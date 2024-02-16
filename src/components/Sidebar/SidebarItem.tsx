@@ -10,43 +10,46 @@ import {
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { SidebarListItem } from './consts'
-import { useState } from 'react'
 import Link from 'next/link'
 
 interface Props {
   item: SidebarListItem
   isSidebarOpened: boolean
+  open: boolean
+  //eslint-disable-next-line no-unused-vars
+  setOpen: (open: boolean) => void
 }
 
-export default function SidebarItem({ item, isSidebarOpened }: Props) {
-  const [open, setOpen] = useState(false)
+export default function SidebarItem({
+  item,
+  isSidebarOpened,
+  open,
+  setOpen,
+}: Props) {
   return (
     <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
       <ListItemButton
         sx={{
           minHeight: 48,
-          justifyContent: open ? 'initial' : 'center',
           px: 2.5,
+          pl: 1.5,
         }}
         onClick={() => setOpen(!open)}
       >
         <ListItemIcon
           sx={{
             minWidth: 0,
-            mr: isSidebarOpened ? 3 : 'auto',
+            mr: 1.5,
             justifyContent: 'center',
           }}
         >
           {item.icon}
         </ListItemIcon>
-        {isSidebarOpened && (
+        {
           <>
             {item.children ? (
               <>
-                <ListItemText
-                  primary={item.title}
-                  sx={{ opacity: isSidebarOpened ? 1 : 0 }}
-                />
+                <ListItemText primary={item.title} sx={{ opacity: 1 }} />
                 {open ? <ExpandLess /> : <ExpandMore />}
               </>
             ) : (
@@ -57,15 +60,15 @@ export default function SidebarItem({ item, isSidebarOpened }: Props) {
               </>
             )}
           </>
-        )}
+        }
       </ListItemButton>
-      {isSidebarOpened && item.children && (
-        <Collapse in={open}>
+      {item.children && (
+        <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
             {item.children.map((child) => (
               <Link key={child.title} href={item.href} shallow>
                 <ListItemButton>
-                  <ListItemText primary={child.title} sx={{ ml: 10 }} />
+                  <ListItemText primary={child.title} sx={{ ml: 4 }} />
                 </ListItemButton>
               </Link>
             ))}

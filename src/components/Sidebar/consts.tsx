@@ -15,18 +15,21 @@ export type SidebarListItem = {
   icon: React.ReactNode
   children?: SidebarItemChild[]
   href: string
+  open: boolean
 }
 
 const PLATFORMS_ITEMS: SidebarListItem[] = [
   {
     title: 'Home',
     icon: <HomeIcon />,
+    open: false,
     href: '/',
   },
   {
     title: 'Investing',
     icon: <AutoGraphIcon />,
     href: '/investing',
+    open: false,
     children: [
       {
         title: 'Market Cap Weighted',
@@ -40,6 +43,7 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
     title: 'Trading',
     href: '/trading',
     icon: <TrendingUpIcon />,
+    open: false,
     children: [
       {
         title: 'Trading subpage',
@@ -50,6 +54,7 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
     title: 'Income',
     href: '/income',
     icon: <CurrencyExchangeIcon />,
+    open: false,
     children: [
       {
         title: 'Income subpage',
@@ -60,6 +65,7 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
     title: 'Arbitrage',
     href: '/arbitrage',
     icon: <BarChartIcon />,
+    open: false,
     children: [
       {
         title: 'Arbitrage subpage',
@@ -70,12 +76,13 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
 
 const TOOLS_ITEMS: SidebarListItem[] = [
   {
-    title: 'My Wallets',
-    href: '/profile',
+    title: 'Portfolios',
+    href: '/myWallets',
     icon: <AccountBalanceWalletIcon />,
+    open: false,
     children: [
       {
-        title: 'Profile subpage',
+        title: 'My Wallets',
       },
     ],
   },

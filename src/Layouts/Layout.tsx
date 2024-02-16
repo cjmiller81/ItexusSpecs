@@ -4,28 +4,24 @@ import CssBaseline from '@mui/material/CssBaseline'
 import Header from '@/components/Header/Header'
 import Sidebar from '@/components/Sidebar/Sidebar'
 import { StyledDrawerHeader } from '@/components/Sidebar/StyledDrawer'
-import RootLayout from './RootLayout'
 
 interface Props {
   children: any
 }
 
 export default function Layout({ children }: Props) {
-  const [openSide, setOpenSide] = React.useState(false)
+  const [openSide, setOpenSide] = React.useState(true)
 
   const toggleSidebar = (value: boolean) => setOpenSide(value)
-
   return (
-    <RootLayout>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <Header open={openSide} toggleSide={toggleSidebar} />
-        <Sidebar open={openSide} toggleSide={toggleSidebar} />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <StyledDrawerHeader />
-          {children}
-        </Box>
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <Header open={openSide} toggleSide={toggleSidebar} />
+      <Sidebar open={openSide} toggleSide={toggleSidebar} />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <StyledDrawerHeader />
+        {children}
       </Box>
-    </RootLayout>
+    </Box>
   )
 }

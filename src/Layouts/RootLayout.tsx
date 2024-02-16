@@ -3,6 +3,7 @@ import { ThemeProvider } from '@emotion/react'
 import { createTheme } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { CustomThemeContext } from '@/themes/CustomThemeContext'
+import Layout from './Layout'
 
 export default function RootLayout({ children }: any) {
   const [mode, setMode] = useState('dark')
@@ -28,7 +29,9 @@ export default function RootLayout({ children }: any) {
 
   return (
     <CustomThemeContext.Provider value={contextValue}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <Layout>{children}</Layout>
+      </ThemeProvider>
     </CustomThemeContext.Provider>
   )
 }
