@@ -23,7 +23,7 @@ export const columns: GridColDef[] = [
 ]
 
 export const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', amount: 14, day: '2023-02-01' },
+  { id: 1, lastName: 'Snow', firstName: 'John', amount: 14, day: '2023-02-01' },
   {
     id: 2,
     lastName: 'Lannister',

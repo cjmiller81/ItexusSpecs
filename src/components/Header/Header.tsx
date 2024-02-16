@@ -5,12 +5,9 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Box } from '@mui/material'
 import { StyledAppBar } from './StyledAppBar'
-
-import { useRouter } from 'next/router'
-import { formatPath } from './helper'
-
 import ThemeToggle from './ThemeToggle'
 import UserMenu from './UserMenu'
+import MenuOpenIcon from '@mui/icons-material/MenuOpen'
 
 interface Props {
   open: boolean
@@ -18,30 +15,29 @@ interface Props {
 }
 
 function Header({ open, toggleSide }: Props) {
-  const router = useRouter()
-
   return (
-    <StyledAppBar position="fixed" open={open}>
-      <Toolbar>
+    <StyledAppBar
+      position="fixed"
+      sx={{ width: '100%', bgcolor: 'background.paper' }}
+    >
+      <Toolbar style={{ paddingLeft: '17px ' }}>
         <IconButton
-          color="inherit"
           aria-label="open drawer"
-          onClick={() => toggleSide(true)}
+          onClick={() => toggleSide(!open)}
           edge="start"
           sx={{
             marginRight: 5,
-            ...(open && { display: 'none' }),
           }}
         >
-          <MenuIcon />
+          {open ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
         <Box display={'flex'} alignItems={'center'} flex={1}>
-          <Typography variant="h6" noWrap component="div">
-            {formatPath(router.asPath)}
+          <Typography color="textPrimary" variant="h6" noWrap component="div">
+            Elan Insights
           </Typography>
           <Box display={'flex'} flex={1} justifyContent={'flex-end'} gap={3}>
-            <UserMenu />
             <ThemeToggle />
+            <UserMenu />
           </Box>
         </Box>
       </Toolbar>

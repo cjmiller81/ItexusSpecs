@@ -7,8 +7,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { StyledDrawer, StyledDrawerHeader } from './StyledDrawer'
 import { ListSubheader } from '@mui/material'
-import { PLATFORMS_ITEMS, TOOLS_ITEMS } from './consts'
+import { PLATFORMS_ITEMS, SidebarListItem, TOOLS_ITEMS } from './consts'
 import SidebarItem from './SidebarItem'
+import { useState } from 'react'
 
 interface Props {
   open: boolean
@@ -17,6 +18,23 @@ interface Props {
 
 export default function Sidebar({ open, toggleSide }: Props) {
   const theme = useTheme()
+  const [platformItems, setPlatformItems] = useState(PLATFORMS_ITEMS)
+  const [toolsItems, setToolsItems] = useState(TOOLS_ITEMS)
+
+  const handleSetItemOpen = (
+    title: string,
+    items: SidebarListItem[],
+    newOpen: boolean,
+    setNewItems: (items: SidebarListItem[]) => void, // eslint-disable-line no-unused-vars
+  ) => {
+    const newState = items.map((item) =>
+      item.title === title
+        ? { ...item, open: newOpen }
+        : { ...item, open: false },
+    )
+
+    setNewItems(newState)
+  }
 
   return (
     <StyledDrawer variant="permanent" open={open}>
@@ -37,12 +55,22 @@ export default function Sidebar({ open, toggleSide }: Props) {
         aria-labelledby="platforms-subheader"
         subheader={
           <ListSubheader component="div" id="platforms-subheader">
-            {open ? 'Platforms' : ''}
+            {open && 'Platforms'}
           </ListSubheader>
         }
       >
-        {PLATFORMS_ITEMS.map((item) => (
-          <SidebarItem key={item.title} item={item} isSidebarOpened={open} />
+        {platformItems.map((item) => (
+          <SidebarItem
+            key={item.title}
+            item={item}
+            open={item.open}
+            setOpen={(open) =>
+              handleSetItemOpen(item.title, platformItems, open, (newItems) =>
+                setPlatformItems(newItems),
+              )
+            }
+            isSidebarOpened={open}
+          />
         ))}
       </List>
       <Divider />
@@ -52,13 +80,23 @@ export default function Sidebar({ open, toggleSide }: Props) {
         onClick={() => toggleSide(true)}
         aria-labelledby="tools-subheader"
         subheader={
-          <ListSubheader component="div" id="tools-subheader">
-            {open ? 'Tools' : ''}
+          <ListSubheader className="test" component="div" id="tools-subheader">
+            {open && 'Tools'}
           </ListSubheader>
         }
       >
-        {TOOLS_ITEMS.map((item) => (
-          <SidebarItem key={item.title} item={item} isSidebarOpened={open} />
+        {toolsItems.map((item) => (
+          <SidebarItem
+            key={item.title}
+            item={item}
+            open={item.open}
+            setOpen={(open) =>
+              handleSetItemOpen(item.title, toolsItems, open, (newItems) =>
+                setToolsItems(newItems),
+              )
+            }
+            isSidebarOpened={open}
+          />
         ))}
       </List>
     </StyledDrawer>

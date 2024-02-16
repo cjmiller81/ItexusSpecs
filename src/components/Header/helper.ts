@@ -1,4 +1,5 @@
 const formats = {
+  '/myWallets': 'My Wallets',
   '/profile': 'User Profile',
   '/arbitrage': 'Arbitrage',
   '/income': 'Income',
