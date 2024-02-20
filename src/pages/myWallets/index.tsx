@@ -5,7 +5,7 @@ import { WalletAsset } from '@/models/Wallet/walletAsset'
 import { Box, Button, Typography } from '@mui/material'
 import { useGridApiRef } from '@mui/x-data-grid'
 import { useState } from 'react'
-import { WalletInputModal } from './walletInputModal'
+import { WalletInputModal } from '../../components/library/InputFields/WalletInputModal'
 
 const tableStyles = {
   height: 700,
