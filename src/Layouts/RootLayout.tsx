@@ -15,6 +15,14 @@ export default function RootLayout({ children }: any) {
           // @ts-expect-error
           mode,
         },
+        shape: {
+          borderRadius: 2,
+        },
+        typography: {
+          button: {
+            fontFamily: 'inherit',
+          },
+        },
       }),
     [mode],
   )
