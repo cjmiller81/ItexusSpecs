@@ -1,8 +1,9 @@
 import { Box, BoxProps } from '@mui/material'
 import { SxProps, styled, useTheme } from '@mui/material/styles'
 import { ApexOptions } from 'apexcharts'
-import ReactApexChart from 'react-apexcharts'
 import { merge } from 'ts-deepmerge'
+import dynamic from 'next/dynamic'
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false })
 
 export interface Props extends BoxProps {
   optionsOverrides?: ApexOptions
@@ -48,18 +49,20 @@ export const AppChart = ({
   console.log(options)
   return (
     <Box {...props}>
-      <StyledReactAppxChart
-        width={'100%'}
-        options={options}
-        series={series}
-        height={height}
-        type="area"
-      />
+      {typeof window !== 'undefined' && (
+        <StyledReactAppxChart
+          width={'100%'}
+          options={options}
+          series={series}
+          height={height}
+          type="area"
+        />
+      )}
     </Box>
   )
 }
 
-const StyledReactAppxChart = styled(ReactApexChart)(({ theme }) => ({
+const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
   color: theme.palette.text.disabled,
   paddingBottom: 4,
   borderStyle: 'solid',
