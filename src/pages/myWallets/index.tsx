@@ -5,6 +5,7 @@ import { WalletAsset } from '@/models/Wallet/walletAsset'
 import { Box, Button, Typography } from '@mui/material'
 import { useGridApiRef } from '@mui/x-data-grid'
 import { useState } from 'react'
+import { TotalWalletsWorthCard } from '@/components/Cards/TotalWalletsWorth/TotalWalletsWorthCard'
 import { WalletInputModal } from '../../components/library/InputFields/WalletInputModal'
 import { HistoricalWalletsWorth } from '@/containers/HistoricalWalletsWorth/HistoricalWalletsWorth'
 
@@ -68,11 +69,26 @@ export default function MyWalletsPage() {
     }
   }
 
+  const totalWorth = walletsAssets.reduce(
+    (total, curValue) =>
+      total + curValue.assets.reduce((acc, cur) => acc + cur.usdValue, 0),
+    0,
+  )
+  const growPercentage = -22.2
+
   return (
     <>
-      <Button variant="contained" onClick={onAddWalletButtonHandle}>
-        Add Wallet
-      </Button>
+      <Box>
+        <Button variant="contained" onClick={onAddWalletButtonHandle}>
+          Add Wallet
+        </Button>
+        <Box sx={{ position: 'absolute', right: 20, top: 80 }}>
+          <TotalWalletsWorthCard
+            growPercentage={growPercentage}
+            totalWorth={totalWorth}
+          />
+        </Box>
+      </Box>
       {addWalletModalOpen && (
         <WalletInputModal
           open={addWalletModalOpen}
