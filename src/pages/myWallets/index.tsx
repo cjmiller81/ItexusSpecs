@@ -6,9 +6,9 @@ import { Box, Button, Typography } from '@mui/material'
 import { useGridApiRef } from '@mui/x-data-grid'
 import { useState } from 'react'
 import { WalletInputModal } from '../../components/library/InputFields/WalletInputModal'
+import { HistoricalWalletsWorth } from '@/containers/HistoricalWalletsWorth/HistoricalWalletsWorth'
 
 const tableStyles = {
-  height: 700,
   '& .MuiDataGrid-row': {
     maxHeight: '1000px !important',
   },
@@ -80,11 +80,12 @@ export default function MyWalletsPage() {
           onClose={() => setAddWalletModalOpen(false)}
         />
       )}
-      <Typography variant="h6" sx={{ mt: 5 }}>
+      <Typography variant="h5" sx={{ mt: 5 }}>
         Wallets
       </Typography>
       <Box mt={2}>
         <BasicTable
+          getRowHeight={() => 'auto'}
           onCellClick={onCellClick}
           apiRef={apiRef}
           sx={tableStyles}
@@ -93,6 +94,7 @@ export default function MyWalletsPage() {
           rows={walletsAssets}
         />
       </Box>
+      <HistoricalWalletsWorth sx={{ mt: 3 }} />
     </>
   )
 }

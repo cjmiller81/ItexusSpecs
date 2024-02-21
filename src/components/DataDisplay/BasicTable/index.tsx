@@ -2,7 +2,7 @@ import { DataGrid, DataGridProps } from '@mui/x-data-grid'
 
 export default function BasicTable(props: DataGridProps) {
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ width: '100%' }}>
       <DataGrid
         initialState={{
           pagination: {
