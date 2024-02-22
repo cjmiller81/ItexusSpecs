@@ -10,19 +10,35 @@ export const tokensColumns: GridColDef[] = [
   {
     field: 'amount',
     headerName: 'Amount',
+    valueGetter: (params: GridValueGetterParams) => {
+      return params.row.amount.toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 6,
+      })
+    },
     width: 100,
   },
   {
     field: 'price',
     headerName: 'Price',
-    editable: true,
+    valueGetter: (params: GridValueGetterParams) => {
+      return params.row.amount.toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 6,
+      })
+    },
     width: 200,
   },
   {
     field: 'usdValue',
     headerName: 'USD Value',
-    valueGetter: (params: GridValueGetterParams) =>
-      `$${params.row.amount * params.row.price}`,
+    valueGetter: (params: GridValueGetterParams) => {
+      const value = params.row.amount * params.row.price
+      return value.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      })
+    },
     width: 300,
   },
 ]
@@ -41,14 +57,14 @@ export const tokensRows: WalletAsset[] = [
       {
         id: 2,
         token: 'USDC',
-        amount: 2313.87,
+        amount: 2313.87233123,
         price: 1.0,
         usdValue: 2314.8,
       },
       {
         id: 3,
         token: 'BNB',
-        amount: 0.9,
+        amount: 0.9321312321,
         price: 210.8,
         usdValue: 190,
       },

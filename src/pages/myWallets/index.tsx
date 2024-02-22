@@ -74,13 +74,13 @@ export default function MyWalletsPage() {
       total + curValue.assets.reduce((acc, cur) => acc + cur.usdValue, 0),
     0,
   )
-  const growPercentage = -22.2
+  const growPercentage = -22.2323
 
   return (
     <>
       <Box>
         <Button variant="contained" onClick={onAddWalletButtonHandle}>
-          Add Wallet
+          +Add Wallet
         </Button>
         <Box sx={{ position: 'absolute', right: 20, top: 80 }}>
           <TotalWalletsWorthCard

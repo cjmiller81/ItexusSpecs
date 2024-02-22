@@ -15,6 +15,14 @@ export const TotalWalletsWorthCard = ({
 }: Props) => {
   const growMain = growPercentage >= 0 ? 'success.main' : 'error.main'
   const growLight = growPercentage >= 0 ? 'success.light' : 'error.light'
+  const totalWorthFormatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(totalWorth)
+  const growPercentageFormatted = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 2,
+  }).format(growPercentage)
+
   return (
     <Box
       {...props}
@@ -35,6 +43,7 @@ export const TotalWalletsWorthCard = ({
           backgroundColor: 'success.light',
           position: 'relative',
           borderRadius: '50%',
+          alignSelf: 'center',
         }}
       >
         <TrendingUpIcon
@@ -49,10 +58,9 @@ export const TotalWalletsWorthCard = ({
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="subtitle1">Total Wallet Worth</Typography>
-        <Typography
-          sx={{ fontWeight: 'bold' }}
-          variant="subtitle1"
-        >{`$${totalWorth}`}</Typography>
+        <Typography sx={{ fontWeight: 'bold' }} variant="subtitle1">
+          {totalWorthFormatted}
+        </Typography>
       </Box>
 
       <Box>
@@ -63,6 +71,7 @@ export const TotalWalletsWorthCard = ({
             display: 'flex',
             alignItems: 'center',
             padding: 0.7,
+            paddingRight: 2,
           }}
         >
           {growPercentage >= 0 ? (
@@ -72,8 +81,10 @@ export const TotalWalletsWorthCard = ({
           )}
           <Typography
             variant="body2"
+            fontWeight={600}
+            fontSize={12}
             sx={{ backgroundColor: growLight, color: growMain }}
-          >{`${growPercentage}%`}</Typography>
+          >{`${growPercentageFormatted}%`}</Typography>
         </Box>
       </Box>
     </Box>
