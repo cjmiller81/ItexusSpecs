@@ -54,9 +54,13 @@ export default function SidebarItem({
               </>
             ) : (
               <>
-                <Link key={item.title} href={item.href} shallow>
+                {item.href ? (
+                  <Link key={item.title} href={item.href} shallow>
+                    <ListItemText primary={item.title} sx={{ opacity: 1 }} />
+                  </Link>
+                ) : (
                   <ListItemText primary={item.title} sx={{ opacity: 1 }} />
-                </Link>
+                )}
               </>
             )}
           </>
@@ -66,7 +70,7 @@ export default function SidebarItem({
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
             {item.children.map((child) => (
-              <Link key={child.title} href={item.href} shallow>
+              <Link key={child.title} href={child.href} shallow>
                 <ListItemButton>
                   <ListItemText primary={child.title} sx={{ ml: 4 }} />
                 </ListItemButton>

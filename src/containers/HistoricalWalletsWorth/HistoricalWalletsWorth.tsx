@@ -53,6 +53,8 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
     }
   }
 
+  const percentageFormatter = (value: number) => `${value}%`
+
   return (
     <Box {...props}>
       <Box sx={{ display: 'flex', gap: 5, width: '100%' }}>
@@ -92,9 +94,17 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
                   format: toXAxesFormat(period),
                 },
               },
+              yaxis: {
+                labels: {
+                  formatter: percentageFormatter,
+                },
+              },
               tooltip: {
                 x: {
                   format: 'yyyy-MM-dd HH:mm',
+                },
+                y: {
+                  formatter: percentageFormatter,
                 },
               },
             }}

@@ -33,7 +33,9 @@ export const WalletInputModal = ({
           <Button variant="contained" onClick={() => onEnter(walletAddress)}>
             Save
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
         </Box>
       </>
     </AppModal>

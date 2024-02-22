@@ -8,13 +8,14 @@ import React from 'react'
 
 type SidebarItemChild = {
   title: string
+  href: string
 }
 
 export type SidebarListItem = {
   title: string
   icon: React.ReactNode
   children?: SidebarItemChild[]
-  href: string
+  href?: string
   open: boolean
 }
 
@@ -28,47 +29,48 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
   {
     title: 'Investing',
     icon: <AutoGraphIcon />,
-    href: '/investing',
     open: false,
     children: [
       {
         title: 'Market Cap Weighted',
+        href: '/investing/marketCapWeighted',
       },
       {
         title: 'Market Cap Equal Weight',
+        href: '/investing/marketCapEqualWeighted',
       },
     ],
   },
   {
     title: 'Trading',
-    href: '/trading',
     icon: <TrendingUpIcon />,
     open: false,
     children: [
       {
         title: 'Trading subpage',
+        href: '/trading',
       },
     ],
   },
   {
     title: 'Income',
-    href: '/income',
     icon: <CurrencyExchangeIcon />,
     open: false,
     children: [
       {
         title: 'Income subpage',
+        href: '/income',
       },
     ],
   },
   {
     title: 'Arbitrage',
-    href: '/arbitrage',
     icon: <BarChartIcon />,
     open: false,
     children: [
       {
         title: 'Arbitrage subpage',
+        href: '/arbitrage',
       },
     ],
   },
@@ -77,12 +79,12 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
 const TOOLS_ITEMS: SidebarListItem[] = [
   {
     title: 'Portfolios',
-    href: '/myWallets',
     icon: <AccountBalanceWalletIcon />,
     open: false,
     children: [
       {
         title: 'My Wallets',
+        href: '/myWallets',
       },
     ],
   },
