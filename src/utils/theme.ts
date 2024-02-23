@@ -56,9 +56,9 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       components: {
         MuiButton: {
           defaultProps: {
-            sx: {
+            style: {
               letterSpacing: '.04em',
-              lineHeight: 'normal',
+              lineHeight: '1.5rem',
             },
           },
           variants: [
