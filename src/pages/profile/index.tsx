@@ -1,10 +1,39 @@
-import { PageTitle } from '@/components/TextDisplay'
+import { ProfileContainer } from '@/containers/Profile/ProfileContainer'
+import { ProfileDetails } from '@/containers/Profile/ProfileDetails'
+import { ProfilePicture } from '@/containers/Profile/ProfilePicture'
+import { SecurityContainer } from '@/containers/Profile/SecurityContainer'
+import { TabContext, TabPanel } from '@mui/lab'
+import TabList from '@mui/lab/TabList'
+import { Box, Tab } from '@mui/material'
+import { useState } from 'react'
 
 export default function ProfilePage() {
+  const [value, setValue] = useState<string>('1')
+
+  const handleChange = (newValue: string) => {
+    //eslint-disable-next-line no-unused-vars
+    setValue(newValue)
+  }
+
   return (
     <>
-      <PageTitle>Profile...</PageTitle>
-      Profile info
+      <ProfileContainer title="Account">
+        <TabContext value={value}>
+          <TabList onChange={(event, newValue) => handleChange(newValue)}>
+            <Tab label={'PROFILE'} value="1" />
+            <Tab label={'SECURITY'} value="2" />
+          </TabList>
+          <TabPanel value="1">
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <ProfilePicture sx={{ width: '30%', minWidth: '200px' }} />
+              <ProfileDetails sx={{ width: '100%' }} />
+            </Box>
+          </TabPanel>
+          <TabPanel value="2">
+            <SecurityContainer />
+          </TabPanel>
+        </TabContext>
+      </ProfileContainer>
     </>
   )
 }

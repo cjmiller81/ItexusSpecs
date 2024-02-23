@@ -1,0 +1,10 @@
+{
+    "errorMessages":{
+        "incorectPassword": "Incorrect password",
+        "mandatoryField": "Mandatory field",
+        "passwordDoNotMatch": "Password do not match",
+        "maxSymbols": "Max number of symbols - {{value}}",
+        "minSymbols": "Min number of symbols - {{value}}",
+        "incorrectCredentials": "Your credentials are incorrect. Please try again"
+    }
+}
