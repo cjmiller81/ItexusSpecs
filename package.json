@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "release": "standard-version",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "next lint --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",

@@ -17,19 +17,31 @@ export default function ProfilePage() {
 
   return (
     <>
-      <ProfileContainer title="Account">
+      <ProfileContainer title='Account'>
         <TabContext value={value}>
           <TabList onChange={(event, newValue) => handleChange(newValue)}>
-            <Tab label={'PROFILE'} value="1" />
-            <Tab label={'SECURITY'} value="2" />
+            <Tab
+              label={'PROFILE'}
+              value='1'
+            />
+            <Tab
+              label={'SECURITY'}
+              value='2'
+            />
           </TabList>
-          <TabPanel value="1">
-            <Box sx={{ display: 'flex', gap: 2 }}>
+          <TabPanel value='1'>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { sm: 'column', md: 'row' },
+                gap: 2,
+                alignItems: { sm: 'center', md: 'flex-start' },
+              }}>
               <ProfilePicture sx={{ width: '30%', minWidth: '200px' }} />
               <ProfileDetails sx={{ width: '100%' }} />
             </Box>
           </TabPanel>
-          <TabPanel value="2">
+          <TabPanel value='2'>
             <SecurityContainer />
           </TabPanel>
         </TabContext>

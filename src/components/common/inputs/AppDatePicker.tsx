@@ -1,15 +1,17 @@
-import { FormControl } from '@mui/material'
-import { DatePicker, DatePickerProps } from '@mui/x-date-pickers'
-import AppInputLabel from './AppInputLabel'
-import { AppInputProps } from './AppInputProps'
+import { FormControl } from "@mui/material"
+import { DatePicker, DatePickerProps } from "@mui/x-date-pickers"
+import AppInputLabel from "./AppInputLabel"
 
-export interface Props extends DatePickerProps<Date>, AppInputProps {}
+export type Props = DatePickerProps<Date> & { label?: string; required?: boolean }
 
 export default function AppDatePicker({ required, label, ...props }: Props) {
   return (
     <div>
-      <FormControl sx={{ minWidth: 120, width: '100%' }}>
-        <AppInputLabel fieldLabel={label} required={required} />
+      <FormControl sx={{ minWidth: 120, width: "100%" }}>
+        <AppInputLabel
+          fieldLabel={label}
+          required={required}
+        />
         <DatePicker {...props} />
       </FormControl>
     </div>
