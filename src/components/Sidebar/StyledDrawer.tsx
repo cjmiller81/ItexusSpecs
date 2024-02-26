@@ -18,10 +18,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(6)} + 1px)`,
-  },
+  width: theme.spacing(5.4)
 })
 
 const StyledDrawerHeader = styled('div')(({ theme }) => ({

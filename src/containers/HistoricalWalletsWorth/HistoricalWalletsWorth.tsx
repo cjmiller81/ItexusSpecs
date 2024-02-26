@@ -1,39 +1,33 @@
-import { AppChart } from '@/components/Charts/AppChart'
-import AppDatePicker from '@/components/common/inputs/AppDatePicker'
-import AppSelect from '@/components/common/inputs/AppSelect'
-import {
-  Box,
-  BoxProps,
-  MenuItem,
-  SelectChangeEvent,
-  Typography,
-} from '@mui/material'
-import { useState } from 'react'
-
-export type Period = 'daily' | 'weekly' | 'monthly'
+import { AppChart } from "@/components/Charts/AppChart"
+import AppDatePicker from "@/components/common/inputs/AppDatePicker"
+import AppSelect from "@/components/common/inputs/AppSelect"
+import { Box, BoxProps, MenuItem, SelectChangeEvent, Stack, Typography } from "@mui/material"
+import { styled } from "@mui/material/styles"
+import { useState } from "react"
+export type Period = "daily" | "weekly" | "monthly"
 
 export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
-  const [period, setPeriod] = useState<Period>('daily')
+  const [period, setPeriod] = useState<Period>("daily")
 
   const series = [
     {
-      name: 'series1',
+      name: "series1",
       data: [1, 131, 40, 28, 51, 42, 109, 100],
     },
     {
-      name: 'series2',
+      name: "series2",
       data: [1, 11, 32, 45, 32, 34, 52, 41],
     },
   ]
 
   const categories = [
-    '2018-09-19T00:00:00.000Z',
-    '2018-09-19T01:30:00.000Z',
-    '2018-09-19T02:30:00.000Z',
-    '2018-09-19T03:30:00.000Z',
-    '2018-09-19T04:30:00.000Z',
-    '2018-09-19T05:30:00.000Z',
-    '2018-09-19T06:30:00.000Z',
+    "2018-09-19T00:00:00.000Z",
+    "2018-09-19T01:30:00.000Z",
+    "2018-09-19T02:30:00.000Z",
+    "2018-09-19T03:30:00.000Z",
+    "2018-09-19T04:30:00.000Z",
+    "2018-09-19T05:30:00.000Z",
+    "2018-09-19T06:30:00.000Z",
   ]
 
   const onPeriodChanged = (event: SelectChangeEvent<unknown>) => {
@@ -42,14 +36,14 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
 
   const toXAxesFormat = (period: Period): string => {
     switch (period) {
-      case 'daily':
-        return 'HH:mm'
-      case 'weekly':
-        return 'ddd'
-      case 'monthly':
-        return 'MMM'
+      case "daily":
+        return "HH:mm"
+      case "weekly":
+        return "ddd"
+      case "monthly":
+        return "MMM"
       default:
-        return 'HH:mm'
+        return "HH:mm"
     }
   }
 
@@ -57,33 +51,35 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
 
   return (
     <Box {...props}>
-      <Box sx={{ display: 'flex', gap: 5, width: '100%' }}>
-        <Box sx={{ width: '100%', flexDirection: 'column', maxWidth: 300 }}>
-          <Typography variant="h5">Historical Wallets Worth</Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              pt: 3,
-              width: '100%',
-              flexDirection: 'column',
-              gap: 4,
-            }}
-          >
-            <AppSelect
-              label={'Period:'}
-              value={period}
-              defaultValue={'daily'}
-              onChange={onPeriodChanged}
-            >
-              <MenuItem value={'daily'}>Daily</MenuItem>
-              <MenuItem value={'weekly'}>Weekly</MenuItem>
-              <MenuItem value={'monthly'}>Monthly</MenuItem>
-            </AppSelect>
-            <AppDatePicker disableFuture label={'From Date:'} />
-            <AppSelect label={'Compare to Symbol:'}></AppSelect>
-          </Box>
-        </Box>
-        <Box sx={{ width: '100%' }}>
+      <StyledWalletWorthContainer>
+        <StyledWalletWorthMenuContainer>
+          <Stack
+            sx={{ width: "100%" }}
+            direction={{ sm: "row", md: "column" }}>
+            <Typography
+              alignContent={"center"}
+              variant="h5">
+              Historical Wallets Worth
+            </Typography>
+            <StyledWalletWorthMenu>
+              <AppSelect
+                label={"Period:"}
+                value={period}
+                defaultValue={"daily"}
+                onChange={onPeriodChanged}>
+                <MenuItem value={"daily"}>Daily</MenuItem>
+                <MenuItem value={"weekly"}>Weekly</MenuItem>
+                <MenuItem value={"monthly"}>Monthly</MenuItem>
+              </AppSelect>
+              <AppDatePicker
+                disableFuture
+                label={"From Date:"}
+              />
+              <AppSelect label={"Compare to Symbol:"}></AppSelect>
+            </StyledWalletWorthMenu>
+          </Stack>
+        </StyledWalletWorthMenuContainer>
+        <Box sx={{ width: "100%" }}>
           <AppChart
             series={series}
             height={460}
@@ -101,7 +97,7 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
               },
               tooltip: {
                 x: {
-                  format: 'yyyy-MM-dd HH:mm',
+                  format: "yyyy-MM-dd HH:mm",
                 },
                 y: {
                   formatter: percentageFormatter,
@@ -110,7 +106,40 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
             }}
           />
         </Box>
-      </Box>
+      </StyledWalletWorthContainer>
     </Box>
   )
 }
+
+const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
+  flexDirection: "row",
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "column",
+  },
+  alignItems: "center",
+  display: "flex",
+  gap: 5,
+  width: "100%",
+}))
+
+const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
+  flexDirection: "column",
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "row",
+    textWrap: "noWrap",
+  },
+  alignItems: "center",
+  display: "flex",
+  gap: 5,
+  width: "100%",
+}))
+
+const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+}))

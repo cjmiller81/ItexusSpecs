@@ -11,6 +11,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import { SidebarListItem } from './consts'
 import Link from 'next/link'
+import { styled } from '@mui/material/styles'
 
 interface Props {
   item: SidebarListItem
@@ -27,7 +28,19 @@ export default function SidebarItem({
   setOpen,
 }: Props) {
   return (
-    <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
+    <ListItem
+    componentsProps={
+      {
+        root:{
+          style:{
+            
+              padding: 0
+            
+          }
+        }
+      }
+    }
+      key={item.title} disablePadding sx={{ display: 'block', padding: 0 }}>
       <ListItemButton
         sx={{
           minHeight: 48,
@@ -45,26 +58,24 @@ export default function SidebarItem({
         >
           {item.icon}
         </ListItemIcon>
-        {
           <>
             {item.children ? (
               <>
-                <ListItemText primary={item.title} sx={{ opacity: 1 }} />
+                <StyledTitleListItemText primary={item.title} sx={{ opacity: 1 }} />
                 {open ? <ExpandLess /> : <ExpandMore />}
               </>
             ) : (
               <>
                 {item.href ? (
                   <Link key={item.title} href={item.href} shallow>
-                    <ListItemText primary={item.title} sx={{ opacity: 1 }} />
+                    <StyledTitleListItemText primary={item.title} sx={{ opacity: 1 }} />
                   </Link>
                 ) : (
-                  <ListItemText primary={item.title} sx={{ opacity: 1 }} />
+                  <StyledTitleListItemText primary={item.title} sx={{ opacity: 1 }} />
                 )}
               </>
             )}
           </>
-        }
       </ListItemButton>
       {item.children && (
         <Collapse in={!isSidebarOpened ? false : open}>
@@ -72,7 +83,7 @@ export default function SidebarItem({
             {item.children.map((child) => (
               <Link key={child.title} href={child.href} shallow>
                 <ListItemButton>
-                  <ListItemText primary={child.title} sx={{ ml: 4 }} />
+                  <ListItemText  primary={child.title} sx={{ ml: 4 }} />
                 </ListItemButton>
               </Link>
             ))}
@@ -82,3 +93,12 @@ export default function SidebarItem({
     </ListItem>
   )
 }
+
+
+
+const StyledTitleListItemText = styled(ListItemText)(() => ({
+  "span":{
+    fontWeight: 500
+
+  }
+}))

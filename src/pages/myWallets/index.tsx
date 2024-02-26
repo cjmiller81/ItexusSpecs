@@ -99,7 +99,7 @@ export default function MyWalletsPage() {
       <Typography variant="h5" sx={{ mt: 5 }}>
         Wallets
       </Typography>
-      <Box mt={2}>
+      {/* <Box mt={2}>
         <BasicTable
           getRowHeight={() => 'auto'}
           onCellClick={onCellClick}
@@ -109,7 +109,7 @@ export default function MyWalletsPage() {
           columns={walletsColumns}
           rows={walletsAssets}
         />
-      </Box>
+      </Box> */}
       <HistoricalWalletsWorth sx={{ mt: 3 }} />
     </>
   )
