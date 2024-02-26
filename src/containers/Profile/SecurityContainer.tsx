@@ -1,10 +1,10 @@
-import AppFormSwitchField from '@/components/common/FormInputs/AppFormSwitchField'
-import { getIncorectPassword, getMandatoryField } from '@/constants/Errormessages'
-import { Box, BoxProps, Button, Grid, Stack, Typography } from '@mui/material'
-import { Form, Formik } from 'formik'
-import { boolean, InferType, object, string } from 'yup'
-import { ProfileContainer } from './ProfileContainer'
-import AppFormTextField from '@/components/common/FormInputs/AppFormTextField'
+import AppFormSwitchField from "@/components/common/FormInputs/AppFormSwitchField"
+import { getIncorectPassword, getMandatoryField } from "@/constants/Errormessages"
+import { Box, BoxProps, Button, Grid, Stack, Typography } from "@mui/material"
+import { Form, Formik } from "formik"
+import { boolean, InferType, object, string } from "yup"
+import { ProfileContainer } from "./ProfileContainer"
+import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 
 const NewPasswordModelSchema = object({
   newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(6, getIncorectPassword()),
@@ -38,17 +38,17 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
             item>
             <Stack spacing={1}>
               <Stack
-                alignItems={'center'}
-                direction={'row'}>
+                alignItems={"center"}
+                direction={"row"}>
                 <Typography
-                  textAlign={'left'}
+                  textAlign={"left"}
                   noWrap
-                  align='center'>
+                  align="center">
                   {switchLabel}
                 </Typography>
                 <AppFormSwitchField
                   name={switchFieldName}
-                  sx={{ ml: 'auto' }}
+                  sx={{ ml: "auto" }}
                 />
               </Stack>
             </Stack>
@@ -61,13 +61,13 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
             />
           </Grid>
           <Grid
-            flexDirection={'row-reverse'}
+            flexDirection={"row-reverse"}
             item
             xs={4}>
             <Button
-              type='submit'
-              sx={{ float: 'right', width: '80%', mr: '10%' }}
-              variant='contained'>
+              type="submit"
+              sx={{ float: "right", width: "80%", mr: "10%" }}
+              variant="contained">
               Save
             </Button>
           </Grid>
@@ -80,24 +80,24 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     return (
       <Form>
         <ProfileContainer
-          width={'100%'}
-          title='Change Password'
-          sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          width={"100%"}
+          title="Change Password"
+          sx={{ display: "flex", flexDirection: "column" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <AppFormTextField
-              name='newPassword'
-              label='New password'
+              name="newPassword"
+              label="New password"
             />
 
             <Button
-              type='submit'
+              type="submit"
               sx={{
-                alignSelf: 'start',
-                width: '20%',
-                minWidth: '170px',
+                alignSelf: "start",
+                width: "20%",
+                minWidth: "170px",
                 mt: 2,
               }}
-              variant={'contained'}>
+              variant={"contained"}>
               Change Password
             </Button>
           </Box>
@@ -109,13 +109,13 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
   return (
     <Box {...props}>
       <Stack
-        sx={{ width: '100%' }}
-        direction={{ sm: 'column', md: 'column', lg: 'row' }}
+        sx={{ width: "100%" }}
+        direction={{ sm: "column", md: "column", lg: "row" }}
         spacing={2}>
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: "100%" }}>
           <Formik<NewPasswordModel>
             initialValues={{
-              newPassword: '',
+              newPassword: "",
             }}
             validateOnBlur={false}
             validateOnChange={false}
@@ -126,37 +126,37 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
             {renderChangePassword()}
           </Formik>
         </Box>
-        <Box sx={{ width: '100%' }}>
-          <Formik<SmsMfaModel>
-            initialValues={{
-              enabled: false,
-              phoneNumber: '',
-            }}
-            validateOnChange={false}
-            validationSchema={SmsMfaModelSchema}
-            onSubmit={data => {
-              console.log(data)
-            }}>
-            <ProfileContainer
-              title={'Set up Multi-Factor Authentication (cooming soon)'}
-              sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-              {renderMFARow('Enable SMS MFA', 'Phone number', 'enabled', 'phoneNumber')}
-              <Formik<TotpAuthenticatorModel>
-                initialValues={{
-                  enabled: false,
-                  displayName: '',
-                }}
-                validateOnChange={false}
-                validationSchema={SmsMfaModelSchema}
-                onSubmit={data => {
-                  console.log(data)
-                }}>
-                <Box mt={3}>
-                  {renderMFARow('Enable TOTP Authenticatior Apps', 'Display Name', 'enabled', 'displayName')}
-                </Box>
-              </Formik>
-            </ProfileContainer>
-          </Formik>
+        <Box sx={{ width: "100%" }}>
+          <ProfileContainer
+            title={"Set up Multi-Factor Authentication (cooming soon)"}
+            sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+            <Formik<SmsMfaModel>
+              initialValues={{
+                enabled: false,
+                phoneNumber: "",
+              }}
+              validateOnChange={false}
+              validationSchema={SmsMfaModelSchema}
+              onSubmit={data => {
+                console.log(data)
+              }}>
+              {renderMFARow("Enable SMS MFA", "Phone number", "enabled", "phoneNumber")}
+            </Formik>
+            <Formik<TotpAuthenticatorModel>
+              initialValues={{
+                enabled: false,
+                displayName: "",
+              }}
+              validateOnChange={false}
+              validationSchema={TotpAuthenticatorSchema}
+              onSubmit={data => {
+                console.log(data)
+              }}>
+              <Box mt={3}>
+                {renderMFARow("Enable TOTP Authenticatior Apps", "Display Name", "enabled", "displayName")}
+              </Box>
+            </Formik>
+          </ProfileContainer>
         </Box>
       </Stack>
     </Box>
