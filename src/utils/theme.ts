@@ -1,5 +1,6 @@
-import { PaletteMode, PaletteOptions, createTheme } from '@mui/material'
 import { Theme } from '@emotion/react'
+import '@mui/lab/themeAugmentation'
+import { createTheme, PaletteMode, PaletteOptions } from '@mui/material'
 
 const darkPalette: PaletteOptions = {
   primary: {
@@ -54,6 +55,14 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
   const finaleTheme = createTheme(
     {
       components: {
+        MuiTabPanel: {
+          styleOverrides: {
+            root: {
+              paddingLeft: 0,
+              paddingRight: 0,
+            },
+          },
+        },
         MuiButton: {
           defaultProps: {
             style: {

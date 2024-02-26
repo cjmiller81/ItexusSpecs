@@ -1,115 +1,164 @@
-import AppTextField from '@/components/common/inputs/AppTextField'
-import {
-  getIncorectPassword,
-  getMandatoryField,
-  getPasswordDoNotMatch,
-} from '@/constants/Errormessages'
-import { Box, BoxProps, Button, CSSObject } from '@mui/material'
-import { useFormik } from 'formik'
-import { InferType, object, string, ref } from 'yup'
+import AppFormSwitchField from '@/components/common/FormInputs/AppFormSwitchField'
+import { getIncorectPassword, getMandatoryField } from '@/constants/Errormessages'
+import { Box, BoxProps, Button, Grid, Stack, Typography } from '@mui/material'
+import { Form, Formik } from 'formik'
+import { boolean, InferType, object, string } from 'yup'
 import { ProfileContainer } from './ProfileContainer'
-
-const rowStyle: CSSObject = {
-  display: 'flex',
-  gap: 2,
-}
+import AppFormTextField from '@/components/common/FormInputs/AppFormTextField'
 
 const NewPasswordModelSchema = object({
-  newPassword: string()
-    .required(getMandatoryField())
-    .min(1, getMandatoryField())
-    .min(6, getIncorectPassword()),
-  newPasswordConfirm: string()
-    .required(getMandatoryField())
-    .min(1, getMandatoryField())
-    .min(6, getIncorectPassword())
-    .oneOf([ref('newPassword')], getPasswordDoNotMatch()),
-  currentPassword: string()
-    .required(getMandatoryField())
-    .min(1, getMandatoryField())
-    .min(6, getIncorectPassword()),
+  newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(6, getIncorectPassword()),
 })
 
 type NewPasswordModel = InferType<typeof NewPasswordModelSchema>
 
+const SmsMfaModelSchema = object({
+  enabled: boolean(),
+  phoneNumber: string(),
+})
+
+type SmsMfaModel = InferType<typeof SmsMfaModelSchema>
+
+const TotpAuthenticatorSchema = object({
+  enabled: boolean(),
+  displayName: string(),
+})
+
+type TotpAuthenticatorModel = InferType<typeof TotpAuthenticatorSchema>
+
 export const SecurityContainer = ({ ...props }: BoxProps) => {
-  const handleOnSubmit = async (data: NewPasswordModel) => {
-    console.log(data)
+  const renderMFARow = (switchLabel: string, inputLabel: string, switchFieldName: string, inputFieldName: string) => {
+    return (
+      <Form>
+        <Grid
+          container
+          spacing={2}>
+          <Grid
+            xs={8}
+            item>
+            <Stack spacing={1}>
+              <Stack
+                alignItems={'center'}
+                direction={'row'}>
+                <Typography
+                  textAlign={'left'}
+                  noWrap
+                  align='center'>
+                  {switchLabel}
+                </Typography>
+                <AppFormSwitchField
+                  name={switchFieldName}
+                  sx={{ ml: 'auto' }}
+                />
+              </Stack>
+            </Stack>
+            <AppFormTextField
+              sx={{ mt: 1 }}
+              label={inputLabel}
+              name={inputFieldName}
+              inputProps={{ disabled: true }}
+              required
+            />
+          </Grid>
+          <Grid
+            flexDirection={'row-reverse'}
+            item
+            xs={4}>
+            <Button
+              type='submit'
+              sx={{ float: 'right', width: '80%', mr: '10%' }}
+              variant='contained'>
+              Save
+            </Button>
+          </Grid>
+        </Grid>
+      </Form>
+    )
   }
 
-  const formik = useFormik<NewPasswordModel>({
-    initialValues: {
-      currentPassword: '',
-      newPassword: '',
-      newPasswordConfirm: '',
-    },
-    validateOnBlur: false,
-    validateOnMount: false,
-    validateOnChange: false,
-    validationSchema: NewPasswordModelSchema,
-    onSubmit: handleOnSubmit,
-  })
+  const renderChangePassword = () => {
+    return (
+      <Form>
+        <ProfileContainer
+          width={'100%'}
+          title='Change Password'
+          sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <AppFormTextField
+              name='newPassword'
+              label='New password'
+            />
+
+            <Button
+              type='submit'
+              sx={{
+                alignSelf: 'start',
+                width: '20%',
+                minWidth: '170px',
+                mt: 2,
+              }}
+              variant={'contained'}>
+              Change Password
+            </Button>
+          </Box>
+        </ProfileContainer>
+      </Form>
+    )
+  }
 
   return (
     <Box {...props}>
-      <ProfileContainer
-        title="Change Password"
-        sx={{ display: 'flex', flexDirection: 'column' }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <AppTextField
-            name="currentPassword"
-            required
-            label="Current password"
-            value={formik.values.currentPassword}
-            onChange={formik.handleChange}
-            error={
-              formik.submitCount > 0 && Boolean(formik.errors.currentPassword)
-            }
-            fieldError={formik.submitCount > 0 && formik.errors.currentPassword}
-            helperText={formik.submitCount > 0 && formik.errors.currentPassword}
-          />
-          <Box sx={rowStyle}>
-            <AppTextField
-              name="newPassword"
-              required
-              label="New password"
-              value={formik.values.newPassword}
-              onChange={formik.handleChange}
-              error={
-                formik.submitCount > 0 && Boolean(formik.errors.newPassword)
-              }
-              fieldError={formik.submitCount > 0 && formik.errors.newPassword}
-              helperText={formik.submitCount > 0 && formik.errors.newPassword}
-            />
-            <AppTextField
-              name="newPasswordConfirm"
-              required
-              label="Re-enter password"
-              value={formik.values.newPasswordConfirm}
-              onChange={formik.handleChange}
-              error={
-                formik.submitCount > 0 &&
-                Boolean(formik.errors.newPasswordConfirm)
-              }
-              fieldError={
-                formik.submitCount > 0 && formik.errors.newPasswordConfirm
-              }
-              helperText={
-                formik.submitCount > 0 && formik.errors.newPasswordConfirm
-              }
-            />
-          </Box>
-
-          <Button
-            onClick={formik.submitForm}
-            sx={{ alignSelf: 'start', width: '20%', minWidth: '170px', mt: 2 }}
-            variant={'contained'}
-          >
-            Change Password
-          </Button>
+      <Stack
+        sx={{ width: '100%' }}
+        direction={{ sm: 'column', md: 'column', lg: 'row' }}
+        spacing={2}>
+        <Box sx={{ width: '100%' }}>
+          <Formik<NewPasswordModel>
+            initialValues={{
+              newPassword: '',
+            }}
+            validateOnBlur={false}
+            validateOnChange={false}
+            validationSchema={NewPasswordModelSchema}
+            onSubmit={({ newPassword }) => {
+              console.log(newPassword)
+            }}>
+            {renderChangePassword()}
+          </Formik>
         </Box>
-      </ProfileContainer>
+        <Box sx={{ width: '100%' }}>
+          <Formik<SmsMfaModel>
+            initialValues={{
+              enabled: false,
+              phoneNumber: '',
+            }}
+            validateOnChange={false}
+            validationSchema={SmsMfaModelSchema}
+            onSubmit={data => {
+              console.log(data)
+            }}>
+            <ProfileContainer
+              title={'Set up Multi-Factor Authentication (cooming soon)'}
+              sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+              {renderMFARow('Enable SMS MFA', 'Phone number', 'enabled', 'phoneNumber')}
+              <Formik<TotpAuthenticatorModel>
+                initialValues={{
+                  enabled: false,
+                  displayName: '',
+                }}
+                validateOnChange={false}
+                validationSchema={SmsMfaModelSchema}
+                onSubmit={data => {
+                  console.log(data)
+                }}>
+                <Box mt={3}>
+                  {renderMFARow('Enable TOTP Authenticatior Apps', 'Display Name', 'enabled', 'displayName')}
+                </Box>
+              </Formik>
+            </ProfileContainer>
+          </Formik>
+        </Box>
+      </Stack>
     </Box>
   )
 }
