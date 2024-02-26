@@ -47,6 +47,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
                   {switchLabel}
                 </Typography>
                 <AppFormSwitchField
+                  disabled
                   name={switchFieldName}
                   sx={{ ml: "auto" }}
                 />
