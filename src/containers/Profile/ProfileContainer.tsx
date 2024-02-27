@@ -1,5 +1,6 @@
 import { AppContainer } from "@/components/common/Containers/AppContainer"
-import { Box, BoxProps, Typography } from "@mui/material"
+import PageTitle from "@/components/TextDisplay/PageTitle"
+import { Box, BoxProps } from "@mui/material"
 import { TopBordered } from "./TopBordered"
 
 export interface Props extends BoxProps {
@@ -11,11 +12,7 @@ export const ProfileContainer = ({ title, children, ...props }: Props) => {
     <Box {...props}>
       <AppContainer sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
         <Box>
-          <Typography
-            sx={{ textAlign: "left", p: 2 }}
-            variant="h5">
-            {title}
-          </Typography>
+          <PageTitle sx={{ textAlign: "left", p: 2 }}>{title}</PageTitle>
         </Box>
         <TopBordered sx={{ display: "flex", flexDirection: "column", width: "100%", p: 2 }}>{children}</TopBordered>
       </AppContainer>

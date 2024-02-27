@@ -1,5 +1,5 @@
-import { PageTitle } from '@/components/TextDisplay'
+import PageTitle from "@/components/TextDisplay/PageTitle"
 
 export default function ArbitragePage() {
-  return <PageTitle>Arbitrage...</PageTitle>
+  return <PageTitle sx={{ textWrap: "nowrap", minWidth: "300px" }}>Arbitrage...</PageTitle>
 }

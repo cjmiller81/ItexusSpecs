@@ -1,9 +1,9 @@
-import { PageTitle } from '@/components/TextDisplay'
+import PageTitle from "@/components/TextDisplay/PageTitle"
 
 export default function IncomePage() {
   return (
     <>
-      <PageTitle>Income Page Title</PageTitle>
+      <PageTitle sx={{ textWrap: "nowrap", minWidth: "300px" }}>Income Page Title</PageTitle>
     </>
   )
 }

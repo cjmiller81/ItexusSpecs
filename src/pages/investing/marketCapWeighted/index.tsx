@@ -1,5 +1,5 @@
-import { PageTitle } from '@/components/TextDisplay'
+import PageTitle from "@/components/TextDisplay/PageTitle"
 
 export default function MarketCapWeightedPage() {
-  return <PageTitle>Market Cap Weighted Page Title</PageTitle>
+  return <PageTitle sx={{ textWrap: "nowrap", minWidth: "300px" }}>Market Cap Weighted Page Title</PageTitle>
 }
