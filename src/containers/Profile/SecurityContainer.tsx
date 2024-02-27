@@ -1,10 +1,10 @@
 import AppFormSwitchField from "@/components/common/FormInputs/AppFormSwitchField"
+import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 import { getIncorectPassword, getMandatoryField } from "@/constants/Errormessages"
 import { Box, BoxProps, Button, Grid, Stack, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { boolean, InferType, object, string } from "yup"
 import { ProfileContainer } from "./ProfileContainer"
-import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 
 const NewPasswordModelSchema = object({
   newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(6, getIncorectPassword()),
@@ -129,7 +129,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         </Box>
         <Box sx={{ width: "100%" }}>
           <ProfileContainer
-            title={"Set up Multi-Factor Authentication (cooming soon)"}
+            title={"Set up Multi-Factor Authentication (coming soon)"}
             sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <Formik<SmsMfaModel>
               initialValues={{
@@ -154,7 +154,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
                 console.log(data)
               }}>
               <Box mt={3}>
-                {renderMFARow("Enable TOTP Authenticatior Apps", "Display Name", "enabled", "displayName")}
+                {renderMFARow("Enable TOTP Authentication Apps", "Display Name", "enabled", "displayName")}
               </Box>
             </Formik>
           </ProfileContainer>

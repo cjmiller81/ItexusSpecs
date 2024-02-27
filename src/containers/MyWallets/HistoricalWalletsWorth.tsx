@@ -1,7 +1,8 @@
 import { AppChart } from "@/components/Charts/AppChart"
 import AppDatePicker from "@/components/common/inputs/AppDatePicker"
 import AppSelect from "@/components/common/inputs/AppSelect"
-import { Box, BoxProps, MenuItem, SelectChangeEvent, Stack, Typography } from "@mui/material"
+import PageTitle from "@/components/TextDisplay/PageTitle"
+import { Box, BoxProps, MenuItem, SelectChangeEvent } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useState } from "react"
 export type Period = "daily" | "weekly" | "monthly"
@@ -53,31 +54,28 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
     <Box {...props}>
       <StyledWalletWorthContainer>
         <StyledWalletWorthMenuContainer>
-          <Stack
-            sx={{ width: "100%" }}
-            direction={{ sm: "row", md: "column" }}>
-            <Typography
-              alignContent={"center"}
-              variant="h5">
-              Historical Wallets Worth
-            </Typography>
-            <StyledWalletWorthMenu>
-              <AppSelect
-                label={"Period:"}
-                value={period}
-                defaultValue={"daily"}
-                onChange={onPeriodChanged}>
-                <MenuItem value={"daily"}>Daily</MenuItem>
-                <MenuItem value={"weekly"}>Weekly</MenuItem>
-                <MenuItem value={"monthly"}>Monthly</MenuItem>
-              </AppSelect>
-              <AppDatePicker
-                disableFuture
-                label={"From Date:"}
-              />
-              <AppSelect label={"Compare to Symbol:"}></AppSelect>
-            </StyledWalletWorthMenu>
-          </Stack>
+          <StyledTypographyWalletsWorthTitle alignContent={"center"}>
+            Historical Wallets Worth
+          </StyledTypographyWalletsWorthTitle>
+          {/* <StyledWalletWorthMenuInnerContainer> */}
+          <StyledWalletWorthMenu>
+            <AppSelect
+              sx={{ width: "100%" }}
+              label={"Period:"}
+              value={period}
+              defaultValue={"daily"}
+              onChange={onPeriodChanged}>
+              <MenuItem value={"daily"}>Daily</MenuItem>
+              <MenuItem value={"weekly"}>Weekly</MenuItem>
+              <MenuItem value={"monthly"}>Monthly</MenuItem>
+            </AppSelect>
+            <AppDatePicker
+              disableFuture
+              label={"From Date:"}
+            />
+            <AppSelect label={"Compare to Symbol:"}></AppSelect>
+          </StyledWalletWorthMenu>
+          {/* </StyledWalletWorthMenuInnerContainer> */}
         </StyledWalletWorthMenuContainer>
         <Box sx={{ width: "100%" }}>
           <AppChart
@@ -116,30 +114,43 @@ const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },
-  alignItems: "center",
+  gap: theme.spacing(4),
   display: "flex",
-  gap: 5,
   width: "100%",
 }))
 
 const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   flexDirection: "column",
+  gap: theme.spacing(2),
+  width: "25%",
   [theme.breakpoints.down("md")]: {
-    flexDirection: "row",
+    flexDirection: "column",
     textWrap: "noWrap",
+    display: "flex",
+    width: "100%",
   },
   alignItems: "center",
-  display: "flex",
-  gap: 5,
-  width: "100%",
+  justifyContent: "flex-start",
 }))
 
 const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
+  marginTop: theme.spacing(7),
+  gap: theme.spacing(5),
   flexDirection: "column",
   [theme.breakpoints.down("md")]: {
     flexDirection: "row",
     alignItems: "center",
+    marginTop: theme.spacing(1),
+    justifyContent: "space-around",
+  },
+}))
+
+const StyledTypographyWalletsWorthTitle = styled(PageTitle)(({ theme }) => ({
+  [theme.breakpoints.down("md")]: {
+    flexBasis: "20%",
+    textWrap: "wrap",
+    textAlign: "center",
   },
 }))
