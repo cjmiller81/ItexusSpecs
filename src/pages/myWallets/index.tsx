@@ -98,12 +98,11 @@ export default function MyWalletsPage() {
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
-        <Button
-          sx={{ mt: 2 }}
+        <StyledAddWalletButton
           variant="contained"
           onClick={onAddWalletButtonHandle}>
           +Add Wallet
-        </Button>
+        </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
         <PageTitle sx={{ mt: 2 }}>Wallets</PageTitle>
@@ -146,5 +145,12 @@ const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+  },
+}))
+
+const StyledAddWalletButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  [theme.breakpoints.down("md")]: {
+    marginTop: theme.spacing(4),
   },
 }))

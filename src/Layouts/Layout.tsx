@@ -4,6 +4,7 @@ import CssBaseline from "@mui/material/CssBaseline"
 import Header from "@/components/Header/Header"
 import Sidebar from "@/components/Sidebar/Sidebar"
 import { StyledDrawerHeader } from "@/components/Sidebar/StyledDrawer"
+import { styled } from "@mui/material/styles"
 
 interface Props {
   children: any
@@ -14,7 +15,7 @@ export default function Layout({ children }: Props) {
 
   const toggleSidebar = (value: boolean) => setOpenSide(value)
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
+    <StyledRoot sx={{ width: "100%" }}>
       <CssBaseline />
       <Header
         open={openSide}
@@ -30,6 +31,13 @@ export default function Layout({ children }: Props) {
         <StyledDrawerHeader />
         {children}
       </Box>
-    </Box>
+    </StyledRoot>
   )
 }
+
+const StyledRoot = styled(Box)(({ theme }) => ({
+  display: "flex",
+  [theme.breakpoints.down("md")]: {
+    display: "inherit",
+  },
+}))

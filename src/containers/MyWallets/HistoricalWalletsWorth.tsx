@@ -140,9 +140,16 @@ const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
   gap: theme.spacing(5),
   flexDirection: "column",
   [theme.breakpoints.down("md")]: {
+    marginTop: theme.spacing(2),
+  },
+  [theme.breakpoints.between("sm", "md")]: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: theme.spacing(1),
+    justifyContent: "space-around",
+  },
+  [theme.breakpoints.down("xs")]: {
+    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "space-around",
   },
 }))
