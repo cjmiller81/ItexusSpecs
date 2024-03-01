@@ -1,12 +1,14 @@
 import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 import { AppModal } from "@/components/Modals/AppModal"
 import { cryptoWalletFormat } from "@/constants/Common"
+import { getInvalidFormat, getMandatoryField } from "@/constants/Errormessages"
 import { Box, Button, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
+import { useTranslation } from "react-i18next"
 import { InferType, object, string } from "yup"
 
 const AddressFormSchema = object({
-  address: string().matches(cryptoWalletFormat, "Invalid format").required("Required"),
+  address: string().matches(cryptoWalletFormat, getInvalidFormat()).required(getMandatoryField()),
 })
 
 type AddressModel = InferType<typeof AddressFormSchema>
@@ -19,6 +21,7 @@ export interface WalletInputProps {
 }
 
 export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) => {
+  const { t } = useTranslation("WalletInputModal")
   return (
     <AppModal
       onClose={onClose}
@@ -30,11 +33,10 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
         validateOnChange={false}
         validationSchema={AddressFormSchema}
         onSubmit={data => {
-          console.log("submit")
           onEnter(data.address)
         }}>
         <Form>
-          <Typography variant="h6">Add new wallet</Typography>
+          <Typography variant="h6">{t("AddNewWallet")}</Typography>
           <AppFormTextField
             sx={{ mt: 2 }}
             name={"address"}
@@ -47,12 +49,12 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
             <Button
               variant="contained"
               type="submit">
-              Save
+              {t("Save")}
             </Button>
             <Button
               variant="outlined"
               onClick={onClose}>
-              Cancel
+              {t("Cancel")}
             </Button>
           </Box>
         </Form>

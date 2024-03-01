@@ -11,15 +11,16 @@ import { Box, Button } from "@mui/material"
 import { styled } from "@mui/system"
 import { GridCellParams, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
-import { WalletInputModal } from "../../components/library/InputFields/WalletInputModal"
+import { WalletInputModal } from "../../components/Modals/WalletInputModal"
 
 type WalletRow = Wallet & { expanded: boolean }
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, errors } = useSelector((state: RootState) => state.walletsReducer.wallets)
   const dispatch = useDispatch()
-
+  const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
 
   const apiRef = useGridApiRef()
@@ -98,7 +99,7 @@ export default function MyWalletsPage() {
         <StyledAddWalletButton
           variant="contained"
           onClick={() => setAddWalletModalOpen(true)}>
-          +Add Wallet
+          {t("AddWallet")}
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>

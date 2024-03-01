@@ -4,8 +4,8 @@ export const getIncorectPassword = () => i18n.t("incorectPassword", { ns: "error
 export const getPasswordDoNotMatch = () => i18n.t("passwordDoNotMatch", { ns: "errorMessages" })
 export const getMandatoryField = () => i18n.t("mandatoryField", { ns: "errorMessages" })
 export const getInvalidPhoneField = () => i18n.t("invalidPhoneNumber", { ns: "errorMessages" })
-export const getUndefinedErrorMessage = () => i18n.t("SomethingWentWrong", { ns: "errorMessages" })
-export const CustomRequiredMessages = () => getMandatoryField()
+export const getInvalidFormat = () => i18n.t("invalidFormat", { ns: "errorMessages" })
+export const getUndefinedErrorMessage = () => i18n.t("somethingWentWrong", { ns: "errorMessages" })
 
 export const getMaxLengthMessage = (max: number) => i18n.t("maxSymbols", { value: max, ns: "errorMessages" })
 export const getMinLengthMessage = (min: number) => i18n.t("minSymbols", { value: min, ns: "errorMessages" })
