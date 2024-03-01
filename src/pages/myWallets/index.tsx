@@ -7,10 +7,11 @@ import { StyledWalletsTable } from "@/containers/MyWallets/WalletsTable"
 import { RootState } from "@/libs/redux/RootReducer"
 import { clearErrors, createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
 import { Wallet } from "@/models/Wallet/Wallet"
+import { getWalletsUsdTotal } from "@/utils/tokensTableHelpers"
 import { Box, Button } from "@mui/material"
 import { styled } from "@mui/system"
 import { GridCellParams, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
 import { toast } from "react-toastify"
@@ -30,6 +31,8 @@ export default function MyWalletsPage() {
     dispatch(fetchWallets(null))
   }, [dispatch])
 
+  const walletsTotal = useMemo(() => getWalletsUsdTotal(wallets), [wallets])
+
   if (errors.length) {
     errors.forEach(error => {
       toast.error(error)
@@ -37,6 +40,7 @@ export default function MyWalletsPage() {
 
     dispatch(clearErrors())
   }
+
   const onAddWallet = async (walletAddress: string | null) => {
     if (walletAddress) {
       dispatch(createWallet(walletAddress))
@@ -69,15 +73,6 @@ export default function MyWalletsPage() {
     apiRef.current.updateColumns([column])
   }
 
-  const totalWorth = wallets.reduce(
-    (total, curValue) =>
-      total +
-      curValue.chainAssets
-        .flatMap(chainAsset => chainAsset.walletAssets)
-        .reduce((walletTotal, asset) => walletTotal + asset.balance, 0),
-    0,
-  )
-
   const growPercentage = -22.2323
 
   return (
@@ -92,7 +87,7 @@ export default function MyWalletsPage() {
       <StyledWalletWorthContainer>
         <TotalWalletsWorthCard
           growPercentage={growPercentage}
-          totalWorth={totalWorth}
+          totalWorth={walletsTotal}
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>

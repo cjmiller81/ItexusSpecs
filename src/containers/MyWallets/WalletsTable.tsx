@@ -7,6 +7,9 @@ export const StyledWalletsTable = styled(BasicTable)(() => ({
   height: 500,
   mt: 2,
   display: "grid",
+  "& .MuiDataGrid-virtualScroller": {
+    overflowX: "hidden",
+  },
   "& .MuiDataGrid-main": {
     height: "444px",
   },

@@ -31,7 +31,6 @@ export const walletsSlice = createAppSlice({
     }),
     createWallet: create.asyncThunk(
       async (wallet: string) => {
-        //TODO Remove extea fields after backend fixed
         await walletsApi.addWallets(wallet)
         return await walletsApi.getWalletsAssets()
       },
@@ -40,9 +39,10 @@ export const walletsSlice = createAppSlice({
           state.statstatusCreatingWalletus = "loading"
           state.statusFetchingWallets = "loading"
         },
-        fulfilled: state => {
+        fulfilled: (state, action) => {
           state.statstatusCreatingWalletus = "idle"
           state.statusFetchingWallets = "idle"
+          state.wallets = action.payload
         },
         rejected: state => {
           state.statstatusCreatingWalletus = "failed"
