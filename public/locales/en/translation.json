@@ -6,6 +6,17 @@
     "maxSymbols": "Max number of symbols - {{value}}",
     "minSymbols": "Min number of symbols - {{value}}",
     "incorrectCredentials": "Your credentials are incorrect. Please try again",
-    "invalidPhoneNumber": "Phone number is not valid"
+    "invalidPhoneNumber": "Phone number is not valid",
+    "somethingWentWrong": "Something went wrong...",
+    "invalidFormat": "Invalid format"
+  },
+
+  "WalletInputModal": {
+    "AddNewWallet": "Add new wallet",
+    "Save": "Save",
+    "Cancel": "Cancel"
+  },
+  "MyWalletsPage": {
+    "AddWallet": "+Add Wallet"
   }
 }
