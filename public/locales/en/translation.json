@@ -6,6 +6,7 @@
     "maxSymbols": "Max number of symbols - {{value}}",
     "minSymbols": "Min number of symbols - {{value}}",
     "incorrectCredentials": "Your credentials are incorrect. Please try again",
-    "invalidPhoneNumber": "Phone number is not valid"
+    "invalidPhoneNumber": "Phone number is not valid",
+    "SomethingWentWrong": "Something went wrong..."
   }
 }

@@ -1,9 +1,9 @@
-import { Box, BoxProps } from '@mui/material'
-import { SxProps, styled, useTheme } from '@mui/material/styles'
-import { ApexOptions } from 'apexcharts'
-import { merge } from 'ts-deepmerge'
-import dynamic from 'next/dynamic'
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false })
+import { Box, BoxProps } from "@mui/material"
+import { SxProps, styled, useTheme } from "@mui/material/styles"
+import { ApexOptions } from "apexcharts"
+import { merge } from "ts-deepmerge"
+import dynamic from "next/dynamic"
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false })
 
 export interface Props extends BoxProps {
   optionsOverrides?: ApexOptions
@@ -11,12 +11,7 @@ export interface Props extends BoxProps {
   height: number
   sx?: SxProps
 }
-export const AppChart = ({
-  optionsOverrides,
-  series,
-  height,
-  ...props
-}: Props) => {
+export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) => {
   const theme = useTheme()
   const defaultOptions: ApexOptions = {
     chart: {
@@ -33,25 +28,23 @@ export const AppChart = ({
     },
 
     stroke: {
-      curve: 'smooth',
+      curve: "smooth",
     },
     xaxis: {
-      type: 'datetime',
+      type: "datetime",
     },
     tooltip: {
       enabled: true,
     },
   }
 
-  const options = optionsOverrides
-    ? merge(defaultOptions, optionsOverrides)
-    : defaultOptions
-  console.log(options)
+  const options = optionsOverrides ? merge(defaultOptions, optionsOverrides) : defaultOptions
+  //console.log(options)
   return (
     <Box {...props}>
-      {typeof window !== 'undefined' && (
+      {typeof window !== "undefined" && (
         <StyledReactAppxChart
-          width={'100%'}
+          width={"100%"}
           options={options}
           series={series}
           height={height}
@@ -65,19 +58,19 @@ export const AppChart = ({
 const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
   color: theme.palette.text.disabled,
   paddingBottom: 4,
-  borderStyle: 'solid',
+  borderStyle: "solid",
   borderColor: theme.palette.divider,
   borderWidth: 1,
-  '& .apexcharts-tooltip.apexcharts-theme-light': {
+  "& .apexcharts-tooltip.apexcharts-theme-light": {
     color: theme.palette.text.primary,
     background: theme.palette.background.paper,
     borderColor: theme.palette.grey[500],
   },
-  '& .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title': {
+  "& .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title": {
     color: theme.palette.text.primary,
     background: theme.palette.background.paper,
   },
-  '& .apexcharts-xaxistooltip': {
-    display: 'none',
+  "& .apexcharts-xaxistooltip": {
+    display: "none",
   },
 }))

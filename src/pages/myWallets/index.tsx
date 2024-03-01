@@ -1,85 +1,82 @@
 import { TotalWalletsWorthCard } from "@/components/Cards/TotalWalletsWorth/TotalWalletsWorthCard"
-import BasicTable from "@/components/DataDisplay/BasicTable"
 import PageTitle from "@/components/TextDisplay/PageTitle"
+import { walletsColumns } from "@/constants/ColumnsDefs/WalletsTable"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
-import { walletsColumns } from "@/containers/MyWalletsTable/mocks"
-import { tokensRows } from "@/containers/TokensTable/mocks"
-import { WalletAsset } from "@/models/Wallet/walletAsset"
+import { ExpandableRow } from "@/containers/MyWallets/TokensRow"
+import { StyledWalletsTable } from "@/containers/MyWallets/WalletsTable"
+import { RootState } from "@/libs/redux/RootReducer"
+import { clearErrors, createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
+import { Wallet } from "@/models/Wallet/Wallet"
 import { Box, Button } from "@mui/material"
 import { styled } from "@mui/system"
 import { GridCellParams, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
-import { useState } from "react"
-import React from "react"
+import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { toast } from "react-toastify"
 import { WalletInputModal } from "../../components/library/InputFields/WalletInputModal"
 
-const tableStyles = {
-  width: "100%",
-  mt: 2,
-  "& .MuiDataGrid-row": {
-    maxHeight: "1000px !important",
-  },
-  ".MuiDataGrid-cell--withRenderer": {
-    maxHeight: "1000px !important",
-  },
-  ".MuiDataGrid-withBorderColor": {
-    bgColor: "transparent",
-  },
-}
-
-interface WalletAssetTableRow extends WalletAsset {
-  expanded: boolean
-}
-
+type WalletRow = Wallet & { expanded: boolean }
 export default function MyWalletsPage() {
-  const [walletsAssets, setWalletAsset] = useState<WalletAssetTableRow[]>(
-    tokensRows.map(tokenRow => ({ ...tokenRow, expanded: false })),
-  )
+  const { wallets, statusFetchingWallets, errors } = useSelector((state: RootState) => state.walletsReducer.wallets)
+  const dispatch = useDispatch()
+
+  const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
 
   const apiRef = useGridApiRef()
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false)
 
-  const onAddWalletButtonHandle = () => {
-    setAddWalletModalOpen(true)
-  }
+  useEffect(() => {
+    dispatch(fetchWallets(null))
+  }, [dispatch])
 
-  const onAddWallet = (walletAddress: string | null) => {
-    if (walletAddress)
-      setWalletAsset([
-        ...walletsAssets,
-        {
-          address: walletAddress,
-          assets: tokensRows[0].assets,
-          expanded: false,
-        },
-      ])
+  if (errors.length) {
+    errors.forEach(error => {
+      toast.error(error)
+    })
+
+    dispatch(clearErrors())
+  }
+  const onAddWallet = async (walletAddress: string | null) => {
+    if (walletAddress) {
+      dispatch(createWallet(walletAddress))
+    }
     setAddWalletModalOpen(false)
   }
 
-  const onCellClick = (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
+  //eslint-disable-next-line no-undef
+  const onCellClick = async (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
     switch (params.field) {
-      case "expand":
+      case "expand": {
         event.stopPropagation()
-        setWalletAsset([...walletsAssets])
+        const row = params.row
+        row.expanded = !row.expanded
+        apiRef.current.updateRows([row])
         break
-      case "trash":
+      }
+      case "trash": {
         event.stopPropagation()
-        setWalletAsset(walletsAssets.filter(x => x.address !== params.row.address))
+        dispatch(deleteWallet(params.row.address))
         break
-      case "walletAddress":
+      }
+      case "address":
         event.stopPropagation()
         break
       default:
     }
 
-    const column = apiRef.current.getColumn("walletAddress")
-    column.minWidth = walletsAssets.some(asset => asset.expanded) ? 720 : 300
+    const column = apiRef.current.getColumn("address")
     apiRef.current.updateColumns([column])
   }
 
-  const totalWorth = walletsAssets.reduce(
-    (total, curValue) => total + curValue.assets.reduce((acc, cur) => acc + cur.usdValue, 0),
+  const totalWorth = wallets.reduce(
+    (total, curValue) =>
+      total +
+      curValue.chainAssets
+        .flatMap(chainAsset => chainAsset.walletAssets)
+        .reduce((walletTotal, asset) => walletTotal + asset.balance, 0),
     0,
   )
+
   const growPercentage = -22.2323
 
   return (
@@ -100,7 +97,7 @@ export default function MyWalletsPage() {
       <StyledAdaptivePageBox>
         <StyledAddWalletButton
           variant="contained"
-          onClick={onAddWalletButtonHandle}>
+          onClick={() => setAddWalletModalOpen(true)}>
           +Add Wallet
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
@@ -108,14 +105,22 @@ export default function MyWalletsPage() {
         <PageTitle sx={{ mt: 2 }}>Wallets</PageTitle>
       </StyledAdaptivePageBox>
 
-      <BasicTable
-        getRowHeight={() => "auto"}
+      <StyledWalletsTable
+        loading={statusFetchingWallets === "loading"}
+        slots={{
+          row: ExpandableRow,
+        }}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 5 },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
         onCellClick={onCellClick}
         apiRef={apiRef}
-        sx={tableStyles}
         getRowId={x => x.address}
         columns={walletsColumns}
-        rows={walletsAssets}
+        rows={walletsRows}
       />
       <HistoricalWalletsWorth sx={{ mt: 6 }} />
     </>
@@ -137,6 +142,7 @@ const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
     mt: 4,
   },
 }))
+
 const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",

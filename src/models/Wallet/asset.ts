@@ -1,7 +1,6 @@
 export interface Asset {
-  id: number
-  token: string
-  amount: number
-  price: number
-  usdValue: number
+  tokenName: string
+  balance: number
+  //TODO fix the typo after it's fixed on backend
+  tokenAdress: string | null
 }
