@@ -49,6 +49,7 @@ export default function SidebarItem({ item, isSidebarOpened, open, setOpen }: Pr
               {item.href ? (
                 <Link
                   key={item.title}
+                  passHref
                   href={item.href}
                   shallow>
                   <StyledTitleListItemText
@@ -72,6 +73,7 @@ export default function SidebarItem({ item, isSidebarOpened, open, setOpen }: Pr
             {item.children.map(child => (
               <Link
                 key={child.title}
+                passHref
                 href={child.href}
                 shallow>
                 <ListItemButton>

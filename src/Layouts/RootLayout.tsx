@@ -1,28 +1,13 @@
 "use client"
-import { CustomThemeContext } from "@/libs/CustomThemeContext"
-import { StoreProvider } from "@/proveders/StoreProvider"
-import { getAppTheme } from "@/utils/theme"
-import { ThemeProvider } from "@emotion/react"
-import { createTheme, PaletteMode } from "@mui/material"
+import { AppThemeProvider } from "@/providers/AppThemeProvider"
+import { StoreProvider } from "@/providers/StoreProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import Head from "next/head"
-import { useMemo, useState } from "react"
 import Layout from "./Layout"
+import ToastifyLayout from "./ToastifyLayout"
 
 export default function RootLayout({ children }: any) {
-  const [mode, setMode] = useState<PaletteMode>("dark")
-
-  const theme = useMemo(() => createTheme(getAppTheme(mode)), [mode])
-
-  const contextValue = useMemo(
-    () => ({
-      currentTheme: mode,
-      toggle: () => setMode(mode === "light" ? "dark" : "light"),
-    }),
-    [mode],
-  )
-
   return (
     <>
       <Head>
@@ -39,16 +24,15 @@ export default function RootLayout({ children }: any) {
           rel="stylesheet"
         />
       </Head>
-
-      <CustomThemeContext.Provider value={contextValue}>
-        <ThemeProvider theme={theme}>
+      <StoreProvider>
+        <AppThemeProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StoreProvider>
+            <ToastifyLayout>
               <Layout>{children}</Layout>
-            </StoreProvider>
+            </ToastifyLayout>
           </LocalizationProvider>
-        </ThemeProvider>
-      </CustomThemeContext.Provider>
+        </AppThemeProvider>
+      </StoreProvider>
     </>
   )
 }

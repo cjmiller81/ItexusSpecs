@@ -2,6 +2,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import TrendingUpIcon from "@mui/icons-material/TrendingUp"
 import { Box, BoxProps, Typography } from "@mui/material"
+import { useTranslation } from "react-i18next"
 
 export interface Props extends BoxProps {
   totalWorth: number
@@ -9,6 +10,8 @@ export interface Props extends BoxProps {
 }
 
 export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props }: Props) => {
+  const { t } = useTranslation("TotalWalletsWorthCard")
+
   const growMain = growPercentage >= 0 ? "success.main" : "error.main"
   const growLight = growPercentage >= 0 ? "success.light" : "error.light"
   const totalWorthFormatted = new Intl.NumberFormat("en-US", {
@@ -52,7 +55,7 @@ export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props
         />
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Typography variant="subtitle1">Total Wallet Worth</Typography>
+        <Typography variant="subtitle1">{t("TotalWalletWorth")}</Typography>
         <Typography
           sx={{ fontWeight: "bold" }}
           variant="subtitle1">

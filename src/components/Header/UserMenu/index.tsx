@@ -8,10 +8,13 @@ import Divider from "@mui/material/Divider"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import Settings from "@mui/icons-material/Settings"
 import Logout from "@mui/icons-material/Logout"
+import { useTranslation } from "react-i18next"
 
 function UserMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  const { t } = useTranslation("UserMenu")
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -65,10 +68,11 @@ function UserMenu() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
         <Link
+          passHref
           href={"/profile"}
           shallow>
           <MenuItem onClick={handleClose}>
-            <Avatar /> Profile
+            <Avatar /> {t("Profile")}
           </MenuItem>
         </Link>
         <Divider />
@@ -76,13 +80,13 @@ function UserMenu() {
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          Settings
+          {t("Settings")}
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          Logout
+          {t("Logout")}
         </MenuItem>
       </Menu>
     </React.Fragment>

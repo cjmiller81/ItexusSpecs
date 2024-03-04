@@ -1,10 +1,11 @@
-import AutoGraphIcon from '@mui/icons-material/AutoGraph'
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import BarChartIcon from '@mui/icons-material/BarChart'
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
-import HomeIcon from '@mui/icons-material/Home'
-import React from 'react'
+import AutoGraphIcon from "@mui/icons-material/AutoGraph"
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange"
+import TrendingUpIcon from "@mui/icons-material/TrendingUp"
+import BarChartIcon from "@mui/icons-material/BarChart"
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
+import HomeIcon from "@mui/icons-material/Home"
+import PeopleIcon from "@mui/icons-material/People"
+import React from "react"
 
 type SidebarItemChild = {
   title: string
@@ -19,58 +20,66 @@ export type SidebarListItem = {
   open: boolean
 }
 
-const PLATFORMS_ITEMS: SidebarListItem[] = [
+export type SidebarItems = {
+  title: string
+  sidebarListItems: SidebarListItem[]
+}
+
+const HOME_ITEMS: SidebarListItem[] = [
   {
-    title: 'Home',
+    title: "Home",
     icon: <HomeIcon />,
     open: false,
-    href: '/',
+    href: "/",
   },
+]
+
+const PLATFORMS_ITEMS: SidebarListItem[] = [
   {
-    title: 'Investing',
+    title: "Investing",
     icon: <AutoGraphIcon />,
     open: false,
     children: [
       {
-        title: 'Market Cap Weighted',
-        href: '/investing/marketCapWeighted',
+        title: "Market Cap Weighted",
+        href: "/investing/marketCapWeighted",
       },
       {
-        title: 'Market Cap Equal Weight',
-        href: '/investing/marketCapEqualWeighted',
+        title: "Market Cap Equal Weight",
+        href: "/investing/marketCapEqualWeighted",
       },
     ],
   },
   {
-    title: 'Trading',
+    title: "Trading",
     icon: <TrendingUpIcon />,
     open: false,
     children: [
       {
-        title: 'Trading subpage',
-        href: '/trading',
+        title: "Trading subpage",
+        href: "/trading",
       },
     ],
   },
   {
-    title: 'Income',
+    title: "Income",
     icon: <CurrencyExchangeIcon />,
     open: false,
     children: [
       {
-        title: 'Income subpage',
-        href: '/income',
+        title: "Income subpage",
+        href: "/income",
       },
     ],
   },
   {
-    title: 'Arbitrage',
+    title: "Arbitrage",
     icon: <BarChartIcon />,
     open: false,
     children: [
       {
-        title: 'Arbitrage subpage',
-        href: '/arbitrage',
+        title: "Arbitrage subpage",
+        href: "/arbitrage",
       },
     ],
   },
@@ -78,16 +87,42 @@ const PLATFORMS_ITEMS: SidebarListItem[] = [
 
 const TOOLS_ITEMS: SidebarListItem[] = [
   {
-    title: 'Portfolios',
+    title: "Portfolios",
     icon: <AccountBalanceWalletIcon />,
     open: false,
     children: [
       {
-        title: 'My Wallets',
-        href: '/myWallets',
+        title: "My Wallets",
+        href: "/myWallets",
       },
     ],
   },
 ]
 
-export { PLATFORMS_ITEMS, TOOLS_ITEMS }
+const COMUNITY_ITEMS: SidebarListItem[] = [
+  {
+    title: "Community",
+    icon: <PeopleIcon />,
+    href: "/community",
+    open: false,
+  },
+]
+
+export const SidebarMenuItems: SidebarItems[] = [
+  {
+    title: "Home",
+    sidebarListItems: HOME_ITEMS,
+  },
+  {
+    title: "Platform",
+    sidebarListItems: PLATFORMS_ITEMS,
+  },
+  {
+    title: "Tools",
+    sidebarListItems: TOOLS_ITEMS,
+  },
+  {
+    title: "Community",
+    sidebarListItems: COMUNITY_ITEMS,
+  },
+]

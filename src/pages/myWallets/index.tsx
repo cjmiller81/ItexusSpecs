@@ -1,11 +1,11 @@
-import { TotalWalletsWorthCard } from "@/components/Cards/TotalWalletsWorth/TotalWalletsWorthCard"
 import PageTitle from "@/components/TextDisplay/PageTitle"
 import { walletsColumns } from "@/constants/ColumnsDefs/WalletsTable"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { ExpandableRow } from "@/containers/MyWallets/TokensRow"
+import { TotalWalletsWorthCard } from "@/containers/MyWallets/TotalWalletsWorthCard"
 import { StyledWalletsTable } from "@/containers/MyWallets/WalletsTable"
-import { RootState } from "@/libs/redux/RootReducer"
-import { clearErrors, createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
+import { createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { getWalletsUsdTotal } from "@/utils/tokensTableHelpers"
 import { Box, Button } from "@mui/material"
@@ -13,14 +13,13 @@ import { styled } from "@mui/system"
 import { GridCellParams, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useDispatch, useSelector } from "react-redux"
-import { toast } from "react-toastify"
 import { WalletInputModal } from "../../components/Modals/WalletInputModal"
 
 type WalletRow = Wallet & { expanded: boolean }
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, errors } = useSelector((state: RootState) => state.walletsReducer.wallets)
-  const dispatch = useDispatch()
+  const { wallets, statusFetchingWallets } = useAppSelector(state => state.walletsReducer.wallets)
+  const dispatch = useAppDispatch()
+
   const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
 
@@ -32,14 +31,6 @@ export default function MyWalletsPage() {
   }, [dispatch])
 
   const walletsTotal = useMemo(() => getWalletsUsdTotal(wallets), [wallets])
-
-  if (errors.length) {
-    errors.forEach(error => {
-      toast.error(error)
-    })
-
-    dispatch(clearErrors())
-  }
 
   const onAddWallet = async (walletAddress: string | null) => {
     if (walletAddress) {
@@ -98,7 +89,7 @@ export default function MyWalletsPage() {
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
-        <PageTitle sx={{ mt: 2 }}>Wallets</PageTitle>
+        <PageTitle sx={{ mt: 2 }}>{t("Wallets")}</PageTitle>
       </StyledAdaptivePageBox>
 
       <StyledWalletsTable

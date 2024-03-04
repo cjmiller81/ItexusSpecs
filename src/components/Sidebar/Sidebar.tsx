@@ -1,35 +1,36 @@
-import * as React from "react"
-import { useTheme } from "@mui/material/styles"
-import List from "@mui/material/List"
-import Divider from "@mui/material/Divider"
-import IconButton from "@mui/material/IconButton"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import { StyledDrawer, StyledDrawerHeader } from "./StyledDrawer"
-import { Collapse, ListSubheader } from "@mui/material"
-import { PLATFORMS_ITEMS, SidebarListItem, TOOLS_ITEMS } from "./consts"
-import SidebarItem from "./SidebarItem"
+import { Box } from "@mui/material"
+import Divider from "@mui/material/Divider"
+import IconButton from "@mui/material/IconButton"
+import { useTheme } from "@mui/material/styles"
 import { useState } from "react"
+import { SidebarMenuItems } from "./consts"
+import { SidebarSection } from "./SidebarSection"
+import { StyledDrawer, StyledDrawerHeader } from "./StyledDrawer"
 
 interface Props {
   open: boolean
-  toggleSide: Function
+  //eslint-disable-next-line no-unused-vars
+  toggleSide: (open: boolean) => void
 }
 
 export default function Sidebar({ open, toggleSide }: Props) {
   const theme = useTheme()
-  const [platformItems, setPlatformItems] = useState(PLATFORMS_ITEMS)
-  const [toolsItems, setToolsItems] = useState(TOOLS_ITEMS)
+  const [sidebarMenuItems, setSidebarMenuItems] = useState(SidebarMenuItems)
+  const handleSetItemOpen = (title: string, index: number, newOpen: boolean) => {
+    const newState = sidebarMenuItems.map((menuItem, menuItemIndex) =>
+      menuItemIndex === index
+        ? {
+            title: menuItem.title,
+            sidebarListItems: menuItem.sidebarListItems.map(item =>
+              item.title === title ? { ...item, open: newOpen } : { ...item, open: false },
+            ),
+          }
+        : menuItem,
+    )
 
-  const handleSetItemOpen = (
-    title: string,
-    items: SidebarListItem[],
-    newOpen: boolean,
-    setNewItems: (items: SidebarListItem[]) => void, // eslint-disable-line no-unused-vars
-  ) => {
-    const newState = items.map(item => (item.title === title ? { ...item, open: newOpen } : { ...item, open: false }))
-
-    setNewItems(newState)
+    setSidebarMenuItems(newState)
   }
 
   return (
@@ -41,61 +42,22 @@ export default function Sidebar({ open, toggleSide }: Props) {
           {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </StyledDrawerHeader>
-      <Divider />
-      <List
-        sx={{ width: "100%", bgcolor: "background.paper" }}
-        component="nav"
-        onClick={() => toggleSide(true)}
-        aria-labelledby="platforms-subheader"
-        subheader={
-          <Collapse
-            orientation="vertical"
-            in={open}>
-            <ListSubheader
-              component="div"
-              id="platforms-subheader">
-              {"Platforms"}
-            </ListSubheader>
-          </Collapse>
-        }>
-        {platformItems.map(item => (
-          <SidebarItem
-            key={item.title}
-            item={item}
-            open={item.open}
-            setOpen={open => handleSetItemOpen(item.title, platformItems, open, newItems => setPlatformItems(newItems))}
-            isSidebarOpened={open}
-          />
-        ))}
-      </List>
-      <Divider />
-      <List
-        sx={{ width: "100%", bgcolor: "background.paper" }}
-        component="nav"
-        onClick={() => toggleSide(true)}
-        aria-labelledby="tools-subheader"
-        subheader={
-          <Collapse
-            orientation="vertical"
-            in={open}>
-            <ListSubheader
-              className="test"
-              component="div"
-              id="tools-subheader">
-              {"Tools"}
-            </ListSubheader>
-          </Collapse>
-        }>
-        {toolsItems.map(item => (
-          <SidebarItem
-            key={item.title}
-            item={item}
-            open={item.open}
-            setOpen={open => handleSetItemOpen(item.title, toolsItems, open, newItems => setToolsItems(newItems))}
-            isSidebarOpened={open}
-          />
-        ))}
-      </List>
+
+      {sidebarMenuItems.map((item, index) => {
+        return (
+          <Box key={index}>
+            <SidebarSection
+              sectionName={item.title}
+              items={item.sidebarListItems}
+              onSetItemOpen={(title, open) => handleSetItemOpen(title, index, open)}
+              open={open}
+              toggleSide={toggleSide}
+            />
+
+            {index !== sidebarMenuItems.length - 1 && <Divider />}
+          </Box>
+        )
+      })}
     </StyledDrawer>
   )
 }
