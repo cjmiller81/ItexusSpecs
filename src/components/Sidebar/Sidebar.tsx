@@ -5,7 +5,7 @@ import Divider from "@mui/material/Divider"
 import IconButton from "@mui/material/IconButton"
 import { useTheme } from "@mui/material/styles"
 import { useState } from "react"
-import { SidebarMenuItems } from "./consts"
+import { getSidebarMenuItems } from "./consts"
 import { SidebarSection } from "./SidebarSection"
 import { StyledDrawer, StyledDrawerHeader } from "./StyledDrawer"
 
@@ -17,7 +17,7 @@ interface Props {
 
 export default function Sidebar({ open, toggleSide }: Props) {
   const theme = useTheme()
-  const [sidebarMenuItems, setSidebarMenuItems] = useState(SidebarMenuItems)
+  const [sidebarMenuItems, setSidebarMenuItems] = useState(getSidebarMenuItems())
   const handleSetItemOpen = (title: string, index: number, newOpen: boolean) => {
     const newState = sidebarMenuItems.map((menuItem, menuItemIndex) =>
       menuItemIndex === index

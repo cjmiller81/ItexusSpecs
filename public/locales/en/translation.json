@@ -65,5 +65,21 @@
   "ProfilePicture": {
     "UploadAvatar": "Upload Avatar",
     "UploadChangeImage": "Upload/Change Your Profile Image"
+  },
+  "SideBar": {
+    "Home": "Home",
+    "Investing": "Investing",
+    "MarketCapWeighted": "Market Cap Weighted",
+    "MarketCapEqualWeight": "Market Cap Equal Weight",
+    "TradingSubpage": "Trading Subpage",
+    "Income": "Income",
+    "IncomeSubpage": "Income subpage",
+    "Arbitrage": "Arbitrage",
+    "ArbitrageSubpage": "Arbitrage Subpage",
+    "Portfolios": "Portfolios",
+    "MyWallets": "My Wallets",
+    "Community": "Community",
+    "Platform": "Platform",
+    "Tools": "Tools"
   }
 }

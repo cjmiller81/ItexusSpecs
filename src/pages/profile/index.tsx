@@ -2,7 +2,6 @@ import { ProfileContainer } from "@/containers/Profile/ProfileContainer"
 import { ProfileDetails } from "@/containers/Profile/ProfileDetails"
 import { ProfilePicture } from "@/containers/Profile/ProfilePicture"
 import { SecurityContainer } from "@/containers/Profile/SecurityContainer"
-import { WalletsContainer } from "@/containers/Profile/WalletsContainer"
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, styled, Tab } from "@mui/material"
@@ -45,7 +44,7 @@ export default function ProfilePage() {
           <SecurityContainer />
         </TabPanel>
         <TabPanel value="3">
-          <WalletsContainer />
+          <></>
         </TabPanel>
       </TabContext>
     </ProfileContainer>

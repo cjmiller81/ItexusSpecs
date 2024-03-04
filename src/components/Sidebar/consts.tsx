@@ -6,7 +6,9 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import HomeIcon from "@mui/icons-material/Home"
 import PeopleIcon from "@mui/icons-material/People"
 import React from "react"
+import i18next, { t } from "i18next"
 
+i18next.setDefaultNamespace("SideBar")
 type SidebarItemChild = {
   title: string
   href: string
@@ -25,104 +27,114 @@ export type SidebarItems = {
   sidebarListItems: SidebarListItem[]
 }
 
-const HOME_ITEMS: SidebarListItem[] = [
-  {
-    title: "Home",
-    icon: <HomeIcon />,
-    open: false,
-    href: "/",
-  },
-]
+function getHomeItems(): SidebarListItem[] {
+  return [
+    {
+      title: t("Home", { ns: "SideBar" }),
+      icon: <HomeIcon />,
+      open: false,
+      href: "/",
+    },
+  ]
+}
 
-const PLATFORMS_ITEMS: SidebarListItem[] = [
-  {
-    title: "Investing",
-    icon: <AutoGraphIcon />,
-    open: false,
-    children: [
-      {
-        title: "Market Cap Weighted",
-        href: "/investing/marketCapWeighted",
-      },
-      {
-        title: "Market Cap Equal Weight",
-        href: "/investing/marketCapEqualWeighted",
-      },
-    ],
-  },
-  {
-    title: "Trading",
-    icon: <TrendingUpIcon />,
-    open: false,
-    children: [
-      {
-        title: "Trading subpage",
-        href: "/trading",
-      },
-    ],
-  },
-  {
-    title: "Income",
-    icon: <CurrencyExchangeIcon />,
-    open: false,
-    children: [
-      {
-        title: "Income subpage",
-        href: "/income",
-      },
-    ],
-  },
-  {
-    title: "Arbitrage",
-    icon: <BarChartIcon />,
-    open: false,
-    children: [
-      {
-        title: "Arbitrage subpage",
-        href: "/arbitrage",
-      },
-    ],
-  },
-]
+function getPlatformsItems(): SidebarListItem[] {
+  return [
+    {
+      title: t("Investing", { ns: "SideBar" }),
+      icon: <AutoGraphIcon />,
+      open: false,
+      children: [
+        {
+          title: t("MarketCapWeighted", { ns: "SideBar" }),
+          href: "/investing/marketCapWeighted",
+        },
+        {
+          title: t("MarketCapEqualWeight", { ns: "SideBar" }),
+          href: "/investing/marketCapEqualWeighted",
+        },
+      ],
+    },
+    {
+      title: "Trading",
+      icon: <TrendingUpIcon />,
+      open: false,
+      children: [
+        {
+          title: t("TradingSubpage", { ns: "SideBar" }),
+          href: "/trading",
+        },
+      ],
+    },
+    {
+      title: t("Income", { ns: "SideBar" }),
+      icon: <CurrencyExchangeIcon />,
+      open: false,
+      children: [
+        {
+          title: t("IncomeSubpage", { ns: "SideBar" }),
+          href: "/income",
+        },
+      ],
+    },
+    {
+      title: t("Arbitrage", { ns: "SideBar" }),
+      icon: <BarChartIcon />,
+      open: false,
+      children: [
+        {
+          title: t("ArbitrageSubpage", { ns: "SideBar" }),
+          href: "/arbitrage",
+        },
+      ],
+    },
+  ]
+}
 
-const TOOLS_ITEMS: SidebarListItem[] = [
-  {
-    title: "Portfolios",
-    icon: <AccountBalanceWalletIcon />,
-    open: false,
-    children: [
-      {
-        title: "My Wallets",
-        href: "/myWallets",
-      },
-    ],
-  },
-]
+function getToolsItems(): SidebarListItem[] {
+  return [
+    {
+      title: t("Portfolios", { ns: "SideBar" }),
+      icon: <AccountBalanceWalletIcon />,
+      open: false,
+      children: [
+        {
+          title: t("MyWallets", { ns: "SideBar" }),
+          href: "/myWallets",
+        },
+      ],
+    },
+  ]
+}
 
-const COMUNITY_ITEMS: SidebarListItem[] = [
-  {
-    title: "Community",
-    icon: <PeopleIcon />,
-    href: "/community",
-    open: false,
-  },
-]
+function getComunityItems(): SidebarListItem[] {
+  return [
+    {
+      title: t("Community", { ns: "SideBar" }),
+      icon: <PeopleIcon />,
+      href: "/community",
+      open: false,
+    },
+  ]
+}
 
-export const SidebarMenuItems: SidebarItems[] = [
-  {
-    title: "Home",
-    sidebarListItems: HOME_ITEMS,
-  },
-  {
-    title: "Platform",
-    sidebarListItems: PLATFORMS_ITEMS,
-  },
-  {
-    title: "Tools",
-    sidebarListItems: TOOLS_ITEMS,
-  },
-  {
-    title: "Community",
-    sidebarListItems: COMUNITY_ITEMS,
-  },
-]
+export function getSidebarMenuItems(): SidebarItems[] {
+  return [
+    {
+      title: t("Home", { ns: "SideBar" }),
+      sidebarListItems: getHomeItems(),
+    },
+    {
+      title: t("Platform", { ns: "SideBar" }),
+      sidebarListItems: getPlatformsItems(),
+    },
+    {
+      title: t("Tools", { ns: "SideBar" }),
+      sidebarListItems: getToolsItems(),
+    },
+    {
+      title: t("Community", { ns: "SideBar" }),
+      sidebarListItems: getComunityItems(),
+    },
+  ]
+}

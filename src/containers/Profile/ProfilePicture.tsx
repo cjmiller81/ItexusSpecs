@@ -38,7 +38,6 @@ export const ProfilePicture = ({ ...props }: BoxProps) => {
         <Typography
           textAlign={"center"}
           variant="body1">
-          {t("UploadAvatar")}
           {t("UploadChangeImage")}
         </Typography>
         <Button
