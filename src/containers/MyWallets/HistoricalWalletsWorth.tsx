@@ -5,10 +5,12 @@ import PageTitle from "@/components/TextDisplay/PageTitle"
 import { Box, BoxProps, MenuItem, SelectChangeEvent } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 export type Period = "daily" | "weekly" | "monthly"
 
 export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
   const [period, setPeriod] = useState<Period>("daily")
+  const { t } = useTranslation("HistoricalWalletsWorth")
 
   const series = [
     {
@@ -55,7 +57,7 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
       <StyledWalletWorthContainer>
         <StyledWalletWorthMenuContainer>
           <StyledTypographyWalletsWorthTitle alignContent={"center"}>
-            Historical Wallets Worth
+            {t("HistoricalWalletsWorth")}
           </StyledTypographyWalletsWorthTitle>
           {/* <StyledWalletWorthMenuInnerContainer> */}
           <StyledWalletWorthMenu>
@@ -65,15 +67,15 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
               value={period}
               defaultValue={"daily"}
               onChange={onPeriodChanged}>
-              <MenuItem value={"daily"}>Daily</MenuItem>
-              <MenuItem value={"weekly"}>Weekly</MenuItem>
-              <MenuItem value={"monthly"}>Monthly</MenuItem>
+              <MenuItem value={"daily"}>{t("Daily")}</MenuItem>
+              <MenuItem value={"weekly"}>{t("Weekly")}</MenuItem>
+              <MenuItem value={"monthly"}>{t("Monthly")}</MenuItem>
             </AppSelect>
             <AppDatePicker
               disableFuture
-              label={"From Date:"}
+              label={t("FromDate")}
             />
-            <AppSelect label={"Compare to Symbol:"}></AppSelect>
+            <AppSelect label={t("CompareToSymbol")}></AppSelect>
           </StyledWalletWorthMenu>
           {/* </StyledWalletWorthMenuInnerContainer> */}
         </StyledWalletWorthMenuContainer>

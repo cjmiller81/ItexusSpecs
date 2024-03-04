@@ -1,5 +1,8 @@
 import { isoDateFormat } from "@/constants/Common"
+import { getUndefinedErrorMessage } from "@/constants/Errormessages"
 import axios, { AxiosError } from "axios"
+import { addError } from "../redux/Slices/UiSlice"
+import { appStore } from "../redux/Store"
 
 export const appAxios = axios.create({
   baseURL: process.env.API_BASE_URL, // "https://tokensets-api.emergentcybernetics.net",
@@ -41,7 +44,13 @@ appAxios.interceptors.response.use(
   async (_error: AxiosError) => {
     const originalRequest = _error.config
 
-    if (originalRequest) return Promise.reject(_error)
+    if (originalRequest) {
+      if (_error.status === 500) {
+        appStore.dispatch(addError(getUndefinedErrorMessage()))
+      }
+
+      return Promise.reject(_error)
+    }
 
     return Promise.reject()
   },

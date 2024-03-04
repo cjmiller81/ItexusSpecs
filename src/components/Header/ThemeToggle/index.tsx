@@ -1,16 +1,17 @@
-import { CustomThemeContext } from "@/libs/CustomThemeContext"
+import { toggleTheme } from "@/libs/redux/Slices/UiSlice"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import LightModeIcon from "@mui/icons-material/LightMode"
 import NightlightRoundIcon from "@mui/icons-material/NightlightRound"
 import IconButton from "@mui/material/IconButton"
-import * as React from "react"
-function Header() {
-  const colorMode = React.useContext(CustomThemeContext)
 
+function Header() {
+  const { mode } = useAppSelector(store => store.walletsReducer.ui)
+  const dispatch = useAppDispatch()
   return (
     <IconButton
       color="inherit"
-      onClick={colorMode.toggle}>
-      {colorMode.currentTheme === "dark" ? <LightModeIcon /> : <NightlightRoundIcon stroke="black" />}
+      onClick={() => dispatch(toggleTheme())}>
+      {mode === "dark" ? <LightModeIcon /> : <NightlightRoundIcon stroke="black" />}
     </IconButton>
   )
 }

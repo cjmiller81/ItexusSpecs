@@ -1,4 +1,3 @@
-import { getUndefinedErrorMessage } from "@/constants/Errormessages"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
 import { createAppSlice } from "../createAppSlice"
@@ -6,7 +5,6 @@ import { createAppSlice } from "../createAppSlice"
 export type Status = "idle" | "loading" | "failed"
 interface WalletsState {
   wallets: Wallet[]
-  errors: string[]
   statstatusCreatingWalletus: Status
   statusFetchingWallets: Status
   statusDeletingWallets: Status
@@ -14,7 +12,6 @@ interface WalletsState {
 
 const initialState: WalletsState = {
   wallets: [],
-  errors: [],
   statstatusCreatingWalletus: "idle",
   statusFetchingWallets: "idle",
   statusDeletingWallets: "idle",
@@ -24,50 +21,41 @@ export const walletsSlice = createAppSlice({
   initialState,
   reducers: create => ({
     clearErrors: create.reducer(state => {
-      state.errors = []
       state.statstatusCreatingWalletus = "idle"
       state.statusFetchingWallets = "idle"
       state.statusDeletingWallets = "idle"
     }),
     createWallet: create.asyncThunk(
-      async (wallet: string) => {
+      async (wallet: string, thunkApi) => {
         await walletsApi.addWallets(wallet)
-        return await walletsApi.getWalletsAssets()
+        thunkApi.dispatch(fetchWallets(null))
       },
       {
         pending: state => {
           state.statstatusCreatingWalletus = "loading"
-          state.statusFetchingWallets = "loading"
         },
-        fulfilled: (state, action) => {
+        fulfilled: state => {
           state.statstatusCreatingWalletus = "idle"
-          state.statusFetchingWallets = "idle"
-          state.wallets = action.payload
         },
         rejected: state => {
           state.statstatusCreatingWalletus = "failed"
-          state.errors.push(getUndefinedErrorMessage())
         },
       },
     ),
     deleteWallet: create.asyncThunk(
-      async (wallet: string) => {
+      async (wallet: string, thunkApi) => {
         await walletsApi.deleteWallet(wallet)
-        return await walletsApi.getWalletsAssets()
+        thunkApi.dispatch(fetchWallets(null))
       },
       {
         pending: state => {
           state.statusDeletingWallets = "loading"
-          state.statusFetchingWallets = "loading"
         },
-        fulfilled: (state, action) => {
+        fulfilled: state => {
           state.statusDeletingWallets = "idle"
-          state.statusFetchingWallets = "idle"
-          state.wallets = action.payload
         },
         rejected: state => {
           state.statusDeletingWallets = "failed"
-          state.errors.push(getUndefinedErrorMessage())
         },
       },
     ),
@@ -86,7 +74,6 @@ export const walletsSlice = createAppSlice({
         },
         rejected: state => {
           state.statusFetchingWallets = "failed"
-          state.errors.push(getUndefinedErrorMessage())
         },
       },
     ),

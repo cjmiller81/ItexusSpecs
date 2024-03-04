@@ -1,8 +1,10 @@
 import AppTextField from "@/components/common/inputs/AppTextField"
 import { Box, BoxProps, Button, Stack } from "@mui/material"
 import { ProfileContainer } from "./ProfileContainer"
+import { useTranslation } from "react-i18next"
 
 export const ProfileDetails = ({ ...props }: BoxProps) => {
+  const { t } = useTranslation("ProfileContainer")
   return (
     <ProfileContainer
       title="Profile Details"
@@ -13,23 +15,23 @@ export const ProfileDetails = ({ ...props }: BoxProps) => {
           spacing={2}>
           <AppTextField
             required
-            label={"First Name"}
+            label={t("First Name")}
           />
 
           <AppTextField
             required
-            label={"Last Name"}
+            label={t("Last Name")}
           />
         </Stack>
 
         <AppTextField
           required
-          label={"Email"}
+          label={t("Email")}
         />
         <Button
           sx={{ alignSelf: "start", width: "30%", minWidth: "150px", mt: 2 }}
           variant={"contained"}>
-          Change details
+          {t("ChangeDetails")}
         </Button>
       </Box>
     </ProfileContainer>

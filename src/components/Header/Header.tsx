@@ -8,13 +8,16 @@ import { StyledAppBar } from "./StyledAppBar"
 import ThemeToggle from "./ThemeToggle"
 import UserMenu from "./UserMenu"
 import MenuOpenIcon from "@mui/icons-material/MenuOpen"
+import { useTranslation } from "react-i18next"
 
 interface Props {
   open: boolean
-  toggleSide: Function
+  //eslint-disable-next-line no-unused-vars
+  toggleSide: (open: boolean) => void
 }
 
 function Header({ open, toggleSide }: Props) {
+  const { t } = useTranslation("Header")
   return (
     <StyledAppBar
       position="fixed"
@@ -39,7 +42,7 @@ function Header({ open, toggleSide }: Props) {
             variant="h6"
             noWrap
             component="div">
-            Elan Insights
+            {t("ElanInsights")}
           </Typography>
           <Box
             display={"flex"}

@@ -1,9 +1,11 @@
 import { Box, BoxProps, Button, Typography } from "@mui/material"
+import { useTranslation } from "react-i18next"
 import { useFilePicker } from "use-file-picker"
 import { FileAmountLimitValidator, FileTypeValidator } from "use-file-picker/validators"
 import { ProfileContainer } from "./ProfileContainer"
 
 export const ProfilePicture = ({ ...props }: BoxProps) => {
+  const { t } = useTranslation("ProfilePicture")
   const { openFilePicker, filesContent, errors } = useFilePicker({
     readAs: "DataURL",
     accept: "image/*",
@@ -36,13 +38,13 @@ export const ProfilePicture = ({ ...props }: BoxProps) => {
         <Typography
           textAlign={"center"}
           variant="body1">
-          Upload/Change Your Profile Image
+          {t("UploadChangeImage")}
         </Typography>
         <Button
           sx={{ minWidth: "140px" }}
           variant="contained"
           onClick={() => openFilePicker()}>
-          Upload Avatar
+          {t("UploadAvatar")}
         </Button>
       </Box>
     </ProfileContainer>

@@ -5,6 +5,7 @@ import { Box, BoxProps, Button, Grid, Stack, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { boolean, InferType, object, string } from "yup"
 import { ProfileContainer } from "./ProfileContainer"
+import { useTranslation } from "react-i18next"
 
 const NewPasswordModelSchema = object({
   newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(6, getIncorectPassword()),
@@ -27,6 +28,7 @@ const TotpAuthenticatorSchema = object({
 type TotpAuthenticatorModel = InferType<typeof TotpAuthenticatorSchema>
 
 export const SecurityContainer = ({ ...props }: BoxProps) => {
+  const { t } = useTranslation("SecurityContainer")
   const renderMFARow = (switchLabel: string, inputLabel: string, switchFieldName: string, inputFieldName: string) => {
     return (
       <Form>
@@ -69,7 +71,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               type="submit"
               sx={{ float: "right", width: "80%", mr: "10%" }}
               variant="contained">
-              Save
+              {t("Save")}
             </Button>
           </Grid>
         </Grid>
@@ -87,7 +89,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <AppFormTextField
               name="newPassword"
-              label="New password"
+              label={t("NewPassword")}
             />
 
             <Button
@@ -99,7 +101,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
                 mt: 2,
               }}
               variant={"contained"}>
-              Change Password
+              {t("ChangePassword")}
             </Button>
           </Box>
         </ProfileContainer>
@@ -129,7 +131,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         </Box>
         <Box sx={{ width: "100%" }}>
           <ProfileContainer
-            title={"Set up Multi-Factor Authentication (coming soon)"}
+            title={t("MultiFactorAuthenticationTitle")}
             sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <Formik<SmsMfaModel>
               initialValues={{
@@ -141,7 +143,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               onSubmit={data => {
                 console.log(data)
               }}>
-              {renderMFARow("Enable SMS MFA", "Phone number", "enabled", "phoneNumber")}
+              {renderMFARow(t("EnableSMSMFA"), t("PhoneNumber"), "enabled", "phoneNumber")}
             </Formik>
             <Formik<TotpAuthenticatorModel>
               initialValues={{
@@ -154,7 +156,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
                 console.log(data)
               }}>
               <Box mt={3}>
-                {renderMFARow("Enable TOTP Authentication Apps", "Display Name", "enabled", "displayName")}
+                {renderMFARow(t("EnableTOTPAuthenticationApps"), t("DisplayName"), "enabled", "displayName")}
               </Box>
             </Formik>
           </ProfileContainer>
