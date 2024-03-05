@@ -18,7 +18,7 @@
   "MyWalletsPage": {
     "AddWallet": "+Add Wallet",
     "Wallets": "Wallets",
-    "MyWalletsPage": "HistoricalWalletsWorth"
+    "HistoricalWalletsWorth": "Historical Wallets Worth"
   },
   "UserMenu": {
     "Profile": "Profile",
