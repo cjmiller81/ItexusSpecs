@@ -109,7 +109,10 @@ export default function MyWalletsPage() {
         columns={walletsColumns}
         rows={walletsRows}
       />
-      <HistoricalWalletsWorth sx={{ mt: 6 }} />
+      <HistoricalWalletsWorth
+        title={t("HistoricalWalletsWorth")}
+        sx={{ mt: 6 }}
+      />
     </>
   )
 }

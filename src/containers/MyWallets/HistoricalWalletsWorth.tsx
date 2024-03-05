@@ -8,7 +8,10 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 export type Period = "daily" | "weekly" | "monthly"
 
-export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
+interface Props extends BoxProps {
+  title: string
+}
+export const HistoricalWalletsWorth = ({ title, ...props }: Props) => {
   const [period, setPeriod] = useState<Period>("daily")
   const { t } = useTranslation("HistoricalWalletsWorth")
 
@@ -56,14 +59,11 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
     <Box {...props}>
       <StyledWalletWorthContainer>
         <StyledWalletWorthMenuContainer>
-          <StyledTypographyWalletsWorthTitle alignContent={"center"}>
-            {t("HistoricalWalletsWorth")}
-          </StyledTypographyWalletsWorthTitle>
-          {/* <StyledWalletWorthMenuInnerContainer> */}
+          <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
           <StyledWalletWorthMenu>
             <AppSelect
               sx={{ width: "100%" }}
-              label={"Period:"}
+              label={t("Period")}
               value={period}
               defaultValue={"daily"}
               onChange={onPeriodChanged}>
@@ -77,7 +77,6 @@ export const HistoricalWalletsWorth = ({ ...props }: BoxProps) => {
             />
             <AppSelect label={t("CompareToSymbol")}></AppSelect>
           </StyledWalletWorthMenu>
-          {/* </StyledWalletWorthMenuInnerContainer> */}
         </StyledWalletWorthMenuContainer>
         <Box sx={{ width: "100%" }}>
           <AppChart
@@ -157,9 +156,9 @@ const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
 }))
 
 const StyledTypographyWalletsWorthTitle = styled(PageTitle)(({ theme }) => ({
+  textWrap: "wrap",
   [theme.breakpoints.down("md")]: {
     flexBasis: "20%",
-    textWrap: "wrap",
     textAlign: "center",
   },
 }))

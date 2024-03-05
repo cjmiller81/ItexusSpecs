@@ -1,5 +1,12 @@
-import PageTitle from "@/components/TextDisplay/PageTitle"
+import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
+import { useTranslation } from "react-i18next"
 
 export default function MarketCapEqualWeightedPage() {
-  return <PageTitle sx={{ textWrap: "nowrap", minWidth: "300px" }}>Market Cap Equal Weighted Page Title</PageTitle>
+  const { t } = useTranslation("MarketCapEqualWeightedPage")
+  return (
+    <HistoricalWalletsWorth
+      title={t("ChartTitle")}
+      sx={{ textWrap: "nowrap", minWidth: "300px" }}
+    />
+  )
 }
