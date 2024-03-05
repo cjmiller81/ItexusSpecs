@@ -5,6 +5,7 @@ import { Wallet } from "@/models/Wallet/Wallet"
 export interface WalletTokensTableModel extends Asset {
   price?: number
   usdAmount?: number
+  chainName: string
 }
 
 export const toTableTokensModels = (chainAssets: ChainAsset[]): WalletTokensTableModel[] => {
@@ -20,8 +21,9 @@ export const toTableTokensModel = (chainAsset: ChainAsset): WalletTokensTableMod
           ...asset,
           price: details.price,
           usdAmount: details.price * asset.balance,
+          chainName: chainAsset.chainName,
         }
-      : { ...asset }
+      : { ...asset, chainName: chainAsset.chainName }
   })
 
   return tableAssets
