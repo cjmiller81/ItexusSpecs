@@ -10,7 +10,6 @@
     "somethingWentWrong": "Something went wrong...",
     "invalidFormat": "Invalid format"
   },
-
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
     "Save": "Save",
@@ -18,7 +17,8 @@
   },
   "MyWalletsPage": {
     "AddWallet": "+Add Wallet",
-    "Wallets": "Wallets"
+    "Wallets": "Wallets",
+    "HistoricalWalletsWorth": "Historical Wallets Worth"
   },
   "UserMenu": {
     "Profile": "Profile",
@@ -29,12 +29,12 @@
     "ElanInsights": "Elan Insights"
   },
   "HistoricalWalletsWorth": {
-    "HistoricalWalletsWorth": "Historical Wallets Worth",
     "Daily": "Daily",
     "Monthly": "Monthly",
     "Weekly": "Weekly",
     "FromDate": "From Date:",
-    "CompareToSymbol": "Compare to Symbol:"
+    "CompareToSymbol": "Compare to Symbol:",
+    "Period": "Period:"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Worth"
@@ -81,5 +81,11 @@
     "Community": "Community",
     "Platform": "Platform",
     "Tools": "Tools"
+  },
+  "MarketCapEqualWeightedPage": {
+    "ChartTitle": "Historical Market Cap Weighted Index"
+  },
+  "MarketCapWeightedPage": {
+    "ChartTitle": "Historical Market Cap Equal Weight Index"
   }
 }
