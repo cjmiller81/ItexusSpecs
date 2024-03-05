@@ -5,6 +5,7 @@ import { styled } from "@mui/material/styles"
 import { GridRow } from "@mui/x-data-grid"
 
 export const ExpandableRow = (props: any) => {
+  const rows = toTableTokensModels(props.row.chainAssets)
   return (
     <>
       <GridRow {...props}></GridRow>
@@ -18,13 +19,18 @@ export const ExpandableRow = (props: any) => {
               return <></>
             },
           }}
+          initialState={{
+            sorting: {
+              sortModel: [{ field: "chainName", sort: "desc" }],
+            },
+          }}
           rowSelection={false}
           checkboxSelection={false}
-          getRowId={x => x.tokenName}
+          getRowId={x => x.tokenName + x.chainName}
           columnHeaderHeight={40}
           rowHeight={20}
           columns={tokenNamesColumns}
-          rows={toTableTokensModels(props.row.chainAssets)}
+          rows={rows}
         />
       )}
     </>

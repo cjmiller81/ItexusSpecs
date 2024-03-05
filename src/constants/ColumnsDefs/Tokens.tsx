@@ -2,6 +2,13 @@ import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid"
 
 export const tokenNamesColumns: GridColDef[] = [
   {
+    field: "chainName",
+    headerName: "Chain",
+    width: 100,
+    disableExport: true,
+    disableColumnMenu: true,
+  },
+  {
     field: "tokenName",
     headerName: "Token Name",
     flex: 1,
