@@ -1,0 +1,41 @@
+"use client"
+import { AppThemeProvider } from "@/providers/AppThemeProvider"
+import { StoreProvider } from "@/providers/StoreProvider"
+import { LocalizationProvider } from "@mui/x-date-pickers"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import Head from "next/head"
+import AutoSidebarLayout from "./AutoSidebarLayout"
+import Layout from "./Layout"
+import ToastifyLayout from "./ToastifyLayout"
+
+export default function RootLayout({ children }: any) {
+  return (
+    <>
+      <Head>
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+      <StoreProvider>
+        <AppThemeProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <ToastifyLayout>
+              <AutoSidebarLayout>
+                <Layout>{children}</Layout>
+              </AutoSidebarLayout>
+            </ToastifyLayout>
+          </LocalizationProvider>
+        </AppThemeProvider>
+      </StoreProvider>
+    </>
+  )
+}

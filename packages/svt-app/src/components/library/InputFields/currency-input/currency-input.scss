@@ -1,0 +1,11 @@
+@import "../../../../themes/generated/variables.base.scss";
+
+.currency-input {
+  .currency-input-field {
+    input[disabled]:not(input[type=submit]) {
+        background-color: #3b3b3b;
+    }
+
+    margin-bottom: 10px;
+  }
+}

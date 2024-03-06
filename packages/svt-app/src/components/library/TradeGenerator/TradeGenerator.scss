@@ -1,0 +1,20 @@
+@import "../../../themes/generated/variables.base.scss";
+
+.content-block {
+  .dx-card {
+    .left-card {
+      background-color: lighten($base-bg, 4.5);
+      height: 100%;
+      margin-right: 2px;
+    }
+    .middle-card {
+      background-color: lighten($base-bg, 4.5);
+      height: 100%;
+    }
+    .right-card {
+      background-color: lighten($base-bg, 4.5);
+      height: 100%;
+      margin-left: 2px;
+    }
+  }
+}

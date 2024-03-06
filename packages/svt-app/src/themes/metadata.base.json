@@ -1,0 +1,60 @@
+{
+  "items": [
+      {
+          "key": "$base-font-family",
+          "value": "\"Ubuntu\",\"Roboto\", \"RobotoFallback\", \"Noto Kufi Arabic\", \"Helvetica\", \"Arial\", sans-serif"
+      },
+      {
+          "key": "$base-bg",
+          "value": "rgba(16, 22, 40, 1)"
+      },
+      {
+          "key": "$base-border-color",
+          "value": "rgba(24, 48, 90, 1)"
+      },
+      {
+          "key": "$button-default-color",
+          "value": "rgba(255, 255, 255, 0.87)"
+      },
+      {
+          "key": "$button-success-color",
+          "value": "rgba(255, 255, 255, 0.87)"
+      },
+      {
+          "key": "$button-danger-color",
+          "value": "rgba(255, 255, 255, 0.87)"
+      },
+      {
+          "key": "$base-link-color",
+          "value": "rgba(17, 109, 253, 1)"
+      },
+      {
+          "key": "$texteditor-focused-border-color",
+          "value": "rgba(0, 187, 206, 1)"
+      },
+      {
+          "key": "$badge-bg",
+          "value": "rgba(32, 56, 100, 1)"
+      },
+      {
+          "key": "$base-danger",
+          "value": "rgba(104, 72, 88, 1)"
+      },
+      {
+          "key": "$base-success",
+          "value": "rgba(68, 223, 143, 1)"
+      },
+      {
+          "key": "$base-accent",
+          "value": "rgba(17, 109, 253, 1)"
+      },
+      {
+          "key": "$tagbox-tag-bg",
+          "value": "rgba(19, 60, 131, 1)"
+      }
+  ],
+  "baseTheme": "material.blue.dark",
+  "assetsBasePath": "../../../node_modules/devextreme/dist/css/",
+  "outputColorScheme": "base",
+  "base": true
+}

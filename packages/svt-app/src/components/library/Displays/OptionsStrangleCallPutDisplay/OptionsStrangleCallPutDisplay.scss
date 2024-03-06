@@ -1,0 +1,75 @@
+@import "../../../../themes/generated/variables.base.scss";
+
+.options-strangle-call-put-display {
+  text-align: center;
+
+  .options-strangle-header {
+    padding: 5px 0;
+  }
+
+  .options-strangle-border-dash {
+    border: lighten($base-bg, 25);
+    border-style: dashed none none none;
+  }
+
+  .strangle-selection-value {
+    border: lighten(red, 25);
+    background-color: inherit;
+    padding: 5px 0;
+    text-align: center;
+    height: 33px;
+    @include xxxl {
+      height: 37px;
+    }
+  }
+
+  .strangle-mark-price-center-col {
+    background-color: lighten($base-bg, 15);
+  }
+
+  .strangle-center-col {
+    background-color: lighten($base-bg, 15);
+    height: 33px;
+    @include xxxl {
+      height: 37px;
+    }
+  }
+
+  .strangle-title-col {
+    background-color: inherit;
+    color: darken($base-text-color, 65);
+    font-weight: 500;
+  }
+
+  .selected-call-left {
+    background-color: #684858;
+    border-style: solid none solid solid;
+  }
+  .selected-call-middle {
+    border-style: solid none;
+  }
+  .selected-call-right {
+    border-style: solid solid solid none;
+  }
+
+  .selected-put-left {
+    border-style: solid none solid solid;
+  }
+  .selected-put-middle {
+    border-style: solid none;
+  }
+  .selected-put-right {
+    background-color: #684858;
+    border-style: solid solid solid none;
+  }
+  .custom-typography {
+    font-size: 13px;
+    font-weight: 500;
+    @include lg {
+      font-size: 12px;
+    }
+    @include xxxl {
+      font-size: 16px;
+    }
+  }
+}

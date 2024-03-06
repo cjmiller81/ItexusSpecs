@@ -1,0 +1,39 @@
+$base-accent: #116dfd;
+$base-text-color: #ffffff;
+$base-bg: #101628;
+$base-border-color: #18305a;
+$base-border-radius: 4px;
+
+@mixin sm {
+  @media (max-width: 640px) {
+    @content;
+  }
+}
+
+@mixin md {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin lg {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+@mixin xl {
+  @media (min-width: 1280px) {
+    @content;
+  }
+}
+
+@mixin xxl {
+  @media (min-width: 1536px) {
+    @content;
+  }
+}
+@mixin xxxl {
+  @media (min-width: 1650px) {
+    @content;
+  }
+}

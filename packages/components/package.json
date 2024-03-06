@@ -1,0 +1,53 @@
+{
+  "name": "components",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "description": "UI Component Library",
+  "keywords": [
+    "React",
+    "Components"
+  ],
+  "author": "EmergentCybernetics <info@emergentcybernetics.com>",
+  "homepage": "",
+  "main": "dist/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@info-emergentcybernetics.github.com:EmergentCybernetics/ItexusSpecs.git"
+  },
+  "scripts": {
+    "dev": "microbundle watch --jsx React.createElement lib/*.js",
+    "test": "node ./__tests__/components.test.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "source": "lib/index.js",
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.17",
+    "@storybook/addon-interactions": "^7.6.17",
+    "@storybook/addon-links": "^7.6.17",
+    "@storybook/addon-onboarding": "1.0.11",
+    "@storybook/blocks": "^7.6.17",
+    "@storybook/react-vite": "^7.6.17",
+    "@storybook/test": "^7.6.17",
+    "microbundle": "^0.15.1",
+    "prop-types": "15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "storybook": "^7.6.17",
+    "vite": "^5.1.5"
+  },
+  "dependencies": {
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.11.4"
+  }
+}

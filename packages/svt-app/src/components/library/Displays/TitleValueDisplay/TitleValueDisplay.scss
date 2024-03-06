@@ -1,0 +1,33 @@
+@import "../../../../themes/generated/variables.base.scss";
+
+.title-value-display {
+  .title-value-display-title {
+    background-color: inherit;
+    color: darken($base-text-color, 65.00);
+    font-weight: 500;
+  }
+  .title-value-display-value {
+    background-color: inherit;
+    color: lighten($base-accent, 25.00);
+  }
+
+  .title-value-display-color-green {
+    color: green;
+  }
+
+  .title-value-display-color-red {
+    color: red;
+  }
+
+  .title-value-display-text-align-right {
+    text-align: right;
+  }
+
+  .title-value-display-text-align-center {
+    text-align: center;
+  }
+
+  .title-value-display-text-align-left {
+    text-align: left;
+  }
+}

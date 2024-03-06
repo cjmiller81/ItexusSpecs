@@ -1,0 +1,57 @@
+@import "../../../../themes/generated/variables.base.scss";
+
+.option-pill-display {
+  .pill-value {
+    border: $base-accent;
+    background-color: inherit;
+    padding: 5px 0;
+    text-align: center;
+    font-size: 14px;
+
+    @include lg {
+      font-size: 16px;
+    }
+    @include xl {
+      font-size: 20px;
+    }
+  }
+  .option-pill-left {
+    border-top-left-radius: 21px;
+    border-bottom-left-radius: 21px;
+    border-style: solid none solid solid;
+  }
+  .option-pill-middle {
+    border-style: solid none;
+  }
+  .option-pill-middle-date {
+    border-style: solid none;
+  }
+  .option-pill-right {
+    border-top-right-radius: 21px;
+    border-bottom-right-radius: 21px;
+    border-style: solid solid solid none;
+  }
+  .option-pill-divider {
+    border-style: solid none;
+    color: darken($base-text-color, 65);
+  }
+  .inner-border-right {
+    position: relative;
+  }
+  .inner-border-right:after {
+    content: "";
+    position: absolute;
+    top: 9px;
+    right: 0;
+    border-right: 2px solid darken($base-text-color, 65);
+    height: 15px;
+    @include lg {
+      top: 10px;
+      height: 17px;
+    }
+    @include xl {
+      top: 12px;
+      height: 20px;
+    }
+  }
+}

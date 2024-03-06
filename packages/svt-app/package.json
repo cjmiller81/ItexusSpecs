@@ -1,0 +1,90 @@
+{
+  "name": "svt-trading-tools",
+  "version": "2.0.18",
+  "private": true,
+  "workspaces": {
+    "nohoist": [
+      "**"
+    ]
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.3.6",
+    "@dxfeed/api": "^1.1.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/ubuntu": "4.5.9",
+    "@mui/icons-material": "^5.15.12",
+    "@mui/material": "^5.15.12",
+    "@mui/x-date-pickers": "^6.19.6",
+    "@react-rxjs/core": "^0.10.4",
+    "@react-rxjs/utils": "^0.9.5",
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/react": "13.2.0",
+    "@testing-library/user-event": "13.5.0",
+    "@types/jest": "27.5.1",
+    "@types/node": "20.11.24",
+    "@types/react": "18.2.63",
+    "@types/react-dom": "18.2.20",
+    "buffer": "^6.0.3",
+    "crypto-js": "^4.1.1",
+    "date-fns": "2.28.0",
+    "dayjs": "^1.11.10",
+    "devextreme": "^23.1.3",
+    "devextreme-react": "^23.1.3",
+    "dotenv": "16.0.1",
+    "framer-motion": "^6.3.3",
+    "latest": "^0.2.0",
+    "react": "^18.2.0",
+    "react-app-polyfill": "^1.0.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
+    "react-icons": "4.4.0",
+    "react-number-format": "^5.3.1",
+    "react-query": "^3.39.3",
+    "react-scripts": "5.0.1",
+    "rxjs": "^7.8.1",
+    "sass": "^1.34.1",
+    "typescript": "^4.9.5",
+    "use-effect-reducer": "0.7.0",
+    "uuidv4": "6.2.13",
+    "web-vitals": "2.1.4"
+  },
+  "overrides": {
+    "react-refresh": "0.11.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
+    "@types/uuid": "^9.0.2",
+    "msw": "^2.2.2",
+    "prop-types": "^15.8.1"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}
