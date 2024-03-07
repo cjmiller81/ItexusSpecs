@@ -38,6 +38,8 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const [pendingResponse, setPendingResponse] = useState<boolean>(false);
   const [automationRunningLocal, setAutomationRunningLocal] =
     useState<boolean>(false);
+    const [closingOnlyLocal, setClosingOnlyLocal] =
+      useState<boolean>(false);
   const [capitalError, setCapitalError] = useState<boolean>(false);
   const [capitalErrorMessage, setCapitalErrorMessage] = useState<string>("");
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
@@ -83,9 +85,10 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   const handleClosingOnlyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setPendingResponse(true);
+    setClosingOnlyLocal(checked);
     onClosingOnlyChange(checked);
   }, [onClosingOnlyChange])
-  
+
   const handleOnEditing = useCallback((isEditing: boolean):void => {
     setIsEditing(isEditing);
   }, []);
@@ -102,11 +105,16 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   }, [currencyValdiation, isEditing, strategyAccountConnectState?.capitalAllocation]);
 
   useEffect(() => {
-    if (pendingResponse && automationRunningLocal !== automationRunning) {
+    if (pendingResponse) {
       setPendingResponse(false);
-      setAutomationRunningLocal(automationRunning);
+      if (automationRunningLocal !== automationRunning) {
+        setAutomationRunningLocal(automationRunning);
+      }
+      if (closingOnlyLocal !== strategyAccountConnectState.closingOnly) {
+        setClosingOnlyLocal(strategyAccountConnectState.closingOnly);
+      }
     }
-  }, [automationRunning, automationRunningLocal, pendingResponse]);
+  }, [automationRunning, automationRunningLocal, closingOnlyLocal, pendingResponse, strategyAccountConnectState.closingOnly]);
 
   useEffect(() => {
     if (
@@ -185,7 +193,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                 className="closing-only-container"
                 sx={{mt:1}}
                 control={
-                  <Checkbox 
+                  <Checkbox
                   checked={strategyAccountConnectState.closingOnly}
                   onChange={handleClosingOnlyChange}
                   />

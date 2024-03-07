@@ -1,10 +1,22 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
+import { OrderStatus, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
 
 const mockState = {
   connected: false,
-  started: false,
+  status: {
+    isStarted: false,
+    entryOrderId: null,
+    entryOrderStatus: OrderStatus.Undefined,
+    entryOrderSymbol: null,
+    exitOrderId: null,
+    exitOrderStatus: OrderStatus.Undefined,
+    exitOrderSymbol: null,
+    closingOnly: false,
+    capitalAllocation: 15000.00,
+    capitalAllocationNext: 15000.00,
+  } as SvtIvlEsStrategySetStatus
 }
 
 // Mock the `services/tradingPlatformService.ts` API requests.
@@ -71,8 +83,27 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es`, () => {
-    mockState.started = true
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es`, async ({ request }) => {
+    if (request.body) {
+      const data = await request.json() as SvtIvlStrategyAccountConnect;
+
+      if (data) {
+        if (data.closingOnly !== mockState.status.closingOnly && !mockState.status.isStarted) {
+          mockState.status.closingOnly = data.closingOnly
+        } else {
+          mockState.status.isStarted = true
+          mockState.status.closingOnly = data.closingOnly
+          mockState.status.capitalAllocation = data.capitalAllocation
+          mockState.status.capitalAllocationNext = data.capitalAllocationNext
+          mockState.status.entryOrderId = "131083"
+          mockState.status.entryOrderStatus = OrderStatus.Filled
+          mockState.status.entryOrderSymbol = "AAPL"
+          mockState.status.exitOrderId = "131084"
+          mockState.status.exitOrderStatus = OrderStatus.Filled
+          mockState.status.exitOrderSymbol = "AAPL"
+        }
+      }
+    }
 
     return new HttpResponse(null, {
       status: 200
@@ -82,19 +113,19 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es`, () => {
     if (mockState.connected) {
       return HttpResponse.json({
-        "isStarted": mockState.started,
-        "entryOrderId": "131083",
-        "entryOrderStatus": "Filled",
-        "entryOrderSymbol": "AAPL",
-        "exitOrderId": "131084",
-        "exitOrderStatus": "Working",
-        "exitOrderSymbol": "AAPL",
+        "isStarted": mockState.status.isStarted,
+        "entryOrderId": mockState.status.entryOrderId,
+        "entryOrderStatus": mockState.status.entryOrderStatus,
+        "entryOrderSymbol": mockState.status.entryOrderSymbol,
+        "exitOrderId": mockState.status.exitOrderId,
+        "exitOrderStatus": mockState.status.exitOrderStatus,
+        "exitOrderSymbol": mockState.status.exitOrderSymbol,
         "exchangeUsername": "benec",
         "accountNumber": "5WU50943",
         "riskTolerance": "High",
-        "capitalAllocation": "15000.00",
-        "capitalAllocationNext": "15000.00",
-        "closingOnly": false
+        "capitalAllocation": mockState.status.capitalAllocation,
+        "capitalAllocationNext": mockState.status.capitalAllocationNext,
+        "closingOnly": mockState.status.closingOnly
       })
     }
 
@@ -104,7 +135,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   }),
 
   http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es/stop`, () => {
-    mockState.started = false
+    mockState.status.isStarted = false
 
     return new HttpResponse(null, {
       status: 200

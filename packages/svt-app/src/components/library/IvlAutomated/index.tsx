@@ -223,6 +223,7 @@ export default function IvlAutomated() {
               ...strategyAccountConnectState,
               accountNumber: strategySetStatus.accountNumber,
               capitalAllocation: strategySetStatus.capitalAllocation,
+              capitalAllocationNext: strategySetStatus.capitalAllocationNext,
               contractQty: strategySetStatus.contractQty,
               entryOrderId: strategySetStatus.entryOrderId,
               entryOrderStatus: strategySetStatus.entryOrderStatus,
