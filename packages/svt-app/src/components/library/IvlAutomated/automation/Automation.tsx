@@ -89,7 +89,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   useEffect(() => {
     if (!isEditing) {
-      setLocalCapitalAllocation(strategyAccountConnectState?.capitalAllocation);
+      setLocalCapitalAllocation(parseFloat(strategyAccountConnectState?.capitalAllocation as any));
     }
     currencyValdiation(strategyAccountConnectState?.capitalAllocation);
   }, [currencyValdiation, isEditing, strategyAccountConnectState?.capitalAllocation]);
