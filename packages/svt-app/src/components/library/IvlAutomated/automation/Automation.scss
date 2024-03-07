@@ -3,7 +3,12 @@
 .automationHeader {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+}
+.closing-only-container{
+  align-self: center;
+  @include sm {
+    align-self: auto;
+  }
 }
 .stepperStyling {
   margin: 30px;
