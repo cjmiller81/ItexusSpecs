@@ -414,10 +414,10 @@ export default function IvlAutomated() {
       <div className="stepperStyling">
         <div className="stepperHeader">
           <RadioButtonUncheckedIcon
-            sx={{ color: (isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted) ? "green" : "red" }}
+            sx={{ color: (isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted && configuring) ? "green" : "red" }}
           />
           <span className="connectionStatus">
-            Tastytrade {(isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted) ? "connected" : "disconnected"}{" "}
+            Tastytrade {(isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted && configuring) ? "connected" : "disconnected"}{" "}
           </span>
           <IconButton
             disabled={configuring || automationRunning}
