@@ -81,6 +81,7 @@ export interface SvtIvlEsStrategySetStatus {
   riskTolerance:	IvlRiskTolerance
   capitalAllocation:	number
   contractQty:	number | null
+  closingOnly: boolean
 }
 
 interface Callbacks {
@@ -207,6 +208,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
 					accountNumber:	accountConnect.accountNumber,
 					riskTolerance: accountConnect.riskTolerance,
 					capitalAllocation: accountConnect.capitalAllocation,
+					closingOnly: accountConnect.closingOnly
 				} as SvtIvlStrategyAccountConnect)
 			})
 

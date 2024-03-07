@@ -73,6 +73,7 @@ export default function IvlAutomated() {
     accountNumber: "",
     riskTolerance: IvlRiskTolerance.High,
     capitalAllocation: 0,
+    closingOnly: false,
   } as SvtIvlEsStrategySetStatus);
 
   const isDesktop = useMediaQuery('(min-width:800px)');
@@ -232,6 +233,7 @@ export default function IvlAutomated() {
               exitOrderSymbol: strategySetStatus.exitOrderSymbol,
               isStarted: strategySetStatus.isStarted,
               riskTolerance: strategySetStatus.riskTolerance,
+              closingOnly: strategySetStatus.closingOnly
             });
 
             setStatus("accountSelectionSubmitted", true);
@@ -331,6 +333,10 @@ export default function IvlAutomated() {
       stopIvlAutomation.mutate();
     }
   }, [stopIvlAutomation, strategyAccountConnectState, upsertIvlAutomation]);
+
+  const handleClosingOnlyChange = useCallback((newClosingOnly: boolean) => {
+      upsertIvlAutomation.mutate({...strategyAccountConnectState, closingOnly: newClosingOnly});
+  }, [strategyAccountConnectState, upsertIvlAutomation]);
 
   const handleNext = useCallback(() => {
     if (activeStep === 0) {
@@ -490,6 +496,7 @@ export default function IvlAutomated() {
                     strategyAccountConnectState={strategyAccountConnectState}
                     automationRunning={automationRunning}
                     onAutomationRunningChange={handleAutomationRunningChange}
+                    onClosingOnlyChange={handleClosingOnlyChange}
                     onCapitalAllocationChange={handleCapitalAllocation}
                     errorMessage={errorMessage}
                   />

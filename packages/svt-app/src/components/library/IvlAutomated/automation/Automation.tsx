@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Checkbox, Button, Grid, Typography, Stack, FormControlLabel } from "@mui/material";
 
 import AutomationTabs from "./tabs";
 import PositionTable, { IPositionTableRow } from "./position-table";
@@ -19,6 +19,7 @@ interface AutomationComponentProps {
   strategyAccountConnectState: SvtIvlEsStrategySetStatus;
   automationRunning: boolean;
   onAutomationRunningChange: (newAutomationRunning: boolean) => void;
+  onClosingOnlyChange: (closingOnly: boolean) => void;
   onCapitalAllocationChange: (newCapitalAllocation: number) => void;
   errorMessage: string;
 }
@@ -27,6 +28,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   strategyAccountConnectState,
   automationRunning,
   onAutomationRunningChange,
+  onClosingOnlyChange,
   onCapitalAllocationChange,
   errorMessage,
 }: AutomationComponentProps) => {
@@ -79,6 +81,11 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
     onAutomationRunningChange(!automationRunning);
   }, [automationRunning, onAutomationRunningChange]);
 
+  const handleClosingOnlyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    setPendingResponse(true);
+    onClosingOnlyChange(checked);
+  }, [onClosingOnlyChange])
+  
   const handleOnEditing = useCallback((isEditing: boolean):void => {
     setIsEditing(isEditing);
   }, []);
@@ -154,25 +161,38 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
             </Typography>
           </Grid>
           <Grid item xs={12} md="auto">
-            <Button
-              color={automationRunning ? "error" : "success"}
-              variant="outlined"
-              onClick={handleAutomationRunningChange}
-              disabled={
-                !(strategyAccountConnectState.capitalAllocation >= 13000)
-                || pendingResponse
-                || isEditing
-              }
-              sx={{ mr: 1 }}
-            >
-              <LoadIndicator
-                id="small-indicator"
-                height={25}
-                width={25}
-                visible={pendingResponse}
+            <Stack>
+              <Button
+                color={automationRunning ? "error" : "success"}
+                variant="outlined"
+                onClick={handleAutomationRunningChange}
+                disabled={
+                  !(strategyAccountConnectState.capitalAllocation >= 13000)
+                  || pendingResponse
+                  || isEditing
+                }
+                sx={{ mr: 1 }}
+              >
+                <LoadIndicator
+                  id="small-indicator"
+                  height={25}
+                  width={25}
+                  visible={pendingResponse}
+                />
+                {automationRunning ? "Stop Automation" : "Start Automation"}
+              </Button>
+              <FormControlLabel
+                className="closing-only-container"
+                sx={{mt:1}}
+                control={
+                  <Checkbox 
+                  checked={strategyAccountConnectState.closingOnly}
+                  onChange={handleClosingOnlyChange}
+                  />
+                }
+                label="Closing Only"
               />
-              {automationRunning ? "Stop Automation" : "Start Automation"}
-            </Button>
+            </Stack>
           </Grid>
           <Grid item xs={12}>
             {errorMessage.length > 0 ? (
