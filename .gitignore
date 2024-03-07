@@ -4,6 +4,7 @@
 .yarn
 /node_modules
 /.pnp
+/.next
 .pnp.js
 
 # misc
