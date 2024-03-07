@@ -1,10 +1,10 @@
 "use client"
-import { Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import ExpandLess from "@mui/icons-material/ExpandLess"
 import ExpandMore from "@mui/icons-material/ExpandMore"
-import { SidebarListItem } from "./consts"
-import Link from "next/link"
+import { Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { styled } from "@mui/material/styles"
+import { AppLink } from "../common/AppLink"
+import { SidebarListItem } from "./consts"
 
 interface Props {
   item: SidebarListItem
@@ -47,7 +47,7 @@ export default function SidebarItem({ item, isSidebarOpened, open, setOpen }: Pr
           ) : (
             <>
               {item.href ? (
-                <Link
+                <AppLink
                   key={item.title}
                   passHref
                   href={item.href}
@@ -56,7 +56,7 @@ export default function SidebarItem({ item, isSidebarOpened, open, setOpen }: Pr
                     primary={item.title}
                     sx={{ opacity: 1 }}
                   />
-                </Link>
+                </AppLink>
               ) : (
                 <StyledTitleListItemText
                   primary={item.title}
@@ -71,7 +71,7 @@ export default function SidebarItem({ item, isSidebarOpened, open, setOpen }: Pr
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
             {item.children.map(child => (
-              <Link
+              <AppLink
                 key={child.title}
                 passHref
                 href={child.href}
@@ -82,7 +82,7 @@ export default function SidebarItem({ item, isSidebarOpened, open, setOpen }: Pr
                     sx={{ ml: 4 }}
                   />
                 </ListItemButton>
-              </Link>
+              </AppLink>
             ))}
           </List>
         </Collapse>
