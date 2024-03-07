@@ -35,6 +35,8 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
     if (walletAddress) {
       onAddWallet(walletAddress)
     }
+
+    setAddWalletModalOpen(false);
   }
 
   //eslint-disable-next-line no-undef
