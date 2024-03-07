@@ -1,13 +1,13 @@
-import * as React from "react"
+import { AppLink } from "@/components/common/AppLink"
+import Logout from "@mui/icons-material/Logout"
+import Settings from "@mui/icons-material/Settings"
 import { Avatar } from "@mui/material"
-import Link from "next/link"
+import Divider from "@mui/material/Divider"
+import IconButton from "@mui/material/IconButton"
+import ListItemIcon from "@mui/material/ListItemIcon"
 import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
-import IconButton from "@mui/material/IconButton"
-import Divider from "@mui/material/Divider"
-import ListItemIcon from "@mui/material/ListItemIcon"
-import Settings from "@mui/icons-material/Settings"
-import Logout from "@mui/icons-material/Logout"
+import * as React from "react"
 import { useTranslation } from "react-i18next"
 
 function UserMenu() {
@@ -67,14 +67,14 @@ function UserMenu() {
         }}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-        <Link
+        <AppLink
           passHref
           href={"/profile"}
           shallow>
           <MenuItem onClick={handleClose}>
             <Avatar /> {t("Profile")}
           </MenuItem>
-        </Link>
+        </AppLink>
         <Divider />
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
