@@ -43,7 +43,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const [capitalError, setCapitalError] = useState<boolean>(false);
   const [capitalErrorMessage, setCapitalErrorMessage] = useState<string>("");
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
-  const [localCapitalAllocation, setLocalCapitalAllocation] = React.useState<number>(strategyAccountConnectState?.capitalAllocation);
+  const [localCapitalAllocation, setLocalCapitalAllocation] = React.useState<number>(strategyAccountConnectState?.capitalAllocationNext);
 
   const tabPanels: TabPanel[] = [
     {
@@ -81,7 +81,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
     setPendingResponse(true);
     setAutomationRunningLocal(automationRunning);
     onAutomationRunningChange(!automationRunning);
-  }, [automationRunning, onAutomationRunningChange]);
+  }, [automationRunning, onAutomationRunningChange])
 
   const handleClosingOnlyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setPendingResponse(true);
@@ -89,20 +89,21 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
     onClosingOnlyChange(checked);
   }, [onClosingOnlyChange])
 
+  const handleCapitalAllocationButton = useCallback(() => {
+    setPendingResponse(true);
+    onCapitalAllocationChange(localCapitalAllocation);
+  }, [localCapitalAllocation, onCapitalAllocationChange])
+
   const handleOnEditing = useCallback((isEditing: boolean):void => {
     setIsEditing(isEditing);
   }, []);
 
-  const handleCapitalAllocationChange = useCallback((newCapitalAllocation: number):void => {
-    onCapitalAllocationChange(newCapitalAllocation);
-  }, [onCapitalAllocationChange]);
-
   useEffect(() => {
     if (!isEditing) {
-      setLocalCapitalAllocation(parseFloat(strategyAccountConnectState?.capitalAllocation as any));
+      setLocalCapitalAllocation(parseFloat(strategyAccountConnectState?.capitalAllocationNext as any));
     }
-    currencyValdiation(strategyAccountConnectState?.capitalAllocation);
-  }, [currencyValdiation, isEditing, strategyAccountConnectState?.capitalAllocation]);
+    currencyValdiation(strategyAccountConnectState?.capitalAllocationNext);
+  }, [currencyValdiation, isEditing, strategyAccountConnectState?.capitalAllocationNext]);
 
   useEffect(() => {
     if (pendingResponse) {
@@ -128,6 +129,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           type: "Entry",
           status: strategyAccountConnectState.entryOrderStatus,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
+          qty: strategyAccountConnectState.contractQty as number,
         },
         {
           id: 2,
@@ -135,6 +137,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           type: "Exit",
           status: strategyAccountConnectState.exitOrderStatus,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
+          qty: strategyAccountConnectState.contractQty as number,
         },
       ]);
     } else if (strategyAccountConnectState.entryOrderId) {
@@ -145,6 +148,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           type: "Entry",
           status: strategyAccountConnectState.entryOrderStatus,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
+          qty: strategyAccountConnectState.contractQty as number,
         },
       ]);
     } else {
@@ -175,7 +179,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                 variant="outlined"
                 onClick={handleAutomationRunningChange}
                 disabled={
-                  !(strategyAccountConnectState.capitalAllocation >= 13000)
+                  !(strategyAccountConnectState.capitalAllocationNext >= 13000)
                   || pendingResponse
                   || isEditing
                 }
@@ -214,17 +218,44 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           <Grid item xs={12}>
             <Box sx={{ marginBottom: "30px" }}>
               <Typography variant="caption">
-                Strategy Capital Allocation:
+                Next Entry's Capital Allocation:
               </Typography>
-              {/* <TextField hiddenLabel id="outlined-basic" /> */}
-              <CurrencyInput
-                error={capitalError}
-                errorMessage={capitalErrorMessage}
-                disabled={automationRunning}
-                capitalAllocation={localCapitalAllocation}
-                onBlur={handleCapitalAllocationChange}
-                onEditingChange={handleOnEditing}
-              />
+              <Grid container spacing={2}>
+                <Grid item xs={3} md="auto">
+                  <CurrencyInput
+                    error={capitalError}
+                    errorMessage={capitalErrorMessage}
+                    disabled={false}
+                    capitalAllocation={
+                      (strategyAccountConnectState?.capitalAllocation > 0
+                      && strategyAccountConnectState?.capitalAllocationNext === strategyAccountConnectState?.capitalAllocationStart)
+                        ? localCapitalAllocation
+                        : strategyAccountConnectState?.capitalAllocationNext
+                    }
+                    onEditingChange={handleOnEditing}
+                  />
+                </Grid>
+                <Grid item xs={3} md="auto">
+                  { strategyAccountConnectState?.capitalAllocation > 0
+                    ? <Button
+                        color={"success"}
+                        variant="outlined"
+                        onClick={handleCapitalAllocationButton}
+                        disabled={ pendingResponse }
+                        sx={{ mr: 1 }}
+                      >
+                        <LoadIndicator
+                          id="small-indicator"
+                          height={25}
+                          width={25}
+                          visible={pendingResponse}
+                        />
+                        { "Update" }
+                      </Button>
+                    : <></>
+                  }
+                </Grid>
+              </Grid>
               <Box>
                 <Typography variant="caption">
                   IMPORTANT:
@@ -246,7 +277,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <AutomationTabs tabs={tabPanels} />
+            <AutomationTabs capitalAllocation={strategyAccountConnectState?.capitalAllocation} tabs={tabPanels} />
           </Grid>
         </Grid>
       </Box>

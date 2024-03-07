@@ -3,6 +3,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { TabPanel } from "../Automation";
+import { Typography } from "@mui/material";
+import CurrencyInput from "../../../InputFields/currency-input";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,10 +40,11 @@ function a11yProps(index: number) {
 }
 
 interface AutomationTabsProps {
+  capitalAllocation: number;
   tabs: TabPanel[];
 }
 
-export default function AutomationTabs({ tabs }: AutomationTabsProps) {
+export default function AutomationTabs({ capitalAllocation, tabs }: AutomationTabsProps) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -52,6 +55,19 @@ export default function AutomationTabs({ tabs }: AutomationTabsProps) {
     <Box
       sx={{ width: "100%", border: "2px solid #4156be", borderRadius: "6px" }}
     >
+      <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "16px" }}>
+        <Typography
+          variant="caption"
+        >
+          Current Strategy Capital Allocation:
+          <CurrencyInput
+            error={false}
+            errorMessage={""}
+            disabled={true}
+            capitalAllocation={capitalAllocation}
+          />
+        </Typography>
+      </Box>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}

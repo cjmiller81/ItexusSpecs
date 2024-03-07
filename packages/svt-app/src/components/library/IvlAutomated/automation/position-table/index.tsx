@@ -15,6 +15,7 @@ export interface IPositionTableRow {
   type: string;
   status: OrderStatus;
   symbol: string;
+  qty: number;
   disabled?: boolean;
 }
 
@@ -32,6 +33,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ data }) => {
             <TableCell align="left">Type</TableCell>
             <TableCell align="left">Status</TableCell>
             <TableCell align="left">Symbol</TableCell>
+            <TableCell align="left">Qty</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -64,7 +66,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ data }) => {
                 }}
                 align="left"
               >
-                {row.status}
+                {OrderStatus[row.status]}
               </TableCell>
               <TableCell
                 sx={{
@@ -73,6 +75,14 @@ const PositionTable: React.FC<PositionTableProps> = ({ data }) => {
                 align="left"
               >
                 {row.symbol}
+              </TableCell>
+              <TableCell
+                sx={{
+                  color: row.disabled ? "rgba(255, 255, 255, 0.5)" : "inherit",
+                }}
+                align="left"
+              >
+                {row.qty}
               </TableCell>
             </TableRow>
           ))}

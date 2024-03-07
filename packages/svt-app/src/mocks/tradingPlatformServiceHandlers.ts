@@ -14,8 +14,10 @@ const mockState = {
     exitOrderStatus: OrderStatus.Undefined,
     exitOrderSymbol: null,
     closingOnly: false,
-    capitalAllocation: 15000.00,
+    capitalAllocation: 0,
+    capitalAllocationStart: 15000.00,
     capitalAllocationNext: 15000.00,
+    contractQty: 1,
   } as SvtIvlEsStrategySetStatus
 }
 
@@ -93,13 +95,13 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
         } else {
           mockState.status.isStarted = true
           mockState.status.closingOnly = data.closingOnly
-          mockState.status.capitalAllocation = data.capitalAllocation
+          mockState.status.capitalAllocation = data.capitalAllocation === 0 ? data.capitalAllocationNext : data.capitalAllocation
           mockState.status.capitalAllocationNext = data.capitalAllocationNext
           mockState.status.entryOrderId = "131083"
           mockState.status.entryOrderStatus = OrderStatus.Filled
           mockState.status.entryOrderSymbol = "AAPL"
           mockState.status.exitOrderId = "131084"
-          mockState.status.exitOrderStatus = OrderStatus.Filled
+          mockState.status.exitOrderStatus = OrderStatus.Working
           mockState.status.exitOrderSymbol = "AAPL"
         }
       }
@@ -124,8 +126,10 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
         "accountNumber": "5WU50943",
         "riskTolerance": "High",
         "capitalAllocation": mockState.status.capitalAllocation,
+        "capitalAllocationStart": mockState.status.capitalAllocationStart,
         "capitalAllocationNext": mockState.status.capitalAllocationNext,
-        "closingOnly": mockState.status.closingOnly
+        "closingOnly": mockState.status.closingOnly,
+        "contractQty": mockState.status.contractQty,
       })
     }
 

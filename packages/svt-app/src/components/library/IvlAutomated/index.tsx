@@ -72,7 +72,8 @@ export default function IvlAutomated() {
   const [strategyAccountConnectState, setStrategyAccountConnectState] = React.useState<SvtIvlEsStrategySetStatus>({
     accountNumber: "",
     riskTolerance: IvlRiskTolerance.High,
-    capitalAllocation: 0,
+    capitalAllocationStart: 0,
+    capitalAllocationNext: 0,
     closingOnly: false,
   } as SvtIvlEsStrategySetStatus);
 
@@ -173,13 +174,6 @@ export default function IvlAutomated() {
     }
   }, [activeStep, enableNext, exchangeAccountState.isClosed, exchangeAccountState.isFuturesApproved, exchangeAccountState.isMargin, exchangeAccountState.suitableOptionsLevel, initConfiguring, isAccountNumberValid, isExchangeAccountValid, isLoginValid, membership, setStatus]);
 
-  const handleCapitalAllocation = useCallback((newCapitalAllocation: number): void => {
-    setStrategyAccountConnectState({
-      ...strategyAccountConnectState,
-      capitalAllocation: newCapitalAllocation,
-    });
-  }, [strategyAccountConnectState]);
-
   const handleSettingsClicked = useCallback(() => {
     setConfiguring(true);
   }, []);
@@ -223,6 +217,7 @@ export default function IvlAutomated() {
               ...strategyAccountConnectState,
               accountNumber: strategySetStatus.accountNumber,
               capitalAllocation: strategySetStatus.capitalAllocation,
+              capitalAllocationStart: strategySetStatus.capitalAllocationStart,
               capitalAllocationNext: strategySetStatus.capitalAllocationNext,
               contractQty: strategySetStatus.contractQty,
               entryOrderId: strategySetStatus.entryOrderId,
@@ -326,6 +321,10 @@ export default function IvlAutomated() {
       }
     }
   });
+
+  const handleCapitalAllocation = useCallback((newCapitalAllocation: number): void => {
+    upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+  }, [strategyAccountConnectState, upsertIvlAutomation]);
 
   const handleAutomationRunningChange = useCallback((newAutomationRunning: boolean): void => {
     if (newAutomationRunning) {
