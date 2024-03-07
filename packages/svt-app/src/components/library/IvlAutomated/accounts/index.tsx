@@ -37,7 +37,7 @@ export default function Accounts({ accountNumber, tableData, onAccountSelected, 
           gutterBottom
           sx={{ marginBottom: "20px", fontWeight: "900" }}
         >
-          Select your Tastytrade account which will run the /ES autotrading strategy.
+          Select which Tastytrade account will run the IV League Automation
         </Typography>
         <Grid container>
           <Grid item xs={12}>
