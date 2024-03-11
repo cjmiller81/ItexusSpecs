@@ -211,7 +211,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
         body: JSON.stringify({
           accountNumber:	accountConnect.accountNumber,
           riskTolerance: accountConnect.riskTolerance,
-          capitalAllocation: accountConnect.capitalAllocation,
+          capitalAllocation: accountConnect.capitalAllocation ?? 0,
           capitalAllocationNext: accountConnect.capitalAllocationNext,
           closingOnly: accountConnect.closingOnly
         } as SvtIvlStrategyAccountConnect)

@@ -8,7 +8,7 @@ import IvlAutomatedApp from './IvlAutomatedApp';
 import reportWebVitals from './reportWebVitals';
 
 async function enableMocking() {
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.REACT_APP_MOCK_BACKEND_API !== 'true') {
     return;
   }
 
