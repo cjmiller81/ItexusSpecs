@@ -4,9 +4,9 @@ import { StyledDrawerHeader } from "@/components/Sidebar/StyledDrawer"
 import { toggleSideBar } from "@/libs/redux/Slices/UiSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import Box from "@mui/material/Box"
-import CssBaseline from "@mui/material/CssBaseline"
 import { styled } from "@mui/material/styles"
 import * as React from "react"
+import CssBaseline from "@mui/material/CssBaseline"
 import "react-toastify/dist/ReactToastify.css"
 interface Props {
   children: any
@@ -17,7 +17,6 @@ export default function Layout({ children }: Props) {
   const dispatch = useAppDispatch()
   return (
     <StyledRoot sx={{ width: "100%" }}>
-      <CssBaseline />
       <Header
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open }))}
@@ -30,6 +29,7 @@ export default function Layout({ children }: Props) {
         component="main"
         sx={{ flexGrow: 1, p: 3 }}>
         <StyledDrawerHeader />
+        <CssBaseline/>
         {children}
       </Box>
     </StyledRoot>

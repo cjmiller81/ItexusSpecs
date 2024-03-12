@@ -15,12 +15,12 @@ export const ProfileDetails = ({ ...props }: BoxProps) => {
           spacing={2}>
           <AppTextField
             required
-            label={t("First Name")}
+            label={t("FirstName")}
           />
 
           <AppTextField
             required
-            label={t("Last Name")}
+            label={t("LastName")}
           />
         </Stack>
 

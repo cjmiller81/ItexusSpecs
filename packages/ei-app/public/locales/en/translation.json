@@ -55,7 +55,7 @@
     "EnableSMSMFA": "Enable SMS MFA",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
-    "Display Name": "DisplayName",
+    "DisplayName": "Display Name",
     "Save": "Save"
   },
   "ProfilePage": {

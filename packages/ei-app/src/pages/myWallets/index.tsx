@@ -9,7 +9,7 @@ export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets } = useAppSelector(state => state.walletsReducer.wallets)
   const dispatch = useAppDispatch()
 
-  const { t } = useTranslation("MyWalletsSection")
+  const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
 
   useEffect(() => {
