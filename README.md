@@ -1,5 +1,5 @@
 # ECHO - UI
-A trading platform UI.
+A Trading Tlatform UI.
 
 ### Prerequisites:
 
