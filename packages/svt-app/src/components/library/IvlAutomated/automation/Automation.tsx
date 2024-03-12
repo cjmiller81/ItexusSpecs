@@ -19,8 +19,8 @@ interface AutomationComponentProps {
   strategyAccountConnectState: SvtIvlEsStrategySetStatus;
   automationRunning: boolean;
   onAutomationRunningChange: (newAutomationRunning: boolean) => void;
-  onClosingOnlyChange: (closingOnly: boolean) => void;
-  onCapitalAllocationChange: (newCapitalAllocation: number) => void;
+  onClosingOnlyChange: (closingOnly: boolean, localOnly: boolean) => void;
+  onCapitalAllocationChange: (newCapitalAllocation: number, localOnly: boolean) => void;
   errorMessage: string;
 }
 
@@ -35,7 +35,9 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const [positionTableData, setPositionTableData] = useState<
     IPositionTableRow[]
   >([]);
-  const [pendingResponse, setPendingResponse] = useState<boolean>(false);
+  const [pendingAutomationResponse, setPendingAutomationResponse] = useState<boolean>(false);
+  const [pendingCapitalAllocationResponse, setPendingCapitalAllocationResponse] = useState<boolean>(false);
+  const [pendingClosingOnlyResponse, setPendingClosingOnlyResponse] = useState<boolean>(false);
   const [automationRunningLocal, setAutomationRunningLocal] =
     useState<boolean>(false);
     const [closingOnlyLocal, setClosingOnlyLocal] =
@@ -78,44 +80,58 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   }, []);
 
   const handleAutomationRunningChange = useCallback(() => {
-    setPendingResponse(true);
+    setPendingAutomationResponse(true);
     setAutomationRunningLocal(automationRunning);
     onAutomationRunningChange(!automationRunning);
   }, [automationRunning, onAutomationRunningChange])
 
   const handleClosingOnlyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    setPendingResponse(true);
+    setPendingClosingOnlyResponse(true);
     setClosingOnlyLocal(checked);
-    onClosingOnlyChange(checked);
-  }, [onClosingOnlyChange])
+    onClosingOnlyChange(checked, (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0) ? false : true);
+  }, [onClosingOnlyChange, strategyAccountConnectState?.capitalAllocation])
 
   const handleCapitalAllocationButton = useCallback(() => {
-    setPendingResponse(true);
-    onCapitalAllocationChange(localCapitalAllocation);
+    setPendingCapitalAllocationResponse(true);
+    onCapitalAllocationChange(localCapitalAllocation, false);
   }, [localCapitalAllocation, onCapitalAllocationChange])
 
   const handleOnEditing = useCallback((isEditing: boolean):void => {
     setIsEditing(isEditing);
   }, []);
 
-  useEffect(() => {
-    if (!isEditing) {
-      setLocalCapitalAllocation(parseFloat(strategyAccountConnectState?.capitalAllocationNext as any));
+  const handleCapitalAllocationChange = useCallback((newCapitalAllocation: number):void => {
+    currencyValdiation(newCapitalAllocation);
+    if (!(strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)) {
+      onCapitalAllocationChange(newCapitalAllocation, true);
+    } else {
+      setLocalCapitalAllocation(parseFloat(newCapitalAllocation as any));
     }
-    currencyValdiation(strategyAccountConnectState?.capitalAllocationNext);
-  }, [currencyValdiation, isEditing, strategyAccountConnectState?.capitalAllocationNext]);
+  }, [currencyValdiation, onCapitalAllocationChange, strategyAccountConnectState?.capitalAllocation]);
 
   useEffect(() => {
-    if (pendingResponse) {
-      setPendingResponse(false);
-      if (automationRunningLocal !== automationRunning) {
-        setAutomationRunningLocal(automationRunning);
-      }
-      if (closingOnlyLocal !== strategyAccountConnectState.closingOnly) {
-        setClosingOnlyLocal(strategyAccountConnectState.closingOnly);
+    if (pendingAutomationResponse) {
+      if (automationRunningLocal === automationRunning) {
+        setPendingAutomationResponse(false);
       }
     }
-  }, [automationRunning, automationRunningLocal, closingOnlyLocal, pendingResponse, strategyAccountConnectState.closingOnly]);
+  }, [automationRunning, automationRunningLocal, pendingAutomationResponse]);
+
+  useEffect(() => {
+    if (pendingCapitalAllocationResponse) {
+      if (parseFloat(localCapitalAllocation as any) === parseFloat(strategyAccountConnectState?.capitalAllocationNext as any)) {
+        setPendingCapitalAllocationResponse(false);
+      }
+    }
+  }, [localCapitalAllocation, pendingCapitalAllocationResponse, strategyAccountConnectState?.capitalAllocationNext]);
+
+  useEffect(() => {
+    if (pendingClosingOnlyResponse) {
+      if (closingOnlyLocal === strategyAccountConnectState.closingOnly) {
+        setPendingClosingOnlyResponse(false);
+      }
+    }
+  }, [closingOnlyLocal, pendingClosingOnlyResponse, strategyAccountConnectState.closingOnly]);
 
   useEffect(() => {
     if (
@@ -127,7 +143,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           id: 1,
           orderNumber: strategyAccountConnectState.entryOrderId,
           type: "Entry",
-          status: strategyAccountConnectState.entryOrderStatus,
+          status: strategyAccountConnectState.entryOrderStatus as string,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
           qty: strategyAccountConnectState.contractQty as number,
         },
@@ -135,7 +151,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           id: 2,
           orderNumber: strategyAccountConnectState.exitOrderId,
           type: "Exit",
-          status: strategyAccountConnectState.exitOrderStatus,
+          status: strategyAccountConnectState.exitOrderStatus as string,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
           qty: strategyAccountConnectState.contractQty as number,
         },
@@ -146,7 +162,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
           id: 1,
           orderNumber: strategyAccountConnectState.entryOrderId,
           type: "Entry",
-          status: strategyAccountConnectState.entryOrderStatus,
+          status: strategyAccountConnectState.entryOrderStatus as string,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
           qty: strategyAccountConnectState.contractQty as number,
         },
@@ -179,8 +195,10 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                 variant="outlined"
                 onClick={handleAutomationRunningChange}
                 disabled={
-                  !(strategyAccountConnectState.capitalAllocationNext >= 13000)
-                  || pendingResponse
+                  !(parseFloat(strategyAccountConnectState.capitalAllocationNext as any) >= 13000)
+                  || pendingAutomationResponse
+                  || pendingCapitalAllocationResponse
+                  || pendingClosingOnlyResponse
                   || isEditing
                 }
                 sx={{ mr: 1 }}
@@ -189,17 +207,29 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                   id="small-indicator"
                   height={25}
                   width={25}
-                  visible={pendingResponse}
+                  visible={
+                    pendingAutomationResponse
+                    || pendingCapitalAllocationResponse
+                    || pendingClosingOnlyResponse
+                  }
                 />
                 {automationRunning ? "Stop Automation" : "Start Automation"}
               </Button>
               <FormControlLabel
                 className="closing-only-container"
                 sx={{mt:1}}
+                hidden={!automationRunning}
                 control={
                   <Checkbox
-                  checked={strategyAccountConnectState.closingOnly}
-                  onChange={handleClosingOnlyChange}
+                    checked={strategyAccountConnectState.closingOnly}
+                    onChange={handleClosingOnlyChange}
+                    disabled={
+                      !automationRunning
+                      || pendingAutomationResponse
+                      || pendingCapitalAllocationResponse
+                      || pendingClosingOnlyResponse
+                    }
+                    hidden={!automationRunning}
                   />
                 }
                 label="Closing Only"
@@ -226,29 +256,42 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                     error={capitalError}
                     errorMessage={capitalErrorMessage}
                     disabled={false}
-                    capitalAllocation={
-                      (strategyAccountConnectState?.capitalAllocation > 0
-                      && strategyAccountConnectState?.capitalAllocationNext === strategyAccountConnectState?.capitalAllocationStart)
-                        ? localCapitalAllocation
-                        : strategyAccountConnectState?.capitalAllocationNext
+                    capitalAllocation={parseFloat(
+                        (
+                          ((strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)
+                          && parseFloat(strategyAccountConnectState?.capitalAllocationNext as any) === parseFloat(strategyAccountConnectState?.capitalAllocationStart as any))
+                            ? localCapitalAllocation
+                            : strategyAccountConnectState?.capitalAllocationNext
+                        ) as any
+                      )
                     }
                     onEditingChange={handleOnEditing}
+                    onBlur={handleCapitalAllocationChange}
                   />
                 </Grid>
                 <Grid item xs={3} md="auto">
-                  { strategyAccountConnectState?.capitalAllocation > 0
+                  { (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)
                     ? <Button
                         color={"success"}
                         variant="outlined"
                         onClick={handleCapitalAllocationButton}
-                        disabled={ pendingResponse }
+                        disabled={
+                          pendingAutomationResponse
+                          || pendingCapitalAllocationResponse
+                          || pendingClosingOnlyResponse
+                          || (parseFloat(localCapitalAllocation as any) === parseFloat(strategyAccountConnectState?.capitalAllocationNext as any))
+                        }
                         sx={{ mr: 1 }}
                       >
                         <LoadIndicator
                           id="small-indicator"
                           height={25}
                           width={25}
-                          visible={pendingResponse}
+                          visible={
+                            pendingAutomationResponse
+                            || pendingCapitalAllocationResponse
+                            || pendingClosingOnlyResponse
+                          }
                         />
                         { "Update" }
                       </Button>
@@ -277,7 +320,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <AutomationTabs capitalAllocation={strategyAccountConnectState?.capitalAllocation} tabs={tabPanels} />
+            <AutomationTabs capitalAllocation={parseFloat(strategyAccountConnectState?.capitalAllocation as any)} tabs={tabPanels} />
           </Grid>
         </Grid>
       </Box>

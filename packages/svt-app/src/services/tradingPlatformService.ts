@@ -73,10 +73,10 @@ export interface SvtIvlStrategyAccountConnect {
 export interface SvtIvlEsStrategySetStatus {
   isStarted: boolean
   entryOrderId:	string | null
-  entryOrderStatus:	OrderStatus
+  entryOrderStatus:	string | null
   entryOrderSymbol:	string | null
   exitOrderId:	string | null
-  exitOrderStatus:	OrderStatus
+  exitOrderStatus:	string | null
   exitOrderSymbol:	string | null
   exchangeUsername: string
   accountNumber:	string | null
@@ -211,7 +211,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
         body: JSON.stringify({
           accountNumber:	accountConnect.accountNumber,
           riskTolerance: accountConnect.riskTolerance,
-          capitalAllocation: accountConnect.capitalAllocation,
+          capitalAllocation: accountConnect.capitalAllocation ?? 0,
           capitalAllocationNext: accountConnect.capitalAllocationNext,
           closingOnly: accountConnect.closingOnly
         } as SvtIvlStrategyAccountConnect)

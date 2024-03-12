@@ -282,6 +282,7 @@ export default function IvlAutomated() {
             steps.findIndex((step, i) => !(i in completed))
           : activeStep + 1;
       setActiveStep(newActiveStep);
+      setErrorMessage("");
       getAccountList.mutate();
     }, [activeStep, allStepsCompleted, completed, getAccountList, isLastStep, setStatus]),
     onError: (res: any) => {
@@ -311,6 +312,7 @@ export default function IvlAutomated() {
   const stopIvlAutomation = useStopIvlAutomation({
     onSuccess: useCallback((res: any) => {
       setAutomationRunning(!(res as boolean));
+      setErrorMessage("");
       getAccountList.mutate();
     }, [getAccountList]),
     onError: (res: any) => {
@@ -322,20 +324,28 @@ export default function IvlAutomated() {
     }
   });
 
-  const handleCapitalAllocation = useCallback((newCapitalAllocation: number): void => {
-    upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+  const handleCapitalAllocation = useCallback((newCapitalAllocation: number, localOnly: boolean = false): void => {
+    if (localOnly) {
+      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+    } else {
+      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+    }
   }, [strategyAccountConnectState, upsertIvlAutomation]);
 
   const handleAutomationRunningChange = useCallback((newAutomationRunning: boolean): void => {
     if (newAutomationRunning) {
-      upsertIvlAutomation.mutate(strategyAccountConnectState);
+      upsertIvlAutomation.mutate({...strategyAccountConnectState, closingOnly: false});
     } else {
       stopIvlAutomation.mutate();
     }
   }, [stopIvlAutomation, strategyAccountConnectState, upsertIvlAutomation]);
 
-  const handleClosingOnlyChange = useCallback((newClosingOnly: boolean) => {
+  const handleClosingOnlyChange = useCallback((newClosingOnly: boolean, localOnly: boolean = false) => {
+    if (localOnly) {
+      setStrategyAccountConnectState({...strategyAccountConnectState, closingOnly: newClosingOnly});
+    } else {
       upsertIvlAutomation.mutate({...strategyAccountConnectState, closingOnly: newClosingOnly});
+    }
   }, [strategyAccountConnectState, upsertIvlAutomation]);
 
   const handleNext = useCallback(() => {
