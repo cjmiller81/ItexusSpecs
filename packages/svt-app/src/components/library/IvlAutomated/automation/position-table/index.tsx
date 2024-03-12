@@ -7,13 +7,11 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-import { OrderStatus } from "../../../../../services/tradingPlatformService";
-
 export interface IPositionTableRow {
   id?: number;
   orderNumber: string;
   type: string;
-  status: OrderStatus;
+  status: string;
   symbol: string;
   qty: number;
   disabled?: boolean;
@@ -66,7 +64,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ data }) => {
                 }}
                 align="left"
               >
-                {OrderStatus[row.status]}
+                {row.status}
               </TableCell>
               <TableCell
                 sx={{

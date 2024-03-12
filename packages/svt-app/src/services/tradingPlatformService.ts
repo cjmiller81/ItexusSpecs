@@ -73,10 +73,10 @@ export interface SvtIvlStrategyAccountConnect {
 export interface SvtIvlEsStrategySetStatus {
   isStarted: boolean
   entryOrderId:	string | null
-  entryOrderStatus:	OrderStatus
+  entryOrderStatus:	string | null
   entryOrderSymbol:	string | null
   exitOrderId:	string | null
-  exitOrderStatus:	OrderStatus
+  exitOrderStatus:	string | null
   exitOrderSymbol:	string | null
   exchangeUsername: string
   accountNumber:	string | null

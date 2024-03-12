@@ -1,17 +1,20 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
-import { OrderStatus, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
+import { IvlRiskTolerance, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
 
 const mockState = {
   connected: false,
   status: {
+    exchangeUsername: "benec",
+    accountNumber: "5WU50943",
+    riskTolerance: IvlRiskTolerance.High,
     isStarted: false,
     entryOrderId: null,
-    entryOrderStatus: OrderStatus.Undefined,
+    entryOrderStatus: null,
     entryOrderSymbol: null,
     exitOrderId: null,
-    exitOrderStatus: OrderStatus.Undefined,
+    exitOrderStatus: null,
     exitOrderSymbol: null,
     closingOnly: false,
     capitalAllocation: 0,
@@ -98,10 +101,10 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
           mockState.status.capitalAllocation = data.capitalAllocation === 0 ? data.capitalAllocationNext : data.capitalAllocation
           mockState.status.capitalAllocationNext = data.capitalAllocationNext
           mockState.status.entryOrderId = "131083"
-          mockState.status.entryOrderStatus = OrderStatus.Filled
+          mockState.status.entryOrderStatus = "Filled"
           mockState.status.entryOrderSymbol = "AAPL"
           mockState.status.exitOrderId = "131084"
-          mockState.status.exitOrderStatus = OrderStatus.Working
+          mockState.status.exitOrderStatus = "Working"
           mockState.status.exitOrderSymbol = "AAPL"
         }
       }
