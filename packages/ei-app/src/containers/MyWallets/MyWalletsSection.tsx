@@ -7,7 +7,7 @@ import { Wallet } from "@/models/Wallet/Wallet"
 import { getWalletsUsdTotal } from "@/utils/tokensTableHelpers"
 import { Box, BoxProps, Button } from "@mui/material"
 import { styled } from "@mui/system"
-import { GridCallbackDetails, GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
+import { GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { WalletInputModal } from "../../components/Modals/WalletInputModal"
@@ -36,7 +36,7 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
       onAddWallet(walletAddress)
     }
 
-    setAddWalletModalOpen(false);
+    setAddWalletModalOpen(false)
   }
 
   //eslint-disable-next-line no-undef
@@ -99,8 +99,10 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
         slots={{
           row: ExpandableRow,
         }}
-        onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) =>{
-          setSelectedWallets(wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)))
+        onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+          setSelectedWallets(
+            wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+          )
         }}
         initialState={{
           pagination: {
