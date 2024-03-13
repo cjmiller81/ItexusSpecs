@@ -43,7 +43,7 @@ export const getWalletUsdTotal = (wallet: Wallet) => {
 
     const assetsTotal = chainAssets.walletAssets.reduce((assetsAcc, asset) => {
       const details = tokenDetailsMap.get(asset.tokenName.toLocaleLowerCase())
-      return details ? assetsAcc + asset.balance * details.price : 0
+      return details ? assetsAcc + asset.balance * details.price : assetsAcc
     }, 0)
 
     return chainAcc + assetsTotal
