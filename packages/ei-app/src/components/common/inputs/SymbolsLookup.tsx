@@ -12,6 +12,7 @@ export interface Props {
   options: LookUpOption[]
   value?: LookUpOption | null
   label: string
+  //eslint-disable-next-line no-unused-vars
   onChange: (option: LookUpOption | null) => void
 }
 
