@@ -20,7 +20,13 @@
     "Wallets": "Wallets"
   },
   "MyWalletsPage": {
-    "HistoricalWalletsWorth": "Historical Wallets Worth"
+    "HistoricalWalletsWorth": "Historical Wallets Worth",
+    "Daily": "Daily",
+    "Monthly": "Monthly",
+    "Weekly": "Weekly",
+    "FromDate": "From Date:",
+    "CompareToSymbol": "Compare to Symbol:",
+    "Period": "Period:"
   },
   "UserMenu": {
     "Profile": "Profile",

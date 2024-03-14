@@ -120,7 +120,7 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
   )
 }
 
-const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
+export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: 0,
   top: 0,
@@ -136,7 +136,7 @@ const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   },
 }))
 
-const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
+export const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   flexDirection: "row",
@@ -147,7 +147,7 @@ const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
   },
 }))
 
-const StyledAddWalletButton = styled(Button)(({ theme }) => ({
+export const StyledAddWalletButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
   [theme.breakpoints.down("md")]: {
     marginTop: theme.spacing(4),

@@ -111,7 +111,7 @@ export const HistoricalWalletsWorth = ({ title, ...props }: Props) => {
   )
 }
 
-const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
+export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   flexDirection: "row",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
@@ -121,7 +121,7 @@ const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   width: "100%",
 }))
 
-const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
+export const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(2),
   width: "25%",
@@ -135,7 +135,7 @@ const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   justifyContent: "flex-start",
 }))
 
-const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
+export const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   marginTop: theme.spacing(7),
@@ -156,7 +156,7 @@ const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
   },
 }))
 
-const StyledTypographyWalletsWorthTitle = styled(PageTitle)(({ theme }) => ({
+export const StyledTypographyWalletsWorthTitle = styled(PageTitle)(({ theme }) => ({
   textWrap: "wrap",
   [theme.breakpoints.down("md")]: {
     flexBasis: "20%",
