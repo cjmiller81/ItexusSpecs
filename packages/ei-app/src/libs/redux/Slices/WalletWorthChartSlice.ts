@@ -4,12 +4,18 @@ import { createAppSlice } from "../createAppSlice"
 import { Status } from "./UiSlice"
 
 interface WalletsState {
-  chartData: HistoricalWalletData[]
+  chartData?: ChartSeriesDataResponse
   statstatusFetchingHistoricalData: Status
 }
 
+export interface ChartSeriesDataResponse
+{
+  seriesData:  HistoricalWalletData[],
+  comareToLabel: string
+}
+
 const initialState: WalletsState = {
-  chartData: [],
+  chartData: undefined,
   statstatusFetchingHistoricalData: "idle",
 }
 export const walletWorthChartSlice = createAppSlice({
@@ -25,14 +31,16 @@ export const walletWorthChartSlice = createAppSlice({
         startDate: Date
         endDate: Date
         compareSymbol: string
-      }) => {
+        compareLabel: string
+      }) : Promise<ChartSeriesDataResponse> => {
         const response = await walletsApi.getHistoricalWalletData(
           payload.symbols,
           payload.startDate,
           payload.endDate,
           payload.compareSymbol,
-        )
-        return response
+        );
+
+        return {seriesData: response, comareToLabel: payload.compareLabel}
       },
       {
         pending: state => {

@@ -46,6 +46,7 @@ export default function MyWalletsPage() {
       dispatch(
         fetchHistoricalWolletData({
           compareSymbol: symbolOption.label.toLocaleLowerCase(),
+          compareLabel: symbolOption.label,
           endDate: new Date(),
           startDate: fromDate,
           symbols: toTotalTokensBalances(selectedRows),
@@ -54,7 +55,7 @@ export default function MyWalletsPage() {
     }
   }
 
-  const series = toChartSeries(chartData)
+  const series = chartData ? toChartSeries(chartData?.seriesData, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : []
 
   const percentageFormatter = (value: number) => `${value}%`
   return (
@@ -97,7 +98,7 @@ export default function MyWalletsPage() {
 
             <Button
               onClick={onChartRefresh}
-              disabled={!fromDate || !symbolOption}
+              disabled={!fromDate || !symbolOption || !selectedRows.length}
               sx={{ width: "50%", alignSelf: "center" }}
               variant="contained">
               {t("Sumbit")}

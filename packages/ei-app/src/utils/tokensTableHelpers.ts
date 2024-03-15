@@ -90,7 +90,7 @@ export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; q
 }
 
 //eslint-disable-next-line no-undef
-export const toChartSeries = (chartData: HistoricalWalletData[]) : ApexAxisChartSeries => {
+export const toChartSeries = (chartData: HistoricalWalletData[], historicalWalletsWorthSeriesLabel: string, compareToSeriesLabel: string) : ApexAxisChartSeries => {
   if (!chartData.length){
     return []
   }
@@ -99,12 +99,12 @@ export const toChartSeries = (chartData: HistoricalWalletData[]) : ApexAxisChart
   return chartData.length
     ? [
         {
-          name: "series1",
-          data: chartData.map(x => ({ x: x.historyDate, y: x.comparePrice})),
+          name: historicalWalletsWorthSeriesLabel,
+          data: chartData.map(x => ({ x: x.historyDate, y: x.walletValue})),
         },
         {
-          name: "series2",
-          data: chartData.map(x => ({ x: x.historyDate, y: x.walletValue})),
+          name: compareToSeriesLabel,
+          data: chartData.map(x => ({ x: x.historyDate, y: x.comparePrice})),
         },
       ]
     : []

@@ -27,7 +27,8 @@
     "FromDate": "From Date:",
     "Sumbit": "Submit",
     "CompareToSymbol": "Compare to Symbol:",
-    "Period": "Period:"
+    "Period": "Period:",
+    "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
   },
   "UserMenu": {
     "Profile": "Profile",
