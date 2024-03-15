@@ -56,7 +56,7 @@ export const toOptions = (wallets: WalletRow[]): LookUpOption[] => {
   const options = wallets.flatMap(x => x.chainAssets).map(chainAssets => {
     const tokenModels = toTableTokensModel(chainAssets);
     return tokenModels.map<LookUpOption>(token => ({
-      iconUrl: undefined,
+      iconUrl: "https://assets.coingecko.com/coins/images/22990/thumb/ETH_wh_small.png?1696522286",
       label: token.tokenName
     }))
   }).flat()
