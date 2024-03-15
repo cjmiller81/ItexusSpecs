@@ -7,7 +7,7 @@ import { Wallet } from "@/models/Wallet/Wallet"
 import { getWalletsUsdTotal } from "@/utils/tokensTableHelpers"
 import { Box, BoxProps, Button } from "@mui/material"
 import { styled } from "@mui/system"
-import { GridCellParams, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
+import { GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { WalletInputModal } from "../../components/Modals/WalletInputModal"
@@ -25,18 +25,18 @@ export type WalletRow = Wallet & { expanded: boolean }
 
 export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading, sx, ...props }: Props) => {
   const { t } = useTranslation("MyWalletsSection")
-
+  const [selectedWallets, setSelectedWallets] = useState<WalletRow[]>([])
   const apiRef = useGridApiRef()
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false)
 
-  const walletsTotal = useMemo(() => getWalletsUsdTotal(wallets), [wallets])
+  const walletsTotal = useMemo(() => getWalletsUsdTotal(selectedWallets), [selectedWallets])
 
   const addWallet = async (walletAddress: string | null) => {
     if (walletAddress) {
       onAddWallet(walletAddress)
     }
 
-    setAddWalletModalOpen(false);
+    setAddWalletModalOpen(false)
   }
 
   //eslint-disable-next-line no-undef
@@ -98,6 +98,11 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
         loading={loading}
         slots={{
           row: ExpandableRow,
+        }}
+        onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+          setSelectedWallets(
+            wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+          )
         }}
         initialState={{
           pagination: {
