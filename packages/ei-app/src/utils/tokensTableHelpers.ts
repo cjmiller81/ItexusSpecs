@@ -2,6 +2,7 @@ import { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
+import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { Wallet } from "@/models/Wallet/Wallet"
 
 export interface WalletTokensTableModel extends Asset {
@@ -53,16 +54,58 @@ export const getWalletUsdTotal = (wallet: Wallet) => {
 }
 
 export const toOptions = (wallets: WalletRow[]): LookUpOption[] => {
-  const options = wallets.flatMap(x => x.chainAssets).map(chainAssets => {
-    const tokenModels = toTableTokensModel(chainAssets);
-    return tokenModels.map<LookUpOption>(token => ({
-      iconUrl: "https://assets.coingecko.com/coins/images/22990/thumb/ETH_wh_small.png?1696522286",
-      label: token.tokenName
-    }))
-  }).flat()
+  const options = wallets
+    .flatMap(x => x.chainAssets)
+    .map(chainAssets => {
+      const tokenModels = toTableTokensModel(chainAssets)
+      return tokenModels.map<LookUpOption>(token => ({
+        iconUrl: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
+        label: token.tokenName,
+      }))
+    })
+    .flat()
 
-  return options.filter((option, index, arr) =>
-  index === arr.findIndex(t => (
-      t.label === option.label
-  )))
+  return options.filter((option, index, arr) => index === arr.findIndex(t => t.label === option.label))
+}
+
+//eslint-disable-next-line no-undef
+export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; qty: number }[] => {
+  const allChainsAssets = wallets
+    .flatMap(x => x.chainAssets)
+    .map(x => toTableTokensModel(x))
+    .flat()
+
+  const groupedSymbols = new Map<string, { totalBalance: number }>()
+  for (const e of allChainsAssets) {
+    const key = e.tokenName.toLowerCase()
+    let value = groupedSymbols.get(key)
+    if (!value) {
+      groupedSymbols.set(key, { totalBalance: e.balance })
+    } else {
+      value.totalBalance += e.balance
+    }
+  }
+
+  return Array.from(groupedSymbols, ([key, value]) => ({ symbol: key, qty: Math.round(value.totalBalance) }))
+}
+
+//eslint-disable-next-line no-undef
+export const toChartSeries = (chartData: HistoricalWalletData[]) : ApexAxisChartSeries => {
+  if (!chartData.length){
+    return []
+  }
+
+  //TODO calcuate chart data
+  return chartData.length
+    ? [
+        {
+          name: "series1",
+          data: chartData.map(x => ({ x: x.historyDate, y: x.comparePrice})),
+        },
+        {
+          name: "series2",
+          data: chartData.map(x => ({ x: x.historyDate, y: x.walletValue})),
+        },
+      ]
+    : []
 }

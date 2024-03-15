@@ -1,4 +1,4 @@
-import { isoDateFormat } from "@/constants/Common"
+import { apiDateFormat } from "@/constants/Common"
 import { getUndefinedErrorMessage } from "@/constants/Errormessages"
 import axios, { AxiosError } from "axios"
 import { addError } from "../redux/Slices/UiSlice"
@@ -19,7 +19,7 @@ appAxios.interceptors.request.use(
 )
 
 function isIsoDateString(value: any): boolean {
-  return value && typeof value === "string" && isoDateFormat.test(value)
+  return value && typeof value === "string" && apiDateFormat.test(value)
 }
 
 function handleDates(body: any) {
