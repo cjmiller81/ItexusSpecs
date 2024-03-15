@@ -2,6 +2,7 @@ import { AppChart } from "@/components/Charts/AppChart"
 import AppDatePicker from "@/components/common/inputs/AppDatePicker"
 import AppSelect from "@/components/common/inputs/AppSelect"
 import SymbolLookup, { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
+import { chartDateFormatString } from "@/constants/Common"
 import {
   Period,
   StyledTypographyWalletsWorthTitle,
@@ -10,21 +11,25 @@ import {
   StyledWalletWorthMenuContainer,
 } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
+import { fetchHistoricalWolletData } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import { createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { toOptions } from "@/utils/tokensTableHelpers"
-import { Box, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
+import { toChartSeries, toOptions, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
+import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets } = useAppSelector(state => state.walletsReducer.wallets)
+  const { chartData } = useAppSelector(state => state.walletsReducer.walletWorthChart)
   const [period, setPeriod] = useState<Period>("daily")
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
+  const [fromDate, setFromDate] = useState<Date | null>(null)
   const dispatch = useAppDispatch()
 
   const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
+  const [selectedRows, setSelectedRows] = useState<WalletRow[]>([]);
 
   useEffect(() => {
     dispatch(fetchWallets(null))
@@ -32,23 +37,24 @@ export default function MyWalletsPage() {
 
   const options = toOptions(walletsRows)
 
-
   const onPeriodChanged = (event: SelectChangeEvent<unknown>) => {
     setPeriod(event.target.value as Period)
   }
 
-  const toXAxesFormat = (period: Period): string => {
-    switch (period) {
-      case "daily":
-        return "HH:mm"
-      case "weekly":
-        return "ddd"
-      case "monthly":
-        return "MMM"
-      default:
-        return "HH:mm"
+  const onChartRefresh = () => {
+    if (symbolOption && fromDate) {
+      dispatch(
+        fetchHistoricalWolletData({
+          compareSymbol: symbolOption.label.toLocaleLowerCase(),
+          endDate: new Date(),
+          startDate: fromDate,
+          symbols: toTotalTokensBalances(selectedRows),
+        }),
+      )
     }
   }
+
+  const series = toChartSeries(chartData)
 
   const percentageFormatter = (value: number) => `${value}%`
   return (
@@ -56,6 +62,7 @@ export default function MyWalletsPage() {
       <MyWalletsSection
         loading={statusFetchingWallets === "loading"}
         wallets={walletsRows}
+        onSelectedRowsChanged={rows => setSelectedRows(rows)}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
       />
@@ -79,6 +86,7 @@ export default function MyWalletsPage() {
             </AppSelect>
             <AppDatePicker
               disableFuture
+              onChange={date => setFromDate(date)}
               label={t("FromDate")}
             />
             <SymbolLookup
@@ -86,19 +94,21 @@ export default function MyWalletsPage() {
               value={symbolOption}
               options={options}
               label={t("CompareToSymbol")}></SymbolLookup>
+
+            <Button
+              onClick={onChartRefresh}
+              disabled={!fromDate || !symbolOption}
+              sx={{ width: "50%", alignSelf: "center" }}
+              variant="contained">
+              {t("Sumbit")}
+            </Button>
           </StyledWalletWorthMenu>
         </StyledWalletWorthMenuContainer>
         <Box sx={{ width: "100%" }}>
           <AppChart
-            series={[]}
+            series={series}
             height={460}
             optionsOverrides={{
-              xaxis: {
-                categories: [],
-                labels: {
-                  format: toXAxesFormat(period),
-                },
-              },
               yaxis: {
                 labels: {
                   formatter: percentageFormatter,
@@ -106,7 +116,7 @@ export default function MyWalletsPage() {
               },
               tooltip: {
                 x: {
-                  format: "yyyy-MM-dd HH:mm",
+                  format: chartDateFormatString,
                 },
                 y: {
                   formatter: percentageFormatter,

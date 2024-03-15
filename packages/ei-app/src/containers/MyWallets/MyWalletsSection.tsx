@@ -19,11 +19,13 @@ interface Props extends BoxProps {
   onDeleteWallet: (wallet: string) => void
   //eslint-disable-next-line no-unused-vars
   onAddWallet: (wallet: string) => void
+  //eslint-disable-next-line no-unused-vars
+  onSelectedRowsChanged?: (rows: WalletRow[]) => void
 }
 
 export type WalletRow = Wallet & { expanded: boolean }
 
-export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading, sx, ...props }: Props) => {
+export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsChanged, wallets, loading, sx, ...props }: Props) => {
   const { t } = useTranslation("MyWalletsSection")
   const [selectedWallets, setSelectedWallets] = useState<WalletRow[]>([])
   const apiRef = useGridApiRef()
@@ -37,6 +39,12 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
     }
 
     setAddWalletModalOpen(false)
+  }
+
+  const onSelectedChanged = (rows: WalletRow[]) =>{
+    setSelectedWallets(rows)
+    if(onSelectedRowsChanged)
+      onSelectedRowsChanged(rows)
   }
 
   //eslint-disable-next-line no-undef
@@ -100,9 +108,8 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, wallets, loading
           row: ExpandableRow,
         }}
         onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
-          setSelectedWallets(
-            wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
-          )
+          onSelectedChanged(
+            wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)))
         }}
         initialState={{
           pagination: {
