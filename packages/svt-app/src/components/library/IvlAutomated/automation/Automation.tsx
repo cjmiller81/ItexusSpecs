@@ -81,7 +81,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   const handleAutomationRunningChange = useCallback(() => {
     setPendingAutomationResponse(true);
-    setAutomationRunningLocal(automationRunning);
+    setAutomationRunningLocal(!automationRunning);
     onAutomationRunningChange(!automationRunning);
   }, [automationRunning, onAutomationRunningChange])
 
