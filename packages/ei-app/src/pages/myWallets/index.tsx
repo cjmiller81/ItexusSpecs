@@ -1,7 +1,7 @@
 import { AppChart } from "@/components/Charts/AppChart"
 import AppDatePicker from "@/components/common/inputs/AppDatePicker"
 import AppSelect from "@/components/common/inputs/AppSelect"
-import SymbolLookup, { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
+import SymbolLookup from "@/components/common/inputs/SymbolsLookup"
 import { chartDateFormatString } from "@/constants/Common"
 import {
   Period,
@@ -20,6 +20,7 @@ import {
   selectWallets,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { ICoin } from "@/services/backend-api.service"
 import { toChartSeries, toOptions, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
@@ -32,7 +33,7 @@ export default function MyWalletsPage() {
   const { chartData } = useAppSelector(state => state.walletsReducer.walletWorthChart)
 
   const [period, setPeriod] = useState<Period>("daily")
-  const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
+  const [symbolOption, setSymbolOption] = useState<ICoin | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const dispatch = useAppDispatch()
 
@@ -52,9 +53,9 @@ export default function MyWalletsPage() {
   const onChartRefresh = () => {
     if (symbolOption && fromDate) {
       dispatch(
-        fetchHistoricalWalletData({
-          compareSymbol: symbolOption.label.toLocaleLowerCase(),
-          compareLabel: symbolOption.label,
+        fetchHistoricalWolletData({
+          compareSymbol: symbolOption.name.toLocaleLowerCase(),
+          compareLabel: symbolOption.name,
           endDate: new Date(),
           startDate: fromDate,
           symbols: toTotalTokensBalances(selectedWallets),

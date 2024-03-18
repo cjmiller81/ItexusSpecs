@@ -2,18 +2,14 @@ import Autocomplete from "@mui/material/Autocomplete"
 import Box from "@mui/material/Box"
 import TextField from "@mui/material/TextField"
 import AppInputLabel from "./AppInputLabel"
-
-export interface LookUpOption {
-  label: string
-  iconUrl?: string
-}
+import { ICoin } from "@/services/backend-api.service"
 
 export interface Props {
-  options: LookUpOption[]
-  value?: LookUpOption | null
+  options: ICoin[]
+  value?: ICoin | null
   label: string
   //eslint-disable-next-line no-unused-vars
-  onChange: (option: LookUpOption | null) => void
+  onChange: (option: ICoin | null) => void
 }
 
 export default function SymbolLookup({ options, value, onChange, label }: Props) {
@@ -27,7 +23,7 @@ export default function SymbolLookup({ options, value, onChange, label }: Props)
         options={options}
         autoHighlight
         onChange={(_, option) => onChange(option)}
-        getOptionLabel={option => option.label}
+        getOptionLabel={option => option.name}
         value={value}
         renderOption={(props, option) => (
           <Box
@@ -37,10 +33,10 @@ export default function SymbolLookup({ options, value, onChange, label }: Props)
             <img
               loading="lazy"
               width="20"
-              src={option.iconUrl}
+              src={option.lURI}
               alt=""
             />
-            {option.label}
+            {option.name}
           </Box>
         )}
         renderInput={params => (

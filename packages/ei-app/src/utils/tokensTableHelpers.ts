@@ -1,4 +1,3 @@
-import { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Period } from "@/containers/MyWallets/WalletsTable"
 import { ChartSeriesDataResponse } from "@/libs/redux/Slices/WalletWorthChartSlice"
@@ -6,6 +5,7 @@ import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { Wallet } from "@/models/Wallet/Wallet"
+import { ICoin } from "@/services/backend-api.service"
 
 export interface WalletTokensTableModel extends Asset {
   price?: number
@@ -55,19 +55,21 @@ export const getWalletUsdTotal = (wallet: Wallet) => {
   }, 0)
 }
 
-export const toOptions = (wallets: WalletRow[]): LookUpOption[] => {
+export const toOptions = (wallets: WalletRow[]): ICoin[] => {
   const options = wallets
     .flatMap(x => x.chainAssets)
     .map(chainAssets => {
       const tokenModels = toTableTokensModel(chainAssets)
-      return tokenModels.map<LookUpOption>(token => ({
-        iconUrl: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
-        label: token.tokenName,
+      return tokenModels.map<ICoin>(token => ({
+        id: 'ethereum',
+        lURI: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
+        name: token.tokenName,
+        sym: 'ETH'
       }))
     })
     .flat()
 
-  return options.filter((option, index, arr) => index === arr.findIndex(t => t.label === option.label))
+  return options.filter((option, index, arr) => index === arr.findIndex(t => t.name === option.name))
 }
 
 //eslint-disable-next-line no-undef
