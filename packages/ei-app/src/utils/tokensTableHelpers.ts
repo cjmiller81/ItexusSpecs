@@ -97,7 +97,7 @@ export const toChartSeries = (
   compareToSeriesLabel: string,
   //eslint-disable-next-line no-undef
 ): { series: ApexAxisChartSeries; min: number; max: number } => {
-  if (!chartData || !chartData.seriesData.length) {
+  if (!chartData || !chartData.seriesData || !chartData.seriesData.length) {
     return {
       min: 0,
       max: 10,
@@ -136,30 +136,16 @@ export const toChartSeries = (
 }
 
 export const getChartDataScale = (chartData: HistoricalWalletData[]): { min: number; max: number } => {
-  const findMinMax = (
-    historicalWalletData: HistoricalWalletData[],
-    //eslint-disable-next-line no-unused-vars
-    selector: (seriesData: HistoricalWalletData) => number,
-  ): { min: number; max: number } => {
-    let min: number = selector(historicalWalletData[0])
-    let max: number = selector(historicalWalletData[0])
+  const comparePrices = chartData.map(d => d.comparePrice);
+  const comparePriceMin = Math.min(...comparePrices);
+  const comparePriceMax = Math.max(...comparePrices);
 
-    for (let i = 1; i < historicalWalletData.length; i++) {
-      const value = selector(historicalWalletData[i])
-      if (value < min) {
-        min = value
-      } else if (value > max) {
-        max = value
-      }
-    }
+  const walletValuesPrices = chartData.map(d => d.walletValue);
+  const walletWalueMin = Math.min(...walletValuesPrices);
+  const walletWalueMax = Math.max(...walletValuesPrices);
 
-    return { min: min, max: max }
-  }
-
-  const compareMinMax = findMinMax(chartData, s => s.comparePrice)
-  const walletValueMinMax = findMinMax(chartData, s => s.walletValue)
   return {
-    min: Math.min(compareMinMax.min, walletValueMinMax.min),
-    max: Math.min(walletValueMinMax.max, walletValueMinMax.max),
+    min: Math.min(walletWalueMin, comparePriceMin),
+    max: Math.max(comparePriceMax, walletWalueMax),
   }
 }
