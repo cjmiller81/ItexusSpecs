@@ -1,3 +1,5 @@
+'use client'
+
 import { setupWorker } from 'msw/browser'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'

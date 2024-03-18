@@ -2,7 +2,7 @@ import { RateLimiter } from 'limiter'
 import CustomStore from 'devextreme/data/custom_store'
 import { LoadOptions } from 'devextreme/data'
 
-export const backendApiUrl = process.env.BACKEND_API_URL ?? 'http://127.0.0.1:5000'
+export const backendApiUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:5000'
 
 async function sleep(ms:number = 1):Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -279,6 +279,47 @@ export class BackendApiService {
         if (response.statusText === 'Too Many Requests' && retries < 30) {
           console.error(`Failed to fetch: ${url.toString()}\n${response.statusText}\nTrying again...`)
           data = await this.getAllTokens(retries + 1)
+        } else {
+          throw new Error(`Failed to fetch: ${url.toString()}\n${response.statusText}`)
+        }
+      } else {
+        data = await response.json() as unknown as ICoin[]
+      }
+    } catch (err) {
+      console.error(err)
+    }
+
+    return data
+  }
+
+  /**
+   * Get all Coin Gecko Tokens.
+   * @see https://www.coingecko.com/en/api/documentation
+   *
+   * @param {number} [retries=0] - When API rate limits request, number of retries being made.
+   * @returns {Promise<ICoin[]>} - Array of Coin Market data.
+   */
+	public async getTokensSearch(query: string, retries:number = 0):Promise<ICoin[]> {
+    let data = [] as ICoin[]
+
+    try {
+      const searchQuery = (query) ? `?query=${query}` : ""
+      let url = new URL(`${backendApiUrl}/tokens-search${searchQuery}`)
+
+      let req = await BackendApiService.createApiRequest(url.toString())
+        .catch(error => {
+          console.error(error)
+        })
+
+      console.log(`Fetching: ${url}`)
+      let response = await fetch(req as Request, {
+        method: 'GET',
+      })
+
+      if (response.status >= 400) {
+        if (response.statusText === 'Too Many Requests' && retries < 30) {
+          console.error(`Failed to fetch: ${url.toString()}\n${response.statusText}\nTrying again...`)
+          data = await this.getTokensSearch(query, retries + 1)
         } else {
           throw new Error(`Failed to fetch: ${url.toString()}\n${response.statusText}`)
         }
