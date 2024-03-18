@@ -3,12 +3,12 @@ import { walletsColumns } from "@/constants/ColumnsDefs/WalletsTable"
 import { ExpandableRow } from "@/containers/MyWallets/TokensRow"
 import { TotalWalletsWorthCard } from "@/containers/MyWallets/TotalWalletsWorthCard"
 import { StyledWalletsTable } from "@/containers/MyWallets/WalletsTable"
+import { TotalWalletWorthData } from "@/libs/redux/Slices/WalletsSlice"
 import { Wallet } from "@/models/Wallet/Wallet"
-import { getWalletsUsdTotal } from "@/utils/tokensTableHelpers"
 import { Box, BoxProps, Button } from "@mui/material"
 import { styled } from "@mui/system"
 import { GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { WalletInputModal } from "../../components/Modals/WalletInputModal"
 
@@ -21,17 +21,24 @@ interface Props extends BoxProps {
   onAddWallet: (wallet: string) => void
   //eslint-disable-next-line no-unused-vars
   onSelectedRowsChanged?: (rows: WalletRow[]) => void
+  totalWalletsWorthData?: TotalWalletWorthData
 }
 
 export type WalletRow = Wallet & { expanded: boolean }
 
-export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsChanged, wallets, loading, sx, ...props }: Props) => {
+export const MyWalletsSection = ({
+  onAddWallet,
+  onDeleteWallet,
+  onSelectedRowsChanged,
+  wallets,
+  totalWalletsWorthData,
+  loading,
+  sx,
+  ...props
+}: Props) => {
   const { t } = useTranslation("MyWalletsSection")
-  const [selectedWallets, setSelectedWallets] = useState<WalletRow[]>([])
   const apiRef = useGridApiRef()
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false)
-
-  const walletsTotal = useMemo(() => getWalletsUsdTotal(selectedWallets), [selectedWallets])
 
   const addWallet = async (walletAddress: string | null) => {
     if (walletAddress) {
@@ -41,10 +48,8 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsCh
     setAddWalletModalOpen(false)
   }
 
-  const onSelectedChanged = (rows: WalletRow[]) =>{
-    setSelectedWallets(rows)
-    if(onSelectedRowsChanged)
-      onSelectedRowsChanged(rows)
+  const onSelectedChanged = (rows: WalletRow[]) => {
+    if (onSelectedRowsChanged) onSelectedRowsChanged(rows)
   }
 
   //eslint-disable-next-line no-undef
@@ -72,8 +77,6 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsCh
     apiRef.current.updateColumns([column])
   }
 
-  const growPercentage = -22.2323
-
   return (
     <Box
       {...props}
@@ -87,8 +90,8 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsCh
       )}
       <StyledWalletWorthContainer>
         <TotalWalletsWorthCard
-          growPercentage={growPercentage}
-          totalWorth={walletsTotal}
+          growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
+          totalWorth={totalWalletsWorthData?.totalWorth ?? 0}
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
@@ -109,7 +112,8 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsCh
         }}
         onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
           onSelectedChanged(
-            wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)))
+            wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+          )
         }}
         initialState={{
           pagination: {

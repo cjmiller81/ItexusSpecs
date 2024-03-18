@@ -9,7 +9,7 @@ export default function ToastifyLayout({ children }: BoxProps) {
   const dispatch = useAppDispatch()
 
   if (errors.length) {
-    errors.forEach(error => {
+    errors.forEach((error: string) => {
       toast.error(error)
     })
 

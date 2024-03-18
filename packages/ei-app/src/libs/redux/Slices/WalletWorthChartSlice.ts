@@ -8,9 +8,8 @@ interface WalletsState {
   statstatusFetchingHistoricalData: Status
 }
 
-export interface ChartSeriesDataResponse
-{
-  seriesData:  HistoricalWalletData[],
+export interface ChartSeriesDataResponse {
+  seriesData: HistoricalWalletData[]
   comareToLabel: string
 }
 
@@ -25,22 +24,22 @@ export const walletWorthChartSlice = createAppSlice({
     clearErrors: create.reducer(state => {
       state.statstatusFetchingHistoricalData = "idle"
     }),
-    fetchHistoricalWolletData: create.asyncThunk(
+    fetchHistoricalWalletData: create.asyncThunk(
       async (payload: {
         symbols: { symbol: string; qty: number }[]
         startDate: Date
         endDate: Date
         compareSymbol: string
         compareLabel: string
-      }) : Promise<ChartSeriesDataResponse> => {
+      }): Promise<ChartSeriesDataResponse> => {
         const response = await walletsApi.getHistoricalWalletData(
           payload.symbols,
           payload.startDate,
           payload.endDate,
           payload.compareSymbol,
-        );
+        )
 
-        return {seriesData: response, comareToLabel: payload.compareLabel}
+        return { seriesData: response, comareToLabel: payload.compareLabel }
       },
       {
         pending: state => {
@@ -58,4 +57,4 @@ export const walletWorthChartSlice = createAppSlice({
   }),
 })
 
-export const { fetchHistoricalWolletData } = walletWorthChartSlice.actions
+export const { fetchHistoricalWalletData } = walletWorthChartSlice.actions

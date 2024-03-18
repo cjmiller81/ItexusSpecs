@@ -11,17 +11,26 @@ import {
   StyledWalletWorthMenuContainer,
 } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
-import { fetchHistoricalWolletData } from "@/libs/redux/Slices/WalletWorthChartSlice"
-import { createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
+import { fetchHistoricalWalletData } from "@/libs/redux/Slices/WalletWorthChartSlice"
+import {
+  createWallet,
+  deleteWallet,
+  fetchTotalWalletsWorthData,
+  fetchWallets,
+  selectWallets,
+} from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { toChartSeries, toOptions, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets } = useAppSelector(state => state.walletsReducer.wallets)
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
+    state => state.walletsReducer.wallets,
+  )
   const { chartData } = useAppSelector(state => state.walletsReducer.walletWorthChart)
+
   const [period, setPeriod] = useState<Period>("daily")
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
@@ -29,13 +38,12 @@ export default function MyWalletsPage() {
 
   const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
-  const [selectedRows, setSelectedRows] = useState<WalletRow[]>([]);
 
   useEffect(() => {
     dispatch(fetchWallets(null))
   }, [dispatch])
 
-  const options = toOptions(walletsRows)
+  const options = useMemo(() => toOptions(walletsRows), [walletsRows])
 
   const onPeriodChanged = (event: SelectChangeEvent<unknown>) => {
     setPeriod(event.target.value as Period)
@@ -44,26 +52,34 @@ export default function MyWalletsPage() {
   const onChartRefresh = () => {
     if (symbolOption && fromDate) {
       dispatch(
-        fetchHistoricalWolletData({
+        fetchHistoricalWalletData({
           compareSymbol: symbolOption.label.toLocaleLowerCase(),
           compareLabel: symbolOption.label,
           endDate: new Date(),
           startDate: fromDate,
-          symbols: toTotalTokensBalances(selectedRows),
+          symbols: toTotalTokensBalances(selectedWallets),
         }),
       )
     }
   }
 
-  const series = chartData ? toChartSeries(chartData?.seriesData, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : []
+  const onRowsChanged = (rows: WalletRow[]) => {
+    dispatch(selectWallets(rows))
+    dispatch(fetchTotalWalletsWorthData({}))
+  }
+
+  const series = chartData
+    ? toChartSeries(chartData?.seriesData, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel)
+    : []
 
   const percentageFormatter = (value: number) => `${value}%`
   return (
     <Stack>
       <MyWalletsSection
+        totalWalletsWorthData={totalWalletsWorthData}
         loading={statusFetchingWallets === "loading"}
-        wallets={walletsRows}
-        onSelectedRowsChanged={rows => setSelectedRows(rows)}
+        wallets={wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))}
+        onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
       />
@@ -98,7 +114,7 @@ export default function MyWalletsPage() {
 
             <Button
               onClick={onChartRefresh}
-              disabled={!fromDate || !symbolOption || !selectedRows.length}
+              disabled={!fromDate || !symbolOption || !selectedWallets.length}
               sx={{ width: "50%", alignSelf: "center" }}
               variant="contained">
               {t("Sumbit")}
