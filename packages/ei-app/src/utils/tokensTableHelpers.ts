@@ -1,5 +1,6 @@
 import { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
+import { ChartSeriesDataResponse } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
@@ -90,22 +91,75 @@ export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; q
 }
 
 //eslint-disable-next-line no-undef
-export const toChartSeries = (chartData: HistoricalWalletData[], historicalWalletsWorthSeriesLabel: string, compareToSeriesLabel: string) : ApexAxisChartSeries => {
-  if (!chartData.length){
-    return []
+export const toChartSeries = (
+  chartData: ChartSeriesDataResponse,
+  historicalWalletsWorthSeriesLabel: string,
+  compareToSeriesLabel: string,
+  //eslint-disable-next-line no-undef
+): { series: ApexAxisChartSeries; min: number; max: number } => {
+  if (!chartData || !chartData.seriesData.length) {
+    return {
+      min: 0,
+      max: 10,
+      series: [],
+    }
   }
 
-  //TODO calcuate chart data
-  return chartData.length
-    ? [
-        {
-          name: historicalWalletsWorthSeriesLabel,
-          data: chartData.map(x => ({ x: x.historyDate, y: x.walletValue})),
-        },
-        {
-          name: compareToSeriesLabel,
-          data: chartData.map(x => ({ x: x.historyDate, y: x.comparePrice})),
-        },
-      ]
-    : []
+  const firstComparePrice = chartData.seriesData[0].comparePrice
+  const firstWalletValue = chartData.seriesData[0].walletValue
+
+  const chartDataOffset = 0.1
+  const maxPercentageValue = (chartData.maxY - firstWalletValue) / firstWalletValue
+  const minPercentageValue = (chartData.minY - firstWalletValue) / firstWalletValue
+  return {
+    max: maxPercentageValue + Math.abs(chartDataOffset * maxPercentageValue),
+    min: minPercentageValue - Math.abs(chartDataOffset * minPercentageValue),
+    series: chartData.seriesData
+      ? [
+          {
+            name: historicalWalletsWorthSeriesLabel,
+            data: chartData.seriesData.map(x => ({
+              x: x.historyDate,
+              y: (x.walletValue - firstWalletValue) / firstWalletValue,
+            })),
+          },
+          {
+            name: compareToSeriesLabel,
+            data: chartData.seriesData.map(x => ({
+              x: x.historyDate,
+              y: (x.comparePrice - firstComparePrice) / firstComparePrice,
+            })),
+          },
+        ]
+      : [],
+  }
+}
+
+export const getChartDataScale = (chartData: HistoricalWalletData[]): { min: number; max: number } => {
+  const findMinMax = (
+    historicalWalletData: HistoricalWalletData[],
+    //eslint-disable-next-line no-unused-vars
+    selector: (seriesData: HistoricalWalletData) => number,
+  ): { min: number; max: number } => {
+    let min: number = selector(historicalWalletData[0])
+    let max: number = selector(historicalWalletData[0])
+
+    for (let i = 1; i < historicalWalletData.length; i++) {
+      const value = selector(historicalWalletData[i])
+      if (value < min) {
+        min = value
+      } else if (value > max) {
+        max = value
+      }
+    }
+
+    return { min: min, max: max }
+  }
+
+  const compareMinMax = findMinMax(chartData, s => s.comparePrice)
+  const walletValueMinMax = findMinMax(chartData, s => s.walletValue)
+  return {
+    min: Math.min(compareMinMax.min, walletValueMinMax.min),
+    max: Math.min(walletValueMinMax.max, walletValueMinMax.max),
+  }
 }
