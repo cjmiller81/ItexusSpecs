@@ -614,8 +614,12 @@ export class BackendApiService {
 
     url = this.addCookieToApiRequest(url)
     const req = new Request(url, {
-      credentials: 'include',
+      // TODO: When we add Ory back, add this.
+      //credentials: 'include',
     })
+
+    // TODO: When we add Ory back, remove this.
+    req.headers.append('Authorization', process.env.ACCESS_TOKEN as string)
 
     return req
   }
@@ -633,4 +637,5 @@ export class BackendApiService {
   }
 }
 
-export default new BackendApiService()
+const backendApiService = new BackendApiService()
+export default backendApiService

@@ -25,7 +25,7 @@ const nextConfig = {
   env: {
     API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
     NEXT_PUBLIC_API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
-    NEXT_PUBLIC_MOCK_BACKEND_API: "true",
+    NEXT_PUBLIC_MOCK_BACKEND_API: "false",
     ACCESS_TOKEN:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsImV4cCI6MTcxMTU1Mzc4NiwiaXNzIjoieW91cl9pc3N1ZXIiLCJhdWQiOiJ5b3VyX2F1ZGllbmNlIn0.rF6v5SwvKTbmJHzyQAenH9WpMtCWTGV5zfDsaEf5uoA",
   },
