@@ -43,22 +43,22 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
         return params.row.price.toLocaleString("en-US", {
           style: "currency",
           currency: "USD",
-          maximumFractionDigits: 6,
-          minimumFractionDigits: 0,
+          maximumFractionDigits: 4,
+          minimumFractionDigits: 4,
         })
       },
     },
     {
-      field: "marcetCap",
-      headerName: t("MarcetCap"),
+      field: "marketCap",
+      headerName: t("MarketCap"),
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
       valueGetter: (params: GridValueGetterParams) => {
-        if (!params.row.price) return "--"
-        return params.row.marcetCap.toLocaleString("en-US", {
+        if (!params.row.marketCap) return "--"
+        return params.row.marketCap.toLocaleString("en-US", {
           style: "currency",
           currency: "USD",
         })
@@ -89,9 +89,9 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
       disableColumnMenu: true,
       valueGetter: (params: GridValueGetterParams) => {
         if (!params.row.price) return "--"
-        return params.row.price.toLocaleString("en-US", {
-          maximumFractionDigits: 6,
-          minimumFractionDigits: 0,
+        return params.row.qty.toLocaleString("en-US", {
+          maximumFractionDigits: 4,
+          minimumFractionDigits: 4,
         })
       },
     },

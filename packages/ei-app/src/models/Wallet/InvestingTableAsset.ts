@@ -4,7 +4,7 @@ export interface InvestingTableAsset
     symbol: string;
     price: number;
     iconUrl: string;
-    marcetCap: number;
+    marketCap: number;
     weight: number;
     qty: number;
 }

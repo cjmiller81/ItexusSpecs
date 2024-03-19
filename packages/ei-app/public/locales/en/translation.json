@@ -108,7 +108,7 @@
   "ColumnsDefs":{
     "Symbol": "Symbol",
     "Price": "Price",
-    "MarcetCap": "Marcet Cap",
+    "MarketCap": "Market Cap",
     "Weight": "Weight",
     "Qty": "Qty",
     "Chain": "Chain",
