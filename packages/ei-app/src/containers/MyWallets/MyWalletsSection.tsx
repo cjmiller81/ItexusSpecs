@@ -1,5 +1,5 @@
 import PageTitle from "@/components/TextDisplay/PageTitle"
-import { walletsColumns } from "@/constants/ColumnsDefs/WalletsTable"
+import { getWalletsColumns } from "@/constants/ColumnsDefs/WalletsTable"
 import { ExpandableRow } from "@/containers/MyWallets/TokensRow"
 import { TotalWalletsWorthCard } from "@/containers/MyWallets/TotalWalletsWorthCard"
 import { StyledWalletsTable } from "@/containers/MyWallets/WalletsTable"
@@ -115,7 +115,7 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsCh
         onCellClick={onCellClick}
         apiRef={apiRef}
         getRowId={x => x.address}
-        columns={walletsColumns}
+        columns={getWalletsColumns()}
         rows={wallets}
       />
     </Box>
