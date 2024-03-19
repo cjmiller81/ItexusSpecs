@@ -20,6 +20,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
   return (
     <Box {...props}>
       <MyWalletsSection
+        selectedWalletsIds={[]}
         loading={statusFetchingWallets === "loading"}
         wallets={walletsRows}
         onAddWallet={wallet => dispatch(createWallet(wallet))}

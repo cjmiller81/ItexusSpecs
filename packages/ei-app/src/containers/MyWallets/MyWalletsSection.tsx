@@ -3,6 +3,7 @@ import { getWalletsColumns } from "@/constants/ColumnsDefs/WalletsTable"
 import { ExpandableRow } from "@/containers/MyWallets/TokensRow"
 import { TotalWalletsWorthCard } from "@/containers/MyWallets/TotalWalletsWorthCard"
 import { StyledWalletsTable } from "@/containers/MyWallets/WalletsTable"
+import { TotalWalletWorthData } from "@/libs/redux/Slices/WalletsSlice"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { Box, BoxProps, Button } from "@mui/material"
 import { styled } from "@mui/system"
@@ -10,10 +11,10 @@ import { GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { WalletInputModal } from "../../components/Modals/WalletInputModal"
-import { TotalWalletWorthData } from "@/libs/redux/Slices/WalletsSlice"
 
 interface Props extends BoxProps {
   wallets: WalletRow[]
+  selectedWalletsIds: string[]
   loading?: boolean
   //eslint-disable-next-line no-unused-vars
   onDeleteWallet: (wallet: string) => void
@@ -26,7 +27,17 @@ interface Props extends BoxProps {
 
 export type WalletRow = Wallet & { expanded: boolean }
 
-export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsChanged, wallets, totalWalletsWorthData, loading, sx, ...props }: Props) => {
+export const MyWalletsSection = ({
+  onAddWallet,
+  onDeleteWallet,
+  onSelectedRowsChanged,
+  wallets,
+  totalWalletsWorthData,
+  loading,
+  selectedWalletsIds,
+  sx,
+  ...props
+}: Props) => {
   const { t } = useTranslation("MyWalletsSection")
   const apiRef = useGridApiRef()
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false)
@@ -117,6 +128,7 @@ export const MyWalletsSection = ({ onAddWallet, onDeleteWallet, onSelectedRowsCh
         getRowId={x => x.address}
         columns={getWalletsColumns()}
         rows={wallets}
+        rowSelectionModel={selectedWalletsIds}
       />
     </Box>
   )

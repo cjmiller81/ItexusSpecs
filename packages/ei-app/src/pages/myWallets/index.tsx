@@ -26,7 +26,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, firstLoad } = useAppSelector(
     state => state.walletsReducer.wallets,
   )
   const { chartData } = useAppSelector(state => state.walletsReducer.walletWorthChart)
@@ -38,9 +38,9 @@ export default function MyWalletsPage() {
 
   const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
-
   useEffect(() => {
-    dispatch(fetchWallets(null))
+    if(firstLoad)
+      dispatch(fetchWallets(null))
   }, [dispatch])
 
   const options = useMemo(() => toOptions(walletsRows), [walletsRows])
@@ -83,6 +83,7 @@ export default function MyWalletsPage() {
   return (
     <Stack>
       <MyWalletsSection
+        selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
         loading={statusFetchingWallets === "loading"}
         wallets={wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))}
