@@ -66,6 +66,11 @@
     "DisplayName": "Display Name",
     "Save": "Save"
   },
+  "IndexModelingSection":{
+    "Tokens": "Tokens:",
+    "TotalCapital": "Total Capital:",
+    "Export": "Export" 
+  },
   "ProfilePage": {
     "PROFILE": "PROFILE",
     "SECURITY": "SECURITY",
@@ -93,9 +98,11 @@
     "Tools": "Tools"
   },
   "MarketCapEqualWeightedPage": {
-    "ChartTitle": "Historical Market Cap Weighted Index"
+    "ChartTitle": "Historical Market Cap Weighted Index",
+    "IndexModeling": "Index Modeling"
   },
   "MarketCapWeightedPage": {
-    "ChartTitle": "Historical Market Cap Equal Weight Index"
+    "ChartTitle": "Historical Market Cap Equal Weight Index",
+    "IndexModeling": "Index Modeling"
   }
 }
