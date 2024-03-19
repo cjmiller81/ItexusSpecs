@@ -137,16 +137,19 @@ export const toChartSeries = (
   }
 }
 
-function getPeriodHistoricalDataFileter(period: Period): (dataPoint: HistoricalWalletData) => boolean {
+//eslint-disable-next-line no-unused-vars
+function getPeriodHistoricalDataFileter(period: Period): (_: HistoricalWalletData) => boolean {
   switch (period) {
     case "daily":
-      return (dataPoint: HistoricalWalletData) => true
+      //eslint-disable-next-line no-unused-vars
+      return (_: HistoricalWalletData) => true
     case "weekly":
       return (dataPoint: HistoricalWalletData) => dataPoint.historyDate.getDay() === 0
     case "monthly":
       return (dataPoint: HistoricalWalletData) => dataPoint.historyDate.getDate() === 1
     default:
-      return (dataPoint: HistoricalWalletData) => true
+      //eslint-disable-next-line no-unused-vars
+      return (_: HistoricalWalletData) => true
   }
 }
 
