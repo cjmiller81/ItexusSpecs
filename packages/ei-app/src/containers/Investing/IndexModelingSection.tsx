@@ -27,31 +27,29 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
       
       tableAssets.map(asset => ({
         symbol: asset.symbol,
-        icon: asset.iconUrl,
         price: asset.price,
-        marcetCap: asset.marcetCap,
+        marketCap: asset.marketCap,
         weight: asset.weight,
         qty: asset.qty,
       })),
     )
-    const columnWidth80 = { wch: 80 }
     const columnWidth12 = { wch: 12 }
     worksheet["!cols"] = worksheet["!cols"] = [
       columnWidth12,
-      columnWidth80,
       columnWidth12,
       columnWidth12,
       columnWidth12,
       columnWidth12,
     ]
     const workbook = XLSX.utils.book_new()
-    XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Icon", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" })
+    XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" })
     XLSX.utils.book_append_sheet(workbook, worksheet, "assets")
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true })
   }
 
   return (
     <Accordion
+      defaultExpanded
       sx={{ bgcolor: "background.paper" }}
       {...props}>
       <AccordionSummary
