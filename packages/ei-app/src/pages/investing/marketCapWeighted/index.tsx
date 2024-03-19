@@ -1,4 +1,5 @@
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
+import DataGridComponent from "@/components/DataDisplay/DataGrid"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { assets } from "@/mocks/InvestingTableAsset"
 import { Stack } from "@mui/material"
@@ -9,6 +10,7 @@ export default function MarketCapWeightedPage() {
 
   return (
     <Stack>
+      <DataGridComponent />
       <IndexModelingSection
         tableAssets={assets}
         title={t("IndexModeling")}
