@@ -114,6 +114,7 @@
     "Chain": "Chain",
     "Amount": "Amount",
     "USDValue": "USD Value",
+    "TokenName": "Token Name",
     "WalletAddress": "Wallet Address"
   }
 }

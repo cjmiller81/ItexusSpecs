@@ -4,7 +4,7 @@ import i18next, { t } from "i18next"
 
 i18next.setDefaultNamespace("ColumnsDefs")
 
-export const getIndexModelingTableColumns = (): GridColDef[] =>{
+export const getIndexModelingTableColumns = (): GridColDef[] => {
   return [
     {
       field: "symbol",
@@ -87,13 +87,13 @@ export const getIndexModelingTableColumns = (): GridColDef[] =>{
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-    valueGetter: (params: GridValueGetterParams) => {
-      if (!params.row.price) return "--"
-      return params.row.price.toLocaleString("en-US", {
-        maximumFractionDigits: 6,
-        minimumFractionDigits: 0,
-      })
+      valueGetter: (params: GridValueGetterParams) => {
+        if (!params.row.price) return "--"
+        return params.row.price.toLocaleString("en-US", {
+          maximumFractionDigits: 6,
+          minimumFractionDigits: 0,
+        })
+      },
     },
-  },
   ]
 }
