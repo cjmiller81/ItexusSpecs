@@ -1,5 +1,6 @@
 import { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
+import { Period } from "@/containers/MyWallets/WalletsTable"
 import { ChartSeriesDataResponse } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
@@ -93,6 +94,7 @@ export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; q
 //eslint-disable-next-line no-undef
 export const toChartSeries = (
   chartData: ChartSeriesDataResponse,
+  period: Period,
   historicalWalletsWorthSeriesLabel: string,
   compareToSeriesLabel: string,
   //eslint-disable-next-line no-undef
@@ -104,7 +106,7 @@ export const toChartSeries = (
       series: [],
     }
   }
-
+  const periodFilter = getPeriodHistoricalDataFileter(period)
   const firstComparePrice = chartData.seriesData[0].comparePrice
   const firstWalletValue = chartData.seriesData[0].walletValue
 
@@ -118,14 +120,14 @@ export const toChartSeries = (
       ? [
           {
             name: historicalWalletsWorthSeriesLabel,
-            data: chartData.seriesData.map(x => ({
+            data: chartData.seriesData.filter(periodFilter).map(x => ({
               x: x.historyDate,
               y: (x.walletValue - firstWalletValue) / firstWalletValue,
             })),
           },
           {
             name: compareToSeriesLabel,
-            data: chartData.seriesData.map(x => ({
+            data: chartData.seriesData.filter(periodFilter).map(x => ({
               x: x.historyDate,
               y: (x.comparePrice - firstComparePrice) / firstComparePrice,
             })),
@@ -135,17 +137,24 @@ export const toChartSeries = (
   }
 }
 
+function getPeriodHistoricalDataFileter(period: Period): (dataPoint: HistoricalWalletData) => boolean {
+  switch (period) {
+    case "daily":
+      return (dataPoint: HistoricalWalletData) => true
+    case "weekly":
+      return (dataPoint: HistoricalWalletData) => dataPoint.historyDate.getDay() === 0
+    case "monthly":
+      return (dataPoint: HistoricalWalletData) => dataPoint.historyDate.getDate() === 1
+    default:
+      return (dataPoint: HistoricalWalletData) => true
+  }
+}
+
 export const getChartDataScale = (chartData: HistoricalWalletData[]): { min: number; max: number } => {
-  const comparePrices = chartData.map(d => d.comparePrice);
-  const comparePriceMin = Math.min(...comparePrices);
-  const comparePriceMax = Math.max(...comparePrices);
-
-  const walletValuesPrices = chartData.map(d => d.walletValue);
-  const walletWalueMin = Math.min(...walletValuesPrices);
-  const walletWalueMax = Math.max(...walletValuesPrices);
-
+  const comparePrices = chartData.map(d => d.comparePrice)
+  const walletValuesPrices = chartData.map(d => d.walletValue)
   return {
-    min: Math.min(walletWalueMin, comparePriceMin),
-    max: Math.max(comparePriceMax, walletWalueMax),
+    min: Math.min(...walletValuesPrices, ...comparePrices),
+    max: Math.max(...walletValuesPrices, ...comparePrices),
   }
 }

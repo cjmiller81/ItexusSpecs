@@ -69,11 +69,17 @@ export default function MyWalletsPage() {
   }
 
   const seriesData = useMemo(
-    () => chartData ? toChartSeries(chartData, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : null,
-    [chartData]
+    () =>
+      chartData ? toChartSeries(chartData, period, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : null,
+    [chartData, period],
   )
 
-  const percentageFormatter = (value: number) => `${value}%`
+  const percentageFormatter = (value: number) =>
+    `${value.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}%`
+
   return (
     <Stack>
       <MyWalletsSection
