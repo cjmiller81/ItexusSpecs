@@ -1,10 +1,11 @@
-import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "../RootReducer"
+import { appStore } from "../Store"
 import { createAppSlice } from "../createAppSlice"
+import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 
 export type Status = "idle" | "loading" | "failed"
 export interface TotalWalletWorthData {
@@ -13,6 +14,7 @@ export interface TotalWalletWorthData {
 }
 
 interface WalletsState {
+  firstLoad: boolean
   wallets: Wallet[]
   totalWalletsWorthData?: TotalWalletWorthData
   statstatusCreatingWalletus: Status
@@ -23,6 +25,7 @@ interface WalletsState {
 }
 
 const initialState: WalletsState = {
+  firstLoad: true,
   wallets: [],
   statstatusCreatingWalletus: "idle",
   statusFetchingWallets: "idle",
@@ -119,8 +122,12 @@ export const walletsSlice = createAppSlice({
       },
     ),
     fetchWallets: create.asyncThunk(
-      async () => {
+      async (_, thunkApi) => {
         const response = await walletsApi.getWalletsAssets()
+        const state = thunkApi.getState() as RootState
+        if (state.walletsReducer.wallets.firstLoad){
+          appStore.dispatch(selectWallets(response.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))))
+        }
         return response
       },
       {
@@ -129,7 +136,13 @@ export const walletsSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.statusFetchingWallets = "idle"
-          state.wallets = action.payload
+          if (!state.firstLoad)
+            state.wallets = action.payload
+          else
+          {
+            state.firstLoad = false
+            state.wallets = action.payload
+          }
         },
         rejected: state => {
           state.statusFetchingWallets = "failed"

@@ -104,5 +104,17 @@
   "MarketCapWeightedPage": {
     "ChartTitle": "Historical Market Cap Equal Weight Index",
     "IndexModeling": "Index Modeling"
+  },
+  "ColumnsDefs":{
+    "Symbol": "Symbol",
+    "Price": "Price",
+    "MarcetCap": "Marcet Cap",
+    "Weight": "Weight",
+    "Qty": "Qty",
+    "Chain": "Chain",
+    "Amount": "Amount",
+    "USDValue": "USD Value",
+    "TokenName": "Token Name",
+    "WalletAddress": "Wallet Address"
   }
 }

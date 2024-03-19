@@ -1,15 +1,15 @@
 import PageTitle from "@/components/TextDisplay/PageTitle"
-import { indexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
+import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
+import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
-import { toCsvFile } from "@/utils/indexModelingHelpers"
 import DownloadIcon from "@mui/icons-material/Download"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material"
 import { useGridApiRef } from "@mui/x-data-grid"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import * as XLSX from "xlsx"
 import { StyledWalletsTable } from "../MyWallets/WalletsTable"
-import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string
@@ -23,18 +23,31 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
   const [totalCapital, setTotalCapital] = useState<number>(0)
 
   const onExport = () => {
-    const csvFile = toCsvFile(tableAssets)
-
-    const link = document.createElement("a")
-    const url = URL.createObjectURL(csvFile)
-
-    link.href = url
-    link.download = csvFile.name
-    document.body.appendChild(link)
-    link.click()
-
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    const worksheet = XLSX.utils.json_to_sheet(
+      
+      tableAssets.map(asset => ({
+        symbol: asset.symbol,
+        icon: asset.iconUrl,
+        price: asset.price,
+        marcetCap: asset.marcetCap,
+        weight: asset.weight,
+        qty: asset.qty,
+      })),
+    )
+    const columnWidth80 = { wch: 80 }
+    const columnWidth12 = { wch: 12 }
+    worksheet["!cols"] = worksheet["!cols"] = [
+      columnWidth12,
+      columnWidth80,
+      columnWidth12,
+      columnWidth12,
+      columnWidth12,
+      columnWidth12,
+    ]
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Icon", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" })
+    XLSX.utils.book_append_sheet(workbook, worksheet, "assets")
+    XLSX.writeFile(workbook, "assets.xlsx", { compression: true })
   }
 
   return (
@@ -73,7 +86,8 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
             <AppNumberInput
               label={t("TotalCapital")}
               value={totalCapital}
-              onChange={(_, value) => setTotalCapital(value ?? 0)}/>
+              onChange={(_, value) => setTotalCapital(value ?? 0)}
+            />
           </LeftContainer>
           <RightContainer>
             <StyledWalletsTable
@@ -87,7 +101,7 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
               pageSizeOptions={[5, 10]}
               apiRef={apiRef}
               getRowId={x => x.id}
-              columns={indexModelingTableColumns}
+              columns={getIndexModelingTableColumns()}
               rows={tableAssets}
             />
           </RightContainer>
