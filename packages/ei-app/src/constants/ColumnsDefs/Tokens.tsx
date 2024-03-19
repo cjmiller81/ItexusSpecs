@@ -13,7 +13,7 @@ export const getTokenNamesColumns = (): GridColDef[] => {
     },
     {
       field: "tokenName",
-      headerName: t("Token Name"),
+      headerName: t("TokenName"),
       flex: 1,
     },
     {
@@ -41,7 +41,7 @@ export const getTokenNamesColumns = (): GridColDef[] => {
     },
     {
       field: "usdAmount",
-      headerName: t("USD Value"),
+      headerName: t("USDValue"),
       valueGetter: (params: GridValueGetterParams) => {
         if (!params.row.usdAmount) return "--"
         return params.row.usdAmount.toLocaleString("en-US", {
