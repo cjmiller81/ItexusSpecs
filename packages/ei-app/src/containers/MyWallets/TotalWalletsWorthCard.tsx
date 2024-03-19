@@ -1,9 +1,9 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
+import TrendingDownIcon from "@mui/icons-material/TrendingDown"
 import TrendingUpIcon from "@mui/icons-material/TrendingUp"
 import { Box, BoxProps, Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
-
 export interface Props extends BoxProps {
   totalWorth: number
   growPercentage: number
@@ -44,15 +44,27 @@ export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props
           borderRadius: "50%",
           alignSelf: "center",
         }}>
-        <TrendingUpIcon
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            color: growMain,
-          }}
-        />
+        {growPercentage >= 0 ? (
+          <TrendingUpIcon
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              color: growMain,
+            }}
+          />
+        ) : (
+          <TrendingDownIcon
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              color: growMain,
+            }}
+          />
+        )}
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
         <Typography variant="subtitle1">{t("TotalWalletWorth")}</Typography>
