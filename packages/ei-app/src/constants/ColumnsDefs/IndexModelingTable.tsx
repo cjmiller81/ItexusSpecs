@@ -39,12 +39,14 @@ export const indexModelingTableColumns: GridColDef[] = [
       return params.row.price.toLocaleString("en-US", {
         style: "currency",
         currency: "USD",
+        maximumFractionDigits: 6,
+        minimumFractionDigits: 0,
       })
     },
   },
   {
     field: "marcetCap",
-    headerName: "Marcet Cap",
+    headerName: "Market Cap",
     sortable: false,
     editable: false,
     filterable: false,
@@ -81,5 +83,12 @@ export const indexModelingTableColumns: GridColDef[] = [
     filterable: false,
     flex: 1,
     disableColumnMenu: true,
+    valueGetter: (params: GridValueGetterParams) => {
+      if (!params.row.price) return "--"
+      return params.row.price.toLocaleString("en-US", {
+        maximumFractionDigits: 6,
+        minimumFractionDigits: 0,
+      })
+    },
   },
 ]

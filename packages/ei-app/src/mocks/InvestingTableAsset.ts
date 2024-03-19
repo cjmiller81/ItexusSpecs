@@ -5,10 +5,10 @@ export const assets: InvestingTableAsset[] = [
     id: 1,
     iconUrl: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
     symbol: "ETH",
-    marcetCap: 123.3213132131,
+    marcetCap: 123.32131321,
     weight: 1233.3212232,
-    qty: 0.0320232,
-    price: 150,
+    qty: 0.0320232422,
+    price: 150.1231313,
   },
   {
     id: 2,

@@ -8,14 +8,13 @@ export default function MarketCapEqualWeightedPage() {
   const { t } = useTranslation("MarketCapEqualWeightedPage")
   return (
     <Stack>
-      <HistoricalWalletsWorth
-        title={t("ChartTitle")}
-        sx={{ textWrap: "nowrap", minWidth: "300px" }}
-      />
       <IndexModelingSection
         tableAssets={assets}
-        sx={{ mt: 4 }}
         title={t("IndexModeling")}
+      />
+      <HistoricalWalletsWorth
+        title={t("ChartTitle")}
+        sx={{ textWrap: "nowrap", minWidth: "300px", mt: 4 }}
       />
     </Stack>
   )
