@@ -42,7 +42,7 @@ export default function MyWalletsPage() {
   useEffect(() => {
     if(firstLoad)
       dispatch(fetchWallets(null))
-  }, [dispatch])
+  }, [dispatch, firstLoad])
 
   const options = useMemo(() => toOptions(walletsRows), [walletsRows])
 
@@ -53,7 +53,7 @@ export default function MyWalletsPage() {
   const onChartRefresh = () => {
     if (symbolOption && fromDate) {
       dispatch(
-        fetchHistoricalWolletData({
+        fetchHistoricalWalletData({
           compareSymbol: symbolOption.name.toLocaleLowerCase(),
           compareLabel: symbolOption.name,
           endDate: new Date(),
@@ -72,7 +72,7 @@ export default function MyWalletsPage() {
   const seriesData = useMemo(
     () =>
       chartData ? toChartSeries(chartData, period, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : null,
-    [chartData, period],
+    [chartData, period, t],
   )
 
   const percentageFormatter = (value: number) =>
