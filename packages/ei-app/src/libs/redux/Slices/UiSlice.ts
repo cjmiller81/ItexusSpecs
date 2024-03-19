@@ -1,3 +1,4 @@
+import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { PaletteMode } from "@mui/material"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { createAppSlice } from "../createAppSlice"
@@ -7,12 +8,14 @@ interface WalletsState {
   errors: string[]
   sidebarOpened: boolean
   mode: PaletteMode
+  selectedWallets: WalletRow[]
 }
 
 const initialState: WalletsState = {
   errors: [],
   sidebarOpened: true,
   mode: "dark",
+  selectedWallets: [],
 }
 
 export const uiSlice = createAppSlice({

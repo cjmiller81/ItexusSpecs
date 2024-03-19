@@ -1,6 +1,7 @@
 import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { createWallet, deleteWallet, fetchWallets } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { Wallet } from "@/models/Wallet/Wallet"
 import { Box, BoxProps } from "@mui/material"
 import { useEffect } from "react"
 
@@ -10,7 +11,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
   const { wallets, statusFetchingWallets } = useAppSelector(state => state.walletsReducer.wallets)
   const dispatch = useAppDispatch()
 
-  const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
+  const walletsRows = wallets.map<WalletRow>((wallet: Wallet) => ({ ...wallet, expanded: false }))
 
   useEffect(() => {
     dispatch(fetchWallets(null))

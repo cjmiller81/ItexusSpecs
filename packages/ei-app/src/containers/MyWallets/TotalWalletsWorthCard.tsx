@@ -39,7 +39,7 @@ export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props
           width: 48,
           height: 48,
           padding: 1,
-          backgroundColor: "success.light",
+          backgroundColor: growLight,
           position: "relative",
           borderRadius: "50%",
           alignSelf: "center",
@@ -50,7 +50,7 @@ export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            color: "success.main",
+            color: growMain,
           }}
         />
       </Box>
