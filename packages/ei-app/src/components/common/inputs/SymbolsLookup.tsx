@@ -1,6 +1,8 @@
 import Autocomplete from "@mui/material/Autocomplete"
 import Box from "@mui/material/Box"
 import TextField from "@mui/material/TextField"
+import Image from "next/image"
+
 import AppInputLabel from "./AppInputLabel"
 import { ICoin } from "@/services/backend-api.service"
 
@@ -30,10 +32,10 @@ export default function SymbolLookup({ options, value, onChange, label }: Props)
             component="li"
             sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
             {...props}>
-            <img
+            <Image
               loading="lazy"
-              width="20"
-              src={option.lURI}
+              width={20}
+              src={option.lURI as string}
               alt=""
             />
             {option.name}
