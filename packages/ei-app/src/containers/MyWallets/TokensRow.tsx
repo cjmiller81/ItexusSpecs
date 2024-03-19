@@ -1,5 +1,5 @@
 import BasicTable from "@/components/DataDisplay/BasicTable"
-import { tokenNamesColumns } from "@/constants/ColumnsDefs/Tokens"
+import { getTokenNamesColumns } from "@/constants/ColumnsDefs/Tokens"
 import { toTableTokensModels } from "@/utils/tokensTableHelpers"
 import { styled } from "@mui/material/styles"
 import { GridRow } from "@mui/x-data-grid"
@@ -29,7 +29,7 @@ export const ExpandableRow = (props: any) => {
           getRowId={x => x.tokenName + x.chainName}
           columnHeaderHeight={40}
           rowHeight={20}
-          columns={tokenNamesColumns}
+          columns={getTokenNamesColumns()}
           rows={rows}
         />
       )}

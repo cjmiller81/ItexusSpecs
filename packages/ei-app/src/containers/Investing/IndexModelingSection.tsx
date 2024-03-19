@@ -1,6 +1,6 @@
 import PageTitle from "@/components/TextDisplay/PageTitle"
 import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
-import { indexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
+import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 import DownloadIcon from "@mui/icons-material/Download"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
@@ -101,7 +101,7 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
               pageSizeOptions={[5, 10]}
               apiRef={apiRef}
               getRowId={x => x.id}
-              columns={indexModelingTableColumns}
+              columns={getIndexModelingTableColumns()}
               rows={tableAssets}
             />
           </RightContainer>
