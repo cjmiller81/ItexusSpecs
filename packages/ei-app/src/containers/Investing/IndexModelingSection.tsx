@@ -1,5 +1,4 @@
 import PageTitle from "@/components/TextDisplay/PageTitle"
-import AppUpDown from "@/components/common/inputs/AppUpDown"
 import { indexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 import { toCsvFile } from "@/utils/indexModelingHelpers"
@@ -10,6 +9,7 @@ import { useGridApiRef } from "@mui/x-data-grid"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { StyledWalletsTable } from "../MyWallets/WalletsTable"
+import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string
@@ -65,15 +65,15 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
           sx={{ width: "100%" }}
           gap={2}>
           <LeftContainer>
-            <AppUpDown
+            <AppNumberInput
               label={t("Tokens")}
               value={tokens}
-              onChange={(event, value) => setTokens(value ?? 0)}
+              onChange={(_, value) => setTokens(value ?? 0)}
             />
-            <AppUpDown
+            <AppNumberInput
               label={t("TotalCapital")}
               value={totalCapital}
-              onChange={(event, value) => setTotalCapital(value ?? 0)}></AppUpDown>
+              onChange={(_, value) => setTotalCapital(value ?? 0)}/>
           </LeftContainer>
           <RightContainer>
             <StyledWalletsTable
