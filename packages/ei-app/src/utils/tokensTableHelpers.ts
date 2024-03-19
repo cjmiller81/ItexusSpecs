@@ -1,5 +1,7 @@
 import { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
+import { Period } from "@/containers/MyWallets/WalletsTable"
+import { ChartSeriesDataResponse } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
@@ -90,22 +92,72 @@ export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; q
 }
 
 //eslint-disable-next-line no-undef
-export const toChartSeries = (chartData: HistoricalWalletData[], historicalWalletsWorthSeriesLabel: string, compareToSeriesLabel: string) : ApexAxisChartSeries => {
-  if (!chartData.length){
-    return []
+export const toChartSeries = (
+  chartData: ChartSeriesDataResponse,
+  period: Period,
+  historicalWalletsWorthSeriesLabel: string,
+  compareToSeriesLabel: string,
+  //eslint-disable-next-line no-undef
+): { series: ApexAxisChartSeries; min: number; max: number } => {
+  if (!chartData || !chartData.seriesData || !chartData.seriesData.length) {
+    return {
+      min: 0,
+      max: 10,
+      series: [],
+    }
   }
+  const periodFilter = getPeriodHistoricalDataFileter(period)
+  const firstComparePrice = chartData.seriesData[0].comparePrice
+  const firstWalletValue = chartData.seriesData[0].walletValue
 
-  //TODO calcuate chart data
-  return chartData.length
-    ? [
-        {
-          name: historicalWalletsWorthSeriesLabel,
-          data: chartData.map(x => ({ x: x.historyDate, y: x.walletValue})),
-        },
-        {
-          name: compareToSeriesLabel,
-          data: chartData.map(x => ({ x: x.historyDate, y: x.comparePrice})),
-        },
-      ]
-    : []
+  const chartDataOffset = 0.1
+  const maxPercentageValue = (chartData.maxY - firstWalletValue) / firstWalletValue
+  const minPercentageValue = (chartData.minY - firstWalletValue) / firstWalletValue
+  return {
+    max: maxPercentageValue + Math.abs(chartDataOffset * maxPercentageValue),
+    min: minPercentageValue - Math.abs(chartDataOffset * minPercentageValue),
+    series: chartData.seriesData
+      ? [
+          {
+            name: historicalWalletsWorthSeriesLabel,
+            data: chartData.seriesData.filter(periodFilter).map(x => ({
+              x: x.historyDate,
+              y: (x.walletValue - firstWalletValue) / firstWalletValue,
+            })),
+          },
+          {
+            name: compareToSeriesLabel,
+            data: chartData.seriesData.filter(periodFilter).map(x => ({
+              x: x.historyDate,
+              y: (x.comparePrice - firstComparePrice) / firstComparePrice,
+            })),
+          },
+        ]
+      : [],
+  }
+}
+
+//eslint-disable-next-line no-unused-vars
+function getPeriodHistoricalDataFileter(period: Period): (_: HistoricalWalletData) => boolean {
+  switch (period) {
+    case "daily":
+      //eslint-disable-next-line no-unused-vars
+      return (_: HistoricalWalletData) => true
+    case "weekly":
+      return (dataPoint: HistoricalWalletData) => dataPoint.historyDate.getDay() === 0
+    case "monthly":
+      return (dataPoint: HistoricalWalletData) => dataPoint.historyDate.getDate() === 1
+    default:
+      //eslint-disable-next-line no-unused-vars
+      return (_: HistoricalWalletData) => true
+  }
+}
+
+export const getChartDataScale = (chartData: HistoricalWalletData[]): { min: number; max: number } => {
+  const comparePrices = chartData.map(d => d.comparePrice)
+  const walletValuesPrices = chartData.map(d => d.walletValue)
+  return {
+    min: Math.min(...walletValuesPrices, ...comparePrices),
+    max: Math.max(...walletValuesPrices, ...comparePrices),
+  }
 }

@@ -1,5 +1,6 @@
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { walletsApi } from "@/services/walletsService"
+import { getChartDataScale } from "@/utils/tokensTableHelpers"
 import { createAppSlice } from "../createAppSlice"
 import { Status } from "./UiSlice"
 
@@ -11,6 +12,8 @@ interface WalletsState {
 export interface ChartSeriesDataResponse {
   seriesData: HistoricalWalletData[]
   comareToLabel: string
+  minY: number
+  maxY: number
 }
 
 const initialState: WalletsState = {
@@ -38,8 +41,8 @@ export const walletWorthChartSlice = createAppSlice({
           payload.endDate,
           payload.compareSymbol,
         )
-
-        return { seriesData: response, comareToLabel: payload.compareLabel }
+        const { min, max } = getChartDataScale(response)
+        return { seriesData: response, comareToLabel: payload.compareLabel, minY: min, maxY: max }
       },
       {
         pending: state => {

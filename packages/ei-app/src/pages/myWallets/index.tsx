@@ -68,11 +68,18 @@ export default function MyWalletsPage() {
     dispatch(fetchTotalWalletsWorthData({}))
   }
 
-  const series = chartData
-    ? toChartSeries(chartData?.seriesData, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel)
-    : []
+  const seriesData = useMemo(
+    () =>
+      chartData ? toChartSeries(chartData, period, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : null,
+    [chartData, period],
+  )
 
-  const percentageFormatter = (value: number) => `${value}%`
+  const percentageFormatter = (value: number) =>
+    `${value.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}%`
+
   return (
     <Stack>
       <MyWalletsSection
@@ -123,13 +130,38 @@ export default function MyWalletsPage() {
         </StyledWalletWorthMenuContainer>
         <Box sx={{ width: "100%" }}>
           <AppChart
-            series={series}
+            series={seriesData?.series ?? []}
             height={460}
             optionsOverrides={{
+              chart: {
+                animations: {
+                  enabled: false,
+                  dynamicAnimation: {
+                    enabled: false,
+                  },
+                },
+                zoom: {
+                  enabled: true,
+                  autoScaleYaxis: true,
+                },
+              },
               yaxis: {
+                min: seriesData?.min ?? 0,
+                max: seriesData?.max ?? 10,
+                forceNiceScale: true,
                 labels: {
                   formatter: percentageFormatter,
                 },
+              },
+              fill: {
+                type: "solid",
+                colors: ["transparent"],
+              },
+              markers: {
+                radius: 0,
+              },
+              stroke: {
+                width: 1,
               },
               tooltip: {
                 x: {
