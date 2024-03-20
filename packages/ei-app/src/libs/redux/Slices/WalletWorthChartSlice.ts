@@ -11,7 +11,7 @@ interface WalletsState {
 
 export interface ChartSeriesDataResponse {
   seriesData: HistoricalWalletData[]
-  comareToLabel: string
+  comareToLabel?: string | null
   minY: number
   maxY: number
 }
@@ -32,8 +32,8 @@ export const walletWorthChartSlice = createAppSlice({
         symbols: { symbol: string; qty: number }[]
         startDate: Date
         endDate: Date
-        compareSymbol: string
-        compareLabel: string
+        compareSymbol?: string | null
+        compareLabel?: string | null
       }): Promise<ChartSeriesDataResponse> => {
         const response = await walletsApi.getHistoricalWalletData(
           payload.symbols,

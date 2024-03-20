@@ -96,7 +96,7 @@ export const toChartSeries = (
   chartData: ChartSeriesDataResponse,
   period: Period,
   historicalWalletsWorthSeriesLabel: string,
-  compareToSeriesLabel: string,
+  compareToSeriesLabel?: string | null,
   //eslint-disable-next-line no-undef
 ): { series: ApexAxisChartSeries; min: number; max: number } => {
   if (!chartData || !chartData.seriesData || !chartData.seriesData.length) {
@@ -125,13 +125,17 @@ export const toChartSeries = (
               y: (x.walletValue - firstWalletValue) / firstWalletValue,
             })),
           },
-          {
-            name: compareToSeriesLabel,
-            data: chartData.seriesData.filter(periodFilter).map(x => ({
-              x: x.historyDate,
-              y: (x.comparePrice - firstComparePrice) / firstComparePrice,
-            })),
-          },
+          ...(compareToSeriesLabel
+            ? [
+                {
+                  name: compareToSeriesLabel,
+                  data: chartData.seriesData.filter(periodFilter).map(x => ({
+                    x: x.historyDate,
+                    y: (x.comparePrice - firstComparePrice) / firstComparePrice,
+                  })),
+                },
+              ]
+            : []),
         ]
       : [],
   }
