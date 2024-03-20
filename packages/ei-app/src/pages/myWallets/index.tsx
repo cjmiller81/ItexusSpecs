@@ -20,7 +20,7 @@ import {
   selectWallets,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { toChartSeries, toOptions, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
+import { toChartSeries, toOptions } from "@/utils/tokensTableHelpers"
 import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -39,8 +39,7 @@ export default function MyWalletsPage() {
   const { t } = useTranslation("MyWalletsPage")
   const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
   useEffect(() => {
-    if(firstLoad)
-      dispatch(fetchWallets(null))
+    if (firstLoad) dispatch(fetchWallets(null))
   }, [dispatch])
 
   const options = useMemo(() => toOptions(walletsRows), [walletsRows])
@@ -50,22 +49,23 @@ export default function MyWalletsPage() {
   }
 
   const onChartRefresh = () => {
-    if (symbolOption && fromDate) {
+    if (fromDate) {
       dispatch(
         fetchHistoricalWalletData({
-          compareSymbol: symbolOption.label.toLocaleLowerCase(),
-          compareLabel: symbolOption.label,
-          endDate: new Date(),
+          compareSymbol: symbolOption?.label.toLocaleLowerCase(),
+          compareLabel: symbolOption?.label,
           startDate: fromDate,
-          symbols: toTotalTokensBalances(selectedWallets),
         }),
       )
     }
   }
 
+  useEffect(() => {
+    dispatch(fetchTotalWalletsWorthData({}))
+  }, [selectedWallets])
+
   const onRowsChanged = (rows: WalletRow[]) => {
     dispatch(selectWallets(rows))
-    dispatch(fetchTotalWalletsWorthData({}))
   }
 
   const seriesData = useMemo(
@@ -74,11 +74,12 @@ export default function MyWalletsPage() {
     [chartData, period],
   )
 
-  const percentageFormatter = (value: number) =>
-    `${value.toLocaleString("en-US", {
+  const percentageFormatter = (value?: number) => {
+    return `${(value ?? 0).toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     })}%`
+  }
 
   return (
     <Stack>
@@ -122,7 +123,7 @@ export default function MyWalletsPage() {
 
             <Button
               onClick={onChartRefresh}
-              disabled={!fromDate || !symbolOption || !selectedWallets.length}
+              disabled={!fromDate || !selectedWallets.length}
               sx={{ width: "50%", alignSelf: "center" }}
               variant="contained">
               {t("Sumbit")}
@@ -134,6 +135,13 @@ export default function MyWalletsPage() {
             series={seriesData?.series ?? []}
             height={460}
             optionsOverrides={{
+              legend: {
+                show: true,
+                showForSingleSeries: true,
+              },
+              grid: {
+                strokeDashArray: 4,
+              },
               chart: {
                 animations: {
                   enabled: false,
@@ -143,26 +151,45 @@ export default function MyWalletsPage() {
                 },
                 zoom: {
                   enabled: true,
-                  autoScaleYaxis: true,
+                  type: "x",
+                  autoScaleYaxis: false,
+                  zoomedArea: {
+                    fill: {
+                      color: "#90CAF9",
+                      opacity: 0.4,
+                    },
+                    stroke: {
+                      color: "#0D47A1",
+                      opacity: 0.4,
+                      width: 1,
+                    },
+                  },
                 },
               },
+              annotations: {
+                yaxis: [
+                  {
+                    y: 0,
+                    strokeDashArray: 4,
+                    borderWidth: 2,
+                    borderColor: "#F1F1F1",
+                  },
+                ],
+              },
               yaxis: {
-                min: seriesData?.min ?? 0,
-                max: seriesData?.max ?? 10,
+                min: seriesData?.min ? Math.ceil(seriesData?.min * 2) / 2 : 0,
+                max: seriesData?.max ? Math.ceil(seriesData?.max * 2) / 2 : 10,
                 forceNiceScale: true,
                 labels: {
                   formatter: percentageFormatter,
                 },
               },
-              fill: {
-                type: "solid",
-                colors: ["transparent"],
-              },
               markers: {
                 radius: 0,
               },
               stroke: {
-                width: 1,
+                width: 3,
+                curve: "smooth",
               },
               tooltip: {
                 x: {
