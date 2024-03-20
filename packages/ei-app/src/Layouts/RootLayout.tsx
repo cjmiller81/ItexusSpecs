@@ -9,16 +9,16 @@ import ToastifyLayout from "./ToastifyLayout"
 
 export default function RootLayout({ children }: any) {
   return (
-          <StoreProvider>
-        <AppThemeProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <ToastifyLayout>
-              <AutoSidebarLayout>
-                <Layout>{children}</Layout>
-              </AutoSidebarLayout>
-            </ToastifyLayout>
-          </LocalizationProvider>
-        </AppThemeProvider>
-      </StoreProvider>
-      )
+    <StoreProvider>
+      <AppThemeProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <ToastifyLayout>
+            <AutoSidebarLayout>
+              <Layout>{children}</Layout>
+            </AutoSidebarLayout>
+          </ToastifyLayout>
+        </LocalizationProvider>
+      </AppThemeProvider>
+    </StoreProvider>
+  )
 }

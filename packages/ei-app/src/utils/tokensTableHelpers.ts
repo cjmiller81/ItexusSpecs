@@ -88,7 +88,7 @@ export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; q
     }
   }
 
-  return Array.from(groupedSymbols, ([key, value]) => ({ symbol: key, qty: Math.round(value.totalBalance) }))
+  return Array.from(groupedSymbols, ([key, value]) => ({ symbol: key, qty: (parseFloat(value.totalBalance.toFixed(4))) }))
 }
 
 //eslint-disable-next-line no-undef

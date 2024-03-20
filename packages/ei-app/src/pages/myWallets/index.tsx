@@ -20,7 +20,7 @@ import {
   selectWallets,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { toChartSeries, toOptions, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
+import { toChartSeries, toOptions } from "@/utils/tokensTableHelpers"
 import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -54,17 +54,18 @@ export default function MyWalletsPage() {
         fetchHistoricalWalletData({
           compareSymbol: symbolOption?.label.toLocaleLowerCase(),
           compareLabel: symbolOption?.label,
-          endDate: new Date(),
           startDate: fromDate,
-          symbols: toTotalTokensBalances(selectedWallets),
         }),
       )
     }
   }
 
+  useEffect(() => {
+    dispatch(fetchTotalWalletsWorthData({}))
+  }, [selectedWallets])
+
   const onRowsChanged = (rows: WalletRow[]) => {
     dispatch(selectWallets(rows))
-    dispatch(fetchTotalWalletsWorthData({}))
   }
 
   const seriesData = useMemo(

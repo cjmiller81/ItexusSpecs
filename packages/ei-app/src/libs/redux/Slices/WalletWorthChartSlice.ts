@@ -1,6 +1,7 @@
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { walletsApi } from "@/services/walletsService"
-import { getChartDataScale } from "@/utils/tokensTableHelpers"
+import { getChartDataScale, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
+import { RootState } from "../RootReducer"
 import { createAppSlice } from "../createAppSlice"
 import { Status } from "./UiSlice"
 
@@ -28,17 +29,19 @@ export const walletWorthChartSlice = createAppSlice({
       state.statstatusFetchingHistoricalData = "idle"
     }),
     fetchHistoricalWalletData: create.asyncThunk(
-      async (payload: {
-        symbols: { symbol: string; qty: number }[]
-        startDate: Date
-        endDate: Date
-        compareSymbol?: string | null
-        compareLabel?: string | null
-      }): Promise<ChartSeriesDataResponse> => {
+      async (
+        payload: {
+          startDate: Date
+          compareSymbol?: string | null
+          compareLabel?: string | null
+        },
+        thunkApi,
+      ): Promise<ChartSeriesDataResponse> => {
+        const state = thunkApi.getState() as RootState
         const response = await walletsApi.getHistoricalWalletData(
-          payload.symbols,
+          toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
           payload.startDate,
-          payload.endDate,
+          new Date(),
           payload.compareSymbol,
         )
         const { min, max } = getChartDataScale(response)
