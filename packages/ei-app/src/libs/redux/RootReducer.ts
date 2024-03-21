@@ -2,9 +2,10 @@ import { combineReducers, combineSlices } from "@reduxjs/toolkit"
 import { uiSlice } from "./Slices/UiSlice"
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
 import { walletsSlice } from "./Slices/WalletsSlice"
+import { IconsSlice } from "./Slices/IconsSlice"
 
 const rootReducer = combineReducers({
-  walletsReducer: combineSlices(walletsSlice, uiSlice, walletWorthChartSlice),
+  walletsReducer: combineSlices(walletsSlice, uiSlice, walletWorthChartSlice, IconsSlice),
 })
 
 export type RootState = ReturnType<typeof rootReducer>

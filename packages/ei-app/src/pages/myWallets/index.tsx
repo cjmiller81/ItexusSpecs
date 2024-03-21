@@ -1,7 +1,7 @@
 import { AppChart } from "@/components/Charts/AppChart"
 import AppDatePicker from "@/components/common/inputs/AppDatePicker"
 import AppSelect from "@/components/common/inputs/AppSelect"
-import SymbolLookup, { LookUpOption } from "@/components/common/inputs/SymbolsLookup"
+import SymbolLookup, { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { chartDateFormatString } from "@/constants/Common"
 import {
   Period,
@@ -11,6 +11,7 @@ import {
   StyledWalletWorthMenuContainer,
 } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
+import { searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import {
   createWallet,
@@ -20,7 +21,7 @@ import {
   selectWallets,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { toChartSeries, toOptions } from "@/utils/tokensTableHelpers"
+import { toChartSeries } from "@/utils/tokensTableHelpers"
 import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -30,19 +31,19 @@ export default function MyWalletsPage() {
     state => state.walletsReducer.wallets,
   )
   const { chartData } = useAppSelector(state => state.walletsReducer.walletWorthChart)
-
+  const { icons, iconsFetchingStatus } = useAppSelector(state => state.walletsReducer.icons)
   const [period, setPeriod] = useState<Period>("daily")
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const dispatch = useAppDispatch()
 
   const { t } = useTranslation("MyWalletsPage")
-  const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
-  useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null))
-  }, [dispatch])
 
-  const options = useMemo(() => toOptions(walletsRows), [walletsRows])
+  useEffect(() => {
+    if (firstLoad)
+      dispatch(fetchWallets(null))
+      dispatch(searchIcons({}))
+  }, [dispatch])
 
   const onPeriodChanged = (event: SelectChangeEvent<unknown>) => {
     setPeriod(event.target.value as Period)
@@ -68,6 +69,15 @@ export default function MyWalletsPage() {
     dispatch(selectWallets(rows))
   }
 
+  const lookupOptions = useMemo(
+    () =>
+      icons.map<LookUpOption>(icon => ({
+        label: icon.sym,
+        iconUrl: icon.lURI,
+      })),
+    [icons],
+  )
+
   const seriesData = useMemo(
     () =>
       chartData ? toChartSeries(chartData, period, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : null,
@@ -81,6 +91,9 @@ export default function MyWalletsPage() {
     })}%`
   }
 
+  const onLookUpInputChange = (searchQuery?: string) => {
+    dispatch(searchIcons({ query: searchQuery }))
+  }
   return (
     <Stack>
       <MyWalletsSection
@@ -116,10 +129,17 @@ export default function MyWalletsPage() {
               label={t("FromDate")}
             />
             <SymbolLookup
-              onChange={option => setSymbolOption(option)}
+              loading={iconsFetchingStatus === "loading"}
+              disableListWrap
               value={symbolOption}
-              options={options}
-              label={t("CompareToSymbol")}></SymbolLookup>
+              onChange={(event, value) => setSymbolOption(value)}
+              autoComplete={true}
+              onInputChange={(event, value) => onLookUpInputChange(value)}
+              filterOptions={x => x}
+              inputValue={symbolOption?.label}
+              options={lookupOptions}
+              label={t("CompareToSymbol")}
+            />
 
             <Button
               onClick={onChartRefresh}
