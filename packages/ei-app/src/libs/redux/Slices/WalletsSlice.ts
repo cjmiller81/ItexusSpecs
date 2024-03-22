@@ -1,9 +1,9 @@
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
-import { getTomorrowUtc, getYesterdayUtc } from "@/utils/common"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { PayloadAction } from "@reduxjs/toolkit"
+import moment from "moment"
 import { RootState } from "../RootReducer"
 import { appStore } from "../Store"
 import { createAppSlice } from "../createAppSlice"
@@ -65,9 +65,6 @@ export const walletsSlice = createAppSlice({
     }),
     fetchTotalWalletsWorthData: create.asyncThunk(
       async (_, thunkApi): Promise<TotalWalletWorthData> => {
-        const yesterday = getYesterdayUtc()
-        const tomorrow = getTomorrowUtc()
-
         const state = thunkApi.getState() as RootState
 
         if (!state.walletsReducer.wallets.selectedWallets.length) {
@@ -78,8 +75,8 @@ export const walletsSlice = createAppSlice({
         }
         const historicalWalletsData = await walletsApi.getHistoricalWalletData(
           toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
-          yesterday,
-          tomorrow,
+          moment.utc().add(-1, "d").toDate(),
+          moment.utc().add(1, "d").toDate(),
         )
 
         return {

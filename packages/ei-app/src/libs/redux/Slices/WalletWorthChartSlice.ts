@@ -1,10 +1,10 @@
 import { Period } from "@/containers/MyWallets/WalletsTable"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { walletsApi } from "@/services/walletsService"
-import { getTomorrowUtc } from "@/utils/common"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { PayloadAction } from "@reduxjs/toolkit"
 import i18next from "i18next"
+import moment from "moment"
 import { RootState } from "../RootReducer"
 import { createAppSlice } from "../createAppSlice"
 import { Status } from "./UiSlice"
@@ -84,7 +84,7 @@ export const walletWorthChartSlice = createAppSlice({
         const response = await walletsApi.getHistoricalWalletData(
           toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
           payload.startDate,
-          getTomorrowUtc(),
+          moment.utc().add(1, "d").toDate(),
           payload.compareSymbol,
         )
         return { seriesData: response, comareToLabel: payload.compareLabel }

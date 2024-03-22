@@ -21,8 +21,8 @@ import {
   selectWallets,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { getYesterdayUtc } from "@/utils/common"
 import { Box, Button, MenuItem, Stack } from "@mui/material"
+import moment from "moment"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -113,7 +113,7 @@ export default function MyWalletsPage() {
             <AppDatePicker
               disableFuture
               onChange={date => setFromDate(date)}
-              maxDate={getYesterdayUtc()}
+              maxDate={moment.utc().add(-1, "d").toDate()}
               label={t("FromDate")}
             />
             <SymbolLookup
@@ -197,7 +197,6 @@ export default function MyWalletsPage() {
                 max: maxChartValue,
                 forceNiceScale: true,
                 tickAmount: yAxisTicks,
-                
 
                 labels: {
                   formatter: percentageFormatter,
