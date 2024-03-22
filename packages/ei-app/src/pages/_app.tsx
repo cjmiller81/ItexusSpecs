@@ -5,7 +5,7 @@ import "../libs/axios/customAxios"
 import "../libs/i18n/i18n"
 import { useEffect, useState } from "react"
 
-import "devextreme/dist/css/dx.material.blue.dark.css"
+import "devextreme/dist/css/dx.common.css"
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)

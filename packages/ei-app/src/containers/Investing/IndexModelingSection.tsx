@@ -24,7 +24,7 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
 
   const onExport = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-      
+
       tableAssets.map(asset => ({
         symbol: asset.symbol,
         price: asset.price,
@@ -50,11 +50,8 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
   return (
     <Accordion
       defaultExpanded
-      sx={{ bgcolor: "background.paper" }}
       {...props}>
-      <AccordionSummary
-        sx={{ bgcolor: "background.paper" }}
-        expandIcon={<ExpandMoreIcon />}>
+      <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
           <PageTitle sx={{ width: "100%" }}>{title}</PageTitle>
           <Button
@@ -70,7 +67,7 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
             </Box>
           </Button>
         </Box>
-      </AccordionSummary>
+      </StyledAccordionSummary>
       <AccordionDetails sx={{ bgcolor: "background.paper" }}>
         <MainContainer
           sx={{ width: "100%" }}
@@ -136,4 +133,8 @@ const MainContainer = styled(Box)(({ theme }) => ({
     flexDirection: "column",
     alignItems: "center",
   },
+}))
+
+const StyledAccordionSummary = styled(AccordionSummary)(() => ({
+  transition: "none",
 }))

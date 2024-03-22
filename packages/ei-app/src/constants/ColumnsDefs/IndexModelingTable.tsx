@@ -25,7 +25,7 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
               src={props.row.iconUrl}
               alt=""
             />
-            <Box>{props.row.symbol}</Box>
+            <Box sx={{fontSize: "14px"}}>{props.row.symbol}</Box>
           </Box>
         )
       },

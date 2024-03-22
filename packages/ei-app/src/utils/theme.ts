@@ -71,12 +71,20 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
             },
           },
         },
+        MuiAccordionSummary:{
+          styleOverrides:{
+            root:{
+              backgroundColor: commonTheme.palette.background.paper
+            }
+          }
+        },
         MuiButton: {
           defaultProps: {},
           variants: [
             {
               props: { variant: "outlined" },
               style: {
+                transition: "none",
                 border: "1px solid",
                 borderColor: commonTheme.palette.divider,
                 color: commonTheme.palette.text.primary,
@@ -89,6 +97,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
             {
               props: { variant: "contained" },
               style: {
+                transition: "none",
                 boxShadow: commonTheme.shadows[1],
                 color: commonTheme.palette.background.paper,
               },

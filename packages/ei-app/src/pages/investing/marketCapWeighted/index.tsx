@@ -12,6 +12,7 @@ export default function MarketCapWeightedPage() {
     <Stack>
       <DataGridComponent />
       <IndexModelingSection
+        sx={{mt: 4}}
         tableAssets={assets}
         title={t("IndexModeling")}
       />

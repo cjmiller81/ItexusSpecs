@@ -1,3 +1,4 @@
+import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
@@ -5,7 +6,6 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "../RootReducer"
 import { appStore } from "../Store"
 import { createAppSlice } from "../createAppSlice"
-import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 
 export type Status = "idle" | "loading" | "failed"
 export interface TotalWalletWorthData {
