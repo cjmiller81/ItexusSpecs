@@ -1,11 +1,12 @@
+import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
+import { getTomorrowUtc, getYesterdayUtc } from "@/utils/common"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "../RootReducer"
 import { appStore } from "../Store"
 import { createAppSlice } from "../createAppSlice"
-import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 
 export type Status = "idle" | "loading" | "failed"
 export interface TotalWalletWorthData {
@@ -64,10 +65,8 @@ export const walletsSlice = createAppSlice({
     }),
     fetchTotalWalletsWorthData: create.asyncThunk(
       async (_, thunkApi): Promise<TotalWalletWorthData> => {
-        let todayUTC = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()))
-
-        const yesterday = new Date(Date.UTC(todayUTC.getFullYear(), todayUTC.getMonth(), todayUTC.getDate() - 1))
-        const tomorrow = new Date(Date.UTC(todayUTC.getFullYear(), todayUTC.getMonth(), todayUTC.getDate() + 1))
+        const yesterday = getYesterdayUtc()
+        const tomorrow = getTomorrowUtc()
 
         const state = thunkApi.getState() as RootState
 
@@ -125,7 +124,7 @@ export const walletsSlice = createAppSlice({
       async (_, thunkApi) => {
         const response = await walletsApi.getWalletsAssets()
         const state = thunkApi.getState() as RootState
-        if (state.walletsReducer.wallets.firstLoad){
+        if (state.walletsReducer.wallets.firstLoad) {
           appStore.dispatch(selectWallets(response.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))))
         }
         return response
@@ -136,10 +135,8 @@ export const walletsSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.statusFetchingWallets = "idle"
-          if (!state.firstLoad)
-            state.wallets = action.payload
-          else
-          {
+          if (!state.firstLoad) state.wallets = action.payload
+          else {
             state.firstLoad = false
             state.wallets = action.payload
           }
