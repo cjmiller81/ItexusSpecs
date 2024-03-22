@@ -1,15 +1,14 @@
-
+import { Stack } from "@mui/material"
+import LocalStore from "devextreme/data/local_store"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Stack } from "@mui/material"
-import LocalStore from 'devextreme/data/local_store'
 
+import { IndexAllocationsStateStoreContext } from "@/containers/IndexModel/IndexAllocationLocalStoreContext"
 import { IndexModel } from "@/containers/IndexModel/IndexModel"
+import { defaultAllocationsPanelState } from "@/containers/IndexModel/IndexModel.constants"
+import { ISetAllocationsState, ITabPanelData, SetAllocationsType } from "@/containers/IndexModel/IndexModel.types"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
-import { ISetAllocationsState, ITabPanelData, SetAllocationsType } from "@/containers/IndexModel/IndexModel.types"
-import { IndexAllocationsStateStoreContext } from "@/containers/IndexModel/IndexAllocationLocalStoreContext"
-import { defaultAllocationsPanelState } from "@/containers/IndexModel/IndexModel.constants"
 import { assets } from "@/mocks/InvestingTableAsset"
 
 export default function MarketCapEqualWeightedPage() {
@@ -19,19 +18,19 @@ export default function MarketCapEqualWeightedPage() {
 
   const { t } = useTranslation("MarketCapEqualWeightedPage")
 
-  const handleSetAllocationsStateUpdate = useCallback((setAllocationsState:ISetAllocationsState):void => {
+  const handleSetAllocationsStateUpdate = useCallback((setAllocationsState: ISetAllocationsState): void => {
     setSetAllocationsStateStore(setAllocationsState)
     new LocalStore({
-      key: 'setAllocationsStateId',
+      key: "setAllocationsStateId",
       data: [setAllocationsState],
-      name: 'setAllocationsState',
+      name: "setAllocationsState",
     })
   }, [])
 
   const onUpdate = useCallback((tab: SetAllocationsType, data: ITabPanelData) => {
     setState(prevState => ({
       ...prevState,
-      [tab]: data
+      [tab]: data,
     }))
   }, [])
 
@@ -47,7 +46,7 @@ export default function MarketCapEqualWeightedPage() {
 
   useEffect(() => {
     // Init
-    const setAllocationsStateStorage = localStorage.getItem('dx-data-localStore-setAllocationsState')
+    const setAllocationsStateStorage = localStorage.getItem("dx-data-localStore-setAllocationsState")
     if (setAllocationsStateStorage) {
       const parsedData = JSON.parse(setAllocationsStateStorage) as unknown as ISetAllocationsState[]
       if (parsedData && parsedData.length > 0) {
@@ -57,22 +56,23 @@ export default function MarketCapEqualWeightedPage() {
       handleSetAllocationsStateUpdate(localState)
     }
     setLoading(false)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <Stack>
       <IndexAllocationsStateStoreContext.Provider value={setAllocationsStateStore}>
-        {!loading &&
+        {!loading && (
           <IndexModel
             setAllocationsState={localState}
             tabType={SetAllocationsType.EqualWeight}
             onSetAllocationsStateUpdate={handleSetAllocationsStateUpdate}
             onUpdate={onUpdate}
           />
-        }
+        )}
       </IndexAllocationsStateStoreContext.Provider>
       <IndexModelingSection
+        sx={{ mt: 4 }}
         tableAssets={assets}
         title={t("IndexModeling")}
       />
