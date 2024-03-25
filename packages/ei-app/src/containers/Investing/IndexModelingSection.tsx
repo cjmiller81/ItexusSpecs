@@ -27,10 +27,10 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
       
       tableAssets.map(asset => ({
         symbol: asset.symbol,
-        price: asset.price,
-        marketCap: asset.marketCap,
-        weight: asset.weight,
-        qty: asset.qty,
+        price: asset.price.toFixed(4),
+        marketCap: asset.marketCap.toFixed(2),
+        weight: asset.weight.toFixed(2),
+        qty: asset.qty.toFixed(4),
       })),
     )
     const columnWidth12 = { wch: 12 }
