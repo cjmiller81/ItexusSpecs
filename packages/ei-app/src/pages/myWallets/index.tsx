@@ -22,7 +22,7 @@ export default function MyWalletsPage() {
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks } = useAppSelector(
     state => state.walletsReducer.walletWorthChart,
   )
-  const { icons, iconsFetchingStatus } = useAppSelector(state => state.walletsReducer.icons)
+  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const dispatch = useAppDispatch()
@@ -54,15 +54,6 @@ export default function MyWalletsPage() {
     dispatch(selectWallets(rows))
   }
 
-  const lookupOptions = useMemo(
-    () =>
-      icons.map<LookUpOption>(icon => ({
-        label: icon.sym,
-        iconUrl: icon.lURI,
-      })),
-    [icons],
-  )
-
   return (
     <Stack>
       <MyWalletsSection
@@ -81,7 +72,7 @@ export default function MyWalletsPage() {
         chartSeries={chartSeries}
         fromDate={fromDate}
         lookupLoading={iconsFetchingStatus === "loading"}
-        lookupOptions={lookupOptions}
+        lookupOptions={lookUpOptions}
         maxChartValue={maxChartValue}
         minChartValue={minChartValue}
         onChartSubmit={onChartRefresh}
