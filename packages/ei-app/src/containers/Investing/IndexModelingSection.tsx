@@ -27,10 +27,10 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
       
       tableAssets.map(asset => ({
         symbol: asset.symbol,
-        price: asset.price.toFixed(4),
-        marketCap: asset.marketCap.toFixed(2),
-        weight: asset.weight.toFixed(2),
-        qty: asset.qty.toFixed(4),
+        price: asset.price,
+        marketCap: asset.marketCap,
+        weight: asset.weight,
+        qty: asset.qty,
       })),
     )
     const columnWidth12 = { wch: 12 }
@@ -41,6 +41,14 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
       columnWidth12,
       columnWidth12,
     ]
+
+    const currencyFormat = '[$$-409]#,###.00;-[$$-409]#,###.00';
+    for (let i = 2; i < tableAssets.length + 2; i++) {
+      worksheet[`B${i}`].z = currencyFormat
+      worksheet[`C${i}`].z = currencyFormat
+      worksheet[`D${i}`].z = '#,##0.00%'
+      worksheet[`E${i}`].z = '#,####0.0000'
+    }
     const workbook = XLSX.utils.book_new()
     XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" })
     XLSX.utils.book_append_sheet(workbook, worksheet, "assets")
