@@ -16,6 +16,7 @@
         "react"
     ],
     "rules": {
+        "no-prototype-builtins": "off",
         "no-unused-vars": [
           "off",
           {

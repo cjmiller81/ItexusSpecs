@@ -1,17 +1,8 @@
-import { AppChart } from "@/components/Charts/AppChart"
-import AppDatePicker from "@/components/common/inputs/AppDatePicker"
-import AppSelect from "@/components/common/inputs/AppSelect"
-import SymbolLookup from "@/components/common/inputs/SymbolsLookup"
-import { chartDateFormatString } from "@/constants/Common"
-import {
-  Period,
-  StyledTypographyWalletsWorthTitle,
-  StyledWalletWorthContainer,
-  StyledWalletWorthMenu,
-  StyledWalletWorthMenuContainer,
-} from "@/containers/MyWallets/HistoricalWalletsWorth"
+import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
+import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
-import { fetchHistoricalWalletData } from "@/libs/redux/Slices/WalletWorthChartSlice"
+import { searchIcons } from "@/libs/redux/Slices/IconsSlice"
+import { fetchHistoricalWalletData, selectSeries, setPeriod } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import {
   createWallet,
   deleteWallet,
@@ -20,9 +11,7 @@ import {
   selectWallets,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { ICoin } from "@/services/backend-api.service"
-import { toChartSeries, toOptions, toTotalTokensBalances } from "@/utils/tokensTableHelpers"
-import { Box, Button, MenuItem, SelectChangeEvent, Stack } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -30,56 +19,40 @@ export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, firstLoad } = useAppSelector(
     state => state.walletsReducer.wallets,
   )
-  const { chartData } = useAppSelector(state => state.walletsReducer.walletWorthChart)
-
-  const [period, setPeriod] = useState<Period>("daily")
-  const [symbolOption, setSymbolOption] = useState<ICoin | null>(null)
+  const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks } = useAppSelector(
+    state => state.walletsReducer.walletWorthChart,
+  )
+  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
+  const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const dispatch = useAppDispatch()
 
   const { t } = useTranslation("MyWalletsPage")
-  const walletsRows = wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))
+
   useEffect(() => {
-    if(firstLoad)
-      dispatch(fetchWallets(null))
-  }, [dispatch, firstLoad])
-
-  const options = useMemo(() => toOptions(walletsRows), [walletsRows])
-
-  const onPeriodChanged = (event: SelectChangeEvent<unknown>) => {
-    setPeriod(event.target.value as Period)
-  }
+    if (firstLoad) dispatch(fetchWallets(null))
+    dispatch(searchIcons({}))
+  }, [dispatch])
 
   const onChartRefresh = () => {
-    if (symbolOption && fromDate) {
+    if (fromDate) {
       dispatch(
         fetchHistoricalWalletData({
-          compareSymbol: symbolOption.name.toLocaleLowerCase(),
-          compareLabel: symbolOption.name,
-          endDate: new Date(),
+          compareSymbol: symbolOption?.label.toLocaleLowerCase(),
+          compareLabel: symbolOption?.label,
           startDate: fromDate,
-          symbols: toTotalTokensBalances(selectedWallets),
         }),
       )
     }
   }
 
+  useEffect(() => {
+    dispatch(fetchTotalWalletsWorthData({}))
+  }, [selectedWallets])
+
   const onRowsChanged = (rows: WalletRow[]) => {
     dispatch(selectWallets(rows))
-    dispatch(fetchTotalWalletsWorthData({}))
   }
-
-  const seriesData = useMemo(
-    () =>
-      chartData ? toChartSeries(chartData, period, t("HistoricalWalletsWorthSeries"), chartData?.comareToLabel) : null,
-    [chartData, period, t],
-  )
-
-  const percentageFormatter = (value: number) =>
-    `${value.toLocaleString("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    })}%`
 
   return (
     <Stack>
@@ -93,90 +66,25 @@ export default function MyWalletsPage() {
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
       />
 
-      <StyledWalletWorthContainer sx={{ mt: 8 }}>
-        <StyledWalletWorthMenuContainer>
-          <StyledTypographyWalletsWorthTitle alignContent={"center"}>
-            {t("HistoricalWalletsWorth")}
-          </StyledTypographyWalletsWorthTitle>
-          <StyledWalletWorthMenu>
-            <AppSelect
-              sx={{ width: "100%" }}
-              label={t("Period")}
-              value={period}
-              variant="outlined"
-              defaultValue={"daily"}
-              onChange={onPeriodChanged}>
-              <MenuItem value={"daily"}>{t("Daily")}</MenuItem>
-              <MenuItem value={"weekly"}>{t("Weekly")}</MenuItem>
-              <MenuItem value={"monthly"}>{t("Monthly")}</MenuItem>
-            </AppSelect>
-            <AppDatePicker
-              disableFuture
-              onChange={date => setFromDate(date)}
-              label={t("FromDate")}
-            />
-            <SymbolLookup
-              onChange={option => setSymbolOption(option)}
-              value={symbolOption}
-              options={options}
-              label={t("CompareToSymbol")}></SymbolLookup>
-
-            <Button
-              onClick={onChartRefresh}
-              disabled={!fromDate || !symbolOption || !selectedWallets.length}
-              sx={{ width: "50%", alignSelf: "center" }}
-              variant="contained">
-              {t("Sumbit")}
-            </Button>
-          </StyledWalletWorthMenu>
-        </StyledWalletWorthMenuContainer>
-        <Box sx={{ width: "100%" }}>
-          <AppChart
-            series={seriesData?.series ?? []}
-            height={460}
-            optionsOverrides={{
-              chart: {
-                animations: {
-                  enabled: false,
-                  dynamicAnimation: {
-                    enabled: false,
-                  },
-                },
-                zoom: {
-                  enabled: true,
-                  autoScaleYaxis: true,
-                },
-              },
-              yaxis: {
-                min: seriesData?.min ?? 0,
-                max: seriesData?.max ?? 10,
-                forceNiceScale: true,
-                labels: {
-                  formatter: percentageFormatter,
-                },
-              },
-              fill: {
-                type: "solid",
-                colors: ["transparent"],
-              },
-              markers: {
-                radius: 0,
-              },
-              stroke: {
-                width: 1,
-              },
-              tooltip: {
-                x: {
-                  format: chartDateFormatString,
-                },
-                y: {
-                  formatter: percentageFormatter,
-                },
-              },
-            }}
-          />
-        </Box>
-      </StyledWalletWorthContainer>
+      <HistoricalWalletsWorth
+        sx={{mt: 4}}
+        chartAxisTicks={yAxisTicks}
+        chartSeries={chartSeries}
+        fromDate={fromDate}
+        lookupLoading={iconsFetchingStatus === "loading"}
+        lookupOptions={lookUpOptions}
+        maxChartValue={maxChartValue}
+        minChartValue={minChartValue}
+        onChartSubmit={onChartRefresh}
+        onFromDateChange={date => setFromDate(date)}
+        onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
+        onOptionChange={option => setSymbolOption(option)}
+        onPeriodChange={period => dispatch(setPeriod({ period: period }))}
+        period={period}
+        onToggleSeries={seriesIndex => dispatch(selectSeries({ seriesIndex: seriesIndex }))}
+        submitButtonDisabled={!fromDate || !selectedWallets.length}
+        title={t("HistoricalWalletsWorth")}
+      />
     </Stack>
   )
 }

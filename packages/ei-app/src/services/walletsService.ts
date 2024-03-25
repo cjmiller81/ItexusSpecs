@@ -25,7 +25,7 @@ export const walletsApi = {
     symbols: { symbol: string; qty: number }[],
     startDate: Date,
     endDate: Date,
-    compareSymbol?: string,
+    compareSymbol?: string | null,
   ): Promise<HistoricalWalletData[]> => {
     const response = await appAxios.post(`/model/run/walletValueIndex`, symbols, {
       params: {
