@@ -1,3 +1,4 @@
+import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
 import { iconsAbortableApi } from "@/services/iconsService"
 import { RootState } from "../RootReducer"
@@ -8,12 +9,14 @@ interface IconsState {
   iconsFetchingStatus: Status
   icons: TokenDetails[]
   currentSearch?: string
+  lookUpOptions: LookUpOption[]
   cachedIcons: { [searchQuery: string]: TokenDetails[] }
 }
 
 const initialState: IconsState = {
   iconsFetchingStatus: "idle",
   icons: [],
+  lookUpOptions: [],
   cachedIcons: {},
 }
 
@@ -29,7 +32,6 @@ export const IconsSlice = createAppSlice({
           return { query: payload.query, tokens: cached }
         }
         const response = await iconsAbortableApi.getIcons(payload.query)
-
         return { query: payload.query, tokens: response }
       },
       {
@@ -39,6 +41,10 @@ export const IconsSlice = createAppSlice({
         },
         fulfilled: (state, action) => {
           state.iconsFetchingStatus = "idle"
+          state.lookUpOptions = action.payload.tokens.map<LookUpOption>(icon => ({
+            label: icon.sym,
+            iconUrl: icon.lURI,
+          }))
           state.icons = action.payload.tokens
         },
         rejected: (state, error) => {

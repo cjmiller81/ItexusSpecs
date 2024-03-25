@@ -1,113 +1,190 @@
 import { AppChart } from "@/components/Charts/AppChart"
 import AppDatePicker from "@/components/common/inputs/AppDatePicker"
 import AppSelect from "@/components/common/inputs/AppSelect"
+import SymbolLookup, { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import PageTitle from "@/components/TextDisplay/PageTitle"
-import { Box, BoxProps, MenuItem, SelectChangeEvent } from "@mui/material"
+import { chartDateFormatString } from "@/constants/Common"
+import { Box, BoxProps, Button, MenuItem } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import { useState } from "react"
+import moment from "moment"
 import { useTranslation } from "react-i18next"
 export type Period = "daily" | "weekly" | "monthly"
 
 interface Props extends BoxProps {
   title: string
+  period: Period
+  onPeriodChange: (period: Period) => void
+  onFromDateChange: (date: Date | null) => void
+  fromDate: Date | null
+  onChartSubmit: () => void
+  lookupLoading: boolean
+  lookupOptions: LookUpOption[]
+  lookupOption?: LookUpOption | null
+  onOptionChange: (option: LookUpOption | null) => void
+  minChartValue: number
+  maxChartValue: number
+  chartAxisTicks: number
+  onToggleSeries: (seriesIndex: number) => void
+  onLookUpSearchChange: (search: string) => void
+  submitButtonDisabled: boolean
+  //eslint-disable-next-line no-undef
+  chartSeries?: ApexAxisChartSeries | null
 }
-export const HistoricalWalletsWorth = ({ title, ...props }: Props) => {
-  const [period, setPeriod] = useState<Period>("daily")
+export const HistoricalWalletsWorth = ({
+  title,
+  period,
+  onPeriodChange,
+  onFromDateChange,
+  fromDate,
+  onChartSubmit,
+  lookupLoading,
+  lookupOptions,
+  lookupOption,
+  onOptionChange,
+  minChartValue,
+  maxChartValue,
+  chartAxisTicks,
+  onToggleSeries,
+  onLookUpSearchChange,
+  submitButtonDisabled,
+  chartSeries,
+  ...props
+}: Props) => {
   const { t } = useTranslation("HistoricalWalletsWorth")
 
-  const series = [
-    {
-      name: "series1",
-      data: [1, 131, 40, 28, 51, 42, 109, 100],
-    },
-    {
-      name: "series2",
-      data: [1, 11, 32, 45, 32, 34, 52, 41],
-    },
-  ]
-
-  const categories = [
-    "2018-09-19T00:00:00.000Z",
-    "2018-09-19T01:30:00.000Z",
-    "2018-09-19T02:30:00.000Z",
-    "2018-09-19T03:30:00.000Z",
-    "2018-09-19T04:30:00.000Z",
-    "2018-09-19T05:30:00.000Z",
-    "2018-09-19T06:30:00.000Z",
-  ]
-
-  const onPeriodChanged = (event: SelectChangeEvent<unknown>) => {
-    setPeriod(event.target.value as Period)
+  const percentageFormatter = (value?: number) => {
+    return `${(value ?? 0).toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}%`
   }
-
-  const toXAxesFormat = (period: Period): string => {
-    switch (period) {
-      case "daily":
-        return "HH:mm"
-      case "weekly":
-        return "ddd"
-      case "monthly":
-        return "MMM"
-      default:
-        return "HH:mm"
-    }
-  }
-
-  const percentageFormatter = (value: number) => `${value}%`
 
   return (
-    <Box {...props}>
-      <StyledWalletWorthContainer>
-        <StyledWalletWorthMenuContainer>
-          <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
-          <StyledWalletWorthMenu>
-            <AppSelect
-              sx={{ width: "100%" }}
-              label={t("Period")}
-              value={period}
-              variant="outlined"
-              defaultValue={"daily"}
-              onChange={onPeriodChanged}>
-              <MenuItem value={"daily"}>{t("Daily")}</MenuItem>
-              <MenuItem value={"weekly"}>{t("Weekly")}</MenuItem>
-              <MenuItem value={"monthly"}>{t("Monthly")}</MenuItem>
-            </AppSelect>
-            <AppDatePicker
-              disableFuture
-              label={t("FromDate")}
-            />
-            <AppSelect variant="outlined" label={t("CompareToSymbol")}></AppSelect>
-          </StyledWalletWorthMenu>
-        </StyledWalletWorthMenuContainer>
-        <Box sx={{ width: "100%" }}>
-          <AppChart
-            series={series}
-            height={460}
-            optionsOverrides={{
-              xaxis: {
-                categories: categories,
-                labels: {
-                  format: toXAxesFormat(period),
-                },
-              },
-              yaxis: {
-                labels: {
-                  formatter: percentageFormatter,
-                },
-              },
-              tooltip: {
-                x: {
-                  format: "yyyy-MM-dd HH:mm",
-                },
-                y: {
-                  formatter: percentageFormatter,
-                },
-              },
-            }}
+    <StyledWalletWorthContainer {...props}>
+      <StyledWalletWorthMenuContainer>
+        <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
+        <StyledWalletWorthMenu>
+          <AppSelect
+            sx={{ width: "100%" }}
+            label={t("Period")}
+            value={period}
+            variant="outlined"
+            defaultValue={"daily"}
+            onChange={event => onPeriodChange(event.target.value as Period)}>
+            <MenuItem value={"daily"}>{t("Daily")}</MenuItem>
+            <MenuItem value={"weekly"}>{t("Weekly")}</MenuItem>
+            <MenuItem value={"monthly"}>{t("Monthly")}</MenuItem>
+          </AppSelect>
+          <AppDatePicker
+            disableFuture
+            onChange={date => onFromDateChange(date)}
+            maxDate={moment.utc().add(-1, "d").toDate()}
+            label={t("FromDate")}
           />
-        </Box>
-      </StyledWalletWorthContainer>
-    </Box>
+          <SymbolLookup
+            loading={lookupLoading}
+            disableListWrap
+            value={lookupOption}
+            onChange={(event, value) => onOptionChange(value)}
+            autoComplete={true}
+            onInputChange={(event, value) => onLookUpSearchChange(value)}
+            filterOptions={x => x}
+            inputValue={lookupOption?.label}
+            options={lookupOptions}
+            label={t("CompareToSymbol")}
+          />
+
+          <Button
+            onClick={onChartSubmit}
+            disabled={submitButtonDisabled}
+            sx={{ width: "50%", alignSelf: "center" }}
+            variant="contained">
+            {t("Sumbit")}
+          </Button>
+        </StyledWalletWorthMenu>
+      </StyledWalletWorthMenuContainer>
+      <Box sx={{ width: "100%" }}>
+        <AppChart
+          series={chartSeries ?? []}
+          height={460}
+          optionsOverrides={{
+            legend: {
+              show: true,
+              showForSingleSeries: true,
+              onItemClick: {
+                toggleDataSeries: true,
+              },
+            },
+            grid: {
+              strokeDashArray: 0,
+            },
+            chart: {
+              events: {
+                legendClick: (chart: any, seriesIndex?: number) => {
+                  if (seriesIndex !== undefined) onToggleSeries(seriesIndex)
+                },
+              },
+              animations: {
+                enabled: false,
+                dynamicAnimation: {
+                  enabled: false,
+                },
+              },
+              zoom: {
+                enabled: true,
+                type: "x",
+                autoScaleYaxis: false,
+                zoomedArea: {
+                  fill: {
+                    color: "#90CAF9",
+                    opacity: 0.4,
+                  },
+                  stroke: {
+                    color: "#0D47A1",
+                    opacity: 0.4,
+                    width: 1,
+                  },
+                },
+              },
+            },
+            annotations: {
+              yaxis: [
+                {
+                  y: 0,
+                  strokeDashArray: 0,
+                  borderWidth: 2,
+                  borderColor: "#F1F1F1",
+                },
+              ],
+            },
+            yaxis: {
+              min: minChartValue,
+              max: maxChartValue,
+              forceNiceScale: true,
+              tickAmount: chartAxisTicks,
+              labels: {
+                formatter: percentageFormatter,
+              },
+            },
+            markers: {
+              radius: 0,
+            },
+            stroke: {
+              width: 3,
+              curve: "smooth",
+            },
+            tooltip: {
+              x: {
+                format: chartDateFormatString,
+              },
+              y: {
+                formatter: percentageFormatter,
+              },
+            },
+          }}
+        />
+      </Box>
+    </StyledWalletWorthContainer>
   )
 }
 
