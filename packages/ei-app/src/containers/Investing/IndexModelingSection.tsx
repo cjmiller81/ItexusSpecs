@@ -1,6 +1,7 @@
 import PageTitle from "@/components/TextDisplay/PageTitle"
 import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
 import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
+import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls"
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 import DownloadIcon from "@mui/icons-material/Download"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
@@ -42,12 +43,11 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
       columnWidth12,
     ]
 
-    const currencyFormat = '[$$-409]#,###.00;-[$$-409]#,###.00';
     for (let i = 2; i < tableAssets.length + 2; i++) {
       worksheet[`B${i}`].z = currencyFormat
       worksheet[`C${i}`].z = currencyFormat
-      worksheet[`D${i}`].z = '#,##0.00%'
-      worksheet[`E${i}`].z = '#,####0.0000'
+      worksheet[`D${i}`].z = percentageFormat
+      worksheet[`E${i}`].z = qtyFormat
     }
     const workbook = XLSX.utils.book_new()
     XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" })
