@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import DataSource, { DataSourceOptions } from 'devextreme/data/data_source'
-// eslint-disable-next-line import/no-named-as-default
-import DataGrid, {
+import { DataType } from 'devextreme/common'
+import DataGridDef, {
   Column,
   ColumnChooser,
   Export,
@@ -14,207 +15,55 @@ import DataGrid, {
   Paging,
   Search,
 } from 'devextreme-react/data-grid'
-// eslint-disable-next-line import/no-named-as-default
 import { Workbook } from 'exceljs'
 import LocalStore from 'devextreme/data/local_store'
 import { exportDataGrid } from 'devextreme/excel_exporter'
 import { saveAs } from 'file-saver-es'
 import { PositionConfig } from 'devextreme/animation/position'
-import { ItemClickEvent } from 'devextreme/ui/list'
-// eslint-disable-next-line import/no-named-as-default
-import Box, { Item } from 'devextreme-react/box'
-// eslint-disable-next-line import/no-named-as-default
-import Form, { SimpleItem } from 'devextreme-react/form'
-import { Button } from 'devextreme-react'
+import { dxPopupToolbarItem } from 'devextreme/ui/popup'
+import { EventInfo } from 'devextreme/events'
 
-import { SymbolCellIdComponent } from '@/components/common/inputs/symbol-lookup/symbol-lookup'
-import BackendApiService, { ICategory, IPlatform, IPrefilterTokensFilterValues } from '@/services/backend-api.service'
-import { useBackendApi } from '../../backend-api-hook'
-// eslint-disable-next-line import/no-named-as-default
 import { IPrefilterTokensDataRow, IPrefilterTokensTable } from './prefilter-tokens-table.types'
 import { PrefilterTokensField, PrefilterTokensLabel } from './prefilter-tokens-table.constants'
+import CustomFilterBuilder from '../custom-filter-builder/custom-filter-builder'
+import { useBackendApi } from '../../backend-api-hook'
 import { ITokenSetAllocation } from '../../IndexModel.types'
+import BackendApiServiceInstance, { ICategory, IPlatform, IPrefilterTokensFilterValues } from '@/services/backend-api.service'
+import { SymbolCellIdComponent } from '@/components/common/inputs/symbol-lookup/symbol-lookup'
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpdate }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [isDataLoading, setDataLoading] = useState<boolean>(false)
+  const [hasDataLoaded, setHasDataLoaded] = useState<boolean>(false)
   const [categories, setCategories] = useState<string[]>()
   const [chains, setChains] = useState<string[]>()
+  const [hasFilterToAppply, setHasFilterToAppply] = useState<boolean>(false)
+  const [filterToAppply, setFilterToAppply] = useState<string | Function | any[] | undefined>(undefined)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const datagrid = React.createRef<DataGrid<IPrefilterTokensDataRow, any>>()
+  const datagrid = React.createRef<DataGridDef<IPrefilterTokensDataRow, any>>()
   const filterBuilderPopupRef = React.createRef<FilterBuilderPopup>()
   const allowedPageSizes = [5, 10, 20, 50]
+  const store = useMemo(
+    () =>
+      new LocalStore({
+        key: 'id',
+        immediate: true,
+        name: 'prefilterTokensTable',
+      }),
+    []
+  )
 
-  const store = useMemo(() => new LocalStore({
-    key: 'id',
-    immediate: true,
-    name: 'prefilterTokensTable',
-  }), [])
-
-  const dataSource = useMemo(() => new DataSource({
-    store: store,
-  }), [store])
-
-  const { fetchData } = useBackendApi()
-
-  const updatePrefilteredTokens = useCallback(async ():Promise<void> => {
-    try {
-      const grid = datagrid?.current?.instance
-      if (isDataLoading && grid && store && dataSource) {
-        const filterExpr = grid.getCombinedFilter(true)
-        const filteredDataSource = grid.getDataSource()
-        const loadOptions = dataSource.loadOptions()
-
-        await filteredDataSource
-          .store()
-          .load({ filter: filterExpr, sort: loadOptions.sort, group: loadOptions.group })
-          .then((result) => {
-            const prefilteredTokenData = [] as ITokenSetAllocation[]
-
-            const foo = result as IPrefilterTokensDataRow[]
-            foo.forEach(row => {
-              const prefilteredTokenRow = {} as ITokenSetAllocation
-              prefilteredTokenRow.id = row.id
-              prefilteredTokenRow.symbol = row.sym.toUpperCase()
-              prefilteredTokenRow.price = row.price
-              prefilteredTokenRow.marketCap = row.mCap
-
-              prefilteredTokenData.push(prefilteredTokenRow)
-            })
-            onUpdate(prefilteredTokenData)
-          })
-          .catch(err => {
-            console.error('Error on updatePrefilteredTokens filteredDataSource:', err)
-          })
-
-          setDataLoading(false)
-      }
-    } catch (err) {
-      console.error('Error on updatePrefilteredTokens:', err)
-    }
-  }, [datagrid, isDataLoading, onUpdate, store, dataSource])
-
-  const loadData = useCallback(async () => {
-    try {
-      const coinGeckoCategories = localStorage.getItem('coinGeckoCategories')
-      if (coinGeckoCategories !== null && dataSource) {
-        const categoryList:string[] = []
-        const categoryData:ICategory[] = JSON.parse(coinGeckoCategories)
-        categoryData.forEach(cat => {
-          categoryList.push(cat.name)
-        })
-        categoryList.sort()
-        setCategories(categoryList)
-        setDataLoading(true)
-      }
-
-      const coinGeckoChains = localStorage.getItem('coinGeckoChains')
-      if (coinGeckoChains !== null && dataSource) {
-        const chainsList:string[] = []
-        const chainsData:IPlatform[] = JSON.parse(coinGeckoChains)
-        chainsData.forEach(chain => {
-          if (chain.id.length > 0) {
-            chainsList.push(chain.id)
-          }
-        })
-        chainsList.sort()
-        setChains(chainsList)
-        setDataLoading(true)
-      }
-
-      await dataSource.reload()
-
-      setLoading(false)
-    } catch (err) {
-      console.error('Error on loadData:', err)
-    }
-  }, [dataSource])
-
-  const refreshData = async ():Promise<void> => {
-    try {
-      await fetchData()
-      await loadData()
-    } catch(e) {
-      console.error(e)
-    }
-  }
-
-  const categoryToFilterItem = (item: string): {text: string, value: string} => {
-    return {
-      text: item,
-      value: item
-    }
-  }
-
-  const categoriesFilterOperations = ["contains", "anyof", "endswith", "=", "startswith"]
-  const categoriesHeaderFilter = {
-    dataSource: {
-      store: {
-        type: "array",
-        data: categories
-      },
-      map: categoryToFilterItem
-    }
-  }
-
-  const chainsToFilterItem = (item: string): {text: string, value: string} => {
-    return {
-      text: item,
-      value: item
-    }
-  }
-  const chainsHeaderFilter = {
-    dataSource: {
-      store: {
-        type: "array",
-        data: chains
-      },
-      map: chainsToFilterItem
-    }
-  }
-
-  const [predefinedFilter, setPredefinedFilter] = useState<IPrefilterTokensFilterValues[]>([] as IPrefilterTokensFilterValues[])
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const calculateFilterExpression = useCallback(function(this: any, filterValue: any, selectedFilterOperation:string | null, _target: string):any {
-    try {
-      let column = this
-      if (filterValue) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let selector = (data:any): boolean => {
-          let applyOperation = (arg1:string, arg2:string, op:string):boolean => {
-            if (op === "=") return arg1.toUpperCase() === arg2.toUpperCase()
-            if (op === "anyof") return arg1.toUpperCase().includes(arg2.toUpperCase())
-            if (op === "contains") return arg1.toUpperCase().includes(arg2.toUpperCase())
-            if (op === "startswith") return arg1.toUpperCase().startsWith(arg2.toUpperCase())
-            if (op === "endswith") return arg1.toUpperCase().endsWith(arg2.toUpperCase())
-
-            return false
-          }
-
-          let values = column.calculateCellValue(data)
-          return (
-            values &&
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            !!values.find((v:any) =>
-              applyOperation(v, filterValue, selectedFilterOperation ?? '')
-            )
-          )
-        }
-
-        return [selector, "=", true]
-      }
-
-      console.log('filter default')
-      return column.defaultCalculateFilterExpression.apply(this, arguments)
-    } catch (err) {
-      console.error('Error on calculateFilterExpression:', err)
-    }
-  }, [])
+  const dataSource = useMemo(
+    () =>
+      new DataSource({
+        store: store,
+      }),
+    [store]
+  )
 
   const filterBuilderPopupPosition: PositionConfig = {
-    of: window,
+    of: global?.window !== undefined ? window : undefined,
     at: 'top',
     my: 'top',
     offset: { y: 10 },
@@ -228,52 +77,250 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filterValueRef = useRef([])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onFilterValueChange = useCallback(async (value:any):Promise<void> => {
-    try {
-      console.log('onFilterValueChange:', value)
-      const fromFilterBuilder = !Array.isArray(value) && value?.value
-      filterValueRef.current = fromFilterBuilder ? value.value : value
+  const { fetchData } = useBackendApi()
 
-      if (filterValueRef && filterValueRef.current) {
-        localStorage.setItem(`${tabType}PrefilterTokensFilterValues`, JSON.stringify(filterValueRef.current))
-      } else {
-        localStorage.setItem(`${tabType}PrefilterTokensFilterValues`, JSON.stringify([]))
+  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
+    try {
+      const grid = datagrid?.current?.instance
+
+      if (isDataLoading && grid && dataSource) {
+        const combinedFilterExpr = grid.getCombinedFilter(true)
+        const filterExpr = grid.filter()
+        const filteredDataSource = grid.getDataSource()
+        const loadOptions = dataSource.loadOptions()
+
+        if (hasDataLoaded) {
+          datagrid?.current?.instance?.filter(filterExpr ?? combinedFilterExpr)
+          await grid.refresh()
+
+          const prefilteredTokenData = [] as ITokenSetAllocation[]
+
+          const foo = filteredDataSource.items() as IPrefilterTokensDataRow[]
+          foo.forEach((row) => {
+            const prefilteredTokenRow = {} as ITokenSetAllocation
+            prefilteredTokenRow.id = row.id
+            prefilteredTokenRow.symbol = row.sym.toUpperCase()
+            prefilteredTokenRow.price = row.price
+            prefilteredTokenRow.marketCap = row.mCap
+
+            prefilteredTokenData.push(prefilteredTokenRow)
+          })
+
+          onUpdate(prefilteredTokenData)
+        } else {
+          await filteredDataSource
+            .store()
+            .load({ filter: filterExpr ?? combinedFilterExpr, sort: loadOptions.sort, group: loadOptions.group })
+            .then((result) => {
+              setHasDataLoaded(true)
+              const prefilteredTokenData = [] as ITokenSetAllocation[]
+
+              const foo = result as IPrefilterTokensDataRow[]
+              foo.forEach((row) => {
+                const prefilteredTokenRow = {} as ITokenSetAllocation
+                prefilteredTokenRow.id = row.id
+                prefilteredTokenRow.symbol = row.sym.toUpperCase()
+                prefilteredTokenRow.price = row.price
+                prefilteredTokenRow.marketCap = row.mCap
+
+                prefilteredTokenData.push(prefilteredTokenRow)
+              })
+              onUpdate(prefilteredTokenData)
+            })
+            .catch((err) => {
+              console.error('Error on updatePrefilteredTokens filteredDataSource:', err)
+            })
+        }
+
+        setDataLoading(false)
+      }
+    } catch (err) {
+      console.error('Error on updatePrefilteredTokens:', err)
+    }
+  }, [datagrid, isDataLoading, dataSource, hasDataLoaded, onUpdate])
+
+  const loadData = useCallback(async () => {
+    try {
+      const coinGeckoCategories = global?.window !== undefined ? localStorage.getItem('coinGeckoCategories') : null
+      if (coinGeckoCategories !== null && dataSource) {
+        const categoryList: string[] = []
+        const categoryData: ICategory[] = JSON.parse(coinGeckoCategories)
+        categoryData.forEach((cat) => {
+          categoryList.push(cat.name)
+        })
+        categoryList.sort()
+        setCategories(categoryList)
+        setDataLoading(true)
       }
 
-      setDataLoading(true)
-      await updatePrefilteredTokens()
+      const coinGeckoChains = global?.window !== undefined ? localStorage.getItem('coinGeckoChains') : null
+      if (coinGeckoChains !== null && dataSource) {
+        const chainsList: string[] = []
+        const chainsData: IPlatform[] = JSON.parse(coinGeckoChains)
+        chainsData.forEach((chain) => {
+          if (chain.id.length > 0) {
+            chainsList.push(chain.id)
+          }
+        })
+        chainsList.sort()
+        setChains(chainsList)
+        setDataLoading(true)
+      }
+
+      // TODO: this doesn't so data on initial load...
+      datagrid?.current?.instance?.filter(filterValueRef.current)
+      await datagrid?.current?.instance?.refresh()
+
+      setLoading(false)
     } catch (err) {
-      console.error('Error on onFilterValueChange:', err)
+      console.error('Error on loadData:', err)
     }
-  }, [tabType, updatePrefilteredTokens])
+  }, [dataSource, datagrid])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onExporting = async (e: any):Promise<void> => {
-    const workbook = new Workbook()
-    const worksheet = workbook.addWorksheet('Main sheet')
-
-    const currentDate = new Date()
-
-    await exportDataGrid({
-      component: e.component,
-      worksheet,
-      autoFilterEnabled: true,
-    }).then(async () => {
-      await workbook.xlsx.writeBuffer().then((buffer) => {
-        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split('T')[0]}.xlsx`)
-      })
-    })
-    e.cancel = true
+  const refreshData = async (): Promise<void> => {
+    try {
+      await fetchData()
+      await loadData()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  const loadFilterValues = useCallback(async ():Promise<void> => {
-    let filterValues = await BackendApiService.getTokensFilters()
-    setPredefinedFilter(filterValues)
+  const categoryToFilterItem = (item: string): { text: string; value: string } => {
+    return {
+      text: item,
+      value: item,
+    }
+  }
+
+  const categoriesFilterOperations = ['contains', 'anyof', 'endswith', '=', 'startswith']
+  const categoriesHeaderFilter = {
+    dataSource: {
+      store: {
+        type: 'array',
+        data: categories,
+      },
+      map: categoryToFilterItem,
+    },
+  }
+
+  const chainsToFilterItem = (item: string): { text: string; value: string } => {
+    return {
+      text: item,
+      value: item,
+    }
+  }
+  const chainsHeaderFilter = {
+    dataSource: {
+      store: {
+        type: 'array',
+        data: chains,
+      },
+      map: chainsToFilterItem,
+    },
+  }
+
+  const [predefinedFilters, setPredefinedFilters] = useState<IPrefilterTokensFilterValues[]>([] as IPrefilterTokensFilterValues[])
+
+  const calculateFilterExpression = useCallback(function (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    filterValues: any,
+    selectedFilterOperation: string | null,
+    _target: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): any {
+    try {
+      let column = this
+      if (filterValues) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let selector = (data: any): boolean => {
+          let applyOperation = (arg1: string, arg2: string, op: string): boolean => {
+            if (op === '=') return arg1.toUpperCase() === arg2.toUpperCase()
+            if (op === 'anyof') return arg1.toUpperCase().includes(arg2.toUpperCase())
+            if (op === 'contains') return arg1.toUpperCase().includes(arg2.toUpperCase())
+            if (op === 'startswith') return arg1.toUpperCase().startsWith(arg2.toUpperCase())
+            if (op === 'endswith') return arg1.toUpperCase().endsWith(arg2.toUpperCase())
+
+            return false
+          }
+
+          let values = column.calculateCellValue(data)
+          return (
+            values &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            !!values.find((v: any) => applyOperation(v, filterValues, selectedFilterOperation ?? ''))
+          )
+        }
+
+        return [selector, '=', true]
+      }
+
+      return column.defaultCalculateFilterExpression.apply(this, arguments)
+    } catch (err) {
+      console.error('Error on calculateFilterExpression:', err)
+    }
+  }, [])
+
+  const onFilterValueChange = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async (value: any): Promise<void> => {
+      try {
+        const grid = datagrid?.current?.instance
+        grid?.clearFilter()
+        const fromFilterBuilder = !Array.isArray(value) && value?.value
+        filterValueRef.current = fromFilterBuilder ? value.value : value
+
+        if (global?.window !== undefined) {
+          if (filterValueRef && filterValueRef.current) {
+            localStorage.setItem(`${tabType}PrefilterTokensFilterValues`, JSON.stringify(filterValueRef.current))
+          } else {
+            localStorage.setItem(`${tabType}PrefilterTokensFilterValues`, JSON.stringify([]))
+          }
+        }
+
+        setDataLoading(true)
+        await updatePrefilteredTokens()
+      } catch (err) {
+        console.error('Error on onFilterValueChange:', err)
+      }
+    },
+    [datagrid, tabType, updatePrefilteredTokens]
+  )
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onExporting = useCallback(
+    async (e: any): Promise<void> => {
+      const workbook = new Workbook()
+      const worksheet = workbook.addWorksheet('Main sheet')
+
+      const currentDate = new Date()
+
+      await exportDataGrid({
+        component: e.component,
+        worksheet,
+        autoFilterEnabled: true,
+      }).then(async () => {
+        await workbook.xlsx.writeBuffer().then((buffer) => {
+          saveAs(
+            new Blob([buffer], { type: 'application/octet-stream' }),
+            `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split('T')[0]}.xlsx`
+          )
+        })
+      })
+      e.cancel = true
+    },
+    []
+  )
+
+  const loadFilterValues = useCallback(async (): Promise<void> => {
+    let filterValues = await BackendApiServiceInstance.getTokensFilters()
+    setPredefinedFilters(filterValues)
   }, [])
 
   useEffect(() => {
-    const filterValueJson = localStorage.getItem(`${tabType}PrefilterTokensFilterValues`)
+    const filterValueJson = global?.window !== undefined ? localStorage.getItem(`${tabType}PrefilterTokensFilterValues`) : undefined
 
     if (filterValueJson && filterValueJson?.length > 0) {
       filterValueRef.current = JSON.parse(filterValueJson)
@@ -282,129 +329,145 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
     }
     void loadFilterValues()
     void refreshData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const predefinedFilterOnItemClick = useCallback(async (e: ItemClickEvent<{ text: string; icon: string; filter: string[]; }>) => {
-    console.log('predefinedFilterOnItemClick:', e)
-    const grid = datagrid?.current?.instance
+  const filterBuilderActions = [
+    {
+      toolbar: 'bottom',
+      // widget: 'dxButton',
+      options: {
+        text: 'Apply',
+      },
+    },
+  ] as dxPopupToolbarItem[]
 
-    grid?.clearFilter()
-    grid?.filter(e.itemData?.filter)
+  const handleApplyFilter = useCallback(
+    async () => {
+      try {
+        if (hasFilterToAppply) {
+          if (dataSource && dataSource.isLoaded()) {
+            // Update the data source with the new filter conditions and refresh the DataGrid.
+            await onFilterValueChange(filterToAppply)
+          }
 
-    await onFilterValueChange(e.itemData?.filter)
+          setHasFilterToAppply(false)
+          setFilterToAppply(undefined)
+        }
+      } catch (error) {
+        console.error('Error applying filter:', error)
+      }
+    },
+    [dataSource, filterToAppply, hasFilterToAppply, onFilterValueChange]
+  )
 
-    await grid?.refresh()
-  }, [datagrid, onFilterValueChange])
+  const handleOnDisposing = useCallback(
+    async (_e: EventInfo<any>): Promise<void> => {
+      await handleApplyFilter()
+    },
+    [handleApplyFilter]
+  )
 
-  const predefinedFilterListOptions = useMemo(() => {
-    return {
-      onItemClick: predefinedFilterOnItemClick,
-      dataSource: predefinedFilter,
-      placeholder: 'Select a Predefined Filter...',
-      lable: 'Predefined Filter',
-      width: 225
-    }
-  }, [predefinedFilter, predefinedFilterOnItemClick])
-  const filterNameOptions = useMemo(() => {
-    return {
-      placeholder: 'Filter Name',
-      lable: 'Filter Name',
-      width: 225
-    }
-  }, [])
+  const handleApplyFilterCache = useCallback(
+    (filter: string | Function | any[] | undefined) => {
+      setHasFilterToAppply(true)
+      setFilterToAppply(filter)
+    },
+    []
+  )
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderContent = useCallback(() =>  {
-    const formData = {
-      predefinedFilter: '',
-      filterName: 'test',
-    }
-    return (
-      <div>
-        <Box
-          direction="row"
-          height={25}
-          width="100%"
-        >
-          <Item
-            baseSize={125}
-            ratio={1}
-          >
-            <span>Filter Tokens</span>
-          </Item>
-          <Item
-            baseSize={225}
-            ratio={10}
-          >
-            <Form
-              formData={formData}
-              labelLocation='left'
-              colCount={3}
-            >
-              <SimpleItem
-                dataField="predefinedFilter"
-                editorType="dxSelectBox"
-                editorOptions={predefinedFilterListOptions}
-              />
-              <SimpleItem
-                dataField="filterName"
-                editorType="dxTextBox"
-                editorOptions={filterNameOptions}
-              />
-              <Button text="Save" />
-            </Form>
-          </Item>
-          <Item
-            ratio={1}
-          >
-          </Item>
-          <Item
-            baseSize={125}
-            ratio={1}
-          >
-            <Button text="Save" />
-          </Item>
-          <Item
-            ratio={1}
-          >
-          </Item>
-          <Item
-            baseSize={125}
-            ratio={1}
-          >
-            <Button text="Save As" />
-          </Item>
-          <Item
-            ratio={1}
-          >
-          </Item>
-          <Item
-            baseSize={125}
-            ratio={1}
-          >
-            <Button text="Delete" />
-          </Item>
-          <Item
-            ratio={1}
-          >
-          </Item>
-        </Box>
-      </div>
-    )
-  }, [filterNameOptions, predefinedFilterListOptions])
+  const contentRender = useCallback(
+    (props: any) => {
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleFilterBuilderPopupShowing = useCallback((e: any) => {
-    console.log('handleFilterBuilderPopupShowing:', e)
-    console.log('handleFilterBuilderPopupShowing datagrid:', datagrid.current)
-    console.log('handleFilterBuilderPopupShowing filterBuilderPopupRef:', filterBuilderPopupRef.current)
-  }, [datagrid, filterBuilderPopupRef])
+      const fields: {
+        caption?: string
+        width?: number
+        dataField: string
+        dataType: DataType
+        format?: string
+      }[] = [
+        {
+          caption: 'ID',
+          width: 50,
+          dataField: PrefilterTokensField.Id,
+          dataType: 'number',
+        },
+        {
+          caption: PrefilterTokensLabel.Symbol,
+          width: 50,
+          dataField: PrefilterTokensField.Symbol,
+          dataType: 'string',
+        },
+        {
+          caption: PrefilterTokensLabel.Name,
+          dataField: PrefilterTokensField.Name,
+          dataType: 'string',
+        },
+        {
+          caption: PrefilterTokensLabel.Price,
+          dataField: PrefilterTokensField.Price,
+          dataType: 'number',
+          format: 'currency',
+        },
+        {
+          caption: PrefilterTokensLabel.MarketCap,
+          dataField: PrefilterTokensField.MarketCap,
+          dataType: 'number',
+          format: 'currency',
+        },
+        {
+          caption: PrefilterTokensLabel.FullyDilutedValuation,
+          dataField: PrefilterTokensField.FullyDilutedValuation,
+          dataType: 'number',
+          format: 'currency',
+        },
+        {
+          caption: PrefilterTokensLabel.Tokenomics,
+          dataField: PrefilterTokensField.Tokenomics,
+          dataType: 'number',
+          // format: 'percentage',
+        },
+        {
+          caption: PrefilterTokensLabel.Volume,
+          dataField: PrefilterTokensField.Volume,
+          dataType: 'number',
+        },
+        {
+          caption: PrefilterTokensLabel.Chains,
+          dataField: PrefilterTokensField.Chains,
+          dataType: 'string',
+        },
+        {
+          caption: PrefilterTokensLabel.IsErc20,
+          dataField: PrefilterTokensField.IsErc20,
+          dataType: 'boolean',
+        },
+        {
+          caption: PrefilterTokensLabel.Categories,
+          dataField: PrefilterTokensField.Categories,
+          dataType: 'string',
+        },
+      ]
+
+      return (
+        <CustomFilterBuilder
+          {...props}
+          onApplyFilter={handleApplyFilterCache}
+          predefinedFilters={predefinedFilters}
+          fields={fields}
+          loadFilterValues={loadFilterValues}
+          appliedFilterValue={filterValueRef.current}
+          filterToAppply={filterToAppply}
+        />
+      )
+    },
+    [filterToAppply, handleApplyFilterCache, loadFilterValues, predefinedFilters]
+  )
 
   return (
     <div>
-      {!loading &&
-        <DataGrid
+      {!loading && (
+        <DataGridDef
           id="prefilter-tokens-table"
           dataSource={dataSource}
           showBorders={true}
@@ -424,23 +487,17 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customizeText={(e: any) => `Click here to refine filter model: ${e.text}`}
           />
+
           <FilterBuilderPopup
             position={filterBuilderPopupPosition}
             showTitle={true}
             title="Filter Tokens"
-            onShowing={handleFilterBuilderPopupShowing}
+            onDisposing={handleOnDisposing}
             ref={filterBuilderPopupRef}
-            titleComponent={renderContent}
-          >
-            {/*
-            <ToolbarItem
-              widget="dxSelectBox"
-              toolbar="top"
-              location="after"
-              options={predefinedFilterListOptions}
-            />
-            */}
-          </FilterBuilderPopup>
+            contentRender={contentRender}
+            showCloseButton={true}
+            toolbarItems={filterBuilderActions}
+          />
           <HeaderFilter visible={false}>
             <Search enabled={true} />
           </HeaderFilter>
@@ -452,7 +509,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
             displayMode="full"
             showPageSizeSelector={true}
             showInfo={true}
-            showNavigationButtons={true} />
+            showNavigationButtons={true}
+          />
           <ColumnChooser enabled={true} />
           <Column
             dataField={PrefilterTokensField.Symbol}
@@ -472,7 +530,12 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
             minWidth={175}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customizeText={(cellInfo: any) =>
-              (cellInfo.value ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 6, minimumFractionDigits: 6 })
+              (cellInfo.value ?? 0).toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 6,
+                minimumFractionDigits: 6,
+              })
             }
             hidingPriority={11}
           />
@@ -486,7 +549,12 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
             minWidth={160}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customizeText={(cellInfo: any) =>
-              (cellInfo.value ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0, minimumFractionDigits: 0 })
+              (cellInfo.value ?? 0).toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0,
+                minimumFractionDigits: 0,
+              })
             }
             hidingPriority={10}
           />
@@ -499,7 +567,12 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
             minWidth={190}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customizeText={(cellInfo: any) =>
-              (cellInfo.value ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0, minimumFractionDigits: 0 })
+              (cellInfo.value ?? 0).toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0,
+                minimumFractionDigits: 0,
+              })
             }
             hidingPriority={6}
           />
@@ -619,8 +692,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({ tabType, onUpd
             hidingPriority={0}
           />
           <Export enabled={true} allowExportSelectedData={true} />
-        </DataGrid>
-      }
+        </DataGridDef>
+      )}
     </div>
   )
 }

@@ -18,14 +18,25 @@ export const IndexModel = ({ setAllocationsState, tabType, onSetAllocationsState
   }, [])
 
   const handleModelSetModelingUpdate = useCallback((modelSetModelingTable:ITokenSetAllocation[]):void => {
-    setModelSetModelingTableStore(modelSetModelingTable)
-  }, [])
+    if (JSON.stringify(modelSetModelingTableStore) !== JSON.stringify(modelSetModelingTable)) {
+      setModelSetModelingTableStore(modelSetModelingTable)
+    }
+  }, [modelSetModelingTableStore])
 
   useEffect(() => {
     // Init
     setLoading(false)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(
+    () => {
+      // Init
+      setLoading(false)
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
   return (
     <div className={styles.modelTabContainer}>

@@ -13,6 +13,7 @@ import { HistoricalWalletsWorth, Period } from "@/containers/MyWallets/Historica
 import { searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { assets } from "@/mocks/InvestingTableAsset"
+import NotificationProvider from "@/containers/IndexModel/notification-hook"
 
 export default function MarketCapEqualWeightedPage() {
   const [localState, setState] = useState<ISetAllocationsState>(defaultAllocationsPanelState[0])
@@ -26,13 +27,16 @@ export default function MarketCapEqualWeightedPage() {
   const dispatch = useAppDispatch()
   const { t } = useTranslation("MarketCapEqualWeightedPage")
 
-  const handleSetAllocationsStateUpdate = useCallback((setAllocationsState: ISetAllocationsState): void => {
+  const handleSetAllocationsStateUpdate = useCallback((setAllocationsState:ISetAllocationsState):void => {
     setSetAllocationsStateStore(setAllocationsState)
-    new LocalStore({
-      key: "setAllocationsStateId",
-      data: [setAllocationsState],
-      name: "setAllocationsState",
-    })
+
+    if (global?.window !== undefined) {
+      new LocalStore({
+        key: 'setAllocationsStateId',
+        data: [setAllocationsState],
+        name: 'setAllocationsState',
+      })
+    }
   }, [])
 
   const onUpdate = useCallback((tab: SetAllocationsType, data: ITabPanelData) => {
@@ -53,32 +57,36 @@ export default function MarketCapEqualWeightedPage() {
   }, [handleSetAllocationsStateUpdate, loading, setAllocationsStateStore, localState])
 
   useEffect(() => {
-    // Init
-    const setAllocationsStateStorage = localStorage.getItem("dx-data-localStore-setAllocationsState")
-    if (setAllocationsStateStorage) {
-      const parsedData = JSON.parse(setAllocationsStateStorage) as unknown as ISetAllocationsState[]
-      if (parsedData && parsedData.length > 0) {
-        handleSetAllocationsStateUpdate(parsedData[0])
+    if (global?.window !== undefined) {
+      // Init
+      const setAllocationsStateStorage = localStorage.getItem('dx-data-localStore-setAllocationsState')
+      if (setAllocationsStateStorage) {
+        const parsedData = JSON.parse(setAllocationsStateStorage) as unknown as ISetAllocationsState[]
+        if (parsedData && parsedData.length > 0) {
+          handleSetAllocationsStateUpdate(parsedData[0])
+        }
+      } else {
+        handleSetAllocationsStateUpdate(localState)
       }
-    } else {
-      handleSetAllocationsStateUpdate(localState)
+      setLoading(false)
     }
-    setLoading(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <Stack>
-      <IndexAllocationsStateStoreContext.Provider value={setAllocationsStateStore}>
-        {!loading && (
-          <IndexModel
-            setAllocationsState={localState}
-            tabType={SetAllocationsType.EqualWeight}
-            onSetAllocationsStateUpdate={handleSetAllocationsStateUpdate}
-            onUpdate={onUpdate}
-          />
-        )}
-      </IndexAllocationsStateStoreContext.Provider>
+      <NotificationProvider>
+        <IndexAllocationsStateStoreContext.Provider value={setAllocationsStateStore}>
+          {!loading && (
+            <IndexModel
+              setAllocationsState={localState}
+              tabType={SetAllocationsType.EqualWeight}
+              onSetAllocationsStateUpdate={handleSetAllocationsStateUpdate}
+              onUpdate={onUpdate}
+            />
+          )}
+        </IndexAllocationsStateStoreContext.Provider>
+      </NotificationProvider>
       <IndexModelingSection
         sx={{ mt: 4 }}
         tableAssets={assets}

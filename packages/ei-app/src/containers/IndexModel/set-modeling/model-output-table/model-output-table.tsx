@@ -1,6 +1,6 @@
-import React, { FC, useCallback, useContext, useEffect, useState } from 'react'
+import React, { FC, useCallback, useEffect, useState } from 'react'
 import DataSource from 'devextreme/data/data_source'
-import DataGrid, {
+import DataGridDef, {
   Column,
   Editing,
   Export,
@@ -13,21 +13,16 @@ import { SymbolCellIdComponent } from '@/components/common/inputs/symbol-lookup/
 import { IModelOutputDataRow, IModelOutputTable } from './model-output-table.types'
 import { ModelOutputField, ModelOutputLabel } from './model-output-table.constants'
 import { calculateWeightValue } from './model-output-table.utils'
-import { ModelSetModelingTableStoreContext } from '../../ModelLocalStoreContext'
 import { ITokenSetAllocation } from '../../IndexModel.types'
 
 export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, tabType, onModelSetModelingUpdate, tokenCount, startPrice }) => {
-  const [dataSource, setDataSource] = useState<DataSource>()
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const datagrid = React.createRef<DataGrid<IModelOutputDataRow, any>>()
+  const datagrid = React.createRef<DataGridDef<IModelOutputDataRow, any>>()
+  const [modelSetModelingTableStore, setModelSetModelingTableStore] = useState<ITokenSetAllocation[]>([] as ITokenSetAllocation[])
 
-  const modelSetModelingTableStore = useContext(ModelSetModelingTableStoreContext)
-
-  const calculateQtyValue = (rowData: ITokenSetAllocation): number => {
-    const qty = (calculateWeightValue(tabType, rowData.marketCap, prefilteredTokenData) * startPrice) / rowData.price
-    return qty
-  }
+  const [dataSource, setDataSource] = useState<DataSource>(new DataSource({
+    store: modelSetModelingTableStore,
+  }))
 
   const weightOptions = {
     showClearButton: false,
@@ -35,6 +30,38 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
     format: "#0.00%" ,
     disabled: true,
   }
+
+  const calculateQtyValue = useCallback(
+    (rowData: ITokenSetAllocation): number => {
+      const qty = (calculateWeightValue(tabType, rowData.marketCap, prefilteredTokenData) * startPrice) / rowData.price
+      return qty
+    },
+    [prefilteredTokenData, startPrice, tabType]
+  )
+
+  const calculateWeightCellValue = useCallback(
+    (rowData: ITokenSetAllocation) => {
+      const weight = calculateWeightValue(tabType, rowData.marketCap, prefilteredTokenData)
+      return weight.toLocaleString(undefined, {style: 'percent', minimumFractionDigits:2})
+    },
+    [prefilteredTokenData, tabType]
+  )
+
+  const formatCurrencyCellValue = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (cellInfo: any) => {
+      return (cellInfo.value ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0, minimumFractionDigits: 0 })
+    },
+    []
+  )
+
+  const formatQtyCellValue = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (cellInfo: any) => {
+      return (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 6, minimumFractionDigits: 6 })
+    },
+    []
+  )
 
   const loadData = useCallback(async ():Promise<void> => {
     if (prefilteredTokenData !== null && prefilteredTokenData.length > 0) {
@@ -49,9 +76,12 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
         return 0
       }).slice(0, tokenCount)
 
-      onModelSetModelingUpdate(sortedFilteredData)
+      if (JSON.stringify(modelSetModelingTableStore) !== JSON.stringify(sortedFilteredData)) {
+        setModelSetModelingTableStore(sortedFilteredData)
+        onModelSetModelingUpdate(sortedFilteredData)
+      }
     }
-  }, [onModelSetModelingUpdate, prefilteredTokenData, tokenCount])
+  }, [modelSetModelingTableStore, onModelSetModelingUpdate, prefilteredTokenData, tokenCount])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onExporting = async (e: any):Promise<void> => {
@@ -73,31 +103,20 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
   }
 
   useEffect(() => {
-    // Init
-    if (modelSetModelingTableStore) {
-      setDataSource(new DataSource({
-        store: modelSetModelingTableStore,
-      }))
-    }
-    void loadData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (prefilteredTokenData !== null && prefilteredTokenData.length > 0) {
+      if ((modelSetModelingTableStore && modelSetModelingTableStore.length !== 0)) {
+        setDataSource(new DataSource({
+          store: modelSetModelingTableStore,
+        }))
+      }
 
-  useEffect(() => {
-    if (modelSetModelingTableStore) {
-      setDataSource(new DataSource({
-        store: modelSetModelingTableStore,
-      }))
+      void loadData()
     }
-  }, [modelSetModelingTableStore])
-
-  useEffect(() => {
-    void loadData()
-  }, [prefilteredTokenData, tokenCount, startPrice, loadData])
+  }, [prefilteredTokenData, tokenCount, startPrice, loadData, modelSetModelingTableStore])
 
   return (
     <div>
-      <DataGrid
+      <DataGridDef
         id="model-output-table"
         dataSource={dataSource}
         showBorders={true}
@@ -129,9 +148,7 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
           minWidth={175}
           dataType="number"
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          customizeText={(cellInfo: any) =>
-            (cellInfo.value ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 6, minimumFractionDigits: 6 })
-          }
+          customizeText={formatCurrencyCellValue}
           hidingPriority={3}
         />
         <Column
@@ -142,9 +159,7 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
           minWidth={160}
           dataType="number"
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          customizeText={(cellInfo: any) =>
-            (cellInfo.value ?? 0).toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0, minimumFractionDigits: 0 })
-          }
+          customizeText={formatCurrencyCellValue}
           hidingPriority={1}
         />
         <Column
@@ -155,10 +170,7 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
           minWidth={130}
           dataType="number"
           editorOptions={weightOptions}
-          calculateCellValue={(rowData: ITokenSetAllocation) => {
-            const weight = calculateWeightValue(tabType, rowData.marketCap, prefilteredTokenData)
-            return weight.toLocaleString(undefined, {style: 'percent', minimumFractionDigits:2})
-          }}
+          calculateCellValue={calculateWeightCellValue}
           hidingPriority={2}
         />
         <Column
@@ -170,9 +182,7 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
           dataType="number"
           calculateCellValue={calculateQtyValue}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          customizeText={(cellInfo: any) =>
-            (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 6, minimumFractionDigits: 6 })
-          }
+          customizeText={formatQtyCellValue}
           hidingPriority={4}
         />
         <Column
@@ -183,7 +193,7 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
           hidingPriority={0}
         />
         <Export enabled={true} allowExportSelectedData={true} />
-      </DataGrid>
+      </DataGridDef>
     </div>
   )
 }

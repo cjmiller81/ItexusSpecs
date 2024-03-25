@@ -3,8 +3,7 @@ import {
     Form,
     SimpleItem
 } from 'devextreme-react/form'
-// eslint-disable-next-line import/no-named-as-default
-import ResponsiveBox, { Col, Item, Row, Location } from 'devextreme-react/responsive-box'
+import ResponsiveBoxDef, { Col, Item, Row, Location } from 'devextreme-react/responsive-box'
 
 import { ModelOutputTable } from '../model-output-table/model-output-table'
 import { ISetModelingForm } from './set-modeling-form.types'
@@ -91,7 +90,7 @@ export const SetModelingForm: FC<ISetModelingForm> = ({ prefilteredTokenData, ta
 
   return (
     <div className={styles.setModelingContainer}>
-      <ResponsiveBox
+      <ResponsiveBoxDef
         singleColumnScreen="sm"
         screenByWidth={screenByWidth}>
         <Row ratio={1}></Row>
@@ -155,7 +154,7 @@ export const SetModelingForm: FC<ISetModelingForm> = ({ prefilteredTokenData, ta
             tokenCount={tokenCount}
             startPrice={startPrice} />
         </Item>
-      </ResponsiveBox>
+      </ResponsiveBoxDef>
     </div>
   )
 }

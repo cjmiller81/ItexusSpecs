@@ -15,8 +15,7 @@ import {
   Format,
   Label,
 } from 'devextreme-react/chart'
-// eslint-disable-next-line import/no-named-as-default
-import ResponsiveBox, { Col, Item, Row, Location } from 'devextreme-react/responsive-box'
+import ResponsiveBoxDef, { Col, Item, Row, Location } from 'devextreme-react/responsive-box'
 import DataSource from 'devextreme/data/data_source'
 import CustomStore from 'devextreme/data/custom_store'
 
@@ -313,7 +312,7 @@ export const HistoricalAnalysis: FC<IHistoricalAnalysis> = ({
 
   return (
     <div className={styles.historicalAnalysisContainer}>
-      <ResponsiveBox
+      <ResponsiveBoxDef
         singleColumnScreen="sm"
         screenByWidth={screenByWidth}>
         <Row ratio={1}></Row>
@@ -382,7 +381,7 @@ export const HistoricalAnalysis: FC<IHistoricalAnalysis> = ({
             </CommonAnnotationSettings>
           </Chart>
         </Item>
-      </ResponsiveBox>
+      </ResponsiveBoxDef>
     </div>
   )
 }
