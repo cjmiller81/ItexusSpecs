@@ -1,0 +1,39 @@
+@import '../../../../assets/sass/variables';
+
+.symbolLookupContainer {
+}
+
+.symbolLookup {
+}
+
+.symbolLookupFieldContainer {
+}
+
+.symbolLookupFieldContainer > picture > img {
+  height: 20px;
+  width: 20px;
+  margin-right: 10px;
+}
+
+.symbolLookupFieldContainer > div {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 20px;
+  font-size: 15px;
+}
+
+.symbolLookupListItemContainer {
+}
+
+.symbolLookupListItemContainer > picture > img {
+  height: 25px;
+  width: 25px;
+  margin-right: 10px;
+}
+
+.symbolLookupListItemContainer > div {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 25px;
+  font-size: 15px;
+}

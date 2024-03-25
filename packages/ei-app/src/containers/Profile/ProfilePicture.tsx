@@ -1,4 +1,5 @@
 import { Box, BoxProps, Button, Typography } from "@mui/material"
+import Image from "next/image"
 import { useTranslation } from "react-i18next"
 import { useFilePicker } from "use-file-picker"
 import { FileAmountLimitValidator, FileTypeValidator } from "use-file-picker/validators"
@@ -28,9 +29,9 @@ export const ProfilePicture = ({ ...props }: BoxProps) => {
           pl: 3,
           pr: 3,
         }}>
-        <img
-          width={"80px"}
-          height={"80px"}
+        <Image
+          width={80}
+          height={80}
           style={{ borderRadius: "50%" }}
           alt="Avatar"
           src={imgPath}

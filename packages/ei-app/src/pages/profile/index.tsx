@@ -21,7 +21,7 @@ export default function ProfilePage() {
   return (
     <ProfileContainer title={t("UserProfile")}>
       <TabContext value={value}>
-        <TabList onChange={(event, newValue) => handleChange(newValue)}>
+        <TabList onChange={(_event, newValue) => handleChange(newValue)}>
           <Tab
             label={t("PROFILE")}
             value="1"

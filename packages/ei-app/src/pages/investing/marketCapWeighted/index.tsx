@@ -16,10 +16,11 @@ export default function MarketCapWeightedPage() {
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const [period, setPeriod] = useState<Period>("daily")
   const dispatch = useAppDispatch()
-  
+
   return (
     <Stack>
       <IndexModelingSection
+        sx={{mt: 4}}
         tableAssets={assets}
         title={t("IndexModeling")}
       />
