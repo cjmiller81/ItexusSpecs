@@ -2,7 +2,6 @@ import { Stack } from "@mui/material"
 import LocalStore from "devextreme/data/local_store"
 import { useCallback, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-
 import { IndexAllocationsStateStoreContext } from "@/containers/IndexModel/IndexAllocationLocalStoreContext"
 import { IndexModel } from "@/containers/IndexModel/IndexModel"
 import { defaultAllocationsPanelState } from "@/containers/IndexModel/IndexModel.constants"
@@ -10,7 +9,7 @@ import { ISetAllocationsState, ITabPanelData, SetAllocationsType } from "@/conta
 import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
 import { HistoricalWalletsWorth, Period } from "@/containers/MyWallets/HistoricalWalletsWorth"
-import { searchIcons } from "@/libs/redux/Slices/IconsSlice"
+import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { assets } from "@/mocks/InvestingTableAsset"
 import NotificationProvider from "@/containers/IndexModel/notification-hook"
@@ -46,6 +45,11 @@ export default function MarketCapEqualWeightedPage() {
     }))
   }, [])
 
+  useEffect(() =>{
+    dispatch(clearSearchResult());
+    dispatch(searchIcons({}));
+  },[])
+  
   useEffect(() => {
     if (!loading && setAllocationsStateStore) {
       if (!setAllocationsStateStore) {

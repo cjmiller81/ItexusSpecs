@@ -1,11 +1,11 @@
 import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
 import { HistoricalWalletsWorth, Period } from "@/containers/MyWallets/HistoricalWalletsWorth"
-import { searchIcons } from "@/libs/redux/Slices/IconsSlice"
+import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { assets } from "@/mocks/InvestingTableAsset"
 import { Stack } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MarketCapWeightedPage() {
@@ -17,6 +17,12 @@ export default function MarketCapWeightedPage() {
   const [period, setPeriod] = useState<Period>("daily")
   const dispatch = useAppDispatch()
 
+  useEffect(() =>{
+    dispatch(clearSearchResult());
+    dispatch(searchIcons({}));
+  },[])
+  
+  console.log(iconsFetchingStatus);
   return (
     <Stack>
       <IndexModelingSection

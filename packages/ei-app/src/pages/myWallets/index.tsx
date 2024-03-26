@@ -1,7 +1,7 @@
 import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
-import { searchIcons } from "@/libs/redux/Slices/IconsSlice"
+import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { fetchHistoricalWalletData, selectSeries, setPeriod } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import {
   createWallet,
@@ -12,7 +12,7 @@ import {
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { Stack } from "@mui/material"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MyWalletsPage() {
@@ -30,7 +30,9 @@ export default function MyWalletsPage() {
   const { t } = useTranslation("MyWalletsPage")
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null))
+    if (firstLoad)
+      dispatch(fetchWallets(null))
+    dispatch(clearSearchResult());
     dispatch(searchIcons({}))
   }, [dispatch])
 

@@ -38,7 +38,6 @@ export default function SymbolLookup({ label, loading, options, ...props }: Prop
       />
       <Autocomplete
         id="virtualize-demo"
-        loading
         disableListWrap
         PopperComponent={StyledPopper}
         ListboxComponent={ListboxComponent}

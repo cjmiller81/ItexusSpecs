@@ -1,7 +1,6 @@
 import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
 import { iconsAbortableApi } from "@/services/iconsService"
-import { RootState } from "../RootReducer"
 import { createAppSlice } from "../createAppSlice"
 import { Status } from "./UiSlice"
 
@@ -24,13 +23,12 @@ export const IconsSlice = createAppSlice({
   name: "icons",
   initialState,
   reducers: create => ({
+    clearSearchResult: create.reducer(state => {
+      state.icons = []
+      state.lookUpOptions = []
+    }),
     searchIcons: create.asyncThunk(
       async (payload: { query?: string }, thunkApi): Promise<{ query?: string; tokens: TokenDetails[] }> => {
-        const state = thunkApi.getState() as RootState
-        const cached = state.walletsReducer.icons.cachedIcons["query"]
-        if (cached) {
-          return { query: payload.query, tokens: cached }
-        }
         const response = await iconsAbortableApi.getIcons(payload.query)
         return { query: payload.query, tokens: response }
       },
@@ -48,11 +46,11 @@ export const IconsSlice = createAppSlice({
           state.icons = action.payload.tokens
         },
         rejected: (state, error) => {
-          if (error?.error.message !== "aborted") {
+          if (error?.error.message !== "aborted" && state.iconsFetchingStatus !== "loading") {
             state.iconsFetchingStatus = "failed"
           }
 
-          if (error?.error.message === "aborted" && error.meta.arg.query === state.currentSearch) {
+          if (error?.error.message === "aborted" && error.meta.arg.query === state.currentSearch && state.iconsFetchingStatus !== "loading") {
             state.iconsFetchingStatus = "idle"
           }
         },
@@ -61,4 +59,4 @@ export const IconsSlice = createAppSlice({
   }),
 })
 
-export const { searchIcons } = IconsSlice.actions
+export const { searchIcons, clearSearchResult } = IconsSlice.actions
