@@ -116,5 +116,8 @@
     "USDValue": "USD Value",
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address"
+  },
+  "SymbolLookup":{
+    "Search": "Search"
   }
 }
