@@ -49,12 +49,12 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
             <Button
               variant="contained"
               type="submit">
-              {t("Save")}
+              {t("Save", { ns: "Common" })}
             </Button>
             <Button
               variant="outlined"
               onClick={onClose}>
-              {t("Cancel")}
+              {t("Cancel", { ns: "Common" })}
             </Button>
           </Box>
         </Form>

@@ -1,4 +1,9 @@
 {
+  "Common": {
+    "Edit": "Edit",
+    "Save": "Save",
+    "Cancel": "Cancel"
+  },
   "errorMessages": {
     "incorectPassword": "Incorrect password",
     "mandatoryField": "Mandatory field",
@@ -63,8 +68,7 @@
     "EnableSMSMFA": "Enable SMS MFA",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
-    "DisplayName": "Display Name",
-    "Save": "Save"
+    "DisplayName": "Display Name"
   },
   "IndexModelingSection": {
     "Tokens": "Tokens:",
@@ -132,6 +136,7 @@
     "CardEnding": "Ending in {{number}}",
     "Default": "Default",
     "AddNewMethod": "Add New Method",
-    "PaymentMethods": "Payment Methods"
+    "PaymentMethods": "Payment Methods",
+    "MakeDefault": "Make Default"
   }
 }

@@ -8,9 +8,11 @@ import { paymentCards } from "../../../mocks/PaymentCards"
 import { PaymentCardModel } from "../../../models/Payments/PaymentCardModel"
 import { ProfileContainer } from "../ProfileContainer"
 import { BillingPlanContainer, PlatinumPlanPlanContainer } from "./PlanContainers"
+import i18next, { t } from "i18next"
+i18next.setDefaultNamespace("common")
 
 export const BillingContainer = ({ ...props }: StackProps) => {
-  const { t } = useTranslation("BillingContainer")
+  const { t } = useTranslation(["BillingContainer"])
 
   const [cards, setCards] = useState(paymentCards)
 
@@ -110,6 +112,7 @@ const PaymentCard = ({
           ) : (
             <Button
               onClick={onSetDefault}
+              sx={{ minWidth: "85px" }}
               variant="link">
               {t("MakeDefault")}
             </Button>
@@ -121,7 +124,7 @@ const PaymentCard = ({
           <Button
             onClick={onEdit}
             variant="link">
-            {t("Edit")}
+            {t("Edit", { ns: "Common" })}
           </Button>
         </CardButtonsContainer>
       </PaymentCardContainer>

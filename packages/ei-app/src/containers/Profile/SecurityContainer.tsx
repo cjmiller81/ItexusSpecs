@@ -71,7 +71,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               type="submit"
               sx={{ float: "right", width: "80%", mr: "10%" }}
               variant="contained">
-              {t("Save")}
+              {t("Save", { ns: "Common" })}
             </Button>
           </Grid>
         </Grid>
