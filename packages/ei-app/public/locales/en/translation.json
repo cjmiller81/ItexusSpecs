@@ -66,15 +66,16 @@
     "DisplayName": "Display Name",
     "Save": "Save"
   },
-  "IndexModelingSection":{
+  "IndexModelingSection": {
     "Tokens": "Tokens:",
     "TotalCapital": "Total Capital:",
-    "Export": "Export" 
+    "Export": "Export"
   },
   "ProfilePage": {
     "PROFILE": "PROFILE",
     "SECURITY": "SECURITY",
     "WALLETS": "WALLETS",
+    "BILLING": "BILLING",
     "UserProfile": "User Profile"
   },
   "ProfilePicture": {
@@ -105,7 +106,7 @@
     "ChartTitle": "Historical Market Cap Equal Weight Index",
     "IndexModeling": "Index Modeling"
   },
-  "ColumnsDefs":{
+  "ColumnsDefs": {
     "Symbol": "Symbol",
     "Price": "Price",
     "MarketCap": "Market Cap",
@@ -117,7 +118,20 @@
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address"
   },
-  "SymbolLookup":{
+  "SymbolLookup": {
     "Search": "Search"
+  },
+  "BillingContainer": {
+    "Plans": "Plans",
+    "Platinum": "Platinum",
+    "PlatinumCost": "$20.00 USD / month + tax",
+    "ExplorePlans": "Explore plans",
+    "BillingPeriod": "Billing Period",
+    "BillingCost": "Monthly (renews August 16th 2022)",
+    "ChangeBillingPeriod": "Change billing period",
+    "CardEnding": "Ending in {{number}}",
+    "Default": "Default",
+    "AddNewMethod": "Add New Method",
+    "PaymentMethods": "Payment Methods"
   }
 }
