@@ -30,8 +30,6 @@ export default function AppNumberField({
   ...props
 }: AppNumberInputProps) {
   useEffect(() => {
-    const caretPosition = inputRef.current ? inputRef.current.selectionStart : 0
-    console.log(caretPosition)
     setFormattedValue(value.toFixed(maxDecimals))
   }, [value])
 
@@ -48,7 +46,6 @@ export default function AppNumberField({
       return
     }
 
-    inputValue = inputValue.replace(",", ".")
     if (inputValue === "") inputValue = "0"
 
     if (maxDecimals === 0 && inputValue.includes(".")) {
