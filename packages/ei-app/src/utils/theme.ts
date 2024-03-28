@@ -3,6 +3,18 @@ import "@mui/lab/themeAugmentation"
 import { createTheme, PaletteMode, PaletteOptions } from "@mui/material"
 import { TypographyOptions } from "@mui/material/styles/createTypography"
 
+declare module "@mui/material/Button" {
+  interface ButtonPropsVariantOverrides {
+    link: true
+  }
+}
+
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    subtitle3: true
+  }
+}
+
 const darkPalette: PaletteOptions = {
   primary: {
     main: "#26BAFC",
@@ -62,6 +74,12 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
 
   const finaleTheme = createTheme(
     {
+      typography: {
+        subtitle2: {
+          fontSize: "0.75rem",
+          color: commonTheme.palette.mode === "dark" ? commonTheme.palette.grey[400] : commonTheme.palette.grey[500],
+        },
+      },
       components: {
         MuiTabPanel: {
           styleOverrides: {
@@ -71,16 +89,31 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
             },
           },
         },
-        MuiAccordionSummary:{
-          styleOverrides:{
-            root:{
-              backgroundColor: commonTheme.palette.background.paper
-            }
-          }
+        MuiAccordionSummary: {
+          styleOverrides: {
+            root: {
+              backgroundColor: commonTheme.palette.background.paper,
+            },
+          },
         },
         MuiButton: {
           defaultProps: {},
           variants: [
+            {
+              props: { variant: "link" },
+              style: {
+                textTransform: "none",
+                border: `none`,
+                minWidth: 0,
+                padding: 0,
+                fontWeight: 400,
+                color: commonTheme.palette.primary.main,
+                ":hover": {
+                  textDecoration: "underline",
+                  backgroundColor: "transparent",
+                },
+              },
+            },
             {
               props: { variant: "outlined" },
               style: {

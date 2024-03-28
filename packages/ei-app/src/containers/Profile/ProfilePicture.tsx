@@ -1,5 +1,5 @@
 import { Box, BoxProps, Button, Typography } from "@mui/material"
-import Image from "next/image"
+import React from "react"
 import { useTranslation } from "react-i18next"
 import { useFilePicker } from "use-file-picker"
 import { FileAmountLimitValidator, FileTypeValidator } from "use-file-picker/validators"
@@ -29,7 +29,8 @@ export const ProfilePicture = ({ ...props }: BoxProps) => {
           pl: 3,
           pr: 3,
         }}>
-        <Image
+        <img
+          loading="lazy"
           width={80}
           height={80}
           style={{ borderRadius: "50%" }}

@@ -69,7 +69,7 @@ export default function MyWalletsPage() {
       />
 
       <HistoricalWalletsWorth
-        sx={{mt: 4}}
+        sx={{ mt: 4 }}
         chartAxisTicks={yAxisTicks}
         chartSeries={chartSeries}
         fromDate={fromDate}

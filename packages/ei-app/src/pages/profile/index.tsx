@@ -1,3 +1,4 @@
+import { BillingContainer } from "@/containers/Profile/Billing/BillingContainer"
 import { ProfileContainer } from "@/containers/Profile/ProfileContainer"
 import { ProfileDetails } from "@/containers/Profile/ProfileDetails"
 import { ProfilePicture } from "@/containers/Profile/ProfilePicture"
@@ -5,7 +6,7 @@ import { SecurityContainer } from "@/containers/Profile/SecurityContainer"
 import { WalletsContainer } from "@/containers/Profile/WalletsContainer"
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
-import { Box, styled, Tab } from "@mui/material"
+import { Box, Tab, styled } from "@mui/material"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -21,7 +22,7 @@ export default function ProfilePage() {
   return (
     <ProfileContainer title={t("UserProfile")}>
       <TabContext value={value}>
-        <TabList onChange={(_event, newValue) => handleChange(newValue)}>
+        <StyledTabList onChange={(_event, newValue) => handleChange(newValue)}>
           <Tab
             label={t("PROFILE")}
             value="1"
@@ -34,7 +35,11 @@ export default function ProfilePage() {
             label={t("WALLETS")}
             value="3"
           />
-        </TabList>
+          <Tab
+            label={t("BILLING")}
+            value="4"
+          />
+        </StyledTabList>
         <TabPanel value="1">
           <StyledProfileBox>
             <ProfilePicture sx={{ width: "30%", minWidth: "200px" }} />
@@ -46,6 +51,9 @@ export default function ProfilePage() {
         </TabPanel>
         <TabPanel value="3">
           <WalletsContainer />
+        </TabPanel>
+        <TabPanel value="4">
+          <BillingContainer />
         </TabPanel>
       </TabContext>
     </ProfileContainer>
@@ -59,5 +67,14 @@ const StyledProfileBox = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
     alignItems: "center",
+  },
+}))
+
+const StyledTabList = styled(TabList)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    " .MuiButtonBase-root": {
+      minWidth: "20px",
+      padding: "8px 12px",
+    },
   },
 }))
