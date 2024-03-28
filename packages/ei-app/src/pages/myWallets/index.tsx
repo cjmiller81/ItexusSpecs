@@ -30,9 +30,8 @@ export default function MyWalletsPage() {
   const { t } = useTranslation("MyWalletsPage")
 
   useEffect(() => {
-    if (firstLoad)
-      dispatch(fetchWallets(null))
-    dispatch(clearSearchResult());
+    if (firstLoad) dispatch(fetchWallets(null))
+    dispatch(clearSearchResult())
     dispatch(searchIcons({}))
   }, [dispatch])
 
@@ -70,6 +69,7 @@ export default function MyWalletsPage() {
 
       <HistoricalWalletsWorth
         sx={{ mt: 4 }}
+        lookupOption={symbolOption}
         chartAxisTicks={yAxisTicks}
         chartSeries={chartSeries}
         fromDate={fromDate}

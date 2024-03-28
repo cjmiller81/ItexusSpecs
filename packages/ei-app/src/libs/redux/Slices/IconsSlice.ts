@@ -40,7 +40,7 @@ export const IconsSlice = createAppSlice({
         fulfilled: (state, action) => {
           state.iconsFetchingStatus = "idle"
           state.lookUpOptions = action.payload.tokens.map<LookUpOption>(icon => ({
-            label: icon.sym,
+            label: `${icon.sym.toUpperCase()} - ${icon.name}`,
             iconUrl: icon.lURI,
           }))
           state.icons = action.payload.tokens
@@ -50,7 +50,11 @@ export const IconsSlice = createAppSlice({
             state.iconsFetchingStatus = "failed"
           }
 
-          if (error?.error.message === "aborted" && error.meta.arg.query === state.currentSearch && state.iconsFetchingStatus !== "loading") {
+          if (
+            error?.error.message === "aborted" &&
+            error.meta.arg.query === state.currentSearch &&
+            state.iconsFetchingStatus !== "loading"
+          ) {
             state.iconsFetchingStatus = "idle"
           }
         },
