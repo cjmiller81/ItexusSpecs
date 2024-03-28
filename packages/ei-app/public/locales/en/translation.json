@@ -73,7 +73,8 @@
   "IndexModelingSection": {
     "Tokens": "Tokens:",
     "TotalCapital": "Total Capital:",
-    "Export": "Export"
+    "Export": "Export",
+    "EqualWeight": "Equal Weight"
   },
   "ProfilePage": {
     "PROFILE": "PROFILE",

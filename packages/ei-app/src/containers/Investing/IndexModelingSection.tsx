@@ -1,4 +1,5 @@
 import PageTitle from "@/components/TextDisplay/PageTitle"
+import AppPercentageField from "@/components/common/inputs/AppPercentageField"
 import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
 import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls"
@@ -15,12 +16,14 @@ import { StyledWalletsTable } from "../MyWallets/WalletsTable"
 interface Props extends Omit<AccordionProps, "children"> {
   title: string
   tableAssets: InvestingTableAsset[]
+  isEqualWeight?: boolean
 }
 
-export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) => {
+export const IndexModelingSection = ({ title, tableAssets, isEqualWeight, ...props }: Props) => {
   const { t } = useTranslation("IndexModelingSection")
   const apiRef = useGridApiRef()
   const [tokens, setTokens] = useState<number>(0)
+  const [equalWeight, setEqualWeight] = useState<number>(0)
   const [totalCapital, setTotalCapital] = useState<number>(0)
 
   const onExport = () => {
@@ -86,6 +89,15 @@ export const IndexModelingSection = ({ title, tableAssets, ...props }: Props) =>
               value={tokens}
               onChange={(_, value) => setTokens(value ?? 0)}
             />
+            {isEqualWeight && <AppPercentageField
+              label={t("EqualWeight")}
+              onChange={value => setEqualWeight(value)}
+              value={equalWeight}
+              inputProps={{
+                disabled: true
+              }}
+              maxDecimals={2}
+            />}
             <AppNumberInput
               label={t("TotalCapital")}
               value={totalCapital}

@@ -93,6 +93,7 @@ export default function MarketCapEqualWeightedPage() {
       </NotificationProvider>
       <IndexModelingSection
         sx={{ mt: 4 }}
+        isEqualWeight
         tableAssets={assets}
         title={t("IndexModeling")}
       />
