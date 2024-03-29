@@ -75,7 +75,7 @@ export const walletWorthChartSlice = createAppSlice({
       async (
         payload: {
           startDate: Date
-          compareSymbol?: string | null
+          tokenId?: string | null,
           compareLabel?: string | null
         },
         thunkApi,
@@ -85,7 +85,7 @@ export const walletWorthChartSlice = createAppSlice({
           toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
           payload.startDate,
           moment.utc().add(1, "d").toDate(),
-          payload.compareSymbol?.toLowerCase(),
+          payload.tokenId,
         )
         return { seriesData: response, comareToLabel: payload.compareLabel }
       },
