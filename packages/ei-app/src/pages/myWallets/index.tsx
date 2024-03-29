@@ -39,7 +39,7 @@ export default function MyWalletsPage() {
     if (fromDate) {
       dispatch(
         fetchHistoricalWalletData({
-          compareSymbol: symbolOption?.label.toLocaleLowerCase(),
+          compareSymbol: symbolOption?.symbol,
           compareLabel: symbolOption?.label,
           startDate: fromDate,
         }),

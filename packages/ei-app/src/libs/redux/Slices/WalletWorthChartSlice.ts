@@ -85,7 +85,7 @@ export const walletWorthChartSlice = createAppSlice({
           toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
           payload.startDate,
           moment.utc().add(1, "d").toDate(),
-          payload.compareSymbol,
+          payload.compareSymbol?.toLowerCase(),
         )
         return { seriesData: response, comareToLabel: payload.compareLabel }
       },
@@ -122,7 +122,7 @@ function MakeChartSeries(state: WalletsChartState) {
   const firstWalletValue = state.chartData.seriesData[0].walletValue
   const walletWorthValues = state.chartData.seriesData.filter(periodFilter).map(x => ({
     x: x.historyDate,
-    y: (x.walletValue - firstWalletValue) / firstWalletValue,
+    y: ((x.walletValue - firstWalletValue) / firstWalletValue) * 100,
   }))
 
   state.chartSeries = []
@@ -139,7 +139,7 @@ function MakeChartSeries(state: WalletsChartState) {
   if (state.chartCompareToLabel && firstComparePrice !== null) {
     compareToValues = state.chartData.seriesData.filter(periodFilter).map(x => ({
       x: x.historyDate,
-      y: (x.comparePrice - firstComparePrice) / firstComparePrice,
+      y: ((x.comparePrice - firstComparePrice) / firstComparePrice) * 100,
     }))
     state.chartSeries.push({
       name: state.chartCompareToLabel,
