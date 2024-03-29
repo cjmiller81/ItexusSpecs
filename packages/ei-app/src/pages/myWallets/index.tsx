@@ -39,7 +39,7 @@ export default function MyWalletsPage() {
     if (fromDate) {
       dispatch(
         fetchHistoricalWalletData({
-          compareSymbol: symbolOption?.symbol,
+          tokenId: symbolOption?.tokenId,
           compareLabel: symbolOption?.label,
           startDate: fromDate,
         }),

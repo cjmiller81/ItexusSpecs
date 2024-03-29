@@ -1,5 +1,5 @@
 export interface TokenDetails {
-  id?: string | null
+  id: string
   addr?: string | null
   cats?: string | null
   chainId?: null | null

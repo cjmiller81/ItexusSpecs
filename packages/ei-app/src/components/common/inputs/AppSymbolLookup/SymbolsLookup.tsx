@@ -22,7 +22,7 @@ const StyledPopper = styled(Popper)({
 export interface LookUpOption {
   label: string
   iconUrl?: string | null
-  symbol: string
+  tokenId: string
 }
 
 export interface Props extends Omit<AutocompleteProps<LookUpOption, false, false, false, any>, "renderInput"> {
