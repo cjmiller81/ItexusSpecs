@@ -1,5 +1,5 @@
 import SearchIcon from "@mui/icons-material/Search"
-import { CircularProgress } from "@mui/material"
+import { Box, CircularProgress } from "@mui/material"
 import Autocomplete, { AutocompleteProps, autocompleteClasses } from "@mui/material/Autocomplete"
 import Popper from "@mui/material/Popper"
 import TextField from "@mui/material/TextField"
@@ -30,7 +30,7 @@ export interface Props extends Omit<AutocompleteProps<LookUpOption, false, false
   label: string
 }
 
-export default function SymbolLookup({ label, loading, options, ...props }: Props) {
+export default function SymbolLookup({ label, value, loading, options, ...props }: Props) {
   const { t } = useTranslation("SymbolLookup")
 
   return (
@@ -40,21 +40,41 @@ export default function SymbolLookup({ label, loading, options, ...props }: Prop
         required={false}
       />
       <Autocomplete
+      sx={{
+        " .MuiInputBase-root":{
+          display: "flex",
+          flexWrap: "nowrap"
+        }
+      }}
         id="virtualize-demo"
         disableListWrap
         PopperComponent={StyledPopper}
         ListboxComponent={ListboxComponent}
         options={options}
         {...props}
+        value={value}
         renderInput={params => (
           <TextField
             placeholder={t("Search")}
             {...params}
             InputProps={{
               ...params.InputProps,
-              startAdornment: <SearchIcon />,
+              startAdornment: (
+                <Box sx={{ display: "flex", flexWrap: "nowrap" }}>
+                  <SearchIcon />
+                  {value && value.iconUrl && (
+                    <img
+                      style={{ marginLeft: 8, marginRight: 4 }}
+                      loading="lazy"
+                      width="20"
+                      src={value.iconUrl}
+                      alt=""
+                    />
+                  )}
+                </Box>
+              ),
               endAdornment: (
-                <React.Fragment>
+                <>
                   {loading ? (
                     <CircularProgress
                       color="inherit"
@@ -62,7 +82,7 @@ export default function SymbolLookup({ label, loading, options, ...props }: Prop
                     />
                   ) : null}
                   {params.InputProps.endAdornment}
-                </React.Fragment>
+                </>
               ),
             }}
           />

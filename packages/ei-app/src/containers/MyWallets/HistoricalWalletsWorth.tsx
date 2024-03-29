@@ -81,7 +81,7 @@ export const HistoricalWalletsWorth = ({
             maxDate={moment.utc().add(-1, "d").toDate()}
             label={t("FromDate")}
           />
-          <SymbolLookup
+          <StyledSymbolLookup
             loading={lookupLoading}
             disableListWrap
             value={lookupOption}
@@ -198,10 +198,14 @@ export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   width: "100%",
 }))
 
+export const StyledSymbolLookup = styled(SymbolLookup)(() => ({
+  flexGrow: 1,
+}))
+
 export const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(2),
-  width: "25%",
+  width: "35%",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
     textWrap: "noWrap",

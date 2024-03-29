@@ -1,4 +1,4 @@
-import { Box, ListSubheader } from "@mui/material"
+import { Box, ListSubheader, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import * as React from "react"
@@ -37,7 +37,7 @@ export default function renderRow(props: ListChildComponentProps) {
         src={dataSet[1].iconUrl}
         alt=""
       />
-      {dataSet[1].label}
+      <Typography noWrap>{dataSet[1].label}</Typography>
     </Box>
   )
 }
