@@ -2,7 +2,8 @@
   "Common": {
     "Edit": "Edit",
     "Save": "Save",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "Sumbit": "Submit"
   },
   "errorMessages": {
     "incorectPassword": "Incorrect password",
@@ -30,7 +31,6 @@
     "Monthly": "Monthly",
     "Weekly": "Weekly",
     "FromDate": "From Date:",
-    "Sumbit": "Submit",
     "CompareToSymbol": "Compare to Symbol:",
     "Period": "Period:",
     "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
@@ -104,11 +104,12 @@
     "Tools": "Tools"
   },
   "MarketCapEqualWeightedPage": {
-    "ChartTitle": "Historical Market Cap Weighted Index",
-    "IndexModeling": "Index Modeling"
+    "ChartTitle": "Historical Market Cap Equal Weight Index",
+    "IndexModeling": "Index Modeling",
+    "RunTest": "Run Test"
   },
   "MarketCapWeightedPage": {
-    "ChartTitle": "Historical Market Cap Equal Weight Index",
+    "ChartTitle": "Historical Market Cap Weighted Index",
     "IndexModeling": "Index Modeling"
   },
   "ColumnsDefs": {
@@ -125,6 +126,9 @@
   },
   "SymbolLookup": {
     "Search": "Search"
+  },
+  "MarketCapEqualWeight":{
+    "Index": "Index"
   },
   "BillingContainer": {
     "Plans": "Plans",

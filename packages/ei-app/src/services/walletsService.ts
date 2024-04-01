@@ -1,5 +1,6 @@
 import { apiDateFormatString } from "@/constants/Common"
 import { appAxios } from "@/libs/axios/customAxios"
+import { CapHistoricalWeightedDate } from "@/models/Wallet/CapHistoricalWeightedDate"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { Wallet } from "@/models/Wallet/Wallet"
 import moment from "moment"
@@ -29,12 +30,33 @@ export const walletsApi = {
   ): Promise<HistoricalWalletData[]> => {
     const response = await appAxios.post(`/model/run/walletValueIndex`, symbols, {
       params: {
-        startDate: moment(startDate).format(apiDateFormatString),
-        endDate: moment(endDate).format(apiDateFormatString),
+        startDate: ToUtcDateFormatted(startDate),
+        endDate: ToUtcDateFormatted(endDate),
         compareSymbol,
       },
     })
 
-    return response.data;
+    return response.data
   },
+  getHistoricalCapWeightedWalletData: async (
+    startDate: Date,
+    endDate: Date,
+    tokenCount: number,
+    compareSymbolId: string,
+  ): Promise<CapHistoricalWeightedDate[]> => {
+    const response = await appAxios.get(`/model/run/marketCapWeightedIndex`, {
+      params: {
+        startDate: ToUtcDateFormatted(startDate),
+        endDate: ToUtcDateFormatted(endDate),
+        compareTokenId: compareSymbolId,
+        tokenCount,
+      },
+    })
+
+    return response.data
+  },
+}
+
+function ToUtcDateFormatted(date: Date) {
+  return moment(date).utc().format(apiDateFormatString)
 }
