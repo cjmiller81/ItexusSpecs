@@ -1,0 +1,184 @@
+import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
+import { Period } from "@/containers/MyWallets/WalletsTable"
+import { CapHistoricalWeightedDate } from "@/models/Wallet/CapHistoricalWeightedDate"
+import { walletsApi } from "@/services/walletsService"
+import { PayloadAction } from "@reduxjs/toolkit"
+import i18next from "i18next"
+import { RootState } from "../RootReducer"
+import { createAppSlice } from "../createAppSlice"
+import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
+import { Status } from "./UiSlice"
+
+interface MarketCapEqualWeightChartState {
+  chartData?: ChartSeriesDataResponse
+  statstatusFetchingMarcetCapData: Status
+  indexSeriesSelected: boolean
+  compareSymbolSeriesSelected: boolean
+  period: Period
+  tokensAllocation: number
+  chartSeries: ChartSeries[]
+  chartCompareToLabel?: string | null
+  minChartValue: number
+  maxChartValue: number
+  yAxisTicks: number
+  startDate: Date | null
+  endDate: Date
+  symbolOption?: LookUpOption | null
+}
+
+interface ChartSeriesDataResponse {
+  seriesData: CapHistoricalWeightedDate[]
+  comareToLabel?: string | null
+}
+
+const defaultOption: LookUpOption = {
+  label: "BTC - Bitcoin",
+  tokenId: "bitcoin",
+  iconUrl: "https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png?1696501400",
+}
+
+const initialState: MarketCapEqualWeightChartState = {
+  chartData: undefined,
+  period: "daily",
+  tokensAllocation: 3,
+  chartSeries: [],
+  statstatusFetchingMarcetCapData: "idle",
+  indexSeriesSelected: true,
+  compareSymbolSeriesSelected: true,
+  minChartValue: 0,
+  maxChartValue: 10,
+  yAxisTicks: 6,
+  startDate: null,
+  endDate: new Date(),
+  symbolOption: defaultOption,
+}
+
+export const marketCapEqualWeightSlice = createAppSlice({
+  name: "marketCapEqualWeight",
+  initialState,
+  reducers: create => ({
+    resetState: create.reducer(state => {
+      state = { ...initialState }
+    }),
+    setPeriod: create.reducer((state, action: PayloadAction<{ period: Period }>) => {
+      state.period = action.payload.period
+      calculateChartSeries(state)
+    }),
+    setFromDate: create.reducer((state, action: PayloadAction<{ fromDate: Date | null }>) => {
+      state.startDate = action.payload.fromDate
+    }),
+    setCompareOption: create.reducer((state, action: PayloadAction<{ compareToOption: LookUpOption | null }>) => {
+      state.symbolOption = action.payload.compareToOption
+    }),
+    selectSeries: create.reducer((state, action: PayloadAction<{ seriesIndex: 0 | 1 }>) => {
+      if (action.payload.seriesIndex === 0) state.indexSeriesSelected = !state.indexSeriesSelected
+      if (action.payload.seriesIndex === 1) state.compareSymbolSeriesSelected = !state.compareSymbolSeriesSelected
+      calculateChartSeries(state)
+    }),
+    fetchHistoricalCapWeightedData: create.asyncThunk(
+      async (_, thunkApi): Promise<ChartSeriesDataResponse> => {
+        const state = thunkApi.getState() as RootState
+        if (!state.walletsReducer.marketCapEqualWeight.startDate) {
+          throw "startDate is not set"
+        }
+
+        if (!state.walletsReducer.marketCapEqualWeight.symbolOption) {
+          throw "symbolOption is not set"
+        }
+
+        const response = await walletsApi.getHistoricalCapWeightedWalletData(
+          state.walletsReducer.marketCapEqualWeight.startDate,
+          new Date(),
+          state.walletsReducer.marketCapEqualWeight.tokensAllocation,
+          state.walletsReducer.marketCapEqualWeight.symbolOption.tokenId,
+        )
+        return { seriesData: response, comareToLabel: state.walletsReducer.marketCapEqualWeight.symbolOption.label }
+      },
+      {
+        pending: state => {
+          state.statstatusFetchingMarcetCapData = "loading"
+        },
+        fulfilled: (state, action) => {
+          state.statstatusFetchingMarcetCapData = "idle"
+          state.chartData = action.payload
+          state.chartCompareToLabel = state.chartData.comareToLabel
+          calculateChartSeries(state)
+        },
+        rejected: state => {
+          state.statstatusFetchingMarcetCapData = "failed"
+        },
+      },
+    ),
+  }),
+})
+
+function calculateChartSeries(state: MarketCapEqualWeightChartState) {
+  if (!state.chartData?.seriesData?.length || !state.chartCompareToLabel) {
+    return
+  }
+
+  state.chartSeries = makeChartSeries(state.chartData, state.period, state.chartCompareToLabel)
+  const { minValue, maxValue } = calculateMinMax(state)
+  const { minChartValue, maxChartValue } = GetPrettyScale(minValue, maxValue, state.yAxisTicks)
+  state.minChartValue = minChartValue
+  state.maxChartValue = maxChartValue
+}
+
+function makeChartSeries(chartData: ChartSeriesDataResponse, period: Period, compareToLabel: string): ChartSeries[] {
+  if (!chartData || !chartData.seriesData || !chartData.seriesData.length) {
+    return []
+  }
+  const periodFilter = getPeriodHistoricalDataFileter(period)
+  const firstComparePrice = chartData.seriesData[0].comparePrice
+  const firstCapWeightIndexValue = chartData.seriesData[0].capEqualWeightedIndex
+  const capEqualWeightedIndexValues = chartData.seriesData
+    .filter(seriesData => periodFilter(seriesData.capWeightedDate))
+    .map(x => ({
+      x: x.capWeightedDate,
+      y: ((x.capEqualWeightedIndex - firstCapWeightIndexValue) / firstCapWeightIndexValue) * 100,
+    }))
+
+  const chartSeries: ChartSeries[] = []
+  chartSeries.push({
+    name: i18next.t("Index", { ns: "MarketCapEqualWeight" }),
+    data: capEqualWeightedIndexValues,
+  })
+
+  let compareToValues: {
+    x: Date
+    y: number
+  }[] = []
+
+  compareToValues = chartData.seriesData
+    .filter(seriesData => periodFilter(seriesData.capWeightedDate))
+    .map(x => ({
+      x: x.capWeightedDate,
+      y: ((x.comparePrice - firstComparePrice) / firstComparePrice) * 100,
+    }))
+
+  chartSeries.push({
+    name: compareToLabel,
+    data: compareToValues,
+  })
+
+  return chartSeries
+}
+
+function calculateMinMax(state: MarketCapEqualWeightChartState): { minValue: number; maxValue: number } {
+  const selectedSeriesValues = [
+    ...(state.indexSeriesSelected ? state.chartSeries[0].data.map(seriesPoint => seriesPoint) : []),
+    ...(state.compareSymbolSeriesSelected ? state.chartSeries[1].data.map(seriesPoint => seriesPoint) : []),
+  ].map(seriesPoint => seriesPoint.y)
+
+  const maxValue = Math.max(...selectedSeriesValues)
+  let minValue = Math.min(...selectedSeriesValues)
+  minValue = minValue > 0 ? 0 : minValue
+
+  return {
+    minValue: minValue,
+    maxValue: maxValue,
+  }
+}
+
+export const { fetchHistoricalCapWeightedData, setPeriod, setCompareOption, setFromDate, selectSeries, resetState } =
+  marketCapEqualWeightSlice.actions

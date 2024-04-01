@@ -4,9 +4,10 @@ import AppSelect from "@/components/common/inputs/AppSelect"
 import SymbolLookup, { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import PageTitle from "@/components/TextDisplay/PageTitle"
 import { chartDateFormatString } from "@/constants/Common"
-import { Box, BoxProps, Button, MenuItem } from "@mui/material"
+import LoadingButton from "@mui/lab/LoadingButton"
+import { Box, BoxProps, MenuItem } from "@mui/material"
 import { styled } from "@mui/material/styles"
-import moment from "moment"
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 export type Period = "daily" | "weekly" | "monthly"
 
@@ -24,9 +25,11 @@ interface Props extends BoxProps {
   minChartValue: number
   maxChartValue: number
   chartAxisTicks: number
-  onToggleSeries: (seriesIndex: number) => void
+  chartDataLoading?: boolean
+  onToggleSeries: (seriesIndex: 0 | 1) => void
   onLookUpSearchChange: (search: string) => void
   submitButtonDisabled: boolean
+  sumbitButtonText?: string
   //eslint-disable-next-line no-undef
   chartSeries?: ApexAxisChartSeries | null
 }
@@ -44,10 +47,12 @@ export const HistoricalWalletsWorth = ({
   minChartValue,
   maxChartValue,
   chartAxisTicks,
+  chartDataLoading,
   onToggleSeries,
   onLookUpSearchChange,
   submitButtonDisabled,
   chartSeries,
+  sumbitButtonText,
   ...props
 }: Props) => {
   const { t } = useTranslation("HistoricalWalletsWorth")
@@ -58,6 +63,8 @@ export const HistoricalWalletsWorth = ({
       maximumFractionDigits: 2,
     })}%`
   }
+
+  const [inputSearch, setInputSearch] = useState("")
 
   return (
     <StyledWalletWorthContainer {...props}>
@@ -77,8 +84,9 @@ export const HistoricalWalletsWorth = ({
           </AppSelect>
           <AppDatePicker
             disableFuture
+            value={fromDate}
             onChange={date => onFromDateChange(date)}
-            maxDate={moment.utc().add(-1, "d").toDate()}
+            maxDate={new Date()}
             label={t("FromDate")}
           />
           <StyledSymbolLookup
@@ -87,20 +95,23 @@ export const HistoricalWalletsWorth = ({
             value={lookupOption}
             onChange={(event, value) => onOptionChange(value)}
             autoComplete={true}
-            onInputChange={(event, value) => onLookUpSearchChange(value)}
+            onInputChange={(event, value) => {
+              onLookUpSearchChange(value)
+              setInputSearch(value)
+            }}
             filterOptions={x => x}
-            inputValue={lookupOption?.label}
+            inputValue={inputSearch}
             options={lookupOptions}
             label={t("CompareToSymbol")}
           />
-
-          <Button
+          <LoadingButton
+            loading={chartDataLoading}
             onClick={onChartSubmit}
             disabled={submitButtonDisabled}
             sx={{ width: "50%", alignSelf: "center" }}
             variant="contained">
-            {t("Sumbit")}
-          </Button>
+            {sumbitButtonText || t("Sumbit", { ns: "Common" })}
+          </LoadingButton>
         </StyledWalletWorthMenu>
       </StyledWalletWorthMenuContainer>
       <Box sx={{ width: "100%" }}>
@@ -121,7 +132,7 @@ export const HistoricalWalletsWorth = ({
             chart: {
               events: {
                 legendClick: (chart: any, seriesIndex?: number) => {
-                  if (seriesIndex !== undefined) onToggleSeries(seriesIndex)
+                  if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1)
                 },
               },
               animations: {
