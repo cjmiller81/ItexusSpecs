@@ -8,7 +8,6 @@ import DownloadIcon from "@mui/icons-material/Download"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material"
 import { useGridApiRef } from "@mui/x-data-grid"
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import * as XLSX from "xlsx"
 import { StyledWalletsTable } from "../MyWallets/WalletsTable"
@@ -17,14 +16,16 @@ interface Props extends Omit<AccordionProps, "children"> {
   title: string
   tableAssets: InvestingTableAsset[]
   isEqualWeight?: boolean
+  onTokensChange: (tokens: number) => void
+  onCapitalChange: (capital: number) => void
+  capital: number
+  tokens: number
+  weighted: number
 }
 
-export const IndexModelingSection = ({ title, tableAssets, isEqualWeight, ...props }: Props) => {
+export const IndexModelingSection = ({ tokens, capital, weighted, onCapitalChange, onTokensChange, title, tableAssets, isEqualWeight, ...props }: Props) => {
   const { t } = useTranslation("IndexModelingSection")
   const apiRef = useGridApiRef()
-  const [tokens, setTokens] = useState<number>(0)
-  const [equalWeight, setEqualWeight] = useState<number>(0)
-  const [totalCapital, setTotalCapital] = useState<number>(0)
 
   const onExport = () => {
     const worksheet = XLSX.utils.json_to_sheet(
@@ -87,12 +88,13 @@ export const IndexModelingSection = ({ title, tableAssets, isEqualWeight, ...pro
             <AppNumberInput
               label={t("Tokens")}
               value={tokens}
-              onChange={(_, value) => setTokens(value ?? 0)}
+              min={0}
+              onChange={(_, value) => onTokensChange(value || 0)}
             />
             {isEqualWeight && <AppPercentageField
               label={t("EqualWeight")}
-              onChange={value => setEqualWeight(value)}
-              value={equalWeight}
+              onChange={() => {}}
+              value={weighted}
               inputProps={{
                 disabled: true
               }}
@@ -100,8 +102,10 @@ export const IndexModelingSection = ({ title, tableAssets, isEqualWeight, ...pro
             />}
             <AppNumberInput
               label={t("TotalCapital")}
-              value={totalCapital}
-              onChange={(_, value) => setTotalCapital(value ?? 0)}
+              min={0}
+              step={10}
+              value={capital}
+              onChange={(_, value) => onCapitalChange(value|| 0)}
             />
           </LeftContainer>
           <RightContainer>

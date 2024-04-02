@@ -1,10 +1,11 @@
 export interface InvestingTableAsset
 {
-    id: number,
+    id: string,
     symbol: string;
     price: number;
-    iconUrl: string;
+    iconUrl?: string;
     marketCap: number;
     weight: number;
     qty: number;
+    tokenId: string;
 }

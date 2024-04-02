@@ -16,7 +16,8 @@ export default function MarketCapWeightedPage() {
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const [period, setPeriod] = useState<Period>("daily")
   const dispatch = useAppDispatch()
-
+  const [capital, setCapital] = useState(120)
+  const [tokensCount, setTokensCount] = useState(120)
   useEffect(() =>{
     dispatch(clearSearchResult());
     dispatch(searchIcons({}));
@@ -26,6 +27,11 @@ export default function MarketCapWeightedPage() {
   return (
     <Stack>
       <IndexModelingSection
+        capital={capital}
+        onCapitalChange={capital => setCapital(capital)}
+        onTokensChange={tokens => setTokensCount(tokens)}
+        tokens={tokensCount}
+        weighted={1 / capital}
         sx={{mt: 4}}
         tableAssets={assets}
         title={t("IndexModeling")}
