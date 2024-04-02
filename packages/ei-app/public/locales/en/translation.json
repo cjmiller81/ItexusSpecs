@@ -5,6 +5,9 @@
     "Cancel": "Cancel",
     "Sumbit": "Submit"
   },
+  "Labels": {
+    "FromDate":"From Date"
+  },
   "errorMessages": {
     "incorectPassword": "Incorrect password",
     "mandatoryField": "Mandatory field",
@@ -30,7 +33,6 @@
     "Daily": "Daily",
     "Monthly": "Monthly",
     "Weekly": "Weekly",
-    "FromDate": "From Date",
     "CompareToSymbol": "Compare to Symbol",
     "Period": "Period",
     "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
@@ -47,7 +49,6 @@
     "Daily": "Daily",
     "Monthly": "Monthly",
     "Weekly": "Weekly",
-    "FromDate": "From Date",
     "CompareToSymbol": "Compare to Symbol",
     "Period": "Period"
   },

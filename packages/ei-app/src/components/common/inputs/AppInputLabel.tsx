@@ -20,7 +20,12 @@ export default function AppInputLabel({ required, tooltip, fieldLabel }: Props) 
           TransitionProps={{ timeout: 200 }}
           title={tooltip}
           placement="top">
-          <TooltipIcon />
+          <TooltipIcon
+            sx={{
+              stroke: themes => themes.palette.text.secondary,
+              strokeWidth: 0,
+            }}
+          />
         </StyledToolTip>
       )}
     </AppInputLabelText>

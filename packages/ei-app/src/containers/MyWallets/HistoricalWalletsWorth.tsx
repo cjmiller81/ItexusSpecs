@@ -90,7 +90,7 @@ export const HistoricalWalletsWorth = ({
             value={fromDate}
             onChange={date => onFromDateChange(date)}
             maxDate={new Date()}
-            label={t("FromDate")}
+            label={t("FromDate", { ns: "Labels" })}
           />
           <StyledSymbolLookup
             tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
