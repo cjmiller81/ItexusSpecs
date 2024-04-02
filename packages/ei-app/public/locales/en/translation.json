@@ -30,9 +30,9 @@
     "Daily": "Daily",
     "Monthly": "Monthly",
     "Weekly": "Weekly",
-    "FromDate": "From Date:",
-    "CompareToSymbol": "Compare to Symbol:",
-    "Period": "Period:",
+    "FromDate": "From Date",
+    "CompareToSymbol": "Compare to Symbol",
+    "Period": "Period",
     "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
   },
   "UserMenu": {
@@ -47,9 +47,9 @@
     "Daily": "Daily",
     "Monthly": "Monthly",
     "Weekly": "Weekly",
-    "FromDate": "From Date:",
-    "CompareToSymbol": "Compare to Symbol:",
-    "Period": "Period:"
+    "FromDate": "From Date",
+    "CompareToSymbol": "Compare to Symbol",
+    "Period": "Period"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Worth"
@@ -71,8 +71,8 @@
     "DisplayName": "Display Name"
   },
   "IndexModelingSection": {
-    "Tokens": "Tokens:",
-    "TotalCapital": "Total Capital:",
+    "Tokens": "Tokens",
+    "TotalCapital": "Total Capital",
     "Export": "Export",
     "EqualWeight": "Equal Weight"
   },
@@ -143,5 +143,10 @@
     "AddNewMethod": "Add New Method",
     "PaymentMethods": "Payment Methods",
     "MakeDefault": "Make Default"
+  },
+  "Tooltips":{
+    "Period": "Select One",
+    "FromDate": "Required",
+    "CompareToSymbol": "Leave Blank for Plot Only"
   }
 }

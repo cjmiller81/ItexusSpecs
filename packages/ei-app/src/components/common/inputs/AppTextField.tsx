@@ -10,7 +10,7 @@ export type AppTextFieldProps = FormControlProps &
     inputProps?: TextFieldProps
   }
 
-export default function AppTextField({ fieldError, required, label, inputProps, ...props }: AppTextFieldProps) {
+export default function AppTextField({ fieldError, tooltip, required, label, inputProps, ...props }: AppTextFieldProps) {
   return (
     <FormControl
       style={{ width: "100%" }}
@@ -18,6 +18,7 @@ export default function AppTextField({ fieldError, required, label, inputProps, 
       <AppInputLabel
         fieldLabel={label}
         required={required}
+        tooltip={tooltip}
       />
       <TextField
         {...inputProps}
