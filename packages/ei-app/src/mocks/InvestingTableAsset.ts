@@ -2,7 +2,8 @@ import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 
 export const assets: InvestingTableAsset[] = [
   {
-    id: 1,
+    id: "1",
+    tokenId: "1",
     iconUrl: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
     symbol: "ETH",
     marketCap: 111.111111111,
@@ -11,7 +12,8 @@ export const assets: InvestingTableAsset[] = [
     price: 444.44444444,
   },
   {
-    id: 2,
+    id: "2",
+    tokenId: "2",
     iconUrl: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
     symbol: "ETH",
     marketCap: 555.55555555,
@@ -20,7 +22,8 @@ export const assets: InvestingTableAsset[] = [
     price: 888.88888888,
   },
   {
-    id: 3,
+    id: "3",
+    tokenId: "3",
     iconUrl: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
     symbol: "ETH",
     marketCap: 9999.999999999,

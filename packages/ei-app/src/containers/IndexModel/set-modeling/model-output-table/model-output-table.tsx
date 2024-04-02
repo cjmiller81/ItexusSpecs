@@ -65,7 +65,7 @@ export const ModelOutputTable: FC<IModelOutputTable> = ({ prefilteredTokenData, 
 
   const loadData = useCallback(async ():Promise<void> => {
     if (prefilteredTokenData !== null && prefilteredTokenData.length > 0) {
-      let sortedFilteredData:ITokenSetAllocation[] = prefilteredTokenData.sort((a, b) => {
+      let sortedFilteredData:ITokenSetAllocation[] = [...prefilteredTokenData].sort((a, b) => {
         if (a.marketCap < b.marketCap) {
           return 1
         }

@@ -6,6 +6,7 @@ import NotificationProvider from "@/containers/IndexModel/notification-hook"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
+import { setCapital, setTokens, updateIcons } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -15,7 +16,6 @@ import {
   setPeriod,
 } from "@/libs/redux/Slices/MarketCapEqualWeightSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { assets } from "@/mocks/InvestingTableAsset"
 import { Stack } from "@mui/material"
 import LocalStore from "devextreme/data/local_store"
 import { useCallback, useEffect, useState } from "react"
@@ -36,6 +36,10 @@ export default function MarketCapEqualWeightedPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const [setAllocationsStateStore, setSetAllocationsStateStore] = useState<ISetAllocationsState>()
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
+
+  const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
+    state => state.walletsReducer.MarketCapEqualWeightModeling,
+  )
 
   const dispatch = useAppDispatch()
   const { t } = useTranslation("MarketCapEqualWeightedPage")
@@ -107,9 +111,17 @@ export default function MarketCapEqualWeightedPage() {
         </IndexAllocationsStateStoreContext.Provider>
       </NotificationProvider>
       <IndexModelingSection
+        onCapitalChange={value => dispatch(setCapital(value))}
+        onTokensChange={value => {
+          dispatch(setTokens(value))
+          dispatch(updateIcons({}))
+        }}
+        weighted={weight * 100}
+        capital={totalCapital}
+        tokens={tokensCount}
         sx={{ mt: 4 }}
         isEqualWeight
-        tableAssets={assets}
+        tableAssets={tableData}
         title={t("IndexModeling")}
       />
 

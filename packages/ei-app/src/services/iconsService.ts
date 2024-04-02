@@ -1,8 +1,16 @@
 import { appAxios } from "@/libs/axios/customAxios"
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
 import { delay } from "@/utils/common"
+import { ICoin } from "./backend-api.service"
 
+
+//TODO Add retry logic for axios requests
 export const iconsApi = {
+  getbyId: async (id: string) => {
+    const response = await appAxios.get<ICoin>(`/tokens/${id}`)
+    return response.data
+  },
+
   getIcons: async (searchQuery?: string, signal?: AbortSignal): Promise<TokenDetails[]> => {
     const response = await appAxios.get<TokenDetails[]>(`/tokens-search`, {
       signal: signal,

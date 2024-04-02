@@ -4,9 +4,10 @@ import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
 import { walletsSlice } from "./Slices/WalletsSlice"
 import { IconsSlice } from "./Slices/IconsSlice"
 import { marketCapEqualWeightSlice } from "./Slices/MarketCapEqualWeightSlice"
+import { marketCapEqualWeightModelingSlice } from "./Slices/MarketCapEqualWeightModelingSlice"
 
 const rootReducer = combineReducers({
-  walletsReducer: combineSlices(walletsSlice, uiSlice, walletWorthChartSlice, IconsSlice, marketCapEqualWeightSlice),
+  walletsReducer: combineSlices(walletsSlice, uiSlice, walletWorthChartSlice, IconsSlice, marketCapEqualWeightSlice, marketCapEqualWeightModelingSlice),
 })
 
 export type RootState = ReturnType<typeof rootReducer>
