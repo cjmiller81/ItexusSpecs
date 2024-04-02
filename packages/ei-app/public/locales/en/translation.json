@@ -5,9 +5,6 @@
     "Cancel": "Cancel",
     "Sumbit": "Submit"
   },
-  "Labels": {
-    "FromDate":"From Date"
-  },
   "errorMessages": {
     "incorectPassword": "Incorrect password",
     "mandatoryField": "Mandatory field",
@@ -30,11 +27,6 @@
   },
   "MyWalletsPage": {
     "HistoricalWalletsWorth": "Historical Wallets Worth",
-    "Daily": "Daily",
-    "Monthly": "Monthly",
-    "Weekly": "Weekly",
-    "CompareToSymbol": "Compare to Symbol",
-    "Period": "Period",
     "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
   },
   "UserMenu": {
@@ -50,7 +42,8 @@
     "Monthly": "Monthly",
     "Weekly": "Weekly",
     "CompareToSymbol": "Compare to Symbol",
-    "Period": "Period"
+    "Period": "Period",
+    "FromDate": "From Date"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Worth"
@@ -65,7 +58,6 @@
     "ChangePassword": "Change Password",
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",
-
     "EnableSMSMFA": "Enable SMS MFA",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
