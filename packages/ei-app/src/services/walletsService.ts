@@ -42,7 +42,7 @@ export const walletsApi = {
     startDate: Date,
     endDate: Date,
     tokenCount: number,
-    compareSymbolId: string,
+    compareSymbolId?: string,
   ): Promise<CapHistoricalWeightedDate[]> => {
     const response = await appAxios.get(`/model/run/marketCapWeightedIndex`, {
       params: {
