@@ -144,7 +144,7 @@ export default function MarketCapEqualWeightedPage() {
         onPeriodChange={period => dispatch(setPeriod({ period: period }))}
         period={period}
         onToggleSeries={index => dispatch(selectSeries({ seriesIndex: index }))}
-        submitButtonDisabled={!startDate || !symbolOption}
+        submitButtonDisabled={!startDate}
         title={t("ChartTitle")}
       />
     </Stack>

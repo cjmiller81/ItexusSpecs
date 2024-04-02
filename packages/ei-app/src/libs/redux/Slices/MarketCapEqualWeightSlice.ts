@@ -82,17 +82,13 @@ export const marketCapEqualWeightSlice = createAppSlice({
           throw "startDate is not set"
         }
 
-        if (!state.walletsReducer.marketCapEqualWeight.symbolOption) {
-          throw "symbolOption is not set"
-        }
-
         const response = await walletsApi.getHistoricalCapWeightedWalletData(
           state.walletsReducer.marketCapEqualWeight.startDate,
           new Date(),
           state.walletsReducer.marketCapEqualWeight.tokensAllocation,
-          state.walletsReducer.marketCapEqualWeight.symbolOption.tokenId,
+          state.walletsReducer.marketCapEqualWeight.symbolOption?.tokenId,
         )
-        return { seriesData: response, comareToLabel: state.walletsReducer.marketCapEqualWeight.symbolOption.label }
+        return { seriesData: response, comareToLabel: state.walletsReducer.marketCapEqualWeight.symbolOption?.label }
       },
       {
         pending: state => {
@@ -113,7 +109,7 @@ export const marketCapEqualWeightSlice = createAppSlice({
 })
 
 function calculateChartSeries(state: MarketCapEqualWeightChartState) {
-  if (!state.chartData?.seriesData?.length || !state.chartCompareToLabel) {
+  if (!state.chartData?.seriesData?.length) {
     return
   }
 
@@ -124,7 +120,11 @@ function calculateChartSeries(state: MarketCapEqualWeightChartState) {
   state.maxChartValue = maxChartValue
 }
 
-function makeChartSeries(chartData: ChartSeriesDataResponse, period: Period, compareToLabel: string): ChartSeries[] {
+function makeChartSeries(
+  chartData: ChartSeriesDataResponse,
+  period: Period,
+  compareToLabel?: string | null,
+): ChartSeries[] {
   if (!chartData || !chartData.seriesData || !chartData.seriesData.length) {
     return []
   }
@@ -149,17 +149,19 @@ function makeChartSeries(chartData: ChartSeriesDataResponse, period: Period, com
     y: number
   }[] = []
 
-  compareToValues = chartData.seriesData
-    .filter(seriesData => periodFilter(seriesData.capWeightedDate))
-    .map(x => ({
-      x: x.capWeightedDate,
-      y: ((x.comparePrice - firstComparePrice) / firstComparePrice) * 100,
-    }))
+  if (compareToLabel && firstComparePrice !== null) {
+    compareToValues = chartData.seriesData
+      .filter(seriesData => periodFilter(seriesData.capWeightedDate))
+      .map(x => ({
+        x: x.capWeightedDate,
+        y: ((x.comparePrice - firstComparePrice) / firstComparePrice) * 100,
+      }))
 
-  chartSeries.push({
-    name: compareToLabel,
-    data: compareToValues,
-  })
+    chartSeries.push({
+      name: compareToLabel,
+      data: compareToValues,
+    })
+  }
 
   return chartSeries
 }
@@ -167,7 +169,7 @@ function makeChartSeries(chartData: ChartSeriesDataResponse, period: Period, com
 function calculateMinMax(state: MarketCapEqualWeightChartState): { minValue: number; maxValue: number } {
   const selectedSeriesValues = [
     ...(state.indexSeriesSelected ? state.chartSeries[0].data.map(seriesPoint => seriesPoint) : []),
-    ...(state.compareSymbolSeriesSelected ? state.chartSeries[1].data.map(seriesPoint => seriesPoint) : []),
+    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1 ? state.chartSeries[1].data.map(seriesPoint => seriesPoint) : []),
   ].map(seriesPoint => seriesPoint.y)
 
   const maxValue = Math.max(...selectedSeriesValues)
