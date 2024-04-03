@@ -1,6 +1,6 @@
 import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
-import { MyWalletsSection, WalletRow } from "@/containers/MyWallets/MyWalletsSection"
+import { MyWalletsSection } from "@/containers/MyWallets/MyWalletsSection"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { fetchHistoricalWalletData, selectSeries, setPeriod } from "@/libs/redux/Slices/WalletWorthChartSlice"
 import {
@@ -9,8 +9,10 @@ import {
   fetchTotalWalletsWorthData,
   fetchWallets,
   selectWallets,
+  updateWallet,
 } from "@/libs/redux/Slices/WalletsSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { Wallet } from "@/models/Wallet/Wallet"
 import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -51,17 +53,22 @@ export default function MyWalletsPage() {
     dispatch(fetchTotalWalletsWorthData({}))
   }, [selectedWallets])
 
-  const onRowsChanged = (rows: WalletRow[]) => {
+  const onRowsChanged = (rows: Wallet[]) => {
     dispatch(selectWallets(rows))
+  }
+
+  const onUpdateWallet = (address: string, isPersonal: boolean, name?: string) =>{
+    dispatch(updateWallet({address, isPersonal, name}))
   }
 
   return (
     <Stack>
       <MyWalletsSection
+        onUpdateWallet={onUpdateWallet}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
         loading={statusFetchingWallets === "loading"}
-        wallets={wallets.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))}
+        wallets={wallets}
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}

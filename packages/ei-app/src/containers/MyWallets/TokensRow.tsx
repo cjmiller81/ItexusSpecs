@@ -9,7 +9,7 @@ export const ExpandableRow = (props: any) => {
   return (
     <>
       <GridRow {...props}></GridRow>
-      {props.row.expanded && (
+      {props.isExpanded(props.rowId) && (
         <StyledTokensTable
           slots={{
             pagination: () => {
