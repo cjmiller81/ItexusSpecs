@@ -10,7 +10,7 @@ import { styled } from "@mui/system"
 import { GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { WalletInputModal } from "../../components/Modals/WalletInputModal"
+import { AddressModel, WalletInputModal } from "../../components/Modals/WalletInputModal"
 
 interface Props extends BoxProps {
   wallets: WalletRow[]
@@ -19,7 +19,7 @@ interface Props extends BoxProps {
   //eslint-disable-next-line no-unused-vars
   onDeleteWallet: (wallet: string) => void
   //eslint-disable-next-line no-unused-vars
-  onAddWallet: (wallet: string) => void
+  onAddWallet: (wallet: AddressModel) => void
   //eslint-disable-next-line no-unused-vars
   onSelectedRowsChanged?: (rows: WalletRow[]) => void
   totalWalletsWorthData?: TotalWalletWorthData
@@ -42,11 +42,8 @@ export const MyWalletsSection = ({
   const apiRef = useGridApiRef()
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false)
 
-  const addWallet = async (walletAddress: string | null) => {
-    if (walletAddress) {
-      onAddWallet(walletAddress)
-    }
-
+  const addWallet = async (walletAddressModel: AddressModel) => {
+    onAddWallet(walletAddressModel)
     setAddWalletModalOpen(false)
   }
 

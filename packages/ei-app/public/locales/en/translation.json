@@ -18,8 +18,8 @@
   },
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
-    "Save": "Save",
-    "Cancel": "Cancel"
+    "WalletName": "Wallet name",
+    "Personal": "Personal"
   },
   "MyWalletsSection": {
     "AddWallet": "+Add Wallet",
@@ -91,7 +91,7 @@
     "Arbitrage": "Arbitrage",
     "ArbitrageSubpage": "Arbitrage Subpage",
     "Portfolios": "Portfolios",
-    "MyWallets": "My Wallets",
+    "MyWallets": "Wallets",
     "Community": "Community",
     "Platform": "Platform",
     "Tools": "Tools"
