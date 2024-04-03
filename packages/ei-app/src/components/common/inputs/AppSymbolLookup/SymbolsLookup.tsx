@@ -8,6 +8,7 @@ import * as React from "react"
 import { useTranslation } from "react-i18next"
 import AppInputLabel from "../AppInputLabel"
 import { ListboxComponent } from "./ListBoxComponent"
+import { AppInputProps } from "../AppInputProps"
 
 const StyledPopper = styled(Popper)({
   [`& .${autocompleteClasses.listbox}`]: {
@@ -25,13 +26,12 @@ export interface LookUpOption {
   tokenId: string
 }
 
-export interface Props extends Omit<AutocompleteProps<LookUpOption, false, false, false, any>, "renderInput"> {
+export interface Props extends AppInputProps, Omit<AutocompleteProps<LookUpOption, false, false, false, any>, "renderInput"> {
   options: LookUpOption[]
   value?: LookUpOption | null
-  label: string
-}
+}  
 
-export default function SymbolLookup({ label, value, loading, options, ...props }: Props) {
+export default function SymbolLookup({ label, required, tooltip, value, loading, options, ...props }: Props) {
   const { t } = useTranslation("SymbolLookup")
 
   return (
@@ -39,6 +39,7 @@ export default function SymbolLookup({ label, value, loading, options, ...props 
       <AppInputLabel
         fieldLabel={label}
         required={false}
+        tooltip={tooltip}
       />
       <Autocomplete
       sx={{

@@ -72,6 +72,7 @@ export const HistoricalWalletsWorth = ({
         <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
         <StyledWalletWorthMenu>
           <AppSelect
+            tooltip={t("Period", { ns: "Tooltips" })}
             sx={{ width: "100%" }}
             label={t("Period")}
             value={period}
@@ -83,6 +84,8 @@ export const HistoricalWalletsWorth = ({
             <MenuItem value={"monthly"}>{t("Monthly")}</MenuItem>
           </AppSelect>
           <AppDatePicker
+            tooltip={t("FromDate", { ns: "Tooltips" })}
+            required
             disableFuture
             value={fromDate}
             onChange={date => onFromDateChange(date)}
@@ -90,6 +93,7 @@ export const HistoricalWalletsWorth = ({
             label={t("FromDate")}
           />
           <StyledSymbolLookup
+            tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
             loading={lookupLoading}
             disableListWrap
             value={lookupOption}

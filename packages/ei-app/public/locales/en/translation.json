@@ -27,12 +27,6 @@
   },
   "MyWalletsPage": {
     "HistoricalWalletsWorth": "Historical Wallets Worth",
-    "Daily": "Daily",
-    "Monthly": "Monthly",
-    "Weekly": "Weekly",
-    "FromDate": "From Date:",
-    "CompareToSymbol": "Compare to Symbol:",
-    "Period": "Period:",
     "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
   },
   "UserMenu": {
@@ -47,9 +41,9 @@
     "Daily": "Daily",
     "Monthly": "Monthly",
     "Weekly": "Weekly",
-    "FromDate": "From Date:",
-    "CompareToSymbol": "Compare to Symbol:",
-    "Period": "Period:"
+    "CompareToSymbol": "Compare to Symbol",
+    "Period": "Period",
+    "FromDate": "From Date"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Worth"
@@ -64,15 +58,14 @@
     "ChangePassword": "Change Password",
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",
-
     "EnableSMSMFA": "Enable SMS MFA",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
     "DisplayName": "Display Name"
   },
   "IndexModelingSection": {
-    "Tokens": "Tokens:",
-    "TotalCapital": "Total Capital:",
+    "Tokens": "Tokens",
+    "TotalCapital": "Total Capital",
     "Export": "Export",
     "EqualWeight": "Equal Weight"
   },
@@ -143,5 +136,10 @@
     "AddNewMethod": "Add New Method",
     "PaymentMethods": "Payment Methods",
     "MakeDefault": "Make Default"
+  },
+  "Tooltips":{
+    "Period": "Select One",
+    "FromDate": "Required",
+    "CompareToSymbol": "Leave Blank for Plot Only"
   }
 }
