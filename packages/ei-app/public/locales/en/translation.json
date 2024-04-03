@@ -64,7 +64,6 @@
     "ChangePassword": "Change Password",
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",
-
     "EnableSMSMFA": "Enable SMS MFA",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
@@ -98,7 +97,7 @@
     "Arbitrage": "Arbitrage",
     "ArbitrageSubpage": "Arbitrage Subpage",
     "Portfolios": "Portfolios",
-    "MyWallets": "My Wallets",
+    "MyWallets": "Wallets",
     "Community": "Community",
     "Platform": "Platform",
     "Tools": "Tools"
