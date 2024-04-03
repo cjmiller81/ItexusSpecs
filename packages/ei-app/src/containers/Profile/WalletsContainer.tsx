@@ -16,6 +16,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
   return (
     <Box {...props}>
       <MyWalletsSection
+        onUpdateWallet={() => {}}
         selectedWalletsIds={[]}
         loading={false}
         wallets={[]}

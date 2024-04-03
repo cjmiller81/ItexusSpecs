@@ -85,6 +85,7 @@ export const getWalletsColumns = ({
         if (isInEditMode) {
           return [
             <GridActionsCellItem
+              key={0}
               icon={<SaveIcon />}
               label={t("Save", { ns: "Common" })}
               sx={{
@@ -93,6 +94,7 @@ export const getWalletsColumns = ({
               onClick={() => handleSaveClick(id)}
             />,
             <GridActionsCellItem
+              key={1}
               icon={<CancelIcon />}
               label={t("Cancel", { ns: "Common" })}
               className="textPrimary"
@@ -104,6 +106,7 @@ export const getWalletsColumns = ({
 
         return [
           <GridActionsCellItem
+            key={2}
             icon={<EditIcon />}
             label={t("Edit", { ns: "Common" })}
             className="textPrimary"
@@ -111,6 +114,7 @@ export const getWalletsColumns = ({
             color="inherit"
           />,
           <GridActionsCellItem
+            key={3}
             icon={<DeleteIcon />}
             label={t("Delete", { ns: "Common" })}
             onClick={() => handleDeleteClick(id)}

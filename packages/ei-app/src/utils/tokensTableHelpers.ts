@@ -1,6 +1,6 @@
-import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
+import { Wallet } from "@/models/Wallet/Wallet"
 
 export interface WalletTokensTableModel extends Asset {
   price?: number
@@ -30,7 +30,7 @@ export const toTableTokensModel = (chainAsset: ChainAsset): WalletTokensTableMod
 }
 
 //eslint-disable-next-line no-undef
-export const toTotalTokensBalances = (wallets: WalletRow[]): { symbol: string; qty: number }[] => {
+export const toTotalTokensBalances = (wallets: Wallet[]): { symbol: string; qty: number }[] => {
   const allChainsAssets = wallets
     .flatMap(x => x.chainAssets)
     .map(x => toTableTokensModel(x))
