@@ -19,8 +19,6 @@
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
-    "Save": "Save",
-    "Cancel": "Cancel",
     "Personal": "Personal"
   },
   "MyWalletsSection": {
