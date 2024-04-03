@@ -1,3 +1,4 @@
+import { AddressModel } from "@/components/Modals/WalletInputModal"
 import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
@@ -44,8 +45,8 @@ export const walletsSlice = createAppSlice({
       state.statusDeletingWallets = "idle"
     }),
     createWallet: create.asyncThunk(
-      async (wallet: string, thunkApi) => {
-        await walletsApi.addWallets(wallet)
+      async (wallet: AddressModel, thunkApi) => {
+        await walletsApi.addWallets(wallet.address)
         thunkApi.dispatch(fetchWallets(null))
       },
       {
