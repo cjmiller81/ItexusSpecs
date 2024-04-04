@@ -1,5 +1,4 @@
 import { AddressModel } from "@/components/Modals/WalletInputModal"
-import { WalletRow } from "@/containers/MyWallets/MyWalletsSection"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { walletsApi } from "@/services/walletsService"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
@@ -23,7 +22,7 @@ interface WalletsState {
   statusFetchingWallets: Status
   statusDeletingWallets: Status
   statusTotalWalletWorthFetching: Status
-  selectedWallets: WalletRow[]
+  selectedWallets: Wallet[]
 }
 
 const initialState: WalletsState = {
@@ -61,9 +60,18 @@ export const walletsSlice = createAppSlice({
         },
       },
     ),
-    selectWallets: create.reducer((state, action: PayloadAction<WalletRow[]>) => {
+    selectWallets: create.reducer((state, action: PayloadAction<Wallet[]>) => {
       state.selectedWallets = action.payload
     }),
+    updateWallet: create.reducer(
+      (state, action: PayloadAction<{ address: string; name?: string; isPersonal: boolean }>) => {
+        const walletToUpdate = state.wallets.find(wallet => wallet.address === action.payload.address)
+        if (walletToUpdate) {
+          walletToUpdate.name = action.payload.name
+          walletToUpdate.isPersonal = action.payload.isPersonal
+        }
+      },
+    ),
     fetchTotalWalletsWorthData: create.asyncThunk(
       async (_, thunkApi): Promise<TotalWalletWorthData> => {
         const state = thunkApi.getState() as RootState
@@ -123,7 +131,7 @@ export const walletsSlice = createAppSlice({
         const response = await walletsApi.getWalletsAssets()
         const state = thunkApi.getState() as RootState
         if (state.walletsReducer.wallets.firstLoad) {
-          appStore.dispatch(selectWallets(response.map<WalletRow>(wallet => ({ ...wallet, expanded: false }))))
+          appStore.dispatch(selectWallets(response))
         }
         return response
       },
@@ -147,5 +155,12 @@ export const walletsSlice = createAppSlice({
   }),
 })
 
-export const { createWallet, deleteWallet, clearErrors, fetchWallets, fetchTotalWalletsWorthData, selectWallets } =
-  walletsSlice.actions
+export const {
+  createWallet,
+  deleteWallet,
+  clearErrors,
+  fetchWallets,
+  fetchTotalWalletsWorthData,
+  selectWallets,
+  updateWallet,
+} = walletsSlice.actions

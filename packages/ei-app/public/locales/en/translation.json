@@ -2,6 +2,7 @@
   "Common": {
     "Edit": "Edit",
     "Save": "Save",
+    "Delete": "Delete",
     "Cancel": "Cancel",
     "Sumbit": "Submit"
   },
@@ -115,7 +116,9 @@
     "Amount": "Amount",
     "USDValue": "USD Value",
     "TokenName": "Token Name",
-    "WalletAddress": "Wallet Address"
+    "WalletAddress": "Wallet Address",
+    "PersonalPublic": "Personal/Public",
+    "WalletName": "Wallet Name"
   },
   "SymbolLookup": {
     "Search": "Search"

@@ -7,30 +7,44 @@ import { TotalWalletWorthData } from "@/libs/redux/Slices/WalletsSlice"
 import { Wallet } from "@/models/Wallet/Wallet"
 import { Box, BoxProps, Button } from "@mui/material"
 import { styled } from "@mui/system"
-import { GridCellParams, GridRowSelectionModel, MuiEvent, useGridApiRef } from "@mui/x-data-grid"
+import {
+  GridCellParams,
+  GridEventListener,
+  GridRowEditStopReasons,
+  GridRowId,
+  GridRowModel,
+  GridRowModes,
+  GridRowModesModel,
+  GridRowSelectionModel,
+  GridRowsProp,
+  MuiEvent,
+  useGridApiRef,
+} from "@mui/x-data-grid"
+
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { AddressModel, WalletInputModal } from "../../components/Modals/WalletInputModal"
 
 interface Props extends BoxProps {
-  wallets: WalletRow[]
+  wallets: Wallet[]
   selectedWalletsIds: string[]
   loading?: boolean
+  //eslint-disable-next-line no-unused-vars
+  onUpdateWallet: (address: string, isPersonal: boolean, name?: string) => void
   //eslint-disable-next-line no-unused-vars
   onDeleteWallet: (wallet: string) => void
   //eslint-disable-next-line no-unused-vars
   onAddWallet: (wallet: AddressModel) => void
   //eslint-disable-next-line no-unused-vars
-  onSelectedRowsChanged?: (rows: WalletRow[]) => void
+  onSelectedRowsChanged?: (rows: Wallet[]) => void
   totalWalletsWorthData?: TotalWalletWorthData
 }
-
-export type WalletRow = Wallet & { expanded: boolean }
 
 export const MyWalletsSection = ({
   onAddWallet,
   onDeleteWallet,
   onSelectedRowsChanged,
+  onUpdateWallet,
   wallets,
   totalWalletsWorthData,
   loading,
@@ -41,39 +55,64 @@ export const MyWalletsSection = ({
   const { t } = useTranslation("MyWalletsSection")
   const apiRef = useGridApiRef()
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false)
-
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
+  const [expandedRows, setExpandedRows] = useState<GridRowId[]>([])
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel)
     setAddWalletModalOpen(false)
   }
 
-  const onSelectedChanged = (rows: WalletRow[]) => {
+  const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows)
   }
 
   //eslint-disable-next-line no-undef
   const onCellClick = async (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
-    switch (params.field) {
-      case "expand": {
-        event.stopPropagation()
-        const row = params.row
-        row.expanded = !row.expanded
-        apiRef.current.updateRows([row])
-        break
-      }
-      case "trash": {
-        event.stopPropagation()
-        onDeleteWallet(params.row.address)
-        break
-      }
-      case "address":
-        event.stopPropagation()
-        break
-      default:
+    const stopPropagation = ["expand", "trash", "address", "name"]
+    if (stopPropagation.includes(params.field)) {
+      event.stopPropagation()
     }
+  }
 
-    const column = apiRef.current.getColumn("address")
-    apiRef.current.updateColumns([column])
+  const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true
+    }
+  }
+
+  const handleEditClick = (id: GridRowId) => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
+  }
+
+  const handleExpandClick = (id: GridRowId, expanded: boolean) => {
+    const newExpanded = expanded ? [...expandedRows, id as string] : expandedRows.filter(rowId => rowId !== id)
+    setExpandedRows(newExpanded)
+  }
+
+  const handleSaveClick = (id: GridRowId) => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
+  }
+
+  const handleCancelClick = (id: GridRowId) => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    })
+  }
+
+  const handleDeleteClick = (id: GridRowId) => {
+    onDeleteWallet(id as string)
+  }
+
+  const processRowUpdate = (newRow: GridRowModel<Wallet>, oldRow: GridRowModel<Wallet>) => {
+    //TODO add validation
+    const updatedRow = { ...newRow, isNew: false }
+    onUpdateWallet(newRow.address, newRow.isPersonal, newRow.name)
+    return updatedRow
+  }
+
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    setRowModesModel(newRowModesModel)
   }
 
   return (
@@ -106,6 +145,16 @@ export const MyWalletsSection = ({
 
       <StyledWalletsTable
         loading={loading}
+        editMode="row"
+        rowModesModel={rowModesModel}
+        onRowModesModelChange={handleRowModesModelChange}
+        onRowEditStop={handleRowEditStop}
+        processRowUpdate={processRowUpdate}
+        slotProps={{
+          row: {
+            isExpanded: (id: GridRowId) => expandedRows.includes(id),
+          },
+        }}
         slots={{
           row: ExpandableRow,
         }}
@@ -123,7 +172,15 @@ export const MyWalletsSection = ({
         onCellClick={onCellClick}
         apiRef={apiRef}
         getRowId={x => x.address}
-        columns={getWalletsColumns()}
+        columns={getWalletsColumns({
+          handleCancelClick: handleCancelClick,
+          handleSaveClick: handleSaveClick,
+          handleEditClick: handleEditClick,
+          handleDeleteClick: handleDeleteClick,
+          gridRowModesModel: rowModesModel,
+          expandedRows: expandedRows,
+          onExpandClick: handleExpandClick,
+        })}
         rows={wallets}
         rowSelectionModel={selectedWalletsIds}
       />
