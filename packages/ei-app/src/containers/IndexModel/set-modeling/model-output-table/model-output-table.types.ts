@@ -1,9 +1,10 @@
 
+import { ICoin } from '@/services/backend-api.service'
 import { ITokenSetAllocation, SetAllocationsType } from '../../IndexModel.types'
 import { ModelOutputField } from './model-output-table.constants'
 
 export interface IModelOutputTable {
-  prefilteredTokenData: ITokenSetAllocation[]
+  prefilteredTokenData: ICoin[]
   tabType: SetAllocationsType
   onModelSetModelingUpdate: (weightedSetModelingTable:ITokenSetAllocation[]) =>void
   tokenCount: number

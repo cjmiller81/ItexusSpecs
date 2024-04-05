@@ -2,11 +2,12 @@ import { IndexAllocationsStateStoreContext } from "@/containers/IndexModel/Index
 import { IndexModel } from "@/containers/IndexModel/IndexModel"
 import { defaultAllocationsPanelState } from "@/containers/IndexModel/IndexModel.constants"
 import { ISetAllocationsState, ITabPanelData, SetAllocationsType } from "@/containers/IndexModel/IndexModel.types"
-import NotificationProvider from "@/containers/IndexModel/notification-hook"
+import { PrefilterTokensTable } from "@/containers/IndexModel/prefilter-tokens/prefilter-tokens-table/prefilter-tokens-table"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
+import { createFilter, deleteFilter, fetchCoins, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
-import { setCapital, setTokens, updateIcons } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
+import { setCapital, setPrefilteredData, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -15,10 +16,15 @@ import {
   setFromDate,
   setPeriod,
 } from "@/libs/redux/Slices/MarketCapEqualWeightSlice"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { appStore, useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { ICoin } from "@/services/backend-api.service"
 import { Stack } from "@mui/material"
+import DataSource from "devextreme/data/data_source"
 import LocalStore from "devextreme/data/local_store"
-import { useCallback, useEffect, useState } from "react"
+import { exportDataGrid } from "devextreme/excel_exporter"
+import { Workbook } from "exceljs"
+import { saveAs } from "file-saver-es"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MarketCapEqualWeightedPage() {
@@ -33,16 +39,26 @@ export default function MarketCapEqualWeightedPage() {
     statstatusFetchingMarcetCapData,
   } = useAppSelector(state => state.walletsReducer.marketCapEqualWeight)
   const [localState, setState] = useState<ISetAllocationsState>(defaultAllocationsPanelState[0])
-  const [loading, setLoading] = useState<boolean>(true)
   const [setAllocationsStateStore, setSetAllocationsStateStore] = useState<ISetAllocationsState>()
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
+  const { allTokens, allCategories, allChains, filters, fetchingTokensStatus } = useAppSelector(
+    state => state.walletsReducer.allTokensTable,
+  )
+  const dispatch = useAppDispatch()
+
+  const handleUpdateFilteredTokenData = (filteredTokenData: ICoin[]): void => {
+    appStore.dispatch(setPrefilteredData(filteredTokenData))
+  }
 
   const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
     state => state.walletsReducer.MarketCapEqualWeightModeling,
   )
 
-  const dispatch = useAppDispatch()
   const { t } = useTranslation("MarketCapEqualWeightedPage")
+
+  useEffect(() => {
+    dispatch(fetchCoins({}))
+  }, [])
 
   const handleSetAllocationsStateUpdate = useCallback((setAllocationsState: ISetAllocationsState): void => {
     setSetAllocationsStateStore(setAllocationsState)
@@ -70,14 +86,14 @@ export default function MarketCapEqualWeightedPage() {
   }, [])
 
   useEffect(() => {
-    if (!loading && setAllocationsStateStore) {
+    if (setAllocationsStateStore) {
       if (!setAllocationsStateStore) {
         handleSetAllocationsStateUpdate(localState)
       } else {
         setState(setAllocationsStateStore)
       }
     }
-  }, [handleSetAllocationsStateUpdate, loading, setAllocationsStateStore, localState])
+  }, [handleSetAllocationsStateUpdate, setAllocationsStateStore, localState])
 
   useEffect(() => {
     if (global?.window !== undefined) {
@@ -91,30 +107,74 @@ export default function MarketCapEqualWeightedPage() {
       } else {
         handleSetAllocationsStateUpdate(localState)
       }
-      setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const allTokensSource = useMemo(
+    () =>
+      new DataSource<ICoin, string>({
+        store: {
+          type: "array",
+          key: "id",
+          data: allTokens,
+        },
+      }),
+    [allTokens],
+  )
+
+  const onExporting = async (e: any): Promise<void> => {
+    const workbook = new Workbook()
+    const worksheet = workbook.addWorksheet("Main sheet")
+
+    const currentDate = new Date()
+
+    await exportDataGrid({
+      component: e.component,
+      worksheet,
+      autoFilterEnabled: true,
+    })
+
+    await workbook.xlsx.writeBuffer().then(buffer => {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split("T")[0]}.xlsx`,
+      )
+    })
+    e.cancel = true
+  }
+
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>()
   return (
     <Stack>
-      <NotificationProvider>
-        <IndexAllocationsStateStoreContext.Provider value={setAllocationsStateStore}>
-          {!loading && (
-            <IndexModel
-              setAllocationsState={localState}
-              tabType={SetAllocationsType.EqualWeight}
-              onSetAllocationsStateUpdate={handleSetAllocationsStateUpdate}
-              onUpdate={onUpdate}
-            />
-          )}
-        </IndexAllocationsStateStoreContext.Provider>
-      </NotificationProvider>
+      <PrefilterTokensTable
+        onDeleteFilter={id => dispatch(deleteFilter({ id }))}
+        onUpdateFilter={filter => dispatch(updateFilter(filter))}
+        onCreateFilter={filter => dispatch(createFilter(filter))}
+        filters={filters}
+        loading={fetchingTokensStatus === "loading"}
+        onUpdate={handleUpdateFilteredTokenData}
+        onExport={onExporting}
+        categories={allCategories}
+        chains={allChains}
+        currentFilter={currentFilter}
+        onCurrentFilterChange={filter => setCurrentFilter(filter)}
+        dataSource={allTokensSource}
+      />
+
+      <IndexAllocationsStateStoreContext.Provider value={setAllocationsStateStore}>
+        <IndexModel
+          setAllocationsState={localState}
+          tabType={SetAllocationsType.EqualWeight}
+          onSetAllocationsStateUpdate={handleSetAllocationsStateUpdate}
+          onUpdate={onUpdate}
+        />
+      </IndexAllocationsStateStoreContext.Provider>
+
       <IndexModelingSection
         onCapitalChange={value => dispatch(setCapital(value))}
         onTokensChange={value => {
           dispatch(setTokens(value))
-          dispatch(updateIcons({}))
         }}
         weighted={weight * 100}
         capital={totalCapital}

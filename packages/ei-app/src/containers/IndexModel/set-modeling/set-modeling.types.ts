@@ -1,3 +1,4 @@
+import { ICoin } from "@/services/backend-api.service"
 import {
   IModelFormState,
   ISetAllocationsState,
@@ -6,7 +7,7 @@ import {
 } from "../IndexModel.types"
 
 export interface ISetModeling {
-  prefilteredTokenData: ITokenSetAllocation[]
+  prefilteredTokenData: ICoin[]
   onSetAllocationsStateUpdate: (setAllocationsState:ISetAllocationsState) =>void
   onModelSetModelingUpdate: (modelSetModelingTable:ITokenSetAllocation[]) =>void
   onUpdate: (tab: SetAllocationsType, data: IModelFormState) => void
