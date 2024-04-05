@@ -1,6 +1,7 @@
-import { ITokenSetAllocation, SetAllocationsType } from "../IndexModel.types"
+import { ICoin } from "@/services/backend-api.service"
+import { SetAllocationsType } from "../IndexModel.types"
 
 export interface IPrefilterTokens {
   tabType: SetAllocationsType
-  onUpdate: (filteredTokenData: ITokenSetAllocation[]) => void
+  onUpdate: (filteredTokenData: ICoin[]) => void
 }

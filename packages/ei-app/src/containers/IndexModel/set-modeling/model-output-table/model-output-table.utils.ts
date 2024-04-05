@@ -1,39 +1,36 @@
-import {
-  ISetAllocationsState,
-  ITokenSetAllocation,
-  SetAllocationsType
-} from "../../IndexModel.types"
+import { ICoin } from "@/services/backend-api.service"
+import { ISetAllocationsState, SetAllocationsType } from "../../IndexModel.types"
 
-export function calculateWeightValue (
+export function calculateWeightValue(
   tabType: SetAllocationsType,
   marketCap: number,
-  prefilteredTokenData: ITokenSetAllocation[]
+  prefilteredTokenData: ICoin[],
 ): number {
-  let marketCapSum:number = 0
-  let weightedValue:number = 0
-  const setAllocationsState = localStorage.getItem('dx-data-localStore-setAllocationsState')
+  let marketCapSum: number = 0
+  let weightedValue: number = 0
+  const setAllocationsState = localStorage.getItem("dx-data-localStore-setAllocationsState")
   if (setAllocationsState != null) {
     const parsedData = JSON.parse(setAllocationsState) as ISetAllocationsState[]
 
     if (parsedData && parsedData.length > 0) {
-      if (tabType === 'weighted' && parsedData[0][tabType].setModeling.tokenCount) {
+      if (tabType === "weighted" && parsedData[0][tabType].setModeling.tokenCount) {
         if (prefilteredTokenData) {
           prefilteredTokenData
             .sort((a, b) => {
-              if (a.marketCap < b.marketCap) {
+              if (a.mCap < b.mCap) {
                 return 1
               }
-              if (a.marketCap > b.marketCap) {
+              if (a.mCap > b.mCap) {
                 return -1
               }
               // a must be equal to b
               return 0
             })
             .slice(0, parsedData[0][tabType].setModeling.tokenCount)
-            .forEach((token) => marketCapSum += token.marketCap)
+            .forEach(token => (marketCapSum += token.mCap))
         }
         weightedValue = marketCap / marketCapSum
-      } else if (tabType === 'equalWeight' && parsedData[0][tabType].setModeling.tokenCount) {
+      } else if (tabType === "equalWeight" && parsedData[0][tabType].setModeling.tokenCount) {
         weightedValue = 1 / parsedData[0][tabType].setModeling.tokenCount
       }
     }

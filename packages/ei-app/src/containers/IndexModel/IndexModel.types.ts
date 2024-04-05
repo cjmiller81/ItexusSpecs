@@ -1,3 +1,4 @@
+import { ICoin } from '@/services/backend-api.service'
 import { ModelCard } from './IndexModel.constants'
 import { ISetModelingFormState } from './set-modeling/set-modeling-form/set-modeling-form.types'
 
@@ -42,19 +43,6 @@ export interface IModelDropdownState {
   [ModelCard.PrefilterTokens]: boolean
 }
 
-export interface ITokenSetAllocation {
-  id: string
-  user: string
-  tokenSetId?: string
-  chainId: number
-  address: string
-  name: string
-  symbol: string
-  decimals: number
-  logoURI: string
-  price: number
-  marketCap: number
-  allocationDate?: string
-  lastUpdated?: string
+export interface ITokenSetAllocation extends ICoin {
   qty?: number
 }

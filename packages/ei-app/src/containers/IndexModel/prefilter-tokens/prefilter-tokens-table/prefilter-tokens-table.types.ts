@@ -1,10 +1,4 @@
-import { ITokenSetAllocation, SetAllocationsType } from '../../IndexModel.types'
-import { PrefilterTokensField } from './prefilter-tokens-table.constants'
-
-export interface IPrefilterTokensTable {
-  tabType: SetAllocationsType
-  onUpdate: (filteredTokenData: ITokenSetAllocation[]) => void
-}
+import { PrefilterTokensField } from "./prefilter-tokens-table.constants"
 
 export interface IPrefilterTokensDataRow {
   [PrefilterTokensField.Id]: string

@@ -1,10 +1,6 @@
-import { ITokenSetAllocation } from "@/containers/IndexModel/IndexModel.types"
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
-import { iconsApi } from "@/services/iconsService"
-import { isFulfilled } from "@/utils/common"
 import { PayloadAction } from "@reduxjs/toolkit"
-import { RootState } from "../RootReducer"
 import { createAppSlice } from "../createAppSlice"
 import { Status } from "./WalletsSlice"
 
@@ -16,9 +12,8 @@ interface MarketCapEqualWeightModelingState {
   tokensCount: number
   totalCapital: number
   weight: number
-  prefilteredData: ITokenSetAllocation[]
+  prefilteredData: ICoin[]
   tableData: InvestingTableAsset[]
-  iconsCache: { [id: string]: ICoin }
 }
 
 const initialState: MarketCapEqualWeightModelingState = {
@@ -30,8 +25,7 @@ const initialState: MarketCapEqualWeightModelingState = {
   totalCapital: 150,
   weight: 1 / 7,
   prefilteredData: [],
-  tableData: [],
-  iconsCache: {},
+  tableData: []
 }
 
 export const marketCapEqualWeightModelingSlice = createAppSlice({
@@ -47,51 +41,24 @@ export const marketCapEqualWeightModelingSlice = createAppSlice({
       state.totalCapital = action.payload
       calculateTableRows(state)
     }),
-    setPrefilteredData: create.reducer((state, action: PayloadAction<ITokenSetAllocation[]>) => {
-      state.prefilteredData = action.payload.sort((a, b) => b.marketCap - a.marketCap)
+    setPrefilteredData: create.reducer((state, action: PayloadAction<ICoin[]>) => {
+      state.prefilteredData = action.payload.sort((a, b) => b.mCap - a.mCap)
       calculateTableRows(state)
     }),
-    updateIcons: create.asyncThunk(
-      async (_, thunkApi): Promise<ICoin[]> => {
-        const state = thunkApi.getState() as RootState
-        const tableData = state.walletsReducer.MarketCapEqualWeightModeling.tableData
-
-        const iconsTasks = tableData.filter(row => row.iconUrl === undefined).map(row => iconsApi.getbyId(row.tokenId))
-
-        const tokenDetails = await Promise.allSettled(iconsTasks)
-        const fulfilledValues = tokenDetails.filter(isFulfilled).map(p => p.value)
-
-        return fulfilledValues
-      },
-      {
-        fulfilled: (state, action) => {
-          action.payload.forEach(icon => {
-            state.iconsCache[icon.id] = icon
-          })
-          const newTableData = state.tableData.map<InvestingTableAsset>(row => {
-            if (row.iconUrl) return row
-
-            const icon = state.iconsCache[row.tokenId]
-            return { ...row, iconUrl: icon?.lURI } as InvestingTableAsset
-          })
-
-          state.tableData = newTableData
-        },
-      },
-    ),
   }),
 })
 
 function calculateTableRows(state: MarketCapEqualWeightModelingState) {
-  state.tableData = state.prefilteredData.slice(0, state.tokensCount).map<InvestingTableAsset>(data => ({
+  const newTableData = state.prefilteredData.slice(0, state.tokensCount).map<InvestingTableAsset>(data => ({
     tokenId: data.id,
-    iconUrl: state.iconsCache[data.id]?.lURI,
+    iconUrl: data.lURI,
     id: data.id,
-    marketCap: data.marketCap,
-    symbol: data.symbol,
+    marketCap: data.mCap,
+    symbol: data.sym,
     price: data.price,
     qty: (state.weight * state.totalCapital) / data.price,
     weight: state.weight * 100,
   }))
+  state.tableData = newTableData
 }
-export const { setPrefilteredData, setTokens, setCapital, updateIcons } = marketCapEqualWeightModelingSlice.actions
+export const { setPrefilteredData, setTokens, setCapital } = marketCapEqualWeightModelingSlice.actions

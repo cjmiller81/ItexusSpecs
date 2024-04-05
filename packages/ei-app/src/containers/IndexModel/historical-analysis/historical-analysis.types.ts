@@ -1,7 +1,8 @@
+import { ICoin } from "@/services/backend-api.service"
 import { ISetAllocationsState, ITokenSetAllocation, SetAllocationsType } from "../IndexModel.types"
 
 export interface IHistoricalAnalysis {
-  prefilteredTokenData: ITokenSetAllocation[]
+  prefilteredTokenData: ICoin[]
   setAllocationsState: ISetAllocationsState
   tabType: SetAllocationsType
 }

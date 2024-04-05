@@ -1,8 +1,5 @@
-import {
-  ISetAllocationsState,
-  ITokenSetAllocation,
-  SetAllocationsType
-} from "../../IndexModel.types"
+import { ICoin } from "@/services/backend-api.service"
+import { ISetAllocationsState, ITokenSetAllocation, SetAllocationsType } from "../../IndexModel.types"
 
 export interface ISetModelingFormState {
   tokenCount: number
@@ -11,10 +8,10 @@ export interface ISetModelingFormState {
 }
 
 export interface ISetModelingForm {
-  prefilteredTokenData: ITokenSetAllocation[]
+  prefilteredTokenData: ICoin[]
   tabType: SetAllocationsType
-  onSetAllocationsStateUpdate: (setAllocationsState:ISetAllocationsState) =>void
-  onModelSetModelingUpdate: (modelSetModelingTable:ITokenSetAllocation[]) =>void
+  onSetAllocationsStateUpdate: (setAllocationsState: ISetAllocationsState) => void
+  onModelSetModelingUpdate: (modelSetModelingTable: ITokenSetAllocation[]) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUpdate(dataField: string, value: any): void
 }

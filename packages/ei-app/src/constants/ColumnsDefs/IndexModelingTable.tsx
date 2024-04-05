@@ -1,10 +1,11 @@
 import { IconCell } from "@/components/DataDisplay/DataGrid/IconCell"
-import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid"
+import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid"
 import i18next, { t } from "i18next"
 
 i18next.setDefaultNamespace("ColumnsDefs")
 
-export const getIndexModelingTableColumns = (): GridColDef[] => {
+export const getIndexModelingTableColumns = (): GridColDef<InvestingTableAsset>[] => {
   return [
     {
       field: "symbol",
@@ -14,10 +15,11 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      renderCell: props => (
+      renderCell: (params: GridRenderCellParams<InvestingTableAsset, any, any>) => (
         <IconCell
-          symbol={props.row.symbol}
-          iconUrl={props.row.iconUrl}/>
+          symbol={params.row.symbol.toUpperCase()}
+          iconUrl={params.row.iconUrl}
+        />
       ),
     },
     {
@@ -28,7 +30,7 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      valueGetter: (params: GridValueGetterParams) => {
+      valueGetter: params => {
         if (!params.row.price) return "--"
         return params.row.price.toLocaleString("en-US", {
           style: "currency",
@@ -46,7 +48,7 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      valueGetter: (params: GridValueGetterParams) => {
+      valueGetter: params => {
         if (!params.row.marketCap) return "--"
         return params.row.marketCap.toLocaleString("en-US", {
           style: "currency",
@@ -62,7 +64,7 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      valueGetter: (params: GridValueGetterParams) => {
+      valueGetter: params => {
         return `${params.row.weight.toLocaleString("en-US", {
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -77,7 +79,7 @@ export const getIndexModelingTableColumns = (): GridColDef[] => {
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      valueGetter: (params: GridValueGetterParams) => {
+      valueGetter: params => {
         if (!params.row.price) return "--"
         return params.row.qty.toLocaleString("en-US", {
           maximumFractionDigits: 4,
