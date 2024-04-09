@@ -13,14 +13,13 @@ import DataGridDef, {
   Search,
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
-import React, { FC, useCallback, useEffect } from "react"
+import React, { FC, useCallback, useEffect, useRef } from "react"
 
 import { SymbolCellIdComponentV2 } from "@/components/common/inputs/symbol-lookup/symbol-lookup"
-import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "@/services/backend-api.service"
+import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
 import { ExportingEvent } from "devextreme/ui/data_grid"
-import CustomFilterBuilder from "../custom-filter-builder/custom-filter-builder"
 import { PrefilterTokensField, PrefilterTokensLabel } from "./prefilter-tokens-table.constants"
+import "./prefilter-tokens-table.module.scss"
 
 export interface IPrefilterTokensTable {
   loading: boolean
@@ -29,11 +28,8 @@ export interface IPrefilterTokensTable {
   categories: ICategory[]
   currentFilter?: object[] | null | undefined
   dataSource: DataSource<ICoin, string>
-  filters: IPrefilterTokensFilterValues[]
+  onFilterBuilderOpen: Function
   onUpdate: (filteredTokenData: ICoin[]) => void
-  onCreateFilter: (filter: CreateFilterModel) => void
-  onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void
-  onDeleteFilter: (filterId: string) => void
   onExport: (e: ExportingEvent<ICoin, any>) => void
 }
 
@@ -42,19 +38,17 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   categories,
   chains,
   onUpdate,
-  onCreateFilter,
-  onUpdateFilter,
-  onDeleteFilter,
   onCurrentFilterChange,
   dataSource,
   currentFilter,
-  filters,
+  onFilterBuilderOpen,
   onExport,
 }) => {
   const datagrid = React.createRef<DataGridDef<ICoin, string>>()
-  const filterBuilderPopupRef = React.createRef<FilterBuilderPopup>()
-  const allowedPageSizes = [5, 10, 20, 50]
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const filterPanelText = useRef<Element | null>(null)
 
+  const allowedPageSizes = [5, 10, 20, 50]
   const updatePrefilteredTokens = async (): Promise<void> => {
     const grid = datagrid?.current?.instance
 
@@ -69,7 +63,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
 
   useEffect(() => {
     const grid = datagrid?.current?.instance
-
     if (!grid) return
     updatePrefilteredTokens()
   }, [currentFilter])
@@ -132,278 +125,270 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     onCurrentFilterChange(filter as object[])
   }
 
+  const handleFilterTextClick = useCallback((event: Event) => {
+    event.stopPropagation()
+    setTimeout(() => onFilterBuilderOpen())
+  }, [])
+
+  const onContentReady = () => {
+    if (filterPanelText.current) {
+      filterPanelText.current.removeEventListener("click", handleFilterTextClick)
+    }
+
+    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text")
+    if (filterPanelTextDiv) {
+      filterPanelText.current = filterPanelTextDiv
+      filterPanelTextDiv.addEventListener("click", handleFilterTextClick)
+    }
+  }
+
   return (
-    <DataGridDef<ICoin>
-      id="prefilter-tokens-table"
-      dataSource={dataSource}
-      showBorders={true}
-      ref={datagrid}
-      allowColumnReordering={true}
-      columnHidingEnabled={true}
-      onExporting={onExport}
-      width="99%"
-      filterBuilder={{
-        customOperations: [],
-        allowHierarchicalFields: true,
-      }}
-      filterValue={currentFilter || []}
-      filterSyncEnabled={true}
-      onFilterValueChange={onApplyFilter}>
-      <FilterRow visible={true} />
-      <FilterPanel
-        visible={true}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={e => `Click here to refine filter model: ${e.text}`}
-      />
-
-      <FilterBuilderPopup
-        position={{
-          of: global.window,
-          at: "top",
-          my: "top",
-          offset: { y: 10 },
+    <div ref={containerRef}>
+      <DataGridDef<ICoin>
+        id="prefilter-tokens-table"
+        dataSource={dataSource}
+        showBorders={true}
+        ref={datagrid}
+        allowColumnReordering={true}
+        columnHidingEnabled={true}
+        onExporting={onExport}
+        width="99%"
+        filterBuilderPopup={{
+          visible: false,
         }}
-        showTitle={true}
-        title="Filter Tokens"
-        ref={filterBuilderPopupRef}
-        closeOnOutsideClick
-        height={"90%"}
-        contentRender={() => (
-          <CustomFilterBuilder
-            onCreateFilter={onCreateFilter}
-            onClose={() => {}}
-            predefinedFilters={filters}
-            onUpdateFilter={onUpdateFilter}
-            onApply={onApplyFilter}
-            filterToAppply={currentFilter}
-            onDeleteFilter={onDeleteFilter}
-          />
-        )}
-        showCloseButton={true}
-        toolbarItems={[
-          {
-            toolbar: "bottom",
-            options: {
-              text: "Apply",
-            },
-          },
-        ]}
-      />
+        filterBuilder={{
+          visible: false,
+          customOperations: [],
+          allowHierarchicalFields: true,
+        }}
+        filterValue={currentFilter || []}
+        onContentReady={onContentReady}
+        filterSyncEnabled={true}
+        onFilterValueChange={onApplyFilter}>
+        <FilterRow visible={true} />
+        <FilterPanel
+          visible={true}
+          customizeText={e => `Click here to refine filter model: ${e.text}`}
+        />
 
-      <HeaderFilter visible={false}>
-        <Search enabled={true} />
-      </HeaderFilter>
-      <LoadPanel enabled />
-      <Paging defaultPageSize={10} />
-      <Pager
-        visible={true}
-        allowedPageSizes={allowedPageSizes}
-        displayMode="full"
-        showPageSizeSelector={true}
-        showInfo={true}
-        showNavigationButtons={true}
-      />
-      <ColumnChooser enabled={true} />
-      <Column
-        dataField={PrefilterTokensField.Symbol}
-        caption={PrefilterTokensLabel.Symbol}
-        alignment="left"
-        visible={true}
-        minWidth={150}
-        allowHiding={false}
-        cellComponent={SymbolCellIdComponentV2}
-      />
-      <Column
-        dataField={PrefilterTokensField.Price}
-        caption={PrefilterTokensLabel.Price}
-        alignment="right"
-        visible={true}
-        dataType="number"
-        minWidth={175}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, {
-            style: "currency",
-            currency: "USD",
-            maximumFractionDigits: 6,
-            minimumFractionDigits: 6,
-          })
-        }
-        hidingPriority={11}
-      />
-      <Column
-        dataField={PrefilterTokensField.MarketCap}
-        caption={PrefilterTokensLabel.MarketCap}
-        alignment="right"
-        defaultSortOrder="desc"
-        visible={true}
-        dataType="number"
-        minWidth={160}
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, {
-            style: "currency",
-            currency: "USD",
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-          })
-        }
-        hidingPriority={10}
-      />
-      <Column
-        dataField={PrefilterTokensField.FullyDilutedValuation}
-        caption={PrefilterTokensLabel.FullyDilutedValuation}
-        alignment="right"
-        visible={true}
-        dataType="number"
-        minWidth={190}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, {
-            style: "currency",
-            currency: "USD",
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-          })
-        }
-        hidingPriority={6}
-      />
-      <Column
-        dataField={PrefilterTokensField.Tokenomics}
-        caption={PrefilterTokensLabel.Tokenomics}
-        alignment="right"
-        visible={true}
-        dataType="number"
-        minWidth={130}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, {
-            style: "percent",
-            maximumFractionDigits: 2,
-            minimumFractionDigits: 2,
-          })
-        }
-        hidingPriority={9}
-      />
-      <Column
-        dataField={PrefilterTokensField.Volume}
-        caption={PrefilterTokensLabel.Volume}
-        alignment="right"
-        visible={true}
-        dataType="number"
-        minWidth={140}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
-        }
-        hidingPriority={7}
-      />
-      <Column
-        dataField={PrefilterTokensField.Chains}
-        caption={PrefilterTokensLabel.Chains}
-        alignment="left"
-        visible={true}
-        dataType="string"
-        calculateFilterExpression={calculateFilterExpression}
-        filterOperations={categoriesFilterOperations}
-        minWidth={150}
-        width={200}
-        allowHiding={true}
-        hidingPriority={4}>
-        <HeaderFilter
-          visible={true}
-          dataSource={{
-            store: {
-              type: "array",
-              data: chains,
-            },
-            map: chainsToFilterItem,
-          }}>
-          <Search enabled={false} />
+        <FilterBuilderPopup
+          visible={false}
+          defaultVisible={false}
+        />
+
+        <HeaderFilter visible={false}>
+          <Search enabled={true} />
         </HeaderFilter>
-      </Column>
-      <Column
-        dataField={PrefilterTokensField.IsErc20}
-        caption={PrefilterTokensLabel.IsErc20}
-        alignment="center"
-        visible={true}
-        dataType="boolean"
-        minWidth={130}
-        hidingPriority={8}
-      />
-      <Column
-        dataField={PrefilterTokensField.Categories}
-        caption={PrefilterTokensLabel.Categories}
-        alignment="left"
-        visible={true}
-        dataType="string"
-        calculateFilterExpression={calculateFilterExpression}
-        filterOperations={categoriesFilterOperations}
-        minWidth={150}
-        width={200}
-        hidingPriority={5}>
-        <HeaderFilter
+        <LoadPanel
+          showPane={loading}
+          enabled
+        />
+        <Paging defaultPageSize={10} />
+        <Pager
           visible={true}
-          dataSource={{
-            store: {
-              type: "array",
-              data: categories,
-            },
-            map: categoryToFilterItem,
-          }}>
-          <Search enabled={false} />
-        </HeaderFilter>
-      </Column>
-      <Column
-        dataField={PrefilterTokensField.CirculatingSupply}
-        caption={PrefilterTokensLabel.CirculatingSupply}
-        alignment="right"
-        visible={false}
-        dataType="number"
-        minWidth={200}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
-        }
-        hidingPriority={3}
-      />
-      <Column
-        dataField={PrefilterTokensField.TotalSupply}
-        caption={PrefilterTokensLabel.TotalSupply}
-        alignment="right"
-        visible={false}
-        dataType="number"
-        minWidth={200}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
-        }
-        hidingPriority={2}
-      />
-      <Column
-        dataField={PrefilterTokensField.MaxSupply}
-        caption={PrefilterTokensLabel.MaxSupply}
-        alignment="right"
-        visible={false}
-        dataType="number"
-        minWidth={250}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        customizeText={(cellInfo: any) =>
-          (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
-        }
-        hidingPriority={1}
-      />
-      <Column
-        dataField={PrefilterTokensField.Id}
-        caption={PrefilterTokensLabel.Id}
-        alignment="center"
-        visible={false}
-        minWidth={100}
-        hidingPriority={0}
-      />
-      <Export
-        enabled={true}
-        allowExportSelectedData={true}
-      />
-    </DataGridDef>
+          allowedPageSizes={allowedPageSizes}
+          displayMode="full"
+          showPageSizeSelector={true}
+          showInfo={true}
+          showNavigationButtons={true}
+        />
+        <ColumnChooser enabled={true} />
+        <Column
+          dataField={PrefilterTokensField.Symbol}
+          caption={PrefilterTokensLabel.Symbol}
+          alignment="left"
+          visible={true}
+          minWidth={150}
+          allowHiding={false}
+          cellComponent={SymbolCellIdComponentV2}
+        />
+        <Column
+          dataField={PrefilterTokensField.Price}
+          caption={PrefilterTokensLabel.Price}
+          alignment="right"
+          visible={true}
+          dataType="number"
+          minWidth={175}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, {
+              style: "currency",
+              currency: "USD",
+              maximumFractionDigits: 6,
+              minimumFractionDigits: 6,
+            })
+          }
+          hidingPriority={11}
+        />
+        <Column
+          dataField={PrefilterTokensField.MarketCap}
+          caption={PrefilterTokensLabel.MarketCap}
+          alignment="right"
+          defaultSortOrder="desc"
+          visible={true}
+          dataType="number"
+          minWidth={160}
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, {
+              style: "currency",
+              currency: "USD",
+              maximumFractionDigits: 0,
+              minimumFractionDigits: 0,
+            })
+          }
+          hidingPriority={10}
+        />
+        <Column
+          dataField={PrefilterTokensField.FullyDilutedValuation}
+          caption={PrefilterTokensLabel.FullyDilutedValuation}
+          alignment="right"
+          visible={true}
+          dataType="number"
+          minWidth={190}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, {
+              style: "currency",
+              currency: "USD",
+              maximumFractionDigits: 0,
+              minimumFractionDigits: 0,
+            })
+          }
+          hidingPriority={6}
+        />
+        <Column
+          dataField={PrefilterTokensField.Tokenomics}
+          caption={PrefilterTokensLabel.Tokenomics}
+          alignment="right"
+          visible={true}
+          dataType="number"
+          minWidth={130}
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, {
+              style: "percent",
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            })
+          }
+          hidingPriority={9}
+        />
+        <Column
+          dataField={PrefilterTokensField.Volume}
+          caption={PrefilterTokensLabel.Volume}
+          alignment="right"
+          visible={true}
+          dataType="number"
+          minWidth={140}
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
+          }
+          hidingPriority={7}
+        />
+        <Column
+          dataField={PrefilterTokensField.Chains}
+          caption={PrefilterTokensLabel.Chains}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          filterOperations={categoriesFilterOperations}
+          minWidth={150}
+          width={200}
+          allowHiding={true}
+          hidingPriority={4}>
+          <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: chainsToFilterItem,
+            }}>
+            <Search enabled={false} />
+          </HeaderFilter>
+        </Column>
+        <Column
+          dataField={PrefilterTokensField.IsErc20}
+          caption={PrefilterTokensLabel.IsErc20}
+          alignment="center"
+          visible={true}
+          dataType="boolean"
+          minWidth={130}
+          hidingPriority={8}
+        />
+        <Column
+          dataField={PrefilterTokensField.Categories}
+          caption={PrefilterTokensLabel.Categories}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          filterOperations={categoriesFilterOperations}
+          minWidth={150}
+          width={200}
+          hidingPriority={5}>
+          <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: categories,
+              },
+              map: categoryToFilterItem,
+            }}>
+            <Search enabled={false} />
+          </HeaderFilter>
+        </Column>
+        <Column
+          dataField={PrefilterTokensField.CirculatingSupply}
+          caption={PrefilterTokensLabel.CirculatingSupply}
+          alignment="right"
+          visible={false}
+          dataType="number"
+          minWidth={200}
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
+          }
+          hidingPriority={3}
+        />
+        <Column
+          dataField={PrefilterTokensField.TotalSupply}
+          caption={PrefilterTokensLabel.TotalSupply}
+          alignment="right"
+          visible={false}
+          dataType="number"
+          minWidth={200}
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
+          }
+          hidingPriority={2}
+        />
+        <Column
+          dataField={PrefilterTokensField.MaxSupply}
+          caption={PrefilterTokensLabel.MaxSupply}
+          alignment="right"
+          visible={false}
+          dataType="number"
+          minWidth={250}
+          customizeText={(cellInfo: any) =>
+            (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
+          }
+          hidingPriority={1}
+        />
+        <Column
+          dataField={PrefilterTokensField.Id}
+          caption={PrefilterTokensLabel.Id}
+          alignment="center"
+          visible={false}
+          minWidth={100}
+          hidingPriority={0}
+        />
+        <Export
+          enabled={true}
+          allowExportSelectedData={true}
+        />
+      </DataGridDef>
+    </div>
   )
 }

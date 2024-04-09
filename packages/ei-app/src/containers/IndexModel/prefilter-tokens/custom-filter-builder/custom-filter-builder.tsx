@@ -111,111 +111,111 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   }
 
   return (
-    <Box>
-      <Grid
-        container
-        spacing={1}>
+      <Box>
         <Grid
-          xs={3}
-          item>
-          <FilterBuilderDef
-            value={filterValue as any[]}
-            fields={filterBuilderFields}
-            onValueChanged={handleFilterValueChanged}
-          />
-          <Button
-            sx={{ marginTop: "20px" }}
-            disabled={!filterValue || !filterValue.length}
-            onClick={handleClearFilters}
-            variant="outlined"
-            color="warning">
-            Clear
-          </Button>
-        </Grid>
-        <Grid
-          xs={9}
-          item>
-          <div className="dx-field">
-            <div className="dx-field-label">Select pre-built filter:</div>
-            <div className="dx-field-value">
-              <SelectBoxDef
-                displayExpr="text"
-                dataSource={predefinedFilters}
-                value={selectedSavedFilter?.id}
-                valueExpr={"id"}
-                onValueChanged={handleSavedFilterChange}
-              />
-            </div>
-          </div>
-          <div className="dx-field">
-            <div className="dx-field-label">Selected filter name:</div>
-            <div className="dx-field-value">
-              <Box sx={{ display: "flex" }}>
-                <TextBox
-                  width={"75%"}
-                  defaultValue={filterName}
-                  value={filterName}
-                  showClearButton={true}
-                  onValueChanged={e => setFilterName(e.value)}></TextBox>
-                <Box sx={{ marginLeft: "20px", display: "flex", justifyContent: "space-between", width: "25%" }}>
-                  <Button
-                    disabled={!filterValue && !filterName}
-                    onClick={handleSaveFilter}
-                    variant="contained"
-                    color="primary">
-                    Save
-                  </Button>
-                  <Button
-                    disabled={!selectedSavedFilter}
-                    onClick={handleDeleteFilter}
-                    variant="contained"
-                    color="error">
-                    Delete
-                  </Button>
-                </Box>
-              </Box>
-            </div>
-          </div>
+          container
+          spacing={1}>
           <Grid
-            spacing={3}
-            container>
+            xs={3}
+            item>
+            <FilterBuilderDef
+              value={filterValue as any[]}
+              fields={filterBuilderFields}
+              onValueChanged={handleFilterValueChanged}
+            />
+            <Button
+              sx={{ marginTop: "20px" }}
+              disabled={!filterValue || !filterValue.length}
+              onClick={handleClearFilters}
+              variant="outlined"
+              color="warning">
+              Clear
+            </Button>
+          </Grid>
+          <Grid
+            xs={9}
+            item>
+            <div className="dx-field">
+              <div className="dx-field-label">Select pre-built filter:</div>
+              <div className="dx-field-value">
+                <SelectBoxDef
+                  displayExpr="text"
+                  dataSource={predefinedFilters}
+                  value={selectedSavedFilter?.id}
+                  valueExpr={"id"}
+                  onValueChanged={handleSavedFilterChange}
+                />
+              </div>
+            </div>
+            <div className="dx-field">
+              <div className="dx-field-label">Selected filter name:</div>
+              <div className="dx-field-value">
+                <Box sx={{ display: "flex" }}>
+                  <TextBox
+                    width={"75%"}
+                    defaultValue={filterName}
+                    value={filterName}
+                    showClearButton={true}
+                    onValueChanged={e => setFilterName(e.value)}></TextBox>
+                  <Box sx={{ marginLeft: "20px", display: "flex", justifyContent: "space-between", width: "25%" }}>
+                    <Button
+                      disabled={!filterValue && !filterName}
+                      onClick={handleSaveFilter}
+                      variant="contained"
+                      color="primary">
+                      Save
+                    </Button>
+                    <Button
+                      disabled={!selectedSavedFilter}
+                      onClick={handleDeleteFilter}
+                      variant="contained"
+                      color="error">
+                      Delete
+                    </Button>
+                  </Box>
+                </Box>
+              </div>
+            </div>
             <Grid
-              xs={6}
-              item>
-              <Typography
-                variant="h2"
-                sx={{ marginBottom: "20px", dixplay: "flex", justifyContent: "center" }}>
-                How to make a custom filter
-              </Typography>
-              <ReactPlayer
-                width={"100%"}
-                url="https://www.youtube.com/watch?v=h0bABvxh67c"
-              />
-            </Grid>
-            <Grid
-              xs={6}
-              item>
-              <Typography
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
-                variant="h4">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab animi optio similique quidem enim vero
-                veritatis sequi dolores obcaecati commodi quae laudantium amet corrupti nobis, cum, laboriosam mollitia
+              spacing={3}
+              container>
+              <Grid
+                xs={6}
+                item>
+                <Typography
+                  variant="h2"
+                  sx={{ marginBottom: "20px", dixplay: "flex", justifyContent: "center" }}>
+                  How to make a custom filter
+                </Typography>
+                <ReactPlayer
+                  width={"100%"}
+                  url="https://www.youtube.com/watch?v=h0bABvxh67c"
+                />
+              </Grid>
+              <Grid
+                xs={6}
+                item>
+                <Typography
+                  sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
+                  variant="h4">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab animi optio similique quidem enim vero
+                  veritatis sequi dolores obcaecati commodi quae laudantium amet corrupti nobis, cum, laboriosam mollitia
                 ratione? Provident!
-              </Typography>
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
-      <Box sx={{ display: "flex", justifyContent: "right" }}>
-        <Button
-          disabled={!filterValue}
-          onClick={handleApplyFilter}
-          variant="contained"
-          color="primary">
-          Apply Filter
-        </Button>
+        <Box sx={{ display: "flex", justifyContent: "right" }}>
+          <Button
+            disabled={!filterValue}
+            onClick={handleApplyFilter}
+            variant="contained"
+            color="primary">
+            Apply Filter
+          </Button>
+        </Box>
       </Box>
-    </Box>
   )
 }
 

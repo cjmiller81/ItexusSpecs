@@ -4,7 +4,18 @@
     "Save": "Save",
     "Delete": "Delete",
     "Cancel": "Cancel",
-    "Sumbit": "Submit"
+    "Sumbit": "Submit",
+    "Clear": "Clear",
+    "Yes": "Yes",
+    "No": "No"
+  },
+  "CustomFilterBuilder":{
+    "DeleteDialogTitle": "Delete filter",
+    "ApplyFilter": "Apply filter",
+    "SelectFilter": "Select pre-built filter:",
+    "SaveFilterAs": "Save filter as:",
+    "FilterTokens": "Filter Tokens",
+    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
   },
   "errorMessages": {
     "incorectPassword": "Incorrect password",
