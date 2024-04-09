@@ -126,8 +126,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   }
 
   const handleFilterTextClick = useCallback((event: Event) => {
-    event.stopPropagation()
-    setTimeout(() => onFilterBuilderOpen())
+    onFilterBuilderOpen()
   }, [])
 
   const onContentReady = () => {
@@ -153,11 +152,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         columnHidingEnabled={true}
         onExporting={onExport}
         width="99%"
-        filterBuilderPopup={{
-          visible: false,
-        }}
         filterBuilder={{
-          visible: false,
           customOperations: [],
           allowHierarchicalFields: true,
         }}
@@ -172,8 +167,9 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         />
 
         <FilterBuilderPopup
-          visible={false}
-          defaultVisible={false}
+          onShowing={e => {
+            e.cancel = true
+          }}
         />
 
         <HeaderFilter visible={false}>
