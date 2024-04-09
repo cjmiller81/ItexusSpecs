@@ -2,6 +2,7 @@ import { IndexAllocationsStateStoreContext } from "@/containers/IndexModel/Index
 import { IndexModel } from "@/containers/IndexModel/IndexModel"
 import { defaultAllocationsPanelState } from "@/containers/IndexModel/IndexModel.constants"
 import { ISetAllocationsState, ITabPanelData, SetAllocationsType } from "@/containers/IndexModel/IndexModel.types"
+import { CustomFilterBuilderV2 } from "@/containers/IndexModel/prefilter-tokens/custom-filter-builder/custom-filter-builder-modal"
 import { PrefilterTokensTable } from "@/containers/IndexModel/prefilter-tokens/prefilter-tokens-table/prefilter-tokens-table"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
@@ -24,7 +25,7 @@ import LocalStore from "devextreme/data/local_store"
 import { exportDataGrid } from "devextreme/excel_exporter"
 import { Workbook } from "exceljs"
 import { saveAs } from "file-saver-es"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MarketCapEqualWeightedPage() {
@@ -41,14 +42,23 @@ export default function MarketCapEqualWeightedPage() {
   const [localState, setState] = useState<ISetAllocationsState>(defaultAllocationsPanelState[0])
   const [setAllocationsStateStore, setSetAllocationsStateStore] = useState<ISetAllocationsState>()
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
-  const { allTokens, allCategories, allChains, filters, fetchingTokensStatus } = useAppSelector(
-    state => state.walletsReducer.allTokensTable,
-  )
+  const {
+    allTokens,
+    allCategories,
+    allChains,
+    filters,
+    fetchingTokensStatus,
+    updatingFilterStatus,
+    deletingFilterStatus,
+    creatingFilterStatus,
+  } = useAppSelector(state => state.walletsReducer.allTokensTable)
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>()
+  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false)
   const dispatch = useAppDispatch()
 
-  const handleUpdateFilteredTokenData = (filteredTokenData: ICoin[]): void => {
+  const handleUpdateFilteredTokenData = useCallback((filteredTokenData: ICoin[]): void => {
     appStore.dispatch(setPrefilteredData(filteredTokenData))
-  }
+  }, [])
 
   const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
     state => state.walletsReducer.MarketCapEqualWeightModeling,
@@ -123,7 +133,7 @@ export default function MarketCapEqualWeightedPage() {
     [allTokens],
   )
 
-  const onExporting = async (e: any): Promise<void> => {
+  const onExporting = useCallback(async (e: any): Promise<void> => {
     const workbook = new Workbook()
     const worksheet = workbook.addWorksheet("Main sheet")
 
@@ -142,16 +152,28 @@ export default function MarketCapEqualWeightedPage() {
       )
     })
     e.cancel = true
-  }
+  }, [])
 
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>()
   return (
     <Stack>
-      <PrefilterTokensTable
-        onDeleteFilter={id => dispatch(deleteFilter({ id }))}
-        onUpdateFilter={filter => dispatch(updateFilter(filter))}
+      <CustomFilterBuilderV2
+        filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+        filterDeletingLoading={deletingFilterStatus === "loading"}
+        open={filterBuildeOpen}
         onCreateFilter={filter => dispatch(createFilter(filter))}
-        filters={filters}
+        onClose={() => setFilterBuilderOpen(false)}
+        predefinedFilters={filters}
+        onUpdateFilter={filter => dispatch(updateFilter(filter))}
+        onApply={filter => {
+          setCurrentFilter(filter)
+          setFilterBuilderOpen(false)
+        }}
+        filterToAppply={currentFilter}
+        onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+      />
+
+      <MemoizedPrefilterTokensTable
+        onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
         loading={fetchingTokensStatus === "loading"}
         onUpdate={handleUpdateFilteredTokenData}
         onExport={onExporting}
@@ -210,3 +232,12 @@ export default function MarketCapEqualWeightedPage() {
     </Stack>
   )
 }
+
+const MemoizedPrefilterTokensTable = React.memo(PrefilterTokensTable, (prevProps, nextProps) => {
+  return (
+    prevProps.dataSource === nextProps.dataSource &&
+    prevProps.categories === nextProps.categories &&
+    prevProps.chains === nextProps.chains &&
+    prevProps.currentFilter === nextProps.currentFilter
+  )
+})
