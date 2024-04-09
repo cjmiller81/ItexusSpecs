@@ -11,7 +11,7 @@
     ]
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
     "release": "standard-version",
@@ -25,6 +25,9 @@
     "@mui/material": "^5.15.12",
     "@mui/x-data-grid": "^6.19.6",
     "@mui/x-date-pickers": "^6.19.6",
+    "@ory/client": "1.2.10",
+    "@ory/elements": "^0.1.0-beta.14",
+    "@ory/integrations": "1.1.5",
     "@reduxjs/toolkit": "^2.2.0",
     "apexcharts": "^3.46.0",
     "axios": "^1.6.7",
