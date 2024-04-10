@@ -27,7 +27,7 @@ import { ValueChangedEvent } from "devextreme/ui/filter_builder"
 import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import ReactPlayer from "react-player"
-import { filterBuilderFields } from "../prefilter-tokens-table/prefilter-tokens-table.constants"
+import { filterBuilderFields } from "../../constants/PrefilterTokensTable"
 
 interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[]
@@ -42,7 +42,7 @@ interface ICustomFilterBuilderProps {
   filterDeletingLoading?: boolean
 }
 
-export const CustomFilterBuilderV2: React.FC<ICustomFilterBuilderProps> = ({
+export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   predefinedFilters,
   onCreateFilter,
   onUpdateFilter,

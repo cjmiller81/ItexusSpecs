@@ -1,11 +1,11 @@
-import React, { useState, createContext, useContext } from 'react'
-import CustomSnackbar from './notification'
+import CustomSnackbarProvider from "@/providers/CustomSnackbarProvider"
+import { createContext, useContext, useState } from "react"
 
 interface INotificationContextProps {
   open: boolean
   message: string
-  severity: 'success' | 'error' | 'info' | 'warning'
-  showNotification: (message: string, severity: 'success' | 'error' | 'info' | 'warning') => void
+  severity: "success" | "error" | "info" | "warning"
+  showNotification: (message: string, severity: "success" | "error" | "info" | "warning") => void
   hideNotification: () => void
 }
 
@@ -14,7 +14,7 @@ const NotificationContext = createContext<INotificationContextProps | undefined>
 export const useNotification = () => {
   const context = useContext(NotificationContext)
   if (!context) {
-    throw new Error('useNotification must be used within a NotificationProvider')
+    throw new Error("useNotification must be used within a NotificationProvider")
   }
   return context
 }
@@ -23,11 +23,11 @@ export const useNotification = () => {
 const NotificationProvider = ({ children }: any) => {
   const [notification, setNotification] = useState({
     open: false,
-    message: '',
-    severity: 'success' as 'success' | 'error' | 'info' | 'warning',
+    message: "",
+    severity: "success" as "success" | "error" | "info" | "warning",
   })
 
-  const showNotification = (message: string, severity: 'success' | 'error' | 'info' | 'warning') => {
+  const showNotification = (message: string, severity: "success" | "error" | "info" | "warning") => {
     setNotification({
       open: true,
       message,
@@ -36,7 +36,7 @@ const NotificationProvider = ({ children }: any) => {
   }
 
   const hideNotification = () => {
-    setNotification((prev) => ({
+    setNotification(prev => ({
       ...prev,
       open: false,
     }))
@@ -51,7 +51,12 @@ const NotificationProvider = ({ children }: any) => {
   return (
     <NotificationContext.Provider value={contextValue}>
       {children}
-      <CustomSnackbar open={notification.open} onClose={hideNotification} severity={notification.severity} message={notification.message} />
+      <CustomSnackbarProvider
+        open={notification.open}
+        onClose={hideNotification}
+        severity={notification.severity}
+        message={notification.message}
+      />
     </NotificationContext.Provider>
   )
 }
