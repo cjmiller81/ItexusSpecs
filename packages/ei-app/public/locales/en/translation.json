@@ -9,6 +9,9 @@
     "Yes": "Yes",
     "No": "No"
   },
+  "PrefilterTokensSection":{
+    "PrefilterTokens": "Prefilter Tokens"
+  },
   "CustomFilterBuilder":{
     "DeleteDialogTitle": "Delete filter",
     "ApplyFilter": "Apply filter",

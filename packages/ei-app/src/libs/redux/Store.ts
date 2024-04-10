@@ -1,14 +1,17 @@
-import { configureStore, Action, ThunkAction } from "@reduxjs/toolkit"
+import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
-import rootReducer, { RootState } from "./RootReducer"
+import { persistStore } from "redux-persist"
+import { RootState, persistedReducer } from "./RootReducer"
 
 const makeStore = () => {
   return configureStore({
-    reducer: rootReducer,
+    reducer: persistedReducer,
   })
 }
 
 export const appStore = makeStore()
+export const appPersistor = persistStore(appStore)
+
 export type AppDispatch = AppStore["dispatch"]
 type DispatchFunc = () => AppDispatch
 export const useAppDispatch: DispatchFunc = useDispatch

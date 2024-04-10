@@ -5,12 +5,12 @@ import { addError } from "../redux/Slices/UiSlice"
 import { appStore } from "../redux/Store"
 
 export const appAxios = axios.create({
-  baseURL: process.env.API_BASE_URL, // "https://tokensets-api.emergentcybernetics.net",
+  baseURL: process.env.API_BASE_URL,
 })
 
 appAxios.interceptors.request.use(
   config => {
-    config.headers.Authorization = process.env.ACCESS_TOKEN //`Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsImV4cCI6MTcxMTU1Mzc4NiwiaXNzIjoieW91cl9pc3N1ZXIiLCJhdWQiOiJ5b3VyX2F1ZGllbmNlIn0.rF6v5SwvKTbmJHzyQAenH9WpMtCWTGV5zfDsaEf5uoA`
+    config.headers.Authorization = process.env.ACCESS_TOKEN
     return config
   },
   error => {

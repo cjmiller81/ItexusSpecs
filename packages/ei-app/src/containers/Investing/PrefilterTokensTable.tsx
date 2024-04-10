@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -13,13 +14,10 @@ import DataGridDef, {
   Search,
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
-import React, { FC, useCallback, useEffect, useRef } from "react"
-
-import { SymbolCellIdComponentV2 } from "@/components/common/inputs/symbol-lookup/symbol-lookup"
-import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
 import { ExportingEvent } from "devextreme/ui/data_grid"
-import { PrefilterTokensField, PrefilterTokensLabel } from "./prefilter-tokens-table.constants"
-import "./prefilter-tokens-table.module.scss"
+import React, { FC, useCallback, useEffect, useRef } from "react"
+import { PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
+import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
 
 export interface IPrefilterTokensTable {
   loading: boolean
@@ -196,7 +194,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           minWidth={150}
           allowHiding={false}
-          cellComponent={SymbolCellIdComponentV2}
+          cellComponent={SymbolCellIdComponent}
         />
         <Column
           dataField={PrefilterTokensField.Price}
