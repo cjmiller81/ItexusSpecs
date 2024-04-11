@@ -80,6 +80,7 @@ export const HistoricalWalletsWorth = ({
     event: PickerChangeHandlerContext<DateValidationError>,
     setIsValid: (isValid: boolean) => void,
   ) => {
+    //eslint-disable-next-line no-extra-boolean-cast
     setIsValid(!Boolean(event.validationError))
   }
   return (
