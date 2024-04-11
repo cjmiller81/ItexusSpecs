@@ -21,12 +21,12 @@ export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, firstLoad } = useAppSelector(
     state => state.walletsReducer.wallets,
   )
-  const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks } = useAppSelector(
-    state => state.walletsReducer.walletWorthChart,
-  )
+  const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
+    useAppSelector(state => state.walletsReducer.walletWorthChart)
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
+  const [toDate, setToDate] = useState<Date | null>(new Date())
   const dispatch = useAppDispatch()
 
   const { t } = useTranslation("MyWalletsPage")
@@ -38,12 +38,13 @@ export default function MyWalletsPage() {
   }, [dispatch])
 
   const onChartRefresh = () => {
-    if (fromDate) {
+    if (fromDate && toDate) {
       dispatch(
         fetchHistoricalWalletData({
           tokenId: symbolOption?.tokenId,
           compareLabel: symbolOption?.label,
           startDate: fromDate,
+          endDate: toDate,
         }),
       )
     }
@@ -57,8 +58,8 @@ export default function MyWalletsPage() {
     dispatch(selectWallets(rows))
   }
 
-  const onUpdateWallet = (address: string, isPersonal: boolean, name?: string) =>{
-    dispatch(updateWallet({address, isPersonal, name}))
+  const onUpdateWallet = (address: string, isPersonal: boolean, name?: string) => {
+    dispatch(updateWallet({ address, isPersonal, name }))
   }
 
   return (
@@ -76,16 +77,19 @@ export default function MyWalletsPage() {
 
       <HistoricalWalletsWorth
         sx={{ mt: 4 }}
+        chartDataLoading={statstatusFetchingHistoricalData === "loading"}
         lookupOption={symbolOption}
         chartAxisTicks={yAxisTicks}
         chartSeries={chartSeries}
         fromDate={fromDate}
+        toDate={toDate}
         lookupLoading={iconsFetchingStatus === "loading"}
         lookupOptions={lookUpOptions}
         maxChartValue={maxChartValue}
         minChartValue={minChartValue}
         onChartSubmit={onChartRefresh}
         onFromDateChange={date => setFromDate(date)}
+        onToDateChange={date => setToDate(date)}
         onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
         onOptionChange={option => setSymbolOption(option)}
         onPeriodChange={period => dispatch(setPeriod({ period: period }))}
