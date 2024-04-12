@@ -22,7 +22,7 @@ interface MarketCapEqualWeightChartState {
   maxChartValue: number
   yAxisTicks: number
   startDate: Date | null
-  endDate: Date
+  endDate: Date | null
   symbolOption?: LookUpOption | null
 }
 
@@ -66,6 +66,9 @@ export const marketCapEqualWeightSlice = createAppSlice({
     }),
     setFromDate: create.reducer((state, action: PayloadAction<{ fromDate: Date | null }>) => {
       state.startDate = action.payload.fromDate
+    }),
+    setToDate: create.reducer((state, action: PayloadAction<{ toDate: Date | null }>) => {
+      state.endDate = action.payload.toDate
     }),
     setCompareOption: create.reducer((state, action: PayloadAction<{ compareToOption: LookUpOption | null }>) => {
       state.symbolOption = action.payload.compareToOption
@@ -182,5 +185,5 @@ function calculateMinMax(state: MarketCapEqualWeightChartState): { minValue: num
   }
 }
 
-export const { fetchHistoricalCapWeightedData, setPeriod, setCompareOption, setFromDate, selectSeries, resetState } =
+export const { fetchHistoricalCapWeightedData, setPeriod, setCompareOption, setFromDate, selectSeries, resetState, setToDate } =
   marketCapEqualWeightSlice.actions

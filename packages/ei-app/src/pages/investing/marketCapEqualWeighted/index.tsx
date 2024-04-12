@@ -12,6 +12,7 @@ import {
   setCompareOption,
   setFromDate,
   setPeriod,
+  setToDate,
 } from "@/libs/redux/Slices/MarketCapEqualWeightSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { Stack } from "@mui/material"
@@ -26,6 +27,7 @@ export default function MarketCapEqualWeightedPage() {
     period,
     yAxisTicks,
     startDate,
+    endDate,
     symbolOption,
     statstatusFetchingMarcetCapData,
   } = useAppSelector(state => state.walletsReducer.marketCapEqualWeight)
@@ -72,6 +74,7 @@ export default function MarketCapEqualWeightedPage() {
           chartAxisTicks={yAxisTicks}
           chartSeries={chartSeries}
           fromDate={startDate}
+          toDate={endDate}
           chartDataLoading={statstatusFetchingMarcetCapData === "loading"}
           lookupOption={symbolOption}
           lookupLoading={iconsFetchingStatus === "loading"}
@@ -80,6 +83,7 @@ export default function MarketCapEqualWeightedPage() {
           minChartValue={minChartValue}
           onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({}))}
           onFromDateChange={date => dispatch(setFromDate({ fromDate: date }))}
+          onToDateChange={date => dispatch(setToDate({ toDate: date }))}
           onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
           onOptionChange={option => dispatch(setCompareOption({ compareToOption: option }))}
           onPeriodChange={period => dispatch(setPeriod({ period: period }))}

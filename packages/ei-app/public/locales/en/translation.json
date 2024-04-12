@@ -58,7 +58,8 @@
     "Weekly": "Weekly",
     "CompareToSymbol": "Compare to Symbol",
     "Period": "Period",
-    "FromDate": "From Date"
+    "FromDate": "From Date",
+    "ToDate": "To Date"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Worth"
@@ -156,7 +157,7 @@
   },
   "Tooltips":{
     "Period": "Select One",
-    "FromDate": "Required",
+    "Required": "Required",
     "CompareToSymbol": "Leave Blank for Plot Only"
   }
 }
