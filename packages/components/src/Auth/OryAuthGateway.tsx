@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react"
 import { HandleError } from "./pkg/hooks"
 import { ory } from "./pkg/sdk"
+import ErrorUi from "./ui/error"
 import Login from "./ui/login"
 import Recovery from "./ui/recovery"
 import Registration from "./ui/registration"
@@ -13,6 +14,7 @@ type OryContextType = {
   logOut: () => Promise<void>
 }
 
+const ErrorPath = "/ui/error"
 const LoginPath = "/ui/login"
 const RecoveryPath = "/ui/recovery"
 const RegistrationPath = "/ui/registration"
@@ -34,7 +36,7 @@ export function OryAuthGateway({
   const router = useRouter()
 
   const handleError = (error: AxiosError) => {
-    const handle = HandleError(undefined, undefined, "/ui/login")
+    const handle = HandleError(undefined, undefined, LoginPath)
     return handle(error)
   }
 
@@ -48,18 +50,13 @@ export function OryAuthGateway({
       })
 
       setSession(undefined)
-      router.push("/ui/login")
+      router.push(LoginPath)
     } catch (error) {}
   }
 
   useEffect(() => {
     // If the router is not ready yet, or we already have a session, do nothing.
-    if (
-      pathname == "/ui/logout" ||
-      pathname == "/ui/login" ||
-      pathname == "/ui/recovery" ||
-      pathname == "/ui/registration"
-    ) {
+    if ([ErrorPath, LogoutPath, LoginPath, RecoveryPath, RegistrationPath].indexOf(pathname) > -1) {
       setSession(undefined)
       return
     }
@@ -73,11 +70,11 @@ export function OryAuthGateway({
       .catch(error => {
         // Handle all other errors like error.message "network error" if Kratos can not be connected etc.
         if (error.message) {
-          return router.push(`/ui/error?error=${encodeURIComponent(error.message)}`)
+          return router.push(`${ErrorPath}?error=${encodeURIComponent(error.message)}`)
         }
 
         // Just stringify error and print all data
-        return router.push(`/ui/error?error=${encodeURIComponent(JSON.stringify(error))}`)
+        return router.push(`${ErrorPath}?error=${encodeURIComponent(JSON.stringify(error))}`)
       })
   }, [pathname])
 
@@ -95,9 +92,10 @@ export function OryAuthGateway({
         customTranslations={customTranslations || {}}
         locale="en"
         defaultLocale="en">
-        {pathname == "/ui/login" && <Login />}
+        {pathname == ErrorPath && <ErrorUi />}
+        {pathname == LoginPath && <Login />}
         {pathname == RecoveryPath && <Recovery />}
-        {pathname == "/ui/registration" && <Registration />}
+        {pathname == RegistrationPath && <Registration />}
       </IntlProvider>
       {!allAuthPaths.includes(pathname) && session && children}
     </OryGatewayContext.Provider>
@@ -106,9 +104,8 @@ export function OryAuthGateway({
 
 export const useOry = () => {
   const context = useContext(OryGatewayContext)
-  console.log(context)
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider9")
+    throw new Error("useAuth must be used within an AuthProvider")
   }
   return context
 }

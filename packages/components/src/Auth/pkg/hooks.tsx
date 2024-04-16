@@ -12,9 +12,11 @@ export const HandleError = (
 ) => {
   return async (error: AxiosError): Promise<AxiosError | void> => {
     if (!error.response || error.response?.status === 0) {
-      window.location.href = `/ui/error?error=${encodeURIComponent(JSON.stringify(error.response))}`
+      let errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
+      window.location.href = `/ui/error?error=${encodeURIComponent(process.env.development ? JSON.stringify(error) : errorMsg)}`
       return Promise.resolve()
     }
+
     const responseData = (error.response?.data as ErrorBrowserLocationChangeRequired) || {}
     const responseError = responseData?.error as GenericError
 

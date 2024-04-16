@@ -5,8 +5,9 @@ import { AxiosError } from "axios"
 import { CodeBox } from "@ory/elements"
 import { ory } from "../pkg/sdk"
 import { HandleError } from "../pkg/hooks"
+import { AuthContainer } from "./AuthContainer"
 
-const Error = (): React.JSX.Element => {
+const ErrorUi = (): React.JSX.Element => {
   const [error, setError] = useState<string>()
   const router = useRouter()
 
@@ -43,19 +44,23 @@ const Error = (): React.JSX.Element => {
   }, [err, id, router.isReady, handleError])
 
   return (
-    <>
-      <Link href="/">Home</Link>
+    <AuthContainer>
+      <div
+        className="log"
+        style={{ height: "85vh" }}>
+        <Link href="/">Home</Link>
 
-      <p>An error occurred. Please check the error information below and try again.</p>
-      <CodeBox
-        style={{
-          overflow: "auto",
-          maxWidth: "600px",
-        }}>
-        {error}
-      </CodeBox>
-    </>
+        <p>An error occurred. Please check the error information below and try again.</p>
+        <CodeBox
+          style={{
+            overflow: "auto",
+            maxWidth: "600px",
+          }}>
+          {error}
+        </CodeBox>
+      </div>
+    </AuthContainer>
   )
 }
 
-export default Error
+export default ErrorUi
