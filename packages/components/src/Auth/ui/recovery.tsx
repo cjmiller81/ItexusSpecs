@@ -1,35 +1,20 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-// React
-import { FC, useCallback, useEffect, useState } from "react"
-
-// Next.js
-import NextJsRouter, { useRouter } from "next/router"
-
-// Ory SDK & Ory Client
 import { RecoveryFlow, UpdateRecoveryFlowBody } from "@ory/client"
 import { UserAuthCard } from "@ory/elements"
 import { AxiosError } from "axios"
-import { ory } from "../../pkg/sdk"
+import { useRouter } from "next/router"
+import { FC, useCallback, useEffect, useState } from "react"
+import { Loader } from "../loader"
+import { HandleError } from "../pkg/hooks"
+import { ory } from "../pkg/sdk"
+import { AuthContainer } from "./AuthContainer"
 
-// Misc.
-import { IAppComponent } from "../../common/types"
-
-// Ory Elements
-// We will use UserAuthCard from Ory Elements to display the recovery form.
-import { Loader } from '../../components/common/loader'
-import { HandleError } from "../../pkg/hooks"
-import { SetUriFlow } from "../../pkg/helpers"
-
-import styles from './index.module.scss'
-
-export const Recovery: FC<IAppComponent> = () => {
+export const Recovery: FC<{}> = () => {
   const [flow, setFlow] = useState<RecoveryFlow | null>()
 
   // Get flow information from the URL
   const router = useRouter()
 
   const flowId = String(router.query.flow || "")
-  const returnTo = String(router.query.return_to || "/ui/profile")
 
   const getFlow = useCallback(
     (id: string) =>
@@ -38,9 +23,7 @@ export const Recovery: FC<IAppComponent> = () => {
         .then(({ data }) => {
           setFlow(data)
         })
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
         .catch(handleError),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
 
@@ -63,21 +46,16 @@ export const Recovery: FC<IAppComponent> = () => {
     [getFlow],
   )
 
-  const createFlow = useCallback(
-    (returnToLocal: string) =>
-      ory
-        .createBrowserRecoveryFlow({
-          returnTo: returnToLocal,
-        })
-        .then(({ data }) => {
-          setFlow(data)
-          SetUriFlow(NextJsRouter, data.id)
-        })
-        .catch((c) => {
-          void handleError(c)
-        }),
-    [handleError],
-  )
+  const createFlow = () =>
+    ory
+      .createBrowserRecoveryFlow()
+      .then(({ data }) => {
+        setFlow(data)
+        router.push(`/ui/recovery?flow=${data.id}`)
+      })
+      .catch(c => {
+        void handleError(c)
+      })
 
   useEffect(() => {
     if (!router.isReady) {
@@ -86,14 +64,14 @@ export const Recovery: FC<IAppComponent> = () => {
 
     // If ?flow=.. was in the URL, we fetch it
     if (flowId) {
-      getFlow(flowId).catch(() => createFlow(returnTo))
+      getFlow(flowId).catch(() => createFlow())
       // if the flow is expired, we create a new one
       return
     }
 
     // Otherwise we initialize it
-    createFlow(returnTo)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    createFlow()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
 
   const submitFlow = (values: UpdateRecoveryFlowBody): Promise<void> =>
@@ -105,13 +83,16 @@ export const Recovery: FC<IAppComponent> = () => {
       .then(({ data }) => {
         setFlow(data)
       })
-      .catch((c) => {
+      .catch(c => {
         void handleError(c)
       })
 
-  return flow ? (
-    <main className={styles.login}>
-      <div className="log" style={{ height: '85vh' }}>
+  if (!flow) return <Loader />
+  return (
+    <AuthContainer>
+      <div
+        className="log"
+        style={{ height: "85vh" }}>
         <UserAuthCard
           // create a recovery form that dynamically renders based on the flow data using Ory Elements
           // This defines what kind of card we want to render.
@@ -126,16 +107,11 @@ export const Recovery: FC<IAppComponent> = () => {
           includeScripts={true}
           // we submit the form data to Ory
           onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
-
-          cardImage='https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png'
+          cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
         />
       </div>
-    </main>
-  ) : (
-    <Loader />
+    </AuthContainer>
   )
 }
-
-// Recovery.getLayout = (page) => <Layout>{page}</Layout>
 
 export default Recovery
