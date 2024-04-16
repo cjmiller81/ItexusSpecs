@@ -1,12 +1,16 @@
-import RootLayout from "@/Layouts/RootLayout"
 import type { AppProps } from "next/app"
+import { useEffect, useState } from "react"
+import RootLayout from "@/Layouts/RootLayout"
 import "../libs/axios/customAxios"
 import "../libs/i18n/i18n"
-import { useEffect, useState } from "react"
-
+import "@ory/elements/assets/normalize.css"
+import "@ory/elements/assets/fa-brands.min.css"
+import "@ory/elements/assets/fa-solid.min.css"
+import "@ory/elements/assets/fontawesome.min.css"
+import "@ory/elements/assets/inter-font.css"
+import "@ory/elements/assets/jetbrains-mono-font.css"
 import "devextreme/dist/css/dx.common.css"
-import { Link } from "@mui/material"
-
+import "@ory/elements/style.css"
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)
 
@@ -38,12 +42,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      { mocksStarted
-        ? <RootLayout>
-            <Component {...pageProps} />
-          </RootLayout>
-        : <></>
-      }
+      {mocksStarted && (
+        <RootLayout {...pageProps}>
+          <Component
+            {...pageProps}
+          />
+        </RootLayout>
+      )}
     </>
   )
 }

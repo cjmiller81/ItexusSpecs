@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sources":["../lib/index.js"],"sourcesContent":["'use strict';\n\nmodule.exports = components;\n\nfunction components() {\n  return 'Hello from components';\n}\n"],"names":["module","exports"],"mappings":"AAEAA,OAAOC,QAEP,WACE,MAAO,uBACT"}

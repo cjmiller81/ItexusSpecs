@@ -5,7 +5,8 @@ import { addError } from "../redux/Slices/UiSlice"
 import { appStore } from "../redux/Store"
 
 export const appAxios = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: process.env.API_BASE_URL, // "https://tokensets-api.emergentcybernetics.net",
+  withCredentials: true,
 })
 
 appAxios.interceptors.request.use(
