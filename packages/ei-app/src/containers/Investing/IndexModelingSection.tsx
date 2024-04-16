@@ -1,12 +1,11 @@
-import PageTitle from "@/components/TextDisplay/PageTitle"
+import { AppAccordionSection } from "@/components/common/Containers/AppAccordionSection"
 import AppPercentageField from "@/components/common/inputs/AppPercentageField"
 import AppNumberInput from "@/components/common/inputs/NumberInput/AppNumberInput"
 import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls"
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 import DownloadIcon from "@mui/icons-material/Download"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material"
+import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material"
 import { useGridApiRef } from "@mui/x-data-grid"
 import { useTranslation } from "react-i18next"
 import * as XLSX from "xlsx"
@@ -23,13 +22,21 @@ interface Props extends Omit<AccordionProps, "children"> {
   weighted: number
 }
 
-export const IndexModelingSection = ({ tokens, capital, weighted, onCapitalChange, onTokensChange, title, tableAssets, isEqualWeight, ...props }: Props) => {
+export const IndexModelingSection = ({
+  tokens,
+  capital,
+  weighted,
+  onCapitalChange,
+  onTokensChange,
+  title,
+  tableAssets,
+  isEqualWeight,
+  ...props
+}: Props) => {
   const { t } = useTranslation("IndexModelingSection")
   const apiRef = useGridApiRef()
-
   const onExport = () => {
     const worksheet = XLSX.utils.json_to_sheet(
-
       tableAssets.map(asset => ({
         symbol: asset.symbol,
         price: asset.price,
@@ -60,73 +67,72 @@ export const IndexModelingSection = ({ tokens, capital, weighted, onCapitalChang
   }
 
   return (
-    <Accordion
+    <AppAccordionSection
+      persistKey="IndexModeling"
       defaultExpanded
+      title={title}
+      headerChildren={
+        <Button
+          sx={{ mr: 2 }}
+          onClick={event => {
+            event.stopPropagation()
+            onExport()
+          }}
+          variant="outlined">
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <DownloadIcon></DownloadIcon>
+            {t("Export")}
+          </Box>
+        </Button>
+      }
       {...props}>
-      <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{title}</PageTitle>
-          <Button
-            sx={{ mr: 2 }}
-            onClick={event => {
-              event.stopPropagation()
-              onExport()
-            }}
-            variant="outlined">
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-              <DownloadIcon></DownloadIcon>
-              {t("Export")}
-            </Box>
-          </Button>
-        </Box>
-      </StyledAccordionSummary>
-      <AccordionDetails sx={{ bgcolor: "background.paper" }}>
-        <MainContainer
-          sx={{ width: "100%" }}
-          gap={2}>
-          <LeftContainer>
-            <AppNumberInput
-              label={t("Tokens")}
-              value={tokens}
-              min={0}
-              onChange={(_, value) => onTokensChange(value || 0)}
-            />
-            {isEqualWeight && <AppPercentageField
+      <MainContainer
+        sx={{ width: "100%" }}
+        gap={2}>
+        <LeftContainer>
+          <AppNumberInput
+            label={t("Tokens")}
+            value={tokens}
+            min={0}
+            onChange={(_, value) => onTokensChange(value || 0)}
+          />
+          {isEqualWeight && (
+            <AppPercentageField
               label={t("EqualWeight")}
               onChange={() => {}}
               value={weighted}
               inputProps={{
-                disabled: true
+                disabled: true,
               }}
               maxDecimals={2}
-            />}
-            <AppNumberInput
-              label={t("TotalCapital")}
-              min={0}
-              step={10}
-              value={capital}
-              onChange={(_, value) => onCapitalChange(value|| 0)}
             />
-          </LeftContainer>
-          <RightContainer>
-            <StyledWalletsTable
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 5 },
-                },
-              }}
-              rowSelection={false}
-              checkboxSelection={false}
-              pageSizeOptions={[5, 10]}
-              apiRef={apiRef}
-              getRowId={x => x.id}
-              columns={getIndexModelingTableColumns()}
-              rows={tableAssets}
-            />
-          </RightContainer>
-        </MainContainer>
-      </AccordionDetails>
-    </Accordion>
+          )}
+          <AppNumberInput
+            label={t("TotalCapital")}
+            min={0}
+            step={10}
+            value={capital}
+            onChange={(_, value) => onCapitalChange(value || 0)}
+          />
+        </LeftContainer>
+        <RightContainer>
+          <StyledWalletsTable
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            rowSelection={false}
+            checkboxSelection={false}
+            pageSizeOptions={[5, 10]}
+            apiRef={apiRef}
+            getRowId={x => x.id}
+            columns={getIndexModelingTableColumns()}
+            rows={tableAssets}
+          />
+        </RightContainer>
+      </MainContainer>
+    </AppAccordionSection>
   )
 }
 
@@ -159,6 +165,6 @@ const MainContainer = styled(Box)(({ theme }) => ({
   },
 }))
 
-const StyledAccordionSummary = styled(AccordionSummary)(() => ({
+export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
   transition: "none",
 }))

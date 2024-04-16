@@ -14,6 +14,7 @@ export default function MarketCapWeightedPage() {
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
+  const [toDate, setToDate] = useState<Date | null>(null)
   const [period, setPeriod] = useState<Period>("daily")
   const dispatch = useAppDispatch()
   const [capital, setCapital] = useState(120)
@@ -39,6 +40,7 @@ export default function MarketCapWeightedPage() {
       <HistoricalWalletsWorth
         sx={{ mt: 4, width: "100%" }}
         chartAxisTicks={6}
+        toDate={toDate}
         chartSeries={[]}
         fromDate={fromDate}
         lookupOption={symbolOption}
@@ -48,6 +50,7 @@ export default function MarketCapWeightedPage() {
         minChartValue={0}
         onChartSubmit={() => {}}
         onFromDateChange={date => setFromDate(date)}
+        onToDateChange={date => setToDate(date)}
         onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
         onOptionChange={option => setSymbolOption(option)}
         onPeriodChange={period => setPeriod(period)}

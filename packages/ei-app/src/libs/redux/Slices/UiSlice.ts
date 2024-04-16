@@ -1,4 +1,3 @@
-import { Wallet } from "@/models/Wallet/Wallet"
 import { PaletteMode } from "@mui/material"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { createAppSlice } from "../createAppSlice"
@@ -8,12 +7,14 @@ interface WalletsState {
   errors: string[]
   sidebarOpened: boolean
   mode: PaletteMode
+  accordions: { [id: string]: boolean }
 }
 
 const initialState: WalletsState = {
   errors: [],
   sidebarOpened: true,
   mode: "dark",
+  accordions: {},
 }
 
 export const uiSlice = createAppSlice({
@@ -32,7 +33,10 @@ export const uiSlice = createAppSlice({
     toggleTheme: create.reducer(state => {
       state.mode = state.mode === "dark" ? "light" : "dark"
     }),
+    setAccordionState: create.reducer((state, action: PayloadAction<{ key: string; open: boolean }>) => {
+      state.accordions = { ...state.accordions, [action.payload.key]: action.payload.open }
+    }),
   }),
 })
 
-export const { clearErrors, addError, toggleSideBar, toggleTheme } = uiSlice.actions
+export const { clearErrors, addError, toggleSideBar, toggleTheme, setAccordionState } = uiSlice.actions

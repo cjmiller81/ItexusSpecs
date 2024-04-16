@@ -5,8 +5,10 @@ import SymbolLookup, { LookUpOption } from "@/components/common/inputs/AppSymbol
 import PageTitle from "@/components/TextDisplay/PageTitle"
 import { chartDateFormatString } from "@/constants/Common"
 import LoadingButton from "@mui/lab/LoadingButton"
-import { Box, BoxProps, MenuItem } from "@mui/material"
+import { Box, BoxProps, MenuItem, Stack } from "@mui/material"
 import { styled } from "@mui/material/styles"
+import { DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers"
+import moment from "moment"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 export type Period = "daily" | "weekly" | "monthly"
@@ -16,7 +18,9 @@ interface Props extends BoxProps {
   period: Period
   onPeriodChange: (period: Period) => void
   onFromDateChange: (date: Date | null) => void
+  onToDateChange: (date: Date | null) => void
   fromDate: Date | null
+  toDate: Date | null
   onChartSubmit: () => void
   lookupLoading: boolean
   lookupOptions: LookUpOption[]
@@ -38,7 +42,9 @@ export const HistoricalWalletsWorth = ({
   period,
   onPeriodChange,
   onFromDateChange,
+  onToDateChange,
   fromDate,
+  toDate,
   onChartSubmit,
   lookupLoading,
   lookupOptions,
@@ -63,9 +69,20 @@ export const HistoricalWalletsWorth = ({
       maximumFractionDigits: 2,
     })}%`
   }
-
+  const [isFromDateValid, setIsFromDateValid] = useState(true)
+  const [isToDateValid, setIsToDateValid] = useState(true)
   const [inputSearch, setInputSearch] = useState("")
 
+  const maxFromDate = (toDate ? moment(toDate).add(-1, "d") : moment().add(-1, "d")).toDate()
+  const minToDate = fromDate ? moment(fromDate).add(1, "d").toDate() : undefined
+
+  const handleDatePickerContext = (
+    event: PickerChangeHandlerContext<DateValidationError>,
+    setIsValid: (isValid: boolean) => void,
+  ) => {
+    //eslint-disable-next-line no-extra-boolean-cast
+    setIsValid(!Boolean(event.validationError))
+  }
   return (
     <StyledWalletWorthContainer {...props}>
       <StyledWalletWorthMenuContainer>
@@ -83,15 +100,35 @@ export const HistoricalWalletsWorth = ({
             <MenuItem value={"weekly"}>{t("Weekly")}</MenuItem>
             <MenuItem value={"monthly"}>{t("Monthly")}</MenuItem>
           </AppSelect>
-          <AppDatePicker
-            tooltip={t("FromDate", { ns: "Tooltips" })}
-            required
-            disableFuture
-            value={fromDate}
-            onChange={date => onFromDateChange(date)}
-            maxDate={new Date()}
-            label={t("FromDate")}
-          />
+          <Stack
+            gap={2}
+            direction="row">
+            <AppDatePicker
+              tooltip={t("Required", { ns: "Tooltips" })}
+              required
+              disableFuture
+              value={fromDate}
+              onChange={(date, event) => {
+                onFromDateChange(date)
+                handleDatePickerContext(event, setIsFromDateValid)
+              }}
+              maxDate={maxFromDate}
+              label={t("FromDate")}
+            />
+            <AppDatePicker
+              tooltip={t("Required", { ns: "Tooltips" })}
+              required
+              disableFuture
+              value={toDate}
+              onChange={(date, event) => {
+                onToDateChange(date)
+                handleDatePickerContext(event, setIsToDateValid)
+              }}
+              maxDate={new Date()}
+              minDate={minToDate}
+              label={t("ToDate")}
+            />
+          </Stack>
           <StyledSymbolLookup
             tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
             loading={lookupLoading}
@@ -111,7 +148,7 @@ export const HistoricalWalletsWorth = ({
           <LoadingButton
             loading={chartDataLoading}
             onClick={onChartSubmit}
-            disabled={submitButtonDisabled}
+            disabled={submitButtonDisabled || !isFromDateValid || !isToDateValid}
             sx={{ width: "50%", alignSelf: "center" }}
             variant="contained">
             {sumbitButtonText || t("Sumbit", { ns: "Common" })}

@@ -56,6 +56,7 @@ export const walletWorthChartSlice = createAppSlice({
       async (
         payload: {
           startDate: Date
+          endDate: Date
           tokenId?: string | null
           compareLabel?: string | null
         },
@@ -65,7 +66,7 @@ export const walletWorthChartSlice = createAppSlice({
         const response = await walletsApi.getHistoricalWalletData(
           toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
           payload.startDate,
-          moment.utc().add(1, "d").toDate(),
+          payload.endDate,
           payload.tokenId,
         )
         return { seriesData: response, comareToLabel: payload.compareLabel }

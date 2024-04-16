@@ -97,6 +97,13 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
           },
         },
         MuiButton: {
+          styleOverrides: {
+            root: () => ({
+              transition: "none",
+              boxShadow: commonTheme.shadows[1],
+              color: commonTheme.palette.background.paper,
+            }),
+          },
           defaultProps: {},
           variants: [
             {
@@ -125,14 +132,6 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
                 ":hover": {
                   borderColor: commonTheme.palette.divider,
                 },
-              },
-            },
-            {
-              props: { variant: "contained" },
-              style: {
-                transition: "none",
-                boxShadow: commonTheme.shadows[1],
-                color: commonTheme.palette.background.paper,
               },
             },
           ],
