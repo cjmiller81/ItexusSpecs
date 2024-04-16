@@ -1,19 +1,10 @@
-// React
 import React, { useCallback, useEffect, useState } from "react"
-
-// Next.js
 import Link from "next/link"
 import { useRouter } from "next/router"
-
 import { AxiosError } from "axios"
-// Ory SDK & Ory Client
 import { CodeBox } from "@ory/elements"
-import { ory } from "../../pkg/sdk"
-
-// Misc.
-import { HandleError } from "../../pkg/hooks"
-
-// We will use CodeBox from Ory Elements to display the session information.
+import { ory } from "../pkg/sdk"
+import { HandleError } from "../pkg/hooks"
 
 const Error = (): React.JSX.Element => {
   const [error, setError] = useState<string>()
@@ -34,9 +25,7 @@ const Error = (): React.JSX.Element => {
 
     if (err) {
       try {
-        setError(
-          JSON.stringify(JSON.parse(decodeURIComponent(String(err))), null, 2),
-        )
+        setError(JSON.stringify(JSON.parse(decodeURIComponent(String(err))), null, 2))
       } catch (_catchError) {
         setError(String(err))
       }
@@ -57,16 +46,12 @@ const Error = (): React.JSX.Element => {
     <>
       <Link href="/">Home</Link>
 
-      <p>
-        An error occurred. Please check the error information below and try
-        again.
-      </p>
+      <p>An error occurred. Please check the error information below and try again.</p>
       <CodeBox
         style={{
           overflow: "auto",
           maxWidth: "600px",
-        }}
-      >
+        }}>
         {error}
       </CodeBox>
     </>

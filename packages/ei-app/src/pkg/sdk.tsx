@@ -1,5 +1,5 @@
-import { appAxios } from '@/libs/axios/customAxios'
-import { Configuration, FrontendApi } from '@ory/client'
+import { Configuration, FrontendApi } from "@ory/client"
+import axios from "axios"
 
 // Create a new Ory API client
 // This will default to the Ory playground project if no environment variable is set.
@@ -7,11 +7,12 @@ import { Configuration, FrontendApi } from '@ory/client'
 // or on production to the custom domain you have added to your Ory project.
 const ory = new FrontendApi(
   new Configuration({
-    basePath: process.env.NEXT_PUBLIC_ORY_SDK_URL || '',
+    basePath: process.env.NEXT_PUBLIC_ORY_SDK_URL || "",
   }),
-  '',
-  // TODO: axios version mismatch. Upgrade Ory deps to fix?
-  appAxios as any,
+  "",
+  axios.create({
+    withCredentials: true,
+  }),
 )
 
 export { ory }

@@ -1,3 +1,4 @@
+import { useOry } from "components"
 import { AppLink } from "@/components/common/AppLink"
 import Logout from "@mui/icons-material/Logout"
 import Settings from "@mui/icons-material/Settings"
@@ -12,6 +13,15 @@ import { useTranslation } from "react-i18next"
 
 function UserMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const { session, logOut } = useOry()
+
+  let nameLetters = ""
+  if (session) {
+    const firstName = session.identity?.traits.name.first
+    const lastName = session.identity?.traits.name.last
+    nameLetters = `${firstName && firstName.length ? firstName[0] : ""}${lastName && lastName.length ? lastName[0] : ""}`
+  }
+
   const open = Boolean(anchorEl)
   const { t } = useTranslation("UserMenu")
 
@@ -20,6 +30,10 @@ function UserMenu() {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const onLogOut = async () => {
+    await logOut()
   }
 
   return (
@@ -31,7 +45,7 @@ function UserMenu() {
         aria-controls={open ? "account-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}>
-        <Avatar sx={{ bgcolor: "coral", cursor: "pointer" }}>SR</Avatar>
+        <Avatar sx={{ bgcolor: "coral", cursor: "pointer" }}>{nameLetters.toLocaleUpperCase()}</Avatar>
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -82,7 +96,7 @@ function UserMenu() {
           </ListItemIcon>
           {t("Settings")}
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={onLogOut}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
