@@ -9,7 +9,7 @@ import { createAppSlice } from "../createAppSlice"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
 import { Status } from "./UiSlice"
 
-interface MarketCapEqualWeightChartState {
+export interface MarketCapEqualWeightChartState {
   chartData?: ChartSeriesDataResponse
   statstatusFetchingMarcetCapData: Status
   indexSeriesSelected: boolean
@@ -26,18 +26,18 @@ interface MarketCapEqualWeightChartState {
   symbolOption?: LookUpOption | null
 }
 
-interface ChartSeriesDataResponse {
+export interface ChartSeriesDataResponse {
   seriesData: CapHistoricalWeightedDate[]
   comareToLabel?: string | null
 }
 
-const defaultOption: LookUpOption = {
+export const defaultOption: LookUpOption = {
   label: "BTC - Bitcoin",
   tokenId: "bitcoin",
   iconUrl: "https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png?1696501400",
 }
 
-const initialState: MarketCapEqualWeightChartState = {
+export const initialState: MarketCapEqualWeightChartState = {
   chartData: undefined,
   period: "daily",
   tokensAllocation: 3,
@@ -53,8 +53,8 @@ const initialState: MarketCapEqualWeightChartState = {
   symbolOption: defaultOption,
 }
 
-export const marketCapEqualWeightSlice = createAppSlice({
-  name: "marketCapEqualWeight",
+export const marketCapEqualWeightChartSlice = createAppSlice({
+  name: "marketCapEqualWeightChart",
   initialState,
   reducers: create => ({
     resetState: create.reducer(state => {
@@ -80,18 +80,7 @@ export const marketCapEqualWeightSlice = createAppSlice({
     }),
     fetchHistoricalCapWeightedData: create.asyncThunk(
       async (_, thunkApi): Promise<ChartSeriesDataResponse> => {
-        const state = thunkApi.getState() as RootState
-        if (!state.walletsReducer.marketCapEqualWeight.startDate) {
-          throw "startDate is not set"
-        }
-
-        const response = await walletsApi.getHistoricalCapWeightedWalletData(
-          state.walletsReducer.marketCapEqualWeight.startDate,
-          new Date(),
-          state.walletsReducer.marketCapEqualWeight.tokensAllocation,
-          state.walletsReducer.marketCapEqualWeight.symbolOption?.tokenId,
-        )
-        return { seriesData: response, comareToLabel: state.walletsReducer.marketCapEqualWeight.symbolOption?.label }
+        return fetchChartData(thunkApi.getState() as RootState)
       },
       {
         pending: state => {
@@ -111,21 +100,45 @@ export const marketCapEqualWeightSlice = createAppSlice({
   }),
 })
 
+export async function fetchChartData(state: RootState) {
+  if (!state.walletsReducer.marketCapEqualWeightChart.startDate) {
+    throw "startDate is not set"
+  }
+
+  const response = await walletsApi.getHistoricalCapWeightedWalletData(
+    state.walletsReducer.marketCapEqualWeightChart.startDate,
+    new Date(),
+    state.walletsReducer.marketCapEqualWeightChart.tokensAllocation,
+    state.walletsReducer.marketCapEqualWeightChart.symbolOption?.tokenId,
+  )
+  return {
+    seriesData: response,
+    comareToLabel: state.walletsReducer.marketCapEqualWeightChart.symbolOption?.label,
+  }
+}
+
 function calculateChartSeries(state: MarketCapEqualWeightChartState) {
   if (!state.chartData?.seriesData?.length) {
     return
   }
 
-  state.chartSeries = makeChartSeries(state.chartData, state.period, state.chartCompareToLabel)
+  state.chartSeries = makeChartSeries(
+    state.chartData,
+    state.period,
+    data => data.capEqualWeightedIndex,
+    state.chartCompareToLabel,
+  )
+
   const { minValue, maxValue } = calculateMinMax(state)
   const { minChartValue, maxChartValue } = GetPrettyScale(minValue, maxValue, state.yAxisTicks)
   state.minChartValue = minChartValue
   state.maxChartValue = maxChartValue
 }
 
-function makeChartSeries(
+export function makeChartSeries(
   chartData: ChartSeriesDataResponse,
   period: Period,
+  mainValueSelector: (data: CapHistoricalWeightedDate) => number,
   compareToLabel?: string | null,
 ): ChartSeries[] {
   if (!chartData || !chartData.seriesData || !chartData.seriesData.length) {
@@ -133,12 +146,12 @@ function makeChartSeries(
   }
   const periodFilter = getPeriodHistoricalDataFileter(period)
   const firstComparePrice = chartData.seriesData[0].comparePrice
-  const firstCapWeightIndexValue = chartData.seriesData[0].capEqualWeightedIndex
+  const firstCapWeightIndexValue = mainValueSelector(chartData.seriesData[0])
   const capEqualWeightedIndexValues = chartData.seriesData
     .filter(seriesData => periodFilter(seriesData.capWeightedDate))
     .map(x => ({
       x: x.capWeightedDate,
-      y: ((x.capEqualWeightedIndex - firstCapWeightIndexValue) / firstCapWeightIndexValue) * 100,
+      y: ((mainValueSelector(x) - firstCapWeightIndexValue) / firstCapWeightIndexValue) * 100,
     }))
 
   const chartSeries: ChartSeries[] = []
@@ -169,10 +182,12 @@ function makeChartSeries(
   return chartSeries
 }
 
-function calculateMinMax(state: MarketCapEqualWeightChartState): { minValue: number; maxValue: number } {
+export function calculateMinMax(state: MarketCapEqualWeightChartState): { minValue: number; maxValue: number } {
   const selectedSeriesValues = [
     ...(state.indexSeriesSelected ? state.chartSeries[0].data.map(seriesPoint => seriesPoint) : []),
-    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1 ? state.chartSeries[1].data.map(seriesPoint => seriesPoint) : []),
+    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1
+      ? state.chartSeries[1].data.map(seriesPoint => seriesPoint)
+      : []),
   ].map(seriesPoint => seriesPoint.y)
 
   const maxValue = Math.max(...selectedSeriesValues)
@@ -185,5 +200,5 @@ function calculateMinMax(state: MarketCapEqualWeightChartState): { minValue: num
   }
 }
 
-export const { fetchHistoricalCapWeightedData, setPeriod, setCompareOption, setFromDate, selectSeries, resetState, setToDate } =
-  marketCapEqualWeightSlice.actions
+export const { fetchHistoricalCapWeightedData, setToDate, setPeriod, setCompareOption, setFromDate, selectSeries, resetState } =
+  marketCapEqualWeightChartSlice.actions

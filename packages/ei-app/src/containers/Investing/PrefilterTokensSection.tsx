@@ -2,8 +2,7 @@ import PageTitle from "@/components/TextDisplay/PageTitle"
 import StatePersistedAccordion from "@/components/common/StatePersistedAccordion"
 import { CustomFilterBuilder } from "@/containers/Investing/CustomFilterBuilder"
 import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { setPrefilteredData } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
-import { appStore, useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { ICoin } from "@/services/backend-api.service"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { AccordionDetails, AccordionProps, Box } from "@mui/material"
@@ -16,7 +15,11 @@ import { useTranslation } from "react-i18next"
 import { StyledAccordionSummary } from "./IndexModelingSection"
 import { PrefilterTokensTable } from "./PrefilterTokensTable"
 
-export default function PrefilterTokensSection(props: Omit<AccordionProps, "children">) {
+type Props = Omit<AccordionProps, "children"> & {
+  onFilteredTokensChanged: (filteredTokenData: ICoin[]) => void
+}
+
+export default function PrefilterTokensSection({ onFilteredTokensChanged, ...props }: Props) {
   const {
     allTokens,
     allCategories,
@@ -31,10 +34,6 @@ export default function PrefilterTokensSection(props: Omit<AccordionProps, "chil
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false)
   const dispatch = useAppDispatch()
   const { t } = useTranslation("PrefilterTokensSection")
-
-  const handleUpdateFilteredTokenData = useCallback((filteredTokenData: ICoin[]): void => {
-    appStore.dispatch(setPrefilteredData(filteredTokenData))
-  }, [])
 
   const allTokensSource = useMemo(
     () =>
@@ -99,7 +98,7 @@ export default function PrefilterTokensSection(props: Omit<AccordionProps, "chil
         <MemoizedPrefilterTokensTable
           onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
           loading={fetchingTokensStatus === "loading"}
-          onUpdate={handleUpdateFilteredTokenData}
+          onUpdate={onFilteredTokensChanged}
           onExport={onExporting}
           categories={allCategories}
           chains={allChains}

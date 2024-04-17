@@ -1,32 +1,8 @@
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
-import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
+import { ICoin } from "@/services/backend-api.service"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { createAppSlice } from "../createAppSlice"
-import { Status } from "./WalletsSlice"
-
-interface MarketCapEqualWeightModelingState {
-  tokens: ICoin[]
-  chains: IPlatform[]
-  categories: ICategory[]
-  statusFetchingModelingData: Status
-  tokensCount: number
-  totalCapital: number
-  weight: number
-  prefilteredData: ICoin[]
-  tableData: InvestingTableAsset[]
-}
-
-const initialState: MarketCapEqualWeightModelingState = {
-  statusFetchingModelingData: "idle",
-  tokens: [],
-  chains: [],
-  categories: [],
-  tokensCount: 7,
-  totalCapital: 150,
-  weight: 1 / 7,
-  prefilteredData: [],
-  tableData: []
-}
+import { MarketCapEqualModelingState, initialState } from "./MarketCapWeightedModelingSlice"
 
 export const marketCapEqualWeightModelingSlice = createAppSlice({
   name: "MarketCapEqualWeightModeling",
@@ -48,7 +24,7 @@ export const marketCapEqualWeightModelingSlice = createAppSlice({
   }),
 })
 
-function calculateTableRows(state: MarketCapEqualWeightModelingState) {
+function calculateTableRows(state: MarketCapEqualModelingState) {
   const newTableData = state.prefilteredData.slice(0, state.tokensCount).map<InvestingTableAsset>(data => ({
     tokenId: data.id,
     iconUrl: data.lURI,

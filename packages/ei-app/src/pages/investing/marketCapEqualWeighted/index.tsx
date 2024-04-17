@@ -4,7 +4,6 @@ import PrefilterTokensSection from "@/containers/Investing/PrefilterTokensSectio
 import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
-import { setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -12,8 +11,9 @@ import {
   setCompareOption,
   setFromDate,
   setPeriod,
-  setToDate,
-} from "@/libs/redux/Slices/MarketCapEqualWeightSlice"
+  setToDate
+} from "@/libs/redux/Slices/MarketCapEqualWeightChartSlice"
+import { setCapital, setPrefilteredData, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { Stack } from "@mui/material"
 import { useEffect } from "react"
@@ -29,8 +29,8 @@ export default function MarketCapEqualWeightedPage() {
     startDate,
     endDate,
     symbolOption,
-    statstatusFetchingMarcetCapData,
-  } = useAppSelector(state => state.walletsReducer.marketCapEqualWeight)
+    statstatusFetchingMarcetCapData
+  } = useAppSelector(state => state.walletsReducer.marketCapEqualWeightChart)
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
   const dispatch = useAppDispatch()
 
@@ -38,7 +38,7 @@ export default function MarketCapEqualWeightedPage() {
     state => state.walletsReducer.MarketCapEqualWeightModeling,
   )
 
-  const { t } = useTranslation("MarketCapEqualWeightedPage")
+  const { t } = useTranslation("MarketCapPage")
 
   useEffect(() => {
     dispatch(resetState())
@@ -49,7 +49,9 @@ export default function MarketCapEqualWeightedPage() {
 
   return (
     <Stack gap={2}>
-      <PrefilterTokensSection />
+      <PrefilterTokensSection
+        onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
+      />
 
       <IndexModelingSection
         onCapitalChange={value => dispatch(setCapital(value))}
@@ -67,7 +69,7 @@ export default function MarketCapEqualWeightedPage() {
       <AppAccordionSection
         persistKey="HistoricalWalletsWorth"
         defaultExpanded
-        title={t("ChartTitle")}>
+        title={t("EqualWeightedChartTitle")}>
         <HistoricalWalletsWorth
           sx={{ mt: 4, width: "100%" }}
           sumbitButtonText={t("RunTest")}
