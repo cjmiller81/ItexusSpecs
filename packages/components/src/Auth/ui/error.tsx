@@ -7,7 +7,7 @@ import { ory } from "../pkg/sdk"
 import { HandleError } from "../pkg/hooks"
 import { AuthContainer } from "./AuthContainer"
 
-const ErrorUi = (): React.JSX.Element => {
+export const ErrorUi = (): React.JSX.Element => {
   const [error, setError] = useState<string>()
   const router = useRouter()
 
@@ -39,7 +39,10 @@ const ErrorUi = (): React.JSX.Element => {
         .then(({ data }) => {
           setError(JSON.stringify(data, null, 2))
         })
-        .catch(handleError)
+        .catch(err => {
+          setError(JSON.stringify(err, null, 2))
+          //handleError
+      })
     }
   }, [err, id, router.isReady, handleError])
 

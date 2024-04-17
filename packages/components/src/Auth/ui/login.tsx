@@ -59,14 +59,28 @@ export const Login: FC<{}> = () => {
   }
 
   useEffect(() => {
+    const queryString = (typeof window !== 'undefined') ? window.location.search : "";
+    const searchParams = new URLSearchParams(queryString);
+    const hasFlowId = searchParams.has("flow")
+
     if (!router.isReady) {
       return
     }
 
-    if (flowId) {
-      getFlow(flowId).catch(() => {
+    if (hasFlowId && flowId) {
+      getFlow(flowId).catch((_err) => {
         createFlow(refresh, aal, returnTo)
       })
+      return
+    }
+  }, [router.isReady, flowId, returnTo])
+
+  useEffect(() => {
+    const queryString = (typeof window !== 'undefined') ? window.location.search : "";
+    const searchParams = new URLSearchParams(queryString);
+    const hasFlowId = searchParams.has("flow")
+
+    if (!router.isReady || hasFlowId) {
       return
     }
 
