@@ -20,7 +20,7 @@ const RecoveryPath = "/ui/recovery"
 const RegistrationPath = "/ui/registration"
 const LogoutPath = "/ui/logout"
 
-const allAuthPaths = [LoginPath, RecoveryPath, RegistrationPath, LogoutPath]
+const allAuthPaths = [ErrorPath, LoginPath, RecoveryPath, RegistrationPath, LogoutPath]
 
 const OryGatewayContext = createContext<OryContextType | undefined>(undefined)
 
@@ -105,7 +105,7 @@ export function OryAuthGateway({
 export const useOry = () => {
   const context = useContext(OryGatewayContext)
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useOry must be used within an AuthProvider")
   }
   return context
 }

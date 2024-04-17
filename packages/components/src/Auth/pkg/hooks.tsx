@@ -11,9 +11,11 @@ export const HandleError = (
   fatalToError = false,
 ) => {
   return async (error: AxiosError): Promise<AxiosError | void> => {
+    const inDevEnvironment = !!process && process.env.NODE_ENV === 'development';
+
     if (!error.response || error.response?.status === 0) {
       let errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
-      window.location.href = `/ui/error?error=${encodeURIComponent(process.env.development ? JSON.stringify(error) : errorMsg)}`
+      window.location.href = `/ui/error?error=${encodeURIComponent(inDevEnvironment ? JSON.stringify(error) : errorMsg)}`
       return Promise.resolve()
     }
 
@@ -107,6 +109,8 @@ export const HandleError = (
           }
 
           // Path has changed
+          // TODO: @see: https://github.com/ory/elements/pull/169/files
+          // TODO: @see: https://github.com/ory/elements/pull/180/files
           if (currentUrl.pathname !== redirect.pathname) {
             console.warn("sdkError 422: Update path")
             await Router.push(redirect.pathname + redirect.search)
@@ -140,13 +144,14 @@ export const HandleError = (
     }
 
     if (fatalToError) {
-      console.warn("sdkError: fatal error redirect to /error")
+      console.warn("sdkError: fatal error redirect to /ui/error")
       const errorData: any = error.response?.data
+      let errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
 
       await Router.push({
         pathname: "/ui/error",
         query: {
-          error: JSON.stringify(error, null, 2),
+          error: JSON.stringify(inDevEnvironment ? JSON.stringify(error) : errorMsg, null, 2),
           id: errorData.error?.id,
           flowType: Router.pathname,
         },
