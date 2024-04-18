@@ -4,8 +4,10 @@ import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 import { allTokensTableSlice } from "./Slices/AllTokensTableSlice"
 import { IconsSlice } from "./Slices/IconsSlice"
+import { marketCapEqualWeightChartSlice } from "./Slices/MarketCapEqualWeightChartSlice"
 import { marketCapEqualWeightModelingSlice } from "./Slices/MarketCapEqualWeightModelingSlice"
-import { marketCapEqualWeightSlice } from "./Slices/MarketCapEqualWeightSlice"
+import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlice"
+import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice"
 import { uiSlice } from "./Slices/UiSlice"
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
 import { walletsSlice } from "./Slices/WalletsSlice"
@@ -16,8 +18,10 @@ export const rootReducer = combineReducers({
     walletsSlice,
     walletWorthChartSlice,
     IconsSlice,
-    marketCapEqualWeightSlice,
+    marketCapEqualWeightChartSlice,
     marketCapEqualWeightModelingSlice,
+    marketCapWeightedChartSlice,
+    marketCapWeightedModelingSlice,
     allTokensTableSlice,
   ),
 })

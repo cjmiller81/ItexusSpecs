@@ -2,7 +2,8 @@ import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "@/ser
 import { iconsApi } from "@/services/iconsService"
 import { v4 as uuid } from "uuid"
 import { createAppSlice } from "../createAppSlice"
-import { setPrefilteredData } from "./MarketCapEqualWeightModelingSlice"
+import { setPrefilteredData as setPrefilteredWeightedData } from "./MarketCapEqualWeightModelingSlice"
+import { setPrefilteredData as setPrefilteredEqualWeightedData } from "./MarketCapWeightedModelingSlice"
 
 export type Status = "idle" | "loading" | "failed"
 export interface TotalWalletWorthData {
@@ -56,7 +57,8 @@ export const allTokensTableSlice = createAppSlice({
         ])
 
         thunkApi.dispatch(fetchFilters({}))
-        thunkApi.dispatch(setPrefilteredData(coins))
+        thunkApi.dispatch(setPrefilteredEqualWeightedData([...coins]))
+        thunkApi.dispatch(setPrefilteredWeightedData([...coins]))
         return { coins, chains, categories }
       },
       {
@@ -69,7 +71,7 @@ export const allTokensTableSlice = createAppSlice({
           state.allCategories = action.payload.categories
           state.allChains = action.payload.chains
         },
-        rejected: state => {
+        rejected: (state) => {
           state.fetchingTokensStatus = "failed"
         },
       },

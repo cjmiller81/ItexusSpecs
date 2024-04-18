@@ -116,14 +116,11 @@
     "Platform": "Platform",
     "Tools": "Tools"
   },
-  "MarketCapEqualWeightedPage": {
-    "ChartTitle": "Historical Market Cap Equal Weight Index",
+  "MarketCapPage": {
+    "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
+    "WeightedChartTitle": "Historical Market Cap Weighted Index",
     "IndexModeling": "Index Modeling",
     "RunTest": "Run Test"
-  },
-  "MarketCapWeightedPage": {
-    "ChartTitle": "Historical Market Cap Weighted Index",
-    "IndexModeling": "Index Modeling"
   },
   "ColumnsDefs": {
     "Symbol": "Symbol",

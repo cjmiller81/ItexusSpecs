@@ -1,64 +1,99 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
+import { AppAccordionSection } from "@/components/common/Containers/AppAccordionSection"
 import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
-import { HistoricalWalletsWorth, Period } from "@/containers/MyWallets/HistoricalWalletsWorth"
+import PrefilterTokensSection from "@/containers/Investing/PrefilterTokensSection"
+import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
+import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
+import {
+  fetchHistoricalCapWeightedData,
+  resetState,
+  selectSeries,
+  setCompareOption,
+  setFromDate,
+  setPeriod,
+  setToDate,
+} from "@/libs/redux/Slices/MarketCapWeightedChartSlice"
+import { setCapital, setPrefilteredData, setTokens } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { assets } from "@/mocks/InvestingTableAsset"
 import { Stack } from "@mui/material"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MarketCapWeightedPage() {
-  const { t } = useTranslation("MarketCapWeightedPage")
-
+  const {
+    chartSeries,
+    maxChartValue,
+    minChartValue,
+    period,
+    yAxisTicks,
+    startDate,
+    symbolOption,
+    statstatusFetchingMarcetCapData,
+    endDate
+  } = useAppSelector(state => state.walletsReducer.marketCapWeightedChart)
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
-  const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
-  const [fromDate, setFromDate] = useState<Date | null>(null)
-  const [toDate, setToDate] = useState<Date | null>(null)
-  const [period, setPeriod] = useState<Period>("daily")
   const dispatch = useAppDispatch()
-  const [capital, setCapital] = useState(120)
-  const [tokensCount, setTokensCount] = useState(120)
-  useEffect(() =>{
-    dispatch(clearSearchResult());
-    dispatch(searchIcons({}));
-  },[])
-  
-  console.log(iconsFetchingStatus);
+
+  const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
+    state => state.walletsReducer.MarketCapWeightedModeling,
+  )
+
+  const { t } = useTranslation("MarketCapPage")
+
+  useEffect(() => {
+    dispatch(resetState())
+    dispatch(clearSearchResult())
+    dispatch(searchIcons({}))
+    dispatch(fetchCoins({}))
+  }, [])
+
   return (
-    <Stack>
+    <Stack gap={2}>
+      <PrefilterTokensSection
+        onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
+      />
+
       <IndexModelingSection
-        capital={capital}
-        onCapitalChange={capital => setCapital(capital)}
-        onTokensChange={tokens => setTokensCount(tokens)}
+        onCapitalChange={value => dispatch(setCapital(value))}
+        onTokensChange={value => {
+          dispatch(setTokens(value))
+        }}
+        weighted={weight * 100}
+        capital={totalCapital}
         tokens={tokensCount}
-        weighted={1 / capital}
-        sx={{mt: 4}}
-        tableAssets={assets}
+        tableAssets={tableData}
         title={t("IndexModeling")}
       />
-      <HistoricalWalletsWorth
-        sx={{ mt: 4, width: "100%" }}
-        chartAxisTicks={6}
-        toDate={toDate}
-        chartSeries={[]}
-        fromDate={fromDate}
-        lookupOption={symbolOption}
-        lookupLoading={iconsFetchingStatus === "loading"}
-        lookupOptions={lookUpOptions}
-        maxChartValue={10}
-        minChartValue={0}
-        onChartSubmit={() => {}}
-        onFromDateChange={date => setFromDate(date)}
-        onToDateChange={date => setToDate(date)}
-        onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
-        onOptionChange={option => setSymbolOption(option)}
-        onPeriodChange={period => setPeriod(period)}
-        period={period}
-        onToggleSeries={() => {}}
-        submitButtonDisabled={true}
-        title={t("ChartTitle")}
-      />
+
+      <AppAccordionSection
+        persistKey="HistoricalWalletsWorth"
+        defaultExpanded
+        title={t("WeightedChartTitle")}>
+        <HistoricalWalletsWorth
+          toDate={endDate}
+          sx={{ mt: 4, width: "100%" }}
+          sumbitButtonText={t("RunTest")}
+          chartAxisTicks={yAxisTicks}
+          chartSeries={chartSeries}
+          fromDate={startDate}
+          chartDataLoading={statstatusFetchingMarcetCapData === "loading"}
+          lookupOption={symbolOption}
+          lookupLoading={iconsFetchingStatus === "loading"}
+          lookupOptions={lookUpOptions}
+          maxChartValue={maxChartValue}
+          minChartValue={minChartValue}
+          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({}))}
+          onToDateChange={date => dispatch(setToDate({ toDate: date }))}
+          onFromDateChange={date => dispatch(setFromDate({ fromDate: date }))}
+          onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
+          onOptionChange={option => dispatch(setCompareOption({ compareToOption: option }))}
+          onPeriodChange={period => dispatch(setPeriod({ period: period }))}
+          period={period}
+          onToggleSeries={index => dispatch(selectSeries({ seriesIndex: index }))}
+          submitButtonDisabled={!startDate}
+          title={""}
+        />
+      </AppAccordionSection>
     </Stack>
   )
 }
