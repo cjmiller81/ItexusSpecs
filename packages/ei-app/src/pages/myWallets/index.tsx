@@ -58,8 +58,8 @@ export default function MyWalletsPage() {
     dispatch(selectWallets(rows))
   }
 
-  const onUpdateWallet = (address: string, isPersonal: boolean, name?: string) => {
-    dispatch(updateWallet({ address, isPersonal, name }))
+  const onUpdateWallet = (wallet: Wallet) => {
+    dispatch(updateWallet(wallet))
   }
 
   return (

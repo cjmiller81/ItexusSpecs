@@ -1,11 +1,15 @@
+import { AppToolTip } from "@/components/common/AppTooltip"
+import { Wallet } from "@/models/Wallet/Wallet"
 import { ExpandLess, ExpandMore } from "@mui/icons-material"
 import CancelIcon from "@mui/icons-material/Close"
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye"
 import SaveIcon from "@mui/icons-material/Save"
-import { Checkbox, IconButton } from "@mui/material"
+import { Checkbox, Fade, IconButton } from "@mui/material"
 import { GridActionsCellItem, GridColDef, GridRowId, GridRowModes, GridRowModesModel } from "@mui/x-data-grid"
 import i18next, { t } from "i18next"
+import { ChangeEvent } from "react"
 
 i18next.setDefaultNamespace("ColumnsDefs")
 
@@ -27,7 +31,7 @@ export const getWalletsColumns = ({
   gridRowModesModel,
   expandedRows,
   onExpandClick,
-}: ColumnsProps): GridColDef[] => {
+}: ColumnsProps): GridColDef<Wallet>[] => {
   return [
     {
       field: "address",
@@ -39,7 +43,7 @@ export const getWalletsColumns = ({
       disableColumnMenu: true,
     },
     {
-      field: "name",
+      field: "walletName",
       headerName: t("WalletName"),
       sortable: false,
       editable: true,
@@ -56,21 +60,34 @@ export const getWalletsColumns = ({
       sortable: false,
       editable: true,
       filterable: false,
-      width: 130,
+      width: 80,
       disableColumnMenu: true,
       renderEditCell: props => {
+        const { id, value, api, field } = props
+        const handleChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+          api.setEditCellValue({ id, field, value: checked })
+        }
+
         return (
           <Checkbox
-            sx={{ ml: "33px" }}
-            value={props.row.isPersonsl}></Checkbox>
+            sx={{ ml: "11px" }}
+            onChange={handleChange}
+            checked={value}></Checkbox>
         )
       },
       renderCell: props => {
-        return (
+        return !props.row.isPersonal ? (
+          <AppToolTip
+            TransitionComponent={Fade}
+            TransitionProps={{ timeout: 200 }}
+            title={t("PublicEye", { ns: "Tooltips" })}>
+            <RemoveRedEyeIcon sx={{ ml: "20px" }} />
+          </AppToolTip>
+        ) : (
           <Checkbox
-            sx={{ ml: "33px" }}
+            sx={{ ml: "11px" }}
             disabled={true}
-            value={props.row.isPersonsl}></Checkbox>
+            checked={props.row.isPersonal}></Checkbox>
         )
       },
     },

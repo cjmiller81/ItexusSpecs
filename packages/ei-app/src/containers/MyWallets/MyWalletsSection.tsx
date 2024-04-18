@@ -30,7 +30,7 @@ interface Props extends BoxProps {
   selectedWalletsIds: string[]
   loading?: boolean
   //eslint-disable-next-line no-unused-vars
-  onUpdateWallet: (address: string, isPersonal: boolean, name?: string) => void
+  onUpdateWallet: (wallet: Wallet) => void
   //eslint-disable-next-line no-unused-vars
   onDeleteWallet: (wallet: string) => void
   //eslint-disable-next-line no-unused-vars
@@ -107,7 +107,7 @@ export const MyWalletsSection = ({
   const processRowUpdate = (newRow: GridRowModel<Wallet>, oldRow: GridRowModel<Wallet>) => {
     //TODO add validation
     const updatedRow = { ...newRow, isNew: false }
-    onUpdateWallet(newRow.address, newRow.isPersonal, newRow.name)
+    onUpdateWallet(newRow)
     return updatedRow
   }
 

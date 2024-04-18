@@ -10,8 +10,8 @@ import AppFormCheckboxField from "../common/FormInputs/AppFormCheckboxField"
 
 const AddressFormSchema = object({
   address: string().matches(cryptoWalletFormat, getInvalidFormat()).required(getMandatoryField()),
-  walletName: string().max(50).optional(),
-  isPersonal: boolean(),
+  walletName: string().max(50).required(getMandatoryField()),
+  isPersonal: boolean().required(),
 })
 
 export type AddressModel = InferType<typeof AddressFormSchema>

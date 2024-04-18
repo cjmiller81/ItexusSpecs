@@ -4,7 +4,7 @@ export interface Wallet {
   address: string
   walletId: string
   isValid: boolean
-  name?: string,
+  walletName?: string,
   isPersonal: boolean,
   chainAssets: ChainAsset[]
 }

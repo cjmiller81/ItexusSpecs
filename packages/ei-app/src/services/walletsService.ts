@@ -15,12 +15,18 @@ export const walletsApi = {
     return appAxios.delete(`/user/wallet/${wallet}`)
   },
 
-  addWallets: async (wallet: string): Promise<void> => {
+  addWallets: async (wallet: string, walletName: string, isPersonal: boolean): Promise<void> => {
     return appAxios.post(`/user/wallet`, [
       {
         address: wallet,
+        isPersonal,
+        walletName
       },
     ])
+  },
+  updateWallets: async (wallet: Wallet): Promise<void> => {
+    const {chainAssets, ...walletRequest} = wallet
+    return appAxios.post(`/user/wallet/${wallet.address}`, walletRequest)
   },
   getHistoricalWalletData: async (
     symbols: { symbol: string; qty: number }[],

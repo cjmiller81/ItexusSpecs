@@ -133,7 +133,7 @@
     "USDValue": "USD Value",
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address",
-    "PersonalPublic": "Personal/Public",
+    "PersonalPublic": "Personal",
     "WalletName": "Wallet Name"
   },
   "SymbolLookup": {
@@ -159,6 +159,7 @@
   "Tooltips":{
     "Period": "Select One",
     "Required": "Required",
+    "PublicEye": "Watched Public Wallet",
     "CompareToSymbol": "Leave Blank for Plot Only"
   }
 }
