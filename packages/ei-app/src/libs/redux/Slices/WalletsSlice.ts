@@ -14,6 +14,7 @@ export interface TotalWalletWorthData {
   growPercentage: number
 }
 
+type WalletsFilter = {isPersonal: boolean}
 interface WalletsState {
   firstLoad: boolean
   wallets: Wallet[]
@@ -21,8 +22,10 @@ interface WalletsState {
   statstatusCreatingWalletus: Status
   statusFetchingWallets: Status
   statusDeletingWallets: Status
+  statusUpdatingWallets: Status
   statusTotalWalletWorthFetching: Status
   selectedWallets: Wallet[]
+  currentWalletsFilter: WalletsFilter
 }
 
 const initialState: WalletsState = {
@@ -31,8 +34,10 @@ const initialState: WalletsState = {
   statstatusCreatingWalletus: "idle",
   statusFetchingWallets: "idle",
   statusDeletingWallets: "idle",
+  statusUpdatingWallets: "idle",
   statusTotalWalletWorthFetching: "idle",
   selectedWallets: [],
+  currentWalletsFilter: {isPersonal: false}
 }
 export const walletsSlice = createAppSlice({
   name: "wallets",
@@ -45,7 +50,7 @@ export const walletsSlice = createAppSlice({
     }),
     createWallet: create.asyncThunk(
       async (wallet: AddressModel, thunkApi) => {
-        await walletsApi.addWallets(wallet.address)
+        await walletsApi.addWallets(wallet.address, wallet.walletName, wallet.isPersonal)
         thunkApi.dispatch(fetchWallets(null))
       },
       {
@@ -60,16 +65,27 @@ export const walletsSlice = createAppSlice({
         },
       },
     ),
+    setWalletsFilter: create.reducer((state, action: PayloadAction<WalletsFilter>) => {
+      state.currentWalletsFilter = action.payload
+    }),
     selectWallets: create.reducer((state, action: PayloadAction<Wallet[]>) => {
       state.selectedWallets = action.payload
     }),
-    updateWallet: create.reducer(
-      (state, action: PayloadAction<{ address: string; name?: string; isPersonal: boolean }>) => {
-        const walletToUpdate = state.wallets.find(wallet => wallet.address === action.payload.address)
-        if (walletToUpdate) {
-          walletToUpdate.name = action.payload.name
-          walletToUpdate.isPersonal = action.payload.isPersonal
-        }
+    updateWallet: create.asyncThunk(
+      async (wallet: Wallet, thunkApi) => {
+        await walletsApi.updateWallets(wallet)
+        thunkApi.dispatch(fetchWallets(null))
+      },
+      {
+        pending: state => {
+          state.statusUpdatingWallets = "loading"
+        },
+        fulfilled: state => {
+          state.statusUpdatingWallets = "idle"
+        },
+        rejected: state => {
+          state.statusUpdatingWallets = "failed"
+        },
       },
     ),
     fetchTotalWalletsWorthData: create.asyncThunk(
