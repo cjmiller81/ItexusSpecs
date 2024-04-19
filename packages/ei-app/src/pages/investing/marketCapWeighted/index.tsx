@@ -50,10 +50,12 @@ export default function MarketCapWeightedPage() {
   return (
     <Stack gap={2}>
       <PrefilterTokensSection
+        persisKey="WeightedPrefilterTokens"
         onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
       />
 
       <IndexModelingSection
+        persistKey="WeightedIndexModeling"
         onCapitalChange={value => dispatch(setCapital(value))}
         onTokensChange={value => {
           dispatch(setTokens(value))
@@ -66,7 +68,7 @@ export default function MarketCapWeightedPage() {
       />
 
       <AppAccordionSection
-        persistKey="HistoricalWalletsWorth"
+        persistKey="WeightedHistoricalWalletsWorth"
         defaultExpanded
         title={t("WeightedChartTitle")}>
         <HistoricalWalletsWorth

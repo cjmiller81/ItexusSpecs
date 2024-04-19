@@ -16,10 +16,11 @@ import { StyledAccordionSummary } from "./IndexModelingSection"
 import { PrefilterTokensTable } from "./PrefilterTokensTable"
 
 type Props = Omit<AccordionProps, "children"> & {
+  persisKey: string
   onFilteredTokensChanged: (filteredTokenData: ICoin[]) => void
 }
 
-export default function PrefilterTokensSection({ onFilteredTokensChanged, ...props }: Props) {
+export default function PrefilterTokensSection({ onFilteredTokensChanged, persisKey, ...props }: Props) {
   const {
     allTokens,
     allCategories,
@@ -70,7 +71,7 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, ...pro
 
   return (
     <StatePersistedAccordion
-      persistKey="PrefilterTokens"
+      persistKey={persisKey}
       defaultExpanded
       {...props}>
       <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
