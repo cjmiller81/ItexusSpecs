@@ -59,7 +59,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const [filterName, setFilterName] = useState<string | undefined>("")
   const [filterValue, setFilterValue] = useState<object[] | undefined | null>()
   const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>()
-  const [deleteFilterModal, setDeleteFilterModal] = useState<boolean>(false)
+  const [isDeleteFilterModalOpened , setIsDeleteFilterModalOpened] = useState<boolean>(false)
   const { t } = useTranslation("CustomFilterBuilder")
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
@@ -143,7 +143,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   ) => {
     event.stopPropagation()
     setFilterToDelete(filter)
-    setDeleteFilterModal(true)
+    setIsDeleteFilterModalOpened(true)
   }
 
   const onAgree = () => {
@@ -152,7 +152,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     }
 
     onDeleteFilter(filterToDelete.id)
-    setDeleteFilterModal(false)
+    setIsDeleteFilterModalOpened(false)
 
     if (filterToDelete.id === selectedSavedFilter?.id) {
       setSelectedSavedFilter(null)
@@ -166,8 +166,8 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
         content={t("DeleteDialogContent")}
         title={t("DeleteDialogTitle")}
         onAgree={onAgree}
-        open={deleteFilterModal}
-        onClose={() => setDeleteFilterModal(false)}
+        open={isDeleteFilterModalOpened}
+        onClose={() => setIsDeleteFilterModalOpened(false)}
       />
       <Dialog
         fullWidth
