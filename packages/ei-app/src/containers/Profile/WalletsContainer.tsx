@@ -22,9 +22,8 @@ export const WalletsContainer = ({ ...props }: Props) => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null))
-    dispatch(clearSearchResult())
-    dispatch(searchIcons({}))
+    if (firstLoad) 
+      dispatch(fetchWallets(null))
   }, [dispatch])
 
   useEffect(() => {
