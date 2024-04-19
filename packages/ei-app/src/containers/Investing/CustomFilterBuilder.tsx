@@ -14,15 +14,16 @@ import {
   Divider,
   Grid,
   IconButton,
+  ListItemText,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
   styled,
 } from "@mui/material"
 import FilterBuilderDef from "devextreme-react/filter-builder"
-import SelectBoxDef from "devextreme-react/select-box"
-import { NativeEventInfo } from "devextreme/events"
-import { ValueChangedInfo } from "devextreme/ui/editor/editor"
 import { ValueChangedEvent } from "devextreme/ui/filter_builder"
 import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -57,7 +58,8 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null)
   const [filterName, setFilterName] = useState<string | undefined>("")
   const [filterValue, setFilterValue] = useState<object[] | undefined | null>()
-  const [deleteFilterDialog, setDeleteFilterDialog] = useState(false)
+  const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>()
+  const [deleteFilterModal, setDeleteFilterModal] = useState<boolean>(false)
   const { t } = useTranslation("CustomFilterBuilder")
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
@@ -86,10 +88,8 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     }
   }, [filterToAppply, open])
 
-  const handleSavedFilterChange = (
-    event: NativeEventInfo<any, KeyboardEvent | MouseEvent | PointerEvent | Event> & ValueChangedInfo,
-  ) => {
-    const predefinedFilter = predefinedFilters.find(filter => filter.id === event?.value)
+  const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
+    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0])
     if (predefinedFilter) {
       setSelectedSavedFilter(predefinedFilter)
       setFilterValue(predefinedFilter.filter)
@@ -102,6 +102,12 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     setFilterValue(undefined)
     setFilterName("")
   }
+
+  useEffect(() => {
+    if (!selectedSavedFilter) return
+    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id)
+    if (updatedFilter) setSelectedSavedFilter(updatedFilter)
+  }, [predefinedFilters])
 
   const handleSaveFilter = () => {
     if (!filterName) return
@@ -131,18 +137,27 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     }
   }
 
-  const handleDeleteFilter = () => {
-    if (!selectedSavedFilter) return
-    setDeleteFilterDialog(true)
+  const handleDeleteFilter = (
+    filter: IPrefilterTokensFilterValues,
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    event.stopPropagation()
+    setFilterToDelete(filter)
+    setDeleteFilterModal(true)
   }
 
   const onAgree = () => {
-    if (!selectedSavedFilter) return
-    onDeleteFilter(selectedSavedFilter.id)
-    setDeleteFilterDialog(false)
-    setSelectedSavedFilter(null)
-    setFilterName("")
-    setFilterValue(null)
+    if (!filterToDelete) {
+      return
+    }
+
+    onDeleteFilter(filterToDelete.id)
+    setDeleteFilterModal(false)
+
+    if (filterToDelete.id === selectedSavedFilter?.id) {
+      setSelectedSavedFilter(null)
+      setFilterValue(null)
+    }
   }
 
   return (
@@ -151,8 +166,8 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
         content={t("DeleteDialogContent")}
         title={t("DeleteDialogTitle")}
         onAgree={onAgree}
-        open={deleteFilterDialog}
-        onClose={() => setDeleteFilterDialog(false)}
+        open={deleteFilterModal}
+        onClose={() => setDeleteFilterModal(false)}
       />
       <Dialog
         fullWidth
@@ -249,22 +264,31 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     minWidth={150}>
                     {t("SelectFilter")}
                   </Typography>
-                  <SelectBoxDef
-                    width={"100%"}
-                    displayExpr="text"
-                    dataSource={predefinedFilters}
-                    value={selectedSavedFilter?.id}
-                    valueExpr={"id"}
-                    onValueChanged={handleSavedFilterChange}
-                  />
-                  <LoadingButton
-                    loading={filterDeletingLoading}
-                    disabled={!selectedSavedFilter}
-                    onClick={handleDeleteFilter}
-                    variant="contained"
-                    color="error">
-                    {t("Delete", { ns: "Common" })}
-                  </LoadingButton>
+                  <Select
+                    style={{ width: "100%" }}
+                    labelId="demo-controlled-open-select-label"
+                    id="demo-controlled-open-select"
+                    size="small"
+                    onChange={handleSavedFilterChange}
+                    renderValue={value => {
+                      return <ListItemText primary={selectedSavedFilter?.text} />
+                    }}>
+                    {predefinedFilters.map(filter => (
+                      <MenuItem
+                        selected={false}
+                        key={filter.id}
+                        value={[filter.id, filter.text]}>
+                        <ListItemText primary={filter.text} />
+                        <LoadingButton
+                          loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                          onClick={event => handleDeleteFilter(filter, event)}
+                          variant="contained"
+                          color="error">
+                          {t("Delete", { ns: "Common" })}
+                        </LoadingButton>
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FilterSelectorContainer>
                 <MockContent />
               </Stack>
