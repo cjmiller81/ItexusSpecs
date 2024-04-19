@@ -31,12 +31,6 @@ export interface ChartSeriesDataResponse {
   comareToLabel?: string | null
 }
 
-export const defaultOption: LookUpOption = {
-  label: "BTC - Bitcoin",
-  tokenId: "bitcoin",
-  iconUrl: "https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png?1696501400",
-}
-
 export const initialState: MarketCapEqualWeightChartState = {
   chartData: undefined,
   period: "daily",
@@ -49,8 +43,7 @@ export const initialState: MarketCapEqualWeightChartState = {
   maxChartValue: 10,
   yAxisTicks: 6,
   startDate: null,
-  endDate: new Date(),
-  symbolOption: defaultOption,
+  endDate: new Date()
 }
 
 export const marketCapEqualWeightChartSlice = createAppSlice({

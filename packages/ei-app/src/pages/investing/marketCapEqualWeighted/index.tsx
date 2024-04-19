@@ -50,10 +50,12 @@ export default function MarketCapEqualWeightedPage() {
   return (
     <Stack gap={2}>
       <PrefilterTokensSection
+        persisKey="EqualWeightedPrefilterTokens"
         onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
       />
 
       <IndexModelingSection
+        persistKey="EqualWeightedIndexModeling"
         onCapitalChange={value => dispatch(setCapital(value))}
         onTokensChange={value => {
           dispatch(setTokens(value))
@@ -67,7 +69,7 @@ export default function MarketCapEqualWeightedPage() {
       />
 
       <AppAccordionSection
-        persistKey="HistoricalWalletsWorth"
+        persistKey="EqualWeightedHistoricalWalletsWorth"
         defaultExpanded
         title={t("EqualWeightedChartTitle")}>
         <HistoricalWalletsWorth

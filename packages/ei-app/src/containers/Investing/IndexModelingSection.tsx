@@ -20,6 +20,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   capital: number
   tokens: number
   weighted: number
+  persistKey: string
 }
 
 export const IndexModelingSection = ({
@@ -31,6 +32,7 @@ export const IndexModelingSection = ({
   title,
   tableAssets,
   isEqualWeight,
+  persistKey,
   ...props
 }: Props) => {
   const { t } = useTranslation("IndexModelingSection")
@@ -68,7 +70,7 @@ export const IndexModelingSection = ({
 
   return (
     <AppAccordionSection
-      persistKey="IndexModeling"
+      persistKey={persistKey}
       defaultExpanded
       title={title}
       headerChildren={
@@ -116,15 +118,12 @@ export const IndexModelingSection = ({
           />
         </LeftContainer>
         <RightContainer>
-          <StyledWalletsTable
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
+          <StyledIndexModelingTable
+            slots={{
+              footer: () => <></>,
             }}
             rowSelection={false}
             checkboxSelection={false}
-            pageSizeOptions={[5, 10]}
             apiRef={apiRef}
             getRowId={x => x.id}
             columns={getIndexModelingTableColumns()}
@@ -162,6 +161,12 @@ const MainContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.between("xs", "sm")]: {
     flexDirection: "column",
     alignItems: "center",
+  },
+}))
+
+const StyledIndexModelingTable = styled(StyledWalletsTable)(({ theme }) => ({
+  "& .MuiDataGrid-main": {
+    height: "auto",
   },
 }))
 

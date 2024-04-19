@@ -17,7 +17,7 @@ export default function StatePersistedAccordion({
     dispatch(
       setAccordionState({
         key: persistKey,
-        open: defaultExpanded ?? false,
+        open: Boolean(defaultExpanded),
       }),
     )
   }
@@ -34,6 +34,7 @@ export default function StatePersistedAccordion({
     <Accordion
       {...props}
       onChange={onExpandedChange}
+      defaultExpanded
       expanded={expanded}
     />
   )
