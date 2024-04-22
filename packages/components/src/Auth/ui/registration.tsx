@@ -1,12 +1,13 @@
+import { Stack } from "@mui/material"
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
-import { UserAuthCard } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useState } from "react"
 import { Loader } from "../loader"
 import { HandleError } from "../pkg/hooks"
 import { ory } from "../pkg/sdk"
-import { AuthContainer } from "./AuthContainer"
+import { StyledAuthContainer } from "./StyledAuthContainer"
+import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
 const Registration: FC<{}> = () => {
   const [flow, setFlow] = useState<RegistrationFlow>()
@@ -82,11 +83,12 @@ const Registration: FC<{}> = () => {
 
   if (!flow) return <Loader />
   return (
-    <AuthContainer>
-      <div
-        className="log"
-        style={{ height: "85vh" }}>
-        <UserAuthCard
+    <StyledAuthContainer>
+      <Stack
+        alignItems="center"
+        gap={1}
+        className="log">
+        <StyledUserAuthCard
           // create a registration form that dynamically renders based on the flow data using Ory Elements
           // This defines what kind of card we want to render.
           flowType={"registration"}
@@ -102,8 +104,8 @@ const Registration: FC<{}> = () => {
           onSubmit={({ body }) => submitFlow(body as UpdateRegistrationFlowBody)}
           cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
         />
-      </div>
-    </AuthContainer>
+      </Stack>
+    </StyledAuthContainer>
   )
 }
 

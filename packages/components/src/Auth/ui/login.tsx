@@ -1,17 +1,18 @@
+import { Stack } from "@mui/material"
 import { LoginFlow, UpdateLoginFlowBody } from "@ory/client"
-import { UserAuthCard } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useState } from "react"
 import { Loader } from "../loader"
 import { HandleError } from "../pkg/hooks"
 import { ory } from "../pkg/sdk"
-import { AuthContainer } from "./AuthContainer"
+import ProtectedByOryLabel from "./protectedByOryLabel"
+import { StyledUserAuthCard } from "./StyledUserAuthCard"
+import { StyledAuthContainer } from "./StyledAuthContainer"
 
 export const Login: FC<{}> = () => {
   const [flow, setFlow] = useState<LoginFlow | null>(null)
   const router = useRouter()
-
   const returnTo = String(router.query.return_to || "")
   const flowId = String(router.query.flow || "")
 
@@ -53,14 +54,11 @@ export const Login: FC<{}> = () => {
       .then(({ data }) => {
         router.push(`/ui/login?flow=${data.id}`)
       })
-      .catch(c => {
-        void handleError(c)
-      })
   }
 
   useEffect(() => {
-    const queryString = (typeof window !== 'undefined') ? window.location.search : "";
-    const searchParams = new URLSearchParams(queryString);
+    const queryString = typeof window !== "undefined" ? window.location.search : ""
+    const searchParams = new URLSearchParams(queryString)
     const hasFlowId = searchParams.has("flow")
 
     if (!router.isReady) {
@@ -68,7 +66,7 @@ export const Login: FC<{}> = () => {
     }
 
     if (hasFlowId && flowId) {
-      getFlow(flowId).catch((_err) => {
+      getFlow(flowId).catch(_err => {
         createFlow(refresh, aal, returnTo)
       })
       return
@@ -76,8 +74,8 @@ export const Login: FC<{}> = () => {
   }, [router.isReady, flowId, returnTo])
 
   useEffect(() => {
-    const queryString = (typeof window !== 'undefined') ? window.location.search : "";
-    const searchParams = new URLSearchParams(queryString);
+    const queryString = typeof window !== "undefined" ? window.location.search : ""
+    const searchParams = new URLSearchParams(queryString)
     const hasFlowId = searchParams.has("flow")
 
     if (!router.isReady || hasFlowId) {
@@ -104,11 +102,12 @@ export const Login: FC<{}> = () => {
 
   if (!flow) return <Loader />
   return (
-    <AuthContainer>
-      <div
-        className="log"
-        style={{ height: "85vh" }}>
-        <UserAuthCard
+    <StyledAuthContainer>
+      <Stack
+        alignItems="center"
+        gap={1}
+        className="log">
+        <StyledUserAuthCard
           // cardImage="/ory.svg"
           // This defines what kind of card we want to render.
           flowType={"login"}
@@ -126,8 +125,9 @@ export const Login: FC<{}> = () => {
           cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
           title="Sign In"
         />
-      </div>
-    </AuthContainer>
+        <ProtectedByOryLabel />
+      </Stack>
+    </StyledAuthContainer>
   )
 }
 

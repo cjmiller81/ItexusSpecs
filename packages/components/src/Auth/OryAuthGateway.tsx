@@ -1,3 +1,4 @@
+import { Box, CssBaseline, ThemeProvider, createTheme, styled } from "@mui/material"
 import { Session } from "@ory/client"
 import { CustomLanguageFormats, CustomTranslations, IntlProvider } from "@ory/elements"
 import { AxiosError } from "axios"
@@ -9,6 +10,7 @@ import ErrorUi from "./ui/error"
 import Login from "./ui/login"
 import Recovery from "./ui/recovery"
 import Registration from "./ui/registration"
+
 type OryContextType = {
   session: Session | undefined
   logOut: () => Promise<void>
@@ -37,7 +39,7 @@ export function OryAuthGateway({
 
   const handleError = (error: AxiosError) => {
     const handle = HandleError(undefined, undefined, LoginPath)
-    return handle(error)
+    if (pathname !== null) handle(error)
   }
 
   const handleLogout = async () => {
@@ -67,15 +69,6 @@ export function OryAuthGateway({
         setSession(data as any)
       })
       .catch(handleError)
-      .catch(error => {
-        // Handle all other errors like error.message "network error" if Kratos can not be connected etc.
-        if (error.message) {
-          return router.push(`${ErrorPath}?error=${encodeURIComponent(error.message)}`)
-        }
-
-        // Just stringify error and print all data
-        return router.push(`${ErrorPath}?error=${encodeURIComponent(JSON.stringify(error))}`)
-      })
   }, [pathname])
 
   const contextValue = useMemo<OryContextType>(
@@ -86,21 +79,51 @@ export function OryAuthGateway({
     [session],
   )
 
+  const theme = createTheme({
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            backgroundColor: "#3E3E3E",
+            minWidth: "100%",
+            minHeight: "100vh",
+            margin: "auto",
+          },
+        },
+      },
+    },
+  })
+
   return (
     <OryGatewayContext.Provider value={contextValue}>
-      <IntlProvider<CustomTranslations>
-        customTranslations={customTranslations || {}}
-        locale="en"
-        defaultLocale="en">
-        {pathname == ErrorPath && <ErrorUi />}
-        {pathname == LoginPath && <Login />}
-        {pathname == RecoveryPath && <Recovery />}
-        {pathname == RegistrationPath && <Registration />}
-      </IntlProvider>
+      <ThemeProvider theme={theme}>
+        <StyledAuthLayout>
+          <CssBaseline />
+          <IntlProvider<CustomTranslations>
+            customTranslations={customTranslations || {}}
+            locale="en"
+            defaultLocale="en">
+            {pathname == ErrorPath && <ErrorUi />}
+            {pathname == LoginPath && <Login />}
+            {pathname == RecoveryPath && <Recovery />}
+            {pathname == RegistrationPath && <Registration />}
+          </IntlProvider>
+        </StyledAuthLayout>
+      </ThemeProvider>
       {!allAuthPaths.includes(pathname) && session && children}
     </OryGatewayContext.Provider>
   )
 }
+
+export const StyledAuthLayout = styled(Box)(({ theme }) => ({
+  backgroundColor: "#3E3E3E",
+  minWidth: "100%",
+  minHeight: "100vh",
+  margin: "auto",
+  [theme.breakpoints.down(640)]: {
+    backgroundColor: "#2B2B2B",
+  },
+}))
 
 export const useOry = () => {
   const context = useContext(OryGatewayContext)

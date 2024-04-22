@@ -1,12 +1,12 @@
 import { RecoveryFlow, UpdateRecoveryFlowBody } from "@ory/client"
-import { UserAuthCard } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useState } from "react"
 import { Loader } from "../loader"
 import { HandleError } from "../pkg/hooks"
 import { ory } from "../pkg/sdk"
-import { AuthContainer } from "./AuthContainer"
+import { StyledAuthContainer } from "./StyledAuthContainer"
+import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
 export const Recovery: FC<{}> = () => {
   const [flow, setFlow] = useState<RecoveryFlow | null>()
@@ -89,11 +89,9 @@ export const Recovery: FC<{}> = () => {
 
   if (!flow) return <Loader />
   return (
-    <AuthContainer>
-      <div
-        className="log"
-        style={{ height: "85vh" }}>
-        <UserAuthCard
+    <StyledAuthContainer>
+      <div className="log">
+        <StyledUserAuthCard
           // create a recovery form that dynamically renders based on the flow data using Ory Elements
           // This defines what kind of card we want to render.
           flowType={"recovery"}
@@ -110,7 +108,7 @@ export const Recovery: FC<{}> = () => {
           cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
         />
       </div>
-    </AuthContainer>
+    </StyledAuthContainer>
   )
 }
 
