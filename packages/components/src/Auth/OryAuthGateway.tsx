@@ -96,20 +96,22 @@ export function OryAuthGateway({
 
   return (
     <OryGatewayContext.Provider value={contextValue}>
-      <ThemeProvider theme={theme}>
-        <StyledAuthLayout>
-          <CssBaseline />
-          <IntlProvider<CustomTranslations>
-            customTranslations={customTranslations || {}}
-            locale="en"
-            defaultLocale="en">
-            {pathname == ErrorPath && <ErrorUi />}
-            {pathname == LoginPath && <Login />}
-            {pathname == RecoveryPath && <Recovery />}
-            {pathname == RegistrationPath && <Registration />}
-          </IntlProvider>
-        </StyledAuthLayout>
-      </ThemeProvider>
+      {allAuthPaths.includes(pathname) && (
+        <ThemeProvider theme={theme}>
+          <StyledAuthLayout>
+            <CssBaseline />
+            <IntlProvider<CustomTranslations>
+              customTranslations={customTranslations || {}}
+              locale="en"
+              defaultLocale="en">
+              {pathname == ErrorPath && <ErrorUi />}
+              {pathname == LoginPath && <Login />}
+              {pathname == RecoveryPath && <Recovery />}
+              {pathname == RegistrationPath && <Registration />}
+            </IntlProvider>
+          </StyledAuthLayout>
+        </ThemeProvider>
+      )}
       {!allAuthPaths.includes(pathname) && session && children}
     </OryGatewayContext.Provider>
   )
@@ -117,8 +119,8 @@ export function OryAuthGateway({
 
 export const StyledAuthLayout = styled(Box)(({ theme }) => ({
   backgroundColor: "#3E3E3E",
-  minWidth: "100%",
-  minHeight: "100vh",
+  width: "100%",
+  height: "100vh",
   margin: "auto",
   [theme.breakpoints.down(640)]: {
     backgroundColor: "#2B2B2B",
