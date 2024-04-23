@@ -1,4 +1,4 @@
-import { darken, styled } from "@mui/material"
+import { darken, lighten, styled } from "@mui/material"
 import { UserAuthCard } from "@ory/elements"
 
 export const StyledUserAuthCard = styled(UserAuthCard)(({ theme }) => ({
@@ -19,16 +19,19 @@ export const StyledUserAuthCard = styled(UserAuthCard)(({ theme }) => ({
   },
   "& a": {
     color: "#0D73C7",
+    "&:hover": {
+      color: lighten("#0D73C7", 0.2),
+    },
   },
   "& span": {
     color: "#0D73C7",
     "&:hover": {
-      backgroundColor: darken("#0D73C7", 0.2),
+      backgroundColor: "inherit",
     },
   },
   "& input": {
     ":hover": {
-      borderColor: "#2B2B2B",
+      borderColor: "inherit",
     },
   },
   "& button": {

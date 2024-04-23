@@ -2,7 +2,7 @@ import { Box, CssBaseline, ThemeProvider, createTheme, styled } from "@mui/mater
 import { Session } from "@ory/client"
 import { CustomLanguageFormats, CustomTranslations, IntlProvider } from "@ory/elements"
 import { AxiosError } from "axios"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react"
 import { HandleError } from "./pkg/hooks"
 import { ory } from "./pkg/sdk"
@@ -34,12 +34,11 @@ export function OryAuthGateway({
   customTranslations?: CustomLanguageFormats
 }) {
   const [session, setSession] = useState<Session | undefined>()
-  const pathname = usePathname()
+  const pathname = window.location.pathname;
   const router = useRouter()
-
   const handleError = (error: AxiosError) => {
     const handle = HandleError(undefined, undefined, LoginPath)
-    if (pathname !== null) handle(error)
+    handle(error)
   }
 
   const handleLogout = async () => {
