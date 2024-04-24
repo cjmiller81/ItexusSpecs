@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev:ei": "lerna run dev --parallel --scope ei-app --scope components",
+    "watch:comp": "lerna watch --scope=components -- lerna run build --scope=components",
     "build:comp": "lerna run build --scope components",
     "build:ei": "lerna run build --scope ei-app --include-filtered-dependencies",
     "start:ei": "lerna run start --scope ei-app",
@@ -18,7 +19,9 @@
     "build:storybook": "lerna run build-storybook --scope components"
   },
   "workspaces": {
-    "packages": ["packages/*"],
+    "packages": [
+      "packages/*"
+    ],
     "nohoist": []
   },
   "dependencies": {

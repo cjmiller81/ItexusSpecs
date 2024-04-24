@@ -49,8 +49,7 @@ export const ErrorUi = (): React.JSX.Element => {
   return (
     <AuthContainer>
       <div
-        className="log"
-        style={{ height: "85vh" }}>
+        className="log">
         <Link href="/">Home</Link>
 
         <p>An error occurred. Please check the error information below and try again.</p>
