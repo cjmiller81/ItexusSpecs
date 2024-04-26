@@ -21,6 +21,8 @@
     "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
   },
   "errorMessages": {
+    "invalidPasswordFormat": "Invalid password format.",
+    "invalidCode": "Invalid code.",
     "incorectPassword": "Incorrect password",
     "mandatoryField": "Mandatory field",
     "passwordDoNotMatch": "Password do not match",
@@ -75,13 +77,19 @@
     "Email": "Email"
   },
   "SecurityContainer": {
+    "UnlinkTotp": "Unlink authentication app",
     "ChangePassword": "Change Password",
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",
     "EnableSMSMFA": "Enable SMS MFA",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
-    "DisplayName": "Display Name"
+    "VerificationCode": "Verification code",
+    "NewPasswordMessage": "New password has been set.",
+    "ApplicationUnlinked": "Application unlinked.",
+    "ApplicationLinked": "Application linked.",
+    "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
+    "AndGoogleApp": "and Google Authenticator"
   },
   "IndexModelingSection": {
     "Tokens": "Tokens",

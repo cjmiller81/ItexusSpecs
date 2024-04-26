@@ -6,16 +6,15 @@ import { FC, useCallback, useEffect, useState } from "react"
 import { Loader } from "../loader"
 import { HandleError } from "../pkg/hooks"
 import { ory } from "../pkg/sdk"
-import ProtectedByOryLabel from "./protectedByOryLabel"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
 import { StyledAuthContainer } from "./StyledAuthContainer"
+import { StyledUserAuthCard } from "./StyledUserAuthCard"
+import ProtectedByOryLabel from "./protectedByOryLabel"
 
 export const Login: FC<{}> = () => {
   const [flow, setFlow] = useState<LoginFlow | null>(null)
   const router = useRouter()
-  const returnTo = String(router.query.return_to || "")
+  const returnTo = String(router.query.return_to || window.location.origin)
   const flowId = String(router.query.flow || "")
-
   // Refresh means we want to refresh the session. This is needed, for example, when we want to update the password
   // of a user.
   const refresh = Boolean(router.query.refresh)
@@ -86,7 +85,7 @@ export const Login: FC<{}> = () => {
     createFlow(refresh, aal, returnTo)
   }, [router.isReady])
 
-  const submitFlow = (values: UpdateLoginFlowBody): Promise<void> =>
+  const submitFlow = (values: UpdateLoginFlowBody) => {
     ory
       .updateLoginFlow({
         flow: String(flow?.id),
@@ -99,6 +98,7 @@ export const Login: FC<{}> = () => {
       .catch(c => {
         void handleError(c)
       })
+  }
 
   if (!flow) return <Loader />
   return (

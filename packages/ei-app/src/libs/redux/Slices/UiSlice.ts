@@ -5,6 +5,7 @@ import { createAppSlice } from "../createAppSlice"
 export type Status = "idle" | "loading" | "failed"
 interface WalletsState {
   errors: string[]
+  messages: string[]
   sidebarOpened: boolean
   mode: PaletteMode
   accordions: { [id: string]: boolean }
@@ -12,6 +13,7 @@ interface WalletsState {
 
 const initialState: WalletsState = {
   errors: [],
+  messages: [],
   sidebarOpened: true,
   mode: "dark",
   accordions: {},
@@ -24,8 +26,14 @@ export const uiSlice = createAppSlice({
     clearErrors: create.reducer(state => {
       state.errors = []
     }),
+    clearMessages: create.reducer(state => {
+      state.messages = []
+    }),
     addError: create.reducer((state, action: PayloadAction<string>) => {
       state.errors.push(action.payload)
+    }),
+    addMessage: create.reducer((state, action: PayloadAction<string>) => {
+      state.messages.push(action.payload)
     }),
     toggleSideBar: create.reducer((state, action: PayloadAction<{ open: boolean }>) => {
       state.sidebarOpened = action.payload.open
@@ -39,4 +47,4 @@ export const uiSlice = createAppSlice({
   }),
 })
 
-export const { clearErrors, addError, toggleSideBar, toggleTheme, setAccordionState } = uiSlice.actions
+export const { clearErrors, addMessage, addError, toggleSideBar, toggleTheme, clearMessages, setAccordionState } = uiSlice.actions

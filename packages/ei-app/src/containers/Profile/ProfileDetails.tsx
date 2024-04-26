@@ -1,10 +1,10 @@
-import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 import { Box, BoxProps, Button, Stack } from "@mui/material"
 import { useOry } from "components"
 import { Form, Formik } from "formik"
 import { useTranslation } from "react-i18next"
 import { InferType, object, string } from "yup"
 import { ProfileContainer } from "./ProfileContainer"
+import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 
 const ProfileFormSchema = object({
   firstName: string(),
