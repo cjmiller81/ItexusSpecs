@@ -7,6 +7,7 @@ import { AppToolTip } from "../AppTooltip"
 export interface Props {
   required?: boolean
   fieldLabel?: ReactNode
+  alignLabel?: "center" | "left",
   tooltip?: string
 }
 

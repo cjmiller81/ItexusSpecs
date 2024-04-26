@@ -13,7 +13,7 @@ export type AppTextFieldProps = FormControlProps &
 export default function AppTextField({ fieldError, tooltip, required, label, inputProps, ...props }: AppTextFieldProps) {
   return (
     <FormControl
-      style={{ width: "100%" }}
+      sx={{ width: "100%" }}
       {...props}>
       <AppInputLabel
         fieldLabel={label}

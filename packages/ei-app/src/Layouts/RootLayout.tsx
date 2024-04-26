@@ -1,11 +1,12 @@
+import { OryAuthGateway } from "components"
 import NotificationProvider from "@/hooks/notification-hook"
 import i18n from "@/libs/i18n/i18n"
+import { appPersistor } from "@/libs/redux/Store"
 import { AppThemeProvider } from "@/providers/AppThemeProvider"
 import { StoreProvider } from "@/providers/StoreProvider"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
 import { CustomLanguageFormats, locales } from "@ory/elements"
-import { OryAuthGateway } from "components"
 import { AppProps } from "next/app"
 import { useMemo } from "react"
 import { PersistGate } from "redux-persist/integration/react"
@@ -13,7 +14,6 @@ import AutoSidebarLayout from "./AutoSidebarLayout"
 import DevextremeThemeProvider from "./DevextremeThemeProvider"
 import Layout from "./Layout"
 import ToastifyLayout from "./ToastifyLayout"
-import { appPersistor } from "@/libs/redux/Store"
 
 export interface IRootProps extends AppProps {
   children: any

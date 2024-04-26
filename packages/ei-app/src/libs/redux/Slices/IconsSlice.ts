@@ -42,7 +42,7 @@ export const IconsSlice = createAppSlice({
           state.lookUpOptions = action.payload.tokens.map<LookUpOption>(icon => ({
             label: `${icon.sym.toUpperCase()} - ${icon.name}`,
             iconUrl: icon.lURI,
-            tokenId: icon.id
+            tokenId: icon.id,
           }))
           state.icons = action.payload.tokens
         },

@@ -1,11 +1,18 @@
 import AppFormSwitchField from "@/components/common/FormInputs/AppFormSwitchField"
 import AppFormTextField from "@/components/common/FormInputs/AppFormTextField"
 import { getIncorectPassword, getMandatoryField } from "@/constants/Errormessages"
-import { Box, BoxProps, Button, Grid, Stack, Typography } from "@mui/material"
+import { addError, addMessage } from "@/libs/redux/Slices/UiSlice"
+import { useAppDispatch } from "@/libs/redux/Store"
+import { LoadingButton } from "@mui/lab"
+import { Box, BoxProps, Button, Divider, Grid, Link, Stack, Typography } from "@mui/material"
+import { UiNode, UiNodeImageAttributes } from "@ory/client"
+import { isUiNodeImageAttributes, isUiNodeInputAttributes, isUiNodeTextAttributes } from "@ory/elements"
+import { NodeImage, useOry } from "components"
 import { Form, Formik } from "formik"
-import { boolean, InferType, object, string } from "yup"
-import { ProfileContainer } from "./ProfileContainer"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { InferType, boolean, object, string } from "yup"
+import { ProfileContainer } from "./ProfileContainer"
 
 const NewPasswordModelSchema = object({
   newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(6, getIncorectPassword()),
@@ -21,14 +28,49 @@ const SmsMfaModelSchema = object({
 type SmsMfaModel = InferType<typeof SmsMfaModelSchema>
 
 const TotpAuthenticatorSchema = object({
-  enabled: boolean(),
-  displayName: string(),
+  code: string().required(" "),
 })
 
 type TotpAuthenticatorModel = InferType<typeof TotpAuthenticatorSchema>
 
 export const SecurityContainer = ({ ...props }: BoxProps) => {
+  const { onChangePassword, settingsFlow, onTotpUnlink, createSettingsFow, onTotpSubmit } = useOry()
   const { t } = useTranslation("SecurityContainer")
+  const dispatch = useAppDispatch()
+  const [settingsFlowCreating, setSettingsFlowCreating] = useState(false)
+  const [newPasswordLoading, setNewPasswordLoading] = useState(false)
+  const [codeLoading, setCodeLoading] = useState(false)
+  const [imageNode, setImageNode] = useState<UiNode>()
+  const [totpSecret, setTotpSecret] = useState<string | undefined>(undefined)
+  const [unlinkButton, setUnlinkButton] = useState<boolean>(false)
+
+  useEffect(() => {
+    setSettingsFlowCreating(true)
+    createSettingsFow()
+      .then()
+      .finally(() => setSettingsFlowCreating(false))
+  }, [])
+
+  useEffect(() => {
+    setTotpSecret(undefined)
+    setImageNode(undefined)
+    setUnlinkButton(false)
+    settingsFlow?.ui.nodes.forEach(node => {
+      const { attributes } = node
+      if (isUiNodeTextAttributes(attributes) && attributes?.text.id === 1050006) {
+        setTotpSecret(attributes?.text.text)
+      }
+
+      if (isUiNodeImageAttributes(attributes)) {
+        setImageNode(node)
+      }
+
+      if (isUiNodeInputAttributes(attributes) && attributes?.name === "totp_unlink") {
+        setUnlinkButton(true)
+      }
+    })
+  }, [settingsFlow])
+
   const renderMFARow = (switchLabel: string, inputLabel: string, switchFieldName: string, inputFieldName: string) => {
     return (
       <Form>
@@ -68,6 +110,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
             item
             xs={4}>
             <Button
+              disabled={settingsFlowCreating}
               type="submit"
               sx={{ float: "right", width: "80%", mr: "10%" }}
               variant="contained">
@@ -79,6 +122,125 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     )
   }
 
+  const renderTotpRow = () => {
+    return (
+      <Form>
+        <Stack
+          alignItems={"center"}
+          spacing={1}>
+          {imageNode && (
+            <>
+              {renderTotpInfo()}
+              <NodeImage
+                node={imageNode}
+                attributes={imageNode.attributes as UiNodeImageAttributes}></NodeImage>
+              <code>{totpSecret}</code>
+              <AppFormTextField
+                sx={{ mt: 1, width: "30%", marginTop: 2 }}
+                label={t("VerificationCode")}
+                name="code"
+                inputProps={{ size: "small" }}
+              />
+              <LoadingButton
+                disabled={settingsFlowCreating}
+                loading={codeLoading}
+                type="submit"
+                sx={{ float: "right", width: "30%", mt: 1 }}
+                variant="contained">
+                {t("Save", { ns: "Common" })}
+              </LoadingButton>
+            </>
+          )}
+
+          {unlinkButton && (
+            <LoadingButton
+              disabled={settingsFlowCreating}
+              loading={codeLoading}
+              onClick={onTotpUnlinkHandle}
+              type="submit"
+              sx={{ float: "right", minWidth: "200px", mt: 1 }}
+              variant="contained">
+              {t("UnlinkTotp")}
+            </LoadingButton>
+          )}
+        </Stack>
+      </Form>
+    )
+  }
+
+  const onSubmitNewPassword = async (passsword: string) => {
+    setNewPasswordLoading(true)
+    onChangePassword(passsword)
+      .then(() => {
+        dispatch(addMessage(t("NewPasswordMessage")))
+      })
+      .catch(error => {
+        if (error.response.status === 400) dispatch(addError(t("invalidPasswordFormat", { ns: "errorMessages" })))
+        else dispatch(addError(error?.response?.data?.error?.reason))
+      })
+      .finally(() => {
+        setNewPasswordLoading(false)
+      })
+  }
+
+  const onSubmitCode = async (code: string) => {
+    setCodeLoading(true)
+    onTotpSubmit(code)
+      .then(() => {
+        dispatch(addMessage(t("ApplicationLinked")))
+      })
+      .catch(error => {
+        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "errorMessages" })))
+        else dispatch(addError(error?.response?.data?.error?.reason))
+      })
+      .finally(() => {
+        setCodeLoading(false)
+      })
+  }
+
+  const onTotpUnlinkHandle = async () => {
+    setCodeLoading(true)
+    onTotpUnlink()
+      .then(() => {
+        dispatch(addMessage(t("ApplicationUnlinked")))
+      })
+      .catch(error => {
+        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "errorMessages" })))
+        else dispatch(addError(error?.response?.data?.error?.reason))
+      })
+      .finally(() => {
+        setCodeLoading(false)
+      })
+  }
+
+  const renderTotpInfo = () => (
+    <Typography
+      textAlign="center"
+      variant="body1">
+      {t("AddAuthApp")}{" "}
+      <Link
+        href="https://www.lastpass.com"
+        rel="noreferrer"
+        target="_blank">
+        LastPass
+      </Link>{" "}
+      {t("AndGoogleApp")} (
+      <Link
+        href="https://apps.apple.com/us/app/google-authenticator/id388497605"
+        target="_blank"
+        rel="noreferrer">
+        iOS
+      </Link>
+      ,{" "}
+      <Link
+        href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en&gl=US"
+        target="_blank"
+        rel="noreferrer">
+        Android
+      </Link>
+      ).
+    </Typography>
+  )
   const renderChangePassword = () => {
     return (
       <Form>
@@ -92,7 +254,9 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               label={t("NewPassword")}
             />
 
-            <Button
+            <LoadingButton
+              loading={newPasswordLoading}
+              disabled={settingsFlowCreating}
               type="submit"
               sx={{
                 alignSelf: "start",
@@ -102,7 +266,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               }}
               variant={"contained"}>
               {t("ChangePassword")}
-            </Button>
+            </LoadingButton>
           </Box>
         </ProfileContainer>
       </Form>
@@ -123,8 +287,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
             validateOnBlur={false}
             validateOnChange={false}
             validationSchema={NewPasswordModelSchema}
-            onSubmit={({ newPassword }) => {
-              console.log(newPassword)
+            onSubmit={data => {
+              onSubmitNewPassword(data.newPassword)
             }}>
             {renderChangePassword()}
           </Formik>
@@ -140,24 +304,20 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               }}
               validateOnChange={false}
               validationSchema={SmsMfaModelSchema}
-              onSubmit={data => {
-                console.log(data)
-              }}>
+              onSubmit={() => {}}>
               {renderMFARow(t("EnableSMSMFA"), t("PhoneNumber"), "enabled", "phoneNumber")}
             </Formik>
+            <Divider sx={{ marginBlock: 2 }} />
             <Formik<TotpAuthenticatorModel>
               initialValues={{
-                enabled: false,
-                displayName: "",
+                code: "",
               }}
               validateOnChange={false}
               validationSchema={TotpAuthenticatorSchema}
               onSubmit={data => {
-                console.log(data)
+                onSubmitCode(data.code)
               }}>
-              <Box mt={3}>
-                {renderMFARow(t("EnableTOTPAuthenticationApps"), t("DisplayName"), "enabled", "displayName")}
-              </Box>
+              <Box>{renderTotpRow()}</Box>
             </Formik>
           </ProfileContainer>
         </Box>

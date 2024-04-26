@@ -11,7 +11,7 @@ export const HandleError = (
   fatalToError = false,
 ) => {
   return async (error: AxiosError): Promise<AxiosError | void> => {
-    const inDevEnvironment = !!process && process.env.NODE_ENV === 'development';
+    const inDevEnvironment = !!process && process.env.NODE_ENV === "development"
 
     if (!error.response || error.response?.status === 0) {
       let errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
