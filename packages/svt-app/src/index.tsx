@@ -5,6 +5,7 @@ import { StyledEngineProvider } from '@mui/material/styles';
 import './index.css';
 import App from './App';
 import IvlAutomatedApp from './IvlAutomatedApp';
+import FifoAutomatedApp from './FifoAutomatedApp';
 import reportWebVitals from './reportWebVitals';
 
 async function enableMocking() {
@@ -60,6 +61,24 @@ enableMocking().then(() => {
         <React.StrictMode>
           <StyledEngineProvider injectFirst>
             <IvlAutomatedApp />
+          </StyledEngineProvider>
+        </React.StrictMode>
+      );
+    }
+  }
+  catch (ivlAutomatedRootErr) {
+    console.log(ivlAutomatedRootErr);
+  }
+
+  try {
+    const appFifoAutomatedRootElement = document.getElementById('fifo-automated-root') as HTMLElement;
+
+    if (appFifoAutomatedRootElement) {
+      const ivlAutomatedRoot = ReactDOM.createRoot(appFifoAutomatedRootElement);
+      ivlAutomatedRoot.render(
+        <React.StrictMode>
+          <StyledEngineProvider injectFirst>
+            <FifoAutomatedApp />
           </StyledEngineProvider>
         </React.StrictMode>
       );
