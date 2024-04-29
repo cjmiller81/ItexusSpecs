@@ -74,8 +74,8 @@ enableMocking().then(() => {
     const appFifoAutomatedRootElement = document.getElementById('fifo-automated-root') as HTMLElement;
 
     if (appFifoAutomatedRootElement) {
-      const ivlAutomatedRoot = ReactDOM.createRoot(appFifoAutomatedRootElement);
-      ivlAutomatedRoot.render(
+      const fifoAutomatedRoot = ReactDOM.createRoot(appFifoAutomatedRootElement);
+      fifoAutomatedRoot.render(
         <React.StrictMode>
           <StyledEngineProvider injectFirst>
             <FifoAutomatedApp />
@@ -84,8 +84,8 @@ enableMocking().then(() => {
       );
     }
   }
-  catch (ivlAutomatedRootErr) {
-    console.log(ivlAutomatedRootErr);
+  catch (fifoAutomatedRootErr) {
+    console.log(fifoAutomatedRootErr);
   }
 
   // If you want to start measuring performance in your app, pass a function
