@@ -100,8 +100,8 @@ export const walletsSlice = createAppSlice({
         }
         const historicalWalletsData = await walletsApi.getHistoricalWalletData(
           toTotalTokensBalances(state.wallets.selectedWallets),
-          moment.utc().add(-1, "d").toDate(),
-          moment.utc().add(1, "d").toDate(),
+          moment().add(-1, "d").toDate(),
+          moment().toDate(),
         )
 
         return {
