@@ -1,4 +1,5 @@
-import { combineReducers, combineSlices } from "@reduxjs/toolkit"
+import { combineReducers } from "@reduxjs/toolkit"
+import { uiSlice, walletsSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
 import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
@@ -8,33 +9,27 @@ import { marketCapEqualWeightChartSlice } from "./Slices/MarketCapEqualWeightCha
 import { marketCapEqualWeightModelingSlice } from "./Slices/MarketCapEqualWeightModelingSlice"
 import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlice"
 import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice"
-import { uiSlice } from "./Slices/UiSlice"
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
-import { walletsSlice } from "./Slices/WalletsSlice"
 
 export const rootReducer = combineReducers({
-  walletsReducer: combineSlices(
-    uiSlice,
-    walletsSlice,
-    walletWorthChartSlice,
-    IconsSlice,
-    marketCapEqualWeightChartSlice,
-    marketCapEqualWeightModelingSlice,
-    marketCapWeightedChartSlice,
-    marketCapWeightedModelingSlice,
-    allTokensTableSlice,
-  ),
+  ui: uiSlice.reducer,
+  wallets: walletsSlice.reducer,
+  walletWorthChart: walletWorthChartSlice.reducer,
+  icons: IconsSlice.reducer,
+  marketCapEqualWeightChart: marketCapEqualWeightChartSlice.reducer,
+  MarketCapEqualWeightModeling: marketCapEqualWeightModelingSlice.reducer,
+  marketCapWeightedChart: marketCapWeightedChartSlice.reducer,
+  MarketCapWeightedModeling: marketCapWeightedModelingSlice.reducer,
+  allTokensTable: allTokensTableSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({
   key: "root",
   storage: storage,
-  whitelist: ["walletsReducer.ui.mode", "walletsReducer.ui.sidebarOpened", "walletsReducer.ui.accordions"],
+  whitelist: ["ui.mode", "ui.sidebarOpened", "ui.accordions"],
   rootReducer,
 })
 
 export const persistedReducer = persistReducer(config, rootReducer)
-
 export type RootState = ReturnType<typeof rootReducer>
-
 export default rootReducer

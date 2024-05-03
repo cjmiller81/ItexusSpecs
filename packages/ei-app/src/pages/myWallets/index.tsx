@@ -1,29 +1,28 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
-import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
-import { MyWalletsSection } from "@/containers/MyWallets/MyWalletsSection"
+import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import { fetchHistoricalWalletData, selectSeries, setPeriod } from "@/libs/redux/Slices/WalletWorthChartSlice"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { Stack } from "@mui/material"
 import {
+  LookUpOption, MyWalletsSection,
+  Wallet,
   createWallet,
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
   selectWallets,
   updateWallet,
-} from "@/libs/redux/Slices/WalletsSlice"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { Wallet } from "@/models/Wallet/Wallet"
-import { Stack } from "@mui/material"
+} from "components"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, firstLoad } = useAppSelector(
-    state => state.walletsReducer.wallets,
+    state => state.wallets,
   )
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
-    useAppSelector(state => state.walletsReducer.walletWorthChart)
-  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
+    useAppSelector(state => state.walletWorthChart)
+  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.icons)
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null)
   const [fromDate, setFromDate] = useState<Date | null>(null)
   const [toDate, setToDate] = useState<Date | null>(new Date())

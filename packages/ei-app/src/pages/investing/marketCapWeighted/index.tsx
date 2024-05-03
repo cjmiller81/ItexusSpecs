@@ -1,7 +1,7 @@
-import { AppAccordionSection } from "@/components/common/Containers/AppAccordionSection"
-import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
-import PrefilterTokensSection from "@/containers/Investing/PrefilterTokensSection"
-import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
+import { AppAccordionSection } from "components"
+import { IndexModelingSection } from "@/features/Investing/IndexModelingSection"
+import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection"
+import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth"
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import {
@@ -30,12 +30,12 @@ export default function MarketCapWeightedPage() {
     symbolOption,
     statstatusFetchingMarcetCapData,
     endDate
-  } = useAppSelector(state => state.walletsReducer.marketCapWeightedChart)
-  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
+  } = useAppSelector(state => state.marketCapWeightedChart)
+  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.icons)
   const dispatch = useAppDispatch()
 
   const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
-    state => state.walletsReducer.MarketCapWeightedModeling,
+    state => state.MarketCapWeightedModeling,
   )
 
   const { t } = useTranslation("MarketCapPage")
@@ -49,7 +49,7 @@ export default function MarketCapWeightedPage() {
 
   return (
     <Stack gap={2}>
-      <PrefilterTokensSection
+       <PrefilterTokensSection
         persisKey="WeightedPrefilterTokens"
         onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
       />

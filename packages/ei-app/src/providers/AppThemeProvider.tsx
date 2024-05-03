@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const AppThemeProvider = ({ children }: Props) => {
-  const { mode } = useAppSelector(store => store.walletsReducer.ui)
+  const { mode } = useAppSelector(store => store.ui)
 
   const theme = useMemo(() => createTheme(getAppTheme(mode)), [mode])
 

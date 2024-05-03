@@ -1,6 +1,6 @@
-import { Asset } from "@/models/Wallet/asset"
 import { ChainAsset } from "@/models/Wallet/ChainAsset"
-import { Wallet } from "@/models/Wallet/Wallet"
+import { Asset } from "@/models/Wallet/asset"
+import { Wallet } from "components"
 
 export interface WalletTokensTableModel extends Asset {
   price?: number

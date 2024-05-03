@@ -1,8 +1,7 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
-import { Period } from "@/containers/MyWallets/WalletsTable"
+import { LookUpOption, Period } from "components"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { RootState } from "../RootReducer"
-import { createAppSlice } from "../createAppSlice"
+import { createAppSlice } from "components"
 import { GetPrettyScale } from "./ChartSlicesCommon"
 import { ChartSeriesDataResponse, MarketCapEqualWeightChartState, calculateMinMax, fetchChartData, initialState, makeChartSeries } from "./MarketCapEqualWeightChartSlice"
 

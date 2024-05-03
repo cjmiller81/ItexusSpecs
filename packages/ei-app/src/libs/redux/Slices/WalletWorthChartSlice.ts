@@ -1,14 +1,11 @@
-import { Period } from "@/containers/MyWallets/WalletsTable"
+import { walletsApi } from "components"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
-import { walletsApi } from "@/services/walletsService"
 import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { PayloadAction } from "@reduxjs/toolkit"
 import i18next from "i18next"
-import moment from "moment"
 import { RootState } from "../RootReducer"
-import { createAppSlice } from "../createAppSlice"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
-import { Status } from "./UiSlice"
+import { Period, Status, createAppSlice } from "components"
 
 interface WalletsChartState {
   chartData?: ChartSeriesDataResponse
@@ -64,7 +61,7 @@ export const walletWorthChartSlice = createAppSlice({
       ): Promise<ChartSeriesDataResponse> => {
         const state = thunkApi.getState() as RootState
         const response = await walletsApi.getHistoricalWalletData(
-          toTotalTokensBalances(state.walletsReducer.wallets.selectedWallets),
+          toTotalTokensBalances(state.wallets.selectedWallets),
           payload.startDate,
           payload.endDate,
           payload.tokenId,

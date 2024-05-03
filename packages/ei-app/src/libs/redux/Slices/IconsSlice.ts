@@ -1,8 +1,7 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
+import { LookUpOption, Status } from "components"
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
 import { iconsAbortableApi } from "@/services/iconsService"
-import { createAppSlice } from "../createAppSlice"
-import { Status } from "./UiSlice"
+import { createAppSlice } from "components"
 
 interface IconsState {
   iconsFetchingStatus: Status

@@ -1,11 +1,11 @@
 import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "@/services/backend-api.service"
 import { iconsApi } from "@/services/iconsService"
 import { v4 as uuid } from "uuid"
-import { createAppSlice } from "../createAppSlice"
+import { createAppSlice } from "components"
 import { setPrefilteredData as setPrefilteredWeightedData } from "./MarketCapEqualWeightModelingSlice"
 import { setPrefilteredData as setPrefilteredEqualWeightedData } from "./MarketCapWeightedModelingSlice"
+import { Status } from "components"
 
-export type Status = "idle" | "loading" | "failed"
 export interface TotalWalletWorthData {
   totalWorth: number
   growPercentage: number

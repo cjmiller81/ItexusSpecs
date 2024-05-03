@@ -2,7 +2,7 @@
   "name": "components",
   "private": true,
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -22,7 +22,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc",
+    "build": "vite build",
+    "watch": "vite build --watch --sourcemap \"hidden\" && tsc",
     "test": "node ./__tests__/components.test.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

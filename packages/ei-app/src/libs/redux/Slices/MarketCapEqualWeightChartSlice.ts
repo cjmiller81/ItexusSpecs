@@ -1,13 +1,9 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
-import { Period } from "@/containers/MyWallets/WalletsTable"
 import { CapHistoricalWeightedDate } from "@/models/Wallet/CapHistoricalWeightedDate"
-import { walletsApi } from "@/services/walletsService"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { LookUpOption, Period, Status, createAppSlice, walletsApi } from "components"
 import i18next from "i18next"
 import { RootState } from "../RootReducer"
-import { createAppSlice } from "../createAppSlice"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
-import { Status } from "./UiSlice"
 
 export interface MarketCapEqualWeightChartState {
   chartData?: ChartSeriesDataResponse
@@ -43,7 +39,7 @@ export const initialState: MarketCapEqualWeightChartState = {
   maxChartValue: 10,
   yAxisTicks: 6,
   startDate: null,
-  endDate: new Date()
+  endDate: new Date(),
 }
 
 export const marketCapEqualWeightChartSlice = createAppSlice({
@@ -94,19 +90,19 @@ export const marketCapEqualWeightChartSlice = createAppSlice({
 })
 
 export async function fetchChartData(state: RootState) {
-  if (!state.walletsReducer.marketCapEqualWeightChart.startDate) {
+  if (!state.marketCapEqualWeightChart.startDate) {
     throw "startDate is not set"
   }
 
   const response = await walletsApi.getHistoricalCapWeightedWalletData(
-    state.walletsReducer.marketCapEqualWeightChart.startDate,
+    state.marketCapEqualWeightChart.startDate,
     new Date(),
-    state.walletsReducer.marketCapEqualWeightChart.tokensAllocation,
-    state.walletsReducer.marketCapEqualWeightChart.symbolOption?.tokenId,
+    state.marketCapEqualWeightChart.tokensAllocation,
+    state.marketCapEqualWeightChart.symbolOption?.tokenId,
   )
   return {
     seriesData: response,
-    comareToLabel: state.walletsReducer.marketCapEqualWeightChart.symbolOption?.label,
+    comareToLabel: state.marketCapEqualWeightChart.symbolOption?.label,
   }
 }
 
@@ -193,5 +189,12 @@ export function calculateMinMax(state: MarketCapEqualWeightChartState): { minVal
   }
 }
 
-export const { fetchHistoricalCapWeightedData, setToDate, setPeriod, setCompareOption, setFromDate, selectSeries, resetState } =
-  marketCapEqualWeightChartSlice.actions
+export const {
+  fetchHistoricalCapWeightedData,
+  setToDate,
+  setPeriod,
+  setCompareOption,
+  setFromDate,
+  selectSeries,
+  resetState,
+} = marketCapEqualWeightChartSlice.actions

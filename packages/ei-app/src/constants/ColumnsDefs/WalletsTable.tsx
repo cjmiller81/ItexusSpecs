@@ -1,5 +1,5 @@
-import { AppToolTip } from "@/components/common/AppTooltip"
-import { Wallet } from "@/models/Wallet/Wallet"
+import { AppToolTip } from "components"
+import { Wallet } from "components"
 import { ExpandLess, ExpandMore } from "@mui/icons-material"
 import CancelIcon from "@mui/icons-material/Close"
 import DeleteIcon from "@mui/icons-material/Delete"

@@ -1,0 +1,30 @@
+import { FormControl, FormControlProps } from "@mui/material"
+import TextField, { TextFieldProps } from "@mui/material/TextField"
+import { AppInputProps } from "./AppInputProps"
+import { InputErrorMessage } from "./InputErrorMessage"
+import { AppInputLabel } from "./AppInputLabel"
+
+export type AppTextFieldProps = FormControlProps &
+  AppInputProps & {
+    fieldError?: string | undefined | boolean
+    inputProps?: TextFieldProps
+  }
+
+export default function AppTextField({ fieldError, tooltip, required, label, inputProps, ...props }: AppTextFieldProps) {
+  return (
+    <FormControl
+      sx={{ width: "100%" }}
+      {...props}>
+      <AppInputLabel
+        fieldLabel={label}
+        required={required}
+        tooltip={tooltip}
+      />
+      <TextField
+        {...inputProps}
+        error={!!fieldError}
+        helperText={fieldError ? <InputErrorMessage> {fieldError} </InputErrorMessage> : null}
+      />
+    </FormControl>
+  )
+}
