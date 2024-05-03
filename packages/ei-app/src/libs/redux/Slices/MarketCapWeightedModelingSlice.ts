@@ -15,21 +15,22 @@ export interface MarketCapEqualModelingState {
   tableData: InvestingTableAsset[]
 }
 
+const defaultTotalTokensCount: number = 10
 export const initialState: MarketCapEqualModelingState = {
   statusFetchingModelingData: "idle",
   tokens: [],
   chains: [],
   categories: [],
-  tokensCount: 7,
-  totalCapital: 150,
-  weight: 1 / 7,
+  tokensCount: defaultTotalTokensCount,
+  totalCapital: 1000,
+  weight: 1 / defaultTotalTokensCount,
   prefilteredData: [],
   tableData: [],
 }
 
 export const marketCapWeightedModelingSlice = createAppSlice({
   name: "MarketCapWeightedModeling",
-  initialState,
+  initialState: {...initialState},
   reducers: create => ({
     setTokens: create.reducer((state, action: PayloadAction<number>) => {
       state.tokensCount = action.payload

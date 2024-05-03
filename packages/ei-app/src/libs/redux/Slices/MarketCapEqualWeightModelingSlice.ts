@@ -6,7 +6,7 @@ import { MarketCapEqualModelingState, initialState } from "./MarketCapWeightedMo
 
 export const marketCapEqualWeightModelingSlice = createAppSlice({
   name: "MarketCapEqualWeightModeling",
-  initialState,
+  initialState: {...initialState},
   reducers: create => ({
     setTokens: create.reducer((state, action: PayloadAction<number>) => {
       state.tokensCount = action.payload

@@ -13,7 +13,7 @@ import {
 
 export const marketCapWeightedChartSlice = createAppSlice({
   name: "marketCapWeightedChart",
-  initialState,
+  initialState: {...initialState},
   reducers: create => ({
     resetState: create.reducer(state => {
       state = { ...initialState }
@@ -38,7 +38,7 @@ export const marketCapWeightedChartSlice = createAppSlice({
     }),
     fetchHistoricalCapWeightedData: create.asyncThunk(
       async (_, thunkApi): Promise<ChartSeriesDataResponse> => {
-        return fetchChartData(thunkApi.getState() as RootState)
+        return fetchChartData((thunkApi.getState() as RootState).marketCapWeightedChart)
       },
       {
         pending: state => {

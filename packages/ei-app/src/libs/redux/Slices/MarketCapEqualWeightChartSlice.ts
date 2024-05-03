@@ -44,7 +44,7 @@ export const initialState: MarketCapEqualWeightChartState = {
 
 export const marketCapEqualWeightChartSlice = createAppSlice({
   name: "marketCapEqualWeightChart",
-  initialState,
+  initialState: {...initialState},
   reducers: create => ({
     resetState: create.reducer(state => {
       state = { ...initialState }
@@ -69,7 +69,7 @@ export const marketCapEqualWeightChartSlice = createAppSlice({
     }),
     fetchHistoricalCapWeightedData: create.asyncThunk(
       async (_, thunkApi): Promise<ChartSeriesDataResponse> => {
-        return fetchChartData(thunkApi.getState() as RootState)
+        return fetchChartData((thunkApi.getState() as RootState).marketCapEqualWeightChart)
       },
       {
         pending: state => {
@@ -89,20 +89,20 @@ export const marketCapEqualWeightChartSlice = createAppSlice({
   }),
 })
 
-export async function fetchChartData(state: RootState) {
-  if (!state.marketCapEqualWeightChart.startDate) {
+export async function fetchChartData(state: MarketCapEqualWeightChartState) {
+  if (!state.startDate) {
     throw "startDate is not set"
   }
 
   const response = await walletsApi.getHistoricalCapWeightedWalletData(
-    state.marketCapEqualWeightChart.startDate,
-    new Date(),
-    state.marketCapEqualWeightChart.tokensAllocation,
-    state.marketCapEqualWeightChart.symbolOption?.tokenId,
+    state.startDate,
+    state.endDate || new Date(),
+    state.tokensAllocation,
+    state.symbolOption?.tokenId,
   )
   return {
     seriesData: response,
-    comareToLabel: state.marketCapEqualWeightChart.symbolOption?.label,
+    comareToLabel: state.symbolOption?.label,
   }
 }
 
