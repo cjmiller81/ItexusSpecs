@@ -1,7 +1,7 @@
 "use client"
 
 import { useAppSelector } from "@/libs/redux/Store"
-import { getAppTheme } from "@/utils/theme"
+import { getAppTheme } from "components"
 import { createTheme, ThemeProvider } from "@mui/material"
 import { ReactNode, useMemo } from "react"
 

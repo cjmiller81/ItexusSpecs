@@ -1,9 +1,15 @@
-import { LookUpOption, Period } from "components"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { LookUpOption, Period, createAppSlice } from "components"
 import { RootState } from "../RootReducer"
-import { createAppSlice } from "components"
 import { GetPrettyScale } from "./ChartSlicesCommon"
-import { ChartSeriesDataResponse, MarketCapEqualWeightChartState, calculateMinMax, fetchChartData, initialState, makeChartSeries } from "./MarketCapEqualWeightChartSlice"
+import {
+  ChartSeriesDataResponse,
+  MarketCapEqualWeightChartState,
+  calculateMinMax,
+  fetchChartData,
+  initialState,
+  makeChartSeries,
+} from "./MarketCapEqualWeightChartSlice"
 
 export const marketCapWeightedChartSlice = createAppSlice({
   name: "marketCapWeightedChart",
@@ -69,5 +75,12 @@ function calculateChartSeries(state: MarketCapEqualWeightChartState) {
   state.maxChartValue = maxChartValue
 }
 
-export const { fetchHistoricalCapWeightedData, setToDate, setPeriod, setCompareOption, setFromDate, selectSeries, resetState } =
-  marketCapWeightedChartSlice.actions
+export const {
+  fetchHistoricalCapWeightedData,
+  setToDate,
+  setPeriod,
+  setCompareOption,
+  setFromDate,
+  selectSeries,
+  resetState,
+} = marketCapWeightedChartSlice.actions

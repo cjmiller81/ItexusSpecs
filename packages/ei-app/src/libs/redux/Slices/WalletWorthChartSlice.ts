@@ -1,11 +1,9 @@
-import { walletsApi } from "components"
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
-import { toTotalTokensBalances } from "@/utils/tokensTableHelpers"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { Period, Status, createAppSlice, toTotalTokensBalances, walletsApi } from "components"
 import i18next from "i18next"
 import { RootState } from "../RootReducer"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
-import { Period, Status, createAppSlice } from "components"
 
 interface WalletsChartState {
   chartData?: ChartSeriesDataResponse
