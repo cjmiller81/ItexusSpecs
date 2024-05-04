@@ -1,7 +1,7 @@
 import { darken, lighten, styled } from "@mui/material"
 import { UserAuthCard } from "@ory/elements"
 
-export const StyledUserAuthCard = styled(UserAuthCard)(({ theme }) => ({
+export const StyledUserAuthCard:any = styled(UserAuthCard)(({ theme }) => ({
   backgroundColor: "#2B2B2B",
   borderRadius: "1rem",
   padding: "48px",

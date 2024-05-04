@@ -182,7 +182,7 @@ export function OryAuthGateway({
   )
 }
 
-export const StyledAuthLayout = styled(Box)(({ theme }) => ({
+export const StyledAuthLayout:any = styled(Box)(({ theme }) => ({
   backgroundColor: "#3E3E3E",
   width: "100%",
   height: "100vh",
