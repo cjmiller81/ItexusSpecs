@@ -16,7 +16,7 @@ export const ActionCard = styled(Card)`
   margin-bottom: 18px;
 `
 
-export const CenterLink = styled("a")`
+export const CenterLink:any = styled("a")`
   ${typographyH2Styles};
   ${typographyLinkStyles};
   text-align: center;

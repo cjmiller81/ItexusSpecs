@@ -1,6 +1,6 @@
-import { styled } from "@mui/material/styles"
+import { Theme, styled } from "@mui/material/styles"
 
-export const AuthContainer = styled("main")(() => ({
+export const AuthContainer:any = styled("main")(() => ({
   justifyContent: "center",
   display: "flex",
   height: "100vh",
