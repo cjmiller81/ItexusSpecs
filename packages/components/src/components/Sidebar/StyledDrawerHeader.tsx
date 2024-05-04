@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles"
 
-export const StyledDrawerHeader = styled("div")(({ theme }) => ({
+export const StyledDrawerHeader:any = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",

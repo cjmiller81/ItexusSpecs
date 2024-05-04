@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-export const AppModalBody = styled(Typography)(({ theme }) => ({
+export const AppModalBody:any = styled(Typography)(({ theme }) => ({
   position: 'absolute',
   top: '50%',
   left: '50%',

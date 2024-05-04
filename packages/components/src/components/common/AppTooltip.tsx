@@ -1,7 +1,7 @@
 import { Tooltip, TooltipProps, tooltipClasses } from "@mui/material"
 import { styled } from "@mui/material/styles"
 
-export const AppToolTip = styled(({ className, ...props }: TooltipProps) => (
+export const AppToolTip:any = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip
     {...props}
     classes={{ popper: className }}

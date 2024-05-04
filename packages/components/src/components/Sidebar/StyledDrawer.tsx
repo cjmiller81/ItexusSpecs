@@ -24,7 +24,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   width: theme.spacing(5.4),
 })
 
-export const StyledDrawer = styled(MuiDrawer, {
+export const StyledDrawer:any = styled(MuiDrawer, {
   shouldForwardProp: prop => prop !== "open",
 })(({ theme, open }) => ({
   width: drawerWidth,

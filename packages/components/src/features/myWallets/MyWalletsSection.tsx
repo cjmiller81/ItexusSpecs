@@ -103,7 +103,7 @@ export const MyWalletsSection = ({
     onDeleteWallet(id as string)
   }
 
-  const processRowUpdate = (newRow: GridRowModel<Wallet>, oldRow: GridRowModel<Wallet>) => {
+  const processRowUpdate = (newRow: GridRowModel<Wallet>, _oldRow: GridRowModel<Wallet>) => {
     //TODO add validation
     const updatedRow = { ...newRow, isNew: false }
     onUpdateWallet(newRow)
@@ -187,7 +187,7 @@ export const MyWalletsSection = ({
   )
 }
 
-export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
+export const StyledWalletWorthContainer:any = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: 0,
   top: 0,
@@ -203,7 +203,7 @@ export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   },
 }))
 
-export const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
+export const StyledAdaptivePageBox:any = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   flexDirection: "row",

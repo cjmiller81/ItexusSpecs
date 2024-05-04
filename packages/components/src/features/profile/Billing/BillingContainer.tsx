@@ -133,7 +133,7 @@ const PaymentCard = ({
   )
 }
 
-export const PaymentCardContainer = styled(Box)(({ theme }) => ({
+export const PaymentCardContainer:any = styled(Box)(({ theme }) => ({
   paddingBlock: "24px",
   display: "flex",
   alignItems: "center",
@@ -144,7 +144,7 @@ export const PaymentCardContainer = styled(Box)(({ theme }) => ({
   },
 }))
 
-export const CardDetailsContainer = styled(Box)(({ theme }) => ({
+export const CardDetailsContainer:any = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   alignItems: "center",

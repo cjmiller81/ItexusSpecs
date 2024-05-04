@@ -1,7 +1,7 @@
 import { darken, lighten, styled } from "@mui/material/styles"
 import { BasicTable } from "../../components/DataDisplay"
 
-export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
+export const StyledWalletsTable:any = styled(BasicTable)(({ theme }) => ({
   width: "100%",
   height: 500,
   mt: 2,

@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
-export const AppContainer = styled(Box)(({ theme }) => ({
+export const AppContainer:any = styled(Box)(({ theme }) => ({
   border: 'solid',
   borderWidth: '1px',
   boxSizing: 'border-box',

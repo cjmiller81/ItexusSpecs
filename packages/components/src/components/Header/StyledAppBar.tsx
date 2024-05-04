@@ -5,7 +5,7 @@ interface CustomAppBarProps extends AppBarProps {
   open?: boolean
 }
 
-export const StyledAppBar = styled(AppBar, {
+export const StyledAppBar:any = styled(AppBar, {
   shouldForwardProp: prop => prop !== "open",
 })<CustomAppBarProps>(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,

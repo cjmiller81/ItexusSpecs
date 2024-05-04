@@ -1,7 +1,7 @@
 import { useMemoizedImage } from '../../../hooks/useMemorizedImage';
 import { Box, BoxProps } from '@mui/material';
 
-export const IconCell = ({ symbol, iconUrl }: BoxProps & {symbol: string, iconUrl?: string}) => {
+export const IconCell:any = ({ symbol, iconUrl }: BoxProps & {symbol: string, iconUrl?: string}) => {
   const imageRef = useMemoizedImage(iconUrl)
   return (
     <Box

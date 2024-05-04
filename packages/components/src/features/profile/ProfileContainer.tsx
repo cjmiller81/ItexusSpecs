@@ -23,7 +23,7 @@ export const ProfileContainer = ({ title, endAdortment, children, ...props }: Pr
   )
 }
 
-export const HeaderContainer = styled(Box)(({ theme }) => ({
+export const HeaderContainer:any = styled(Box)(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(1),
   padding: theme.spacing(2),
@@ -32,7 +32,7 @@ export const HeaderContainer = styled(Box)(({ theme }) => ({
   },
 }))
 
-export const HeaderPageTitle = styled(PageTitle)(({ theme }) => ({
+export const HeaderPageTitle:any = styled(PageTitle)(({ theme }) => ({
   textAlign: "left",
   width: "100%",
   [theme.breakpoints.down("sm")]: {
