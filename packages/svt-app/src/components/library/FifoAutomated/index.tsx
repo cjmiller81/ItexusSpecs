@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
@@ -10,22 +10,25 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Settings } from "@mui/icons-material";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-
 import Login from "./login";
 import Accounts from "./accounts";
 import AccountStatus from "./account-status";
 import AutomationComponent from "./automation/Automation";
 import { ExchangeAccount, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useGetAccountList, useGetIvlAutomationStatus, useStopIvlAutomation, useUpsertIvlAutomation, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
-
+import { v4 as uuid } from "uuid"
 import "./FifoAutomated.scss";
 import { useMediaQuery } from "@mui/material";
 import { useInterval } from "../../../utils";
+import { IPositionTableRow } from "./automation/position-table";
 
 const steps = [
-  "Tastytrade Login",
   "Select Account",
-  "Account Status",
+  "Account Status / Settings",
 ];
+
+const fifoFeedOptions = ["SP 500"]
+const tradeSymbolOptions = ["/ES", "SPY"]
+
 interface IState {
   loginSubmitted: boolean;
   accountSelectionSubmitted: boolean;
@@ -77,10 +80,15 @@ export default function FifoAutomated() {
     closingOnly: false,
   } as SvtIvlEsStrategySetStatus);
 
+  const [fifoFeedOption, setFifoFeedOption] = useState("SP 500")
+  const [tradingSymbolOption, setTradingSymbolOption] = useState("/ES")
+  const qty = tradingSymbolOption === "/ES" ? 1 : 100;
+  const [positionTableData, setPositionTableData] = useState<IPositionTableRow[]>([]);
+
   const isDesktop = useMediaQuery('(min-width:800px)');
 
   const totalSteps = () => {
-    return steps.length;
+    return steps.length + 1;
   };
 
   const completedSteps = useCallback(() => {
@@ -118,7 +126,7 @@ export default function FifoAutomated() {
   }, [strategyAccountConnectState]);
 
   const isExchangeAccountValid = useCallback((): boolean => {
-    return (membership === "TODO" && !exchangeAccountState.isClosed && exchangeAccountState.isFuturesApproved && exchangeAccountState.isMargin && exchangeAccountState.suitableOptionsLevel === "No Restrictions");
+    return (membership === "TODO" && !exchangeAccountState.isClosed && exchangeAccountState.isFuturesApproved && exchangeAccountState.isMargin);
   }, [exchangeAccountState, membership]);
 
   const enableNext = useCallback((): void => {
@@ -160,7 +168,6 @@ export default function FifoAutomated() {
       || newExchangeAccountState.isClosed !== exchangeAccountState.isClosed
       || newExchangeAccountState.isFuturesApproved !== exchangeAccountState.isFuturesApproved
       || newExchangeAccountState.isMargin !== exchangeAccountState.isMargin
-      || newExchangeAccountState.suitableOptionsLevel !== exchangeAccountState.suitableOptionsLevel
     ) {
       setStatus("accountStatus", false);
     }
@@ -176,6 +183,7 @@ export default function FifoAutomated() {
 
   const handleSettingsClicked = useCallback(() => {
     setConfiguring(true);
+    setActiveStep(0);
   }, []);
 
   useEffect(() => {
@@ -354,6 +362,8 @@ export default function FifoAutomated() {
       if (isLoginValid()) {
         if (loginState.password && loginState.password?.length > 0) {
           upsertTastytradeConnection.mutate(loginState);
+          if (positionTableData.length)
+            setConfiguring(false)
         } else {
           setStatus("loginSubmitted", true);
           const newActiveStep =
@@ -408,7 +418,11 @@ export default function FifoAutomated() {
   }, [activeStep, allStepsCompleted, completed, enableNext, isAccountNumberValid, isExchangeAccountValid, isLastStep, isLoginValid, loginState, setStatus, upsertTastytradeConnection]);
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setConfiguring(false);
+  };
+
+  const handleCancel = () => {
+    setActiveStep(0);
   };
 
   const handleStep = (step: number) => () => {
@@ -425,6 +439,29 @@ export default function FifoAutomated() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onAddStrategy = () =>{
+    setConfiguring(false);
+    setPositionTableData([...positionTableData, {
+      fifoFeed: fifoFeedOption,
+      status: "Running",
+      tradeSymbol: tradingSymbolOption,
+      tradeQty: qty,
+      account: strategyAccountConnectState.accountNumber,
+      id: uuid()
+    }])
+  }
+
+  const onDeleteStrategy = (id: string) =>{
+    setPositionTableData(positionTableData.filter(strategy => strategy.id !== id))
+  }
+
+  const onStopStrategy = (id: string) =>{
+    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Suspended"} : {...strategy}))
+  }
+
+  const onStartStrategy = (id: string) =>{
+    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Running"} : {...strategy}))
+  }
   return (
     <>
       <div className="stepperStyling">
@@ -436,7 +473,6 @@ export default function FifoAutomated() {
             Tastytrade {(isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted && !configuring) ? "connected" : "disconnected"}{" "}
           </span>
           <IconButton
-            disabled={configuring || automationRunning}
             onClick={handleSettingsClicked}
             aria-label="settings"
           >
@@ -450,12 +486,12 @@ export default function FifoAutomated() {
             background: "#2a3642",
           }}
         >
-          {configuring && (
+          {configuring && activeStep > 0 && (
             <Stepper
               sx={{ fontSize: "18px !important" }}
               nonLinear
               orientation={isDesktop ? "horizontal" : "vertical"}
-              activeStep={activeStep}
+              activeStep={activeStep - 1}
             >
               {steps.map((label, index) => (
                 <Step
@@ -467,10 +503,10 @@ export default function FifoAutomated() {
                     sx={{ fontSize: "18px !important" }}
                     color="inherit"
                     disabled={
-                      (index === 1 && (!isLoginValid() || !state.loginSubmitted))
-                      || (index === 2 && (!isLoginValid() || !state.loginSubmitted || !isAccountNumberValid() || !state.accountSelectionSubmitted))
+                      (index === 0 && (!isLoginValid() || !state.loginSubmitted))
+                      || (index === 1 && (!isLoginValid() || !state.loginSubmitted || !isAccountNumberValid() || !state.accountSelectionSubmitted))
                     }
-                    onClick={handleStep(index)}
+                    onClick={handleStep(index + 1)}
                   >
                     {label}
                   </StepButton>
@@ -499,10 +535,29 @@ export default function FifoAutomated() {
                   <Accounts accountNumber={strategyAccountConnectState.accountNumber ?? ""} tableData={tableData} onAccountSelected={handleAccountSelected} handleStatusUpdate={enableNext} />
                 )}
                 {activeStep === 2 && configuring && (
-                  <AccountStatus membership={membership} state={exchangeAccountState} refreshAccount={getAccountList} handleStatusUpdate={enableNext} />
+                  <AccountStatus
+                    qty={qty}
+                    fifiFeedOptions={fifoFeedOptions}
+                    fifoFeed={fifoFeedOption}
+                    onFifoFeedChanged={value => setFifoFeedOption(value)}
+                    onTradingSymbolChanged={value => setTradingSymbolOption(value)}
+                    tradeSymbolOption={tradingSymbolOption}
+                    tradeSymbolOptions={tradeSymbolOptions}
+                    membership={membership}
+                    state={exchangeAccountState}
+                    refreshAccount={getAccountList}
+                    handleStatusUpdate={enableNext} />
                 )}
                 {!configuring
                   && <AutomationComponent
+                    onDeleteStrategy={onDeleteStrategy}
+                    onStopStrategy={onStopStrategy}
+                    onStartStrategy={onStartStrategy}
+                    onAddStrategy={() => {
+                      setActiveStep(1)
+                      setConfiguring(true)
+                    }}
+                    strategiesRows={positionTableData}
                     strategyAccountConnectState={strategyAccountConnectState}
                     automationRunning={automationRunning}
                     onAutomationRunningChange={handleAutomationRunningChange}
@@ -511,19 +566,26 @@ export default function FifoAutomated() {
                     errorMessage={errorMessage}
                   />
                 }
-
                 {configuring && (
                   <Box
                     sx={{ display: "flex", flexDirection: "row", mt: "80px" }}
                   >
-                    {activeStep !== 0 && (
+                    {((activeStep === 1 && positionTableData.length > 0) || activeStep === 2) && (
                       <Button
                         variant="outlined"
-                        disabled={activeStep === 0}
                         onClick={handleBack}
                         sx={{ mr: 1, transition: "1" }}
                       >
                         Back
+                      </Button>
+                    )}
+                    {(activeStep === 1 && positionTableData.length === 0) && (
+                      <Button
+                        variant="outlined"
+                        onClick={handleCancel}
+                        sx={{ mr: 1, transition: "1" }}
+                      >
+                        Cancel
                       </Button>
                     )}
                     <Box sx={{ flex: "1 1 auto" }} />
@@ -539,11 +601,11 @@ export default function FifoAutomated() {
                       <Button
                         color="success"
                         variant="outlined"
-                        onClick={() => setConfiguring(false)}
+                        onClick={onAddStrategy}
                         disabled={!enabled}
                         sx={{ mr: 1 }}
                       >
-                        Connect Tastytrade
+                        Add Strategy
                       </Button>
                     ) : (
                       <Button
