@@ -21,6 +21,7 @@ interface AutomationComponentProps {
   errorMessage: string;
   onDeleteStrategy: (id: string) => void;
   onStopStrategy: (id: string) => void;
+  onStartStrategy: (id: string) => void;
   strategiesRows: IPositionTableRow[]
 }
 
@@ -29,6 +30,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   onAddStrategy,
   strategiesRows,
   onStopStrategy,
+  onStartStrategy,
   onDeleteStrategy
 }: AutomationComponentProps) => {
 
@@ -36,7 +38,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
     {
       value: "strategies",
       label: "Strategies",
-      component: <PositionTable onStop={onStopStrategy} onDelete={onDeleteStrategy} data={strategiesRows} />,
+      component: <PositionTable onStop={onStopStrategy} onDelete={onDeleteStrategy} data={strategiesRows} onStart={onStartStrategy} />,
     },
   ];
 

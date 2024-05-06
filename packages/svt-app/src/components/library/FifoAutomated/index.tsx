@@ -23,7 +23,7 @@ import { IPositionTableRow } from "./automation/position-table";
 
 const steps = [
   "Select Account",
-  "Settings",
+  "Account Status / Settings",
 ];
 
 const fifoFeedOptions = ["SP 500"]
@@ -418,7 +418,11 @@ export default function FifoAutomated() {
   }, [activeStep, allStepsCompleted, completed, enableNext, isAccountNumberValid, isExchangeAccountValid, isLastStep, isLoginValid, loginState, setStatus, upsertTastytradeConnection]);
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setConfiguring(false);
+  };
+
+  const handleCancel = () => {
+    setActiveStep(0);
   };
 
   const handleStep = (step: number) => () => {
@@ -439,7 +443,7 @@ export default function FifoAutomated() {
     setConfiguring(false);
     setPositionTableData([...positionTableData, {
       fifoFeed: fifoFeedOption,
-      status: "running",
+      status: "Running",
       tradeSymbol: tradingSymbolOption,
       tradeQty: qty,
       account: strategyAccountConnectState.accountNumber,
@@ -452,9 +456,12 @@ export default function FifoAutomated() {
   }
 
   const onStopStrategy = (id: string) =>{
-    
+    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Suspended"} : {...strategy}))
   }
 
+  const onStartStrategy = (id: string) =>{
+    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Running"} : {...strategy}))
+  }
   return (
     <>
       <div className="stepperStyling">
@@ -545,6 +552,7 @@ export default function FifoAutomated() {
                   && <AutomationComponent
                     onDeleteStrategy={onDeleteStrategy}
                     onStopStrategy={onStopStrategy}
+                    onStartStrategy={onStartStrategy}
                     onAddStrategy={() => {
                       setActiveStep(1)
                       setConfiguring(true)
@@ -562,14 +570,22 @@ export default function FifoAutomated() {
                   <Box
                     sx={{ display: "flex", flexDirection: "row", mt: "80px" }}
                   >
-                    {activeStep !== 0 && (
+                    {((activeStep === 1 && positionTableData.length > 0) || activeStep === 2) && (
                       <Button
                         variant="outlined"
-                        disabled={activeStep === 0}
                         onClick={handleBack}
                         sx={{ mr: 1, transition: "1" }}
                       >
                         Back
+                      </Button>
+                    )}
+                    {(activeStep === 1 && positionTableData.length === 0) && (
+                      <Button
+                        variant="outlined"
+                        onClick={handleCancel}
+                        sx={{ mr: 1, transition: "1" }}
+                      >
+                        Cancel
                       </Button>
                     )}
                     <Box sx={{ flex: "1 1 auto" }} />
