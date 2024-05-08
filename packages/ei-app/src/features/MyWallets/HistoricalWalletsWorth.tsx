@@ -153,7 +153,7 @@ export const HistoricalWalletsWorth = ({
       </StyledWalletWorthMenuContainer>
       <Box sx={{ width: "100%" }}>
         <AppChart
-          series={chartSeries ?? []}
+          series={chartSeries || []}
           height={460}
           optionsOverrides={{
             legend: {
@@ -194,16 +194,6 @@ export const HistoricalWalletsWorth = ({
                   },
                 },
               },
-            },
-            annotations: {
-              yaxis: [
-                {
-                  y: 0,
-                  strokeDashArray: 0,
-                  borderWidth: 2,
-                  borderColor: "#F1F1F1",
-                },
-              ],
             },
             yaxis: {
               min: minChartValue,

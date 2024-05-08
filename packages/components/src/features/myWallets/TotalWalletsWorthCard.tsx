@@ -1,4 +1,7 @@
-import { ArrowDropDown, ArrowDropUp, TrendingDown, TrendingUp } from "@mui/icons-material"
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown"
+import ArrowDropUp from "@mui/icons-material/ArrowDropUp"
+import TrendingDown from "@mui/icons-material/TrendingDown"
+import TrendingUp from "@mui/icons-material/TrendingUp"
 import { Box, BoxProps, Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
 interface Props extends BoxProps {

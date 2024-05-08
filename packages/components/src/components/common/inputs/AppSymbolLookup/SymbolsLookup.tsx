@@ -1,4 +1,4 @@
-import { Search } from "@mui/icons-material"
+import Search from "@mui/icons-material/Search"
 import { Box, CircularProgress, Popper, Autocomplete } from "@mui/material"
 import { AutocompleteProps, autocompleteClasses } from "@mui/material/Autocomplete"
 import TextField from "@mui/material/TextField"

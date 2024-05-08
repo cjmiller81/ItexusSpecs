@@ -1,4 +1,4 @@
-import { Percent } from "@mui/icons-material"
+import Percent from "@mui/icons-material/Percent"
 import { AppNumberField, AppNumberInputProps } from "./AppNumberField"
 
 export function AppPercentageField({ ...props }: AppNumberInputProps) {

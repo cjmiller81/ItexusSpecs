@@ -1,4 +1,4 @@
-import { HelpOutline } from "@mui/icons-material"
+import HelpOutline from "@mui/icons-material/HelpOutline"
 import { Fade, Typography } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { ReactNode } from "react"

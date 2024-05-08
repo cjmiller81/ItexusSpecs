@@ -1,4 +1,5 @@
-import { LightMode, NightlightRound } from "@mui/icons-material"
+import LightMode from "@mui/icons-material/LightMode"
+import NightlightRound from "@mui/icons-material/NightlightRound"
 import { IconButton, PaletteMode } from "@mui/material"
 
 type Props = {

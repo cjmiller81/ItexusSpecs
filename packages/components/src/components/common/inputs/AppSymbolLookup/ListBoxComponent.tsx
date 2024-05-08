@@ -3,7 +3,28 @@ import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import * as React from "react"
 import { ListChildComponentProps, VariableSizeList } from "react-window"
-import { OuterElementType } from "./OuterElementType"
+// TODO: Build error:
+/*
+./node_modules/components/src/components/common/inputs/AppSymbolLookup/ListBoxComponent.tsx:97:13
+Type error: No overload matches this call.
+  Overload 1 of 2, '(props: VariableSizeListProps<any>): VariableSizeList<any>', gave the following error.
+    Type 'ForwardRefExoticComponent<RefAttributes<HTMLDivElement>>' is not assignable to type 'ReactElementType | undefined'.
+      Type 'ForwardRefExoticComponent<RefAttributes<HTMLDivElement>>' is not assignable to type 'FunctionComponent<any>'.
+        Type 'React.ReactNode' is not assignable to type 'import("C:/Users/Ben/Documents/SVT/ItexusSpecs/node_modules/@types/react-dom/node_modules/@types/react/index").ReactNode'.
+          Type 'ReactElement<any, string | JSXElementConstructor<any>>' is not assignable to type 'ReactNode'.
+            Property 'children' is missing in type 'ReactElement<any, string | JSXElementConstructor<any>>' but required in type 'ReactPortal'.
+  Overload 2 of 2, '(props: VariableSizeListProps<any>, context: any): VariableSizeList<any>', gave the following error.
+    Type 'ForwardRefExoticComponent<RefAttributes<HTMLDivElement>>' is not assignable to type 'ReactElementType | undefined'.
+
+   95 |             width="100%"
+   96 |             ref={gridRef}
+>  97 |             outerElementType={OuterElementType}
+      |             ^
+   98 |             innerElementType="ul"
+   99 |             itemSize={(index: number) => getChildSize(itemData[index])}
+  100 |             overscanCount={5}
+*/
+//import { OuterElementType } from "./OuterElementType"
 
 const MAX_LIST_ITEMS = 9
 export default function renderRow(props: ListChildComponentProps) {
@@ -94,7 +115,7 @@ export const ListboxComponent = React.forwardRef<HTMLDivElement, React.HTMLAttri
             height={getHeight() + 8}
             width="100%"
             ref={gridRef}
-            outerElementType={OuterElementType}
+            //outerElementType={OuterElementType}
             innerElementType="ul"
             itemSize={(index: number) => getChildSize(itemData[index])}
             overscanCount={5}

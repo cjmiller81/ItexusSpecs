@@ -1,6 +1,6 @@
 "use client"
-import {ExpandLess} from "@mui/icons-material"
-import {ExpandMore} from "@mui/icons-material"
+import ExpandLess from "@mui/icons-material/ExpandLess"
+import ExpandMore from "@mui/icons-material/ExpandMore"
 import { Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { AppLink } from "../common/AppLink"

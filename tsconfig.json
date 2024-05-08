@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
+    "target": "esnext",
     "sourceMap": false,
     "jsx": "react-jsx",
     "allowJs": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "types": ["vite/client"],
     "declaration": true,
     "declarationDir": "./dist/types",
