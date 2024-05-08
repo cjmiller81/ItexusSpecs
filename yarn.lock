@@ -7128,7 +7128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:16 || 17 || 18":
+"@types/react@npm:*, @types/react@npm:16 || 17 || 18, @types/react@npm:^18":
   version: 18.3.1
   resolution: "@types/react@npm:18.3.1"
   dependencies:
@@ -11677,10 +11677,10 @@ __metadata:
 
 "components@file:../components::locator=ei-app%40workspace%3Apackages%2Fei-app":
   version: 1.0.4
-  resolution: "components@file:../components#../components::hash=9d1697&locator=ei-app%40workspace%3Apackages%2Fei-app"
+  resolution: "components@file:../components#../components::hash=3bb6f2&locator=ei-app%40workspace%3Apackages%2Fei-app"
   dependencies:
     use-file-picker: "npm:^2.1.2"
-  checksum: 10c0/d28ffa4184e1a1a5ca41d51a5a229d96d2692a1fdd50caa7e2217485f2b0ac727ada5cb8630972ae81d75a63cc0efa0ea198a2980f5360b4b2c92f8e478cffa6
+  checksum: 10c0/f15dddc1d526407df8c4bd1ca652715dfb516e1cd6eeacb575ab51a0633c70768779ddaaab7e842b597ca755e922a13b47a1fa651586bbb63c0a177d295b32ce
   languageName: node
   linkType: hard
 
@@ -11688,6 +11688,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "components@workspace:packages/components"
   dependencies:
+    "@types/react": "npm:^18"
+    react: "npm:^18.3.1"
     use-file-picker: "npm:^2.1.2"
   languageName: unknown
   linkType: soft
@@ -28459,7 +28461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.2.0":
+"react@npm:^18.2.0, react@npm:^18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
