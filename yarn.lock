@@ -11677,10 +11677,10 @@ __metadata:
 
 "components@file:../components::locator=ei-app%40workspace%3Apackages%2Fei-app":
   version: 1.0.4
-  resolution: "components@file:../components#../components::hash=4de346&locator=ei-app%40workspace%3Apackages%2Fei-app"
+  resolution: "components@file:../components#../components::hash=9d1697&locator=ei-app%40workspace%3Apackages%2Fei-app"
   dependencies:
     use-file-picker: "npm:^2.1.2"
-  checksum: 10c0/288241f4566b07c1f63433f4f03b3aaeac776cbd7428eb0cf92ac83ab3c3765d9fcb7eb567df551da379c549491f9fc2baf17f14413f250e2ffff0c2bb3d687b
+  checksum: 10c0/d28ffa4184e1a1a5ca41d51a5a229d96d2692a1fdd50caa7e2217485f2b0ac727ada5cb8630972ae81d75a63cc0efa0ea198a2980f5360b4b2c92f8e478cffa6
   languageName: node
   linkType: hard
 
