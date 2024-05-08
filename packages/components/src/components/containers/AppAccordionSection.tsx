@@ -1,4 +1,4 @@
-import { ExpandMore } from "@mui/icons-material"
+import ExpandMore from "@mui/icons-material/ExpandMore"
 import { AccordionDetails, AccordionSummary, Box, styled } from "@mui/material"
 import * as React from "react"
 import { PageTitle } from "../TextDisplay/PageTitle"

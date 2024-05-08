@@ -1,4 +1,5 @@
-import { Menu, MenuOpen } from "@mui/icons-material"
+import Menu from "@mui/icons-material/Menu"
+import MenuOpen from "@mui/icons-material/MenuOpen"
 import { Box, IconButton, PaletteMode, Toolbar, Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
 import { StyledAppBar } from "./StyledAppBar"

@@ -1,4 +1,10 @@
-import { Cancel, Delete, Edit, ExpandLess, ExpandMore, RemoveRedEye, Save } from "@mui/icons-material"
+import Cancel from "@mui/icons-material/Cancel"
+import Delete from "@mui/icons-material/Delete"
+import Edit from "@mui/icons-material/Edit"
+import ExpandLess from "@mui/icons-material/ExpandLess"
+import ExpandMore from "@mui/icons-material/ExpandMore"
+import RemoveRedEye from "@mui/icons-material/RemoveRedEye"
+import Save from "@mui/icons-material/Save"
 import { Checkbox, Fade, IconButton } from "@mui/material"
 import { GridActionsCellItem, GridColDef, GridRowId, GridRowModes, GridRowModesModel } from "@mui/x-data-grid"
 import i18next, { t } from "i18next"
@@ -59,7 +65,7 @@ export const getWalletsColumns = ({
       disableColumnMenu: true,
       renderEditCell: props => {
         const { id, value, api, field } = props
-        const handleChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        const handleChange = (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
           api.setEditCellValue({ id, field, value: checked })
         }
 
