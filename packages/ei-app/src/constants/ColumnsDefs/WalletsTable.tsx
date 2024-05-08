@@ -1,6 +1,7 @@
 import { AppToolTip } from "components"
 import { Wallet } from "components"
-import { ExpandLess, ExpandMore } from "@mui/icons-material"
+import ExpandLess from "@mui/icons-material/ExpandLess"
+import ExpandMore from "@mui/icons-material/ExpandMore"
 import CancelIcon from "@mui/icons-material/Close"
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"

@@ -6,8 +6,7 @@
     "node": "20.x"
   },
   "workspaces": {
-    "nohoist": [
-    ]
+    "nohoist": []
   },
   "scripts": {
     "dev": "next dev --experimental-https",
@@ -17,14 +16,20 @@
     "lint": "next lint --fix"
   },
   "dependencies": {
-    "components": "*"
-  },
-  "devDependencies": {
-
+    "components": "file:../components",
+    "i18next": "^23.11.3",
+    "next": "^14.3.0-canary.44",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^14.0.5",
+    "react-player": "^2.15.1",
+    "react-toastify": "^7.0.0",
+    "react-window": "^1.8.10"
   },
   "msw": {
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "packageManager": "yarn@4.2.1"
 }
