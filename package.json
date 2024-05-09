@@ -32,7 +32,7 @@
     "@ory/client": "1.9.0",
     "@ory/elements": "^0.2.0",
     "@ory/integrations": "^1.1.5",
-    "@ory/themes": "^0.0.102",
+    "@ory/themes": "^0.0.103",
     "@reduxjs/toolkit": "^2.2.0",
     "@types/uuid": "^9.0.2",
     "apexcharts": "^3.46.0",

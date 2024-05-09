@@ -5580,9 +5580,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ory/themes@npm:^0.0.102":
-  version: 0.0.102
-  resolution: "@ory/themes@npm:0.0.102"
+"@ory/themes@npm:^0.0.103":
+  version: 0.0.103
+  resolution: "@ory/themes@npm:0.0.103"
   dependencies:
     autoprefixer: "npm:~9.8.6"
     classnames: "npm:~2.3.1"
@@ -5593,10 +5593,10 @@ __metadata:
     styled-components: "npm:~5.2.2"
     update: "npm:^0.7.4"
   peerDependencies:
-    react: ~17.0.2
-    react-dom: ~17.0.2
+    react: ">=17.0.2"
+    react-dom: ">=17.0.2"
     styled-components: ~5.2.2
-  checksum: 10c0/065c23b645ee4ea453f0c2a28d68083c2c8d0851b8d8a721f87f692885e33fd964b4f0cb191714cf578234d57a39fc574a3c30f177f3756fe05f2267265beb86
+  checksum: 10c0/4874a3bc8c79d80f370e3b108bbbc8b7037360f833f7bf07e95480c32cfa379282585e6a41c7a1d11a10b9ea4a84fb38e7c82dc61ff865b372f269923eb285ab
   languageName: node
   linkType: hard
 
@@ -11677,11 +11677,11 @@ __metadata:
 
 "components@file:../components::locator=ei-app%40workspace%3Apackages%2Fei-app":
   version: 1.0.4
-  resolution: "components@file:../components#../components::hash=2c8bf9&locator=ei-app%40workspace%3Apackages%2Fei-app"
+  resolution: "components@file:../components#../components::hash=f37884&locator=ei-app%40workspace%3Apackages%2Fei-app"
   dependencies:
     react: "npm:^18.3.1"
     use-file-picker: "npm:^2.1.2"
-  checksum: 10c0/909fce26ab0f9082244282393540c95cce585f67daf718a5d5a5c01d368689a3c0962b9a5f3401df8f6a43809679a7773335b1f98b14c70e5ce4d57c763739b5
+  checksum: 10c0/05c9b38269f17e71d22212c9e456871de213cf1a60541c18b70a2488786898b8d44e4300e66615af8943faea8f96ef709372aa27f0d646a19ac61e55f98db297
   languageName: node
   linkType: hard
 
@@ -13896,7 +13896,7 @@ __metadata:
     "@ory/client": "npm:1.9.0"
     "@ory/elements": "npm:^0.2.0"
     "@ory/integrations": "npm:^1.1.5"
-    "@ory/themes": "npm:^0.0.102"
+    "@ory/themes": "npm:^0.0.103"
     "@reduxjs/toolkit": "npm:^2.2.0"
     "@types/file-saver-es": "npm:^2.0.3"
     "@types/node": "npm:20.11.24"
