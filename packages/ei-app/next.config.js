@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  reactStrictMode: false,
   output: "standalone",
   webpack: (config, { isServer }) => {
     // @see: https://github.com/mswjs/msw/issues/1801#issuecomment-1793911389
