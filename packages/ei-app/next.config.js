@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   output: "standalone",
   webpack: (config, { isServer }) => {
     // @see: https://github.com/mswjs/msw/issues/1801#issuecomment-1793911389
@@ -20,7 +20,20 @@ const nextConfig = {
       }
     }
 
-    return config;
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // Will make webpack look for these modules in parent directories
+      'components': require.resolve('components'),
+      //'@mui/icons-material': require.resolve('@mui/icons-material'),
+    }
+
+    return {
+      ...config,
+      optimization: {
+        // TODO: Enable for production. This is just to track down build errors.
+        minimize: false,
+      },
+    };
   },
   env: {
     API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
@@ -31,6 +44,15 @@ const nextConfig = {
     NEXT_PUBLIC_ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
     ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
   },
+  transpilePackages: ['@mui/icons-material', 'components'],
+  /*
+  experimental: {
+    optimizePackageImports: [
+      '@mui/icons-material',
+      'components',
+    ],
+  },
+  */
 }
 
 module.exports = nextConfig

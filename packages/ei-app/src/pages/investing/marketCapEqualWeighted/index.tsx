@@ -1,7 +1,6 @@
-import { AppAccordionSection } from "@/components/common/Containers/AppAccordionSection"
-import { IndexModelingSection } from "@/containers/Investing/IndexModelingSection"
-import PrefilterTokensSection from "@/containers/Investing/PrefilterTokensSection"
-import { HistoricalWalletsWorth } from "@/containers/MyWallets/HistoricalWalletsWorth"
+import { IndexModelingSection } from "@/features/Investing/IndexModelingSection"
+import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection"
+import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth"
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import {
@@ -16,6 +15,7 @@ import {
 import { setCapital, setPrefilteredData, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { Stack } from "@mui/material"
+import { AppAccordionSection } from "components"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -29,14 +29,12 @@ export default function MarketCapEqualWeightedPage() {
     startDate,
     endDate,
     symbolOption,
-    statstatusFetchingMarcetCapData
-  } = useAppSelector(state => state.walletsReducer.marketCapEqualWeightChart)
-  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.walletsReducer.icons)
+    statstatusFetchingMarcetCapData,
+  } = useAppSelector(state => state.marketCapEqualWeightChart)
+  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.icons)
   const dispatch = useAppDispatch()
 
-  const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
-    state => state.walletsReducer.MarketCapEqualWeightModeling,
-  )
+  const { tokensCount, totalCapital, weight, tableData } = useAppSelector(state => state.MarketCapEqualWeightModeling)
 
   const { t } = useTranslation("MarketCapPage")
 
@@ -45,6 +43,7 @@ export default function MarketCapEqualWeightedPage() {
     dispatch(clearSearchResult())
     dispatch(searchIcons({}))
     dispatch(fetchCoins({}))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

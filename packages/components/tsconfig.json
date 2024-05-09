@@ -1,10 +1,14 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist/types",
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "incremental": true,
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

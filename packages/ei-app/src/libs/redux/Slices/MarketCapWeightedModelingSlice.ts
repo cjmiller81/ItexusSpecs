@@ -1,8 +1,7 @@
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
 import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
 import { PayloadAction } from "@reduxjs/toolkit"
-import { createAppSlice } from "../createAppSlice"
-import { Status } from "./WalletsSlice"
+import { Status, createAppSlice } from "components"
 
 export interface MarketCapEqualModelingState {
   tokens: ICoin[]
@@ -16,21 +15,22 @@ export interface MarketCapEqualModelingState {
   tableData: InvestingTableAsset[]
 }
 
+const defaultTotalTokensCount: number = 10
 export const initialState: MarketCapEqualModelingState = {
   statusFetchingModelingData: "idle",
   tokens: [],
   chains: [],
   categories: [],
-  tokensCount: 7,
-  totalCapital: 150,
-  weight: 1 / 7,
+  tokensCount: defaultTotalTokensCount,
+  totalCapital: 1000,
+  weight: 1 / defaultTotalTokensCount,
   prefilteredData: [],
   tableData: [],
 }
 
 export const marketCapWeightedModelingSlice = createAppSlice({
   name: "MarketCapWeightedModeling",
-  initialState,
+  initialState: {...initialState},
   reducers: create => ({
     setTokens: create.reducer((state, action: PayloadAction<number>) => {
       state.tokensCount = action.payload

@@ -1,7 +1,10 @@
 {
-  "name": "svt-trading-tools",
+  "name": "svt-app",
   "version": "2.0.21",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "workspaces": {
     "nohoist": [
       "**"
@@ -15,9 +18,11 @@
     "@fontsource/ubuntu": "4.5.9",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
+    "@mui/system": "^5.15.15",
     "@mui/x-date-pickers": "^6.19.6",
     "@react-rxjs/core": "^0.10.4",
     "@react-rxjs/utils": "^0.9.5",
+    "@testing-library/dom": "^10.1.0",
     "@testing-library/jest-dom": "5.16.4",
     "@testing-library/react": "13.2.0",
     "@testing-library/user-event": "13.5.0",
@@ -85,5 +90,6 @@
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "packageManager": "yarn@4.2.1"
 }

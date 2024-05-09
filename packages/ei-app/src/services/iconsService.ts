@@ -1,6 +1,6 @@
-import { appAxios } from "@/libs/axios/customAxios"
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
 import { delay } from "@/utils/common"
+import { appAxios } from "components"
 import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "./backend-api.service"
 
 //TODO Add retry logic for axios requests

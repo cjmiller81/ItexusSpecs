@@ -1,6 +1,7 @@
-import { AppToolTip } from "@/components/common/AppTooltip"
-import { Wallet } from "@/models/Wallet/Wallet"
-import { ExpandLess, ExpandMore } from "@mui/icons-material"
+import { AppToolTip } from "components"
+import { Wallet } from "components"
+import ExpandLess from "@mui/icons-material/ExpandLess"
+import ExpandMore from "@mui/icons-material/ExpandMore"
 import CancelIcon from "@mui/icons-material/Close"
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
@@ -64,7 +65,7 @@ export const getWalletsColumns = ({
       disableColumnMenu: true,
       renderEditCell: props => {
         const { id, value, api, field } = props
-        const handleChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        const handleChange = (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
           api.setEditCellValue({ id, field, value: checked })
         }
 

@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "allowSyntheticDefaultImports": true,
+    "module": "esnext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
+    "target": "esnext",
     "sourceMap": false,
     "jsx": "react-jsx",
     "allowJs": true,
-    "moduleResolution": "node",
-    "types": ["vite/client"],
+    "moduleResolution": "bundler",
     "declaration": true,
     "declarationDir": "./dist/types",
     "isolatedModules": true,
@@ -25,5 +25,6 @@
   "exclude": [
     "node_modules"
   ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,12 +1,7 @@
-import { BillingContainer } from "@/containers/Profile/Billing/BillingContainer"
-import { ProfileContainer } from "@/containers/Profile/ProfileContainer"
-import { ProfileDetails } from "@/containers/Profile/ProfileDetails"
-import { ProfilePicture } from "@/containers/Profile/ProfilePicture"
-import { SecurityContainer } from "@/containers/Profile/SecurityContainer"
-import { WalletsContainer } from "@/containers/Profile/WalletsContainer"
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
+import { BillingContainer, ProfileContainer, ProfileDetails, ProfilePicture, SecurityContainer, WalletsContainer } from "components"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useAppSelector } from "@/libs/redux/Store"
-import { getAppTheme } from "@/utils/theme"
+import { getAppTheme } from "components"
 import { createTheme, ThemeProvider } from "@mui/material"
 import { ReactNode, useMemo } from "react"
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const AppThemeProvider = ({ children }: Props) => {
-  const { mode } = useAppSelector(store => store.walletsReducer.ui)
+  const { mode } = useAppSelector(store => store.ui)
 
   const theme = useMemo(() => createTheme(getAppTheme(mode)), [mode])
 

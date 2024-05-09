@@ -1,4 +1,4 @@
-import PageTitle from "@/components/TextDisplay/PageTitle"
+import { PageTitle } from "components"
 import React from "react"
 
 export default function CommunityPage() {

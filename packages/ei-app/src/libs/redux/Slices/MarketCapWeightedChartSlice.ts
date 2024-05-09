@@ -1,14 +1,19 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
-import { Period } from "@/containers/MyWallets/WalletsTable"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { LookUpOption, Period, createAppSlice } from "components"
 import { RootState } from "../RootReducer"
-import { createAppSlice } from "../createAppSlice"
 import { GetPrettyScale } from "./ChartSlicesCommon"
-import { ChartSeriesDataResponse, MarketCapEqualWeightChartState, calculateMinMax, fetchChartData, initialState, makeChartSeries } from "./MarketCapEqualWeightChartSlice"
+import {
+  ChartSeriesDataResponse,
+  MarketCapEqualWeightChartState,
+  calculateMinMax,
+  fetchChartData,
+  initialState,
+  makeChartSeries,
+} from "./MarketCapEqualWeightChartSlice"
 
 export const marketCapWeightedChartSlice = createAppSlice({
   name: "marketCapWeightedChart",
-  initialState,
+  initialState: {...initialState},
   reducers: create => ({
     resetState: create.reducer(state => {
       state = { ...initialState }
@@ -33,7 +38,7 @@ export const marketCapWeightedChartSlice = createAppSlice({
     }),
     fetchHistoricalCapWeightedData: create.asyncThunk(
       async (_, thunkApi): Promise<ChartSeriesDataResponse> => {
-        return fetchChartData(thunkApi.getState() as RootState)
+        return fetchChartData((thunkApi.getState() as RootState).marketCapWeightedChart)
       },
       {
         pending: state => {
@@ -70,5 +75,12 @@ function calculateChartSeries(state: MarketCapEqualWeightChartState) {
   state.maxChartValue = maxChartValue
 }
 
-export const { fetchHistoricalCapWeightedData, setToDate, setPeriod, setCompareOption, setFromDate, selectSeries, resetState } =
-  marketCapWeightedChartSlice.actions
+export const {
+  fetchHistoricalCapWeightedData,
+  setToDate,
+  setPeriod,
+  setCompareOption,
+  setFromDate,
+  selectSeries,
+  resetState,
+} = marketCapWeightedChartSlice.actions

@@ -2,12 +2,13 @@
   "name": "components",
   "private": true,
   "type": "module",
-  "version": "1.0.1",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "dist/types/index.d.ts",
+  "version": "1.0.4",
+  "main": "./src/index.tsx",
   "engines": {
     "node": ">=20.10.0"
+  },
+  "workspaces": {
+    "nohoist": []
   },
   "description": "UI Component Library",
   "keywords": [
@@ -21,23 +22,17 @@
     "url": "git@info-emergentcybernetics.github.com:EmergentCybernetics/ItexusSpecs.git"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && tsc",
     "test": "node ./__tests__/components.test.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
-  "devDependencies": {
-    "@storybook/react-vite": "^7.6.17",
-    "@storybook/test": "^7.6.17",
-    "storybook": "^7.6.17",
-    "@storybook/addon-essentials": "^7.6.17",
-    "@storybook/addon-interactions": "^7.6.17",
-    "@storybook/addon-links": "^7.6.17",
-    "@storybook/addon-onboarding": "1.0.11",
-    "@storybook/blocks": "^7.6.17"
-  },
+  "packageManager": "yarn@4.2.1",
   "dependencies": {
-    "vite": "^5.2.8"
+    "react": "^18.3.1",
+    "use-file-picker": "^2.1.2"
+  },
+  "devDependencies": {
+    "@mui/system": "^5.15.15",
+    "@types/react": "^18"
   }
 }

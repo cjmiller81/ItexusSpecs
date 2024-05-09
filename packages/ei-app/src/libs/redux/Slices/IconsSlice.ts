@@ -1,8 +1,7 @@
-import { LookUpOption } from "@/components/common/inputs/AppSymbolLookup/SymbolsLookup"
+import { LookUpOption, Status } from "components"
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
 import { iconsAbortableApi } from "@/services/iconsService"
-import { createAppSlice } from "../createAppSlice"
-import { Status } from "./UiSlice"
+import { createAppSlice } from "components"
 
 interface IconsState {
   iconsFetchingStatus: Status
@@ -28,7 +27,7 @@ export const IconsSlice = createAppSlice({
       state.lookUpOptions = []
     }),
     searchIcons: create.asyncThunk(
-      async (payload: { query?: string }, thunkApi): Promise<{ query?: string; tokens: TokenDetails[] }> => {
+      async (payload: { query?: string }, _thunkApi): Promise<{ query?: string; tokens: TokenDetails[] }> => {
         const response = await iconsAbortableApi.getIcons(payload.query)
         return { query: payload.query, tokens: response }
       },
