@@ -45,6 +45,7 @@ export default function MarketCapWeightedPage() {
     dispatch(clearSearchResult())
     dispatch(searchIcons({}))
     dispatch(fetchCoins({}))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

@@ -130,9 +130,9 @@ export const HistoricalWalletsWorth = ({
             loading={lookupLoading}
             disableListWrap
             value={lookupOption}
-            onChange={(event, value) => onOptionChange(value)}
+            onChange={(_event, value) => onOptionChange(value)}
             autoComplete={true}
-            onInputChange={(event, value) => {
+            onInputChange={(_event, value) => {
               onLookUpSearchChange(value)
               setInputSearch(value)
             }}
@@ -168,7 +168,7 @@ export const HistoricalWalletsWorth = ({
             },
             chart: {
               events: {
-                legendClick: (chart: any, seriesIndex?: number) => {
+                legendClick: (_chart: any, seriesIndex?: number) => {
                   if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1)
                 },
               },

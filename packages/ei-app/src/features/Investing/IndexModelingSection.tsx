@@ -161,7 +161,7 @@ const MainContainer = styled(Box)(({ theme }) => ({
   },
 }))
 
-const StyledIndexModelingTable = styled(StyledWalletsTable)(({ theme }) => ({
+const StyledIndexModelingTable = styled(StyledWalletsTable)(({ _theme }) => ({
   "& .MuiDataGrid-main": {
     height: "auto",
   },

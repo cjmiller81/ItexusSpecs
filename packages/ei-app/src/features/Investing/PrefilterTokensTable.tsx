@@ -47,7 +47,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const filterPanelText = useRef<Element | null>(null)
 
   const allowedPageSizes = [5, 10, 20, 50]
-  const updatePrefilteredTokens = async (): Promise<void> => {
+  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance
 
     if (!grid) return
@@ -57,13 +57,13 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh()
     const prefilteredData = filteredDataSource.items() as ICoin[]
     onUpdate(prefilteredData)
-  }
+  }, [currentFilter, datagrid, onUpdate])
 
   useEffect(() => {
     const grid = datagrid?.current?.instance
     if (!grid) return
     updatePrefilteredTokens()
-  }, [currentFilter])
+  }, [currentFilter, datagrid, updatePrefilteredTokens])
 
   const categoryToFilterItem = (item: string): { text: string; value: string } => {
     return {
@@ -123,9 +123,9 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     onCurrentFilterChange(filter as object[])
   }
 
-  const handleFilterTextClick = useCallback((event: Event) => {
+  const handleFilterTextClick = useCallback((_event: Event) => {
     onFilterBuilderOpen()
-  }, [])
+  }, [onFilterBuilderOpen])
 
   const onContentReady = () => {
     if (filterPanelText.current) {

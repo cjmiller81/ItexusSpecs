@@ -27,7 +27,7 @@ export const IconsSlice = createAppSlice({
       state.lookUpOptions = []
     }),
     searchIcons: create.asyncThunk(
-      async (payload: { query?: string }, thunkApi): Promise<{ query?: string; tokens: TokenDetails[] }> => {
+      async (payload: { query?: string }, _thunkApi): Promise<{ query?: string; tokens: TokenDetails[] }> => {
         const response = await iconsAbortableApi.getIcons(payload.query)
         return { query: payload.query, tokens: response }
       },

@@ -65,7 +65,7 @@ export const getWalletsColumns = ({
       disableColumnMenu: true,
       renderEditCell: props => {
         const { id, value, api, field } = props
-        const handleChange = (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+        const handleChange = (_event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
           api.setEditCellValue({ id, field, value: checked })
         }
 

@@ -86,7 +86,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
       setSelectedSavedFilter(null)
       setFilterName("")
     }
-  }, [filterToAppply, open])
+  }, [filterToAppply, open, predefinedFilters])
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
     const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0])
@@ -107,7 +107,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     if (!selectedSavedFilter) return
     const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id)
     if (updatedFilter) setSelectedSavedFilter(updatedFilter)
-  }, [predefinedFilters])
+  }, [predefinedFilters, selectedSavedFilter])
 
   const handleSaveFilter = () => {
     if (!filterName) return
@@ -270,7 +270,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     id="demo-controlled-open-select"
                     size="small"
                     onChange={handleSavedFilterChange}
-                    renderValue={value => {
+                    renderValue={_value => {
                       return <ListItemText primary={selectedSavedFilter?.text} />
                     }}>
                     {predefinedFilters.map(filter => (

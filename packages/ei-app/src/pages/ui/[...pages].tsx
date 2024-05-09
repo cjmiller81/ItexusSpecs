@@ -1,1 +1,2 @@
-export default () => {}
+const uiPages = () => {}
+export default uiPages

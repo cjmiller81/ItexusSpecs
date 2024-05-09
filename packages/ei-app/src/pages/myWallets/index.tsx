@@ -34,7 +34,7 @@ export default function MyWalletsPage() {
     if (firstLoad) dispatch(fetchWallets(null))
     dispatch(clearSearchResult())
     dispatch(searchIcons({}))
-  }, [dispatch])
+  }, [dispatch, firstLoad])
 
   const onChartRefresh = () => {
     if (fromDate && toDate) {
@@ -51,7 +51,7 @@ export default function MyWalletsPage() {
 
   useEffect(() => {
     dispatch(fetchTotalWalletsWorthData({}))
-  }, [selectedWallets])
+  }, [dispatch, selectedWallets])
 
   const onRowsChanged = (rows: Wallet[]) => {
     dispatch(selectWallets(rows))
