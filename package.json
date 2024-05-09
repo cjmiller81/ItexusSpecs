@@ -6,13 +6,24 @@
     "node": "20.x"
   },
   "scripts": {
-    "dev:ei": "lerna run dev --parallel --scope ei-app --scope components",
     "watch:comp": "lerna watch --scope=components -- lerna run build --scope=components",
     "build:comp": "lerna run build --scope components",
+    "dev:ei": "lerna run dev --parallel --scope ei-app --scope components",
     "build:ei": "lerna run build --stream --scope ei-app --include-filtered-dependencies",
     "start:ei": "lerna run start --scope ei-app",
+    "start:ei:local": "lerna run start:local --scope ei-app",
     "lint:ei": "lerna run lint --scope ei-app",
-    "prepare": "husky install"
+    "build:mantis": "lerna run build --stream --scope mantis-app --include-filtered-dependencies",
+    "start:mantis": "lerna run start --scope mantis-app",
+    "lint:mantis": "lerna run lint --scope mantis-app",
+    "build:mantis-seed": "lerna run build --stream --scope mantis-seed-app --include-filtered-dependencies",
+    "start:mantis-seed": "lerna run start --scope mantis-seed-app",
+    "lint:mantis-seed": "lerna run lint --scope mantis-seed-app",
+    "build:svt": "lerna run build --stream --scope svt-app",
+    "start:svt": "lerna run start --scope svt-app",
+    "prepare": "husky install",
+    "storybook": "lerna run storybook --scope components",
+    "build:storybook": "lerna run build-storybook --stream --scope components"
   },
   "workspaces": {
     "packages": [
@@ -51,7 +62,7 @@
     "i18next-browser-languagedetector": "^7.2.0",
     "limiter": "^2.1.0",
     "moment": "^2.30.1",
-    "next": "^14.1.2",
+    "next": "^14.2.3",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.2.0",

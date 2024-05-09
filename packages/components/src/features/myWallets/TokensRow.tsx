@@ -37,7 +37,7 @@ export const ExpandableRow = (props: any) => {
   )
 }
 
-const StyledTokensTable = styled(BasicTable)(() => ({
+const StyledTokensTable:any = styled(BasicTable)(() => ({
   width: "100%",
   "& .MuiDataGrid-virtualScrollerContent": {
     overflow: "hidden",
