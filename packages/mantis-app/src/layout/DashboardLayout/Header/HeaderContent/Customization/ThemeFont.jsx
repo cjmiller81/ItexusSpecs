@@ -9,7 +9,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 // third-party
-import { Inter, Poppins, Public_Sans, Roboto } from 'next/font/google';
+import {
+  Inter,
+  //Poppins,
+  Public_Sans,
+  Roboto
+} from 'next/font/google';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -17,7 +22,17 @@ import useConfig from 'hooks/useConfig';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 const roboto = Roboto({ subsets: ['latin'], weight: ['300', '400', '500', '700'] });
-const poppins = Poppins({ subsets: ['devanagari'], weight: ['400', '500', '600', '700'] });
+// TODO: Causing a build error: 2024-05-09
+/*
+mantis-app: Failed to compile.
+mantis-app:
+mantis-app: src\layout\DashboardLayout\Header\HeaderContent\Customization\ThemeFont.jsx
+mantis-app: `next/font` error:
+mantis-app: Unknown subset `devanagari` for font `Poppins`.
+mantis-app: Available subsets: `latin`, `latin-ext`
+mantis-app: > Build failed because of webpack errors
+*/
+//const poppins = Poppins({ subsets: ['devanagari'], weight: ['400', '500', '600', '700'] });
 const publicSans = Public_Sans({ subsets: ['latin'], weight: ['400', '500', '300', '700'] });
 
 // ==============================|| CUSTOMIZATION - FONT FAMILY ||============================== //
@@ -42,11 +57,13 @@ export default function ThemeFont() {
       value: roboto.style.fontFamily,
       label: 'Roboto'
     },
+    /*
     {
       id: 'poppins',
       value: poppins.style.fontFamily,
       label: 'Poppins'
     },
+    */
     {
       id: 'public-sans',
       value: publicSans.style.fontFamily,
