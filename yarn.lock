@@ -11404,11 +11404,11 @@ __metadata:
 
 "components@file:../components::locator=ei-app%40workspace%3Apackages%2Fei-app":
   version: 1.0.4
-  resolution: "components@file:../components#../components::hash=cad954&locator=ei-app%40workspace%3Apackages%2Fei-app"
+  resolution: "components@file:../components#../components::hash=bf0550&locator=ei-app%40workspace%3Apackages%2Fei-app"
   dependencies:
     react: "npm:^18.3.1"
     use-file-picker: "npm:^2.1.2"
-  checksum: 10c0/03de78412b16a159b64ef6be98f9f261def440fc34f43253957f52c576e6d805ff4f85117cb1b3020d899ba0d1e343844019c070a4e78c3f3bd06223b5fe994e
+  checksum: 10c0/63e34febe24401aaa5dc517f39a4b9fb269a6be144e68e45ff05e3275cb862da40e497991fbdb09e17168e527685cf5356db9e5716553960f461df0906ffb09a
   languageName: node
   linkType: hard
 
