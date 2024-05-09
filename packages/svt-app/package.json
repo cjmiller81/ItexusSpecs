@@ -1,7 +1,10 @@
 {
-  "name": "svt-trading-tools",
+  "name": "svt-app",
   "version": "2.0.21",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "workspaces": {
     "nohoist": [
       "**"
@@ -87,5 +90,6 @@
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "packageManager": "yarn@4.2.1"
 }
