@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button, Typography } from "@mui/material"
+import { Avatar, Box, BoxProps, Button, Typography } from "@mui/material"
 import { useTranslation } from "react-i18next"
 import { useFilePicker } from "use-file-picker"
 import { FileAmountLimitValidator, FileTypeValidator } from "use-file-picker/validators"
@@ -28,14 +28,11 @@ export const ProfilePicture = ({ ...props }: BoxProps) => {
           pl: 3,
           pr: 3,
         }}>
-        <img
-          loading="lazy"
-          width={80}
-          height={80}
+        <Avatar
+          sx={{ width: 80, height: 80 }}
           style={{ borderRadius: "50%" }}
           alt="Avatar"
-          src={imgPath}
-        />
+          src={imgPath}></Avatar>
         <Typography
           textAlign={"center"}
           variant="body1">
