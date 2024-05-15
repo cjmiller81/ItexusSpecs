@@ -21,9 +21,9 @@
     "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
   },
   "errorMessages": {
-    "invalidPasswordFormat": "Invalid password format.",
+    "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
     "invalidCode": "Invalid code.",
-    "incorectPassword": "Incorrect password",
+    "incorectPassword": "Password must contain at least 8 characters",
     "mandatoryField": "Mandatory field",
     "passwordDoNotMatch": "Password do not match",
     "maxSymbols": "Max number of symbols - {{value}}",
@@ -82,6 +82,7 @@
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",
     "EnableSMSMFA": "Enable SMS MFA",
+    "EnterPassword": "Enter password",
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
     "VerificationCode": "Verification code",
@@ -165,6 +166,7 @@
     "MakeDefault": "Make Default"
   },
   "Tooltips":{
+    "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",
     "Period": "Select One",
     "Required": "Required",
     "PublicEye": "Watched Public Wallet",

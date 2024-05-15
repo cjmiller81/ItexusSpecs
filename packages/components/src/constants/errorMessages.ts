@@ -1,11 +1,11 @@
-import i18next from "i18next"
+import i18n from "@/libs/i18n/i18n"
 
-export const getIncorectPassword = () => i18next.t("incorectPassword", { ns: "errorMessages" })
-export const getPasswordDoNotMatch = () => i18next.t("passwordDoNotMatch", { ns: "errorMessages" })
-export const getMandatoryField = () => i18next.t("mandatoryField", { ns: "errorMessages" })
-export const getInvalidPhoneField = () => i18next.t("invalidPhoneNumber", { ns: "errorMessages" })
-export const getInvalidFormat = () => i18next.t("invalidFormat", { ns: "errorMessages" })
-export const getUndefinedErrorMessage = () => i18next.t("somethingWentWrong", { ns: "errorMessages" })
+export const getIncorectPassword = () => i18n.t("incorectPassword", { ns: "errorMessages" })
+export const getPasswordDoNotMatch = () => i18n.t("passwordDoNotMatch", { ns: "errorMessages" })
+export const getMandatoryField = () => i18n.t("mandatoryField", { ns: "errorMessages" })
+export const getInvalidPhoneField = () => i18n.t("invalidPhoneNumber", { ns: "errorMessages" })
+export const getInvalidFormat = () => i18n.t("invalidFormat", { ns: "errorMessages" })
+export const getUndefinedErrorMessage = () => i18n.t("somethingWentWrong", { ns: "errorMessages" })
 
-export const getMaxLengthMessage = (max: number) => i18next.t("maxSymbols", { value: max, ns: "errorMessages" })
-export const getMinLengthMessage = (min: number) => i18next.t("minSymbols", { value: min, ns: "errorMessages" })
+export const getMaxLengthMessage = (max: number) => i18n.t("maxSymbols", { value: max, ns: "errorMessages" })
+export const getMinLengthMessage = (min: number) => i18n.t("minSymbols", { value: min, ns: "errorMessages" })

@@ -1,5 +1,7 @@
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import { LoadingButton } from "@mui/lab"
-import { Box, BoxProps, Button, Divider, Grid, Link, Stack, Typography } from "@mui/material"
+import { Box, BoxProps, Button, Divider, Grid, InputAdornment, Link, Stack, Typography } from "@mui/material"
 import { UiNode, UiNodeImageAttributes } from "@ory/client"
 import { isUiNodeImageAttributes, isUiNodeInputAttributes, isUiNodeTextAttributes } from "@ory/elements"
 import { Form, Formik } from "formik"
@@ -13,7 +15,7 @@ import { NodeImage, useOry } from "../auth"
 import { ProfileContainer } from "./ProfileContainer"
 
 const NewPasswordModelSchema = object({
-  newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(6, getIncorectPassword()),
+  newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(8, getIncorectPassword()),
 })
 
 type NewPasswordModel = InferType<typeof NewPasswordModelSchema>
@@ -35,6 +37,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
   const { onChangePassword, settingsFlow, onTotpUnlink, createSettingsFow, onTotpSubmit } = useOry()
   const { t } = useTranslation("SecurityContainer")
   const dispatch = useAppDispatch()
+  const [showPassword, setShowPassword] = useState(false)
   const [settingsFlowCreating, setSettingsFlowCreating] = useState(false)
   const [newPasswordLoading, setNewPasswordLoading] = useState(false)
   const [codeLoading, setCodeLoading] = useState(false)
@@ -166,11 +169,12 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     )
   }
 
-  const onSubmitNewPassword = async (passsword: string) => {
+  const onSubmitNewPassword = async (passsword: string, resetForm: Function) => {
     setNewPasswordLoading(true)
     onChangePassword(passsword)
       .then(() => {
         dispatch(addMessage(t("NewPasswordMessage")))
+        resetForm()
       })
       .catch(error => {
         if (error.response.status === 400) dispatch(addError(t("invalidPasswordFormat", { ns: "errorMessages" })))
@@ -248,10 +252,26 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
           sx={{ display: "flex", flexDirection: "column" }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <AppFormTextField
+              tooltip={t("Password", { ns: "Tooltips" })}
               name="newPassword"
               label={t("NewPassword")}
+              id="filled-adornment-password"
+              inputProps={{
+                type: showPassword ? "text" : "password",
+                placeholder: t("EnterPassword"),
+                InputProps: {
+                  autoComplete: "off",
+                  endAdornment: (
+                    <InputAdornment
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(prev => !prev)}
+                      position="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
-
             <LoadingButton
               loading={newPasswordLoading}
               disabled={settingsFlowCreating}
@@ -285,8 +305,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
             validateOnBlur={false}
             validateOnChange={false}
             validationSchema={NewPasswordModelSchema}
-            onSubmit={data => {
-              onSubmitNewPassword(data.newPassword)
+            onSubmit={(data, { resetForm }) => {
+              onSubmitNewPassword(data.newPassword, resetForm)
             }}>
             {renderChangePassword()}
           </Formik>
