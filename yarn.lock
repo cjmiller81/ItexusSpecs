@@ -11402,16 +11402,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"components@file:../components::locator=ei-app%40workspace%3Apackages%2Fei-app":
-  version: 1.0.4
-  resolution: "components@file:../components#../components::hash=42d72a&locator=ei-app%40workspace%3Apackages%2Fei-app"
-  dependencies:
-    react: "npm:^18.3.1"
-    use-file-picker: "npm:^2.1.2"
-  checksum: 10c0/a7d2804e29b0ef771512dc621361b3753bf148e4efb9340a4142ba4c4e6a5a26962223a6f8a65bcb04809d8b4bb295f52764253aa5503e4cb436d4659c13e8d2
-  languageName: node
-  linkType: hard
-
 "components@npm:^1.0.0, components@workspace:packages/components":
   version: 0.0.0-use.local
   resolution: "components@workspace:packages/components"
@@ -13708,7 +13698,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ei-app@workspace:packages/ei-app"
   dependencies:
-    components: "file:../components"
     i18next: "npm:^23.11.3"
     next: "npm:^14.2.3"
     react: "npm:^18.2.0"
