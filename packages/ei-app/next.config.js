@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
@@ -23,7 +25,8 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       // Will make webpack look for these modules in parent directories
-      'components': require.resolve('components'),
+      //'components': require.resolve('components'),
+      "components": path.resolve(__dirname, "../components/src"),
       //'@mui/icons-material': require.resolve('@mui/icons-material'),
     }
 
