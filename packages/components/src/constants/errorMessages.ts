@@ -1,5 +1,4 @@
-import i18n from "@/libs/i18n/i18n"
-
+import i18n from "i18next"
 export const getIncorectPassword = () => i18n.t("incorectPassword", { ns: "errorMessages" })
 export const getPasswordDoNotMatch = () => i18n.t("passwordDoNotMatch", { ns: "errorMessages" })
 export const getMandatoryField = () => i18n.t("mandatoryField", { ns: "errorMessages" })
