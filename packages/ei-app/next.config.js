@@ -43,7 +43,7 @@ const nextConfig = {
     NEXT_PUBLIC_API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
     NEXT_PUBLIC_MOCK_BACKEND_API: "false",
     ACCESS_TOKEN:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsImV4cCI6MTcxOTQwODA3MywiaXNzIjoieW91cl9pc3N1ZXIiLCJhdWQiOiJ5b3VyX2F1ZGllbmNlIn0.7I0P39ebsl5HNBTzVeJjMSsghqVOLLc8htyxnuO7Bqw",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2NhblVwbG9hZEZpbGUiOiJjYW5VcGxvYWRGaWxlIiwicHJfYWRtaW4iOiJhZG1pbiIsImV4cCI6MTcxODQ4ODE3NywiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.G_NKEeUe0SpOytyIZ70Le09-Z7dlZf6J2PY3Ez_xY-Q",
     NEXT_PUBLIC_ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
     ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
   },
