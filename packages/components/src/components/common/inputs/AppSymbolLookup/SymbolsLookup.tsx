@@ -49,8 +49,8 @@ export function SymbolLookup({ label, required, tooltip, value, loading, options
         }}
         id="virtualize-demo"
         disableListWrap
-        PopperComponent={StyledPopper}
-        ListboxComponent={ListboxComponent}
+        PopperComponent={StyledPopper as any}
+        ListboxComponent={ListboxComponent as any}
         options={options}
         {...props}
         value={value}
