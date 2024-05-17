@@ -1,29 +1,23 @@
-import { styled } from "@mui/material"
-import {
-  Card,
-  LinkButton,
-  typographyH2Styles,
-  typographyLinkStyles,
-} from "@ory/themes"
+import { Button, styled } from "@mui/material"
+import { Box } from "@mui/system"
+
 import cn from "classnames"
 
-export const MarginCard = styled(Card)`
+export const MarginCard = styled(Box)`
   margin-top: 70px;
   margin-bottom: 18px;
 `
 
-export const ActionCard = styled(Card)`
+export const ActionCard = styled(Box)`
   margin-bottom: 18px;
 `
 
 export const CenterLink:any = styled("a")`
-  ${typographyH2Styles};
-  ${typographyLinkStyles};
   text-align: center;
   font-size: 15px;
 `
 
-export const TextLeftButton = styled(LinkButton)`
+export const TextLeftButton = styled(Button)`
   box-sizing: border-box;
 
   & .linkButton {

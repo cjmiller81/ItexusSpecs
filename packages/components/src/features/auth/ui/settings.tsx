@@ -25,7 +25,7 @@ function SettingsCard({ flow, only, children }: Props & { children: ReactNode })
     return null
   }
 
-  return <ActionCard wide>{children}</ActionCard>
+  return <ActionCard>{children}</ActionCard>
 }
 
 const Settings: NextPage = () => {
@@ -220,7 +220,7 @@ const Settings: NextPage = () => {
           flow={flow}
         />
       </SettingsCard>
-      <ActionCard wide>
+      <ActionCard>
         <Link
           href="/"
           passHref>

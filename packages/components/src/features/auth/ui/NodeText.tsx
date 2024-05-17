@@ -1,13 +1,12 @@
 import { Typography, styled } from "@mui/material"
 import { UiNode, UiNodeTextAttributes, UiText } from "@ory/client"
-import { CodeBox } from "@ory/themes"
 
 interface Props {
   node: UiNode
   attributes: UiNodeTextAttributes
 }
 
-const ScrollableCodeBox = styled(CodeBox)(() => ({
+const ScrollableCodeBox = styled("code")(() => ({
   overflowX: "auto",
   color: "black",
   border: "solid 1px",
@@ -37,7 +36,7 @@ export const Content = ({ attributes }: Props) => {
 
   return (
     <div data-testid={`node/text/${attributes.id}/text`}>
-      <ScrollableCodeBox code={attributes.text.text} />
+      <ScrollableCodeBox>{attributes.text.text}</ScrollableCodeBox>
     </div>
   )
 }
