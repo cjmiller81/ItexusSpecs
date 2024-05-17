@@ -25,6 +25,6 @@ export const AppAccordionSection = ({ children, headerChildren, title, ...props 
   )
 }
 
-export const StyledAccordionSummary:any = styled(AccordionSummary)(() => ({
+export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
   transition: "none",
-}))
+})) as typeof AccordionSummary;
