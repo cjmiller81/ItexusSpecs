@@ -1,5 +1,5 @@
+import { Alert, Box } from "@mui/material"
 import { UiText } from "@ory/client"
-import { Alert, AlertContent } from "@ory/themes"
 
 interface MessageProps {
   message: UiText
@@ -8,7 +8,7 @@ interface MessageProps {
 export const Message = ({ message }: MessageProps) => {
   return (
     <Alert severity={message.type === "error" ? "error" : "info"}>
-      <AlertContent data-testid={`ui/message/${message.id}`}>{message.text}</AlertContent>
+      <Box data-testid={`ui/message/${message.id}`}>{message.text}</Box>
     </Alert>
   )
 }

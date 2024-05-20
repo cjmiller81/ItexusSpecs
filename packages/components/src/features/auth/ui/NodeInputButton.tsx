@@ -1,5 +1,5 @@
+import { Button } from "@mui/material"
 import { getNodeLabel } from "@ory/integrations/ui"
-import { Button } from "@ory/themes"
 import React from "react"
 import { callWebauthnFunction, NodeInputProps } from "./helpers"
 

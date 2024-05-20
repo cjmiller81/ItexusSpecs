@@ -6,6 +6,18 @@ import { RootState, persistedReducer } from "./RootReducer"
 const makeStore = () => {
   return configureStore({
     reducer: persistedReducer,
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ["persist/PERSIST"],
+          ignoredPaths: [
+            "marketCapEqualWeightChart.endDate",
+            "marketCapEqualWeightChart.startDate",
+            "marketCapWeightedChart.endDate",
+            "marketCapWeightedChart.startDate",
+          ],
+        },
+      }),
   })
 }
 
