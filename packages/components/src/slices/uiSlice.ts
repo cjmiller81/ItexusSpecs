@@ -5,6 +5,7 @@ import { createAppSlice } from "./createAppSlice"
 export interface UiState {
   errors: string[]
   messages: string[]
+  warnings: string[]
   sidebarOpened: boolean
   mode: PaletteMode
   accordions: { [id: string]: boolean }
@@ -13,6 +14,7 @@ export interface UiState {
 const initialState: UiState = {
   errors: [],
   messages: [],
+  warnings:[],
   sidebarOpened: true,
   mode: "dark",
   accordions: {},
@@ -28,11 +30,17 @@ export const uiSlice = createAppSlice({
     clearMessages: create.reducer(state => {
       state.messages = []
     }),
+    clearWarnings: create.reducer(state => {
+      state.warnings = []
+    }),
     addError: create.reducer((state, action: PayloadAction<string>) => {
       state.errors.push(action.payload)
     }),
     addMessage: create.reducer((state, action: PayloadAction<string>) => {
       state.messages.push(action.payload)
+    }),
+    addWarning: create.reducer((state, action: PayloadAction<string>) => {
+      state.warnings.push(action.payload)
     }),
     toggleSideBar: create.reducer((state, action: PayloadAction<{ open: boolean }>) => {
       state.sidebarOpened = action.payload.open
@@ -46,4 +54,4 @@ export const uiSlice = createAppSlice({
   }),
 })
 
-export const { clearErrors, addMessage, addError, toggleSideBar, toggleTheme, clearMessages, setAccordionState } = uiSlice.actions
+export const { clearErrors, clearWarnings, addMessage, addWarning, addError, toggleSideBar, toggleTheme, clearMessages, setAccordionState } = uiSlice.actions

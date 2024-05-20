@@ -1,16 +1,16 @@
 import { Box, CssBaseline, ThemeProvider, createTheme, styled } from "@mui/material"
 import { Session, SettingsFlow, UiNodeInputAttributes } from "@ory/client"
-import { CustomLanguageFormats, CustomTranslations, IntlProvider, isUiNodeImageAttributes, isUiNodeInputAttributes } from "@ory/elements"
+import { CustomLanguageFormats, CustomTranslations, IntlProvider, isUiNodeInputAttributes } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react"
-import { HandleError } from "../utils/hooks"
 import { ory } from "../lib/sdk"
 import ErrorUi from "../ui/error"
 import Login from "../ui/login"
 import Recovery from "../ui/recovery"
 import Registration from "../ui/registration"
 import Settings from "../ui/settings"
+import { HandleError } from "../utils/hooks"
 
 type OryContextType = {
   session: Session | undefined
@@ -37,9 +37,11 @@ const OryGatewayContext = createContext<OryContextType | undefined>(undefined)
 export function OryAuthGateway({
   children,
   customTranslations,
+  changePasswordRoute,
 }: {
   children: ReactNode
   customTranslations?: CustomLanguageFormats
+  changePasswordRoute: string
 }) {
   const [session, setSession] = useState<Session | undefined>()
   const pathname = window.location.pathname
@@ -53,11 +55,13 @@ export function OryAuthGateway({
 
   const csrfToken = useMemo(() => {
     if (!currentSettingsFlow) return undefined
-    const csrfAttributes = (currentSettingsFlow.ui.nodes
+    const csrfAttributes = currentSettingsFlow.ui.nodes
       .map(node => node.attributes)
-      .find(attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token")) as UiNodeInputAttributes
-      return csrfAttributes.value
-  }, [currentSettingsFlow]);
+      .find(
+        attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token",
+      ) as UiNodeInputAttributes
+    return csrfAttributes.value
+  }, [currentSettingsFlow])
 
   const onChangePassword = async (password: string) => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
@@ -73,26 +77,30 @@ export function OryAuthGateway({
 
   const onTotpSubmit = async (code: string): Promise<void> => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
-    await ory.updateSettingsFlow({
-      flow: currentSettingsFlow.id,
-      updateSettingsFlowBody: {
-        totp_code: code,
-        method: "totp",
-        csrf_token: csrfToken,
-      },
-    }).then(flow => setCurrentSettingsFlow(flow.data))
+    await ory
+      .updateSettingsFlow({
+        flow: currentSettingsFlow.id,
+        updateSettingsFlowBody: {
+          totp_code: code,
+          method: "totp",
+          csrf_token: csrfToken,
+        },
+      })
+      .then(flow => setCurrentSettingsFlow(flow.data))
   }
 
   const onTotpUnlink = async (): Promise<void> => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
-    await ory.updateSettingsFlow({
-      flow: currentSettingsFlow.id,
-      updateSettingsFlowBody: {
-        totp_unlink: true,
-        method: "totp",
-        csrf_token: csrfToken,
-      },
-    }).then(flow => setCurrentSettingsFlow(flow.data))
+    await ory
+      .updateSettingsFlow({
+        flow: currentSettingsFlow.id,
+        updateSettingsFlowBody: {
+          totp_unlink: true,
+          method: "totp",
+          csrf_token: csrfToken,
+        },
+      })
+      .then(flow => setCurrentSettingsFlow(flow.data))
   }
 
   const handleLogout = async () => {
@@ -170,7 +178,7 @@ export function OryAuthGateway({
               defaultLocale="en">
               {pathname == ErrorPath && <ErrorUi />}
               {pathname == LoginPath && <Login />}
-              {pathname == RecoveryPath && <Recovery />}
+              {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} />}
               {pathname == RegistrationPath && <Registration />}
               {pathname == SettingsPath && <Settings />}
             </IntlProvider>
@@ -182,7 +190,7 @@ export function OryAuthGateway({
   )
 }
 
-export const StyledAuthLayout:any = styled(Box)(({ theme }) => ({
+export const StyledAuthLayout: any = styled(Box)(({ theme }) => ({
   backgroundColor: "#3E3E3E",
   width: "100%",
   height: "100vh",
