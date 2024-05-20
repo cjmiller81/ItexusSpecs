@@ -30,13 +30,13 @@ const nextConfig = {
       //'@mui/icons-material': require.resolve('@mui/icons-material'),
     }
 
-    return {
-      ...config,
-      optimization: {
-        // TODO: Enable for production. This is just to track down build errors.
-        minimize: false,
-      },
+    config.optimization = {
+      ...config.optimization,
+      // TODO: Enable for production. This is just to track down build errors.
+      minimize: true,
     };
+
+    return config;
   },
   env: {
     API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
