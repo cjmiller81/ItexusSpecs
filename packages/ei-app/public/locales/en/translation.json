@@ -78,6 +78,7 @@
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
+    "ChangePasswordWarning": "Please, set a new password",
     "ChangePassword": "Change Password",
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",

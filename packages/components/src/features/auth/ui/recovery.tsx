@@ -3,12 +3,12 @@ import { AxiosError } from "axios"
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useState } from "react"
 import { Loader } from "../components/loader"
-import { HandleError } from "../utils/hooks"
 import { ory } from "../lib/sdk"
+import { HandleError } from "../utils/hooks"
 import { StyledAuthContainer } from "./StyledAuthContainer"
 import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
-export const Recovery: FC<{}> = () => {
+export const Recovery: FC<{ changePasswordRoute: string }> = ({ changePasswordRoute }) => {
   const [flow, setFlow] = useState<RecoveryFlow | null>()
 
   // Get flow information from the URL
@@ -74,7 +74,7 @@ export const Recovery: FC<{}> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
 
-  const submitFlow = (values: UpdateRecoveryFlowBody): Promise<void> =>
+  const submitFlow = (values: UpdateRecoveryFlowBody) => {
     ory
       .updateRecoveryFlow({
         flow: String(flow?.id),
@@ -83,9 +83,16 @@ export const Recovery: FC<{}> = () => {
       .then(({ data }) => {
         setFlow(data)
       })
-      .catch(c => {
-        void handleError(c)
+      .catch((error: AxiosError) => {
+        if (error.response?.status && error.response?.status == 422) {
+          const errorData: any = error.response?.data
+          // Use custom page to change password
+          if (errorData?.redirect_browser_to) {
+            window.location.href = changePasswordRoute
+          }
+        }
       })
+  }
 
   if (!flow) return <Loader />
   return (

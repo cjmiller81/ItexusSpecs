@@ -5,14 +5,15 @@ import { Box, BoxProps, Button, Divider, Grid, InputAdornment, Link, Stack, Typo
 import { UiNode, UiNodeImageAttributes } from "@ory/client"
 import { isUiNodeImageAttributes, isUiNodeInputAttributes, isUiNodeTextAttributes } from "@ory/elements"
 import { Form, Formik } from "formik"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { InferType, boolean, object, string } from "yup"
 import { AppFormSwitchField, AppFormTextField } from "../../components"
 import { getIncorectPassword, getMandatoryField } from "../../constants/errorMessages"
-import { addError, addMessage, useAppDispatch } from "../../slices"
+import { addError, addMessage, addWarning, useAppDispatch } from "../../slices"
 import { NodeImage, useOry } from "../auth"
 import { ProfileContainer } from "./ProfileContainer"
+import { useRouter } from "next/router"
 
 const NewPasswordModelSchema = object({
   newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(8, getIncorectPassword()),
@@ -44,6 +45,14 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
   const [imageNode, setImageNode] = useState<UiNode>()
   const [totpSecret, setTotpSecret] = useState<string | undefined>(undefined)
   const [unlinkButton, setUnlinkButton] = useState<boolean>(false)
+  const passwordFieldRef = useRef<any>();
+  const router = useRouter()
+  useEffect(() => {
+    if (router.query.requireChangePassword) {
+      dispatch(addWarning(t("ChangePasswordWarning")));
+      passwordFieldRef.current?.focus()
+    }
+  }, [])
 
   useEffect(() => {
     setSettingsFlowCreating(true)
@@ -257,6 +266,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
               label={t("NewPassword")}
               id="filled-adornment-password"
               inputProps={{
+                inputRef: passwordFieldRef,
                 type: showPassword ? "text" : "password",
                 placeholder: t("EnterPassword"),
                 InputProps: {

@@ -1,14 +1,39 @@
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
-import { BillingContainer, ProfileContainer, ProfileDetails, ProfilePicture, SecurityContainer, WalletsContainer } from "components"
-import { useState } from "react"
+import {
+  BillingContainer,
+  ProfileContainer,
+  ProfileDetails,
+  ProfilePicture,
+  SecurityContainer,
+  WalletsContainer,
+} from "components"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function ProfilePage() {
-  const [value, setValue] = useState<string>("1")
+  const router = useRouter()
+  const routeParams = (router.query.tab as string[]) || undefined
 
+  const [value, setValue] = useState<string>(
+    routeParams && (router.query.tab as string[]).length ? routeParams[0] : "details",
+  )
   const { t } = useTranslation("ProfilePage")
+
+  useEffect(() => {
+    router.push(
+      {
+        pathname: `${value}`,
+      },
+      undefined,
+      {
+        shallow: true,
+      },
+    )
+  }, [value])
+
   const handleChange = (newValue: string) => {
     //eslint-disable-next-line no-unused-vars
     setValue(newValue)
@@ -20,34 +45,34 @@ export default function ProfilePage() {
         <StyledTabList onChange={(_event, newValue) => handleChange(newValue)}>
           <Tab
             label={t("PROFILE")}
-            value="1"
+            value="details"
           />
           <Tab
             label={t("SECURITY")}
-            value="2"
+            value="security"
           />
           <Tab
             label={t("WALLETS")}
-            value="3"
+            value="wallets"
           />
           <Tab
             label={t("BILLING")}
-            value="4"
+            value="billing"
           />
         </StyledTabList>
-        <TabPanel value="1">
+        <TabPanel value="details">
           <StyledProfileBox>
             <ProfilePicture sx={{ width: "30%", minWidth: "200px" }} />
             <ProfileDetails sx={{ width: "100%" }} />
           </StyledProfileBox>
         </TabPanel>
-        <TabPanel value="2">
+        <TabPanel value="security">
           <SecurityContainer />
         </TabPanel>
-        <TabPanel value="3">
+        <TabPanel value="wallets">
           <WalletsContainer />
         </TabPanel>
-        <TabPanel value="4">
+        <TabPanel value="billing">
           <BillingContainer />
         </TabPanel>
       </TabContext>
