@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { CssBaseline } from "@mui/material"
 import Box from "@mui/material/Box"
 import { styled } from "@mui/material/styles"
-import { Header, Sidebar, toggleSideBar, StyledDrawerHeader, toggleTheme } from "components"
+import { Header, Sidebar, StyledDrawerHeader, toggleSideBar, toggleTheme, useOry } from "components"
 import { useMemo } from "react"
 import "react-toastify/dist/ReactToastify.css"
 interface Props {
@@ -14,10 +14,13 @@ export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
   const dispatch = useAppDispatch()
   const sideBarOptions = useMemo(getSidebarMenuItems, [])
-
+  const { session, logOut } = useOry()
   return (
     <StyledRoot sx={{ width: "100%" }}>
       <Header
+        logOut={logOut}
+        defaultAvatar="/defaultAvatar.png"
+        avatarUrl={session?.identity?.traits.avatarUrl}
         mode={mode}
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}

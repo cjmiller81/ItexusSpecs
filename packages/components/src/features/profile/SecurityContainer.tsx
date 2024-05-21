@@ -5,18 +5,21 @@ import { Box, BoxProps, Button, Divider, Grid, InputAdornment, Link, Stack, Typo
 import { UiNode, UiNodeImageAttributes } from "@ory/client"
 import { isUiNodeImageAttributes, isUiNodeInputAttributes, isUiNodeTextAttributes } from "@ory/elements"
 import { Form, Formik } from "formik"
+import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { InferType, boolean, object, string } from "yup"
 import { AppFormSwitchField, AppFormTextField } from "../../components"
-import { getIncorectPassword, getMandatoryField } from "../../constants/errorMessages"
 import { addError, addMessage, addWarning, useAppDispatch } from "../../slices"
 import { NodeImage, useOry } from "../auth"
 import { ProfileContainer } from "./ProfileContainer"
-import { useRouter } from "next/router"
 
+import i18n from "i18next"
 const NewPasswordModelSchema = object({
-  newPassword: string().required(getMandatoryField()).min(1, getMandatoryField()).min(8, getIncorectPassword()),
+  newPassword: string()
+    .required(i18n.t("mandatoryField", { ns: "errorMessages" }))
+    .min(1, i18n.t("mandatoryField", { ns: "errorMessages" }))
+    .min(8, i18n.t("incorectPassword", { ns: "errorMessages" })),
 })
 
 type NewPasswordModel = InferType<typeof NewPasswordModelSchema>
@@ -45,11 +48,11 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
   const [imageNode, setImageNode] = useState<UiNode>()
   const [totpSecret, setTotpSecret] = useState<string | undefined>(undefined)
   const [unlinkButton, setUnlinkButton] = useState<boolean>(false)
-  const passwordFieldRef = useRef<any>();
+  const passwordFieldRef = useRef<any>()
   const router = useRouter()
   useEffect(() => {
     if (router.query.requireChangePassword) {
-      dispatch(addWarning(t("ChangePasswordWarning")));
+      dispatch(addWarning(t("ChangePasswordWarning")))
       passwordFieldRef.current?.focus()
     }
   }, [])

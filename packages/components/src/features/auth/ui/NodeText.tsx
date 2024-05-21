@@ -14,7 +14,16 @@ const ScrollableCodeBox = styled("code")(() => ({
 }))
 
 export const Content = ({ attributes }: Props) => {
-  const secrets = (attributes.text.context as any).secrets.map((text: UiText, k: number) => (
+  let secretsToRender: any = []
+  const attributeSecrets = (attributes.text.context as any).secrets;
+  if (typeof attributeSecrets === "string"){
+    secretsToRender = [{text: attributeSecrets}]
+  }
+  else{
+    secretsToRender = attributeSecrets || []
+  }
+
+  const secrets = secretsToRender.map((text: UiText, k: number) => (
     <div
       key={k}
       data-testid={`node/text/${attributes.id}/lookup_secret`}>

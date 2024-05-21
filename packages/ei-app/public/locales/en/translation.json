@@ -104,7 +104,8 @@
     "SECURITY": "SECURITY",
     "WALLETS": "WALLETS",
     "BILLING": "BILLING",
-    "UserProfile": "User Profile"
+    "UserProfile": "User Profile",
+    "AvatarUploadingError": "Error while loading image"
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",

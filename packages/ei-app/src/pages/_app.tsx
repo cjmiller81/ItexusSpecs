@@ -1,3 +1,4 @@
+import "../libs/i18n/i18n"
 import RootLayout from "@/Layouts/RootLayout"
 import "@ory/elements/assets/fa-brands.min.css"
 import "@ory/elements/assets/fa-solid.min.css"
@@ -9,7 +10,6 @@ import "@ory/elements/style.css"
 import "devextreme/dist/css/dx.common.css"
 import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
-import "../libs/i18n/i18n"
 import "../libs/axios/axios"
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)

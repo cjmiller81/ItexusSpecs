@@ -1,15 +1,19 @@
-
 import { Box, Button, Stack, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
+import i18n from "i18next"
 import { useTranslation } from "react-i18next"
 import { InferType, boolean, object, string } from "yup"
-import { cryptoWalletFormat, getInvalidFormat, getMandatoryField } from "../../constants"
 import { AppFormCheckboxField, AppFormTextField } from "../../components"
 import { AppModal } from "../../components/modals/AppModal"
+import { cryptoWalletFormat } from "../../constants"
 
 const AddressFormSchema = object({
-  address: string().matches(cryptoWalletFormat, getInvalidFormat()).required(getMandatoryField()),
-  walletName: string().max(50).required(getMandatoryField()),
+  address: string()
+    .matches(cryptoWalletFormat, i18n.t("invalidFormat", { ns: "errorMessages" }))
+    .required(i18n.t("mandatoryField", { ns: "errorMessages" })),
+  walletName: string()
+    .max(50)
+    .required(i18n.t("mandatoryField", { ns: "errorMessages" })),
   isPersonal: boolean().required(),
 })
 
