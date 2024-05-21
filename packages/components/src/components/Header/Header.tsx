@@ -12,9 +12,12 @@ interface Props {
   toggleSide: (open: boolean) => void
   toggleTheme: () => void
   mode: PaletteMode
+  defaultAvatar: string
+  avatarUrl?: string
+  logOut: Function
 }
 
-export function Header({ open, toggleSide, toggleTheme, mode }: Props) {
+export function Header({ open, toggleSide, toggleTheme, mode, defaultAvatar, avatarUrl, logOut }: Props) {
   const { t } = useTranslation("Header")
   return (
     <StyledAppBar
@@ -52,7 +55,11 @@ export function Header({ open, toggleSide, toggleTheme, mode }: Props) {
               mode={mode}
             />
             <Box sx={{ mr: 1 }}>
-              <UserMenu />
+              <UserMenu
+                logOut={logOut}
+                defaultAvatar={defaultAvatar}
+                avatarUrl={avatarUrl}
+              />
             </Box>
           </Box>
         </Box>

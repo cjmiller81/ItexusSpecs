@@ -8,12 +8,20 @@ import {
   ProfilePicture,
   SecurityContainer,
   WalletsContainer,
+  addError,
+  profileService,
+  useAppDispatch,
+  useOry,
 } from "components"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function ProfilePage() {
+  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
+  const { onUpdateAvatar, session } = useOry()
+  const dispatch = useAppDispatch()
+
   const router = useRouter()
   const routeParams = (router.query.tab as string[]) || undefined
 
@@ -39,6 +47,19 @@ export default function ProfilePage() {
     setValue(newValue)
   }
 
+  const onAvatarChanged = async (file: File) => {
+    setIsAvatarUploading(true)
+    profileService
+      .uploadAvatart(file)
+      .then(url => onUpdateAvatar(url))
+      .catch((error: any) => {
+        const reason = error?.response?.data?.error?.reason
+        if (reason) dispatch(addError(reason))
+        else dispatch(addError(t("AvatarUploadingError")))
+      })
+      .finally(() => setIsAvatarUploading(false))
+  }
+
   return (
     <ProfileContainer title={t("UserProfile")}>
       <TabContext value={value}>
@@ -62,7 +83,13 @@ export default function ProfilePage() {
         </StyledTabList>
         <TabPanel value="details">
           <StyledProfileBox>
-            <ProfilePicture sx={{ width: "30%", minWidth: "200px" }} />
+            <ProfilePicture
+              defaultAvatarSrc="/defaultAvatar.png"
+              onAvatarChanged={onAvatarChanged}
+              avatarUrl={session?.identity?.traits.avatarUrl}
+              isAvatarUploading={isAvatarUploading}
+              sx={{ width: "30%", minWidth: "200px" }}
+            />
             <ProfileDetails sx={{ width: "100%" }} />
           </StyledProfileBox>
         </TabPanel>

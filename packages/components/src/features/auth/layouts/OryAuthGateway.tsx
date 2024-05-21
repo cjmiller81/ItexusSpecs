@@ -1,5 +1,5 @@
 import { Box, CssBaseline, ThemeProvider, createTheme, styled } from "@mui/material"
-import { Session, SettingsFlow, UiNodeInputAttributes } from "@ory/client"
+import { Session, SettingsFlow, UiNodeInputAttributes, UpdateSettingsFlowBody } from "@ory/client"
 import { CustomLanguageFormats, CustomTranslations, IntlProvider, isUiNodeInputAttributes } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
@@ -18,6 +18,7 @@ type OryContextType = {
   logOut: () => Promise<void>
   createSettingsFow: () => Promise<SettingsFlow>
   onChangePassword: (password: string) => Promise<void>
+  onUpdateAvatar: (avatarUrl: string) => Promise<void>
   onTotpSubmit: (code: string) => Promise<void>
   onTotpUnlink: () => Promise<void>
 }
@@ -63,6 +64,15 @@ export function OryAuthGateway({
     return csrfAttributes.value
   }, [currentSettingsFlow])
 
+  const getCsrfToken = (flow: SettingsFlow) => {
+    const csrfAttributes = flow.ui.nodes
+      .map(node => node.attributes)
+      .find(
+        attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token",
+      ) as UiNodeInputAttributes
+    return csrfAttributes.value
+  }
+
   const onChangePassword = async (password: string) => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
     await ory.updateSettingsFlow({
@@ -72,6 +82,26 @@ export function OryAuthGateway({
         method: "password",
         csrf_token: csrfToken,
       },
+    })
+  }
+
+  const onUpdateAvatar = async (avatarUrl: string) => {
+    const flow = await createSettingsFow()
+    let payload: object = {}
+    payload["traits.email"] = session?.identity?.traits.email
+    payload["traits.avatarUrl"] = avatarUrl
+    payload["traits.name.first"] = session?.identity?.traits.name.first
+    payload["traits.name.last"] = session?.identity?.traits.name.last
+    payload["traits.newsletter"] = session?.identity?.traits.newsletter
+    payload["csrf_token"] = getCsrfToken(flow)
+    payload["method"] = "profile"
+    await ory.updateSettingsFlow({
+      flow: flow.id,
+      updateSettingsFlowBody: payload as UpdateSettingsFlowBody,
+    })
+
+    await ory.toSession().then(({ data }) => {
+      setSession(data)
     })
   }
 
@@ -147,8 +177,19 @@ export function OryAuthGateway({
       createSettingsFow,
       onTotpSubmit,
       onTotpUnlink,
+      onUpdateAvatar,
     }),
-    [session, currentSettingsFlow, onChangePassword, handleLogout, createSettingsFow, onTotpSubmit, onTotpUnlink],
+    [
+      session,
+      currentSettingsFlow,
+      onChangePassword,
+      handleLogout,
+      createSettingsFow,
+      onTotpSubmit,
+      onTotpUnlink,
+      onUpdateAvatar,
+      csrfToken,
+    ],
   )
 
   const theme = createTheme({

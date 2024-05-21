@@ -8,19 +8,16 @@ import Menu from "@mui/material/Menu"
 import MenuItem from "@mui/material/MenuItem"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
-import { useOry } from "../../features/index"
 import { AppLink } from "../common/AppLink"
 
-export function UserMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const { session, logOut } = useOry()
+type Props = {
+  defaultAvatar: string
+  avatarUrl?: string
+  logOut: Function
+}
 
-  let nameLetters = ""
-  if (session) {
-    const firstName = session.identity?.traits.name.first
-    const lastName = session.identity?.traits.name.last
-    nameLetters = `${firstName && firstName.length ? firstName[0] : ""}${lastName && lastName.length ? lastName[0] : ""}`
-  }
+export const UserMenu: React.FC<Props> = ({ defaultAvatar, avatarUrl, logOut }) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
   const open = Boolean(anchorEl)
   const { t } = useTranslation("UserMenu")
@@ -45,7 +42,9 @@ export function UserMenu() {
         aria-controls={open ? "account-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}>
-        <Avatar sx={{ bgcolor: "coral", cursor: "pointer" }}>{nameLetters.toLocaleUpperCase()}</Avatar>
+        <Avatar
+          src={avatarUrl || defaultAvatar}
+          sx={{ cursor: "pointer" }}></Avatar>
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -86,7 +85,7 @@ export function UserMenu() {
           href={"/profile"}
           shallow>
           <MenuItem onClick={handleClose}>
-            <Avatar /> {t("Profile")}
+            <Avatar src={avatarUrl || defaultAvatar} /> {t("Profile")}
           </MenuItem>
         </AppLink>
         <Divider />
