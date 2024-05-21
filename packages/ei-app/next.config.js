@@ -33,7 +33,7 @@ const nextConfig = {
     config.optimization = {
       ...config.optimization,
       // TODO: Enable for production. This is just to track down build errors.
-      minimize: true,
+      minimize: false,
     };
 
     return config;
