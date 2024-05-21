@@ -5,8 +5,8 @@
   "engines": {
     "node": "20.x"
   },
-  "workspaces": {
-    "nohoist": []
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   },
   "scripts": {
     "dev": "next dev --experimental-https",
