@@ -28,8 +28,10 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": []
+    ]
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
