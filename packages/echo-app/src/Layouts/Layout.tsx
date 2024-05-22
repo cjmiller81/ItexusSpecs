@@ -25,6 +25,7 @@ export default function Layout({ children }: Props) {
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
         title={t("Echo")}
+        defaultAvatar="/defaultAvatar.png"
       />
       <Sidebar
         sidebarItems={sideBarOptions}

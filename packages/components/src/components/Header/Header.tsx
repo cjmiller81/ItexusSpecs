@@ -14,10 +14,11 @@ interface Props {
   title: string
   defaultAvatar: string
   avatarUrl?: string
-  logOut: Function
+  logOut?: Function
 }
 
 export function Header({ open, toggleSide, toggleTheme, mode, title, defaultAvatar, avatarUrl, logOut }: Props) {
+  const handleLogOut = logOut || (() => {})
 
   return (
     <StyledAppBar
@@ -56,7 +57,7 @@ export function Header({ open, toggleSide, toggleTheme, mode, title, defaultAvat
             />
             <Box sx={{ mr: 1 }}>
               <UserMenu
-                logOut={logOut}
+                logOut={handleLogOut}
                 defaultAvatar={defaultAvatar}
                 avatarUrl={avatarUrl}
               />
