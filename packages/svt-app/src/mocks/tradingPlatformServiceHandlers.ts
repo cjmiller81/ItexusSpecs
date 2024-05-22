@@ -165,11 +165,11 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/start`, ({ params }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     const item = mockState.strategies
-    .find(item => 
-      item.masterSymbol === masterSymbol 
-      && tradeSymbol === item.tradeSymbol 
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
       && item.exchangeAccountNumber === accountNumber)
-    
+
     if (item){
       item.active = true
     }
@@ -181,11 +181,11 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/stop`, ({ params, request }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     const item = mockState.strategies
-    .find(item => 
-      item.masterSymbol === masterSymbol 
-      && tradeSymbol === item.tradeSymbol 
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
       && item.exchangeAccountNumber === accountNumber)
-    
+
     if (item){
       item.active = false
     }
@@ -197,11 +197,11 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol`, ({ params }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     mockState.strategies = mockState.strategies
-    .filter(item => 
-      !(item.masterSymbol === masterSymbol 
-      && tradeSymbol === item.tradeSymbol 
+    .filter(item =>
+      !(item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
       && item.exchangeAccountNumber === accountNumber))
-    
+
     return new HttpResponse(null, {
       status: 200
     })
@@ -219,7 +219,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       hasEntryOrderStatus: false,
       exchange: "Tastytrade",
       exchangeAccountNumber: data.exchangeAccountNumber || "",
-      masterSymbol: data.tradingSymbol,
+      masterSymbol: data.tradeSymbol,
       masterSymbolAssetType: "Future",
       stopOrderId: "",
       hasStopOrderId: false,
@@ -230,7 +230,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       targetOrderStatus: "",
       hasTargetOrderStatus: false,
       tradeQty: data.tradeQty,
-      tradeSymbol: data.tradingSymbol,
+      tradeSymbol: data.tradeSymbol,
       tradeSymbolAssetType: "Future",
       userId: ""
     })

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import AutomationTabs from "./tabs";
 import PositionTable, { IPositionTableRow } from "./position-table";
 import { SvtIvlEsStrategySetStatus } from "../../../../services/tradingPlatformService";
@@ -13,12 +13,9 @@ export interface TabPanel {
 
 interface AutomationComponentProps {
   strategyAccountConnectState: SvtIvlEsStrategySetStatus;
-  automationRunning: boolean;
   onAddStrategy: () => void;
-  onAutomationRunningChange: (newAutomationRunning: boolean) => void;
-  onClosingOnlyChange: (closingOnly: boolean, localOnly: boolean) => void;
-  onCapitalAllocationChange: (newCapitalAllocation: number, localOnly: boolean) => void;
   errorMessage: string;
+  isMutating: boolean;
   onDeleteStrategy: (id: IPositionTableRow) => void;
   onStopStrategy: (id: IPositionTableRow) => void;
   onStartStrategy: (id: IPositionTableRow) => void;
@@ -31,23 +28,25 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   strategiesRows,
   onStopStrategy,
   onStartStrategy,
-  onDeleteStrategy
+  onDeleteStrategy,
+  isMutating
 }: AutomationComponentProps) => {
 
   const tabPanels: TabPanel[] = [
     {
       value: "strategies",
       label: "Strategies",
-      component: <PositionTable onStop={onStopStrategy} onDelete={onDeleteStrategy} data={strategiesRows} onStart={onStartStrategy} />,
+      component: <PositionTable onStop={onStopStrategy} onDelete={onDeleteStrategy} data={strategiesRows} onStart={onStartStrategy} isMutating={isMutating} />,
     },
   ];
 
   return (
-    
+
     <AutomationTabs
       onAddStrategy={onAddStrategy}
       capitalAllocation={parseFloat(strategyAccountConnectState?.capitalAllocation as any)}
-      tabs={tabPanels} />
+      tabs={tabPanels}
+      isMutating={isMutating} />
   );
 };
 

@@ -42,9 +42,10 @@ interface AutomationTabsProps {
   capitalAllocation: number;
   tabs: TabPanel[];
   onAddStrategy: () => void;
+  isMutating: boolean;
 }
 
-export default function AutomationTabs({ capitalAllocation, onAddStrategy, tabs }: AutomationTabsProps) {
+export default function AutomationTabs({ capitalAllocation, onAddStrategy, tabs, isMutating }: AutomationTabsProps) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -63,6 +64,7 @@ export default function AutomationTabs({ capitalAllocation, onAddStrategy, tabs 
       <Button
           variant="outlined"
           onClick={onAddStrategyClick}
+          disabled={isMutating}
           sx={{ mr: 1 }}
         >
           {"+ Add Strategy"}

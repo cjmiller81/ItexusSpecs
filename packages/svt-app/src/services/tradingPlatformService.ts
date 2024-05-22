@@ -95,7 +95,7 @@ export interface CreateFifoStrategyRequest {
     units: number,
     nanos: number
   },
-  tradingSymbol: string
+  tradeSymbol: string
 }
 
 export interface FifoStrategyListItem {
@@ -295,7 +295,7 @@ export function useGetIvlAutomationStatus(callbacks?: Callbacks) {
       if (response.ok && response.body) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
-          return response.json()
+          return await response.json()
         }
       }
 
@@ -492,9 +492,15 @@ export function useGetFifoStrategy(callbacks?: Callbacks) {
         headers: headers
       })
 
-      const jsonData = await response.json()
-      const data = JSON.parse(jsonData);
-      return data;
+      if (response.ok && response.body) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const jsonData = await response.json()
+          return jsonData
+        }
+      }
+
+      throw new Error(response.statusText);
     },
     {
       retry: false,

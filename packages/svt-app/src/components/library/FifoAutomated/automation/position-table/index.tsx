@@ -25,9 +25,10 @@ interface PositionTableProps {
   onStop: (id: IPositionTableRow) => void
   onDelete: (id: IPositionTableRow) => void
   onStart: (id: IPositionTableRow) => void
+  isMutating: boolean
 }
 
-const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete, data }) => {
+const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete, data, isMutating }) => {
   const [strategyToDelete, setStrategyToDelete] = useState<null | IPositionTableRow>(null)
   return (
     <>
@@ -77,6 +78,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
                     {row.status === "Running" ? (
                       <Button
                         onClick={() => onStop(row)}
+                        disabled={isMutating}
                         size="small">
                         Stop
                       </Button>
@@ -84,6 +86,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
                       <Button
                         sx={{ color: "success.main" }}
                         onClick={() => onStart(row)}
+                        disabled={isMutating}
                         size="small">
                         Start
                       </Button>
@@ -91,6 +94,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
                     <Button
                       sx={{ color: "error.light" }}
                       onClick={() => setStrategyToDelete(row)}
+                      disabled={isMutating}
                       size="small">
                       Delete
                     </Button>
