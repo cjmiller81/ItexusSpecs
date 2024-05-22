@@ -19,7 +19,8 @@ import { useTranslation } from "react-i18next"
 
 export default function ProfilePage() {
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
-  const { onUpdateAvatar, session } = useOry()
+  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
+  const { onUpdateAvatar, session, onUpdateProfile } = useOry()
   const dispatch = useAppDispatch()
 
   const router = useRouter()
@@ -60,6 +61,18 @@ export default function ProfilePage() {
       .finally(() => setIsAvatarUploading(false))
   }
 
+  const onChangeDetails = (firstName: string, lastName: string) => {
+    setIsProfileDetailsUpdating(true)
+    onUpdateProfile(firstName, lastName)
+      .then()
+      .catch((error: any) => {
+        const reason = error?.response?.data?.error?.reason
+        if (reason) dispatch(addError(reason))
+        else dispatch(addError(t("ProfileUpdatingError")))
+      })
+      .finally(() => setIsProfileDetailsUpdating(false))
+  }
+
   return (
     <ProfileContainer title={t("UserProfile")}>
       <TabContext value={value}>
@@ -90,7 +103,11 @@ export default function ProfilePage() {
               isAvatarUploading={isAvatarUploading}
               sx={{ width: "30%", minWidth: "200px" }}
             />
-            <ProfileDetails sx={{ width: "100%" }} />
+            <ProfileDetails
+              onUpdateProfile={onChangeDetails}
+              loadingCnangeDetails={isProfileDetailsUpdating}
+              sx={{ width: "100%" }}
+            />
           </StyledProfileBox>
         </TabPanel>
         <TabPanel value="security">
