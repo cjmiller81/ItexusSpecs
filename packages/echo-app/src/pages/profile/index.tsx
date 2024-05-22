@@ -1,7 +1,7 @@
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
-import { BillingContainer, ProfileContainer, ProfileDetails, ProfilePicture, SecurityContainer, WalletsContainer } from "components"
+import { ProfileContainer, ProfileDetails, ProfilePicture, SecurityContainer } from "components"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -26,14 +26,6 @@ export default function ProfilePage() {
             label={t("SECURITY")}
             value="2"
           />
-          <Tab
-            label={t("WALLETS")}
-            value="3"
-          />
-          <Tab
-            label={t("BILLING")}
-            value="4"
-          />
         </StyledTabList>
         <TabPanel value="1">
           <StyledProfileBox>
@@ -43,12 +35,6 @@ export default function ProfilePage() {
         </TabPanel>
         <TabPanel value="2">
           <SecurityContainer />
-        </TabPanel>
-        <TabPanel value="3">
-          <WalletsContainer />
-        </TabPanel>
-        <TabPanel value="4">
-          <BillingContainer />
         </TabPanel>
       </TabContext>
     </ProfileContainer>

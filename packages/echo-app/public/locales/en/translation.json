@@ -56,7 +56,7 @@
     "Logout": "Logout"
   },
   "Header": {
-    "ElanInsights": "Elan Insights"
+    "Echo": "ECHO"
   },
   "HistoricalWalletsWorth": {
     "Daily": "Daily",
@@ -101,8 +101,6 @@
   "ProfilePage": {
     "PROFILE": "PROFILE",
     "SECURITY": "SECURITY",
-    "WALLETS": "WALLETS",
-    "BILLING": "BILLING",
     "UserProfile": "User Profile"
   },
   "ProfilePicture": {
@@ -110,20 +108,7 @@
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
   "SideBar": {
-    "Home": "Home",
-    "Investing": "Investing",
-    "MarketCapWeighted": "Market Cap Weighted",
-    "MarketCapEqualWeight": "Market Cap Equal Weight",
-    "TradingSubpage": "Trading Subpage",
-    "Income": "Income",
-    "IncomeSubpage": "Income subpage",
-    "Arbitrage": "Arbitrage",
-    "ArbitrageSubpage": "Arbitrage Subpage",
-    "Portfolios": "Portfolios",
-    "MyWallets": "Wallets",
-    "Community": "Community",
-    "Platform": "Platform",
-    "Tools": "Tools"
+    "Home": "Home"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -131,39 +116,11 @@
     "IndexModeling": "Index Modeling",
     "RunTest": "Run Test"
   },
-  "ColumnsDefs": {
-    "Symbol": "Symbol",
-    "Price": "Price",
-    "MarketCap": "Market Cap",
-    "Weight": "Weight",
-    "Qty": "Qty",
-    "Chain": "Chain",
-    "Amount": "Amount",
-    "USDValue": "USD Value",
-    "TokenName": "Token Name",
-    "WalletAddress": "Wallet Address",
-    "PersonalPublic": "Personal",
-    "WalletName": "Wallet Name"
-  },
   "SymbolLookup": {
     "Search": "Search"
   },
   "MarketCapEqualWeight":{
     "Index": "Index"
-  },
-  "BillingContainer": {
-    "Plans": "Plans",
-    "Platinum": "Platinum",
-    "PlatinumCost": "$20.00 USD / month + tax",
-    "ExplorePlans": "Explore plans",
-    "BillingPeriod": "Billing Period",
-    "BillingCost": "Monthly (renews August 16th 2022)",
-    "ChangeBillingPeriod": "Change billing period",
-    "CardEnding": "Ending in {{number}}",
-    "Default": "Default",
-    "AddNewMethod": "Add New Method",
-    "PaymentMethods": "Payment Methods",
-    "MakeDefault": "Make Default"
   },
   "Tooltips":{
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

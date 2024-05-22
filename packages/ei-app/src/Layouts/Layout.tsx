@@ -6,6 +6,7 @@ import { styled } from "@mui/material/styles"
 import { Header, Sidebar, StyledDrawerHeader, toggleSideBar, toggleTheme, useOry } from "components"
 import { useMemo } from "react"
 import "react-toastify/dist/ReactToastify.css"
+import { useTranslation } from "react-i18next"
 interface Props {
   children: any
 }
@@ -14,6 +15,7 @@ export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
   const dispatch = useAppDispatch()
   const sideBarOptions = useMemo(getSidebarMenuItems, [])
+  const { t } = useTranslation("Header")
   const { session, logOut } = useOry()
   return (
     <StyledRoot sx={{ width: "100%" }}>
@@ -25,6 +27,7 @@ export default function Layout({ children }: Props) {
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
+        title={t("ElanInsights")}
       />
       <Sidebar
         sidebarItems={sideBarOptions}

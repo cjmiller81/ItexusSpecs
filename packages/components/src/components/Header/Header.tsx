@@ -1,7 +1,6 @@
 import Menu from "@mui/icons-material/Menu"
 import MenuOpen from "@mui/icons-material/MenuOpen"
 import { Box, IconButton, PaletteMode, Toolbar, Typography } from "@mui/material"
-import { useTranslation } from "react-i18next"
 import { StyledAppBar } from "./StyledAppBar"
 import { ThemeToggler } from "./ThemeToggler"
 import { UserMenu } from "./UserMenu"
@@ -12,13 +11,14 @@ interface Props {
   toggleSide: (open: boolean) => void
   toggleTheme: () => void
   mode: PaletteMode
+  title: string
   defaultAvatar: string
   avatarUrl?: string
   logOut: Function
 }
 
-export function Header({ open, toggleSide, toggleTheme, mode, defaultAvatar, avatarUrl, logOut }: Props) {
-  const { t } = useTranslation("Header")
+export function Header({ open, toggleSide, toggleTheme, mode, title, defaultAvatar, avatarUrl, logOut }: Props) {
+
   return (
     <StyledAppBar
       position="fixed"
@@ -43,7 +43,7 @@ export function Header({ open, toggleSide, toggleTheme, mode, defaultAvatar, ava
             variant="h6"
             noWrap
             component="div">
-            {t("ElanInsights")}
+            {title}
           </Typography>
           <Box
             display={"flex"}
