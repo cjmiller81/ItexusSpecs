@@ -87,6 +87,50 @@ export interface SvtIvlEsStrategySetStatus {
   contractQty:	number | null
   closingOnly: boolean
 }
+export interface CreateFifoStrategyRequest {
+  active: boolean,
+  exchangeAccountNumber: string | null,
+  masterSymbol: string,
+  tradeQty: {
+    units: number,
+    nanos: number
+  },
+  tradeSymbol: string
+}
+
+export interface FifoStrategyListItem {
+  active: boolean,
+  atrPeriod: number,
+  capitalAllocation: number,
+  entryOrderId: string,
+  hasEntryOrderId: boolean,
+  entryOrderStatus: string,
+  hasEntryOrderStatus: false,
+  exchange: string,
+  exchangeAccountNumber: string,
+  masterSymbol: string,
+  masterSymbolAssetType: string,
+  stopOrderId: string,
+  hasStopOrderId: boolean,
+  stopOrderStatus: string,
+  hasStopOrderStatus: boolean,
+  targetOrderId: string,
+  hasTargetOrderId: boolean,
+  targetOrderStatus: string,
+  hasTargetOrderStatus: false,
+  tradeQty: {
+    units: number,
+    nanos: number
+  },
+  tradeSymbol: string,
+  tradeSymbolAssetType: string,
+  userId: string
+}
+
+export interface FifoStrategyListResponse
+{
+  fifoStrategyList_: FifoStrategyListItem[]
+}
 
 interface Callbacks {
   onError: (res: any) => void
@@ -251,7 +295,7 @@ export function useGetIvlAutomationStatus(callbacks?: Callbacks) {
       if (response.ok && response.body) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
-          return response.json()
+          return await response.json()
         }
       }
 
@@ -287,6 +331,176 @@ export function useStopIvlAutomation(callbacks?: Callbacks) {
       }
 
       return false
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useCreateFifoStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "createFifoStrategy",
+    async (strategy: CreateFifoStrategyRequest) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(strategy)
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useStartStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "startStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/start`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useStopStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "stopStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/stop`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useDeleteStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "deleteStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "DELETE",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useGetFifoStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "getFifoStrategy",
+    async () => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "GET",
+        headers: headers
+      })
+
+      if (response.ok && response.body) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const jsonData = await response.json()
+          return jsonData
+        }
+      }
+
+      throw new Error(response.statusText);
     },
     {
       retry: false,

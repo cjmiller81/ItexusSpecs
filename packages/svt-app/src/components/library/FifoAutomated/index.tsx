@@ -14,7 +14,7 @@ import Login from "./login";
 import Accounts from "./accounts";
 import AccountStatus from "./account-status";
 import AutomationComponent from "./automation/Automation";
-import { ExchangeAccount, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useGetAccountList, useGetIvlAutomationStatus, useStopIvlAutomation, useUpsertIvlAutomation, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
+import { ExchangeAccount, FifoStrategyListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useCreateFifoStrategy, useDeleteStrategy, useGetAccountList, useGetFifoStrategy, useGetIvlAutomationStatus, useStartStrategy, useStopIvlAutomation, useStopStrategy, useUpsertIvlAutomation, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
 import { v4 as uuid } from "uuid"
 import "./FifoAutomated.scss";
 import { useMediaQuery } from "@mui/material";
@@ -27,7 +27,10 @@ const steps = [
 ];
 
 const fifoFeedOptions = ["SP 500"]
-const tradeSymbolOptions = ["/ES", "SPY"]
+const tradeSymbolOptions = [
+  "/ES",
+  //"SPY",
+]
 
 interface IState {
   loginSubmitted: boolean;
@@ -37,10 +40,10 @@ interface IState {
 
 export default function FifoAutomated() {
   const [activeStep, setActiveStep] = React.useState(0);
-  const [automationRunning, setAutomationRunning] = React.useState(false);
   const [initConfiguring, setInitConfiguring] = React.useState(true);
   const [configuring, setConfiguring] = React.useState(true);
   const [enabled, setEnabled] = React.useState(false);
+  const [mutating, setMutating] = React.useState(false);
   const [completed, setCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
@@ -81,8 +84,8 @@ export default function FifoAutomated() {
   } as SvtIvlEsStrategySetStatus);
 
   const [fifoFeedOption, setFifoFeedOption] = useState("SP 500")
-  const [tradingSymbolOption, setTradingSymbolOption] = useState("/ES")
-  const qty = tradingSymbolOption === "/ES" ? 1 : 100;
+  const [tradeSymbolOption, setTradeSymbolOption] = useState("/ES")
+  const qty = tradeSymbolOption === "/ES" ? 1 : 100;
   const [positionTableData, setPositionTableData] = useState<IPositionTableRow[]>([]);
 
   const isDesktop = useMediaQuery('(min-width:800px)');
@@ -114,12 +117,14 @@ export default function FifoAutomated() {
   const isLoginValid = useCallback((): boolean => {
     if (loginState.login.length > 0 && exchangeAccountState !== null && exchangeAccountState.accountNumber && exchangeAccountState.accountNumber.length > 0) {
       return true;
+    } else if (loginState.login.length > 0 && positionTableData && positionTableData.length > 0) {
+      return true;
     } else if ((loginState.login.length > 0 && loginState.password !== null && loginState.password?.length > 0)) {
       return true;
     }
 
     return false;
-  }, [exchangeAccountState, loginState.login.length, loginState.password]);
+  }, [exchangeAccountState, loginState.login.length, loginState.password, positionTableData]);
 
   const isAccountNumberValid = useCallback((): boolean => {
     return strategyAccountConnectState.accountNumber ? (strategyAccountConnectState.accountNumber.length > 0) : false;
@@ -179,7 +184,19 @@ export default function FifoAutomated() {
       setInitConfiguring(false);
       setConfiguring(false);
     }
-  }, [activeStep, enableNext, exchangeAccountState.isClosed, exchangeAccountState.isFuturesApproved, exchangeAccountState.isMargin, exchangeAccountState.suitableOptionsLevel, initConfiguring, isAccountNumberValid, isExchangeAccountValid, isLoginValid, membership, setStatus]);
+  }, [
+    activeStep,
+    enableNext,
+    exchangeAccountState.isClosed,
+    exchangeAccountState.isFuturesApproved,
+    exchangeAccountState.isMargin,
+    initConfiguring,
+    isAccountNumberValid,
+    isExchangeAccountValid,
+    isLoginValid,
+    membership,
+    setStatus
+  ]);
 
   const handleSettingsClicked = useCallback(() => {
     setConfiguring(true);
@@ -202,57 +219,33 @@ export default function FifoAutomated() {
     }
   }, [tableData, exchangeAccountState, strategyAccountConnectState, handleExchangeAccount, membership]);
 
-  const getIvlAutomationStatus = useGetIvlAutomationStatus({
-    onSuccess: useCallback((res: SvtIvlEsStrategySetStatus | unknown) => {
-      if (res && (res as SvtIvlEsStrategySetStatus)) {
-        const strategySetStatus = (res as SvtIvlEsStrategySetStatus)
-        if (strategySetStatus) {
-          if (strategySetStatus.exchangeUsername && strategySetStatus.exchangeUsername.length > 0) {
-            setloginState({
-              ...loginState,
-              login: strategySetStatus.exchangeUsername,
-            });
+  const getStrategies = useGetFifoStrategy({
+    onSuccess: (res: FifoStrategyListResponse) => {
+      const newItems = res.fifoStrategyList_.map<IPositionTableRow>(listItem => ({
+        id: uuid(),
+        account: listItem.exchangeAccountNumber,
+        fifoFeed: "SP 500",
+        tradeQty: listItem.tradeQty.units,
+        status: listItem.active ? "Running" : "Suspended",
+        tradeSymbol: listItem.tradeSymbol
+      }))
+      setPositionTableData(newItems)
 
-            setStatus("loginSubmitted", true);
-
-            setState({
-              ...state,
-              loginSubmitted: true,
-            });
-          }
-          if (strategySetStatus.accountNumber && strategySetStatus.accountNumber.length > 0) {
-            setStrategyAccountConnectState({
-              ...strategyAccountConnectState,
-              accountNumber: strategySetStatus.accountNumber,
-              capitalAllocation: strategySetStatus.capitalAllocation,
-              capitalAllocationStart: strategySetStatus.capitalAllocationStart,
-              capitalAllocationNext: strategySetStatus.capitalAllocationNext,
-              contractQty: strategySetStatus.contractQty,
-              entryOrderId: strategySetStatus.entryOrderId,
-              entryOrderStatus: strategySetStatus.entryOrderStatus,
-              entryOrderSymbol: strategySetStatus.entryOrderSymbol,
-              exchangeUsername: strategySetStatus.exchangeUsername,
-              exitOrderId: strategySetStatus.exitOrderId,
-              exitOrderStatus: strategySetStatus.exitOrderStatus,
-              exitOrderSymbol: strategySetStatus.exitOrderSymbol,
-              isStarted: strategySetStatus.isStarted,
-              riskTolerance: strategySetStatus.riskTolerance,
-              closingOnly: strategySetStatus.closingOnly
-            });
-
-            setStatus("accountSelectionSubmitted", true);
-            setAutomationRunning(strategySetStatus.isStarted);
-          }
-
-          if (strategySetStatus.exchangeUsername && strategySetStatus.exchangeUsername.length > 0 && strategySetStatus.accountNumber && strategySetStatus.accountNumber.length > 0) {
-            enableNext();
-          }
-        }
+      if (newItems && newItems.length > 0 && initConfiguring && activeStep === 0 && isLoginValid())
+      {
+        setStrategyAccountConnectState({
+          ...strategyAccountConnectState,
+          accountNumber: newItems[0].account,
+        });
+        setInitConfiguring(false);
+        setConfiguring(false);
       }
-    }, [enableNext, loginState, setStatus, state, strategyAccountConnectState]),
-    onError: useCallback((res: any) => {
-      console.error("useGetIvlAutomationStatus:", res);
-    }, [])
+
+      setMutating(false);
+    },
+    onError: (res: any) => {
+      console.error("useGetFifoStrategy", res);
+    }
   });
 
   const getAccountList = useGetAccountList({
@@ -265,14 +258,61 @@ export default function FifoAutomated() {
             login: accountList[0].exchangeUsername,
           });
 
+          setStatus("loginSubmitted", true);
+          setStatus("accountSelectionSubmitted", true);
+          setStatus("accountStatus", true);
+
           setTableData(accountList);
         }
 
-        getIvlAutomationStatus.mutate();
+        getStrategies.mutate();
+      } else {
+        setMutating(false);
       }
-    }, [getIvlAutomationStatus, loginState]),
+    }, [getStrategies, loginState, setStatus]),
     onError: (res: any) => {
+      setMutating(false);
       console.error("useGetAccountList:", res);
+    }
+  });
+
+  const createFifoStrategy = useCreateFifoStrategy({
+    onSuccess:(res: any) => {
+      getAccountList.mutate();
+    },
+    onError: (res: any) => {
+      setMutating(false);
+      console.error("useCreateFifoStrategy", res);
+    }
+  });
+
+  const stopFifoStrategy = useStopStrategy({
+    onSuccess:(res: any) => {
+      getAccountList.mutate();
+    },
+    onError: (res: any) => {
+      setMutating(false);
+      console.error("useStopStrategy", res);
+    }
+  });
+
+  const startFifoStrategy = useStartStrategy({
+    onSuccess:(res: any) => {
+      getAccountList.mutate();
+    },
+    onError: (res: any) => {
+      setMutating(false);
+      console.error("useStartStrategy", res);
+    }
+  });
+
+  const deleteFifoStrategy = useDeleteStrategy({
+    onSuccess: useCallback((res: any) => {
+      getAccountList.mutate();
+    }, [getAccountList]),
+    onError: (res: any) => {
+      setMutating(false);
+      console.error("useDeleteStrategy", res);
     }
   });
 
@@ -301,60 +341,6 @@ export default function FifoAutomated() {
       }
     }
   });
-
-  const upsertIvlAutomation = useUpsertIvlAutomation({
-    onSuccess: useCallback((res: any) => {
-      setAutomationRunning((res as boolean));
-      setErrorMessage("");
-      getAccountList.mutate();
-    }, [getAccountList]),
-    onError: (res: any) => {
-      if (res && res.message) {
-        setErrorMessage(`Error starting IVL Automation: ${res.message}`);
-      } else {
-        setErrorMessage("Unknown error starting IVL Automation!");
-      }
-    }
-  });
-
-  const stopIvlAutomation = useStopIvlAutomation({
-    onSuccess: useCallback((res: any) => {
-      setAutomationRunning(!(res as boolean));
-      setErrorMessage("");
-      getAccountList.mutate();
-    }, [getAccountList]),
-    onError: (res: any) => {
-      if (res && res.message) {
-        setErrorMessage(`Error stopping IVL Automation: ${res.message}`);
-      } else {
-        setErrorMessage("Unknown error stopping IVL Automation!");
-      }
-    }
-  });
-
-  const handleCapitalAllocation = useCallback((newCapitalAllocation: number, localOnly: boolean = false): void => {
-    if (localOnly) {
-      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
-    } else {
-      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
-    }
-  }, [strategyAccountConnectState, upsertIvlAutomation]);
-
-  const handleAutomationRunningChange = useCallback((newAutomationRunning: boolean): void => {
-    if (newAutomationRunning) {
-      upsertIvlAutomation.mutate({...strategyAccountConnectState, closingOnly: false});
-    } else {
-      stopIvlAutomation.mutate();
-    }
-  }, [stopIvlAutomation, strategyAccountConnectState, upsertIvlAutomation]);
-
-  const handleClosingOnlyChange = useCallback((newClosingOnly: boolean, localOnly: boolean = false) => {
-    if (localOnly) {
-      setStrategyAccountConnectState({...strategyAccountConnectState, closingOnly: newClosingOnly});
-    } else {
-      upsertIvlAutomation.mutate({...strategyAccountConnectState, closingOnly: newClosingOnly});
-    }
-  }, [strategyAccountConnectState, upsertIvlAutomation]);
 
   const handleNext = useCallback(() => {
     if (activeStep === 0) {
@@ -415,7 +401,20 @@ export default function FifoAutomated() {
           : activeStep + 1;
       setActiveStep(newActiveStep);
     }
-  }, [activeStep, allStepsCompleted, completed, enableNext, isAccountNumberValid, isExchangeAccountValid, isLastStep, isLoginValid, loginState, setStatus, upsertTastytradeConnection]);
+  }, [
+    activeStep,
+    allStepsCompleted,
+    completed,
+    enableNext,
+    isAccountNumberValid,
+    isExchangeAccountValid,
+    isLastStep,
+    isLoginValid,
+    loginState,
+    positionTableData.length,
+    setStatus,
+    upsertTastytradeConnection
+  ]);
 
   const handleBack = () => {
     setConfiguring(false);
@@ -440,43 +439,71 @@ export default function FifoAutomated() {
   }, []);
 
   const onAddStrategy = () =>{
+    setMutating(true);
+    createFifoStrategy.mutate({
+      active: true,
+      exchangeAccountNumber: strategyAccountConnectState.accountNumber,
+      masterSymbol: tradeSymbolOption,
+      //fifoFeedOption: fifoFeedOption
+      tradeQty: {
+        units: qty,
+        nanos: 0
+      },
+      tradeSymbol: tradeSymbolOption
+    })
+
     setConfiguring(false);
     setPositionTableData([...positionTableData, {
       fifoFeed: fifoFeedOption,
       status: "Running",
-      tradeSymbol: tradingSymbolOption,
+      tradeSymbol: tradeSymbolOption,
       tradeQty: qty,
       account: strategyAccountConnectState.accountNumber,
       id: uuid()
     }])
   }
 
-  const onDeleteStrategy = (id: string) =>{
-    setPositionTableData(positionTableData.filter(strategy => strategy.id !== id))
+  const onDeleteStrategy = (row: IPositionTableRow) =>{
+    setMutating(true);
+    deleteFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol)
+    })
   }
 
-  const onStopStrategy = (id: string) =>{
-    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Suspended"} : {...strategy}))
+  const onStopStrategy = (row: IPositionTableRow) =>{
+    setMutating(true);
+    stopFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol)
+    })
   }
 
-  const onStartStrategy = (id: string) =>{
-    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Running"} : {...strategy}))
+  const onStartStrategy = (row: IPositionTableRow) =>{
+    setMutating(true);
+    startFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol)
+    })
   }
   return (
     <>
       <div className="stepperStyling">
         <div className="stepperHeader">
           <RadioButtonUncheckedIcon
-            sx={{ color: (isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted && !configuring) ? "green" : "red" }}
+            sx={{ color: (isLoginValid() && isAccountNumberValid() && state.loginSubmitted && state.accountSelectionSubmitted && !configuring) ? "green" : "red" }}
           />
           <span className="connectionStatus">
-            Tastytrade {(isLoginValid() && isAccountNumberValid() && isExchangeAccountValid() && state.loginSubmitted && state.accountSelectionSubmitted && !configuring) ? "connected" : "disconnected"}{" "}
+            Tastytrade {(isLoginValid() && isAccountNumberValid() && state.loginSubmitted && state.accountSelectionSubmitted && !configuring) ? "connected" : "disconnected"}{" "}
           </span>
           <IconButton
             onClick={handleSettingsClicked}
             aria-label="settings"
           >
-            <Settings sx={{ color: (!configuring && !automationRunning) ? "white" : "#5e5e5e" }} />
+            <Settings sx={{ color: (!configuring) ? "white" : "#5e5e5e" }} />
           </IconButton>
         </div>
         <Box
@@ -540,8 +567,8 @@ export default function FifoAutomated() {
                     fifiFeedOptions={fifoFeedOptions}
                     fifoFeed={fifoFeedOption}
                     onFifoFeedChanged={value => setFifoFeedOption(value)}
-                    onTradingSymbolChanged={value => setTradingSymbolOption(value)}
-                    tradeSymbolOption={tradingSymbolOption}
+                    onTradeSymbolChanged={value => setTradeSymbolOption(value)}
+                    tradeSymbolOption={tradeSymbolOption}
                     tradeSymbolOptions={tradeSymbolOptions}
                     membership={membership}
                     state={exchangeAccountState}
@@ -559,11 +586,8 @@ export default function FifoAutomated() {
                     }}
                     strategiesRows={positionTableData}
                     strategyAccountConnectState={strategyAccountConnectState}
-                    automationRunning={automationRunning}
-                    onAutomationRunningChange={handleAutomationRunningChange}
-                    onClosingOnlyChange={handleClosingOnlyChange}
-                    onCapitalAllocationChange={handleCapitalAllocation}
                     errorMessage={errorMessage}
+                    isMutating={mutating}
                   />
                 }
                 {configuring && (
@@ -602,7 +626,7 @@ export default function FifoAutomated() {
                         color="success"
                         variant="outlined"
                         onClick={onAddStrategy}
-                        disabled={!enabled}
+                        disabled={!enabled || mutating}
                         sx={{ mr: 1 }}
                       >
                         Add Strategy
@@ -612,7 +636,7 @@ export default function FifoAutomated() {
                         color="success"
                         variant="outlined"
                         onClick={handleNext}
-                        disabled={!enabled}
+                        disabled={!enabled || mutating}
                         sx={{ mr: 1 }}
                       >
                         Next

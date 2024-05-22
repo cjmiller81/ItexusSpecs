@@ -22,21 +22,22 @@ export interface IPositionTableRow {
 
 interface PositionTableProps {
   data: IPositionTableRow[]
-  onStop: (id: string) => void
-  onDelete: (id: string) => void
-  onStart: (id: string) => void
+  onStop: (id: IPositionTableRow) => void
+  onDelete: (id: IPositionTableRow) => void
+  onStart: (id: IPositionTableRow) => void
+  isMutating: boolean
 }
 
-const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete, data }) => {
-  const [strategyIdToDelete, setStrategyIdToDelete] = useState<null | string>(null)
+const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete, data, isMutating }) => {
+  const [strategyToDelete, setStrategyToDelete] = useState<null | IPositionTableRow>(null)
   return (
     <>
-      <YesNoDialog open={Boolean(strategyIdToDelete)}
+      <YesNoDialog open={Boolean(strategyToDelete)}
       onAgree={() => {
-        setStrategyIdToDelete(null)
-        onDelete(strategyIdToDelete!)
+        setStrategyToDelete(null)
+        onDelete(strategyToDelete!)
       }}
-      onClose={() => setStrategyIdToDelete(null)}
+      onClose={() => setStrategyToDelete(null)}
       title="Delete strategy"
       content="Are you sure you want to delete the selected strategy?" />
 
@@ -76,21 +77,24 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
                     justifyContent="center">
                     {row.status === "Running" ? (
                       <Button
-                        onClick={() => onStop(row.id)}
+                        onClick={() => onStop(row)}
+                        disabled={isMutating}
                         size="small">
                         Stop
                       </Button>
                     ) : (
                       <Button
                         sx={{ color: "success.main" }}
-                        onClick={() => onStart(row.id)}
+                        onClick={() => onStart(row)}
+                        disabled={isMutating}
                         size="small">
                         Start
                       </Button>
                     )}
                     <Button
                       sx={{ color: "error.light" }}
-                      onClick={() => setStrategyIdToDelete(row.id)}
+                      onClick={() => setStrategyToDelete(row)}
+                      disabled={isMutating}
                       size="small">
                       Delete
                     </Button>

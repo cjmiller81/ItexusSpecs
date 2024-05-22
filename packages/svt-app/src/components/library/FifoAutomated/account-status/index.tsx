@@ -1,7 +1,7 @@
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { Box, Grid, IconButton, MenuItem, Select, TextField, Typography, styled, useMediaQuery } from "@mui/material";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { Box, Grid, IconButton, MenuItem, Select, TextField, Typography, styled } from "@mui/material";
+import { ReactNode, useCallback, useEffect } from "react";
 import { UseMutationResult } from "react-query";
 import { ExchangeAccount } from "../../../../services/tradingPlatformService";
 import { Divider, Stack } from "@chakra-ui/react";
@@ -14,7 +14,7 @@ type Props = {
   handleStatusUpdate: () => void;
   onFifoFeedChanged: (value: string) => void
   fifoFeed: string
-  onTradingSymbolChanged: (value: string) => void
+  onTradeSymbolChanged: (value: string) => void
   tradeSymbolOptions: string[]
   fifiFeedOptions: string[]
   tradeSymbolOption: string
@@ -27,7 +27,7 @@ export default function AccountStatus({ membership,
   handleStatusUpdate,
   onFifoFeedChanged,
   fifoFeed,
-  onTradingSymbolChanged,
+  onTradeSymbolChanged,
   tradeSymbolOption,
   tradeSymbolOptions,
   fifiFeedOptions,
@@ -113,7 +113,7 @@ export default function AccountStatus({ membership,
       <Stack alignItems="center" width="10%">
         <Divider borderColor="#757575" marginLeft="auto" marginRight="auto" height="100%" orientation="vertical" />
       </Stack>
-      
+
       <AdaptiveSideBox alignItems="center" width="45%">
         <Typography
           variant="button"
@@ -129,15 +129,15 @@ export default function AccountStatus({ membership,
         <LabeledStategyOptionField label="FIFO Feed">
           <Select onChange={event => onFifoFeedChanged(event.target.value)} value={fifoFeed} size="small">
             {
-              fifiFeedOptions.map(option => (<MenuItem value={option}>{option}</MenuItem>))
+              fifiFeedOptions.map(option => (<MenuItem value={option} key={option}>{option}</MenuItem>))
             }
           </Select>
         </LabeledStategyOptionField>
 
         <LabeledStategyOptionField label="Trade Symbol">
-          <Select onChange={event => onTradingSymbolChanged(event.target.value)} value={tradeSymbolOption} size="small">
+          <Select onChange={event => onTradeSymbolChanged(event.target.value)} value={tradeSymbolOption} size="small">
             {
-              tradeSymbolOptions.map(option => (<MenuItem value={option}>{option}</MenuItem>))
+              tradeSymbolOptions.map(option => (<MenuItem value={option} key={option}>{option}</MenuItem>))
             }
           </Select>
         </LabeledStategyOptionField>
