@@ -19,9 +19,9 @@ interface AutomationComponentProps {
   onClosingOnlyChange: (closingOnly: boolean, localOnly: boolean) => void;
   onCapitalAllocationChange: (newCapitalAllocation: number, localOnly: boolean) => void;
   errorMessage: string;
-  onDeleteStrategy: (id: string) => void;
-  onStopStrategy: (id: string) => void;
-  onStartStrategy: (id: string) => void;
+  onDeleteStrategy: (id: IPositionTableRow) => void;
+  onStopStrategy: (id: IPositionTableRow) => void;
+  onStartStrategy: (id: IPositionTableRow) => void;
   strategiesRows: IPositionTableRow[]
 }
 

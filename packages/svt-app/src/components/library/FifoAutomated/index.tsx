@@ -14,7 +14,7 @@ import Login from "./login";
 import Accounts from "./accounts";
 import AccountStatus from "./account-status";
 import AutomationComponent from "./automation/Automation";
-import { ExchangeAccount, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useGetAccountList, useGetIvlAutomationStatus, useStopIvlAutomation, useUpsertIvlAutomation, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
+import { ExchangeAccount, FifoStrateguListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useCreateFifoStrategy, useDeleteStrategy, useGetAccountList, useGetFifoStrategy, useGetIvlAutomationStatus, useStartStrategy, useStopIvlAutomation, useStopStrategy, useUpsertIvlAutomation, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
 import { v4 as uuid } from "uuid"
 import "./FifoAutomated.scss";
 import { useMediaQuery } from "@mui/material";
@@ -276,6 +276,59 @@ export default function FifoAutomated() {
     }
   });
 
+  const getStrategies = useGetFifoStrategy({
+    onSuccess: (res: FifoStrateguListResponse) => {
+      const newItems = res.fifoStrategyList_.map<IPositionTableRow>(listItem => ({
+        id: uuid(),
+        account: listItem.exchangeAccountNumber,
+        fifoFeed: "SP 500",
+        tradeQty: listItem.tradeQty.units,
+        status: listItem.active ? "Running" : "Suspended",
+        tradeSymbol: listItem.tradeSymbol
+      }))
+      setPositionTableData(newItems)
+    },
+    onError: (res: any) => {
+      console.error("useGetFifoStrategy", res);
+    }
+  });
+
+  const createFifoStrategy = useCreateFifoStrategy({
+    onSuccess:(res: any) => {
+      getAccountList.mutate();
+    },
+    onError: (res: any) => {
+      console.error("useCreateFifoStrategy", res);
+    }
+  });
+
+  const stopFifoStrategy = useStopStrategy({
+    onSuccess:(res: any) => {
+      getStrategies.mutate();
+    },
+    onError: (res: any) => {
+      console.error("useStopStrategy", res);
+    }
+  });
+
+  const startFifoStrategy = useStartStrategy({
+    onSuccess:(res: any) => {
+      getStrategies.mutate();
+    },
+    onError: (res: any) => {
+      console.error("useStartStrategy", res);
+    }
+  });
+
+  const deleteFifoStrategy = useDeleteStrategy({
+    onSuccess: useCallback((res: any) => {
+      getStrategies.mutate();
+    }, [getAccountList]),
+    onError: (res: any) => {
+      console.error("useDeleteStrategy", res);
+    }
+  });
+
   useInterval(() => {
     getAccountList.mutate();
   }, (1 * 60 * 1000)) // Refresh once every 5 minutes.
@@ -436,10 +489,23 @@ export default function FifoAutomated() {
 
   useEffect(() => {
     getAccountList.mutate();
+    getStrategies.mutate()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onAddStrategy = () =>{
+    createFifoStrategy.mutate({
+      active: true,
+      exchangeAccountNumber: strategyAccountConnectState.accountNumber,
+      masterSymbol: tradingSymbolOption,
+      //fifoFeedOption: fifoFeedOption
+      tradeQty: {
+        units: qty,
+        nanos: 0
+      },
+      tradingSymbol: tradingSymbolOption
+    })
+
     setConfiguring(false);
     setPositionTableData([...positionTableData, {
       fifoFeed: fifoFeedOption,
@@ -451,16 +517,28 @@ export default function FifoAutomated() {
     }])
   }
 
-  const onDeleteStrategy = (id: string) =>{
-    setPositionTableData(positionTableData.filter(strategy => strategy.id !== id))
+  const onDeleteStrategy = (row: IPositionTableRow) =>{
+    deleteFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol)
+    })
   }
 
-  const onStopStrategy = (id: string) =>{
-    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Suspended"} : {...strategy}))
+  const onStopStrategy = (row: IPositionTableRow) =>{
+    stopFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol)
+    })
   }
 
-  const onStartStrategy = (id: string) =>{
-    setPositionTableData(positionTableData.map(strategy => strategy.id === id ? {...strategy, status: "Running"} : {...strategy}))
+  const onStartStrategy = (row: IPositionTableRow) =>{
+    startFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol)
+    })
   }
   return (
     <>

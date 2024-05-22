@@ -1,10 +1,16 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
-import { IvlRiskTolerance, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
+import { CreateFifoStrategyRequest, FifoStrateguListItem, FifoStrateguListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
 
-const mockState = {
+
+const mockState :{
+  connected: boolean,
+  strategies: FifoStrateguListItem[]
+  status: any
+} = {
   connected: false,
+  strategies: [],
   status: {
     exchangeUsername: "benec",
     accountNumber: "5WU50943",
@@ -144,6 +150,90 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es/stop`, () => {
     mockState.status.isStarted = false
 
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`, () => {
+    const response: FifoStrateguListResponse = {
+      fifoStrategyList_: mockState.strategies
+    }
+    return HttpResponse.json(JSON.stringify(response))
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/start`, ({ params }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.strategies
+    .find(item => 
+      item.masterSymbol === masterSymbol 
+      && tradeSymbol === item.tradeSymbol 
+      && item.exchangeAccountNumber === accountNumber)
+    
+    if (item){
+      item.active = true
+    }
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/stop`, ({ params, request }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.strategies
+    .find(item => 
+      item.masterSymbol === masterSymbol 
+      && tradeSymbol === item.tradeSymbol 
+      && item.exchangeAccountNumber === accountNumber)
+    
+    if (item){
+      item.active = false
+    }
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol`, ({ params }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    mockState.strategies = mockState.strategies
+    .filter(item => 
+      !(item.masterSymbol === masterSymbol 
+      && tradeSymbol === item.tradeSymbol 
+      && item.exchangeAccountNumber === accountNumber))
+    
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`, async ({request}) => {
+    const data = await request.json() as CreateFifoStrategyRequest;
+    mockState.strategies.push({
+      active: data.active,
+      atrPeriod: 14,
+      capitalAllocation: 0,
+      entryOrderId: "",
+      hasEntryOrderId: false,
+      entryOrderStatus: "",
+      hasEntryOrderStatus: false,
+      exchange: "Tastytrade",
+      exchangeAccountNumber: data.exchangeAccountNumber || "",
+      masterSymbol: data.tradingSymbol,
+      masterSymbolAssetType: "Future",
+      stopOrderId: "",
+      hasStopOrderId: false,
+      stopOrderStatus: "",
+      hasStopOrderStatus: false,
+      targetOrderId: "",
+      hasTargetOrderId: false,
+      targetOrderStatus: "",
+      hasTargetOrderStatus: false,
+      tradeQty: data.tradeQty,
+      tradeSymbol: data.tradingSymbol,
+      tradeSymbolAssetType: "Future",
+      userId: ""
+    })
     return new HttpResponse(null, {
       status: 200
     })
