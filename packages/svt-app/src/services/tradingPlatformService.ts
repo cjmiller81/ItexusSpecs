@@ -98,7 +98,7 @@ export interface CreateFifoStrategyRequest {
   tradingSymbol: string
 }
 
-export interface FifoStrateguListItem {
+export interface FifoStrategyListItem {
   active: boolean,
   atrPeriod: number,
   capitalAllocation: number,
@@ -127,9 +127,9 @@ export interface FifoStrateguListItem {
   userId: string
 }
 
-export interface FifoStrateguListResponse
+export interface FifoStrategyListResponse
 {
-  fifoStrategyList_: FifoStrateguListItem[]
+  fifoStrategyList_: FifoStrategyListItem[]
 }
 
 interface Callbacks {

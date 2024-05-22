@@ -1,12 +1,12 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
-import { CreateFifoStrategyRequest, FifoStrateguListItem, FifoStrateguListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
+import { CreateFifoStrategyRequest, FifoStrategyListItem, FifoStrategyListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
 
 
 const mockState :{
   connected: boolean,
-  strategies: FifoStrateguListItem[]
+  strategies: FifoStrategyListItem[]
   status: any
 } = {
   connected: false,
@@ -156,7 +156,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   }),
 
   http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`, () => {
-    const response: FifoStrateguListResponse = {
+    const response: FifoStrategyListResponse = {
       fifoStrategyList_: mockState.strategies
     }
     return HttpResponse.json(JSON.stringify(response))
