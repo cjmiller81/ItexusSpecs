@@ -23,7 +23,10 @@
     "start:svt": "lerna run start --scope svt-app",
     "prepare": "husky install",
     "storybook": "lerna run storybook --scope components",
-    "build:storybook": "lerna run build-storybook --stream --scope components"
+    "build:storybook": "lerna run build-storybook --stream --scope components",
+    "dev:echo": "lerna run dev --parallel --scope echo-app --scope components",
+    "build:echo": "lerna run build --stream --scope echo-app --include-filtered-dependencies",
+    "start:echo": "lerna run start --scope echo-app"
   },
   "workspaces": {
     "packages": [
