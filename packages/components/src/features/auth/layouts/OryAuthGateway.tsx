@@ -16,6 +16,7 @@ type OryContextType = {
   session: Session | undefined
   settingsFlow?: SettingsFlow
   logOut: () => Promise<void>
+  onUpdateProfile: (firstName: string, lastName: string) => Promise<void>
   createSettingsFow: () => Promise<SettingsFlow>
   onChangePassword: (password: string) => Promise<void>
   onUpdateAvatar: (avatarUrl: string) => Promise<void>
@@ -105,6 +106,26 @@ export function OryAuthGateway({
     })
   }
 
+  const onUpdateProfile = async (firstName: string, lastName: string) => {
+    const flow = await createSettingsFow()
+    let payload: object = {}
+    payload["traits.email"] = session?.identity?.traits.email
+    payload["traits.avatarUrl"] = session?.identity?.traits.avatarUrl
+    payload["traits.name.first"] = firstName
+    payload["traits.name.last"] = lastName
+    payload["traits.newsletter"] = session?.identity?.traits.newsletter
+    payload["csrf_token"] = getCsrfToken(flow)
+    payload["method"] = "profile"
+    await ory.updateSettingsFlow({
+      flow: flow.id,
+      updateSettingsFlowBody: payload as UpdateSettingsFlowBody,
+    })
+
+    await ory.toSession().then(({ data }) => {
+      setSession(data)
+    })
+  }
+
   const onTotpSubmit = async (code: string): Promise<void> => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
     await ory
@@ -175,6 +196,7 @@ export function OryAuthGateway({
       logOut: handleLogout,
       onChangePassword,
       createSettingsFow,
+      onUpdateProfile,
       onTotpSubmit,
       onTotpUnlink,
       onUpdateAvatar,
@@ -184,6 +206,7 @@ export function OryAuthGateway({
       currentSettingsFlow,
       onChangePassword,
       handleLogout,
+      onUpdateProfile,
       createSettingsFow,
       onTotpSubmit,
       onTotpUnlink,

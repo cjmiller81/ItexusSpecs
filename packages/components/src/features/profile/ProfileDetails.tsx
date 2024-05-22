@@ -1,19 +1,34 @@
-import { Box, BoxProps, Button, Stack } from "@mui/material"
-import { useOry, AppFormTextField } from "../../index"
+import LoadingButton from "@mui/lab/LoadingButton"
+import { Box, BoxProps, Stack } from "@mui/material"
 import { Form, Formik } from "formik"
+import i18n from "i18next"
 import { useTranslation } from "react-i18next"
 import { InferType, object, string } from "yup"
+import { AppFormTextField, useOry } from "../../index"
 import { ProfileContainer } from "./ProfileContainer"
 
+const requiredError = i18n.t("mandatoryField", { ns: "errorMessages" })
+const maxFieldLengthError = i18n.t("MaxFieldLengthError", { ns: "errorMessages", symbols: 50 })
 const ProfileFormSchema = object({
-  firstName: string(),
-  lastName: string(),
+  firstName: string()
+    .required(requiredError)
+    .min(1, requiredError)
+    .max(50, maxFieldLengthError),
+  lastName: string()
+    .required(requiredError)
+    .min(1, requiredError)
+    .max(50, maxFieldLengthError),
   email: string(),
 })
 
 export type ProfileModel = InferType<typeof ProfileFormSchema>
 
-export const ProfileDetails = ({ ...props }: BoxProps) => {
+type Props = BoxProps & {
+  onUpdateProfile: (firstName: string, lastName: string) => void
+  loadingCnangeDetails?: boolean
+}
+
+export const ProfileDetails = ({ onUpdateProfile, loadingCnangeDetails, ...props }: Props) => {
   const { t } = useTranslation("ProfileContainer")
   const { session } = useOry()
 
@@ -31,7 +46,7 @@ export const ProfileDetails = ({ ...props }: BoxProps) => {
         validateOnBlur={false}
         validationSchema={ProfileFormSchema}
         onSubmit={data => {
-          console.log(data)
+          onUpdateProfile(data.firstName, data.lastName)
         }}>
         <Form>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pl: 2, pr: 2 }}>
@@ -53,15 +68,19 @@ export const ProfileDetails = ({ ...props }: BoxProps) => {
             </Stack>
             <AppFormTextField
               name="email"
+              inputProps={{
+                disabled: true,
+              }}
               required
               label={t("Email")}
             />
-            <Button
+            <LoadingButton
+              loading={loadingCnangeDetails}
               sx={{ alignSelf: "start", width: "30%", minWidth: "150px", mt: 2 }}
               variant={"contained"}
               type="submit">
               {t("ChangeDetails")}
-            </Button>
+            </LoadingButton>
           </Box>
         </Form>
       </Formik>
