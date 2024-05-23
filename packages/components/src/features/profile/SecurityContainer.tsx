@@ -17,9 +17,9 @@ import { ProfileContainer } from "./ProfileContainer"
 import i18n from "i18next"
 const NewPasswordModelSchema = object({
   newPassword: string()
-    .required(i18n.t("mandatoryField", { ns: "errorMessages" }))
-    .min(1, i18n.t("mandatoryField", { ns: "errorMessages" }))
-    .min(8, i18n.t("incorectPassword", { ns: "errorMessages" })),
+    .required(i18n.t("mandatoryField", { ns: "ErrorMessages" }))
+    .min(1, i18n.t("mandatoryField", { ns: "ErrorMessages" }))
+    .min(8, i18n.t("incorectPassword", { ns: "ErrorMessages" })),
 })
 
 type NewPasswordModel = InferType<typeof NewPasswordModelSchema>
@@ -189,7 +189,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         resetForm()
       })
       .catch(error => {
-        if (error.response.status === 400) dispatch(addError(t("invalidPasswordFormat", { ns: "errorMessages" })))
+        if (error.response.status === 400) dispatch(addError(t("invalidPasswordFormat", { ns: "ErrorMessages" })))
         else dispatch(addError(error?.response?.data?.error?.reason))
       })
       .finally(() => {
@@ -204,7 +204,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         dispatch(addMessage(t("ApplicationLinked")))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "errorMessages" })))
+        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "ErrorMessages" })))
         else dispatch(addError(error?.response?.data?.error?.reason))
       })
       .finally(() => {
@@ -219,7 +219,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         dispatch(addMessage(t("ApplicationUnlinked")))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "errorMessages" })))
+        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "ErrorMessages" })))
         else dispatch(addError(error?.response?.data?.error?.reason))
       })
       .finally(() => {

@@ -9,11 +9,11 @@ import { cryptoWalletFormat } from "../../constants"
 
 const AddressFormSchema = object({
   address: string()
-    .matches(cryptoWalletFormat, i18n.t("invalidFormat", { ns: "errorMessages" }))
-    .required(i18n.t("mandatoryField", { ns: "errorMessages" })),
+    .matches(cryptoWalletFormat, i18n.t("invalidFormat", { ns: "ErrorMessages" }))
+    .required(i18n.t("mandatoryField", { ns: "ErrorMessages" })),
   walletName: string()
     .max(50)
-    .required(i18n.t("mandatoryField", { ns: "errorMessages" })),
+    .required(i18n.t("mandatoryField", { ns: "ErrorMessages" })),
   isPersonal: boolean().required(),
 })
 
