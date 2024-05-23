@@ -32,7 +32,7 @@ function getHomeItems(): SidebarListItem[] {
     {
       title: t("Home", { ns: "SideBar" }),
       icon: <HomeIcon />,
-      open: false,
+      open: true,
       href: "/",
     },
   ]
