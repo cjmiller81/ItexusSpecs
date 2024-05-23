@@ -1,5 +1,5 @@
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
-import { delay } from "@/utils/common"
+import { delay } from "components"
 import { appAxios } from "components"
 import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "./backend-api.service"
 

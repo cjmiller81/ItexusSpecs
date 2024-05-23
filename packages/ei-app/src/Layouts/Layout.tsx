@@ -15,8 +15,8 @@ export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
   const dispatch = useAppDispatch()
   const sideBarOptions = useMemo(getSidebarMenuItems, [])
-  const { t } = useTranslation("Header")
   const { session, logOut } = useOry()
+  const { t } = useTranslation("Header")
   return (
     <StyledRoot sx={{ width: "100%" }}>
       <Header

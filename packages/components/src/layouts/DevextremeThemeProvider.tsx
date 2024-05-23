@@ -1,7 +1,8 @@
-import { useAppSelector } from "@/libs/redux/Store"
+
 import { BoxProps } from "@mui/material"
 import themes from "devextreme/ui/themes"
 import { useEffect } from "react"
+import { useAppSelector } from "../slices"
 
 export default function DevextremeThemeProvider({ children }: BoxProps) {
   const mode = useAppSelector(store => store.ui.mode)

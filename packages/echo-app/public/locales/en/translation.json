@@ -24,6 +24,7 @@
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
     "invalidCode": "Invalid code.",
     "incorectPassword": "Password must contain at least 8 characters",
+    "MaxFieldLengthError": "Thes field must be less than {{symbols}} characters",
     "mandatoryField": "Mandatory field",
     "passwordDoNotMatch": "Password do not match",
     "maxSymbols": "Max number of symbols - {{value}}",
@@ -56,7 +57,7 @@
     "Logout": "Logout"
   },
   "Header": {
-    "Echo": "ECHO"
+    "ElanInsights": "Elan Insights"
   },
   "HistoricalWalletsWorth": {
     "Daily": "Daily",
@@ -78,6 +79,7 @@
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
+    "ChangePasswordWarning": "Please, set a new password",
     "ChangePassword": "Change Password",
     "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
     "NewPassword": "New password",
@@ -101,14 +103,31 @@
   "ProfilePage": {
     "PROFILE": "PROFILE",
     "SECURITY": "SECURITY",
-    "UserProfile": "User Profile"
+    "WALLETS": "WALLETS",
+    "BILLING": "BILLING",
+    "UserProfile": "User Profile",
+    "AvatarUploadingError": "Error while loading image",
+    "ProfileUpdatingError": "Error while updating profile"
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
   "SideBar": {
-    "Home": "Home"
+    "Home": "Home",
+    "Investing": "Investing",
+    "MarketCapWeighted": "Market Cap Weighted",
+    "MarketCapEqualWeight": "Market Cap Equal Weight",
+    "TradingSubpage": "Trading Subpage",
+    "Income": "Income",
+    "IncomeSubpage": "Income subpage",
+    "Arbitrage": "Arbitrage",
+    "ArbitrageSubpage": "Arbitrage Subpage",
+    "Portfolios": "Portfolios",
+    "MyWallets": "Wallets",
+    "Community": "Community",
+    "Platform": "Platform",
+    "Tools": "Tools"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -116,11 +135,39 @@
     "IndexModeling": "Index Modeling",
     "RunTest": "Run Test"
   },
+  "ColumnsDefs": {
+    "Symbol": "Symbol",
+    "Price": "Price",
+    "MarketCap": "Market Cap",
+    "Weight": "Weight",
+    "Qty": "Qty",
+    "Chain": "Chain",
+    "Amount": "Amount",
+    "USDValue": "USD Value",
+    "TokenName": "Token Name",
+    "WalletAddress": "Wallet Address",
+    "PersonalPublic": "Personal",
+    "WalletName": "Wallet Name"
+  },
   "SymbolLookup": {
     "Search": "Search"
   },
   "MarketCapEqualWeight":{
     "Index": "Index"
+  },
+  "BillingContainer": {
+    "Plans": "Plans",
+    "Platinum": "Platinum",
+    "PlatinumCost": "$20.00 USD / month + tax",
+    "ExplorePlans": "Explore plans",
+    "BillingPeriod": "Billing Period",
+    "BillingCost": "Monthly (renews August 16th 2022)",
+    "ChangeBillingPeriod": "Change billing period",
+    "CardEnding": "Ending in {{number}}",
+    "Default": "Default",
+    "AddNewMethod": "Add New Method",
+    "PaymentMethods": "Payment Methods",
+    "MakeDefault": "Make Default"
   },
   "Tooltips":{
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

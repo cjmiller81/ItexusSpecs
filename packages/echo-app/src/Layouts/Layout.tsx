@@ -1,10 +1,16 @@
-import { getSidebarMenuItems } from "@/constants/sidebar"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { CssBaseline } from "@mui/material"
 import Box from "@mui/material/Box"
 import { styled } from "@mui/material/styles"
-import { Header, Sidebar, toggleSideBar, StyledDrawerHeader, toggleTheme } from "components"
-import { useMemo } from "react"
+import {
+  Header,
+  Sidebar,
+  StyledDrawerHeader,
+  toggleSideBar,
+  toggleTheme,
+  useAppDispatch,
+  useAppSelector,
+  useOry,
+} from "components"
 import { useTranslation } from "react-i18next"
 import "react-toastify/dist/ReactToastify.css"
 interface Props {
@@ -14,21 +20,24 @@ interface Props {
 export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
   const dispatch = useAppDispatch()
-  const sideBarOptions = useMemo(getSidebarMenuItems, [])
+  const { session, logOut } = useOry()
   const { t } = useTranslation("Header")
 
   return (
     <StyledRoot sx={{ width: "100%" }}>
       <Header
+        logOut={logOut}
+        defaultAvatar="/defaultAvatar.png"
+        avatarUrl={session?.identity?.traits.avatarUrl}
         mode={mode}
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
-        title={t("Echo")}
-        defaultAvatar="/defaultAvatar.png"
+        title={t("ElanInsights")}
       />
       <Sidebar
-        sidebarItems={sideBarOptions}
+        // TODO Add sidebar menu items here.
+        sidebarItems={[]}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
       />

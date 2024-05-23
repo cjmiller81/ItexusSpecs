@@ -1,4 +1,4 @@
-import { PaymentCardModel } from "../models/Payments/PaymentCardModel"
+import { PaymentCardModel } from "components";
 
 export const paymentCards: PaymentCardModel[] = [
   {

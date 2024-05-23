@@ -1,9 +1,10 @@
 "use client"
 
-import { useAppSelector } from "@/libs/redux/Store"
+
 import { getAppTheme } from "components"
 import { createTheme, ThemeProvider } from "@mui/material"
 import { ReactNode, useMemo } from "react"
+import { useAppSelector } from "../libs/redux/Store"
 
 interface Props {
   readonly children: ReactNode

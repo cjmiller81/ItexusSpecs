@@ -1,5 +1,6 @@
 import { AxiosError } from "axios"
-import { addError, appAxios, getUndefinedErrorMessage } from "components"
+import { addError, appAxios } from "components"
+import i18next from "i18next"
 import { appStore } from "../redux/Store"
 
 appAxios.interceptors.response.use(
@@ -11,7 +12,7 @@ appAxios.interceptors.response.use(
 
     if (originalRequest) {
       if (_error.status === 500) {
-        appStore.dispatch(addError(getUndefinedErrorMessage()))
+        appStore.dispatch(addError(i18next.t("somethingWentWrong", { ns: "errorMessages" })))
       }
 
       return Promise.reject(_error)
@@ -20,3 +21,5 @@ appAxios.interceptors.response.use(
     return Promise.reject()
   },
 )
+
+export default appAxios

@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
-import { backendApiUrl, ICategory, ICoin, IMarketCapWeightedIndex, IPlatform } from '@/services/backend-api.service'
+import { backendApiUrl, ICategory, ICoin, IMarketCapWeightedIndex, IPlatform } from 'components'
 
 // Mock data:
 import allCategories from './data/categories/all.json';
