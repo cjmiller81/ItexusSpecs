@@ -6,13 +6,26 @@
     "node": "20.x"
   },
   "scripts": {
-    "watch:comp": "lerna watch --scope=components -- lerna run build --scope=components",
-    "build:comp": "lerna run build --scope components",
     "dev:ei": "lerna run dev --parallel --scope ei-app --scope components",
     "build:ei": "lerna run build --stream --scope ei-app --include-filtered-dependencies",
     "start:ei": "lerna run start --scope ei-app",
     "start:ei:local": "lerna run start:local --scope ei-app",
     "lint:ei": "lerna run lint --scope ei-app",
+    "dev:echo": "lerna run dev --parallel --scope echo-app --scope components",
+    "build:echo": "lerna run build --stream --scope echo-app --include-filtered-dependencies",
+    "start:echo": "lerna run start --scope echo-app",
+    "start:echo:local": "lerna run start:local --scope echo-app",
+    "lint:echo": "lerna run lint --scope echo-app",
+    "dev:tda": "lerna run dev --parallel --scope tda-app --scope components",
+    "build:tda": "lerna run build --stream --scope tda-app --include-filtered-dependencies",
+    "start:tda": "lerna run start --scope tda-app",
+    "start:tda:local": "lerna run start:local --scope tda-app",
+    "lint:tda": "lerna run lint --scope tda-app",
+    "dev:svta": "lerna run dev --parallel --scope svt-admin-app --scope components",
+    "build:svta": "lerna run build --stream --scope svt-admin-app --include-filtered-dependencies",
+    "start:svta": "lerna run start --scope svt-admin-app",
+    "start:svta:local": "lerna run start:local --scope svt-admin-app",
+    "lint:svta": "lerna run lint --scope svt-admin-app",
     "build:mantis": "lerna run build --stream --scope mantis-app --include-filtered-dependencies",
     "start:mantis": "lerna run start --scope mantis-app",
     "lint:mantis": "lerna run lint --scope mantis-app",
@@ -23,11 +36,7 @@
     "start:svt": "lerna run start --scope svt-app",
     "prepare": "husky install",
     "storybook": "lerna run storybook --scope components",
-    "build:storybook": "lerna run build-storybook --stream --scope components",
-    "dev:echo": "lerna run dev --parallel --scope echo-app --scope components",
-    "build:echo": "lerna run build --stream --scope echo-app --include-filtered-dependencies",
-    "start:echo": "lerna run start --scope echo-app",
-    "start:echo:local": "lerna run start:local --scope echo-app"
+    "build:storybook": "lerna run build-storybook --stream --scope components"
   },
   "workspaces": {
     "packages": [
