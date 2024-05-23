@@ -7,8 +7,8 @@ import { InferType, object, string } from "yup"
 import { AppFormTextField, useOry } from "../../index"
 import { ProfileContainer } from "./ProfileContainer"
 
-const requiredError = i18n.t("mandatoryField", { ns: "errorMessages" })
-const maxFieldLengthError = i18n.t("MaxFieldLengthError", { ns: "errorMessages", symbols: 50 })
+const requiredError = i18n.t("mandatoryField", { ns: "ErrorMessages" })
+const maxFieldLengthError = i18n.t("MaxFieldLengthError", { ns: "ErrorMessages", symbols: 50 })
 const ProfileFormSchema = object({
   firstName: string()
     .required(requiredError)

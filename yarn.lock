@@ -10221,7 +10221,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"components@npm:^1.0.0, components@workspace:packages/components":
+"components@npm:^1.0.0, components@workspace:*, components@workspace:packages/components":
   version: 0.0.0-use.local
   resolution: "components@workspace:packages/components"
   dependencies:
@@ -12204,6 +12204,14 @@ __metadata:
   checksum: 10c0/6cf168bae1e2dad2e46561d9af9cbabfbf5ff592176ad4e9f0f41eaaf5fe5e10bb58147fe0a804de62b1ee9dad42c28810c88d652b21b6013c47ba8efa274ca1
   languageName: node
   linkType: hard
+
+"echo-app@workspace:packages/echo-app":
+  version: 0.0.0-use.local
+  resolution: "echo-app@workspace:packages/echo-app"
+  dependencies:
+    components: "workspace:*"
+  languageName: unknown
+  linkType: soft
 
 "echo-ui@workspace:.":
   version: 0.0.0-use.local

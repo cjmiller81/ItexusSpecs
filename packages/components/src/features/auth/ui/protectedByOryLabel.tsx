@@ -1,6 +1,5 @@
 import { Box, Typography } from "@mui/material"
 import React from "react"
-import icon from "../assets/oryIcon.svg"
 
 export const ProtectedByOryLabel = (): React.JSX.Element => {
   return (
@@ -12,7 +11,7 @@ export const ProtectedByOryLabel = (): React.JSX.Element => {
         fontSize=".625rem">
         Protected by
       </Typography>
-      <img src={icon}></img>
+      <img src="/oryIcon.svg"></img>
     </Box>
   )
 }
