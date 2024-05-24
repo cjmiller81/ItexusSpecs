@@ -1,13 +1,11 @@
 import AutoGraphIcon from "@mui/icons-material/AutoGraph"
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange"
 import SyncAltIcon from '@mui/icons-material/SyncAlt'
-import WorkspacesOutlinedIcon from '@mui/icons-material/WorkspacesOutlined'
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import HomeIcon from "@mui/icons-material/Home"
 import PeopleIcon from "@mui/icons-material/People"
 import React from "react"
 import i18next, { t } from "i18next"
-// import {arbitrage} from "../../public/arbitrage.svg";
 
 i18next.setDefaultNamespace("SideBar")
 type SidebarItemChild = {
