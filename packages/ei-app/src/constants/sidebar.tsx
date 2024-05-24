@@ -1,7 +1,6 @@
 import AutoGraphIcon from "@mui/icons-material/AutoGraph"
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange"
-import TrendingUpIcon from "@mui/icons-material/TrendingUp"
-import BarChartIcon from "@mui/icons-material/BarChart"
+import SyncAltIcon from '@mui/icons-material/SyncAlt'
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import HomeIcon from "@mui/icons-material/Home"
 import PeopleIcon from "@mui/icons-material/People"
@@ -57,7 +56,7 @@ function getPlatformsItems(): SidebarListItem[] {
     },
     {
       title: "Trading",
-      icon: <TrendingUpIcon />,
+      icon: <SyncAltIcon />,
       open: false,
       children: [
         {
@@ -79,7 +78,7 @@ function getPlatformsItems(): SidebarListItem[] {
     },
     {
       title: t("Arbitrage", { ns: "SideBar" }),
-      icon: <BarChartIcon />,
+      icon: <img src="/arbitrage.svg" alt="Arbitrage" style={{ width: '24px', height: '24px' }} />,
       open: false,
       children: [
         {
@@ -113,6 +112,30 @@ function getComunityItems(): SidebarListItem[] {
       title: t("Community", { ns: "SideBar" }),
       icon: <PeopleIcon />,
       href: "/community",
+      open: false,
+    },
+    {
+      title: t("Discord", { ns: "SideBar" }),
+      icon: <img src="/discord.svg" alt="Discord" style={{ width: '21px', height: '21px' }} />,
+      href: "/discord",
+      open: false,
+    },
+    {
+      title: t("X", { ns: "SideBar" }),
+      icon: <img src="/x.svg" alt="X" style={{ width: '24px', height: '24px' }} />,
+      href: "/x",
+      open: false,
+    },
+    {
+      title: t("Reddit", { ns: "SideBar" }),
+      icon:  <img src="/reddit.svg" alt="Reddit" style={{ width: '24px', height: '24px' }} />,
+      href: "/reddit",
+      open: false,
+    },
+    {
+      title: t("GitHub", { ns: "SideBar" }),
+      icon: <img src="/gitHub.svg" alt="GitHub" style={{ width: '23px', height: '23px' }} />,
+      href: "/gitHub",
       open: false,
     },
   ]
