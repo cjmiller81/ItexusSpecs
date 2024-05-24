@@ -1,0 +1,179 @@
+{
+  "Common": {
+    "Edit": "Edit",
+    "Save": "Save",
+    "Delete": "Delete",
+    "Cancel": "Cancel",
+    "Sumbit": "Submit",
+    "Clear": "Clear",
+    "Yes": "Yes",
+    "No": "No"
+  },
+  "PrefilterTokensSection":{
+    "PrefilterTokens": "Prefilter Tokens"
+  },
+  "CustomFilterBuilder":{
+    "DeleteDialogTitle": "Delete filter",
+    "ApplyFilter": "Apply filter",
+    "SelectFilter": "Select pre-built filter:",
+    "SaveFilterAs": "Save filter as:",
+    "FilterTokens": "Filter Tokens",
+    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
+  },
+  "ErrorMessages": {
+    "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
+    "invalidCode": "Invalid code.",
+    "incorectPassword": "Password must contain at least 8 characters",
+    "MaxFieldLengthError": "Thes field must be less than {{symbols}} characters",
+    "mandatoryField": "Mandatory field",
+    "passwordDoNotMatch": "Password do not match",
+    "maxSymbols": "Max number of symbols - {{value}}",
+    "minSymbols": "Min number of symbols - {{value}}",
+    "incorrectCredentials": "Your credentials are incorrect. Please try again",
+    "invalidPhoneNumber": "Phone number is not valid",
+    "somethingWentWrong": "Something went wrong...",
+    "invalidFormat": "Invalid format"
+  },
+  "ory":{
+    "login.title": "Login",
+    "identities.messages.1070004": "Email"
+  },
+  "WalletInputModal": {
+    "AddNewWallet": "Add new wallet",
+    "WalletName": "Wallet name",
+    "Personal": "Personal"
+  },
+  "MyWalletsSection": {
+    "AddWallet": "+Add Wallet",
+    "Wallets": "Wallets"
+  },
+  "MyWalletsPage": {
+    "HistoricalWalletsWorth": "Historical Wallets Worth",
+    "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
+  },
+  "UserMenu": {
+    "Profile": "Profile",
+    "Settings": "Settings",
+    "Logout": "Logout"
+  },
+  "Header": {
+    "ElanInsights": "Elan Insights"
+  },
+  "HistoricalWalletsWorth": {
+    "Daily": "Daily",
+    "Monthly": "Monthly",
+    "Weekly": "Weekly",
+    "CompareToSymbol": "Compare to Symbol",
+    "Period": "Period",
+    "FromDate": "From Date",
+    "ToDate": "To Date"
+  },
+  "TotalWalletsWorthCard": {
+    "TotalWalletWorth": "Total Wallet Worth"
+  },
+  "ProfileContainer": {
+    "ChangeDetails": "Change details",
+    "FirstName": "First Name",
+    "LastName": "Last Name",
+    "Email": "Email"
+  },
+  "SecurityContainer": {
+    "UnlinkTotp": "Unlink authentication app",
+    "ChangePasswordWarning": "Please, set a new password",
+    "ChangePassword": "Change Password",
+    "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
+    "NewPassword": "New password",
+    "EnableSMSMFA": "Enable SMS MFA",
+    "EnterPassword": "Enter password",
+    "PhoneNumber": "Phone number",
+    "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
+    "VerificationCode": "Verification code",
+    "NewPasswordMessage": "New password has been set.",
+    "ApplicationUnlinked": "Application unlinked.",
+    "ApplicationLinked": "Application linked.",
+    "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
+    "AndGoogleApp": "and Google Authenticator"
+  },
+  "IndexModelingSection": {
+    "Tokens": "Tokens",
+    "TotalCapital": "Total Capital",
+    "Export": "Export",
+    "EqualWeight": "Equal Weight"
+  },
+  "ProfilePage": {
+    "PROFILE": "PROFILE",
+    "SECURITY": "SECURITY",
+    "WALLETS": "WALLETS",
+    "BILLING": "BILLING",
+    "UserProfile": "User Profile",
+    "AvatarUploadingError": "Error while loading image",
+    "ProfileUpdatingError": "Error while updating profile"
+  },
+  "ProfilePicture": {
+    "UploadAvatar": "Upload Image/Avatar",
+    "UploadChangeImage": "Upload/Change Your Profile Image"
+  },
+  "SideBar": {
+    "Home": "Home",
+    "Investing": "Investing",
+    "MarketCapWeighted": "Market Cap Weighted",
+    "MarketCapEqualWeight": "Market Cap Equal Weight",
+    "TradingSubpage": "Trading Subpage",
+    "Income": "Income",
+    "IncomeSubpage": "Income subpage",
+    "Arbitrage": "Arbitrage",
+    "ArbitrageSubpage": "Arbitrage Subpage",
+    "Portfolios": "Portfolios",
+    "MyWallets": "Wallets",
+    "Community": "Community",
+    "Platform": "Platform",
+    "Tools": "Tools"
+  },
+  "MarketCapPage": {
+    "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
+    "WeightedChartTitle": "Historical Market Cap Weighted Index",
+    "IndexModeling": "Index Modeling",
+    "RunTest": "Run Test"
+  },
+  "ColumnsDefs": {
+    "Symbol": "Symbol",
+    "Price": "Price",
+    "MarketCap": "Market Cap",
+    "Weight": "Weight",
+    "Qty": "Qty",
+    "Chain": "Chain",
+    "Amount": "Amount",
+    "USDValue": "USD Value",
+    "TokenName": "Token Name",
+    "WalletAddress": "Wallet Address",
+    "PersonalPublic": "Personal",
+    "WalletName": "Wallet Name"
+  },
+  "SymbolLookup": {
+    "Search": "Search"
+  },
+  "MarketCapEqualWeight":{
+    "Index": "Index"
+  },
+  "BillingContainer": {
+    "Plans": "Plans",
+    "Platinum": "Platinum",
+    "PlatinumCost": "$20.00 USD / month + tax",
+    "ExplorePlans": "Explore plans",
+    "BillingPeriod": "Billing Period",
+    "BillingCost": "Monthly (renews August 16th 2022)",
+    "ChangeBillingPeriod": "Change billing period",
+    "CardEnding": "Ending in {{number}}",
+    "Default": "Default",
+    "AddNewMethod": "Add New Method",
+    "PaymentMethods": "Payment Methods",
+    "MakeDefault": "Make Default"
+  },
+  "Tooltips":{
+    "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",
+    "Period": "Select One",
+    "Required": "Required",
+    "PublicEye": "Watched Public Wallet",
+    "CompareToSymbol": "Leave Blank for Plot Only"
+  }
+}
