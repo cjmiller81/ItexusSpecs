@@ -51,7 +51,7 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
             {t("AddNewWallet")}
           </Typography>
           <AppFormTextField
-            sx={{ mt: 0.5 }}
+            sx={{ mt: 0.5, width: "100%" }}
             name={"address"}
             inputProps={{
               size: "small",
@@ -63,7 +63,7 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
             {t("WalletName")}
           </Typography>
           <AppFormTextField
-            sx={{ mt: 0.5 }}
+            sx={{ mt: 0.5, width: "100%" }}
             name={"walletName"}
             inputProps={{
               size: "small",

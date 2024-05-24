@@ -2,7 +2,7 @@
 
 # dependencies
 .yarn
-/node_modules
+node_modules
 /.pnp
 /.next
 .pnp.js

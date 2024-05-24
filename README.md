@@ -13,7 +13,7 @@ Before you can use this repo, you must have the following software installed:
 
 To use/run this repo, follow these steps:
 
-1. Clone this repo
+1. Clone this  repo
 2. Navigate into the cloned repo directory
 3. Install dependencies: `yarn`
 4. Install Lerna globally `yarn global add lerna`
