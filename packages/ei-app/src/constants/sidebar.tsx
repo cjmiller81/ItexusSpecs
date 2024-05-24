@@ -78,7 +78,7 @@ function getPlatformsItems(): SidebarListItem[] {
     },
     {
       title: t("Arbitrage", { ns: "SideBar" }),
-      icon:  <img src="/arbitrage.svg" alt="Arbitrage" style={{ width: '24px', height: '24px' }} />,
+      icon: <img src="/arbitrage.svg" alt="Arbitrage" style={{ width: '24px', height: '24px' }} />,
       open: false,
       children: [
         {
