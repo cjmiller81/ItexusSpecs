@@ -1,8 +1,8 @@
 import { styled } from "@mui/material/styles"
 import { GridRow } from "@mui/x-data-grid"
-import { toTableTokensModels } from "../../utils"
-import { getTokenNamesColumns } from "../../constants/ColumnsDefs/Tokens"
 import { BasicTable } from "../../components/DataDisplay"
+import { toTableTokensModels } from "../../utils"
+import { getTokenNamesColumns } from "./TokensTableColumnsDefs"
 
 export const ExpandableRow = (props: any) => {
   const rows = toTableTokensModels(props.row.chainAssets)
@@ -37,7 +37,7 @@ export const ExpandableRow = (props: any) => {
   )
 }
 
-const StyledTokensTable:any = styled(BasicTable)(() => ({
+const StyledTokensTable: any = styled(BasicTable)(() => ({
   width: "100%",
   "& .MuiDataGrid-virtualScrollerContent": {
     overflow: "hidden",

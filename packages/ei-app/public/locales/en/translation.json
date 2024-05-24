@@ -146,7 +146,7 @@
     "USDValue": "USD Value",
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address",
-    "PersonalPublic": "Personal",
+    "PersonalPublic": "Personal/Public",
     "WalletName": "Wallet Name"
   },
   "SymbolLookup": {

@@ -12,8 +12,6 @@ import { ChangeEvent } from "react"
 import { AppToolTip } from "../../components"
 import { Wallet } from "../../models"
 
-i18next.setDefaultNamespace("ColumnsDefs")
-
 interface ColumnsProps {
   handleSaveClick: (id: GridRowId) => void
   handleEditClick: (id: GridRowId) => void
@@ -36,32 +34,33 @@ export const getWalletsColumns = ({
   return [
     {
       field: "address",
-      headerName: t("WalletAddress"),
+      headerName: i18next.t("WalletAddress", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
-      width: 400,
+      minWidth: 100,
+      flex: 1,
       disableColumnMenu: true,
     },
     {
       field: "walletName",
-      headerName: t("WalletName"),
+      headerName: i18next.t("WalletName", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: true,
       type: "text",
       filterable: false,
-      width: 500,
+      minWidth: 100,
       flex: 1,
       disableColumnMenu: true,
     },
-
     {
       field: "isPersonal",
-      headerName: t("PersonalPublic"),
+      headerName: i18next.t("PersonalPublic", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: true,
       filterable: false,
-      width: 80,
+      align: "center",
+      width: 150,
       disableColumnMenu: true,
       renderEditCell: props => {
         const { id, value, api, field } = props
@@ -71,7 +70,6 @@ export const getWalletsColumns = ({
 
         return (
           <Checkbox
-            sx={{ ml: "11px" }}
             onChange={handleChange}
             checked={value}></Checkbox>
         )
@@ -82,11 +80,10 @@ export const getWalletsColumns = ({
             TransitionComponent={Fade}
             TransitionProps={{ timeout: 200 }}
             title={t("PublicEye", { ns: "Tooltips" })}>
-            <RemoveRedEye sx={{ ml: "20px" }} />
+            <RemoveRedEye />
           </AppToolTip>
         ) : (
           <Checkbox
-            sx={{ ml: "11px" }}
             disabled={true}
             checked={props.row.isPersonal}></Checkbox>
         )
@@ -114,7 +111,7 @@ export const getWalletsColumns = ({
             <GridActionsCellItem
               key={1}
               icon={<Cancel />}
-              label={t("Cancel", { ns: "Common" })}
+              label={i18next.t("Cancel", { ns: "Common" })}
               className="textPrimary"
               onClick={() => handleCancelClick(id)}
               color="inherit"
