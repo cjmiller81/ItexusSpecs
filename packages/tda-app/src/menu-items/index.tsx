@@ -1,19 +1,10 @@
-// project import
-import applications from './applications';
-import widget from './widget';
-import formsTables from './forms-tables';
-import chartsMap from './charts-map';
-import samplePage from './sample-page';
-import other from './other';
-import pages from './pages';
-
-// types
-import { NavItemType } from 'types/menu';
-
-// ==============================|| MENU ITEMS ||============================== //
+import tradingExecution from "./tradeExecution"
+import { NavItemType } from "types/menu"
+import accountFunding from "./account-funding"
+import admin from "./admin"
 
 const menuItems: { items: NavItemType[] } = {
-  items: [widget, applications, formsTables, chartsMap, samplePage, pages, other]
-};
+  items: [tradingExecution, accountFunding, admin],
+}
 
-export default menuItems;
+export default menuItems
