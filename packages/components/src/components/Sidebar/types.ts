@@ -1,4 +1,5 @@
 export type SidebarItemChild = {
+  icon: React.ReactNode
   title: string
   href: string
 }

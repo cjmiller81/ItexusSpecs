@@ -6,11 +6,13 @@ import HomeIcon from "@mui/icons-material/Home"
 import PeopleIcon from "@mui/icons-material/People"
 import React from "react"
 import i18next, { t } from "i18next"
+import { useTheme } from "@mui/material/styles"
 
 i18next.setDefaultNamespace("SideBar")
 type SidebarItemChild = {
   title: string
   href: string
+  icon?: React.ReactNode
 }
 
 export type SidebarListItem = {
@@ -106,37 +108,37 @@ function getToolsItems(): SidebarListItem[] {
   ]
 }
 
-function getComunityItems(): SidebarListItem[] {
+function getCommunityItems(): SidebarListItem[] {
+  const theme = useTheme()
+  const fillColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#696969';
   return [
     {
       title: t("Community", { ns: "SideBar" }),
       icon: <PeopleIcon />,
       href: "/community",
       open: false,
-    },
-    {
-      title: t("Discord", { ns: "SideBar" }),
-      icon: <img src="/discord.svg" alt="Discord" style={{ width: '21px', height: '21px' }} />,
-      href: "/discord",
-      open: false,
-    },
-    {
-      title: t("X", { ns: "SideBar" }),
-      icon: <img src="/x.svg" alt="X" style={{ width: '24px', height: '24px' }} />,
-      href: "/x",
-      open: false,
-    },
-    {
-      title: t("Reddit", { ns: "SideBar" }),
-      icon:  <img src="/reddit.svg" alt="Reddit" style={{ width: '24px', height: '24px' }} />,
-      href: "/reddit",
-      open: false,
-    },
-    {
-      title: t("GitHub", { ns: "SideBar" }),
-      icon: <img src="/gitHub.svg" alt="GitHub" style={{ width: '23px', height: '23px' }} />,
-      href: "/gitHub",
-      open: false,
+      children: [
+        {
+          title: t("Discord", { ns: "SideBar" }),
+          icon: <img src="/discord.svg" alt="X" style={{ width: "20px", height: "20px", fill: fillColor}} />,
+          href: "/#",
+        },
+        {
+          title: t("X", { ns: "SideBar" }),
+          icon: <img src="/x.svg" alt="X" style={{ width: '24px', height: '24px' }} />,
+          href: '/#',
+        },
+        {
+          title: t("Reddit", { ns: "SideBar" }),
+          icon:  <img src="/reddit.svg" alt="Reddit" style={{ width: '24px', height: '24px' }} />,
+          href: '/#',
+        },
+        {
+          title: t("GitHub", { ns: "SideBar" }),
+          icon: <img src="/gitHub.svg" alt="GitHub" style={{ width: '23px', height: '23px' }} />,
+          href: '/#',
+        },
+      ]
     },
   ]
 }
@@ -157,7 +159,7 @@ export function getSidebarMenuItems(): SidebarItems[] {
     },
     {
       title: t("Community", { ns: "SideBar" }),
-      sidebarListItems: getComunityItems(),
+      sidebarListItems: getCommunityItems(),
     },
   ]
 }

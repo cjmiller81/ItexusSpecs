@@ -59,7 +59,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               ) : (
                 <StyledTitleListItemText
                   primary={item.title}
-                  sx={{ opacity: 1 }}
+                  sx={{ opacity: 1}}
                 />
               )}
             </>
@@ -69,20 +69,23 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
       {item.children && (
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
-            {item.children.map(child => (
+            {item.children.map(child => {
+              const path = child.icon && child.icon.props
+              return(
               <AppLink
                 key={child.title}
                 passHref
                 href={child.href}
                 shallow>
-                <ListItemButton>
+                <ListItemButton sx={{pl: 3 }}>
+                  {child.icon && <img src={path.src} alt={path.alt} style={path.style}/>}
                   <ListItemText
                     primary={child.title}
-                    sx={{ ml: 4 }}
+                    sx={{ ml: 2 }}
                   />
                 </ListItemButton>
               </AppLink>
-            ))}
+              )})}
           </List>
         </Collapse>
       )}
