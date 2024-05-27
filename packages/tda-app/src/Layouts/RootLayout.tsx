@@ -1,16 +1,23 @@
+import ThemeCustomization from "@/themes"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
 import { CustomLanguageFormats, locales } from "@ory/elements"
 import { AutoSidebarLayout, OryAuthGateway, ToastifyLayout } from "components"
+import Snackbar from "components/@extended/Snackbar"
+import Locales from "components/Locales"
+import RTLLayout from "components/RTLLayout"
+import ScrollTop from "components/ScrollTop"
+import Notistack from "components/third-party/Notistack"
+import { SessionProvider } from "next-auth/react"
 import { AppProps } from "next/app"
 import { useMemo } from "react"
 import { PersistGate } from "redux-persist/integration/react"
 import i18n from "../libs/i18n/i18n"
 import { appPersistor } from "../libs/redux/Store"
-import { AppThemeProvider } from "../providers/AppThemeProvider"
 import { StoreProvider } from "../providers/StoreProvider"
 import Layout from "./Layout"
 
+import { ConfigProvider } from "contexts/ConfigContext"
 export interface IRootProps extends AppProps {
   children: any
 }
@@ -28,21 +35,36 @@ export default function RootLayout({ children }: IRootProps) {
 
   return (
     <OryAuthGateway
-      changePasswordRoute={typeof window !== "undefined" ? `${window.location.origin}/profile/security?requireChangePassword=true` : ""}
+      changePasswordRoute={
+        typeof window !== "undefined" ? `${window.location.origin}/profile/security?requireChangePassword=true` : ""
+      }
       customTranslations={customTranslations}>
       <StoreProvider>
         <PersistGate
           loading={null}
           persistor={appPersistor}>
-          <AppThemeProvider>
+          <ThemeCustomization>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <ToastifyLayout>
                 <AutoSidebarLayout>
-                  <Layout>{children}</Layout>
+                  <ConfigProvider>
+                      <RTLLayout>
+                        <Locales>
+                          <ScrollTop>
+                            <SessionProvider refetchInterval={0}>
+                              <Notistack>
+                                <Snackbar />
+                                <Layout>{children}</Layout>
+                              </Notistack>
+                            </SessionProvider>
+                          </ScrollTop>
+                        </Locales>
+                      </RTLLayout>
+                  </ConfigProvider>
                 </AutoSidebarLayout>
               </ToastifyLayout>
             </LocalizationProvider>
-          </AppThemeProvider>
+          </ThemeCustomization>
         </PersistGate>
       </StoreProvider>
     </OryAuthGateway>
