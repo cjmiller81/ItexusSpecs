@@ -16,7 +16,7 @@ interface Props {
 
 export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
   const theme = useTheme()
-  const [opened, setOpened] = useState<{ [index: number]: { [title: string]: boolean } }>({})
+  const [opened, setOpened] = useState(new Map<number, Map<string, boolean>>())
   const handleSetItemOpen = (title: string, index: number, newOpen: boolean) => {
     const newOpened = { ...opened }
     newOpened[index] = { [title]: newOpen }
