@@ -6,7 +6,11 @@ import HomeIcon from "@mui/icons-material/Home"
 import PeopleIcon from "@mui/icons-material/People"
 import React from "react"
 import i18next, { t } from "i18next"
+import ArbitrageIcon from "../../public/arbitrage.svg";
+import DiscordIcon from "../../public/discord.svg";
+import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
+import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system"
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
   
@@ -22,7 +26,8 @@ function getHomeItems(): SidebarListItem[] {
   ]
 }
 
-function getPlatformsItems(): SidebarListItem[] {
+function getPlatformsItems(theme: Theme): SidebarListItem[] {
+  const fillColor = theme.palette.mode === 'dark' ? '#ffffff' : '#696969';
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -60,7 +65,7 @@ function getPlatformsItems(): SidebarListItem[] {
     },
     {
       title: t("Arbitrage", { ns: "SideBar" }),
-      icon:  <img src="/arbitrage.svg" alt="Arbitrage" style={{ width: '24px', height: '24px' }} />,
+      icon: <ArbitrageIcon width="24px" height="24px" fill={fillColor} stroke={fillColor}/>,
       children: [
         {
           title: t("ArbitrageSubpage", { ns: "SideBar" }),
@@ -71,7 +76,7 @@ function getPlatformsItems(): SidebarListItem[] {
   ]
 }
 
-function getToolsItems(): SidebarListItem[] {
+function getToolsItems():  SidebarListItem[] {
   return [
     {
       title: t("Portfolios", { ns: "SideBar" }),
@@ -88,7 +93,7 @@ function getToolsItems(): SidebarListItem[] {
 }
 
   function getCommunityItems(theme: Theme): SidebarListItem[] {
-  const fillColor = theme.palette.mode === 'dark' ? 'red' : 'blue';
+  const fillColor = theme.palette.mode === 'dark' ? '#ffffff' : '#696969';
   return [
     {
       title: t("Community", { ns: "SideBar" }),
@@ -98,12 +103,12 @@ function getToolsItems(): SidebarListItem[] {
       children: [
         {
           title: t("Discord", { ns: "SideBar" }),
-          icon: <img src="/discord.svg" alt="X" style={{ width: "20px", height: "20px", fill: fillColor}} />,
+          icon: <DiscordIcon width="21px" height="21px" fill={fillColor} stroke={fillColor}/>,
           href: "/#",
         },
         {
           title: t("X", { ns: "SideBar" }),
-          icon: <img src="/x.svg" alt="X" style={{ width: '24px', height: '24px' }} />,
+          icon: <XIcon width="21px" height="21px" fill={fillColor} stroke={fillColor}/>,
           href: '/#',
         },
         {
@@ -113,9 +118,10 @@ function getToolsItems(): SidebarListItem[] {
         },
         {
           title: t("GitHub", { ns: "SideBar" }),
-          icon: <img src="/gitHub.svg" alt="GitHub" style={{ width: '23px', height: '23px' }} />,
+          icon: <GitHubIcon width="23px" height="23px" fill={fillColor} stroke={fillColor}/>,
           href: '/#',
         },
+
       ]
     },
   ]
@@ -129,7 +135,7 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
     },
     {
       title: t("Platform", { ns: "SideBar" }),
-      sidebarListItems: getPlatformsItems(),
+      sidebarListItems: getPlatformsItems(theme),
     },
     {
       title: t("Tools", { ns: "SideBar" }),

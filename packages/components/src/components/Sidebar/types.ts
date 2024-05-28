@@ -16,4 +16,5 @@ export type SidebarListItem = {
   icon: React.ReactNode
   children?: SidebarItemChild[]
   href?: string
+  open?: boolean
 }
