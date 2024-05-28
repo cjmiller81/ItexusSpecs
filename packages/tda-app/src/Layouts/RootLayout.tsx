@@ -1,8 +1,6 @@
 import ThemeCustomization from "@/themes"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
 import { CustomLanguageFormats, locales } from "@ory/elements"
-import { AutoSidebarLayout, OryAuthGateway, ToastifyLayout } from "components"
+import { OryAuthGateway } from "components"
 import Snackbar from "components/@extended/Snackbar"
 import Locales from "components/Locales"
 import RTLLayout from "components/RTLLayout"
@@ -43,28 +41,22 @@ export default function RootLayout({ children }: IRootProps) {
         <PersistGate
           loading={null}
           persistor={appPersistor}>
-          <ThemeCustomization>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <ToastifyLayout>
-                <AutoSidebarLayout>
-                  <ConfigProvider>
-                      <RTLLayout>
-                        <Locales>
-                          <ScrollTop>
-                            <SessionProvider refetchInterval={0}>
-                              <Notistack>
-                                <Snackbar />
-                                <Layout>{children}</Layout>
-                              </Notistack>
-                            </SessionProvider>
-                          </ScrollTop>
-                        </Locales>
-                      </RTLLayout>
-                  </ConfigProvider>
-                </AutoSidebarLayout>
-              </ToastifyLayout>
-            </LocalizationProvider>
-          </ThemeCustomization>
+          <ConfigProvider>
+            <ThemeCustomization>
+              <RTLLayout>
+                <Locales>
+                  <ScrollTop>
+                    <SessionProvider refetchInterval={0}>
+                      <Notistack>
+                        <Snackbar />
+                        <Layout>{children}</Layout>
+                      </Notistack>
+                    </SessionProvider>
+                  </ScrollTop>
+                </Locales>
+              </RTLLayout>
+            </ThemeCustomization>
+          </ConfigProvider>
         </PersistGate>
       </StoreProvider>
     </OryAuthGateway>

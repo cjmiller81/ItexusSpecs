@@ -60,6 +60,7 @@
     "@ory/elements": "^0.2.0",
     "@ory/integrations": "^1.1.5",
     "@reduxjs/toolkit": "^2.2.0",
+    "@svgr/webpack": "^8.1.0",
     "@types/react": "^18",
     "@types/uuid": "^9.0.2",
     "apexcharts": "^3.46.0",
