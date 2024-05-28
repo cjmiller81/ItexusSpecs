@@ -20,19 +20,6 @@ type SidebarItemChild = {
   href: string
 }
 
-export type SidebarListItem = {
-  title: string
-  icon: React.ReactNode
-  children?: SidebarItemChild[]
-  href?: string
-  open: boolean
-}
-
-export type SidebarItems = {
-  title: string
-  sidebarListItems: SidebarListItem[]
-}
-
 function getHomeItems(): SidebarListItem[] {
   return [
     {
@@ -83,7 +70,7 @@ function getPlatformsItems(theme: Theme): SidebarListItem[] {
     },
     {
       title: t("Arbitrage", { ns: "SideBar" }),
-      icon: <ArbitrageIcon width="24px" height="24px" fill={fillColor} stroke={fillColor}/>,
+      icon: <ArbitrageIcon width="21px" height="25px" fill={fillColor} stroke={fillColor}/>,
       children: [
         {
           title: t("ArbitrageSubpage", { ns: "SideBar" }),
