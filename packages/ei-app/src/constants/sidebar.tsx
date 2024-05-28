@@ -13,14 +13,32 @@ import RedditIcon from "../../public/reddit.svg";
 import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system"
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
-  
+
 i18next.setDefaultNamespace("SideBar")
+type SidebarItemChild = {
+  title: string
+  href: string
+}
+
+export type SidebarListItem = {
+  title: string
+  icon: React.ReactNode
+  children?: SidebarItemChild[]
+  href?: string
+  open: boolean
+}
+
+export type SidebarItems = {
+  title: string
+  sidebarListItems: SidebarListItem[]
+}
 
 function getHomeItems(): SidebarListItem[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
       icon: <HomeIcon />,
+      open: false,
       href: "/",
     },
   ]
@@ -76,7 +94,7 @@ function getPlatformsItems(theme: Theme): SidebarListItem[] {
   ]
 }
 
-function getToolsItems():  SidebarListItem[] {
+function getToolsItems(): SidebarListItem[] {
   return [
     {
       title: t("Portfolios", { ns: "SideBar" }),

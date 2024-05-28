@@ -27567,6 +27567,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svt-admin-app@workspace:packages/svt-admin-app":
+  version: 0.0.0-use.local
+  resolution: "svt-admin-app@workspace:packages/svt-admin-app"
+  dependencies:
+    components: "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "svt-app@workspace:packages/svt-app":
   version: 0.0.0-use.local
   resolution: "svt-app@workspace:packages/svt-app"
@@ -27771,6 +27779,14 @@ __metadata:
   checksum: 10c0/a5eca3eb50bc11552d453488344e6507156b9193efd7635e98e867fab275d527af53d8866e2370cd09dfe74378a18111622ace35af6a608e5223a7d27fe99537
   languageName: node
   linkType: hard
+
+"tda-app@workspace:packages/tda-app":
+  version: 0.0.0-use.local
+  resolution: "tda-app@workspace:packages/tda-app"
+  dependencies:
+    components: "workspace:*"
+  languageName: unknown
+  linkType: soft
 
 "temp-dir@npm:1.0.0":
   version: 1.0.0

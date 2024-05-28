@@ -2,7 +2,7 @@
   "name": "components",
   "private": true,
   "type": "module",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "main": "./src/index.tsx",
   "engines": {
     "node": ">=20.10.0"
