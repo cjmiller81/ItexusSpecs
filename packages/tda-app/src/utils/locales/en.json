@@ -136,5 +136,16 @@
   "utils": "Utils",
   "virtualized": "Virtualized",
   "widgets": "Widgets",
-  "more-items": "More Items"
+  "more-items": "More Items",
+  "trade-execution": "Trade Execution",
+  "rfq": "RFQ",
+  "account-management": "Account Management",
+  "account-funding": "Account Funding",
+  "crypto": "Crypto",
+  "flat": "Flat",
+  "admin": "Admin",
+  "accounting": "Accounting",
+  "account-history": "Account History",
+  "fireblocks": "Fireblocks",
+  "customers": "Customers"
 }

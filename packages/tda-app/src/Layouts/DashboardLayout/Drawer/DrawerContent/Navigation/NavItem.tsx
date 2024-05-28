@@ -79,7 +79,7 @@ export default function NavItem({ item, level, isParents = false }: Props) {
       {menuOrientation === MenuOrientation.VERTICAL || downLG ? (
         <Box sx={{ position: 'relative' }}>
           <ListItemButton
-            component={Link}
+            component={item.url ? Link : Box}
             href={item.url!}
             target={itemTarget}
             disabled={item.disabled}
