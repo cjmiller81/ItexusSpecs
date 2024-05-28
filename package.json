@@ -54,6 +54,7 @@
     "@types/uuid": "^9.0.2",
     "apexcharts": "^3.46.0",
     "axios": "^1.6.7",
+    "babel-plugin-inline-react-svg": "^2.0.2",
     "classnames": "^2.5.1",
     "components": "^1.0.0",
     "date-fns": "^3.4.0",
