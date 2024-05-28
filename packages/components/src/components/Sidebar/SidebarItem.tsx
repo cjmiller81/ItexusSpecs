@@ -1,13 +1,13 @@
 "use client"
 import ExpandLess from "@mui/icons-material/ExpandLess"
 import ExpandMore from "@mui/icons-material/ExpandMore"
-import { Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
+import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { AppLink } from "../common/AppLink"
 import { SidebarListItem } from "./types"
 
 interface Props {
-  item: SidebarListItem
+  item: SidebarListItem & {open: boolean}
   isSidebarOpened: boolean
   open: boolean
   //eslint-disable-next-line no-unused-vars
@@ -70,7 +70,6 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
             {item.children.map(child => {
-              const path = child.icon && child.icon.props
               return(
               <AppLink
                 key={child.title}
@@ -78,7 +77,9 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                 href={child.href}
                 shallow>
                 <ListItemButton sx={{pl: 3 }}>
-                  {child.icon && <img src={path.src} alt={path.alt} style={path.style}/>}
+                  <Box sx={{stroke: "green"}}>
+                  {child.icon}
+                  </Box>
                   <ListItemText
                     primary={child.title}
                     sx={{ ml: 2 }}

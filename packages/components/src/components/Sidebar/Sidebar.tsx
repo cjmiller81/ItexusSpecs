@@ -16,20 +16,11 @@ interface Props {
 
 export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
   const theme = useTheme()
-  const [sidebarMenuItems, setSidebarMenuItems] = useState(sidebarItems)
+  const [opened, setOpened] = useState<{ [index: number]: { [title: string]: boolean } }>({})
   const handleSetItemOpen = (title: string, index: number, newOpen: boolean) => {
-    const newState = sidebarMenuItems.map((menuItem, menuItemIndex) =>
-      menuItemIndex === index
-        ? {
-            title: menuItem.title,
-            sidebarListItems: menuItem.sidebarListItems.map(item =>
-              item.title === title ? { ...item, open: newOpen } : { ...item, open: false },
-            ),
-          }
-        : menuItem,
-    )
-
-    setSidebarMenuItems(newState)
+    const newOpened = { ...opened }
+    newOpened[index] = { [title]: newOpen }
+    setOpened(newOpened)
   }
 
   return (
@@ -43,18 +34,21 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
           </IconButton>
         </StyledDrawerHeader>
 
-        {sidebarMenuItems.map((item, index) => {
+        {sidebarItems.map((item, sidebarItemindex) => {
           return (
-            <Box key={index}>
+            <Box key={sidebarItemindex}>
               <SidebarSection
                 sectionName={item.title}
-                items={item.sidebarListItems}
-                onSetItemOpen={(title, open) => handleSetItemOpen(title, index, open)}
+                items={item.sidebarListItems.map((item) => ({
+                  ...item,
+                  open: Boolean(opened[sidebarItemindex] ? opened[sidebarItemindex][item.title] : false),
+                }))}
+                onSetItemOpen={(title, open) => handleSetItemOpen(title, sidebarItemindex, open)}
                 open={open}
                 toggleSide={toggleSide}
               />
 
-              {index !== sidebarMenuItems.length - 1 && <Divider />}
+              {sidebarItemindex !== sidebarItems.length - 1 && <Divider />}
             </Box>
           )
         })}

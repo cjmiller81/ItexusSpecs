@@ -6,34 +6,17 @@ import HomeIcon from "@mui/icons-material/Home"
 import PeopleIcon from "@mui/icons-material/People"
 import React from "react"
 import i18next, { t } from "i18next"
-import { useTheme } from "@mui/material/styles"
-
+import RedditIcon from "../../public/reddit.svg";
+import { Theme } from "@mui/system"
+import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
+  
 i18next.setDefaultNamespace("SideBar")
-type SidebarItemChild = {
-  title: string
-  href: string
-  icon?: React.ReactNode
-}
-
-export type SidebarListItem = {
-  title: string
-  icon: React.ReactNode
-  children?: SidebarItemChild[]
-  href?: string
-  open: boolean
-}
-
-export type SidebarItems = {
-  title: string
-  sidebarListItems: SidebarListItem[]
-}
 
 function getHomeItems(): SidebarListItem[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
       icon: <HomeIcon />,
-      open: false,
       href: "/",
     },
   ]
@@ -44,7 +27,6 @@ function getPlatformsItems(): SidebarListItem[] {
     {
       title: t("Investing", { ns: "SideBar" }),
       icon: <AutoGraphIcon />,
-      open: false,
       children: [
         {
           title: t("MarketCapWeighted", { ns: "SideBar" }),
@@ -59,7 +41,6 @@ function getPlatformsItems(): SidebarListItem[] {
     {
       title: "Trading",
       icon: <SyncAltIcon />,
-      open: false,
       children: [
         {
           title: t("TradingSubpage", { ns: "SideBar" }),
@@ -70,7 +51,6 @@ function getPlatformsItems(): SidebarListItem[] {
     {
       title: t("Income", { ns: "SideBar" }),
       icon: <CurrencyExchangeIcon />,
-      open: false,
       children: [
         {
           title: t("IncomeSubpage", { ns: "SideBar" }),
@@ -81,7 +61,6 @@ function getPlatformsItems(): SidebarListItem[] {
     {
       title: t("Arbitrage", { ns: "SideBar" }),
       icon:  <img src="/arbitrage.svg" alt="Arbitrage" style={{ width: '24px', height: '24px' }} />,
-      open: false,
       children: [
         {
           title: t("ArbitrageSubpage", { ns: "SideBar" }),
@@ -108,9 +87,8 @@ function getToolsItems(): SidebarListItem[] {
   ]
 }
 
-function getCommunityItems(): SidebarListItem[] {
-  const theme = useTheme()
-  const fillColor = theme.palette.mode === 'dark' ? '#FFFFFF' : '#696969';
+  function getCommunityItems(theme: Theme): SidebarListItem[] {
+  const fillColor = theme.palette.mode === 'dark' ? 'red' : 'blue';
   return [
     {
       title: t("Community", { ns: "SideBar" }),
@@ -130,7 +108,7 @@ function getCommunityItems(): SidebarListItem[] {
         },
         {
           title: t("Reddit", { ns: "SideBar" }),
-          icon:  <img src="/reddit.svg" alt="Reddit" style={{ width: '24px', height: '24px' }} />,
+          icon: <RedditIcon width="24px" height="24px" fill={fillColor} stroke={fillColor}/>,
           href: '/#',
         },
         {
@@ -143,7 +121,7 @@ function getCommunityItems(): SidebarListItem[] {
   ]
 }
 
-export function getSidebarMenuItems(): SidebarItems[] {
+export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
@@ -159,7 +137,7 @@ export function getSidebarMenuItems(): SidebarItems[] {
     },
     {
       title: t("Community", { ns: "SideBar" }),
-      sidebarListItems: getCommunityItems(),
+      sidebarListItems: getCommunityItems(theme),
     },
   ]
 }
