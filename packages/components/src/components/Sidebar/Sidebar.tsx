@@ -16,11 +16,13 @@ interface Props {
 
 export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
   const theme = useTheme()
-  const [opened, setOpened] = useState(new Map<number, Map<string, boolean>>())
+  const [opened, setOpened] = useState(new Map<string, boolean>())
   const handleSetItemOpen = (title: string, index: number, newOpen: boolean) => {
-    const newOpened = { ...opened }
-    newOpened[index] = { [title]: newOpen }
-    setOpened(newOpened)
+    setOpened((prevOpened) => {
+      const newOpened = new Map(prevOpened)
+      newOpened.set(`${index}-${title}`, newOpen)
+      return newOpened
+    })
   }
 
   return (
@@ -41,7 +43,7 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
                 sectionName={item.title}
                 items={item.sidebarListItems.map((item) => ({
                   ...item,
-                  open: Boolean(opened[sidebarItemindex] ? opened[sidebarItemindex][item.title] : false),
+                  open: Boolean(opened.get(`${sidebarItemindex}-${item.title}`) || false),
                 }))}
                 onSetItemOpen={(title, open) => handleSetItemOpen(title, sidebarItemindex, open)}
                 open={open}
