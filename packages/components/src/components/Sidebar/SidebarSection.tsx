@@ -5,7 +5,7 @@ import { SidebarListItem } from "./types"
 
 interface Props {
   sectionName: string
-  items: SidebarListItem[]
+  items: (SidebarListItem & {open: boolean})[]
   open: boolean
   toggleSide: Function
   //eslint-disable-next-line no-unused-vars

@@ -9,17 +9,6 @@
     "Yes": "Yes",
     "No": "No"
   },
-  "PrefilterTokensSection":{
-    "PrefilterTokens": "Prefilter Tokens"
-  },
-  "CustomFilterBuilder":{
-    "DeleteDialogTitle": "Delete filter",
-    "ApplyFilter": "Apply filter",
-    "SelectFilter": "Select pre-built filter:",
-    "SaveFilterAs": "Save filter as:",
-    "FilterTokens": "Filter Tokens",
-    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
-  },
   "ErrorMessages": {
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
     "invalidCode": "Invalid code.",
@@ -38,67 +27,14 @@
     "login.title": "Login",
     "identities.messages.1070004": "Email"
   },
-  "WalletInputModal": {
-    "AddNewWallet": "Add new wallet",
-    "WalletName": "Wallet name",
-    "Personal": "Personal"
-  },
-  "MyWalletsSection": {
-    "AddWallet": "+Add Wallet",
-    "Wallets": "Wallets"
-  },
-  "MyWalletsPage": {
-    "HistoricalWalletsWorth": "Historical Wallets Worth",
-    "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
-  },
-  "UserMenu": {
-    "Profile": "Profile",
-    "Settings": "Settings",
-    "Logout": "Logout"
-  },
   "Header": {
-    "ElanInsights": "Elan Insights"
-  },
-  "HistoricalWalletsWorth": {
-    "Daily": "Daily",
-    "Monthly": "Monthly",
-    "Weekly": "Weekly",
-    "CompareToSymbol": "Compare to Symbol",
-    "Period": "Period",
-    "FromDate": "From Date",
-    "ToDate": "To Date"
-  },
-  "TotalWalletsWorthCard": {
-    "TotalWalletWorth": "Total Wallet Worth"
+    "Title": "SVT Admin Dashboard"
   },
   "ProfileContainer": {
     "ChangeDetails": "Change details",
     "FirstName": "First Name",
     "LastName": "Last Name",
     "Email": "Email"
-  },
-  "SecurityContainer": {
-    "UnlinkTotp": "Unlink authentication app",
-    "ChangePasswordWarning": "Please, set a new password",
-    "ChangePassword": "Change Password",
-    "MultiFactorAuthenticationTitle": "Set up Multi-Factor Authentication (coming soon)",
-    "NewPassword": "New password",
-    "EnableSMSMFA": "Enable SMS MFA",
-    "EnterPassword": "Enter password",
-    "PhoneNumber": "Phone number",
-    "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
-    "VerificationCode": "Verification code",
-    "NewPasswordMessage": "New password has been set.",
-    "ApplicationUnlinked": "Application unlinked.",
-    "ApplicationLinked": "Application linked.",
-    "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
-    "AndGoogleApp": "and Google Authenticator"
-  },
-  "IndexModelingSection": {
-    "Tokens": "Tokens",
-    "TotalCapital": "Total Capital",
-    "Export": "Export",
-    "EqualWeight": "Equal Weight"
   },
   "ProfilePage": {
     "PROFILE": "PROFILE",
@@ -114,26 +50,18 @@
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
   "SideBar": {
-    "Home": "Home",
-    "Investing": "Investing",
-    "MarketCapWeighted": "Market Cap Weighted",
-    "MarketCapEqualWeight": "Market Cap Equal Weight",
-    "TradingSubpage": "Trading Subpage",
-    "Income": "Income",
-    "IncomeSubpage": "Income subpage",
-    "Arbitrage": "Arbitrage",
-    "ArbitrageSubpage": "Arbitrage Subpage",
-    "Portfolios": "Portfolios",
-    "MyWallets": "Wallets",
-    "Community": "Community",
-    "Platform": "Platform",
-    "Tools": "Tools"
-  },
-  "MarketCapPage": {
-    "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
-    "WeightedChartTitle": "Historical Market Cap Weighted Index",
-    "IndexModeling": "Index Modeling",
-    "RunTest": "Run Test"
+    "Dashboard": "Dashboard",
+    "FifoStrategy": "FIFO Strategy",
+    "FifoSignals": "FIFO Signals",
+    "FifoTradeInstruments": "FIFO Trade Instruments",
+    "FifoReports": "FIFO Reports",
+    "FifoUsers": "FIFO Users",
+    "IvlStrategy": "IVL Strategy",
+    "IvlUsers": "IVL Users",
+    "Fifo": "FIFO",
+    "Ivl": "IVL",
+    "IvlReports": "IVL Reports",
+    "Users": "Users "
   },
   "ColumnsDefs": {
     "Symbol": "Symbol",
@@ -148,32 +76,5 @@
     "WalletAddress": "Wallet Address",
     "PersonalPublic": "Personal",
     "WalletName": "Wallet Name"
-  },
-  "SymbolLookup": {
-    "Search": "Search"
-  },
-  "MarketCapEqualWeight":{
-    "Index": "Index"
-  },
-  "BillingContainer": {
-    "Plans": "Plans",
-    "Platinum": "Platinum",
-    "PlatinumCost": "$20.00 USD / month + tax",
-    "ExplorePlans": "Explore plans",
-    "BillingPeriod": "Billing Period",
-    "BillingCost": "Monthly (renews August 16th 2022)",
-    "ChangeBillingPeriod": "Change billing period",
-    "CardEnding": "Ending in {{number}}",
-    "Default": "Default",
-    "AddNewMethod": "Add New Method",
-    "PaymentMethods": "Payment Methods",
-    "MakeDefault": "Make Default"
-  },
-  "Tooltips":{
-    "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",
-    "Period": "Select One",
-    "Required": "Required",
-    "PublicEye": "Watched Public Wallet",
-    "CompareToSymbol": "Leave Blank for Plot Only"
   }
 }

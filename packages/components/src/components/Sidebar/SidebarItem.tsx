@@ -1,13 +1,13 @@
 "use client"
 import ExpandLess from "@mui/icons-material/ExpandLess"
 import ExpandMore from "@mui/icons-material/ExpandMore"
-import { Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
+import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { styled } from "@mui/material/styles"
 import { AppLink } from "../common/AppLink"
 import { SidebarListItem } from "./types"
 
 interface Props {
-  item: SidebarListItem
+  item: SidebarListItem & {open: boolean}
   isSidebarOpened: boolean
   open: boolean
   //eslint-disable-next-line no-unused-vars
@@ -59,7 +59,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               ) : (
                 <StyledTitleListItemText
                   primary={item.title}
-                  sx={{ opacity: 1 }}
+                  sx={{ opacity: 1}}
                 />
               )}
             </>
@@ -69,20 +69,24 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
       {item.children && (
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
-            {item.children.map(child => (
+            {item.children.map(child => {
+              return(
               <AppLink
                 key={child.title}
                 passHref
                 href={child.href}
                 shallow>
-                <ListItemButton>
+                <ListItemButton sx={{pl: 3 }}>
+                  <Box sx={{stroke: "green"}}>
+                  {child.icon}
+                  </Box>
                   <ListItemText
                     primary={child.title}
-                    sx={{ ml: 4 }}
+                    sx={{ ml: 2 }}
                   />
                 </ListItemButton>
               </AppLink>
-            ))}
+              )})}
           </List>
         </Collapse>
       )}
