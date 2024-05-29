@@ -1,15 +1,16 @@
-import AutoGraphIcon from "@mui/icons-material/AutoGraph"
+import PersonIcon from "@mui/icons-material/Person"
 import SyncAltIcon from "@mui/icons-material/SyncAlt"
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
 import i18next, { t } from "i18next"
-import PersonIcon from '@mui/icons-material/Person';
+import HomeIcon from '@mui/icons-material/Home';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+
 
 function getDashboardItems(): SidebarListItem[] {
   return [
     {
       title: i18next.t("Dashboard", { ns: "SideBar" }),
-      icon: <SyncAltIcon />,
+      icon: <HomeIcon />,
       open: false,
       href: "/",
     },
@@ -20,7 +21,7 @@ function getFifoStrategiesItems(): SidebarListItem[] {
   return [
     {
       title: i18next.t("FifoStrategy", { ns: "SideBar" }),
-      icon: <SyncAltIcon />,
+      icon: <AccountBalanceWalletIcon />,
       open: false,
       children: [
         {
@@ -48,7 +49,7 @@ function getIvlItems(): SidebarListItem[] {
   return [
     {
       title: i18next.t("IvlStrategy", { ns: "SideBar" }),
-      icon: <SyncAltIcon />,
+      icon: <AccountBalanceWalletIcon />,
       open: false,
       children: [
         {
@@ -58,7 +59,7 @@ function getIvlItems(): SidebarListItem[] {
         {
           title: t("IvlReports", { ns: "SideBar" }),
           href: "/strategies/ivl/reports",
-        }
+        },
       ],
     },
   ]
@@ -70,8 +71,8 @@ function getUsersItems(): SidebarListItem[] {
       title: i18next.t("Users", { ns: "SideBar" }),
       icon: <PersonIcon />,
       open: false,
-      href: "/users"
-    }
+      href: "/users",
+    },
   ]
 }
 
