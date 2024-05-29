@@ -17,7 +17,15 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
     chart: {
       foreColor: theme.palette.text.primary,
       toolbar: {
-        show: false,
+        tools: {
+          pan: false,
+          download:false,
+          zoom: '<img src="/reset.svg" style="visibility:hidden;" alt="zoom"/>',
+          zoomin: false,
+          zoomout: false,
+          reset: '<img src="/reset.svg" width="20" style="padding: 6px 0 10px 0 " alt="reset"/>'
+        },
+        show: true,
       },
       zoom: {
         enabled: false,
@@ -74,3 +82,4 @@ const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
     display: "none",
   },
 }))
+
