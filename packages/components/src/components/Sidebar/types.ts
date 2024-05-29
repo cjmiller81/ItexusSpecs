@@ -1,4 +1,7 @@
+import { ReactNode } from "react"
+
 export type SidebarItemChild = {
+  icon?: ReactNode
   title: string
   href: string
 }
@@ -13,5 +16,5 @@ export type SidebarListItem = {
   icon: React.ReactNode
   children?: SidebarItemChild[]
   href?: string
-  open: boolean
+  open?: boolean
 }
