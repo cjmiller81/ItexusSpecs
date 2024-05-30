@@ -67,17 +67,19 @@
     "Users": "Users "
   },
   "ColumnsDefs": {
-    "Symbol": "Symbol",
-    "Price": "Price",
-    "MarketCap": "Market Cap",
-    "Weight": "Weight",
-    "Qty": "Qty",
-    "Chain": "Chain",
-    "Amount": "Amount",
-    "USDValue": "USD Value",
-    "TokenName": "Token Name",
-    "WalletAddress": "Wallet Address",
-    "PersonalPublic": "Personal",
-    "WalletName": "Wallet Name"
+    "ATRMin": "ATR Min",
+    "ATRMax": "ATR Max",
+    "Formula1Start": "Formula 1 Start",
+    "Formula2Start": "Formula 2 Start",
+    "Formula1Slope": "Formula 1 Slope",
+    "Formula2Slope": "Formula 2 Slope",
+    "TickATRMEffect": "Tick ATR MEffect",
+    "TickATRMultiple": "Tick ATR Multiple",
+    "TickBase": "Tick Base",
+    "TickResetPercent": "Tick Reset Percent",
+    "StopMultiple": "Stop Multiple",
+    "TargetMultiple": "Target Multiple",
+    "Action": "Action",
+    "Symbol": "Symbol"
   }
 }

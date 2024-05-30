@@ -4,6 +4,8 @@ import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"
 import { GridActionsCellItem, GridColDef, GridRowId, GridRowModes, GridRowModesModel } from "@mui/x-data-grid"
 import { FifoSignalRow } from "./fifoSignalRow"
+import i18next from "@/libs/i18n/i18n"
+
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
   handleEditClick: (id: GridRowId) => void,
@@ -14,7 +16,7 @@ export function getColumns(
   const columns: GridColDef<FifoSignalRow>[] = [
     {
       field: "atrMin",
-      headerName: "ATR Min",
+      headerName: i18next.t("ATRMin", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -22,7 +24,7 @@ export function getColumns(
     },
     {
       field: "atrMax",
-      headerName: "ATR Max",
+      headerName: i18next.t("ATRMax", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -30,7 +32,7 @@ export function getColumns(
     },
     {
       field: "formula1Start",
-      headerName: "Formula 1 Start",
+      headerName: i18next.t("Formula1Start", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -38,7 +40,7 @@ export function getColumns(
     },
     {
       field: "formula2Start",
-      headerName: "Formula 2 Start",
+      headerName: i18next.t("Formula2Start", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -46,7 +48,7 @@ export function getColumns(
     },
     {
       field: "formula1Slope",
-      headerName: "Formula 1 Slope",
+      headerName: i18next.t("Formula1Slope", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -54,31 +56,7 @@ export function getColumns(
     },
     {
       field: "formula2Slope",
-      headerName: "Formula 2 Slope",
-      minWidth: 100,
-      editable: true,
-      type: "number",
-      flex: 1,
-    },
-    {
-      field: "masterSymbol",
-      headerName: "Tick ATR MEffect",
-      minWidth: 100,
-      editable: true,
-      type: "string",
-      flex: 1,
-    },
-    {
-      field: "stopMultiple",
-      headerName: "Tick ATR Multiple",
-      minWidth: 100,
-      editable: true,
-      type: "number",
-      flex: 1,
-    },
-    {
-      field: "targetMultiple",
-      headerName: "Tick Base",
+      headerName: i18next.t("Formula2Slope", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -86,7 +64,7 @@ export function getColumns(
     },
     {
       field: "tickAtrMEffect",
-      headerName: "Tick Reset Percent",
+      headerName: i18next.t("TickATRMEffect", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -94,7 +72,7 @@ export function getColumns(
     },
     {
       field: "tickAtrMultiple",
-      headerName: "Stop Multiple",
+      headerName: i18next.t("TickATRMultiple", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -102,7 +80,7 @@ export function getColumns(
     },
     {
       field: "tickBase",
-      headerName: "Target Multiple",
+      headerName: i18next.t("TickBase", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -110,10 +88,34 @@ export function getColumns(
     },
     {
       field: "tickResetPercent",
-      headerName: "Tick Reset Percent",
+      headerName: i18next.t("TickResetPercent", {ns : "ColumnsDefs"}),
       minWidth: 100,
       editable: true,
       type: "number",
+      flex: 1,
+    },
+    {
+      field: "stopMultiple",
+      headerName: i18next.t("StopMultiple", {ns : "ColumnsDefs"}),
+      minWidth: 100,
+      editable: true,
+      type: "number",
+      flex: 1,
+    },
+    {
+      field: "targetMultiple",
+      headerName: i18next.t("TargetMultiple", {ns : "ColumnsDefs"}),
+      minWidth: 100,
+      editable: true,
+      type: "number",
+      flex: 1,
+    },
+    {
+      field: "masterSymbol",
+      headerName:i18next.t("Symbol", {ns : "ColumnsDefs"}),
+      minWidth: 100,
+      editable: true,
+      type: "string",
       flex: 1,
     },
     {
