@@ -25,10 +25,11 @@ export default function FullFeaturedCrudGrid() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
   const [newRows, setNewRows] = useState<FifoSignalRow[]>([])
   const { fifoSignals } = useAppSelector(state => state.fifoSignals)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     dispatch(fetchFifoSignals({}))
-  }, [])
+  }, [dispatch])
 
   const fifoSignalsRows = useMemo(
     () =>
@@ -39,7 +40,6 @@ export default function FullFeaturedCrudGrid() {
     [fifoSignals],
   )
 
-  const dispatch = useAppDispatch()
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {

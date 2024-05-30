@@ -28,9 +28,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           //server.listen()
           setMocksStarted(true)
         } else {
-          const { worker } = await import("../mocks/browserApiServices")
-          // TODO fix. Worker does not woerk for https
-         // await worker.start()
+          // TODO fix. Worker does not work for https
+          // const { worker } = await import("../mocks/browserApiServices")
+          // await worker.start()
           setMocksStarted(true)
         }
       } else {

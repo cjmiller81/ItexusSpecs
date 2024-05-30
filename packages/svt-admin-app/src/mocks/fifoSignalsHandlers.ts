@@ -13,7 +13,7 @@ export const fifoSignalsHandlers: RequestHandler<RequestHandlerDefaultInfo, any,
     return HttpResponse.json(mockState.fifoSignals)
   }),
 
-  http.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoSignal/:id`, async ({ params, request }) => {
+  http.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoSignal/:id`, async ({ request }) => {
     const fifoSignal = (await request.json()) as FifoSignal
 
     const existedSignalIndex = mockState.fifoSignals.findIndex(
@@ -24,7 +24,7 @@ export const fifoSignalsHandlers: RequestHandler<RequestHandlerDefaultInfo, any,
     else mockState.fifoSignals.splice(existedSignalIndex, 1, fifoSignal)
   }),
 
-  http.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoSignal/:id`, ({ params, request }) => {
+  http.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoSignal/:id`, ({ params }) => {
     const { id } = params
     const decodedId = decodeURIComponent(id as string)
     const splitedId: [string, string] = decodedId.split(".") as [string, string]
