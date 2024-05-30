@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "name": "⭐ tda-app",
+      "path": "packages\\tda-app",
+    },
+    {
+      "name": "📚 components",
+      "path": "packages\\components",
+    },
+    {
+      "name": "✨ mantis-app",
+      "path": "packages\\mantis-app",
+    },
+    {
+      "name": "📌 root",
+      "path": ".",
+    },
+  ],
+}
