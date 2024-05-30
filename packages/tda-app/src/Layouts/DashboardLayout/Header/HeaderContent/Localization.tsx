@@ -113,37 +113,25 @@ export default function Localization() {
                       }
                     />
                   </ListItemButton>
-                  <ListItemButton selected={i18n === 'fr'} onClick={() => handleListItemClick('fr')}>
+                  <ListItemButton selected={i18n === 'sp'} onClick={() => handleListItemClick('sp')}>
                     <ListItemText
                       primary={
                         <Grid container>
-                          <Typography color="text.primary">français</Typography>
+                          <Typography color="text.primary">Spanish</Typography>
                           <Typography variant="caption" color="text.secondary" sx={{ ml: '8px' }}>
-                            (French)
+                            (SP)
                           </Typography>
                         </Grid>
                       }
                     />
                   </ListItemButton>
-                  <ListItemButton selected={i18n === 'ro'} onClick={() => handleListItemClick('ro')}>
+                  <ListItemButton selected={i18n === 'pt'} onClick={() => handleListItemClick('pt')}>
                     <ListItemText
                       primary={
                         <Grid container>
-                          <Typography color="text.primary">Română</Typography>
+                          <Typography color="text.primary">Portuguese</Typography>
                           <Typography variant="caption" color="text.secondary" sx={{ ml: '8px' }}>
-                            (Romanian)
-                          </Typography>
-                        </Grid>
-                      }
-                    />
-                  </ListItemButton>
-                  <ListItemButton selected={i18n === 'zh'} onClick={() => handleListItemClick('zh')}>
-                    <ListItemText
-                      primary={
-                        <Grid container>
-                          <Typography color="text.primary">中国人</Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ ml: '8px' }}>
-                            (Chinese)
+                            (PT)
                           </Typography>
                         </Grid>
                       }
