@@ -47,15 +47,15 @@ export default function FullFeaturedCrudGrid() {
     }
   }
 
-  const handleEditClick = (id: GridRowId) => () => {
+  const handleEditClick = (id: GridRowId) => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
   }
 
-  const handleSaveClick = (id: GridRowId) => () => {
+  const handleSaveClick = (id: GridRowId) => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
   }
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteClick = (id: GridRowId) => {
     dispatch(deleteFifoSignal({ id: encodeURIComponent(id) as string }))
   }
 
@@ -70,7 +70,7 @@ export default function FullFeaturedCrudGrid() {
     }
   }
 
-  const processRowUpdate = (newRow: FifoSignalRow, oldRow: FifoSignalRow) => {
+  const processRowUpdate = (newRow: FifoSignalRow) => {
     if (newRows.some(newItem => newItem.id === newRow.id)) {
       dispatch(createFifoSignal(newRow))
       setNewRows(prevNewRows => prevNewRows.filter(newRow => newRow.id !== newRow.id))
@@ -95,10 +95,7 @@ export default function FullFeaturedCrudGrid() {
     }))
   }
 
-  const columns = useMemo(
-    () => getColumns(handleSaveClick, handleEditClick, handleDeleteClick, handleCancelClick, rowModesModel),
-    [handleSaveClick, handleEditClick, handleDeleteClick, handleCancelClick, rowModesModel],
-  )
+  const columns = getColumns(handleSaveClick, handleEditClick, handleDeleteClick, handleCancelClick, rowModesModel);
   return (
     <Box
       sx={{

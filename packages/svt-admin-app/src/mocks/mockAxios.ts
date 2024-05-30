@@ -13,7 +13,8 @@ export function configureAxiosMocks(axios: AxiosInstance) {
   mock.onGet(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoSignal`).reply(config => {
     return [200, mockState.fifoSignals]
   })
-
+  
+  // eslint-disable-next-line
   const pathRegex = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/fifoSignal\/*`)
   mock.onPost(pathRegex).reply(config => {
     const fifoSignal = JSON.parse(config.data)
