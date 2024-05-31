@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 // material-ui
-import { Theme } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 
@@ -21,7 +21,7 @@ import { ThemeToggler } from '../../../../../../components/src/components/Header
 
 export default function HeaderContent() {
   const { menuOrientation, mode, onChangeMode } = useConfig();
-
+  const theme = useTheme();
   const downLG = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'));
 
   const localization = useMemo(() => <Localization />, []);
@@ -45,7 +45,7 @@ export default function HeaderContent() {
           styles={{
             ml: 1,
             "&:hover": {
-              backgroundColor: mode === "dark" ? "#555555" : "#ececec"
+              backgroundColor: theme.palette.grey[200]
             }
           }}
         />
