@@ -15,7 +15,7 @@ import DataGridDef, {
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
 import { ExportingEvent } from "devextreme/ui/data_grid"
-import React, { FC, useCallback, useEffect, useRef } from "react"
+import React, { FC, useCallback, useEffect, useRef, useMemo } from "react"
 import { PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
 
@@ -46,7 +46,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const containerRef = useRef<HTMLDivElement | null>(null)
   const filterPanelText = useRef<Element | null>(null)
 
-  const allowedPageSizes = [5, 10, 20, 50]
+  const allowedPageSizes = useMemo(() => [5, 10, 20, 50], [])
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance
 
@@ -119,9 +119,9 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     }
   }, [])
 
-  const onApplyFilter = (filter: string | any[] | (() => any)) => {
+  const onApplyFilter = useCallback((filter: string | any[] | (() => any)) => {
     onCurrentFilterChange(filter as object[])
-  }
+  }, [onCurrentFilterChange])
 
   const handleFilterTextClick = useCallback((_event: Event) => {
     onFilterBuilderOpen()
