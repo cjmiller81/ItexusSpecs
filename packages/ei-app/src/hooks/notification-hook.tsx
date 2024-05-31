@@ -1,5 +1,5 @@
 import CustomSnackbarProvider from "@/providers/CustomSnackbarProvider"
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useMemo, useState } from "react"
 
 interface INotificationContextProps {
   open: boolean
@@ -42,11 +42,11 @@ const NotificationProvider = ({ children }: any) => {
     }))
   }
 
-  const contextValue: INotificationContextProps = {
+  const contextValue = useMemo(() => ({
     ...notification,
     showNotification,
     hideNotification,
-  }
+  }), [notification]);
 
   return (
     <NotificationContext.Provider value={contextValue}>
