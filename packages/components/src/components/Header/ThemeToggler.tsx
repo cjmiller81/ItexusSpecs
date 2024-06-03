@@ -5,11 +5,13 @@ import { IconButton, PaletteMode } from "@mui/material"
 type Props = {
   mode: PaletteMode
   onToggleMode: () => void
+  styles?: object
 }
 
-export function ThemeToggler({ mode, onToggleMode }: Props) {
+export function ThemeToggler({ mode, onToggleMode, styles = {} }: Props) {
   return (
     <IconButton
+      sx={{ ...styles } }
       color="inherit"
       onClick={onToggleMode}>
       {mode === "dark" ? <LightMode /> : <NightlightRound stroke="black" />}
