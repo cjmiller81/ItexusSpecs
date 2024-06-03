@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+        "name": "⭐ ei-app",
+        "path": "packages\\ei-app"
+    },
+    {
+        "name": "📚 components",
+        "path": "packages\\components"
+    },
+    {
+      "name": "📌 root",
+      "path": "."
+    }
+  ],
+}

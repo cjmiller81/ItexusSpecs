@@ -15,10 +15,6 @@ import { Theme } from "@mui/system"
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
 
 i18next.setDefaultNamespace("SideBar")
-type SidebarItemChild = {
-  title: string
-  href: string
-}
 
 function getHomeItems(): SidebarListItem[] {
   return [

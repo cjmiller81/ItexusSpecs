@@ -1,9 +1,8 @@
-import PersonIcon from "@mui/icons-material/Person"
-import SyncAltIcon from "@mui/icons-material/SyncAlt"
-import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
-import i18next, { t } from "i18next"
-import HomeIcon from '@mui/icons-material/Home';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from "@mui/icons-material/Person";
+import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
+import i18next, { t } from "i18next";
 
 
 function getDashboardItems(): SidebarListItem[] {

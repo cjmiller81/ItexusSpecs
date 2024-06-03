@@ -1,5 +1,5 @@
 import axios from "axios"
-import { apiDateFormat } from "../../constants/common"
+import { AddDatesProcessing } from "./axiosDatesProcessor"
 
 export const appAxios = axios.create({
   baseURL: process.env.API_BASE_URL, // "https://tokensets-api.emergentcybernetics.net",
@@ -16,21 +16,5 @@ appAxios.interceptors.request.use(
   },
 )
 
-function isIsoDateString(value: any): boolean {
-  return value && typeof value === "string" && apiDateFormat.test(value)
-}
+AddDatesProcessing(appAxios)
 
-function handleDates(body: any) {
-  if (body === null || body === undefined || typeof body !== "object") return body
-
-  for (const key of Object.keys(body)) {
-    const value = body[key]
-    if (isIsoDateString(value)) body[key] = new Date(value)
-    else if (typeof value === "object") handleDates(value)
-  }
-}
-
-appAxios.interceptors.response.use(originalResponse => {
-  handleDates(originalResponse.data)
-  return originalResponse
-})
