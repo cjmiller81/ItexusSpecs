@@ -290,7 +290,9 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     ))}
                   </Select>
                 </FilterSelectorContainer>
+                {/*
                 <MockContent />
+                */}
               </Stack>
             </ContentContainer>
           </Box>
@@ -336,6 +338,7 @@ const MockContent = () => {
 
 const FilterBuilderComponentContainer = styled(Box)(({ theme }) => ({
   minHeight: theme.spacing(16),
+  minWidth: theme.spacing(60),
 }))
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
