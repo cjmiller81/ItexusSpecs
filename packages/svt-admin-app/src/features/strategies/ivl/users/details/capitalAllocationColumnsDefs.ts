@@ -2,7 +2,7 @@ import i18next from "@/libs/i18n/i18n"
 import { GridColDef } from "@mui/x-data-grid"
 import { CapitalAllocation } from "./capitalAllocation"
 import moment from "moment"
-import { dateTimeFormat } from "components"
+import { apiDateFormatString } from "components"
 
 export function getCapitalAllocationColumnsDefs() {
   const columns: GridColDef<CapitalAllocation>[] = [
@@ -44,7 +44,7 @@ export function getCapitalAllocationColumnsDefs() {
       minWidth: 100,
       editable: true,
       type: "string",
-      valueFormatter: params => moment(params?.value).format(dateTimeFormat),
+      valueFormatter: params => moment(params?.value).format(apiDateFormatString),
       flex: 1,
     },
   ]

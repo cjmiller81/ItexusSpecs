@@ -1,6 +1,6 @@
 import i18next from "@/libs/i18n/i18n"
 import { GridColDef } from "@mui/x-data-grid"
-import { dateTimeFormat } from "components"
+import { apiDateFormatString } from "components"
 import moment from "moment"
 import { Billing } from "./billing"
 
@@ -28,7 +28,7 @@ export function getBillingColumnsDefs() {
       minWidth: 100,
       editable: true,
       type: "string",
-      valueFormatter: params => moment(params?.value).format(dateTimeFormat),
+      valueFormatter: params => moment(params?.value).format(apiDateFormatString),
       flex: 1,
     },
     {
@@ -37,7 +37,7 @@ export function getBillingColumnsDefs() {
       minWidth: 100,
       editable: true,
       type: "string",
-      valueFormatter: params => moment(params?.value).format(dateTimeFormat),
+      valueFormatter: params => moment(params?.value).format(apiDateFormatString),
       flex: 1,
     },
     {
@@ -70,7 +70,7 @@ export function getBillingColumnsDefs() {
       minWidth: 100,
       editable: true,
       type: "string",
-      valueFormatter: params => moment(params?.value).format(dateTimeFormat),
+      valueFormatter: params => moment(params?.value).format(apiDateFormatString),
       flex: 1,
     },
   ]

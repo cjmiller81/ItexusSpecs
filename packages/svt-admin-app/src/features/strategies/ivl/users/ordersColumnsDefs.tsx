@@ -1,6 +1,6 @@
 import i18next from "@/libs/i18n/i18n"
 import { GridColDef } from "@mui/x-data-grid"
-import { dateTimeFormat } from "components"
+import { apiDateFormatString } from "components"
 import moment from "moment"
 import { Order } from "./details/order"
 
@@ -47,7 +47,7 @@ export function getOrderColumnsColumns() {
       headerName: i18next.t("TransactionTime", { ns: "ColumnsDefs" }),
       type: "string",
       flex: 1,
-      valueFormatter: params => moment(params?.value).format(dateTimeFormat),
+      valueFormatter: params => moment(params?.value).format(apiDateFormatString),
     },
   ]
 
