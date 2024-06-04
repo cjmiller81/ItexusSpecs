@@ -79,9 +79,11 @@ const nextConfig = {
 
     BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
     NEXT_PUBLIC_BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
+    //BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
+    //NEXT_PUBLIC_BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
 
-    BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsImV4cCI6MTcxOTQwODA3MywiaXNzIjoieW91cl9pc3N1ZXIiLCJhdWQiOiJ5b3VyX2F1ZGllbmNlIn0.7I0P39ebsl5HNBTzVeJjMSsghqVOLLc8htyxnuO7Bqw',
-    NEXT_PUBLIC_BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsImV4cCI6MTcxOTQwODA3MywiaXNzIjoieW91cl9pc3N1ZXIiLCJhdWQiOiJ5b3VyX2F1ZGllbmNlIn0.7I0P39ebsl5HNBTzVeJjMSsghqVOLLc8htyxnuO7Bqw',
+    BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJleHAiOjE3MjAxMzMzNTMsImlzcyI6Imp3dF9hcGlfaXNzdWVyIiwiYXVkIjoiand0X2FwaV9hdWRpZW5jZSJ9.9bXICtI03xv8Op0psUL_PZ6MIPrG0oLsEyaQbH8Bv9E',
+    NEXT_PUBLIC_BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJleHAiOjE3MjAxMzMzNTMsImlzcyI6Imp3dF9hcGlfaXNzdWVyIiwiYXVkIjoiand0X2FwaV9hdWRpZW5jZSJ9.9bXICtI03xv8Op0psUL_PZ6MIPrG0oLsEyaQbH8Bv9E',
 
   },
   transpilePackages: ['@mui/icons-material', 'components'],
