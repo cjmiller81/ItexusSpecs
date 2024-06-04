@@ -112,7 +112,7 @@
   "UserDetailsSection":{
     "CapitalAllocation": "Capital Allocation",
     "OrdersPlaced": "Orders Placed",
-    "BootStatus": "Boot Status",
+    "BotStatus": "Bot Status",
     "ClosingOnly": "Closing Only",
     "Orders": "Orders",
     "Billings": "Billings",
