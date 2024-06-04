@@ -31,7 +31,7 @@ export default function UserDetailsSection({ opened, user, orders, allocations, 
   const capitalAllocationCardColor =
     theme.palette.mode === "dark" ? theme.palette.primary.dark : theme.palette.primary.main
   const ordersCardColor = theme.palette.mode === "dark" ? theme.palette.warning.dark : theme.palette.warning.light
-  const bootStatusCardColor = theme.palette.mode === "dark" ? theme.palette.success.dark : theme.palette.success.main
+  const botStatusCardColor = theme.palette.mode === "dark" ? theme.palette.success.dark : theme.palette.success.main
   return (
     <Box {...props}>
       <StyledMetricsBox>
@@ -47,8 +47,8 @@ export default function UserDetailsSection({ opened, user, orders, allocations, 
           title={t("OrdersPlaced")}
           subtitle={orders.length.toString()}></UserMetricCard>
         <UserMetricCard
-          sx={{ backgroundColor: bootStatusCardColor }}
-          title={t("BootStatus")}
+          sx={{ backgroundColor: botStatusCardColor }}
+          title={t("BotStatus")}
           subtitle={user.botStatus}></UserMetricCard>
       </StyledMetricsBox>
 
@@ -56,9 +56,9 @@ export default function UserDetailsSection({ opened, user, orders, allocations, 
         <ClosingOnlyBox>
           <Button
             variant="outlined"
-            color={bootStatusVariant}
-            sx={{ borderColor: bootStatusColor, color: bootStatusColor, maxWidth: "200px" }}>
-            {bootStatusText}
+            color={botStatusVariant}
+            sx={{ borderColor: botStatusColor, color: botStatusColor, maxWidth: "200px" }}>
+            {botStatusText}
           </Button>
 
           <FormControlLabel
