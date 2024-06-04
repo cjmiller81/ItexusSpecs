@@ -24,9 +24,9 @@ export default function UserDetailsSection({ opened, user, orders, allocations, 
   const { t } = useTranslation("UserDetailsSection")
   const totalAllocation = allocations.reduce((acc, allocation) => acc + allocation.capitalAllocation, 0)
 
-  const bootStatusColor = user.botStatus === "Active" ? theme.palette.warning.main : theme.palette.success.main
-  const bootStatusVariant = user.botStatus === "Active" ? "error" : "success"
-  const bootStatusText = user.botStatus === "Active" ? t("StopAutomation") : t("StartAutomation")
+  const botStatusColor = user.botStatus === "Active" ? theme.palette.warning.main : theme.palette.success.main
+  const botStatusVariant = user.botStatus === "Active" ? "error" : "success"
+  const botStatusText = user.botStatus === "Active" ? t("StopAutomation") : t("StartAutomation")
 
   const capitalAllocationCardColor =
     theme.palette.mode === "dark" ? theme.palette.primary.dark : theme.palette.primary.main
