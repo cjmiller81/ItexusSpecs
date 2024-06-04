@@ -59,7 +59,7 @@ export default function FullFeaturedCrudGrid() {
     dispatch(deleteFifoSignal({ id: encodeURIComponent(id) as string }))
   }
 
-  const handleCancelClick = (id: GridRowId) => () => {
+  const handleCancelClick = (id: GridRowId) => {
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
