@@ -19,7 +19,7 @@ export function getColumns(
   const columns: GridColDef<TradeInstrumentsRow>[] = [
     {
       field: "masterSymbol",
-      headerName: i18next.t("Master Symbol", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("MasterSymbol", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -28,7 +28,7 @@ export function getColumns(
     },
     {
       field: "masterTickATRMultiple",
-      headerName: i18next.t("Master Tick ATR Multiple", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("MasterTickATRMultiple", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -36,7 +36,7 @@ export function getColumns(
     },
     {
       field: "atrPeriod",
-      headerName: i18next.t("ATR Period", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("AtrPeriod", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -44,7 +44,7 @@ export function getColumns(
     },
     {
       field: "tradeSymbol",
-      headerName: i18next.t("Trade Symbol", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("TradeSymbol", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -53,7 +53,7 @@ export function getColumns(
     },
     {
       field: "targetMultiple",
-      headerName: i18next.t("Target Multiple", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("TargetMultiple", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
@@ -61,7 +61,7 @@ export function getColumns(
     },
     {
       field: "stopMultiple",
-      headerName: i18next.t("Stop Multiple", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("StopMultiple", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
