@@ -9,6 +9,9 @@
     "Yes": "Yes",
     "No": "No"
   },
+  "EditToolbar":{
+    "AddSignal": "Add Signal"
+  },
   "ErrorMessages": {
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
     "invalidCode": "Invalid code.",
@@ -64,17 +67,56 @@
     "Users": "Users "
   },
   "ColumnsDefs": {
+    "ATRMin": "ATR Min",
+    "ATRMax": "ATR Max",
+    "Formula1Start": "Formula 1 Start",
+    "Formula2Start": "Formula 2 Start",
+    "Formula1Slope": "Formula 1 Slope",
+    "Formula2Slope": "Formula 2 Slope",
+    "TickATRMEffect": "Tick ATR MEffect",
+    "TickATRMultiple": "Tick ATR Multiple",
+    "TickBase": "Tick Base",
+    "TickResetPercent": "Tick Reset Percent",
+    "StopMultiple": "Stop Multiple",
+    "TargetMultiple": "Target Multiple",
+    "Action": "Action",
     "Symbol": "Symbol",
-    "Price": "Price",
-    "MarketCap": "Market Cap",
-    "Weight": "Weight",
-    "Qty": "Qty",
-    "Chain": "Chain",
+    "Id": "Id",
+    "ExchangeUsername": "Exchange Username",
+    "ConnectionStatus": "Connection Status",
+    "AccountNumber": "Account Number",
+    "BotStatus": "Bot Status",
+    "CapitalAllocation": "Capital Allocation",
+    "StripeCustomerId": "Stripe Customer Id",
+
+    "OriginalCapitalAllocation": "Allocation",
+    "DailyPNL": "Daily PNL",
+    "TotalPNL": "Total PNL",
+    "UpdateType": "Update Type",
+    "Transaction Time": "Transaction Time",
+
+    "PaymentGateway": "Payment Gateway",
+    "PeriodStart": "Period Start",
+    "PeriodEnd": "Period End",
+    "Description": "Description",
     "Amount": "Amount",
-    "USDValue": "USD Value",
-    "TokenName": "Token Name",
-    "WalletAddress": "Wallet Address",
-    "PersonalPublic": "Personal",
-    "WalletName": "Wallet Name"
+    "Status": "Status",
+    "TransactionTime": "Transaction Time",
+
+    "ExchangeOrderId": "Exchange Order Id",
+    "Instruction": "Instruction",
+    "IsEntryOrder": "Is Entry Order",
+    "IsExitOrder": "Is Exit Order",
+    "ExchangeEntryOrderId": "Exchange Entry OrderId"
+  },
+  "UserDetailsSection":{
+    "CapitalAllocation": "Capital Allocation",
+    "OrdersPlaced": "Orders Placed",
+    "BotStatus": "Bot Status",
+    "ClosingOnly": "Closing Only",
+    "Orders": "Orders",
+    "Billings": "Billings",
+    "StopAutomation": "Stop Automation",
+    "StartAutomation": "Start Automation"
   }
 }

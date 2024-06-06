@@ -28,7 +28,9 @@ export default function RootLayout({ children }: IRootProps) {
 
   return (
     <OryAuthGateway
-      changePasswordRoute={typeof window !== "undefined" ? `${window.location.origin}/profile/security?requireChangePassword=true` : ""}
+      changePasswordRoute={
+        typeof window !== "undefined" ? `${window.location.origin}/profile/security?requireChangePassword=true` : ""
+      }
       customTranslations={customTranslations}>
       <StoreProvider>
         <PersistGate

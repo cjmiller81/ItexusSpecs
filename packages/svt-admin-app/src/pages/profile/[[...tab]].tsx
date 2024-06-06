@@ -39,10 +39,9 @@ export default function ProfilePage() {
         shallow: true,
       },
     )
-  }, [value])
+  }, [value, router])
 
   const handleChange = (newValue: string) => {
-    //eslint-disable-next-line no-unused-vars
     setValue(newValue)
   }
 
