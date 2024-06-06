@@ -50,6 +50,7 @@
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@microsoft/signalr": "^8.0.0",
     "@mui/icons-material": "^5.15.12",
     "@mui/lab": "^5.0.0-alpha.167",
     "@mui/material": "^5.15.12",
@@ -65,8 +66,8 @@
     "@types/uuid": "^9.0.2",
     "apexcharts": "^3.46.0",
     "axios": "^1.6.7",
-    "babel-plugin-inline-react-svg": "^2.0.2",
     "axios-mock-adapter": "^1.22.0",
+    "babel-plugin-inline-react-svg": "^2.0.2",
     "classnames": "^2.5.1",
     "components": "^1.0.0",
     "date-fns": "^3.4.0",

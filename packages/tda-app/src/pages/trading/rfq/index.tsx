@@ -9,10 +9,11 @@ import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 
 import axios from "axios";
-import {RfqQuote} from "../../../components/RfqTile/RfqQuote";
-import {accountNumber,timeFormated} from '../../../components/RfqTile/userData'
 import moment from "moment";
 
+import {RfqQuote} from "../../../components/RfqTile/RfqQuote";
+import {accountNumber,timeFormated} from '../../../components/RfqTile/userData'
+import Connector from '../../../components/RfqTile/signalr-connection'
 
 const backendApiUrl = process.env.BACKEND_API_URL ?? 'http://localhost:5000'
 const backendApiToken = process.env.BACKEND_API_TOKEN ?? 'set-your-token-in-the-.env-file'
@@ -32,18 +33,25 @@ export default function SpotRFQPage() {
     horizontal: 'center',
   });
   const { vertical, horizontal } = obj;
+  const { events } = Connector();
 
+  useEffect(
+    () => {
+      if (!("Notification" in window)) {
+        console.log("Browser does not support desktop notification");
+      } else {
+        console.log("notification supported")
+        Notification.requestPermission();
+      }
 
-  useEffect(() => {
-    if (!("Notification" in window)) {
-      console.log("Browser does not support desktop notification");
-    } else {
-      console.log("notification supported")
-      Notification.requestPermission();
-    }
+      console.log('signalR events reg')
+      events((message) => console.log('signalR msg:', message));
 
-    getHistoryData();
-  }, []);
+      getHistoryData();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
     const handlePlaceOrderRequest = async (payload: any) => {
         if (payload) {
@@ -59,7 +67,7 @@ export default function SpotRFQPage() {
                 setPlacingOrder(true);
 
                 const response = await axios.post(
-                    `${backendApiUrl}/customer/placeorder`,
+                    `${backendApiUrl}/api/customers/placeorder`,
                     payload,
                     {
                         cancelToken: source.token,
@@ -231,7 +239,7 @@ export default function SpotRFQPage() {
 
     const getHistoryData = async() => {
       try{
-        const res = await axios.get(`${backendApiUrl}/customer/orderhistory?accountNumber=${accountNumber}`,{
+        const res = await axios.get(`${backendApiUrl}/api/customers/order-history?accountNumber=${accountNumber}`,{
             headers: {
                 'Authorization': `Bearer ${backendApiToken}`            }
         });

@@ -77,13 +77,13 @@ const nextConfig = {
     NEXT_APP_GOOGLE_MAPS_API_KEY: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     NEXT_APP_MAPBOX_ACCESS_TOKEN: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
 
-    BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
-    NEXT_PUBLIC_BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
-    //BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
-    //NEXT_PUBLIC_BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
+    //BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
+    //NEXT_PUBLIC_BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
+    BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
+    NEXT_PUBLIC_BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
 
-    BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJleHAiOjE3MjAxMzMzNTMsImlzcyI6Imp3dF9hcGlfaXNzdWVyIiwiYXVkIjoiand0X2FwaV9hdWRpZW5jZSJ9.9bXICtI03xv8Op0psUL_PZ6MIPrG0oLsEyaQbH8Bv9E',
-    NEXT_PUBLIC_BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJleHAiOjE3MjAxMzMzNTMsImlzcyI6Imp3dF9hcGlfaXNzdWVyIiwiYXVkIjoiand0X2FwaV9hdWRpZW5jZSJ9.9bXICtI03xv8Op0psUL_PZ6MIPrG0oLsEyaQbH8Bv9E',
+    BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJwcl9Db3VudGVyUGFydHlJZCI6IkVDX1RFU1QiLCJleHAiOjE3MjAyODI0NTQsImlzcyI6Imp3dF9hcGlfaXNzdWVyIiwiYXVkIjoiand0X2FwaV9hdWRpZW5jZSJ9.U2c80DBa-vj4aROPAX7JWJHt2kY3ZCrThVW2O6iIMIA',
+    NEXT_PUBLIC_BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJwcl9Db3VudGVyUGFydHlJZCI6IkVDX1RFU1QiLCJleHAiOjE3MjAyODI0NTQsImlzcyI6Imp3dF9hcGlfaXNzdWVyIiwiYXVkIjoiand0X2FwaV9hdWRpZW5jZSJ9.U2c80DBa-vj4aROPAX7JWJHt2kY3ZCrThVW2O6iIMIA',
 
   },
   transpilePackages: ['@mui/icons-material', 'components'],
