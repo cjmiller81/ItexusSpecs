@@ -1,5 +1,4 @@
-import { configureAxiosMocks } from "@/mocks/mockAxios"
-import { configureAxiosTIMocks } from "@/mocksInstrumentHandler/mockAxiosTradeInstruments"
+import { configureAxiosMockHandlers } from "@/mocks/configureAxiosMockHandlers"
 import axios, { AxiosError } from "axios"
 import { AddDatesProcessing, addError } from "components"
 import i18next from "i18next"
@@ -40,7 +39,8 @@ appAxios.interceptors.response.use(
   },
 )
 
-if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API) { configureAxiosMocks(appAxios); configureAxiosTIMocks(appAxios) }
-
+if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API) {
+  configureAxiosMockHandlers(appAxios)
+}
 
 export default appAxios

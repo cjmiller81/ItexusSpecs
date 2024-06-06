@@ -1,3 +1,4 @@
+import { ivlUsersSlice } from "@/features/strategies/ivl/users/ivlUsersSlice"
 import { fifoSignalSlice } from "@/features/strategies/signals/fifiSignalSlice"
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
@@ -12,6 +13,7 @@ export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   fifoSignals: fifoSignalSlice.reducer,
   fifoTradeInstruments: fifoTradeInstrumentsSlice.reducer,
+  ivlUsers: ivlUsersSlice.reducer
 })
 
 const config = getPersistConfig<RootState>({

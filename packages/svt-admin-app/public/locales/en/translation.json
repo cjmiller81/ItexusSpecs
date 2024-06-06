@@ -85,6 +85,44 @@
     "MasterSymbol": "Master Symbol",
     "MasterTickATRMultiple": "Master Tick ATR Multiple",
     "AtrPeriod": "ATR Period",
-    "TradeSymbol": "Trade Symbol"
+    "TradeSymbol": "Trade Symbol",
+    "Symbol": "Symbol",
+    "Id": "Id",
+    "ExchangeUsername": "Exchange Username",
+    "ConnectionStatus": "Connection Status",
+    "AccountNumber": "Account Number",
+    "BotStatus": "Bot Status",
+    "CapitalAllocation": "Capital Allocation",
+    "StripeCustomerId": "Stripe Customer Id",
+
+    "OriginalCapitalAllocation": "Allocation",
+    "DailyPNL": "Daily PNL",
+    "TotalPNL": "Total PNL",
+    "UpdateType": "Update Type",
+    "Transaction Time": "Transaction Time",
+
+    "PaymentGateway": "Payment Gateway",
+    "PeriodStart": "Period Start",
+    "PeriodEnd": "Period End",
+    "Description": "Description",
+    "Amount": "Amount",
+    "Status": "Status",
+    "TransactionTime": "Transaction Time",
+
+    "ExchangeOrderId": "Exchange Order Id",
+    "Instruction": "Instruction",
+    "IsEntryOrder": "Is Entry Order",
+    "IsExitOrder": "Is Exit Order",
+    "ExchangeEntryOrderId": "Exchange Entry OrderId"
+  },
+  "UserDetailsSection":{
+    "CapitalAllocation": "Capital Allocation",
+    "OrdersPlaced": "Orders Placed",
+    "BotStatus": "Bot Status",
+    "ClosingOnly": "Closing Only",
+    "Orders": "Orders",
+    "Billings": "Billings",
+    "StopAutomation": "Stop Automation",
+    "StartAutomation": "Start Automation"
   }
 }
