@@ -10,7 +10,8 @@
     "No": "No"
   },
   "EditToolbar":{
-    "AddSignal": "Add Signal"
+    "AddSignal": "Add Signal",
+    "AddTradeInstruments": "Add Trade-instruments"
   },
   "ErrorMessages": {
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
@@ -80,6 +81,10 @@
     "StopMultiple": "Stop Multiple",
     "TargetMultiple": "Target Multiple",
     "Action": "Action",
-    "Symbol": "Symbol"
+    "Symbol": "Symbol",
+    "MasterSymbol": "Master Symbol",
+    "MasterTickATRMultiple": "Master Tick ATR Multiple",
+    "AtrPeriod": "ATR Period",
+    "TradeSymbol": "Trade Symbol"
   }
 }

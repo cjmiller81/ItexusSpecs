@@ -4,10 +4,14 @@ import { uiSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
 import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
+import {
+  fifoTradeInstrumentsSlice
+} from "@/features/strategies/tradeInstruments/fifoTradeInstrumentsSlice"
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   fifoSignals: fifoSignalSlice.reducer,
+  fifoTradeInstruments: fifoTradeInstrumentsSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({
