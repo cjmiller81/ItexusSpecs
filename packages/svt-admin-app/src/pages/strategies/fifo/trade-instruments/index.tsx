@@ -91,9 +91,10 @@ export default function TradeInstruments() {
     if (newRows.length) return
     const newItem: TradeInstrumentsRow = getNewFifoTradeInstruments() as TradeInstrumentsRow
     setNewRows(prevNewRows => [...prevNewRows, newItem])
+    const newId = String(newItem.id);
     setRowModesModel(oldModel => ({
       ...oldModel,
-      [newItem.id]: { mode: GridRowModes.Edit, fieldToFocus: "masterSymbol" },
+      [newId]: { mode: GridRowModes.Edit, fieldToFocus: "masterSymbol" },
     }))
   }
 
@@ -153,7 +154,7 @@ export default function TradeInstruments() {
         rows={fifoTradeInstrumentRows.concat(newRows)}
         columns={columns}
         editMode="row"
-        getRowId={row => row.id}
+        getRowId={row => row.id ?? `${Math.random()}`}
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
