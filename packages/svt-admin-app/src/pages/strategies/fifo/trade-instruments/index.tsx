@@ -1,5 +1,5 @@
 import { getColumns } from "@/features/strategies/tradeInstruments/columnsDefs"
-import { EditToolbar } from "@/features/strategies/signals/editToolbar"
+import { EditToolbar } from "@/features/strategies/tradeInstruments/editToolbar"
 import {
   createFifoTradeInstruments,
   deleteFifoTradeInstruments,
