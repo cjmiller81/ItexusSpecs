@@ -772,7 +772,9 @@ export default function TradingTools() {
         */}
         <Tab _selected={{ color: "white", borderBottomColor: "#116DFD" }} fontSize={["9px", "12px", "16px"]}>Trade Generator</Tab>
         <Tab _selected={{ color: "white", borderBottomColor: "#116DFD" }} fontSize={["9px", "12px", "16px"]}>Trade Management Tools</Tab>
+        {/*
         <Tab _selected={{ color: "white", borderBottomColor: "#116DFD" }} fontSize={["9px", "12px", "16px"]}>Trade Generator (BETA)</Tab>
+        */}
       </TabList>
       {/*
       <HStack spacing="30px" py="24px" w="full">
