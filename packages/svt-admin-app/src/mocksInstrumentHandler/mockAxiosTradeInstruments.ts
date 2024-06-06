@@ -33,8 +33,7 @@ const mockState: {
   ],
 }
 
-export function configureAxiosTIMocks(axios: AxiosInstance) {
-  const mock = new MockAdapter(axios)
+export function configureAxiosTIMocks(mock: MockAdapter) {
   mock.onGet(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoExecution`).reply((config) => {
     return [200, mockState.fifoTradeInstruments]
   })
@@ -80,6 +79,4 @@ export function configureAxiosTIMocks(axios: AxiosInstance) {
     )
     return [200]
   })
-
-  return mock
 }
