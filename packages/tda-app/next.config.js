@@ -77,10 +77,10 @@ const nextConfig = {
     NEXT_APP_GOOGLE_MAPS_API_KEY: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     NEXT_APP_MAPBOX_ACCESS_TOKEN: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
 
-    //BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
-    //NEXT_PUBLIC_BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
-    BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
-    NEXT_PUBLIC_BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
+    BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
+    NEXT_PUBLIC_BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
+    //BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
+    //NEXT_PUBLIC_BACKEND_API_URL: 'https://local.emergentcybernetics.net:7163',
 
     BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJwcl9PcnlDYW5BZG1pblVzZXJzIjoiT3J5Q2FuQWRtaW5Vc2VycyIsInByX0NvdW50ZXJQYXJ0eUlkIjoiRUNfVEVTVCIsImV4cCI6MTcyMDMwODUxOCwiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.KrryOcwgrDj2GkgP30DxacjKKnrvshoSBuIHJTSJOR0',
     NEXT_PUBLIC_BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJwcl9PcnlDYW5BZG1pblVzZXJzIjoiT3J5Q2FuQWRtaW5Vc2VycyIsInByX0NvdW50ZXJQYXJ0eUlkIjoiRUNfVEVTVCIsImV4cCI6MTcyMDMwODUxOCwiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.KrryOcwgrDj2GkgP30DxacjKKnrvshoSBuIHJTSJOR0',
