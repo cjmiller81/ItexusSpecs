@@ -1,4 +1,4 @@
-# ECHO - UI 
+# ECHO - UI
 A Trading Tlatform UI.
 
 ### Prerequisites:
