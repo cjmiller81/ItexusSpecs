@@ -12,6 +12,7 @@ export interface SnackbarProps {
   action: boolean;
   open: boolean;
   message: string;
+  autoHideDuration: number,
   anchorOrigin: SnackbarOrigin;
   variant: string;
   alert: AlertProps;

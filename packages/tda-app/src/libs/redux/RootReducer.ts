@@ -1,13 +1,16 @@
+import { currenciesSlice } from "@/features/trading/rfq/slices/currenciesSlice"
+import { rfqSlice } from "@/features/trading/rfq/slices/rfqSlice"
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice, walletsSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
 import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 
-
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   wallets: walletsSlice.reducer,
+  rfq: rfqSlice.reducer,
+  currencies: currenciesSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({

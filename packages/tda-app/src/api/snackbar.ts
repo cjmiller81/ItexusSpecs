@@ -11,6 +11,7 @@ export const endpoints = {
 const initialState: SnackbarProps = {
   action: false,
   open: false,
+  autoHideDuration: 1500,
   message: 'Note archived',
   anchorOrigin: {
     vertical: 'bottom',
@@ -44,7 +45,7 @@ export function useGetSnackbar() {
 export function openSnackbar(snackbar: SnackbarProps) {
   // to update local state based on key
 
-  const { action, open, message, anchorOrigin, variant, alert, transition, close, actionButton } = snackbar;
+  const { action, open, message, anchorOrigin, variant, alert, transition, close, actionButton, autoHideDuration } = snackbar;
 
   mutate(
     endpoints.key,
@@ -56,6 +57,7 @@ export function openSnackbar(snackbar: SnackbarProps) {
         message: message || initialState.message,
         anchorOrigin: anchorOrigin || initialState.anchorOrigin,
         variant: variant || initialState.variant,
+        autoHideDuration: autoHideDuration || 1500,
         alert: {
           color: alert?.color || initialState.alert.color,
           variant: alert?.variant || initialState.alert.variant

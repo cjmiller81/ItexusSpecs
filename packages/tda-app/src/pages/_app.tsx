@@ -3,7 +3,6 @@ import RootLayout from "@/Layouts/RootLayout"
 import '../global.css'
 import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
-import "../libs/axios/axios"
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)
 

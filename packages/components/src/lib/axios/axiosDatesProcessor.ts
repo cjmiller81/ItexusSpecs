@@ -1,9 +1,13 @@
 import { AxiosInstance } from "axios"
-import { apiDateFormat } from "../../constants"
+import { ISO8601format, apiDateFormat } from "../../constants"
 
 export function AddDatesProcessing(axiosInstance: AxiosInstance) {
   const isIsoDateString = (value: any): boolean => {
     return value && typeof value === "string" && apiDateFormat.test(value)
+  }
+
+  const isISO8601format  = (value: any): boolean => {
+    return value && typeof value === "string" && ISO8601format.test(value)
   }
 
   const handleDates = (body: any) => {
@@ -11,7 +15,7 @@ export function AddDatesProcessing(axiosInstance: AxiosInstance) {
 
     for (const key of Object.keys(body)) {
       const value = body[key]
-      if (isIsoDateString(value)) body[key] = new Date(value)
+      if (isIsoDateString(value) || isISO8601format(value)) body[key] = new Date(value)
       else if (typeof value === "object") handleDates(value)
     }
   }
