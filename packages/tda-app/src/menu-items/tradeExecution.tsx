@@ -9,7 +9,7 @@ const tradeExecution: NavItemType = {
   children: [
     {
       id: "rfq",
-      url: "",
+      url: "trading/rfq",
       title: <FormattedMessage id="rfq" />,
       type: "item",
       icon: CandlestickChartIcon,

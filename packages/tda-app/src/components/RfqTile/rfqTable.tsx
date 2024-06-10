@@ -1,318 +1,250 @@
-import { Typography, useMediaQuery } from "@mui/material";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded"
+import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import Button from "@mui/material/Button"
+import { Box, BoxProps, Stack } from "@mui/system"
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers"
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
 import {
-  DataGrid,
-  GridColDef,
-} from "@mui/x-data-grid";
-import * as React from "react";
-import { CustomThemeContext } from "./CustomThemeContext";
-import Picker from "./DPicker";
-import dayjs, { Dayjs } from 'dayjs';
-import Button from '@mui/material/Button';
-import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+  ColumnDef,
+  HeaderGroup,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+import { TablePagination } from "components/third-party/react-table"
+import moment from "moment"
+import DownloadSvgIcon from "public/assets/images/rfq/csv-download.svg"
+import { FC, ReactNode } from "react"
+import MainCard from "../MainCard"
+import ScrollX from "../ScrollX"
+import { HistoryDataParsed } from "./HistoryDataParsed"
 
-const columns: GridColDef[] = [
-  { field: "transactTime", headerName: "Transact Time", width: 200 },
-  { field: "symbol", headerName: "Symbol", width: 200 },
-  { field: "side", headerName: "Side", width: 200 },
-  { field: "filledQty", headerName: "Filled Quantity", width: 200 },
-  { field: "filledPrice", headerName: "Filled Price", width: 200 },
-  // { field: 'accountNum', headerName: 'Account Number', width: 200 },
-  { field: "status", headerName: "Status", width: 200 },
-];
+const columns: ColumnDef<HistoryDataParsed>[] = [
+  {
+    accessorKey: "transactTime",
+    header: "Transact Time",
+    cell: props =>
+      moment(props.getValue() as Date)
+        .local()
+        .format("YYYY-MM-DD HH:mm:ss"),
+  },
+  { accessorKey: "symbol", header: "Symbol" },
+  { accessorKey: "side", header: "Side" },
+  { accessorKey: "filledQty", header: "Filled Quantity" },
+  { accessorKey: "filledPrice", header: "Filled Price" },
+  { accessorKey: "status", header: "Status" },
+]
 
-interface RowData {
-  id: string;
-  transactTime: string;
-  symbol: string;
-  side: string;
-  filledQty: string;
-  filledPrice: string;
-  accountNum: string;
-  status: string;
+interface RFQTableProps extends BoxProps {
+  rows: HistoryDataParsed[]
+  handleHistoryRequest: (fromDate: Date, toDate: Date) => void
+  fromDate: Date | null
+  toDate: Date | null
+  onFromDateChange: (date: Date | null) => void
+  onToDateChange: (date: Date | null) => void
 }
 
-interface RFQTableProps {
-  rows: RowData[];
-  handleHistoryRequest: (dateVal: object) => void;
-}
-
-export default function RFQTable(props: RFQTableProps) {
-  const { rows } = props;
-  const [filterText, setFilterText] = React.useState("");
-  const themes = React.useContext(CustomThemeContext);
-  const [toDate, setToDate] = React.useState<any>(dayjs('2022-04-17'));
-  const [fromDate, setFromDate] = React.useState<any>(dayjs('2022-01-6'));
-  const _isSmallerThan600 = useMediaQuery("(max-width:600px)");
-  const columnsWithDynamicWidth = columns.map((column) => ({
-    ...column,
-    width: 260, // isSmallerThan600 ? 150 : 200,
-  }));
-
-  const filteredRows = rows.filter((row) => {
-    return (
-      row?.filledQty?.toLowerCase().includes(filterText.toLowerCase()) ||
-      row?.filledPrice?.toLowerCase().includes(filterText.toLowerCase())
-      // Add more conditions for other columns as needed
-    );
-  });
-
-  React.useEffect(() => {
-    const currentDate: string = new Date()?.toISOString()?.split('T')[0];
-    let fullCurrentDate = new Date(currentDate);
-    let fromDateVal = new Date(fullCurrentDate.getTime());
-    fromDateVal.setDate(fromDateVal?.getDate() - 30);
-    let formattedFromDate: string = fromDateVal?.toISOString()?.split('T')[0];
-    if(formattedFromDate){
-      setFromDate(dayjs(formattedFromDate));
+export const RFQTable: FC<RFQTableProps> = ({
+  rows,
+  handleHistoryRequest,
+  fromDate,
+  toDate,
+  onFromDateChange,
+  onToDateChange,
+  ...props
+}) => {
+  const handleToDateChange = (newToDate: Date | null) => {
+    if (fromDate && newToDate && newToDate < fromDate) {
+      onToDateChange(null)
+    } else {
+      onToDateChange(newToDate)
     }
-    if(currentDate){
-      setToDate(dayjs(currentDate));
+  }
+
+  const handleFromDateChange = (newToDate: Date | null) => {
+    onFromDateChange(newToDate)
+    if (toDate && newToDate && toDate < newToDate) {
+      onFromDateChange(null)
     }
-  }, []);
-
-  const handleFromDateChange = (newFromDate: any) => {
-    setFromDate(newFromDate);
-  };
-
-  const handleToDateChange = (newToDate: any) => {
-    setToDate(newToDate);
-  };
+  }
 
   const handleDownloadCsv = () => {
     // Create the CSV content from the data array
-    let csvContent =
-      "Timestamp, Symbol, Side, Quantity, Price, TradeStatus\n";
-    filteredRows?.forEach((item, key) => {
-      csvContent += `${item.transactTime},${item.symbol},${item.side},${item.filledQty},${item.filledPrice},${item.status}\n`;
-    });
+    let csvContent = "Timestamp, Symbol, Side, Quantity, Price, TradeStatus\n"
+    rows?.forEach((item, key) => {
+      csvContent += `${item.transactTime},${item.symbol},${item.side},${item.filledQty},${item.filledPrice},${item.status}\n`
+    })
 
     // Create a Blob object from the CSV content
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
 
     // Create a temporary anchor element
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "Symbol_Data.csv";
+    const link = document.createElement("a")
+    link.href = URL.createObjectURL(blob)
+    link.download = "Symbol_Data.csv"
 
     // Simulate a click on the anchor element to trigger the download
-    link.click();
-  };
+    link.click()
+  }
 
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterText(event.target.value);
-  };
-
-  const getRowClassName = (params: any) => {
-    let num = Number(params.id);
-    return num % 2 != 0
-      ? themes.currentTheme === "dark"
-        ? "evenDarkRow"
-        : "evenLightRow"
-      : "";
-  };
-
-  const handleHistory = ()=>{
-    let dates = {
-      fromDate:fromDate?.$d,
-      toDate:toDate?.$d
-    }
-    props.handleHistoryRequest(dates);
+  const handleHistory = () => {
+    if (toDate && fromDate) handleHistoryRequest(fromDate, toDate)
   }
 
   return (
-    <div
-      style={{
-        height: "24rem",
-        width: "100%",
-        backgroundColor: themes.currentTheme === "dark" ? "#3b3b44" : "#F9F9F9",
-        padding: 10,
-      }}
-    >
-      <div
-        style={{
-          height: "5%",
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{ paddingTop: "20px" }}
-          className="tableHeading"
-        >
-          Recent Transactions
-        </Typography>
-        <div
-          className="tableHeaderRight"
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <div
-            className="iconMargin"
-            style={{ marginRight: 10, paddingTop: 25 }}
-          >
-            <span style={{ cursor: "pointer" }} onClick={handleDownloadCsv}>
-              <svg
-                width={20}
-                height={20}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 25"
-                style={{
-                  marginTop:5
+    <Box {...props}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <MainCard
+          content={false}
+          sx={{ bgcolor: "primary.lighter", position: "relative" }}>
+          <ReactTable
+            data={rows}
+            columns={columns}
+            header={
+              <TableHeader
+                {...{
+                  fromDate,
+                  toDate,
+                  handleDownloadCsv,
+                  handleHistory,
+                  handleToDateChange,
+                  handleFromDateChange,
                 }}
-              >
-                <g fill="none" fillRule="evenodd">
-                  <g fill="currentColor">
-                    <path d="M11.278 9.198c.334.256.4.732.15 1.07l-4.713 6.374a.745.745 0 0 1-1.052.148.772.772 0 0 1-.15-1.072l4.713-6.373a.745.745 0 0 1 1.052-.147z"></path>
-                    <path d="M5.663 9.198a.772.772 0 0 0-.15 1.07l4.713 6.374a.745.745 0 0 0 1.052.148.772.772 0 0 0 .15-1.072L6.715 9.345a.745.745 0 0 0-1.052-.147z"></path>
-                  </g>
-                  <path
-                    fillRule="nonzero"
-                    stroke="currentColor"
-                    strokeWidth="1.949"
-                    d="M1.355 5.876a.585.585 0 0 0-.38.548v12.152c0 .244.151.463.38.548l12.882 4.803a.585.585 0 0 0 .789-.548V1.621a.585.585 0 0 0-.79-.548L1.356 5.876z"
-                  ></path>
-                </g>
-              </svg>
-            </span>
-          </div>
-       <div
-       style={{
-        flexDirection:'row',
-        display:'flex'
-       }}
-       >
-           {/* From Date */}
-           <div
-            style={{
-              flexDirection: "column",
-              display: "flex",
-              // marginRight:10
-              // backgroundColor:'red'
-            }}
-          >
-            <div
-              style={{
-                flexDirection: "column",
-                display: "flex",
-                // height: 45,
-                // width: 110,
-                paddingTop: 5,
-                marginRight: 5,
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: 11,
-                    color: "gray",
-                    paddingTop: 0.5,
-                  }}
-                >
-                  From Date*
-                </Typography>
-                {/* <HelpOutline
-                  sx={{
-                    color: "gray",
-                    fontSize: 10,
-                    marginLeft: 0.5,
-                    marginTop: 0.5,
-                  }}
-                /> */}
-              </div>
-            </div>
-            <Picker dateValue={fromDate} onChange={handleFromDateChange}/>
-          </div>
-          {/* From Date */}
-
-          {/* To Date */}
-          <div
-            style={{
-              flexDirection: "column",
-              display: "flex",
-              marginLeft:10
-              // backgroundColor:'red'
-            }}
-          >
-            <div
-              style={{
-                flexDirection: "column",
-                display: "flex",
-                // height: 45,
-                // width: 110,
-                paddingTop: 5,
-                marginRight: 5,
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: 11,
-                    color: "gray",
-                    paddingTop: 0.5,
-
-                  }}
-                >
-                  To Date*
-                </Typography>
-                {/* <HelpOutline
-                  sx={{
-                    color: "gray",
-                    fontSize: 10,
-                    marginLeft: 0.5,
-                    marginTop: 0.5,
-                  }}
-                /> */}
-              </div>
-            </div>
-            <Picker dateValue={toDate} onChange={handleToDateChange}/>
-          </div>
-          {/* To Date */}
-       </div>
-
-
-       <div className="runHistoryBtn" style={{ marginLeft: 10, paddingTop: 30 }} >
-          <Button variant="contained" onClick={handleHistory}>Run History</Button>
-       </div>
-
-       <div className="runHistoryIconBtn" style={{ marginLeft: 5, paddingTop: 35 }}>
-           <HistoryRoundedIcon  onClick={handleHistory} sx={{ color: "white", fontSize: 25 }} />
-       </div>
-
-        </div>
-      </div>
-      <div style={{ height: "85%", width: "100%", paddingTop: 6 }}>
-        <DataGrid
-          rows={filteredRows}
-          columns={columnsWithDynamicWidth}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          // getRowClassName={getRowClassName}
-          getRowClassName={(params) =>
-            params.indexRelativeToCurrentPage % 2 === 0
-              ? themes.currentTheme === "dark"
-                ? "evenDarkRow"
-                : "evenLightRow"
-              : ""
-          }
-        />
-      </div>
-    </div>
-  );
+              />
+            }
+          />
+        </MainCard>
+      </LocalizationProvider>
+    </Box>
+  )
 }
+
+function TableHeader({
+  handleDownloadCsv,
+  fromDate,
+  toDate,
+  handleHistory,
+  handleToDateChange,
+  handleFromDateChange,
+}: {
+  handleDownloadCsv: () => void
+  handleHistory: () => void
+  fromDate: Date | null
+  toDate: Date | null
+  handleToDateChange: (date: Date | null) => void
+  handleFromDateChange: (date: Date | null) => void
+}) {
+  return (
+    <Stack
+      direction="row"
+      alignItems="center">
+      <DownloadSvgIcon
+        onClick={handleDownloadCsv}
+        style={{ cursor: "pointer" }}
+        width="24px"
+        height="24px"></DownloadSvgIcon>
+      <DesktopDatePicker
+        sx={{ ml: 0.5, minWidth: "150px" }}
+        label="From Date*"
+        format="MM/dd/yyyy"
+        value={fromDate}
+        maxDate={toDate ?? undefined}
+        onChange={handleFromDateChange}
+      />
+      <DesktopDatePicker
+        sx={{ ml: 1, minWidth: "150px" }}
+        label="To Date*"
+        format="MM/dd/yyyy"
+        value={toDate}
+        minDate={fromDate ?? undefined}
+        onChange={handleToDateChange}
+      />
+      <Button
+        sx={{ ml: 4, minWidth: "150px" }}
+        variant="contained"
+        disabled={!(fromDate && toDate)}
+        onClick={handleHistory}>
+        Run History
+      </Button>
+      <HistoryRoundedIcon
+        onClick={handleHistory}
+        sx={{ cursor: "pointer", ml: theme => theme.spacing(0.5) }}
+      />
+    </Stack>
+  )
+}
+
+function ReactTable({
+  data,
+  columns,
+  header,
+}: {
+  data: HistoryDataParsed[]
+  columns: ColumnDef<HistoryDataParsed>[]
+  header: ReactNode
+}) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    debugTable: true,
+  })
+
+  return (
+    <MainCard
+      title={"Recent Transactions"}
+      content={false}
+      secondary={header}>
+      <ScrollX>
+        <Stack>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                {table.getHeaderGroups().map((headerGroup: HeaderGroup<any>) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <TableCell
+                        key={header.id}
+                        {...header.column.columnDef.meta}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHead>
+              <TableBody>
+                {table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell
+                        key={cell.id}
+                        {...cell.column.columnDef.meta}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Divider />
+          <Box sx={{ p: 2 }}>
+            <TablePagination
+              {...{
+                setPageSize: table.setPageSize,
+                setPageIndex: table.setPageIndex,
+                getState: table.getState,
+                getPageCount: table.getPageCount,
+              }}
+            />
+          </Box>
+        </Stack>
+      </ScrollX>
+    </MainCard>
+  )
+}
+
+export default RFQTable

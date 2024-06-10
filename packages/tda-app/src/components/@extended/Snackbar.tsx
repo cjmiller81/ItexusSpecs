@@ -68,7 +68,7 @@ export default function Snackbar() {
         <MuiSnackbar
           anchorOrigin={snackbar.anchorOrigin}
           open={snackbar.open}
-          autoHideDuration={1500}
+          autoHideDuration={snackbar.autoHideDuration}
           onClose={handleClose}
           message={snackbar.message}
           TransitionComponent={animation[snackbar.transition]}

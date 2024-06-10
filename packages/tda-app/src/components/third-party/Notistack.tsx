@@ -45,6 +45,7 @@ export default function Notistack({ children }: any) {
     <StyledSnackbarProvider
       maxSnack={snackbar.maxStack}
       dense={snackbar.dense}
+      autoHideDuration={snackbar.autoHideDuration}
       iconVariant={
         snackbar.iconVariant === 'useemojis'
           ? {

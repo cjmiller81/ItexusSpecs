@@ -1,10 +1,10 @@
 ﻿export interface RfqQuote {
     id:string;
-    transactTime: string;
+    transactTime: Date;
     symbol: string;
-    side: string;
-    filledQty: string;
-    filledPrice: string;
+    side: "Buy" | "Sell";
+    filledQty: number;
+    filledPrice: number;
     accountNum : string;
     QuoteID : string;
     RFQID : string;

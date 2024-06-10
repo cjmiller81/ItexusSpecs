@@ -1,3 +1,4 @@
+import { rfqSlice } from "@/slices/rfqSlice"
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice, walletsSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
@@ -8,6 +9,7 @@ import storage from "redux-persist/lib/storage"
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   wallets: walletsSlice.reducer,
+  rfq: rfqSlice.reducer
 })
 
 const config = getPersistConfig<RootState>({
