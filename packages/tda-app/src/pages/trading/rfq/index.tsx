@@ -1,26 +1,27 @@
-import { rfqApi } from "@/api/rfqApi"
+import { rfqApi } from "@/api/rfq-api/rfqApi"
 import { openSnackbar } from "@/api/snackbar"
+import CurrencyDropdown from "@/features/trading/rfq/CurrencyDropdown"
+import Tile from "@/features/trading/rfq/Tile"
+import RFQTable from "@/features/trading/rfq/rfqTable"
+import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice"
+import { clearRfq, fetchHistoryData, fetchRfq } from "@/features/trading/rfq/slices/rfqSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { clearRfq, fetchHistoryData, fetchRfq } from "@/slices/rfqSlice"
 import { SnackbarProps } from "@/types/snackbar"
 import { Stack, Typography } from "@mui/material"
 import { SnackbarOrigin } from "@mui/material/Snackbar"
 import moment from "moment"
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { v4 } from "uuid"
-import CurrencyDropdown from "../../../components/RfqTile/CurrencyDropdown"
-import Tile from "../../../components/RfqTile/Tile"
-import { currencyBuying, currencySelling } from "../../../components/RfqTile/currencies"
-import RFQTable from "../../../components/RfqTile/rfqTable"
 
-export const accountNumber = "EC_TEST";
+export const accountNumber = "EC_TEST"
 
 export default function SpotRFQPage() {
-  const [symbol1, setSymbol1] = useState<string | null>("USDT")
-  const [symbol2, setSymbol2] = useState<string | null>("USD")
-  const [toDate, setToDate] = React.useState<Date | null>(moment().add(1, "d").toDate())
-  const [fromDate, setFromDate] = React.useState<Date | null>(moment().add(-1, "M").toDate())
+  const [symbol1, setSymbol1] = useState<string | null>(null)
+  const [symbol2, setSymbol2] = useState<string | null>(null)
+  const [toDate, setToDate] = useState<Date | null>(moment().add(1, "d").toDate())
+  const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate())
   const { rfqModel, statusFetchingRfq, historyData } = useAppSelector(state => state.rfq)
+  const { pairs, statusFetchingPairs } = useAppSelector(state => state.currencies)
   const dispatch = useAppDispatch()
   const placeAbortableController = useRef<AbortController>(new AbortController())
   const rfqAbortableController = useRef<AbortController>(new AbortController())
@@ -37,6 +38,7 @@ export default function SpotRFQPage() {
     }
 
     getHistoryData()
+    dispatch(fetchPairs({}))
   }, [])
 
   const addQuote = async (tradeSide: "Buy" | "Sell") => {
@@ -121,8 +123,7 @@ export default function SpotRFQPage() {
   }
 
   const getHistoryData = async () => {
-    if(fromDate && toDate)
-    handleHistoryRequest(fromDate, toDate)
+    if (fromDate && toDate) handleHistoryRequest(fromDate, toDate)
   }
 
   const handleHistoryRequest = (fromDate: Date, toDate: Date) => {
@@ -148,10 +149,9 @@ export default function SpotRFQPage() {
           mt={1}
           symbol1={symbol1}
           symbol2={symbol2}
-          options1={currencySelling}
-          options2={currencyBuying}
-          handleSymbolOne={symbol => setSymbol1(symbol)}
-          handleSymbolTwo={symbol => setSymbol2(symbol)}
+          pairs={pairs}
+          onSymbol1Change={symbol => setSymbol1(symbol)}
+          onSymbol2Change={symbol => setSymbol2(symbol)}
         />
 
         <Tile

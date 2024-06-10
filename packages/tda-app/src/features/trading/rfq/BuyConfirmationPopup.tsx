@@ -1,7 +1,7 @@
+import MainCard, { MainCardProps } from "@/components/MainCard"
 import { Stack, Typography } from "@mui/material"
 import Button from "@mui/material/Button"
 import { FC } from "react"
-import MainCard, { MainCardProps } from "../MainCard"
 import { TradeConfirmation } from "./TradeConfirmation"
 
 type Props = Omit<MainCardProps, "children">  & {

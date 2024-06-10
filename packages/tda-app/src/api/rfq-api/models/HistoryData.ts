@@ -28,7 +28,7 @@ export interface HistoryData {
   qtyPlaced: number
   qtyFilled: number
   replacesOrderId: string | null
-  subscriptions: any []
+  subscriptions: any[]
   submissionSpeed: string
   submitRemainingAfterPartialFillCancel: boolean
   submittedRemainingAfterPartialFillCancel: boolean

@@ -4,13 +4,13 @@ import LinearProgress from "@mui/material/LinearProgress"
 import { BoxProps } from "@mui/system"
 import { FC } from "react"
 
-type ProgressFooter = {
+type ProgressFooterProps = {
   secondsLeft: number
   totalSeconds: number
   handleReject: () => void
 }
 
-export const ProgressFooter: FC<ProgressFooter & BoxProps> = ({
+export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
   secondsLeft,
   totalSeconds,
   handleReject,

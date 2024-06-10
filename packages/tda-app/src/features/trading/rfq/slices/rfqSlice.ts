@@ -1,7 +1,9 @@
-import { GetHistoryDataRequest, RfqRequest, rfqApi } from "@/api/rfqApi"
-import { HistoryDataParsed } from "@/components/RfqTile/HistoryDataParsed"
-import { RfqResponse } from "@/components/RfqTile/rfqResponse"
+import { rfqApi } from "@/api/rfq-api/rfqApi"
 import { Status, createAppSlice } from "components"
+import { HistoryDataParsed } from "../../../../api/rfq-api/models/HistoryDataParsed"
+import { GetHistoryDataRequest } from "@/api/rfq-api/models/GetHistoryDataRequest"
+import { RfqRequest } from "@/api/rfq-api/models/RfqRequest"
+import { RfqResponse } from "@/api/rfq-api/models/RfqResponse"
 
 export interface RfqState {
   rfqModel: RfqResponse | null

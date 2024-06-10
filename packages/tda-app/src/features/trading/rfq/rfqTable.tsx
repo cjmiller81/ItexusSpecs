@@ -16,9 +16,9 @@ import { TablePagination } from "components/third-party/react-table"
 import moment from "moment"
 import DownloadSvgIcon from "public/assets/images/rfq/csv-download.svg"
 import { FC, ReactNode } from "react"
-import MainCard from "../MainCard"
-import ScrollX from "../ScrollX"
-import { HistoryDataParsed } from "./HistoryDataParsed"
+import { HistoryDataParsed } from "../../../api/rfq-api/models/HistoryDataParsed"
+import MainCard from "@/components/MainCard"
+import ScrollX from "@/components/ScrollX"
 
 const columns: ColumnDef<HistoryDataParsed>[] = [
   {

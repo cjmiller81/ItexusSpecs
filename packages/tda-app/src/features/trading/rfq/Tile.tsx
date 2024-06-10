@@ -11,7 +11,7 @@ import { BuyConfirmationPopup } from "./BuyConfirmationPopup"
 import { BuySellCell, ExpiredLabel } from "./BuySellCell"
 import { ProgressFooter } from "./ProgressBar"
 import { RfqButton, RfqButtonState } from "./RfqButton"
-import { RfqResponse } from "./rfqResponse"
+import { RfqResponse } from "@/api/rfq-api/models/RfqResponse"
 
 interface TileProps {
   symbol1: string | null
