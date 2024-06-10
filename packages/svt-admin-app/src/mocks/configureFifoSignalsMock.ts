@@ -1,5 +1,4 @@
 import { FifoSignal } from "@/features/strategies/signals/fifoSignal"
-import { AxiosInstance } from "axios"
 import MockAdapter from "axios-mock-adapter"
 
 const mockState: {
@@ -8,8 +7,7 @@ const mockState: {
   fifoSignals: [],
 }
 
-export function configureAxiosMocks(axios: AxiosInstance) {
-  const mock = new MockAdapter(axios)
+export function configureFifoSignalsMock(mock: MockAdapter) {
   mock.onGet(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoSignal`).reply(() => {
     return [200, mockState.fifoSignals]
   })
