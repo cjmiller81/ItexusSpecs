@@ -31,14 +31,14 @@ export const rfqSlice = createAppSlice({
       },
       {
         pending: state => {
-          state.statusFetchingRfq = "loading"
+          state.statusFetchingHistoryData = "loading"
         },
         fulfilled: (state, action) => {
-          state.statusFetchingRfq = "idle"
+          state.statusFetchingHistoryData = "idle"
           state.historyData = action.payload
         },
         rejected: state => {
-          state.statusFetchingRfq = "failed"
+          state.statusFetchingHistoryData = "failed"
         },
       },
     ),
