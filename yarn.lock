@@ -8178,6 +8178,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-query@npm:^1.2.9":
+  version: 1.2.9
+  resolution: "@types/react-query@npm:1.2.9"
+  dependencies:
+    react-query: "npm:*"
+  checksum: 10c0/257373903828f36947cec80de049b2d52943faafef8bdb497ba7ed1bcb2496593077966acd8870ff0a03a5903b32b1ba79a914e1bf21becaa8f698127327dcbf
+  languageName: node
+  linkType: hard
+
 "@types/react-redux@npm:^7.1.20":
   version: 7.1.33
   resolution: "@types/react-redux@npm:7.1.33"
@@ -13761,6 +13770,7 @@ __metadata:
     "@types/node": "npm:20.11.24"
     "@types/react": "npm:18.2.63"
     "@types/react-dom": "npm:18.2.20"
+    "@types/react-query": "npm:^1.2.9"
     "@types/react-syntax-highlighter": "npm:^15"
     "@types/react-window": "npm:^1.8.8"
     "@types/slick-carousel": "npm:^1"
@@ -25640,7 +25650,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-query@npm:^3.39.3":
+"react-query@npm:*, react-query@npm:^3.39.3":
   version: 3.39.3
   resolution: "react-query@npm:3.39.3"
   dependencies:
