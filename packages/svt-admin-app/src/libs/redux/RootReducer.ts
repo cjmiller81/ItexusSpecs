@@ -1,6 +1,6 @@
 import { ivlUsersSlice } from "@/features/strategies/ivl/users/ivlUsersSlice"
 import { fifoSignalSlice } from "@/features/strategies/signals/fifiSignalSlice"
-import { fifoUsersSlice } from "@/features/strategies/usersNew/fifoUsersSlice"
+import { fifoUsersSlice } from "@/features/strategies/users/fifoUsersSlice"
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"

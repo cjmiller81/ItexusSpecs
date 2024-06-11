@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
 import { styled, useTheme } from "@mui/material/styles"
-import { IFifoUser } from "@/features/strategies/usersNew/iFifoUser"
+import { IFifoUser } from "@/features/strategies/users/iFifoUser"
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
-import UserDetailsSection from "@/features/strategies/usersNew/details/userDetailsSections"
+import UserDetailsSection from "@/features/strategies/users/details/userDetailsSections"
 import {
   deleteFifoUser,
   fetchFifoUsers,
   fetchUserDetails,
   updateFifoUser,
-} from "@/features/strategies/usersNew/fifoUsersSlice"
+} from "@/features/strategies/users/fifoUsersSlice"
 import { tableSx } from "@/features/strategies/shared/tableSx"
-import { getColumns } from "@/features/strategies/usersNew/usersColumnsDefs"
+import { getColumns } from "@/features/strategies/users/usersColumnsDefs"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"

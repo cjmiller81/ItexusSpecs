@@ -10,7 +10,7 @@ import UserMetricCard from "./UserMetricCard";
 import { getBotColumnsDefs } from "./botsColumnsDefs";
 import { Order } from "./order";
 import { Bot } from "./bot";
-import { deleteFifoBot } from "@/features/strategies/usersNew/fifoUsersSlice";
+import { deleteFifoBot } from "@/features/strategies/users/fifoUsersSlice";
 
 type Props = BoxProps & {
   user: IFifoUser;

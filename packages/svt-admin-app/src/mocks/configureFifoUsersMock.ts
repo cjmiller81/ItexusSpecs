@@ -1,8 +1,8 @@
-import { IFifoUser } from "@/features/strategies/usersNew/iFifoUser"
+import { IFifoUser } from "@/features/strategies/users/iFifoUser"
 import MockAdapter from "axios-mock-adapter"
 import { initBots, initFifoUsers, initOrders } from "./initFifoUsers"
-import { Order } from "@/features/strategies/usersNew/details/order"
-import { Bot } from "@/features/strategies/usersNew/details/bot"
+import { Order } from "@/features/strategies/users/details/order"
+import { Bot } from "@/features/strategies/users/details/bot"
 /* eslint-disable no-useless-escape */
 
 const mockState: {

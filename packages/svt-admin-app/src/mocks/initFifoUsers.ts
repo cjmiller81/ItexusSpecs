@@ -1,6 +1,6 @@
-import { IFifoUser } from "@/features/strategies/usersNew/iFifoUser"
-import { Order } from "@/features/strategies/usersNew/details/order"
-import { Bot } from "@/features/strategies/usersNew/details/bot"
+import { IFifoUser } from "@/features/strategies/users/iFifoUser"
+import { Order } from "@/features/strategies/users/details/order"
+import { Bot } from "@/features/strategies/users/details/bot"
 
 export const initFifoUsers: IFifoUser[] = [
   {
