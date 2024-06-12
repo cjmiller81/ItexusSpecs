@@ -57,7 +57,7 @@ export function openSnackbar(snackbar: SnackbarProps) {
         message: message || initialState.message,
         anchorOrigin: anchorOrigin || initialState.anchorOrigin,
         variant: variant || initialState.variant,
-        autoHideDuration: 1500,
+        autoHideDuration: autoHideDuration || initialState.autoHideDuration,
         alert: {
           color: alert?.color || initialState.alert.color,
           variant: alert?.variant || initialState.alert.variant
