@@ -3,7 +3,7 @@ import { AddDatesProcessing } from "components"
 import { getSession } from "next-auth/react"
 
 const appAxios = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: process.env.BACKEND_API_URL,
   withCredentials: true,
   headers: {
     Authorization: `Bearer ${process.env.BACKEND_API_TOKEN}`,
