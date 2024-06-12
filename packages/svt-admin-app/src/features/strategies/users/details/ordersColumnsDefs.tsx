@@ -16,7 +16,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "userId",
-      headerName: i18next.t("User Id", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("UserId", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -24,7 +24,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "accountNumber",
-      headerName: i18next.t("Account Number", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("AccountNumber", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -32,7 +32,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "tradeSymbol",
-      headerName: i18next.t("Trade Symbol", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("TradeSymbol", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -40,7 +40,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "exchangeOrderId",
-      headerName: i18next.t("Exchange Order Id", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("ExchangeOrderId", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -56,7 +56,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "isEntryOrder",
-      headerName: i18next.t("Is Entry Order", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("IsEntryOrder", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -64,7 +64,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "isExitOrder",
-      headerName: i18next.t("Is Exit Order", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("IsExitOrder", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -80,7 +80,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "exchangeEntryOrderId",
-      headerName: i18next.t("Exchange Entry Order Id", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("ExchangeEntryOrderId", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
@@ -88,7 +88,7 @@ export function getOrderColumnsColumns() {
     },
     {
       field: "transactionTime",
-      headerName: i18next.t("Transaction Time", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("TransactionTime", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,

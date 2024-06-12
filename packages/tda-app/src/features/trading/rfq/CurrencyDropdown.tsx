@@ -1,7 +1,7 @@
-
-import { CurrencyPair } from "@/api/rfq-api/models/CurrencyPair"
-import { Autocomplete, AutocompleteProps, Stack, StackProps, TextField, Typography } from "@mui/material"
 import { FC, useEffect } from "react"
+import i18next from "@/libs/i18n/i18n"
+import { Autocomplete, AutocompleteProps, Stack, StackProps, TextField, Typography } from "@mui/material"
+import { CurrencyPair } from "@/api/rfq-api/models/CurrencyPair"
 
 interface CurrencyDropdownProps extends StackProps {
   onSymbol1Change: (newSymbol: string | null) => void
@@ -67,7 +67,7 @@ const AutocomleteSection: FC<AutocomleteSectionProps> = ({ onValueChange, ...pro
       renderInput={params => (
         <TextField
           {...params}
-          label="Choose currency"
+          label={i18next.t("ChooseCurrency", { ns: "WalletInputModal" })}
           type="text"
         />
       )}

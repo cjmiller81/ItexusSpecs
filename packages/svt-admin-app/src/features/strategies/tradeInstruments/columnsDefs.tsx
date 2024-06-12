@@ -5,7 +5,7 @@ import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"
 import { GridActionsCellItem, GridColDef, GridRowId, GridRowModes, GridRowModesModel } from "@mui/x-data-grid"
 import { TradeInstrumentsRow } from "./tradeInstrumentsRow"
-import { symbolListOptions } from "../../../mocksInstrumentHandler/symbolListOptions"
+import { symbolListOptions } from "../../../mocks/symbolListOptions"
 
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
