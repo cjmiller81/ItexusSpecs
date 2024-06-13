@@ -2,8 +2,6 @@ import { useState, MouseEvent } from 'react';
 
 // next
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
 
 // material-ui
 import { styled, useTheme, Theme } from '@mui/material/styles';
@@ -56,7 +54,6 @@ export default function NavUser() {
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
 
   const user = useUser();
-  const { data: session } = useSession();
 
   const { logOut } = useOry();
 

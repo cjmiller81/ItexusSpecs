@@ -6,7 +6,6 @@ import Locales from "components/Locales"
 import RTLLayout from "components/RTLLayout"
 import ScrollTop from "components/ScrollTop"
 import Notistack from "components/third-party/Notistack"
-import { SessionProvider } from "next-auth/react"
 import { AppProps } from "next/app"
 import { useMemo } from "react"
 import { PersistGate } from "redux-persist/integration/react"
@@ -46,12 +45,10 @@ export default function RootLayout({ children }: IRootProps) {
               <RTLLayout>
                 <Locales>
                   <ScrollTop>
-                    <SessionProvider refetchInterval={0}>
                       <Notistack>
                         <Snackbar />
                         <Layout>{children}</Layout>
                       </Notistack>
-                    </SessionProvider>
                   </ScrollTop>
                 </Locales>
               </RTLLayout>

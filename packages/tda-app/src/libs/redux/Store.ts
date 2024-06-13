@@ -6,6 +6,13 @@ import { RootState, persistedReducer } from "./RootReducer"
 const makeStore = () => {
   return configureStore({
     reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: ['persist/PERSIST'],
+          ignoredPaths: ['register'],
+        },
+      }),
   })
 }
 

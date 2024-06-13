@@ -4,8 +4,6 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="dx-theme" data-theme="material.blue.light" href="/dx.material.blue.light.css" data-active="true"/>
-        <link rel="dx-theme" data-theme="material.blue.dark" href="/dx.material.blue.dark.css" data-active="false"/>
         <link
           rel="preconnect"
           href="https://fonts.googleapis.com"
