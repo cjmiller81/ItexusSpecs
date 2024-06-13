@@ -1,5 +1,5 @@
 import { Box, Card, TextField, Typography } from "@mui/material"
-import { BoxProps, Stack } from "@mui/system"
+import { BoxProps, Stack, styled } from "@mui/system"
 import { Status } from "components"
 import * as React from "react"
 import { BuySellCell, ExpiredLabel } from "./BuySellCell"
@@ -70,7 +70,7 @@ const Tile: React.FC<TileProps> = ({
                   sx={{
                     height: "60px",
                     ":disabled": {
-                      bgcolor: theme => theme.palette.grey[400],
+                      bgcolor: theme => theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
                     },
                   }}
                   loading={statusFetchingRfq === "loading" || rfqButtonState === "inProgress"}
@@ -99,7 +99,7 @@ const Tile: React.FC<TileProps> = ({
             alignItems="center"
             direction="row"
             gap={theme => theme.spacing(1)}>
-            <TextField
+            <ContrastTextField
               label={symbol1}
               placeholder="1,000,000"
               disabled={rfqButtonState !== "requiring"}
@@ -120,4 +120,24 @@ const Tile: React.FC<TileProps> = ({
   )
 }
 
+const ContrastTextField = styled(TextField)({
+  "& .Mui-disabled": {
+    color: "inherit !important",
+    "& .MuiInputBase-input.Mui-disabled": {
+      WebkitTextFillColor: "inherit !important",
+    },
+    "& .MuiInput-underline:before": {
+      borderBottomStyle: "solid !important",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomStyle: "solid !important",
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: "inherit !important",
+    },
+    "& label.Mui-disabled": {
+      color: "inherit !important", // Label color when disabled
+    },
+  },
+})
 export default Tile

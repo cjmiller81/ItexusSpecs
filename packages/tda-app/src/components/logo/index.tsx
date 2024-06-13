@@ -3,9 +3,11 @@ import { useTheme } from "@emotion/react"
 import ButtonBase from "@mui/material/ButtonBase"
 import Typography from "@mui/material/Typography"
 import { SxProps } from "@mui/material/styles"
+import { Box } from "@mui/system"
 import { APP_DEFAULT_PATH } from "config"
 import NextLink from "next/link"
-import AppLogo from "../../../public/app-icon.svg"
+import AppLogoBlack from "../../../public/tda-logo-black.svg"
+import AppLogoWhite from "../../../public/tda-logo-white.svg"
 
 interface Props {
   reverse?: boolean
@@ -25,13 +27,29 @@ export default function LogoSection({ reverse, isIcon, sx, to }: Props) {
       legacyBehavior>
       <ButtonBase
         disableRipple
-        sx={sx}>
-        <AppLogo
-          stroke={mode === "dark" ? "white" : "black"}
-          width="50px"
-          height="50px"
-        />
-        {!isIcon && <Typography variant="h5">{"Trillion Digital Assets"}</Typography>}
+        sx={{ ...sx }}>
+        {
+          <Box width={"45px"}>
+            {mode === "dark" ? (
+              <AppLogoWhite
+                width={"45px"}
+                height={"45px"}
+              />
+            ) : (
+              <AppLogoBlack
+                width={"45px"}
+                height={"45px"}
+              />
+            )}
+          </Box>
+        }
+        {!isIcon && (
+          <Typography
+            ml={1}
+            variant="h5">
+            {"Trillion Digital Assets"}
+          </Typography>
+        )}
       </ButtonBase>
     </NextLink>
   )
