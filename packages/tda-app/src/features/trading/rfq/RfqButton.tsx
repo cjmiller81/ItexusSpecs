@@ -1,10 +1,10 @@
 import { LoadingButton, LoadingButtonProps } from "@mui/lab"
 import { FC } from "react"
 
-export type RfqButtonState = "cancelable" | "requiring" | "requote"
+export type RfqStage = "cancelable" | "requiring" | "requote" | "inProgress"
 type RfqButtonProps = {
   onInitiateRFQ: () => void
-  stage: RfqButtonState
+  stage: RfqStage
   onCancel: () => void
   onRequote: () => void
 }
