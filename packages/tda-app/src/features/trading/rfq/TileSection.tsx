@@ -158,7 +158,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
 
     const options: NotificationOptions = {
       body: `${side} ${symbol1} ${qty} vs ${symbol2} @ ${priceString}`,
-      icon: "https://tda-gui-v2.vercel.app/static/images/dark.png?auto=compress&cs=tinysrgb&dpr=1&w=500",
+      icon: logoUrl,
       dir: "ltr",
     }
     new Notification(`Trade Accepted: ID ${id}`, options)
