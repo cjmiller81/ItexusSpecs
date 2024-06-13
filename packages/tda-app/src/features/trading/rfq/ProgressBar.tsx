@@ -5,14 +5,14 @@ import { BoxProps } from "@mui/system"
 import { FC } from "react"
 
 type ProgressFooterProps = {
+  progress: number
   secondsLeft: number
-  totalSeconds: number
   handleReject: () => void
 }
 
 export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
   secondsLeft,
-  totalSeconds,
+  progress,
   handleReject,
   sx,
   ...props
@@ -39,7 +39,7 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
         <LinearProgress
           sx={{ marginTop: 0, borderRadius: 50 }}
           variant="determinate"
-          value={(100 * secondsLeft) / totalSeconds}
+          value={progress}
         />
       </Box>
       <Box

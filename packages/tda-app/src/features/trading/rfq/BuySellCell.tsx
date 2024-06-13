@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material"
 import { blue, grey, red } from "@mui/material/colors"
-import { Box, BoxProps, Stack, TypographyProps, darken, lighten, useTheme } from "@mui/system"
+import { Box, BoxProps, Stack, TypographyProps, lighten, useTheme } from "@mui/system"
 import { FC } from "react"
 
 type Props = {
@@ -26,7 +26,7 @@ export const BuySellCell: FC<Props & BoxProps> = ({
 }) => {
   const theme = useTheme()
   let bgColor: string = theme.palette.mode === "dark" ? grey[800] : grey[200]
-  
+
   if (value && cellType === "buy") {
     bgColor = theme.palette.mode === "dark" ? red[700] : red[400]
   }
@@ -39,13 +39,18 @@ export const BuySellCell: FC<Props & BoxProps> = ({
       borderRadius={2}
       p={1}
       width="auto"
-      sx={{ minWidth: "140px", height: "max-content",cursor: "pointer", backgroundColor: bgColor,
-      minHeight: "72px",
-      "&:hover": {
-        transition: "0.3s",
-        backgroundColor: lighten(bgColor, 0.2)
-      },
-      ...sx }}
+      sx={{
+        minWidth: "140px",
+        height: "max-content",
+        cursor: "pointer",
+        backgroundColor: bgColor,
+        minHeight: "72px",
+        "&:hover": {
+          transition: "0.3s",
+          backgroundColor: lighten(bgColor, 0.2),
+        },
+        ...sx,
+      }}
       {...props}
       onClick={onCellClick}>
       <Stack alignItems={contentAlignment ?? "start"}>
@@ -70,9 +75,7 @@ export const BuySellCell: FC<Props & BoxProps> = ({
 const renderInlargedNum = (value?: number | null) => {
   const [integerPart, decimalPart] = value ? value.toFixed(5).split(".") : ["", ""]
   return (
-    <Box
-      
-      component="div">
+    <Box component="div">
       {integerPart}
       {Boolean(integerPart.length) && "."}
       {decimalPart.split("").map((digit, index) => {
@@ -100,7 +103,7 @@ const renderInlargedNum = (value?: number | null) => {
   )
 }
 
-export const ExpiredLabel: FC = ({...props}: TypographyProps) => {
+export const ExpiredLabel: FC = ({ ...props }: TypographyProps) => {
   return (
     <Typography
       fontSize="12px"

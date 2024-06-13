@@ -11,6 +11,7 @@ type Props = Omit<MainCardProps, "children">  & {
   buyValue: number
   onAccept: () => void
   onDiscard: () => void
+  side: "Buy" | "Sell"
 }
 
 export const BuyConfirmationPopup: FC<Props> = ({
@@ -20,15 +21,17 @@ export const BuyConfirmationPopup: FC<Props> = ({
   buyValue,
   onAccept,
   onDiscard,
+  side,
   sx,
   ...props
 }) => {
+  const invertedSide = side === "Buy" ? "Sell" : "Buy"
   return (
     <MainCard {...props} sx={{borderRadius: 2, ...sx}}>
       <Stack alignItems="center">
         <TradeConfirmation />
         <Typography mt={1} variant="body2" textAlign="center">
-          Buy {amount.toLocaleString("en-US")} {symbol1} and Sell {(buyValue * amount).toLocaleString("en-US")}{" "}
+          {side} {amount.toLocaleString("en-US")} {symbol1} and ${invertedSide} {(buyValue * amount).toLocaleString("en-US")}{" "}
           {symbol2} (Notional Value) @ {buyValue.toFixed(6)}
         </Typography>
         <Stack mt={4}
