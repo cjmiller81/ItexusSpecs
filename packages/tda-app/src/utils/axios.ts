@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios"
 import { AddDatesProcessing } from "components"
-import { getSession } from "next-auth/react"
 
 const appAxios = axios.create({
   baseURL: process.env.BACKEND_API_URL,
@@ -11,18 +10,6 @@ const appAxios = axios.create({
 })
 
 AddDatesProcessing(appAxios)
-appAxios.interceptors.request.use(
-  async config => {
-    const session = await getSession()
-    if (session?.token.accessToken) {
-      config.headers["Authorization"] = `Bearer ${session?.token.accessToken}`
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  },
-)
 
 appAxios.interceptors.response.use(
   response => response,

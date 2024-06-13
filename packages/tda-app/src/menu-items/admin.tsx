@@ -1,11 +1,10 @@
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import { FormattedMessage } from "react-intl"
 import { NavItemType } from "types/menu"
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
 
 const admin: NavItemType = {
-  id: "group-forms-tables",
+  id: "group-forms-tables-2",
   title: <FormattedMessage id="admin" />,
   type: "group",
   children: [

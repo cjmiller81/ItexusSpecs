@@ -1,9 +1,5 @@
 import { useRef, useState, ReactNode, SyntheticEvent } from 'react';
 
-// next
-import { useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
-
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';

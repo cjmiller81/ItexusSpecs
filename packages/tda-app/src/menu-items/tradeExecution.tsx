@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { NavItemType } from 'types/menu';
 
 const tradeExecution: NavItemType = {
-  id: "group-forms-tables",
+  id: "group-forms-tables-3",
   title: <FormattedMessage id="trade-execution" />,
   type: "group",
   children: [

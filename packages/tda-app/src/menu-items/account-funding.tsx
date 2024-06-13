@@ -3,7 +3,7 @@ import { FormattedMessage } from "react-intl"
 import { NavItemType } from "types/menu"
 
 const accountFunding: NavItemType = {
-  id: "group-forms-tables",
+  id: "group-forms-tables-1",
   title: <FormattedMessage id="account-management" />,
   type: "group",
   children: [
