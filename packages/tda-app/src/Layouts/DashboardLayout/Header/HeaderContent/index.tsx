@@ -33,7 +33,7 @@ export default function HeaderContent() {
   return (
     <>
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
-      {!downLG && <Search />}
+      {!downLG && <Box width="100%"></Box>}
       {!downLG && localization}
       {downLG && <Box sx={{ width: '100%', ml: 1 }} />}
 
