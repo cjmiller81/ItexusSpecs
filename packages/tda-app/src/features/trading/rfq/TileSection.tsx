@@ -13,6 +13,7 @@ import { FC, useEffect, useRef, useState } from "react"
 import useCountDown from "react-countdown-hook"
 import { v4 } from "uuid"
 import { OrderEvent, isOrderEvent } from "./models/OrderEvent"
+import { logoUrl } from "./constants"
 
 type TileSectionProps = BoxProps & {
   symbol1: string | null
@@ -124,7 +125,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
 
     if (Notification?.permission === "granted") {
       new Notification(errorMessage, {
-        icon: "https://tda-gui-v2.vercel.app/static/images/dark.png?auto=compress&cs=tinysrgb&dpr=1&w=500",
+        icon: logoUrl,
         dir: "ltr",
       })
     }
