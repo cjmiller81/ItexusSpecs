@@ -1,6 +1,5 @@
 import CurrencyDropdown from "@/features/trading/rfq/CurrencyDropdown"
 import { TileSection } from "@/features/trading/rfq/TileSection"
-import { OrderEvent, isOrderEvent } from "@/features/trading/rfq/models/order"
 import RFQTable from "@/features/trading/rfq/rfqTable"
 import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice"
 import { fetchHistoryData } from "@/features/trading/rfq/slices/rfqSlice"

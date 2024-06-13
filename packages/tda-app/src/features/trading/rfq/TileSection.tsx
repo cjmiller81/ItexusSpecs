@@ -12,7 +12,7 @@ import { BoxProps } from "@mui/system"
 import { FC, useEffect, useRef, useState } from "react"
 import useCountDown from "react-countdown-hook"
 import { v4 } from "uuid"
-import { OrderEvent, isOrderEvent } from "./models/order"
+import { OrderEvent, isOrderEvent } from "./models/OrderEvent"
 
 type TileSectionProps = BoxProps & {
   symbol1: string | null
