@@ -1,10 +1,13 @@
-import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "@/services/backend-api.service"
 import { iconsApi } from "@/services/iconsService"
 import { v4 as uuid } from "uuid"
 import { createAppSlice } from "components"
 import { setPrefilteredData as setPrefilteredWeightedData } from "./MarketCapEqualWeightModelingSlice"
 import { setPrefilteredData as setPrefilteredEqualWeightedData } from "./MarketCapWeightedModelingSlice"
 import { Status } from "components"
+import { ICoin } from "components/src/models/token/ICoin"
+import { IPlatform } from "components/src/models/token/IPlatform"
+import { ICategory } from "components/src/models/token/ICatigory"
+import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues"
 
 export interface TotalWalletWorthData {
   totalWorth: number

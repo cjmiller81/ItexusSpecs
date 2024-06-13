@@ -1,7 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
-import { backendApiUrl, ICategory, ICoin, IMarketCapWeightedIndex, IPlatform } from '@/services/backend-api.service'
 
 // Mock data:
 import allCategories from './data/categories/all.json';
@@ -13,23 +12,27 @@ import marketCapWeightedIndexJanMarBtc8 from './data/marketCapWeightedIndex/janM
 import allTokens from './data/tokens/all.json';
 import btcTokens from './data/tokens-search/btc.json';
 import ethTokens from './data/tokens-search/eth.json';
+import { ICategory } from 'components/src/models/token/ICatigory';
+import { IPlatform } from 'components/src/models/token/IPlatform';
+import { ICoin } from 'components/src/models/token/ICoin';
+import { IMarketCapWeightedIndex } from 'components';
 
 //const mockState = {}
 
 // Mock the `services/backend-api.service.ts` API requests.
 export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo, any, any, RequestHandlerOptions>[] = [
 
-  http.get(`${backendApiUrl as string}/categories`, () => {
+  http.get(`${process.env.API_BASE_URL}/categories`, () => {
     const categories = allCategories as ICategory[]
     return HttpResponse.json(categories)
   }),
 
-  http.get(`${backendApiUrl as string}/chains`, () => {
+  http.get(`${process.env.API_BASE_URL}/chains`, () => {
     const chains = allChains as IPlatform[]
     return HttpResponse.json(chains)
   }),
 
-  http.get(`${backendApiUrl as string}/model/run/marketCapWeightedIndex`, () => {
+  http.get(`${process.env.API_BASE_URL}/model/run/marketCapWeightedIndex`, () => {
     /*
     var url = new URL(request.url)
     let tokenCount = 8
@@ -59,12 +62,12 @@ export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo
     return HttpResponse.json(marketCapWeightedIndex)
   }),
 
-  http.get(`${backendApiUrl as string}/tokens`, () => {
+  http.get(`${process.env.API_BASE_URL}/tokens`, () => {
     const coins = allTokens as ICoin[]
     return HttpResponse.json(coins)
   }),
 
-  http.get(`${backendApiUrl as string}/tokens-search`, ({ request }) => {
+  http.get(`${process.env.API_BASE_URL}/tokens-search`, ({ request }) => {
     var url = new URL(request.url)
     if (url.searchParams.has('query')) {
       const symbolQuery = url.searchParams.get('query') ?? ''

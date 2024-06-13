@@ -1,7 +1,7 @@
-import { ICoin } from "@/services/backend-api.service"
 import { ColumnCellTemplateData } from "devextreme/ui/data_grid"
 import { FC } from "react"
 import { SymbolLookupField } from "./SymbolLookupField"
+import { ICoin } from "components/src/models/token/ICoin"
 
 export const SymbolCellIdComponent: FC<{ data: ColumnCellTemplateData<ICoin> }> = ({ data }) => {
   return (

@@ -19,28 +19,28 @@ const mockState: {
 }
 
 export function configureIvlUsersMock(mock: MockAdapter) {
-  mock.onGet(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/ivl\/users`).reply(() => {
+  mock.onGet(`${process.env.API_BASE_URL}\/api\/ivl\/users`).reply(() => {
     
     return [200, mockState.ivlUsers]
   })
   
-  const getBillingRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/billing`) 
+  const getBillingRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/billing`) 
   mock.onGet(getBillingRegExp).reply((config) => {
     const userId = getBillingRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.billings.filter(billing => billing.userId === userId)]
   })
-  const getCapitalAllocationRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/capital-allocations`) 
+  const getCapitalAllocationRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/capital-allocations`) 
   mock.onGet(getCapitalAllocationRegExp).reply((config) => {
     const userId = getCapitalAllocationRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.allocations.filter(allocation => allocation.userId === userId)]
   })
-  const getOrdersRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/orders`) 
+  const getOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/orders`) 
   mock.onGet(getOrdersRegExp).reply((config) => {
     const userId = getOrdersRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.orders.filter(order => order.userId === userId)]
   })
   // eslint-disable-next-line
-  const putUserRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/ivl\/users\/*`)
+  const putUserRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/*`)
   mock.onPut(putUserRegExp).reply(config => {
     const ivlUser = JSON.parse(config.data)
     const url = new URL(config.url!, config.baseURL!)

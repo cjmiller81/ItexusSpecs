@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+        "name": "⭐ echo-app",
+        "path": "packages\\echo-app"
+    },
+    {
+        "name": "📚 components",
+        "path": "packages\\components"
+    },
+    {
+      "name": "📌 root",
+      "path": "."
+    }
+  ],
+}

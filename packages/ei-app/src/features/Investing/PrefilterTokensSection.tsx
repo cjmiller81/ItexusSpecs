@@ -1,6 +1,5 @@
 import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { ICoin } from "@/services/backend-api.service"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import { AccordionDetails, AccordionProps, Box } from "@mui/material"
 import { PageTitle, StatePersistedAccordion } from "components"
@@ -13,6 +12,7 @@ import { useTranslation } from "react-i18next"
 import { CustomFilterBuilder } from "./CustomFilterBuilder"
 import { StyledAccordionSummary } from "./IndexModelingSection"
 import { PrefilterTokensTable } from "./PrefilterTokensTable"
+import { ICoin } from "components/src/models/token/ICoin"
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string

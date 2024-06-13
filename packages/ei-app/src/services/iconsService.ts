@@ -1,9 +1,10 @@
 import { TokenDetails } from "@/models/Wallet/TokenDetails"
-import { delay } from "components"
-import { appAxios } from "components"
-import { ICategory, ICoin, IPlatform, IPrefilterTokensFilterValues } from "./backend-api.service"
+import { appAxios, delay } from "components"
+import { ICategory } from "components/src/models/token/ICatigory"
+import { ICoin } from "components/src/models/token/ICoin"
+import { IPlatform } from "components/src/models/token/IPlatform"
+import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues"
 
-//TODO Add retry logic for axios requests
 type ApiFilterModel = Omit<IPrefilterTokensFilterValues, "filter"> & { filter: string }
 
 function ToApiFilterModel(filterModel: IPrefilterTokensFilterValues): ApiFilterModel {

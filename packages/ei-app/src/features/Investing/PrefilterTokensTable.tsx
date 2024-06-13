@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -18,6 +17,9 @@ import { ExportingEvent } from "devextreme/ui/data_grid"
 import React, { FC, useCallback, useEffect, useRef, useMemo } from "react"
 import { PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
+import { IPlatform } from "components/src/models/token/IPlatform"
+import { ICoin } from "components/src/models/token/ICoin"
+import { ICategory } from "components/src/models/token/ICatigory"
 
 export interface IPrefilterTokensTable {
   loading: boolean
