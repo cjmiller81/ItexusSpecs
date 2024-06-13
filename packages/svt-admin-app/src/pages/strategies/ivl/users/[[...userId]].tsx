@@ -1,5 +1,5 @@
 import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
-import { StyledDrawer } from "@/features/strategies/ivl/users/details/userDetailsDrawer"
+import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
 import UserDetailsSection from "@/features/strategies/ivl/users/details/userDetailsSections"
 import {
   deleteIvlUser,
@@ -7,7 +7,7 @@ import {
   fetchUserDetails,
   updateIvlUser,
 } from "@/features/strategies/ivl/users/ivlUsersSlice"
-import { tableSx } from "@/features/strategies/ivl/users/tableSx"
+import { tableSx } from "@/features/strategies/shared/tableSx"
 import { getColumns } from "@/features/strategies/ivl/users/usersColumnsDefs"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"

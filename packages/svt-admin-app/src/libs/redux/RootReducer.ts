@@ -1,5 +1,6 @@
 import { ivlUsersSlice } from "@/features/strategies/ivl/users/ivlUsersSlice"
 import { fifoSignalSlice } from "@/features/strategies/signals/fifiSignalSlice"
+import { fifoUsersSlice } from "@/features/strategies/users/fifoUsersSlice"
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
@@ -13,7 +14,8 @@ export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   fifoSignals: fifoSignalSlice.reducer,
   fifoTradeInstruments: fifoTradeInstrumentsSlice.reducer,
-  ivlUsers: ivlUsersSlice.reducer
+  ivlUsers: ivlUsersSlice.reducer,
+  fifoUsers: fifoUsersSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({

@@ -41,7 +41,9 @@
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
-    "Personal": "Personal"
+    "Personal": "Personal",
+    "ChooseCurrency": "Choose currency"
+
   },
   "MyWalletsSection": {
     "AddWallet": "+Add Wallet",

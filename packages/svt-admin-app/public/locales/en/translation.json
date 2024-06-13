@@ -4,14 +4,17 @@
     "Save": "Save",
     "Delete": "Delete",
     "Cancel": "Cancel",
+    "StartStop": "Start/Stop",
     "Sumbit": "Submit",
+    "View": "View",
     "Clear": "Clear",
     "Yes": "Yes",
     "No": "No"
   },
   "EditToolbar":{
     "AddSignal": "Add Signal",
-    "AddTradeInstruments": "Add Trade-instruments"
+    "AddTradeInstruments": "Add Trade-instruments",
+    "AddUser": "Add User"
   },
   "ErrorMessages": {
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
@@ -86,7 +89,6 @@
     "MasterTickATRMultiple": "Master Tick ATR Multiple",
     "AtrPeriod": "ATR Period",
     "TradeSymbol": "Trade Symbol",
-    "Symbol": "Symbol",
     "Id": "Id",
     "ExchangeUsername": "Exchange Username",
     "ConnectionStatus": "Connection Status",
@@ -94,12 +96,32 @@
     "BotStatus": "Bot Status",
     "CapitalAllocation": "Capital Allocation",
     "StripeCustomerId": "Stripe Customer Id",
+    "BotCount": "Bot Count",
+    "Active": "Active",
+    "EntryOrderId": "Entry Order Id",
+    "HasEntryOrderId": "Has Entry Order Id",
+    "EntryOrderStatus": "Entry Order Status",
+    "HasEntryOrderStatus": "Has Entry Order Status",
+    "Exchange": "Exchange",
+    "ExchangeAccountNumber": "Exchange Account Number",
+    "MasterSymbolAssetType": "Master Symbol Asset Type",
+    "StopOrderId": "Stop Order Id",
+    "HasStopOrderId": "Has Stop Order Id",
+    "StopOrderStatus": "Stop Order Status",
+    "HasStopOrderStatus": "Has Stop Order Status",
+    "TargetOrderId": "Target Order Id",
+    "HasTargetOrderId": "Has Target Order Id",
+    "TargetOrderStatus": "Target Order Status",
+    "HasTargetOrderStatus": "Has Target Order Status",
+    "TradeQtyUnits": "Trade Qty Units",
+    "TradeQtyNanos": "Trade Qty Nanos",
+    "TradeSymbolAssetType": "Trade Symbol Asset Type",
+    "UserId": "User Id",
 
     "OriginalCapitalAllocation": "Allocation",
     "DailyPNL": "Daily PNL",
     "TotalPNL": "Total PNL",
     "UpdateType": "Update Type",
-    "Transaction Time": "Transaction Time",
 
     "PaymentGateway": "Payment Gateway",
     "PeriodStart": "Period Start",
@@ -122,6 +144,7 @@
     "ClosingOnly": "Closing Only",
     "Orders": "Orders",
     "Billings": "Billings",
+    "Bots": "Bots",
     "StopAutomation": "Stop Automation",
     "StartAutomation": "Start Automation"
   }

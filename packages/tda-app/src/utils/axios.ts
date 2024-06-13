@@ -2,9 +2,8 @@ import axios, { AxiosRequestConfig } from "axios"
 import { AddDatesProcessing } from "components"
 import { getSession } from "next-auth/react"
 
-const axiosServices = axios.create({ baseURL: process.env.NEXT_APP_API_URL || 'http://localhost:3010/' });
 const appAxios = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: process.env.BACKEND_API_URL,
   withCredentials: true,
   headers: {
     Authorization: `Bearer ${process.env.BACKEND_API_TOKEN}`,
@@ -37,14 +36,14 @@ appAxios.interceptors.response.use(
 
 export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  const res = await axiosServices.get(url, { ...config });
+  const res = await appAxios.get(url, { ...config });
 
   return res.data;
 };
 
 export const fetcherPost = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  const res = await axiosServices.post(url, { ...config });
+  const res = await appAxios.post(url, { ...config });
 
   return res.data;
 };
