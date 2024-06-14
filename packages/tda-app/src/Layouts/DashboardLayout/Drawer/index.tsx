@@ -12,7 +12,8 @@ import DrawerContent from './DrawerContent';
 import MiniDrawerStyled from './MiniDrawerStyled';
 
 import { DRAWER_WIDTH } from 'config';
-import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/Store';
+import { toggleSideBar } from 'components';
 
 // ==============================|| MAIN LAYOUT - DRAWER ||============================== //
 
@@ -21,8 +22,8 @@ interface Props {
 }
 
 export default function MainDrawer({ window }: Props) {
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
+  const sidebarOpen = useAppSelector(store => store.ui.sidebarOpened)
+  const dispatch = useAppDispatch()
   const downLG = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'));
 
   // responsive drawer container
@@ -30,12 +31,12 @@ export default function MainDrawer({ window }: Props) {
 
   // header content
   const drawerContent = useMemo(() => <DrawerContent />, []);
-  const drawerHeader = useMemo(() => <DrawerHeader open={drawerOpen} />, [drawerOpen]);
+  const drawerHeader = useMemo(() => <DrawerHeader open={sidebarOpen} />, [sidebarOpen]);
 
   return (
     <Box component="nav" sx={{ flexShrink: { md: 0 }, zIndex: 1200 }} aria-label="mailbox folders">
       {!downLG ? (
-        <MiniDrawerStyled variant="permanent" open={drawerOpen}>
+        <MiniDrawerStyled variant="permanent" open={sidebarOpen}>
           {drawerHeader}
           {drawerContent}
         </MiniDrawerStyled>
@@ -43,8 +44,8 @@ export default function MainDrawer({ window }: Props) {
         <Drawer
           container={container}
           variant="temporary"
-          open={drawerOpen}
-          onClose={() => handlerDrawerOpen(!drawerOpen)}
+          open={sidebarOpen}
+          onClose={() => dispatch(toggleSideBar({open: !sidebarOpen}))}
           ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', lg: 'none' },

@@ -27,7 +27,6 @@ import Transitions from 'components/@extended/Transitions';
 
 import { MenuOrientation, ThemeMode } from 'config';
 import useConfig from 'hooks/useConfig';
-import { handlerActiveItem, useGetMenuMaster } from 'api/menu';
 
 // assets
 import BorderOutlined from '@ant-design/icons/BorderOutlined';
@@ -37,6 +36,8 @@ import RightOutlined from '@ant-design/icons/RightOutlined';
 
 // types
 import { NavItemType } from 'types/menu';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/Store';
+import { setOpenedItem } from '@/features/nav-bar/navBarSlice';
 
 type VirtualElement = {
   getBoundingClientRect: () => ClientRect | DOMRect;
@@ -95,8 +96,8 @@ interface Props {
 
 export default function NavCollapse({ menu, level, parentId, setSelectedItems, selectedItems, setSelectedLevel, selectedLevel }: Props) {
   const theme = useTheme();
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
+  const drawerOpen = useAppSelector((state) => state.ui.sidebarOpened);
+  const dispatch = useAppDispatch();
 
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
 
@@ -235,7 +236,7 @@ export default function NavCollapse({ menu, level, parentId, setSelectedItems, s
 
   useEffect(() => {
     if (menu.url === pathname) {
-      handlerActiveItem(menu.id!);
+      dispatch(setOpenedItem({ openedItem: menu.id}));
       setSelected(menu.id);
       setAnchorEl(null);
       setOpen(true);
