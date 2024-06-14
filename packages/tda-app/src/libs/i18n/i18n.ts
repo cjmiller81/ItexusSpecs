@@ -11,7 +11,6 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    debug: true,
     returnEmptyString: false,
     fallbackLng: "en",
     interpolation: {
@@ -19,6 +18,12 @@ i18n
     },
     defaultNS: ["common", "login"],
     resources,
+    saveMissing: true,
+    missingKeyHandler: (lng, ns, key, fallbackValue) => {
+      const message = `Missing translation key [${key}] for [${lng}/${ns}], fallbackValue: ${fallbackValue}`
+      console.warn(message)
+      return fallbackValue
+    },
   })
 
 export default i18n

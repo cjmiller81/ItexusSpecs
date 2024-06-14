@@ -27,7 +27,6 @@ import Transitions from 'components/@extended/Transitions';
 
 import { MenuOrientation } from 'config';
 import useConfig from 'hooks/useConfig';
-import { handlerHorizontalActiveItem, useGetMenuMaster } from 'api/menu';
 
 // assets
 import DownOutlined from '@ant-design/icons/DownOutlined';
@@ -36,6 +35,8 @@ import RightOutlined from '@ant-design/icons/RightOutlined';
 
 // types
 import { NavItemType } from 'types/menu';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/Store';
+import { setHorizontalActiveItem } from '@/features/nav-bar/navBarSlice';
 
 // ==============================|| NAVIGATION - LIST GROUP ||============================== //
 
@@ -89,10 +90,9 @@ export default function NavGroup({
   const pathname = usePathname();
 
   const { menuOrientation } = useConfig();
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
-  const selectedID = menuMaster.openedHorizontalItem;
-
+  const drawerOpen =  useAppSelector((state) => state.ui.sidebarOpened)
+  const selectedID = useAppSelector((state) => state.ui.horizontalActiveItem);
+  const dispatch = useAppDispatch();
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [anchorEl, setAnchorEl] = useState<VirtualElement | (() => VirtualElement) | null | undefined>(null);
@@ -120,7 +120,7 @@ export default function NavGroup({
         checkOpenForParent(ele.children, currentItem.id!);
       }
       if (ele.url === pathname) {
-        handlerHorizontalActiveItem(id);
+        dispatch(setHorizontalActiveItem({horizontalActiveItem: id}))
       }
     });
   };
@@ -131,7 +131,7 @@ export default function NavGroup({
         checkOpenForParent(itemCheck.children, currentItem.id!);
       }
       if (itemCheck?.url === pathname) {
-        handlerHorizontalActiveItem(currentItem.id!);
+        dispatch(setHorizontalActiveItem({horizontalActiveItem: currentItem.id}))
       }
     });
   };

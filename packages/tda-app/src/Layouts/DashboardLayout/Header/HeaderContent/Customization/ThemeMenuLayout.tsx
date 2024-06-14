@@ -13,7 +13,8 @@ import Typography from '@mui/material/Typography';
 import MainCard from 'components/MainCard';
 import { MenuOrientation, ThemeDirection } from 'config';
 import useConfig from 'hooks/useConfig';
-import { handlerDrawerOpen } from 'api/menu';
+import { useAppDispatch } from '@/libs/redux/Store';
+import { toggleSideBar } from '@/features/nav-bar/navBarSlice';
 
 // assets
 const defaultLayout = '/assets/images/customization/default.svg';
@@ -24,7 +25,7 @@ const containerLayout = '/assets/images/customization/container.svg';
 export default function ThemeMenuLayout() {
   const theme = useTheme();
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
-
+  const dispatch = useAppDispatch();
   const { menuOrientation, onChangeMenuOrientation, onChangeMiniDrawer, onChangeDirection } = useConfig();
   const isHorizontal = menuOrientation === MenuOrientation.HORIZONTAL && !downLG;
 
@@ -33,12 +34,12 @@ export default function ThemeMenuLayout() {
       onChangeMiniDrawer(true);
       onChangeDirection(ThemeDirection.LTR);
       onChangeMenuOrientation(e.target.value);
-      handlerDrawerOpen(false);
+      dispatch(toggleSideBar({ open: false }));
     } else {
       onChangeMiniDrawer(true);
       onChangeDirection(ThemeDirection.LTR);
       onChangeMenuOrientation(e.target.value);
-      handlerDrawerOpen(true);
+      dispatch(toggleSideBar({ open: true }));
     }
   };
 

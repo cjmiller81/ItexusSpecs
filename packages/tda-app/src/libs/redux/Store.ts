@@ -8,10 +8,7 @@ const makeStore = () => {
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: ['persist/PERSIST'],
-          ignoredPaths: ['register'],
-        },
+        serializableCheck: false
       }),
   })
 }

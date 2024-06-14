@@ -13,11 +13,12 @@ import IconButton from 'components/@extended/IconButton';
 
 import { DRAWER_WIDTH, MINI_DRAWER_WIDTH, MenuOrientation, ThemeMode } from 'config';
 import useConfig from 'hooks/useConfig';
-import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
 // assets
 import MenuFoldOutlined from '@ant-design/icons/MenuFoldOutlined';
 import MenuUnfoldOutlined from '@ant-design/icons/MenuUnfoldOutlined';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/Store';
+import { toggleSideBar } from '@/features/nav-bar/navBarSlice';
 
 // ==============================|| MAIN LAYOUT - HEADER ||============================== //
 
@@ -26,9 +27,8 @@ export default function Header() {
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
   const { mode, menuOrientation } = useConfig();
 
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
-
+  const drawerOpen = useAppSelector((state) => state.ui.sidebarOpened);
+  const dispatch = useAppDispatch()
   const isHorizontal = menuOrientation === MenuOrientation.HORIZONTAL && !downLG;
 
   // header content
@@ -42,7 +42,7 @@ export default function Header() {
       {!isHorizontal ? (
         <IconButton
           aria-label="open drawer"
-          onClick={() => handlerDrawerOpen(!drawerOpen)}
+          onClick={() => dispatch(toggleSideBar({open: !drawerOpen}))}
           edge="start"
           color="secondary"
           variant="light"

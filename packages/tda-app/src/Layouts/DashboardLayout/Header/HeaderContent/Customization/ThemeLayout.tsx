@@ -16,7 +16,8 @@ import MainCard from 'components/MainCard';
 
 import { MenuOrientation, ThemeDirection } from 'config';
 import useConfig from 'hooks/useConfig';
-import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
+import { useAppDispatch, useAppSelector } from '@/libs/redux/Store';
+import { toggleSideBar } from '@/features/nav-bar/navBarSlice';
 
 // assets
 const defaultLayout = '/assets/images/customization/default.svg';
@@ -27,8 +28,8 @@ const miniMenu = '/assets/images/customization/mini-menu.svg';
 
 export default function ThemeLayout() {
   const theme = useTheme();
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
+  const drawerOpen = useAppSelector((state) => state.ui.sidebarOpened);
+  const dispatch = useAppDispatch();
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
 
   const { miniDrawer, themeDirection, onChangeDirection, onChangeMiniDrawer, menuOrientation } = useConfig();
@@ -49,13 +50,13 @@ export default function ThemeLayout() {
         onChangeMiniDrawer(false);
       }
       if (!drawerOpen) {
-        handlerDrawerOpen(true);
+        dispatch(toggleSideBar({open: true}));
       }
     }
     if (newValue === 'mini') {
       onChangeMiniDrawer(true);
       if (drawerOpen) {
-        handlerDrawerOpen(false);
+        dispatch(toggleSideBar({open: true}));
       }
     }
     if (newValue === ThemeDirection.RTL) {
