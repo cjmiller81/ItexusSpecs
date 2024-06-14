@@ -21,10 +21,12 @@ import IconButton from 'components/@extended/IconButton';
 
 import { MenuOrientation, ThemeMode, NavActionType } from 'config';
 import useConfig from 'hooks/useConfig';
-import { handlerHorizontalActiveItem, handlerActiveItem, handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
 // types
 import { LinkTarget, NavItemType } from 'types/menu';
+import { useAppSelector } from '@/libs/redux/Store';
+import { useAppDispatch } from 'components';
+import { setHorizontalActiveItem, setOpenedItem, toggleSideBar } from '@/features/nav-bar/navBarSlice';
 
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
@@ -36,10 +38,9 @@ interface Props {
 
 export default function NavItem({ item, level, isParents = false }: Props) {
   const theme = useTheme();
-
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
-  const openItem = menuMaster.openedItem;
+  const dispatch = useAppDispatch()
+  const drawerOpen = useAppSelector(state => state.ui.sidebarOpened);
+  const openItem = useAppSelector(state => state.ui.openedItem);
 
   const downLG = useMediaQuery(theme.breakpoints.down('lg'));
 
@@ -67,7 +68,7 @@ export default function NavItem({ item, level, isParents = false }: Props) {
 
   // active menu item on page load
   useEffect(() => {
-    if (pathname === item.url) handlerActiveItem(item.id!);
+    if (pathname === item.url) dispatch(setOpenedItem({openedItem: item.id }));
     // eslint-disable-next-line
   }, [pathname]);
 
@@ -116,7 +117,7 @@ export default function NavItem({ item, level, isParents = false }: Props) {
               })
             }}
             {...(downLG && {
-              onClick: () => handlerDrawerOpen(false)
+              onClick: () => dispatch(toggleSideBar({open: false}))
             })}
           >
             {itemIcon && (
@@ -214,7 +215,7 @@ export default function NavItem({ item, level, isParents = false }: Props) {
           selected={isSelected}
           {...(isParents && {
             onClick: () => {
-              handlerHorizontalActiveItem(item.id!);
+              dispatch(setHorizontalActiveItem({ horizontalActiveItem: item.id }));
             }
           })}
           sx={{

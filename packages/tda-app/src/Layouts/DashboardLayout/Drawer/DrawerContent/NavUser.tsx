@@ -17,11 +17,10 @@ import MenuItem from '@mui/material/MenuItem';
 // project import
 import Avatar from 'components/@extended/Avatar';
 import useUser from 'hooks/useUser';
-import { useGetMenuMaster } from 'api/menu';
 
 // assets
 import RightOutlined from '@ant-design/icons/RightOutlined';
-import { useOry } from 'components';
+import { useAppSelector, useOry } from 'components';
 
 interface ExpandMoreProps extends IconButtonProps {
   theme: Theme;
@@ -50,8 +49,7 @@ const ExpandMore = styled(IconButton, { shouldForwardProp: (prop) => prop !== 't
 export default function NavUser() {
   const theme = useTheme();
 
-  const { menuMaster } = useGetMenuMaster();
-  const drawerOpen = menuMaster.isDashboardDrawerOpened;
+  const drawerOpen = useAppSelector((state) => state.ui.sidebarOpened);
 
   const user = useUser();
 
