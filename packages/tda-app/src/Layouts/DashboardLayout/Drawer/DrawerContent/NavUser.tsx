@@ -118,9 +118,6 @@ export default function NavUser() {
         <MenuItem component={Link} href="/profile/details" onClick={handleClose}>
           Profile
         </MenuItem>
-        <MenuItem component={Link} href="/profile/details" onClick={handleClose}>
-          My account
-        </MenuItem>
       </Menu>
     </Box>
   );

@@ -62,7 +62,8 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_MOCK_BACKEND_API: "false",
     ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
-    BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
+    BACKEND_API_URL: 'https://tokensets-api.emergentcybernetics.net',
+    API_BASE_URL: 'https://tda-api.emergentcybernetics.net',
   },
   transpilePackages: ['@mui/icons-material', 'components'],
 }

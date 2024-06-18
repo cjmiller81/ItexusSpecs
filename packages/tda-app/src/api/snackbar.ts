@@ -11,13 +11,13 @@ export const endpoints = {
 const initialState: SnackbarProps = {
   action: false,
   open: false,
-  autoHideDuration: 1500,
+  autoHideDuration: 5000,
   message: 'Note archived',
   anchorOrigin: {
-    vertical: 'bottom',
-    horizontal: 'right'
+    vertical: 'top',
+    horizontal: 'center'
   },
-  variant: 'default',
+  variant: 'alert',
   alert: {
     color: 'primary',
     variant: 'filled'

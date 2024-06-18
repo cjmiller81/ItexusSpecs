@@ -1,128 +1,205 @@
-import { TabContext, TabPanel } from "@mui/lab"
-import TabList from "@mui/lab/TabList"
-import { Box, Tab, styled } from "@mui/material"
-import {
-  ProfileContainer,
-  ProfileDetails,
-  ProfilePicture,
-  SecurityContainer,
-  addError,
-  profileService,
-  useAppDispatch,
-  useOry,
-} from "components"
+import { openSnackbar } from "@/api/snackbar"
+import { ChangePasswordSection } from "@/features/profile/ChangePasswordSection"
+import ProfileCard from "@/features/profile/ProfileCard"
+import ProfileEditSection, { ProfileModel } from "@/features/profile/ProfileEditSection"
+import { TotpSection } from "@/features/profile/TotpSection"
+import { SnackbarProps } from "@/types/snackbar"
+import { Grid } from "@mui/material"
+import { profileService, useOry } from "components"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-
 export default function ProfilePage() {
-  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
-  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
-  const { onUpdateAvatar, session, onUpdateProfile } = useOry()
-  const dispatch = useAppDispatch()
-
+  const { t } = useTranslation("ProfilePage")
   const router = useRouter()
   const routeParams = (router.query.tab as string[]) || undefined
 
-  const [value, setValue] = useState<string>(
-    routeParams && (router.query.tab as string[]).length ? routeParams[0] : "details",
-  )
-  const { t } = useTranslation("ProfilePage")
+  const tab = routeParams && (router.query.tab as string[]).length ? routeParams[0] : "personal"
+  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
+  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
+  const {
+    onUpdateAvatar,
+    onUpdateProfile,
+    onTotpUnlink,
+    onTotpSubmit,
+    settingsFlow,
+    createSettingsFow,
+    onChangePassword,
+  } = useOry()
+  const [codeLoading, setCodeLoading] = useState(false)
+  const [newPasswordLoading, setNewPasswordLoading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    router.push(
-      {
-        pathname: `${value}`,
-      },
-      undefined,
-      {
-        shallow: true,
-      },
-    )
-  }, [value])
+    if (settingsFlow) return
+    createSettingsFow().then()
+  }, [])
 
-  const handleChange = (newValue: string) => {
-    //eslint-disable-next-line no-unused-vars
-    setValue(newValue)
-  }
-
-  const onAvatarChanged = async (file: File) => {
+  const onAvatarChanged = (file: File) => {
     setIsAvatarUploading(true)
     profileService
       .uploadAvatart(file)
       .then(url => onUpdateAvatar(url))
       .catch((error: any) => {
-        const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError(reason))
-        else dispatch(addError(t("AvatarUploadingError")))
+        const message = error?.response?.data?.error?.reason ?? t("AvatarUploadingError")
+        openSnackbar({
+          open: true,
+          message: message,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+        } as SnackbarProps)
       })
       .finally(() => setIsAvatarUploading(false))
   }
 
-  const onChangeDetails = (firstName: string, lastName: string) => {
+  const focusInput = () => {
+    inputRef.current?.focus()
+  }
+
+  const onChangeDetails = ({ firstName, lastName }: ProfileModel) => {
     setIsProfileDetailsUpdating(true)
     onUpdateProfile(firstName, lastName)
       .then()
       .catch((error: any) => {
-        const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError(reason))
-        else dispatch(addError(t("ProfileUpdatingError")))
+        openSnackbar({
+          open: true,
+          message: error?.response?.data?.error?.reason ?? t("ProfileUpdatingError"),
+          alert: {
+            color: "error",
+          },
+        } as SnackbarProps)
       })
       .finally(() => setIsProfileDetailsUpdating(false))
   }
 
+  const onSubmitCode = async (code: string) => {
+    setCodeLoading(true)
+    onTotpSubmit(code)
+      .then(() => {
+        openSnackbar({
+          open: true,
+          message: t("ApplicationLinked"),
+          variant: "alert",
+          alert: {
+            color: "success",
+          },
+        } as SnackbarProps)
+      })
+      .catch(error => {
+        const message = error?.response?.data?.error?.reason ?? t("invalidCode", { ns: "ErrorMessages" })
+        openSnackbar({
+          open: true,
+          message: message,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+        } as SnackbarProps)
+      })
+      .finally(() => {
+        setCodeLoading(false)
+      })
+  }
+
+  const onTotpUnlinkHandle = async () => {
+    setCodeLoading(true)
+    onTotpUnlink()
+      .then(() => {
+        openSnackbar({
+          open: true,
+          message: t("ApplicationUnlinked", "SecurityContainer"),
+          alert: {
+            color: "success",
+          },
+        } as SnackbarProps)
+      })
+      .catch(error => {
+        const message = error?.response?.data?.error?.reason ?? t("invalidCode", { ns: "ErrorMessages" })
+        openSnackbar({
+          open: true,
+          message: message,
+          alert: {
+            color: "error",
+          },
+        } as SnackbarProps)
+      })
+      .finally(() => {
+        setCodeLoading(false)
+      })
+  }
+
+  const onSubmitNewPassword = async (passsword: string) => {
+    setNewPasswordLoading(true)
+    onChangePassword(passsword)
+      .then(() => {
+        openSnackbar({
+          open: true,
+          message: t("NewPasswordMessage", { ns: "SecurityContainer" }),
+          alert: {
+            color: "success",
+          },
+        } as SnackbarProps)
+      })
+      .catch(error => {
+        const message = error?.response?.data?.error?.reason ?? t("invalidPasswordFormat", { ns: "ErrorMessages" })
+        openSnackbar({
+          open: true,
+          message: message,
+          variant: "alert",
+          alert: {
+            color: "error",
+          },
+        } as SnackbarProps)
+      })
+      .finally(() => {
+        setNewPasswordLoading(false)
+      })
+  }
+
   return (
-    <ProfileContainer title={t("UserProfile")}>
-      <TabContext value={value}>
-        <StyledTabList onChange={(_event, newValue) => handleChange(newValue)}>
-          <Tab
-            label={t("PROFILE")}
-            value="details"
+    <Grid
+      container
+      spacing={3}>
+      <Grid
+        item
+        xs={12}
+        md={3}>
+        <ProfileCard
+          isAvatarLoading={isAvatarUploading}
+          avatarLoading={isAvatarUploading}
+          onChangeAvatar={onAvatarChanged}
+          focusInput={focusInput}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        md={9}>
+        {tab === "details" && (
+          <ProfileEditSection
+            isProfileUpdating={isProfileDetailsUpdating}
+            onProfileUpdated={onChangeDetails}
           />
-          <Tab
-            label={t("SECURITY")}
-            value="security"
-          />
-        </StyledTabList>
-        <TabPanel value="details">
-          <StyledProfileBox>
-            <ProfilePicture
-              defaultAvatarSrc="/defaultAvatar.png"
-              onAvatarChanged={onAvatarChanged}
-              avatarUrl={session?.identity?.traits.avatarUrl}
-              isAvatarUploading={isAvatarUploading}
-              sx={{ width: "30%", minWidth: "200px" }}
+        )}
+        {tab === "password" && (
+          <>
+            <ChangePasswordSection
+              isLoading={newPasswordLoading}
+              settingsFlow={settingsFlow}
+              onChangePassword={onSubmitNewPassword}
             />
-            <ProfileDetails
-              onUpdateProfile={onChangeDetails}
-              loadingCnangeDetails={isProfileDetailsUpdating}
-              sx={{ width: "100%" }}
+            <TotpSection
+              onSubmitCode={onSubmitCode}
+              onTotpUnlinkHandle={onTotpUnlinkHandle}
+              settingsFlow={settingsFlow}
+              isCodeSubmitting={codeLoading}
+              sx={{ mt: 2 }}
             />
-          </StyledProfileBox>
-        </TabPanel>
-        <TabPanel value="security">
-          <SecurityContainer />
-        </TabPanel>
-      </TabContext>
-    </ProfileContainer>
+          </>
+        )}
+      </Grid>
+    </Grid>
   )
 }
-
-const StyledProfileBox = styled(Box)(({ theme }) => ({
-  display: "flex",
-  gap: theme.spacing(2),
-  alignItems: "flex-start",
-  [theme.breakpoints.down("md")]: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-}))
-
-const StyledTabList = styled(TabList)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    " .MuiButtonBase-root": {
-      minWidth: "20px",
-      padding: "8px 12px",
-    },
-  },
-}))
