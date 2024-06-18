@@ -111,8 +111,8 @@ export const TotpSection: FC<Props & Omit<MainCardProps, "children">> = ({
                   <NodeImage
                     node={imageNode}
                     attributes={imageNode.attributes as UiNodeImageAttributes}></NodeImage>
-                  <code>{totpSecret}</code>
-                  <InputLabel htmlFor="password-old">{t("VerificationCode")}</InputLabel>
+                  <code style={{ marginBottom: "32px" }}>{totpSecret}</code>
+                  <InputLabel  htmlFor="password-old">{t("VerificationCode")}</InputLabel>
                   <OutlinedInput
                     size="small"
                     sx={{ mt: 4, width: "30%" }}
