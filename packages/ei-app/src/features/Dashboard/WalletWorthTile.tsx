@@ -18,6 +18,7 @@ export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props })
     })}%`
   }
 
+  // eslint-disable-next-line no-undef
   const series: ApexAxisChartSeries = [
     {
       name: t("ChartSeriesTitle"),
