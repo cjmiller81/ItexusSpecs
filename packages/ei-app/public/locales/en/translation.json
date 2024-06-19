@@ -68,14 +68,18 @@
     "FromDate": "From Date",
     "ToDate": "To Date"
   },
-  "TotalWalletsWorthCard": {
-    "TotalWalletWorth": "Total Wallet Worth"
+  "WalletWorthTile": {
+    "ChartSeriesTitle": "Total Wallet Worth"
   },
   "ProfileContainer": {
     "ChangeDetails": "Change details",
     "FirstName": "First Name",
     "LastName": "Last Name",
     "Email": "Email"
+  },
+  "HomePage":{
+    "WalletsWorthTile": "Wallets Performance - Last 30 Days",
+    "Welcome": "Welcome, {{userName}}"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
