@@ -8178,15 +8178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-query@npm:^1.2.9":
-  version: 1.2.9
-  resolution: "@types/react-query@npm:1.2.9"
-  dependencies:
-    react-query: "npm:*"
-  checksum: 10c0/257373903828f36947cec80de049b2d52943faafef8bdb497ba7ed1bcb2496593077966acd8870ff0a03a5903b32b1ba79a914e1bf21becaa8f698127327dcbf
-  languageName: node
-  linkType: hard
-
 "@types/react-redux@npm:^7.1.20":
   version: 7.1.33
   resolution: "@types/react-redux@npm:7.1.33"
@@ -13770,7 +13761,6 @@ __metadata:
     "@types/node": "npm:20.11.24"
     "@types/react": "npm:18.2.63"
     "@types/react-dom": "npm:18.2.20"
-    "@types/react-query": "npm:^1.2.9"
     "@types/react-syntax-highlighter": "npm:^15"
     "@types/react-window": "npm:^1.8.8"
     "@types/slick-carousel": "npm:^1"
@@ -13817,12 +13807,14 @@ __metadata:
     prettier: "npm:^3.2.5"
     react: "npm:^18.2.0"
     react-apexcharts: "npm:^1.4.1"
+    react-countdown-hook: "npm:^1.1.3"
     react-dom: "npm:^18.2.0"
     react-i18next: "npm:^14.0.5"
     react-player: "npm:^2.15.1"
     react-redux: "npm:^7.2.8"
     react-syntax-highlighter: "npm:^15.5.0"
     react-toastify: "npm:^7.0.0"
+    react-ts-tradingview-widgets: "npm:^1.2.5"
     react-window: "npm:^1.8.10"
     redux: "npm:^5.0.1"
     redux-deep-persist: "npm:^1.0.7"
@@ -25269,6 +25261,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-countdown-hook@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "react-countdown-hook@npm:1.1.3"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/1e82ccd46bffcd4118f6c252c1185186447ec03fb9633928b88a37ea57f2bccbf3220ac3588bebd40f565e9dedf41b88db71432da608ab50354e4f3cc2e6116f
+  languageName: node
+  linkType: hard
+
 "react-csv@npm:^2.2.2":
   version: 2.2.2
   resolution: "react-csv@npm:2.2.2"
@@ -25650,7 +25651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-query@npm:*, react-query@npm:^3.39.3":
+"react-query@npm:^3.39.3":
   version: 3.39.3
   resolution: "react-query@npm:3.39.3"
   dependencies:
@@ -25959,6 +25960,16 @@ __metadata:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: 10c0/2ba754ba748faefa15f87c96dfa700d5525054a0141de8c75763aae6734af0740e77e11261a1e8f4ffc08fd9ab78510122e05c21c2d79066c38bb6861a886c82
+  languageName: node
+  linkType: hard
+
+"react-ts-tradingview-widgets@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "react-ts-tradingview-widgets@npm:1.2.5"
+  peerDependencies:
+    react: ^17.0.2 || ^18.1.0
+    react-dom: ^17.0.2 || ^18.1.0
+  checksum: 10c0/8c7ebacdcc65b76f206e0a7f55eeaa6743d833a8d93fb1f123b49dd4d1066e3a745bbca43554213c8bd0ecc2816a0bc7328d32b4ebd58bc173861eb8a59c78be
   languageName: node
   linkType: hard
 
