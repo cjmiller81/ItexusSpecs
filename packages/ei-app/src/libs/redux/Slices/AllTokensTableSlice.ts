@@ -58,7 +58,8 @@ export const allTokensTableSlice = createAppSlice({
           iconsApi.getAllChains(),
           iconsApi.getAllCategories(),
         ])
-
+        
+        coins.sort((a, b) => b.mCap - a.mCap)
         thunkApi.dispatch(fetchFilters({}))
         thunkApi.dispatch(setPrefilteredEqualWeightedData([...coins]))
         thunkApi.dispatch(setPrefilteredWeightedData([...coins]))

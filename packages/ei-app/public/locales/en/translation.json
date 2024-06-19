@@ -79,7 +79,8 @@
   },
   "HomePage":{
     "WalletsWorthTile": "Wallets Performance - Last 30 Days",
-    "Welcome": "Welcome, {{userName}}"
+    "Welcome": "Welcome, {{userName}}",
+    "TopTokensTile": "Investing - Current Top 10 Tokens by Market Cap"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
@@ -155,7 +156,8 @@
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address",
     "PersonalPublic": "Personal/Public",
-    "WalletName": "Wallet Name"
+    "WalletName": "Wallet Name",
+    "FullyDilutedValuation": "Fully Diluted Valuation"
   },
   "SymbolLookup": {
     "Search": "Search"
