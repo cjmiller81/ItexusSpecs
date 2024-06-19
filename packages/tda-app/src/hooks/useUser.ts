@@ -6,6 +6,8 @@ export default function useUser() {
   if (session) {
     const newUser = {
       name: `${session?.identity?.traits.name.first} ${session?.identity?.traits.name.last}`,
+      firstName: session?.identity?.traits.name.first,
+      lastName: session?.identity?.traits.name.last,
       email: session?.identity?.traits.email,
       avatar: session?.identity?.traits.avatarUrl,
       thumb: session?.identity?.traits.avatarUrl,
@@ -14,5 +16,5 @@ export default function useUser() {
 
     return newUser
   }
-  return false
+  throw new Error("User not found")
 }
