@@ -6,7 +6,7 @@ class Connector {
   static instance: Connector
   constructor() {
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(`${process.env.BACKEND_API_URL}/events/orders`)
+      .withUrl(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/events/orders`)
       .withAutomaticReconnect()
       .build()
     this.connection.start().catch(err => console.error("SignalR Connection Error:", err))
