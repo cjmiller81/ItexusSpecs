@@ -1,5 +1,5 @@
 import { CircularProgress, Typography } from "@mui/material"
-import { Stack, StackProps } from "@mui/system"
+import { Box, Stack, StackProps, useTheme } from "@mui/system"
 import { FC, ReactNode } from "react"
 
 export type DashboardTileProps = StackProps & {
@@ -9,6 +9,7 @@ export type DashboardTileProps = StackProps & {
 }
 
 export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, loading, sx, ...props }) => {
+  const theme = useTheme()
   return (
     <Stack
       sx={{
@@ -32,7 +33,7 @@ export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, l
           />
         )}
       </Stack>
-      {children}
+      <Box sx={{ boxShadow: theme.shadows?.[8] }}>{children}</Box>
     </Stack>
   )
 }
