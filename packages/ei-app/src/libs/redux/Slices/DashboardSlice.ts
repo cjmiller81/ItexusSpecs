@@ -1,7 +1,7 @@
 import { Status, createAppSlice, toTotalTokensBalances, walletsApi } from "components"
 import moment from "moment"
 import { RootState } from "../RootReducer"
-import { CompareToValues, getHestoricalWalletWorthChartData } from "./Shared"
+import { CompareToValues, getHistoricalWalletWorthChartData } from "./Shared"
 
 export interface WalletsState {
   totalWalletWorthChartData: CompareToValues | null
@@ -28,7 +28,7 @@ export const dashboardSlice = createAppSlice({
           null,
         )
 
-        const chartData = getHestoricalWalletWorthChartData(response, "daily")
+        const chartData = getHistoricalWalletWorthChartData(response, "daily")
         return chartData
       },
       {

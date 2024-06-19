@@ -6,7 +6,7 @@ export type CompareToValues = {
   y: number
 }[]
 
-export function getHestoricalWalletWorthChartData(
+export function getHistoricalWalletWorthChartData(
   historicalWalletData: HistoricalWalletData[],
   period: Period,
 ): CompareToValues {

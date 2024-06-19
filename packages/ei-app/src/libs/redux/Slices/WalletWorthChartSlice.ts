@@ -4,7 +4,7 @@ import { Period, Status, createAppSlice, toTotalTokensBalances, walletsApi } fro
 import i18next from "i18next"
 import { RootState } from "../RootReducer"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
-import { getHestoricalWalletWorthChartData } from "./Shared"
+import { getHistoricalWalletWorthChartData } from "./Shared"
 
 interface WalletsChartState {
   chartData?: ChartSeriesDataResponse
@@ -100,7 +100,7 @@ function makeChartSeries(state: WalletsChartState) {
   const periodFilter = getPeriodHistoricalDataFileter(state.period)
   const firstComparePrice = state.chartData.seriesData[0].comparePrice
 
-  const walletWorthValues = getHestoricalWalletWorthChartData(state.chartData.seriesData, state.period)
+  const walletWorthValues = getHistoricalWalletWorthChartData(state.chartData.seriesData, state.period)
 
   state.chartSeries = []
   state.chartSeries.push({
