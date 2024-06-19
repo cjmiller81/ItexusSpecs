@@ -60,36 +60,11 @@ const nextConfig = {
     };
   },
   env: {
-    NEXT_PUBLIC_MOCK_BACKEND_API: "false",
-    ACCESS_TOKEN:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2NhblVwbG9hZEZpbGUiOiJjYW5VcGxvYWRGaWxlIiwicHJfYWRtaW4iOiJhZG1pbiIsImV4cCI6MTcxODQ4ODE3NywiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.G_NKEeUe0SpOytyIZ70Le09-Z7dlZf6J2PY3Ez_xY-Q",
-    NEXT_PUBLIC_ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
-    ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
-    NEXT_APP_VERSION: process.env.REACT_APP_VERSION,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET_KEY,
-    NEXTAUTH_SECRET_KEY: process.env.NEXTAUTH_SECRET_KEY,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    NEXT_APP_API_URL: process.env.REACT_APP_API_URL,
-    NEXT_APP_JWT_SECRET: process.env.REACT_APP_JWT_SECRET,
-    NEXT_APP_JWT_TIMEOUT: process.env.REACT_APP_JWT_TIMEOUT,
-    NEXT_APP_GOOGLE_MAPS_API_KEY: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    NEXT_APP_MAPBOX_ACCESS_TOKEN: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
-
-    BACKEND_API_URL: 'https://tda-api.emergentcybernetics.net',
-
-    BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJwcl9PcnlDYW5BZG1pblVzZXJzIjoiT3J5Q2FuQWRtaW5Vc2VycyIsInByX0NvdW50ZXJQYXJ0eUlkIjoiRUNfVEVTVCIsImV4cCI6MTcyMDMwODUxOCwiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.KrryOcwgrDj2GkgP30DxacjKKnrvshoSBuIHJTSJOR0',
-    NEXT_PUBLIC_BACKEND_API_TOKEN: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2FkbWluIjoiYWRtaW4iLCJwcl9PcnlDYW5BZG1pblVzZXJzIjoiT3J5Q2FuQWRtaW5Vc2VycyIsInByX0NvdW50ZXJQYXJ0eUlkIjoiRUNfVEVTVCIsImV4cCI6MTcyMDMwODUxOCwiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.KrryOcwgrDj2GkgP30DxacjKKnrvshoSBuIHJTSJOR0',
-
+    NEXT_PUBLIC_MOCK_BACKEND_API: process.env.NEXT_PUBLIC_MOCK_BACKEND_API,
+    ORY_SDK_URL: process.env.ORY_SDK_URL,
+    BACKEND_API_URL: process.env.ORY_SDK_URL.API_BASE_URL,
   },
   transpilePackages: ['@mui/icons-material', 'components'],
-  /*
-  experimental: {
-    optimizePackageImports: [
-      '@mui/icons-material',
-      'components',
-    ],
-  },
-  */
 }
 
 module.exports = nextConfig

@@ -34,11 +34,11 @@ const mockState: {
 }
 
 export const fifoTradeInstrumentsHandlers: RequestHandler<RequestHandlerDefaultInfo, any, any, RequestHandlerOptions>[] = [
-  http.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoExecution`, () => {
+  http.get(`${process.env.API_BASE_URL}/api/fifoExecution`, () => {
     return HttpResponse.json(mockState.fifoTradeInstruments)
   }),
 
-  http.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoExecution/:id`, async ({ request }) => {
+  http.post(`${process.env.API_BASE_URL}/api/fifoExecution/:id`, async ({ request }) => {
     const fifoTradeInstruments = (await request.json()) as IFifoTradeInstruments
 
     const existedTradeInstrumentsIndex = mockState.fifoTradeInstruments.findIndex(
@@ -49,7 +49,7 @@ export const fifoTradeInstrumentsHandlers: RequestHandler<RequestHandlerDefaultI
     else mockState.fifoTradeInstruments.splice(existedTradeInstrumentsIndex, 1, fifoTradeInstruments)
   }),
 
-  http.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoExecution/:id`, ({ params }) => {
+  http.delete(`${process.env.API_BASE_URL}/api/fifoExecution/:id`, ({ params }) => {
     const { id } = params
     const decodedId = decodeURIComponent(id as string)
     const splitedId: [string, string] = decodedId.split(".") as [string, string]

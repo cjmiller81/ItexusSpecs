@@ -39,23 +39,11 @@ const nextConfig = {
     return config;
   },
   env: {
-    API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
-    NEXT_PUBLIC_API_BASE_URL: "https://tokensets-api.emergentcybernetics.net",
-    NEXT_PUBLIC_MOCK_BACKEND_API: "false",
-    ACCESS_TOKEN:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6IjFlMjViNTBkLTVhZjQtNGQ1Zi1hMmM4LTMxOTEyZTBlNzU2ZCIsInByX2NhblVwbG9hZEZpbGUiOiJjYW5VcGxvYWRGaWxlIiwicHJfYWRtaW4iOiJhZG1pbiIsImV4cCI6MTcxODQ4ODE3NywiaXNzIjoiand0X2FwaV9pc3N1ZXIiLCJhdWQiOiJqd3RfYXBpX2F1ZGllbmNlIn0.G_NKEeUe0SpOytyIZ70Le09-Z7dlZf6J2PY3Ez_xY-Q",
-    NEXT_PUBLIC_ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
-    ORY_SDK_URL: 'https://trading-tools-auth.emergentcybernetics.net',
+    API_BASE_URL: process.env.API_BASE_URL,
+    NEXT_PUBLIC_MOCK_BACKEND_API: process.env.NEXT_PUBLIC_MOCK_BACKEND_API,
+    ORY_SDK_URL: process.env.ORY_SDK_URL,
   },
   transpilePackages: ['@mui/icons-material', 'components'],
-  /*
-  experimental: {
-    optimizePackageImports: [
-      '@mui/icons-material',
-      'components',
-    ],
-  },
-  */
 }
 
 module.exports = nextConfig

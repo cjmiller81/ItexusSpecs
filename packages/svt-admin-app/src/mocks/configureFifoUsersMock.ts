@@ -17,21 +17,21 @@ const mockState: {
 }
 
 export function configureFifoUsersMock(mock: MockAdapter) {
-  mock.onGet(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/fifo\/users`).reply(() => {
+  mock.onGet(`${process.env.API_BASE_URL}\/api\/fifo\/users`).reply(() => {
 
     return [200, mockState.fifoUsers]
   })
 
-  const getBotRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/fifo\/users\/([^/]+)\/bots`)
+  const getBotRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/fifo\/users\/([^/]+)\/bots`)
   mock.onGet(getBotRegExp).reply(() => {
     return [200, mockState.bots]
   })
-  const getOrdersRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/fifo\/users\/([^/]+)\/orders`)
+  const getOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/fifo\/users\/([^/]+)\/orders`)
   mock.onGet(getOrdersRegExp).reply(() => {
     return [200, mockState.orders]
   })
   // eslint-disable-next-line
-  const putUserRegExp = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/fifo\/users\/*`)
+  const putUserRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/fifo\/users\/*`)
   mock.onPut(putUserRegExp).reply(config => {
     const fifoUser = JSON.parse(config.data)
     const url = new URL(config.url!, config.baseURL!)

@@ -5,19 +5,9 @@ import i18next from "i18next"
 import { appStore } from "../redux/Store"
 
 export const appAxios = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.API_BASE_URL,
   withCredentials: true,
 })
-
-appAxios.interceptors.request.use(
-  config => {
-    config.headers.Authorization = process.env.ACCESS_TOKEN
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  },
-)
 
 AddDatesProcessing(appAxios)
 appAxios.interceptors.response.use(

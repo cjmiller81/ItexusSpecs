@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { YesNoDialog } from "components"
 import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { IPrefilterTokensFilterValues } from "@/services/backend-api.service"
 import { isDeepEqual } from "@/utils/utils"
 import CloseIcon from "@mui/icons-material/Close"
 import { LoadingButton } from "@mui/lab"
@@ -29,6 +28,7 @@ import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import ReactPlayer from "react-player"
 import { filterBuilderFields } from "../../constants/PrefilterTokensTable"
+import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues"
 
 interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[]

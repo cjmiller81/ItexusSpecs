@@ -3,10 +3,7 @@ import { AddDatesProcessing } from "components"
 
 const appAxios = axios.create({
   baseURL: process.env.BACKEND_API_URL,
-  withCredentials: true,
-  headers: {
-    Authorization: `Bearer ${process.env.BACKEND_API_TOKEN}`,
-  },
+  withCredentials: true
 })
 
 AddDatesProcessing(appAxios)

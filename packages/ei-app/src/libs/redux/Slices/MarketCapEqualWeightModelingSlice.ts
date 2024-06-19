@@ -1,12 +1,12 @@
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
-import { ICoin } from "@/services/backend-api.service"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { createAppSlice } from "components"
+import { ICoin } from "components/src/models/token/ICoin"
 import { MarketCapEqualModelingState, initialState } from "./MarketCapWeightedModelingSlice"
 
 export const marketCapEqualWeightModelingSlice = createAppSlice({
   name: "MarketCapEqualWeightModeling",
-  initialState: {...initialState},
+  initialState: { ...initialState },
   reducers: create => ({
     setTokens: create.reducer((state, action: PayloadAction<number>) => {
       state.tokensCount = action.payload

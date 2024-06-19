@@ -34,7 +34,7 @@ const mockState: {
 }
 
 export function configureAxiosTIMocks(mock: MockAdapter) {
-  mock.onGet(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/fifoExecution`).reply((config) => {
+  mock.onGet(`${process.env.API_BASE_URL}/api/fifoExecution`).reply((config) => {
     return [200, mockState.fifoTradeInstruments]
   })
 
@@ -47,7 +47,7 @@ export function configureAxiosTIMocks(mock: MockAdapter) {
   }
 
   // eslint-disable-next-line
-  const pathRegex = new RegExp(`${process.env.NEXT_PUBLIC_API_BASE_URL}\/api\/fifoExecution\/*`)
+  const pathRegex = new RegExp(`${process.env.API_BASE_URL}\/api\/fifoExecution\/*`)
 
   mock.onPost(pathRegex).reply(config => {
 

@@ -1,7 +1,7 @@
 import { AxiosError } from "axios"
-import { addError, appAxios } from "components"
 import i18n from "i18next"
 import { appStore } from "../redux/Store"
+import { addError, appAxios } from "components"
 
 appAxios.interceptors.response.use(
   async response => {

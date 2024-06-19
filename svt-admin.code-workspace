@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+        "name": "⭐ svt-admin-app",
+        "path": "packages\\svt-admin-app"
+    },
+    {
+        "name": "📚 components",
+        "path": "packages\\components"
+    },
+    {
+      "name": "📌 root",
+      "path": "."
+    }
+  ],
+}

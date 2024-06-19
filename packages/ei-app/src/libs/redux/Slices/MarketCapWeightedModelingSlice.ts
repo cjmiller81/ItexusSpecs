@@ -1,7 +1,9 @@
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
-import { ICategory, ICoin, IPlatform } from "@/services/backend-api.service"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { Status, createAppSlice } from "components"
+import { ICategory } from "components/src/models/token/ICatigory"
+import { ICoin } from "components/src/models/token/ICoin"
+import { IPlatform } from "components/src/models/token/IPlatform"
 
 export interface MarketCapEqualModelingState {
   tokens: ICoin[]

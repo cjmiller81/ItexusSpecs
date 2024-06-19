@@ -38,7 +38,7 @@ export const rfqApi = {
   },
   placeOrder: async (payload: PlaceOrderRequest, signal: GenericAbortSignal): Promise<void> => {
     await appAxios.post(
-      `${process.env.BACKEND_API_URL}/api/customers/placeorder`,
+      `/api/customers/placeorder`,
       {
         ...payload,
         transactTime: moment(payload.transactTime).utc().format("YYYY-MM-DD HH:mm:ss"),
@@ -50,7 +50,7 @@ export const rfqApi = {
     )
   },
   getCurrenciesPairs: async (): Promise<CurrencyPair[]> => {
-    const response = await appAxios.get<{ Symbol: string }[]>(`${process.env.BACKEND_API_URL}/api/customers/pairs`)
+    const response = await appAxios.get<{ Symbol: string }[]>(`/api/customers/pairs`)
     return response.data.map<CurrencyPair>(symbolData => {
       const splitedPair = symbolData.Symbol.split("-")
       return {
@@ -62,8 +62,8 @@ export const rfqApi = {
   getHistoryData: async ({ accountNumber, fromDate, toDate }: GetHistoryDataRequest): Promise<HistoryDataParsed[]> => {
     const requestUrl =
       fromDate && toDate
-        ? `${process.env.BACKEND_API_URL}/api/customers/order-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
-        : `${process.env.BACKEND_API_URL}/api/customers/order-history?accountNumber=${accountNumber}`
+        ? `/api/customers/order-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
+        : `/api/customers/order-history?accountNumber=${accountNumber}`
 
     const response = await appAxios.get<HistoryData[]>(requestUrl)
 
