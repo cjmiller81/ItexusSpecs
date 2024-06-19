@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios"
 import { AddDatesProcessing } from "components"
 
 const appAxios = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API_URL,
   withCredentials: true
 })
 
