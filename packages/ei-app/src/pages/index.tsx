@@ -34,7 +34,7 @@ export default function HomePage() {
       <Typography
         variant="h5"
         sx={{ fontWeight: "bold" }}>
-        Welcome, {firstName}
+          {t("Welcome", { userName: firstName })}
       </Typography>
 
       <Grid

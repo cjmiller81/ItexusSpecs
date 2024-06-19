@@ -78,7 +78,8 @@
     "Email": "Email"
   },
   "HomePage":{
-    "WalletsWorthTile": "Wallets Performance - Last 30 Days"
+    "WalletsWorthTile": "Wallets Performance - Last 30 Days",
+    "Welcome": "Welcome, {{userName}}"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
