@@ -22,17 +22,17 @@ import { IMarketCapWeightedIndex } from 'components';
 // Mock the `services/backend-api.service.ts` API requests.
 export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo, any, any, RequestHandlerOptions>[] = [
 
-  http.get(`${process.env.API_BASE_URL}/categories`, () => {
+  http.get(`${process.env.BACKEND_API_URL}/categories`, () => {
     const categories = allCategories as ICategory[]
     return HttpResponse.json(categories)
   }),
 
-  http.get(`${process.env.API_BASE_URL}/chains`, () => {
+  http.get(`${process.env.BACKEND_API_URL}/chains`, () => {
     const chains = allChains as IPlatform[]
     return HttpResponse.json(chains)
   }),
 
-  http.get(`${process.env.API_BASE_URL}/model/run/marketCapWeightedIndex`, () => {
+  http.get(`${process.env.BACKEND_API_URL}/model/run/marketCapWeightedIndex`, () => {
     /*
     var url = new URL(request.url)
     let tokenCount = 8
@@ -62,12 +62,12 @@ export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo
     return HttpResponse.json(marketCapWeightedIndex)
   }),
 
-  http.get(`${process.env.API_BASE_URL}/tokens`, () => {
+  http.get(`${process.env.BACKEND_API_URL}/tokens`, () => {
     const coins = allTokens as ICoin[]
     return HttpResponse.json(coins)
   }),
 
-  http.get(`${process.env.API_BASE_URL}/tokens-search`, ({ request }) => {
+  http.get(`${process.env.BACKEND_API_URL}/tokens-search`, ({ request }) => {
     var url = new URL(request.url)
     if (url.searchParams.has('query')) {
       const symbolQuery = url.searchParams.get('query') ?? ''
