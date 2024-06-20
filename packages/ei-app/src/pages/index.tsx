@@ -4,6 +4,7 @@ import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
+import AutoGraphIcon from "@mui/icons-material/AutoGraph"
 import { Grid, Typography } from "@mui/material"
 import { fetchWallets, useOry } from "components"
 import { useEffect, useMemo } from "react"
@@ -80,7 +81,7 @@ export default function HomePage() {
           <TopTokensTile
             loading={fetchingTokensStatus === "loading"}
             title={t("TopTokensTile")}
-            icon={<AccountBalanceWalletIcon />}
+            icon={<AutoGraphIcon />}
             tableAssets={coinsMemorized}></TopTokensTile>
         </Grid>
       </Grid>
