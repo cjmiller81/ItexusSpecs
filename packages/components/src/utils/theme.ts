@@ -9,9 +9,23 @@ declare module "@mui/material/Button" {
   }
 }
 
+declare module "@mui/material/styles/createTypography" {
+  interface TypographyOptions {
+    body3?: React.CSSProperties
+    body4?: React.CSSProperties
+  }
+
+  interface Typography {
+    body3: React.CSSProperties
+    body4: React.CSSProperties
+  }
+}
+
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     subtitle3: true
+    body3: true
+    body4: true
   }
 }
 
@@ -60,6 +74,16 @@ const typographyOverrides: TypographyOptions = {
     fontSize: 13,
     lineHeight: "normal",
     padding: "5px",
+  },
+  body3: {
+    fontSize: "0.625rem",
+    lineHeight: 1.35,
+    letterSpacing: "0.012em",
+  },
+  body4: {
+    fontSize: "0.5rem",
+    lineHeight: 1.3,
+    letterSpacing: "0.013em",
   },
 }
 

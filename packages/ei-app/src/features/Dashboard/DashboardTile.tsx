@@ -22,7 +22,7 @@ export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, l
         gap={1}>
         {icon}
         <Typography
-          sx={{ pt: "2px" }}
+          sx={{ pt: "2px", textWrap: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
           variant="h6">
           {title}
         </Typography>

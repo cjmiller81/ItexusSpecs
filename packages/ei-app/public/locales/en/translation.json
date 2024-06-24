@@ -77,10 +77,14 @@
     "LastName": "Last Name",
     "Email": "Email"
   },
+  "CryptoNewsTile":{
+    "ReadMore": "Read More >"
+  },
   "HomePage":{
     "WalletsWorthTile": "Wallets Performance - Last 30 Days",
     "Welcome": "Welcome, {{userName}}",
-    "TopTokensTile": "Investing - Current Top 10 Tokens by Market Cap"
+    "TopTokensTile": "Investing - Current Top 10 Tokens by Market Cap",
+    "CryptoNewsTile": "Crypto News"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
