@@ -2,6 +2,7 @@ import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 import { persistStore } from "redux-persist"
 import { RootState, persistedReducer } from "./RootReducer"
+import { newsApi } from "./Apis/NewsApi"
 
 const makeStore = () => {
   return configureStore({
@@ -9,7 +10,7 @@ const makeStore = () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: false
-      }),
+      }).concat(newsApi.middleware),
   })
 }
 

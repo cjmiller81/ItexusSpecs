@@ -1,15 +1,17 @@
+import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile"
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile"
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile"
+import { useMockGetAllNews } from "@/libs/redux/Apis/NewsApi"
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import AutoGraphIcon from "@mui/icons-material/AutoGraph"
+import NewspaperIcon from "@mui/icons-material/Newspaper"
 import { Grid, Typography } from "@mui/material"
 import { fetchWallets, useOry } from "components"
 import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-
 export default function HomePage() {
   const { session } = useOry()
   const firstName = session?.identity?.traits.name.first
@@ -22,7 +24,8 @@ export default function HomePage() {
   const allCoins = useAppSelector(state => state.allTokensTable.allTokens)
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus)
   const dispatch = useAppDispatch()
-
+  //const { data, isLoading } = useGetAllNewsQuery()
+  const { data, isLoading } = useMockGetAllNews()
   useEffect(() => {
     dispatch(fetchCoins({}))
   }, [])
@@ -67,7 +70,7 @@ export default function HomePage() {
         spacing={1}
         container>
         <Grid
-          xs={6}
+          xs={4}
           item>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
@@ -76,13 +79,22 @@ export default function HomePage() {
             chartData={totalWalletWorthChartData}></WalletWorthTile>
         </Grid>
         <Grid
-          xs={6}
+          xs={4}
           item>
           <TopTokensTile
             loading={fetchingTokensStatus === "loading"}
             title={t("TopTokensTile")}
             icon={<AutoGraphIcon />}
             tableAssets={coinsMemorized}></TopTokensTile>
+        </Grid>
+        <Grid
+          xs={4}
+          item>
+          <CryptoNewsTile
+            loading={isLoading}
+            title={t("CryptoNewsTile")}
+            icon={<NewspaperIcon />}
+            news={data?.items?.length ? data.items.slice(0, 5) : []}></CryptoNewsTile>
         </Grid>
       </Grid>
     </>

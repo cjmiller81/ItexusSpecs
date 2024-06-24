@@ -11,6 +11,7 @@ import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlic
 import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice"
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
 import { dashboardSlice } from "./Slices/DashboardSlice"
+import { newsApi } from "./Apis/NewsApi"
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -22,7 +23,8 @@ export const rootReducer = combineReducers({
   marketCapWeightedChart: marketCapWeightedChartSlice.reducer,
   MarketCapWeightedModeling: marketCapWeightedModelingSlice.reducer,
   allTokensTable: allTokensTableSlice.reducer,
-  [dashboardSlice.name]: dashboardSlice.reducer
+  [dashboardSlice.name]: dashboardSlice.reducer,
+  [newsApi.reducerPath]: newsApi.reducer
 })
 
 const config = getPersistConfig<RootState>({
