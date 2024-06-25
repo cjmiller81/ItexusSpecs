@@ -196,5 +196,9 @@
     "Required": "Required",
     "PublicEye": "Watched Public Wallet",
     "CompareToSymbol": "Leave Blank for Plot Only"
+  },
+  "CryptoCalendar":{
+    "CryptoCalendarTitle": "Crypto Calendar:",
+    "ReadMore": "Read More >"
   }
 }

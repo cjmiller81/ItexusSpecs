@@ -15,6 +15,9 @@ import { fetchWallets, useOry } from "components"
 import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import CryptoCalendar from '@/features/CryptoCalendar/CryptoCalendat';
+import { useMockGetAllEvents } from "@/libs/redux/Apis/CryptoCalendarApi";
+
 export default function HomePage() {
   const { session } = useOry()
   const firstName = session?.identity?.traits.name.first
@@ -26,6 +29,7 @@ export default function HomePage() {
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData)
   const allCoins = useAppSelector(state => state.allTokensTable.allTokens)
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus)
+  const { data: cryptoCalendarData, isLoading: cryptoCalendarIsLoading } = useMockGetAllEvents();
   const dispatch = useAppDispatch()
   //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews()
@@ -111,6 +115,17 @@ export default function HomePage() {
             title={t("UpdatesTile")}
             version={process.env.APP_VERSION as string}
           />
+            news={data?.items?.length ? data.items.slice(0, 5) : []}></CryptoNewsTile>
+        </Grid>
+        <Grid mt={2} spacing={0} container >
+          <Grid xs={4} item>
+            <CryptoCalendar
+              loading={cryptoCalendarIsLoading}
+              title={t("CryptoCalendarTitle")}
+              icon={<CalendarMonthOutlinedIcon />}
+              calendarData={cryptoCalendarData.body || []}
+            />
+          </Grid>
         </Grid>
       </Grid>
     </>
