@@ -8,6 +8,7 @@ import "@ory/elements/assets/jetbrains-mono-font.css"
 import "@ory/elements/assets/normalize.css"
 import "@ory/elements/style.css"
 import "devextreme/dist/css/dx.common.css"
+import 'simplebar-react/dist/simplebar.min.css';
 import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
 import "../libs/axios/axios"
