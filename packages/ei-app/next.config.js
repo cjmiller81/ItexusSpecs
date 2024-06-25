@@ -43,7 +43,8 @@ const nextConfig = {
     NEXT_PUBLIC_MOCK_BACKEND_API: process.env.NEXT_PUBLIC_MOCK_BACKEND_API,
     ORY_SDK_URL: process.env.ORY_SDK_URL,
     TRADIND_VIEW_NEWS_API: process.env.TRADIND_VIEW_NEWS_API,
-    NEWS_ICONS_URL: process.env.NEWS_ICONS_URL
+    NEWS_ICONS_URL: process.env.NEWS_ICONS_URL,
+    APP_VERSION: process.env.APP_VERSION,
   },
   transpilePackages: ['@mui/icons-material', 'components'],
 }
