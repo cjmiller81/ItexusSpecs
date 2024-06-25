@@ -3,27 +3,29 @@ import { CircularProgress, Grid, Card, CardContent, Typography, Box } from "@mui
 import { styled } from "@mui/system";
 import { CryptoCalendarHeader } from "@/features/CryptoCalendar/CryptoCalendarHeader";
 import { useTranslation } from "react-i18next";
+import { DashboardTile } from "@/features/Dashboard/DashboardTile"
+import { AppLink } from "components"
 
 const Container = styled('div')({
-  minWidth: '500px',
-  padding: '5px',
-  borderRadius: '3px',
+  minWidth: 400,
+  padding: 5,
+  borderRadius: 3,
   boxShadow: '0px 0px 4px 4px rgba(0, 0, 0, 0.3)',
 });
 
 const CustomCard = styled(Card)({
-  height: '80px',
+  height: 80,
   color: theme => theme.palette.grey[100],
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
-  borderRadius: '7px',
-  margin: '3px',
+  borderRadius: 7,
+  margin: 3,
 });
 
 const CardContentCustom = styled(CardContent)({
   color: theme => theme.palette.grey[900],
-  padding: '5px',
+  padding: 5,
   flexGrow: 1,
 });
 
@@ -51,7 +53,11 @@ const CryptoCalendar = ({ loading, title, icon, calendarData }) => {
 
   return (
     <>
-      <CryptoCalendarHeader title={title} icon={icon} loading={loading} />
+      {/*<CryptoCalendarHeader title={title} icon={icon} loading={loading} />*/}
+      <DashboardTile
+        title={title}
+        icon={icon}
+        loading={loading}>
       <Container>
         {loading ? (
           <CircularProgress sx={{ color: "success.main", marginLeft: "auto", marginRight: 0 }} size="1rem" />
@@ -79,11 +85,25 @@ const CryptoCalendar = ({ loading, title, icon, calendarData }) => {
           </Grid>
         )}
         {eventsDisplayed < calendarData.length && (
-          <Box sx={{ marginLeft: '20px', textAlign: 'left', color: '#4caf50', cursor: 'pointer' }} onClick={handleReadMore}>
-            <Typography variant="h6">{t("ReadMore")}</Typography>
+          <Box mt={1.5}>
+            <Typography
+              sx={{
+                cursor: "pointer",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+              pl={1.5}
+              variant="h6"
+              target="_blank"
+              color={theme => theme.palette.primary.main}
+              onClick={handleReadMore}
+              > {t("ReadMore")}
+            </Typography>
           </Box>
         )}
       </Container>
+      </DashboardTile>
     </>
   );
 };

@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next"
 
 import CryptoCalendar from '@/features/CryptoCalendar/CryptoCalendat';
 import { useMockGetAllEvents } from "@/libs/redux/Apis/CryptoCalendarApi";
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 
 export default function HomePage() {
   const { session } = useOry()
@@ -117,8 +118,8 @@ export default function HomePage() {
           />
             news={data?.items?.length ? data.items.slice(0, 5) : []}></CryptoNewsTile>
         </Grid>
-        <Grid mt={2} spacing={0} container >
-          <Grid xs={4} item>
+        <Grid mt={2} spacing={0} container sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Grid xs={4} item >
             <CryptoCalendar
               loading={cryptoCalendarIsLoading}
               title={t("CryptoCalendarTitle")}
