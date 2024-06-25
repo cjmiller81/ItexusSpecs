@@ -22,7 +22,7 @@ export default function LogoSection({ reverse, isIcon, sx, to }: Props) {
 
   return (
     <NextLink
-      href={!to ? APP_DEFAULT_PATH : to}
+      href={!to ? "/" : to}
       passHref
       legacyBehavior>
       <ButtonBase

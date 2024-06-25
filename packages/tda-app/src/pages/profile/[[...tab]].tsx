@@ -1,8 +1,10 @@
 import { openSnackbar } from "@/api/snackbar"
+import { setOpenedItem } from "@/features/nav-bar/navBarSlice"
 import { ChangePasswordSection } from "@/features/profile/ChangePasswordSection"
 import ProfileCard from "@/features/profile/ProfileCard"
 import ProfileEditSection, { ProfileModel } from "@/features/profile/ProfileEditSection"
 import { TotpSection } from "@/features/profile/TotpSection"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { SnackbarProps } from "@/types/snackbar"
 import { Grid } from "@mui/material"
 import { profileService, useOry } from "components"
@@ -29,7 +31,8 @@ export default function ProfilePage() {
   const [codeLoading, setCodeLoading] = useState(false)
   const [newPasswordLoading, setNewPasswordLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-
+  const dispatch = useAppDispatch()
+  const openedItem = useAppSelector(state => state.ui.openedItem)
   useEffect(() => {
     if (settingsFlow) return
     createSettingsFow().then()
@@ -102,6 +105,10 @@ export default function ProfilePage() {
         setCodeLoading(false)
       })
   }
+
+  useEffect(() => {
+    if (tab !== openedItem) dispatch(setOpenedItem({ openedItem: tab}));
+  }, [tab]);
 
   const onTotpUnlinkHandle = async () => {
     setCodeLoading(true)
