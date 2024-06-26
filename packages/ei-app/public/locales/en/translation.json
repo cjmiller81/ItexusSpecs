@@ -84,7 +84,8 @@
     "WalletsWorthTile": "Wallets Performance - Last 30 Days",
     "Welcome": "Welcome, {{userName}}",
     "TopTokensTile": "Investing - Current Top 10 Tokens by Market Cap",
-    "CryptoNewsTile": "Crypto News"
+    "CryptoNewsTile": "Crypto News",
+    "UpdatesTile": "Updates"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
@@ -147,6 +148,12 @@
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
     "IndexModeling": "Index Modeling",
     "RunTest": "Run Test"
+  },
+  "UpdatesTile":{
+    "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",
+    "CurrentVersion": "Current Version {{version}}",
+    "ViewNote": "View Full Release Notes",
+    "NotifyMe": "Notify me of new releases"
   },
   "ColumnsDefs": {
     "Symbol": "Symbol",
