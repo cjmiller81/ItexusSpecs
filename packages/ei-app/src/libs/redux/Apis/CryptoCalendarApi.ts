@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import mockCryptoCalendar from "../../../mocks/data/cryptoCalendar/cryptoCalendar.json"
+import axios from "axios"
 
 type Coin = {
   id: string
@@ -43,16 +44,21 @@ type CalendarResponse = {
   body: CalendarEvent[]
 }
 
-export const calendarApi = createApi({
-  reducerPath: "calendarApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.TRADING_VIEW_CALENDAR_API,
-  }),
-  endpoints: builder => ({
-    getAllEvents: builder.query<CalendarResponse, void>({
-      query: () => `/calendar`,
-    }),
-  }),
+// Define types for CoinMarketCal API query parameters
+type GetEventsParams = {
+  date: string; // Date in YYYY-MM-DD format
+};
+
+// Define types for CoinMarketCal API response
+type CoinMarketCalResponse = {
+  data: CoinMarketCalEvent[];
+};
+
+export const calendarApi = axios.create({
+  baseURL: "https://api.coinmarketcal.com/v1/",
+  headers: {
+    "x-api-key": "q8XkCPZXyH57ZSkngPJj73daFSp2gxna52UJ2ALC",
+  },
 })
 
 export const useMockGetAllEvents = () => {
@@ -64,4 +70,4 @@ export const useMockGetAllEvents = () => {
   }
 }
 
-export const { useGetAllEventsQuery } = calendarApi
+export const { useGetEventsQuery } = calendarApi

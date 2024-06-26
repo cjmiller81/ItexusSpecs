@@ -24,10 +24,10 @@
           "fullname": "Metal DAO (MTL)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-21T12:09:38Z",
-      "displayed_date": "24 Jun 2024",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 1,
@@ -51,10 +51,10 @@
           "fullname": "Crypto Hub (HUB)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-14T10:14:29Z",
-      "displayed_date": "24 Jun 2024",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 9,
@@ -78,10 +78,10 @@
           "fullname": "Worldwide USD (WUSD)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-21T20:09:48Z",
-      "displayed_date": "24 Jun 2024",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 4,
@@ -126,10 +126,10 @@
           "fullname": "Shen (SHEN)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-18T16:18:13Z",
-      "displayed_date": "From 18 Jun to 24 Jun 2024",
+      "displayed_date": "From 18 Jun to 26 Jun 2024",
       "categories": [
         {
           "id": 7,
@@ -153,10 +153,10 @@
           "fullname": "Qudefi (QDFI)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-23T13:03:56Z",
-      "displayed_date": "24 Jun 2024",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 4,
@@ -187,10 +187,10 @@
           "fullname": "Seedify NFT Space (SNFTS)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-13T21:53:09Z",
-      "displayed_date": "From 24 Jun to 25 Jun 2024",
+      "displayed_date": "From 26 Jun to 27 Jun 2024",
       "categories": [
         {
           "id": 7,
@@ -214,10 +214,10 @@
           "fullname": "Zcash (ZEC)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
       "created_date": "2024-06-23T03:16:18Z",
-      "displayed_date": "24 Jun 2024",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 7,
@@ -228,254 +228,309 @@
       "source": "https://coinmarketcal.com/event/dev-fund-poll-218640"
     },
     {
-      "id": 217800,
+      "id": 218350,
       "title": {
-        "en": "SPL404 PFP NFT Collection"
+        "en": "Y Dragon Launch on Launchpool"
       },
       "coins": [
         {
-          "id": "gh0stc0in",
-          "name": "gh0stc0in",
-          "rank": 4890,
-          "symbol": "GHOST",
-          "fullname": "gh0stc0in (GHOST)"
+          "id": "launchpool",
+          "name": "Launchpool",
+          "rank": 2201,
+          "symbol": "LPOOL",
+          "fullname": "Launchpool (LPOOL)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-20T13:11:12Z",
+      "displayed_date": "26 Jun 2024",
+      "categories": [
+        {
+          "id": 3,
+          "name": "Update"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/64626137396366312d346235342d346234612d623930382d366133366130373738343438.png",
+      "source": "https://coinmarketcal.com/event/y-dragon-launch-on-launchpool-218350"
+    },
+    {
+      "id": 218618,
+      "title": {
+        "en": "OSNAP Oracle Release"
+      },
+      "coins": [
+        {
+          "id": "ftx-token",
+          "name": "FTX Token",
+          "rank": 212,
+          "symbol": "FTT",
+          "fullname": "FTX Token (FTT)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-22T20:06:13Z",
+      "displayed_date": "26 Jun 2024",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Release"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/37303639393237312d346130652d346439662d623734642d303637663837343230663563.png",
+      "source": "https://coinmarketcal.com/event/osnap-oracle-release-218618"
+    },
+    {
+      "id": 217750,
+      "title": {
+        "en": "Polygon ZK Solution"
+      },
+      "coins": [
+        {
+          "id": "polygon",
+          "name": "Polygon",
+          "rank": 12,
+          "symbol": "MATIC",
+          "fullname": "Polygon (MATIC)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-14T21:47:11Z",
+      "displayed_date": "From 26 Jun to 28 Jun 2024",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Release"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/35343336633536622d303336372d343831302d616334392d313162323738666532333137.png",
+      "source": "https://coinmarketcal.com/event/polygon-zk-solution-217750"
+    },
+    {
+      "id": 217907,
+      "title": {
+        "en": "EGBID IDO on Kommunitas"
+      },
+      "coins": [
+        {
+          "id": "kommunitas",
+          "name": "Kommunitas",
+          "rank": 2023,
+          "symbol": "KOM",
+          "fullname": "Kommunitas (KOM)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-16T08:06:57Z",
+      "displayed_date": "From 26 Jun to 27 Jun 2024",
+      "categories": [
+        {
+          "id": 7,
+          "name": "Other"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/38616638666463362d613163322d346366662d623632382d356363313463613865653237.png",
+      "source": "https://coinmarketcal.com/event/egbid-ido-on-kommunitas-217907"
+    },
+    {
+      "id": 217541,
+      "title": {
+        "en": "MEXC Listing"
+      },
+      "coins": [
+        {
+          "id": "omnidex",
+          "name": "Omnidex",
+          "rank": 3381,
+          "symbol": "CHARM",
+          "fullname": "Omnidex (CHARM)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-13T10:28:14Z",
+      "displayed_date": "26 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/37306163383466642d666231652d346365652d383235392d383339663839393132363937.png",
+      "source": "https://coinmarketcal.com/event/mexc-listing-217541"
+    },
+    {
+      "id": 218207,
+      "title": {
+        "en": "Binance.US Delisting"
+      },
+      "coins": [
+        {
+          "id": "chiliz",
+          "name": "Chiliz",
+          "rank": 138,
+          "symbol": "CHZ",
+          "fullname": "Chiliz (CHZ)"
         },
         {
-          "id": "silly-dragon",
-          "name": "Silly Dragon",
-          "rank": 1056,
-          "symbol": "SILLY",
-          "fullname": "Silly Dragon (SILLY)"
+          "id": "gala",
+          "name": "Gala",
+          "rank": 163,
+          "symbol": "GALA",
+          "fullname": "Gala (GALA)"
+        },
+        {
+          "id": "matic-network",
+          "name": "Matic Network",
+          "rank": 15830,
+          "symbol": "MATIC",
+          "fullname": "Matic Network (MATIC)"
+        },
+        {
+          "id": "quarkchain",
+          "name": "QuarkChain",
+          "rank": 753,
+          "symbol": "QKC",
+          "fullname": "QuarkChain (QKC)"
+        },
+        {
+          "id": "theta",
+          "name": "THETA",
+          "rank": 69,
+          "symbol": "THETA",
+          "fullname": "THETA (THETA)"
+        },
+        {
+          "id": "zilliqa",
+          "name": "Zilliqa",
+          "rank": 135,
+          "symbol": "ZIL",
+          "fullname": "Zilliqa (ZIL)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
-      "created_date": "2024-06-15T04:17:43Z",
-      "displayed_date": "From 20 Jun to 24 Jun 2024",
+      "created_date": "2024-06-19T13:05:11Z",
+      "displayed_date": "26 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/35383739333837332d393962312d346532612d613230342d363138373030356437373937.png",
+      "source": "https://coinmarketcal.com/event/binance-us-delisting-218207"
+    },
+    {
+      "id": 218202,
+      "title": {
+        "en": "Network Update"
+      },
+      "coins": [
+        {
+          "id": "nano",
+          "name": "Nano",
+          "rank": 413,
+          "symbol": "XNO",
+          "fullname": "Nano (XNO)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-19T12:32:18Z",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 1,
           "name": "Release"
         }
       ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/78f42dce7bc3b330200b033fde7ae896.png",
-      "source": "https://coinmarketcal.com/event/spl404-pfp-nft-collection-217800"
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/34336366326633652d303835642d346437652d613137312d616233396634393764346237.png",
+      "source": "https://coinmarketcal.com/event/network-update-218202"
     },
     {
-      "id": 218546,
+      "id": 218606,
       "title": {
-        "en": "BingX Listing"
+        "en": "Network Upgrade"
       },
       "coins": [
         {
-          "id": "love-power-coin",
-          "name": "Love Power Coin",
-          "rank": 10052,
-          "symbol": "LOVE",
-          "fullname": "Love Power Coin (LOVE)"
+          "id": "polkadot",
+          "name": "Polkadot",
+          "rank": 13,
+          "symbol": "DOT",
+          "fullname": "Polkadot (DOT)"
         }
       ],
-      "date_event": "2024-06-24T00:00:00Z",
+      "date_event": "2024-06-26T00:00:00Z",
       "can_occur_before": false,
-      "created_date": "2024-06-21T16:58:56Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 4,
-          "name": "Exchange"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/34303637613631342d616430652d346366312d613331362d366430663262663135393466.png",
-      "source": "https://coinmarketcal.com/event/bingx-listing-218546"
-    },
-    {
-      "id": 218687,
-      "title": {
-        "en": "XT.COM Listing"
-      },
-      "coins": [
-        {
-          "id": "peipeicoin-vip",
-          "name": "PeiPei",
-          "rank": 711,
-          "symbol": "PEIPEI",
-          "fullname": "PeiPei (PEIPEI)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-24T00:00:00Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 4,
-          "name": "Exchange"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/cd03ca6115b90a5b10628c8db827b504.png",
-      "source": "https://coinmarketcal.com/event/xt-com-listing-218687"
-    },
-    {
-      "id": 218599,
-      "title": {
-        "en": "AMA with BitMart"
-      },
-      "coins": [
-        {
-          "id": "zetrix",
-          "name": "Zetrix",
-          "rank": 8733,
-          "symbol": "ZETRIX",
-          "fullname": "Zetrix (ZETRIX)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-21T22:06:00Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 9,
-          "name": "AMA"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/38396163616238632d333131612d346364352d383435642d326438623861656232356463.png",
-      "source": "https://coinmarketcal.com/event/ama-with-bitmart-218599"
-    },
-    {
-      "id": 218562,
-      "title": {
-        "en": "BingX Listing"
-      },
-      "coins": [
-        {
-          "id": "hedgehog-in-the-fog",
-          "name": "Hedgehog in the fog",
-          "rank": 5633,
-          "symbol": "HIF",
-          "fullname": "Hedgehog in the fog (HIF)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-21T21:26:32Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 4,
-          "name": "Exchange"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/63313534313662352d663562392d343537622d623364322d363666653061626433663130.png",
-      "source": "https://coinmarketcal.com/event/bingx-listing-218562"
-    },
-    {
-      "id": 218683,
-      "title": {
-        "en": "WalletConnect Integration"
-      },
-      "coins": [
-        {
-          "id": "bazaars",
-          "name": "Bazaars",
-          "rank": 362,
-          "symbol": "BZR",
-          "fullname": "Bazaars (BZR)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-24T00:00:00Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 18,
-          "name": "Integration"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/61373536393730382d653562312d343232642d383537382d633834666661633737393966.png",
-      "source": "https://coinmarketcal.com/event/walletconnect-integration-218683"
-    },
-    {
-      "id": 218723,
-      "title": {
-        "en": "Bitcointry Listing"
-      },
-      "coins": [
-        {
-          "id": "ninja-squad",
-          "name": "Ninja Squad Token",
-          "rank": 10529,
-          "symbol": "NST",
-          "fullname": "Ninja Squad Token (NST)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-24T00:00:00Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 4,
-          "name": "Exchange"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/65363262326131312d623030612d343666332d386666312d626636663632346538653433.png",
-      "source": "https://coinmarketcal.com/event/bitcointry-listing-218723"
-    },
-    {
-      "id": 218743,
-      "title": {
-        "en": "PancakeSwap Listing"
-      },
-      "coins": [
-        {
-          "id": "idia",
-          "name": "Impossible Finance Launchpad",
-          "rank": 780,
-          "symbol": "IDIA",
-          "fullname": "Impossible Finance Launchpad (IDIA)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-24T00:00:00Z",
-      "displayed_date": "24 Jun 2024",
-      "categories": [
-        {
-          "id": 4,
-          "name": "Exchange"
-        }
-      ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/33393864653838622d306631372d343436612d613731372d313231393761386134333039.png",
-      "source": "https://coinmarketcal.com/event/pancakeswap-listing-218743"
-    },
-    {
-      "id": 218690,
-      "title": {
-        "en": "Titan Sepolia L2"
-      },
-      "coins": [
-        {
-          "id": "tokamak-network",
-          "name": "Tokamak Network",
-          "rank": 556,
-          "symbol": "TON",
-          "fullname": "Tokamak Network (TON)"
-        }
-      ],
-      "date_event": "2024-06-24T00:00:00Z",
-      "can_occur_before": false,
-      "created_date": "2024-06-24T00:00:00Z",
-      "displayed_date": "24 Jun 2024",
+      "created_date": "2024-06-22T19:25:31Z",
+      "displayed_date": "26 Jun 2024",
       "categories": [
         {
           "id": 1,
           "name": "Release"
         }
       ],
-      "proof": "https://d32bfp67k1q0s7.cloudfront.net/b67083799539efa131a5513c066ab2a5.png",
-      "source": "https://coinmarketcal.com/event/titan-sepolia-l2-218690"
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/62383963336664372d336239652d343931662d393732612d623861653965653363616266.png",
+      "source": "https://coinmarketcal.com/event/network-upgrade-218606"
+    },
+    {
+      "id": 218005,
+      "title": {
+        "en": "Token Burn"
+      },
+      "coins": [
+        {
+          "id": "mi-token",
+          "name": "Mi Token",
+          "rank": 2028,
+          "symbol": "MI",
+          "fullname": "Mi Token (MI)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-18T08:14:43Z",
+      "displayed_date": "26 Jun 2024",
+      "categories": [
+        {
+          "id": 2,
+          "name": "Token"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/35303730643861332d313264352d346630652d613334362d636238306664356235396439.png",
+      "source": "https://coinmarketcal.com/event/token-burn-218005"
+    },
+    {
+      "id": 217553,
+      "title": {
+        "en": "Bitget Listing"
+      },
+      "coins": [
+        {
+          "id": "seedon",
+          "name": "SeedOn",
+          "rank": 1616,
+          "symbol": "SEON",
+          "fullname": "SeedOn (SEON)"
+        }
+      ],
+      "date_event": "2024-06-26T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-13T11:18:24Z",
+      "displayed_date": "26 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://d32bfp67k1q0s7.cloudfront.net/64313262653332392d366339652d343135342d613863642d346133383636623736643332.png",
+      "source": "https://coinmarketcal.com/event/bitget-listing-217553"
     }
   ]
 }

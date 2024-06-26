@@ -6,9 +6,18 @@ export type DashboardTileProps = StackProps & {
   title: string
   icon: ReactNode
   loading?: boolean
+  rightComponent?: ReactNode // Optional rightComponent prop
 }
 
-export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, loading, sx, ...props }) => {
+export const DashboardTile: FC<DashboardTileProps> = ({
+                                                        title,
+                                                        icon,
+                                                        children,
+                                                        loading,
+                                                        rightComponent,
+                                                        sx,
+                                                        ...props
+                                                      }) => {
   const theme = useTheme()
   return (
     <Stack
@@ -19,18 +28,26 @@ export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, l
       <Stack
         direction="row"
         alignItems="center"
+        justifyContent="space-between" // Adjust alignment to space-between
         gap={1}>
-        {icon}
-        <Typography
-          sx={{ pt: "2px", textWrap: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-          variant="h6">
-          {title}
-        </Typography>
-        {loading && (
-          <CircularProgress
-            sx={{ color: "success.main", marginLeft: "auto", marginRight: 0 }}
-            size="1rem"
-          />
+        <Stack direction="row" alignItems="center" gap={1}>
+          {icon}
+          <Typography
+            sx={{ pt: "2px", textWrap: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+            variant="h6">
+            {title}
+          </Typography>
+          {loading && (
+            <CircularProgress
+              sx={{ color: "success.main", marginLeft: "auto", marginRight: 0 }}
+              size="1rem"
+            />
+          )}
+        </Stack>
+        {rightComponent && (
+          <Box sx={{ ml: "auto" }}> {/* Ensure rightComponent is aligned to the right */}
+            {rightComponent}
+          </Box>
         )}
       </Stack>
       <Paper sx={{ boxShadow: theme.shadows?.[8] }}>{children}</Paper>
