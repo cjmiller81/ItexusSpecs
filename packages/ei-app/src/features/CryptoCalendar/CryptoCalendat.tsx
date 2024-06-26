@@ -5,6 +5,13 @@ import { useTranslation } from "react-i18next"
 import { DashboardTile } from "@/features/Dashboard/DashboardTile"
 import axios from "axios"
 import { DatePicker } from "@/features/CryptoCalendar/DatePicker"
+import {
+  useGetAllCalendarEventsQuery,
+  useGetCalendarEventsByDateQuery,
+  useMockGetAllEvents, useMockGetEventsByDate,
+} from "@/libs/redux/Apis/CryptoCalendarApi"
+
+const moment = require("moment")
 
 const Container = styled("div")({
   minWidth: 400,
@@ -35,12 +42,20 @@ const CryptoCalendar = ({ loading, title, icon, calendarData }) => {
   const [displayEvents, setDisplayEvents] = useState([])
   const iconTitle = t(title)
   const [events, setEvents] = useState([])
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const {
+    data: cryptoCalendarDataByDate,
+    isLoading: cryptoCalendarIsLoading,
+  } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"))
+
+  const { data: allEvents, isLoading: isLoadingAll } = useGetAllCalendarEventsQuery()
+  const { data: dateEvents, isLoading: isLoadingDate } = useGetCalendarEventsByDateQuery({ date: "2024-06-26" })
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await axios.get("https://api.coinmarketcal.com/v1/events", {
-          params: { date: "2024-06-27" }, // Example date parameter
+          params: { date: "2024-06-27" },
           headers: { "x-api-key": `${process.env.CALENDAR_EVENTS_API_KEY}` },
         })
         setEvents(response.data)
@@ -49,13 +64,20 @@ const CryptoCalendar = ({ loading, title, icon, calendarData }) => {
         console.log(error)
       }
     }
-
     fetchEvents()
   }, [])
 
+
+  // useEffect(() => {
+  //   console.log(selectedDate, "selectedDate")
+  //   console.log(cryptoCalendarDataByDate, "cryptoCalendarDataByDate")
+  //   setDisplayEvents(cryptoCalendarDataByDate.body)
+  // }, [selectedDate])
+
+
   useEffect(() => {
-    setDisplayEvents(calendarData.slice(0, eventsDisplayed))
-  }, [calendarData, eventsDisplayed])
+    setDisplayEvents(cryptoCalendarDataByDate.body.slice(0, eventsDisplayed))
+  }, [calendarData, eventsDisplayed, selectedDate])
 
   const handleReadMore = () => {
     const startIndex = eventsDisplayed
@@ -70,7 +92,7 @@ const CryptoCalendar = ({ loading, title, icon, calendarData }) => {
         title={iconTitle}
         icon={icon}
         loading={loading}
-        rightComponent={<DatePicker />} // Pass DatePicker as rightComponent
+        datePicker={<DatePicker setSelectedDate={setSelectedDate} selectedDate={selectedDate} />}
       >
         <Container>
           {loading ? (

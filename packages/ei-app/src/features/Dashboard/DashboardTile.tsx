@@ -1,12 +1,14 @@
 import { CircularProgress, Paper, Typography } from "@mui/material"
 import { Box, Stack, StackProps, useTheme } from "@mui/system"
 import { FC, ReactNode } from "react"
+import { Box, Stack, StackProps, useTheme } from "@mui/system"
+import { CircularProgress, Typography } from "@mui/material"
 
 export type DashboardTileProps = StackProps & {
   title: string
   icon: ReactNode
   loading?: boolean
-  rightComponent?: ReactNode // Optional rightComponent prop
+  datePicker?: ReactNode
 }
 
 export const DashboardTile: FC<DashboardTileProps> = ({
@@ -14,7 +16,7 @@ export const DashboardTile: FC<DashboardTileProps> = ({
                                                         icon,
                                                         children,
                                                         loading,
-                                                        rightComponent,
+                                                        datePicker,
                                                         sx,
                                                         ...props
                                                       }) => {
@@ -28,7 +30,7 @@ export const DashboardTile: FC<DashboardTileProps> = ({
       <Stack
         direction="row"
         alignItems="center"
-        justifyContent="space-between" // Adjust alignment to space-between
+        justifyContent="space-between"
         gap={1}>
         <Stack direction="row" alignItems="center" gap={1}>
           {icon}
@@ -44,9 +46,9 @@ export const DashboardTile: FC<DashboardTileProps> = ({
             />
           )}
         </Stack>
-        {rightComponent && (
-          <Box sx={{ ml: "auto" }}> {/* Ensure rightComponent is aligned to the right */}
-            {rightComponent}
+        {datePicker && (
+          <Box sx={{ ml: "auto" }}>
+            {datePicker}
           </Box>
         )}
       </Stack>

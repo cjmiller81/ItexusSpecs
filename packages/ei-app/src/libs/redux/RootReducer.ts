@@ -12,6 +12,7 @@ import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModeli
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
 import { dashboardSlice } from "./Slices/DashboardSlice"
 import { newsApi } from "./Apis/NewsApi"
+import { calendarEventsApi } from "@/libs/redux/Apis/CryptoCalendarApi"
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -24,7 +25,8 @@ export const rootReducer = combineReducers({
   MarketCapWeightedModeling: marketCapWeightedModelingSlice.reducer,
   allTokensTable: allTokensTableSlice.reducer,
   [dashboardSlice.name]: dashboardSlice.reducer,
-  [newsApi.reducerPath]: newsApi.reducer
+  [newsApi.reducerPath]: newsApi.reducer,
+  [calendarEventsApi.reducerPath]: calendarEventsApi.reducer,
 })
 
 const config = getPersistConfig<RootState>({

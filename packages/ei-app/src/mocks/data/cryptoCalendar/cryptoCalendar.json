@@ -531,6 +531,195 @@
       ],
       "proof": "https://d32bfp67k1q0s7.cloudfront.net/64313262653332392d366339652d343135342d613863642d346133383636623736643332.png",
       "source": "https://coinmarketcal.com/event/bitget-listing-217553"
+    },
+    {
+      "id": 218700,
+      "title": {
+        "en": "New Exchange Listing"
+      },
+      "coins": [
+        {
+          "id": "exampeoin",
+          "name": "ExampleCoin",
+          "rank": 1000,
+          "symbol": "EXC",
+          "fullname": "ExampleCoin (EXC)"
+        }
+      ],
+      "date_event": "2024-06-27T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-24T10:00:00Z",
+      "displayed_date": "27 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://example.com/proof.png",
+      "source": "https://example.com/event/new-exchange-listing-218700"
+    },
+    {
+      "id": 218700,
+      "title": {
+        "en": "New Exchange Listing"
+      },
+      "coins": [
+        {
+          "id": "exampltoin",
+          "name": "ExamFFFin",
+          "rank": 1000,
+          "symbol": "EXC",
+          "fullname": "ExamCCCCoin (FFFC)"
+        }
+      ],
+      "date_event": "2024-06-27T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-24T10:00:00Z",
+      "displayed_date": "27 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://example.com/proof.png",
+      "source": "https://example.com/event/new-exchange-listing-218700"
+    },
+    {
+      "id": 218700,
+      "title": {
+        "en": "New Exchange Listing"
+      },
+      "coins": [
+        {
+          "id": "exaRplecoin",
+          "name": "ExampleCoin",
+          "rank": 1000,
+          "symbol": "EXC",
+          "fullname": "ExampleCoin (EXC)"
+        }
+      ],
+      "date_event": "2024-06-27T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-24T10:00:00Z",
+      "displayed_date": "27 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://example.com/proof.png",
+      "source": "https://example.com/event/new-exchange-listing-218700"
+    },
+    {
+      "id": 218700,
+      "title": {
+        "en": "New ExchGGGG Listing"
+      },
+      "coins": [
+        {
+          "id": "examplhoin",
+          "name": "ExamTTTTTCoin",
+          "rank": 1000,
+          "symbol": "EXSC",
+          "fullname": "ExampleBit (EXXC)"
+        }
+      ],
+      "date_event": "2024-06-27T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-24T10:00:00Z",
+      "displayed_date": "27 Jun 2024",
+      "categories": [
+        {
+          "id": 4,
+          "name": "Exchange"
+        }
+      ],
+      "proof": "https://example.com/proof.png",
+      "source": "https://example.com/event/new-exchange-listing-218700"
+    },
+    {
+      "id": 218701,
+      "title": {
+        "en": "Token Upgrade"
+      },
+      "coins": [
+        {
+          "id": "sampletoken",
+          "name": "SampleToken",
+          "rank": 1500,
+          "symbol": "STK",
+          "fullname": "SampleToken (STK)"
+        }
+      ],
+      "date_event": "2024-06-28T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-25T10:00:00Z",
+      "displayed_date": "28 Jun 2024",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Release"
+        }
+      ],
+      "proof": "https://example.com/proof2.png",
+      "source": "https://example.com/event/token-upgrade-218701"
+    },
+    {
+      "id": 218701,
+      "title": {
+        "en": "Token Upgrade"
+      },
+      "coins": [
+        {
+          "id": "samwletoke2",
+          "name": "SampleToken",
+          "rank": 1500,
+          "symbol": "STTTK",
+          "fullname": "SamplRREReToken (S$#TK)"
+        }
+      ],
+      "date_event": "2024-06-28T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-25T10:00:00Z",
+      "displayed_date": "28 Jun 2024",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Release"
+        }
+      ],
+      "proof": "https://example.com/proof2.png",
+      "source": "https://example.com/event/token-upgrade-218701"
+    },
+    {
+      "id": 218701,
+      "title": {
+        "en": "Token Upgrade"
+      },
+      "coins": [
+        {
+          "id": "samwleetoke2",
+          "name": "SampleToken",
+          "rank": 1500,
+          "symbol": "ETYU",
+          "fullname": "SamplRrrgeToken (RGFGK)"
+        }
+      ],
+      "date_event": "2024-06-28T00:00:00Z",
+      "can_occur_before": false,
+      "created_date": "2024-06-25T10:00:00Z",
+      "displayed_date": "28 Jun 2024",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Release"
+        }
+      ],
+      "proof": "https://example.com/proof2.png",
+      "source": "https://example.com/event/token-upgrade-218701"
     }
   ]
 }

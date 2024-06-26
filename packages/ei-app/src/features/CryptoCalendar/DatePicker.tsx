@@ -3,8 +3,7 @@ import { CircularProgress, Stack, Typography, IconButton } from "@mui/material"
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material"
 import { format, addDays, subDays } from "date-fns"
 
-export const DatePicker = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date())
+export const DatePicker = ({ setSelectedDate, selectedDate }) => {
 
   const handlePreviousDay = () => {
     setSelectedDate(prevDate => subDays(prevDate, 1))
