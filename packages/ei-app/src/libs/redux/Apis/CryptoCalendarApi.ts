@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import axios from "axios"
 import mockCryptoCalendar from "../../../mocks/data/cryptoCalendar/cryptoCalendar.json"
 
 type Coin = {
@@ -44,16 +43,7 @@ type CalendarResponse = {
   body: CalendarEvent[];
 };
 
-
-export const calendarApi = axios.create({
-  baseURL: "https://api.coinmarketcal.com/v1/",
-  headers: {
-    "x-api-key": "q8XkCPZXyH57ZSkngPJj73daFSp2gxna52UJ2ALC",
-  },
-})
-
-
-export const useMockGetAllEvents = () => {
+export const useMockGetCalendarEventsByDate = () => {
   return {
     data: mockCryptoCalendar as unknown as CalendarResponse,
     isLoading: false,
@@ -75,23 +65,16 @@ export const useMockGetEventsByDate = (date: string) => {
   }
 }
 
-
 export const calendarEventsApi = createApi({
   reducerPath: "calendarEventsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://api.coinmarketcal.com/v1/",
+    baseUrl: process.env.CALENDAR_EVENTS_URL,
     prepareHeaders: (headers) => {
-      headers.set("x-api-key", "q8XkCPZXyH57ZSkngPJj73daFSp2gxna52UJ2ALC")
+      headers.set("x-api-key", process.env.CALENDAR_EVENTS_TOKEN as string)
       return headers
     },
   }),
   endpoints: (builder) => ({
-    getAllCalendarEvents: builder.query<CalendarResponse, void>({
-      query: () => ({
-        url: "events",
-        method: "GET",
-      }),
-    }),
     getCalendarEventsByDate: builder.query<CalendarResponse, { date: string; page?: number; max?: number }>({
       query: ({ date, page = 1, max = 16 }) => ({
         url: "events",
@@ -107,4 +90,4 @@ export const calendarEventsApi = createApi({
   }),
 })
 
-export const { useGetAllCalendarEventsQuery, useGetCalendarEventsByDateQuery } = calendarEventsApi
+export const { useGetCalendarEventsByDateQuery } = calendarEventsApi

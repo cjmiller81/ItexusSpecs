@@ -31,7 +31,8 @@ export const DashboardTile: FC<DashboardTileProps> = ({
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        gap={1}>
+        gap={1}
+        sx={{}}>
         <Stack direction="row" alignItems="center" gap={1}>
           {icon}
           <Typography
