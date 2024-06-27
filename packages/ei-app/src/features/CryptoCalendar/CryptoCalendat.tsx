@@ -34,11 +34,12 @@ const Container = styled("div")(({ theme }: { theme: Theme }) => ({
 const CustomCard = styled(Card)(({ theme }: { theme: Theme }) => ({
   height: "80px",
   color: theme.palette.grey[100],
+  boxShadow: theme.shadows[2],
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
   borderRadius: "7px",
-  margin: "3px",
+  margin: "2px",
 }))
 
 const CardContentCustom = styled(CardContent)(({ theme }: { theme: Theme }) => ({
