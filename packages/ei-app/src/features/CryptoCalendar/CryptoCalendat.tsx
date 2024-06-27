@@ -17,22 +17,27 @@ import {
 import moment from "moment"
 import { Theme } from "@mui/material/styles"
 
+interface CustomCardProps {
+  theme: Theme;
+}
+
 interface CalendarEvent {
   title: { en: string };
   coins: { fullname: string }[];
   categories: { name: string }[];
   source: string;
+  proof: string;
 }
 
 const Container = styled("div")(({ theme }: { theme: Theme }) => ({
-  minWidth: "400px",
+  maxWidth: "600px",
   padding: "5px",
   borderRadius: "3px",
   boxShadow: theme.shadows[8],
 }))
 
-const CustomCard = styled(Card)(({ theme }: { theme: Theme }) => ({
-  height: "80px",
+const CustomCard = styled(Card)<CustomCardProps>(({ theme }) => ({
+  height: "90px",
   color: theme.palette.grey[100],
   boxShadow: theme.shadows[2],
   display: "flex",
@@ -108,18 +113,25 @@ const CryptoCalendar = ({
                 <Grid item xs={12} sm={6} key={index}>
                   <a href={event.source} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                     <CustomCard theme={theme}>
-                      <CardContentCustom theme={theme}>
-                        <Typography variant="h6" color="text.primary" component="div"
-                                    gutterBottom>
-                          {event.title.en}
-                        </Typography>
-                        <Typography variant="body2" color="text.primary" gutterBottom>
-                          {event.coins.map((coin) => coin.fullname).join(", ")}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                          {event.categories.map((category) => category.name).join(", ")}
-                        </Typography>
-                      </CardContentCustom>
+                      <Box sx={{ display: "flex" }}>
+                        <img
+                          src={event.proof}
+                          alt="Proof"
+                          style={{ width: 35, height: 25, objectFit: "cover", marginRight: 10 }}
+                        />
+                        <CardContentCustom theme={theme}>
+                          <Typography variant="h6" color="text.primary" component="div"
+                                      gutterBottom>
+                            {event.title.en}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            {event.coins.map((coin) => coin.fullname).join(", ")}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                            {event.categories.map((category) => category.name).join(", ")}
+                          </Typography>
+                        </CardContentCustom>
+                      </Box>
                     </CustomCard>
                   </a>
                 </Grid>
