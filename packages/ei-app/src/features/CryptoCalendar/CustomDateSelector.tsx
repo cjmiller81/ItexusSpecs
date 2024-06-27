@@ -3,7 +3,7 @@ import moment from "moment"
 import { Stack, Typography, IconButton } from "@mui/material"
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material"
 
-export const DatePicker = ({ setSelectedDate, selectedDate }) => {
+export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
 
   const handlePreviousDay = () => {
     setSelectedDate((prevDate) => moment(prevDate).subtract(1, "days").toDate())

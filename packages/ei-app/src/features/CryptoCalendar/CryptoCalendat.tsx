@@ -9,7 +9,7 @@ import {
 import { styled, ThemeProvider, useTheme } from "@mui/system"
 import { useTranslation } from "react-i18next"
 import { DashboardTile } from "@/features/Dashboard/DashboardTile"
-import { DatePicker } from "@/features/CryptoCalendar/DatePicker"
+import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector"
 import {
   useGetCalendarEventsByDateQuery,
   useMockGetEventsByDate,
@@ -79,7 +79,7 @@ const CryptoCalendar = ({
 
   const handleReadMore = () => {
     const startIndex = eventsDisplayed
-    const endIndex = startIndex + 8
+    const endIndex = startIndex + eventsDisplayed
     const initialEvents = cryptoCalendarDataByDate?.body?.slice(startIndex, endIndex) || []
     if (initialEvents.length > 0) {
       setDisplayEvents(initialEvents)
@@ -93,7 +93,7 @@ const CryptoCalendar = ({
           title={title}
           icon={icon}
           loading={loading}
-          datePicker={<DatePicker setSelectedDate={setSelectedDate} selectedDate={selectedDate} />}
+          datePicker={<CustomDateSelector setSelectedDate={setSelectedDate} selectedDate={selectedDate} />}
         >
           <Container theme={theme}>
             {displayEvents.length === 0 ? (
@@ -109,11 +109,11 @@ const CryptoCalendar = ({
                     <a href={event.source} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                       <CustomCard theme={theme}>
                         <CardContentCustom theme={theme}>
-                          <Typography variant="h6" color="common.white" component="div"
+                          <Typography variant="h6" color="text.primary" component="div"
                                       gutterBottom>
                             {event.title.en}
                           </Typography>
-                          <Typography variant="body2" color="common.white" gutterBottom>
+                          <Typography variant="body2" color="text.primary" gutterBottom>
                             {event.coins.map((coin) => coin.fullname).join(", ")}
                           </Typography>
                           <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
