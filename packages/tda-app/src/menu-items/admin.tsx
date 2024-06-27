@@ -2,6 +2,7 @@ import { FormattedMessage } from "react-intl"
 import { NavItemType } from "types/menu"
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 
 const admin: NavItemType = {
   id: "group-forms-tables-2",
@@ -28,6 +29,14 @@ const admin: NavItemType = {
       type: "item",
       icon: PersonIcon,
       breadcrumbs: false,
+    },
+    {
+      id: "users",
+      title: <FormattedMessage id="users" />,
+      type: "item",
+      icon: GroupOutlinedIcon,
+      breadcrumbs: false,
+      url: "/admin/users",
     },
   ],
 }
