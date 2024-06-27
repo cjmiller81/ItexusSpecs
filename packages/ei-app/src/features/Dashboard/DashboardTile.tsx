@@ -1,8 +1,6 @@
-import { CircularProgress, Paper, Typography } from "@mui/material"
-import { Box, Stack, StackProps, useTheme } from "@mui/system"
 import { FC, ReactNode } from "react"
 import { Box, Stack, StackProps, useTheme } from "@mui/system"
-import { CircularProgress, Typography } from "@mui/material"
+import { CircularProgress, Paper, Typography } from "@mui/material"
 
 export type DashboardTileProps = StackProps & {
   title: string

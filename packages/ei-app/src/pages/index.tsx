@@ -107,6 +107,17 @@ export default function HomePage() {
             news={data?.items?.length ? data.items.slice(0, 30) : []}></CryptoNewsTile>
         </Grid>
 
+        <Grid mt={2} spacing={0} container sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Grid xs={4} item>
+            <CryptoCalendar
+              loading={cryptoCalendarIsLoading}
+              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+              icon={<CalendarMonthOutlinedIcon />}
+              calendarData={cryptoCalendarData.body || []}
+            />
+          </Grid>
+        </Grid>
+
         <Grid
           item
           xs={9}></Grid>
@@ -118,17 +129,6 @@ export default function HomePage() {
             title={t("UpdatesTile")}
             version={process.env.APP_VERSION as string}
           />
-            news={data?.items?.length ? data.items.slice(0, 5) : []}></CryptoNewsTile>
-        </Grid>
-        <Grid mt={2} spacing={0} container sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Grid xs={4} item>
-            <CryptoCalendar
-              loading={cryptoCalendarIsLoading}
-              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-              icon={<CalendarMonthOutlinedIcon />}
-              calendarData={cryptoCalendarData.body || []}
-            />
-          </Grid>
         </Grid>
       </Grid>
     </>
