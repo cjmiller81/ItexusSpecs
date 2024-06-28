@@ -1,6 +1,7 @@
 import { uiSlice } from "@/features/nav-bar/navBarSlice"
 import { currenciesSlice } from "@/features/trading/rfq/slices/currenciesSlice"
 import { rfqSlice } from "@/features/trading/rfq/slices/rfqSlice"
+import { adminUsersSlice } from "features/users/adminUsersSlice"
 import { combineReducers } from "@reduxjs/toolkit"
 import { walletsSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
@@ -12,6 +13,7 @@ export const rootReducer = combineReducers({
   wallets: walletsSlice.reducer,
   rfq: rfqSlice.reducer,
   currencies: currenciesSlice.reducer,
+  adminUsers: adminUsersSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({

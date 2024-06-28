@@ -20,8 +20,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           //server.listen()
           setMocksStarted(true)
         } else {
-          const { worker } = await import("../mocks/browserApiServices")
-          await worker.start()
           setMocksStarted(true)
         }
       } else {

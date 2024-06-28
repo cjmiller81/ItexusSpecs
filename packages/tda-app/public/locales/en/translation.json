@@ -7,7 +7,9 @@
     "Sumbit": "Submit",
     "Clear": "Clear",
     "Yes": "Yes",
-    "No": "No"
+    "Confirm": "Confirm",
+    "No": "No",
+    "ADD": "Add"
   },
   "PrefilterTokensSection":{
     "PrefilterTokens": "Prefilter Tokens"
@@ -114,5 +116,18 @@
     "NewPasswordMessage": "New password has been set.",
     "ApplicationUnlinked": "Application unlinked.",
     "ApplicationLinked": "Application linked."
+  },
+  "ColumnsDefs": {
+    "AvatarUrl": "Avatar Url",
+    "FirstName": "First Name",
+    "LastName": "Last Name",
+    "Email": "Email",
+    "Newsletter": "Newsletter",
+    "Roles": "Roles",
+    "AddNewPermission": "Add Permission",
+    "SelectAPermission": "Select a Permission to add for user and set the Value:",
+    "ConfirmDeletion": "Confirm Deletion",
+    "DeleteThisPermission": "Are you sure you want to delete this Permission?"
+    }
   }
-}
+
