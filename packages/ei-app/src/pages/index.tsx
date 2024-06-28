@@ -14,6 +14,9 @@ import { Grid, Typography } from "@mui/material"
 import { fetchWallets, useOry } from "components"
 import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat"
+import { useMockGetCalendarEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi"
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined"
 
 export default function HomePage() {
   const { session } = useOry()
@@ -27,6 +30,10 @@ export default function HomePage() {
   const allCoins = useAppSelector(state => state.allTokensTable.allTokens)
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus)
   const dispatch = useAppDispatch()
+  // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
+  //   date: moment(new Date()).format("YYYY-MM-DD"),
+  // })
+  const { data: cryptoCalendarData, isLoading: cryptoCalendarIsLoading } = useMockGetCalendarEventsByDate()
   //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews()
   useEffect(() => {
@@ -98,6 +105,17 @@ export default function HomePage() {
             title={t("CryptoNewsTile")}
             icon={<NewspaperIcon />}
             news={data?.items?.length ? data.items.slice(0, 30) : []}></CryptoNewsTile>
+        </Grid>
+
+        <Grid mt={2} spacing={0} container sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Grid xs={4} item>
+            <CryptoCalendar
+              loading={cryptoCalendarIsLoading}
+              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+              icon={<CalendarMonthOutlinedIcon />}
+              calendarData={cryptoCalendarData.body || []}
+            />
+          </Grid>
         </Grid>
 
         <Grid
