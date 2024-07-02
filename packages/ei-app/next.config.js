@@ -4,7 +4,7 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, defaultLoaders }) => {
     // @see: https://github.com/mswjs/msw/issues/1801#issuecomment-1793911389
     if (isServer) {
       // next server build => ignore msw/browser
@@ -29,6 +29,19 @@ const nextConfig = {
       "components": path.resolve(__dirname, "../components/src"),
       //'@mui/icons-material': require.resolve('@mui/icons-material'),
     }
+
+    config.module.rules.push(
+      {
+        test: /\.svg$/,
+        use: [
+          defaultLoaders.babel,
+          {
+            loader: '@svgr/webpack',
+            options: { babel: false },
+          },
+        ],
+      },
+    );
 
     config.optimization = {
       ...config.optimization,
