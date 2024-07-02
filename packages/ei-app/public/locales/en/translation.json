@@ -85,7 +85,9 @@
     "Welcome": "Welcome, {{userName}}",
     "TopTokensTile": "Investing - Current Top 10 Tokens by Market Cap",
     "CryptoNewsTile": "Crypto News",
-    "UpdatesTile": "Updates"
+    "UpdatesTile": "Updates",
+    "TradingTile": "Real-Time Trading",
+    "IncomeTile": "Income"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
