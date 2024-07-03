@@ -78,7 +78,8 @@ export default function HomePage() {
       <Grid
         mt={2}
         spacing={2}
-        container>
+        container
+        sx={{ marginTop: -0.3 }}>
         <Grid
           xs={4.5}
           item>
@@ -107,8 +108,15 @@ export default function HomePage() {
             news={data?.items?.length ? data.items.slice(0, 30) : []}></CryptoNewsTile>
         </Grid>
 
-        <Grid mt={2} spacing={0} container sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Grid xs={4} item>
+        <Grid
+          mt={2}
+          spacing={0}
+          container
+          sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Grid
+            xs={4}
+            item
+            style={{ maxWidth: 589, width: "100%" }}>
             <CryptoCalendar
               loading={cryptoCalendarIsLoading}
               title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}

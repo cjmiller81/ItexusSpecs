@@ -9,15 +9,7 @@ export type DashboardTileProps = StackProps & {
   datePicker?: ReactNode
 }
 
-export const DashboardTile: FC<DashboardTileProps> = ({
-                                                        title,
-                                                        icon,
-                                                        children,
-                                                        loading,
-                                                        datePicker,
-                                                        sx,
-                                                        ...props
-                                                      }) => {
+export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, loading, datePicker, sx, ...props }) => {
   const theme = useTheme()
   return (
     <Stack
@@ -31,10 +23,20 @@ export const DashboardTile: FC<DashboardTileProps> = ({
         justifyContent="space-between"
         gap={1}
         sx={{}}>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1}>
           {icon}
           <Typography
-            sx={{ pt: "2px", textWrap: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+            sx={{
+              pt: "2px",
+              textWrap: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              fontSize: "1.040rem",
+              letterSpacing: "0.03em",
+            }}
             variant="h6">
             {title}
           </Typography>
@@ -45,11 +47,7 @@ export const DashboardTile: FC<DashboardTileProps> = ({
             />
           )}
         </Stack>
-        {datePicker && (
-          <Box sx={{ ml: "auto" }}>
-            {datePicker}
-          </Box>
-        )}
+        {datePicker && <Box sx={{ ml: "auto" }}>{datePicker}</Box>}
       </Stack>
       <Paper sx={{ boxShadow: theme.shadows?.[8] }}>{children}</Paper>
     </Stack>
