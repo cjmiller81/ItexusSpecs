@@ -70,14 +70,18 @@ const CryptoCalendar = ({
       setDisplayEvents(calendarData.slice(0, pageSize))
       setLastViewIndex(pageSize)
     }
-  }, [pageSize, selectedDate])
+  }, [selectedDate])
 
   useEffect(() => {
-    setShouldDisplayReadMore(calendarData.length > displayEvents.length && displayEvents.length >= pageSize)
+    setShouldDisplayReadMore(
+      calendarData.length > displayEvents.length &&
+        displayEvents.length >= pageSize &&
+        calendarData.length !== lastViewIndex,
+    )
   }, [displayEvents])
 
   const handleReadMore = () => {
-    const startIndex = lastViewIndex
+    const startIndex = lastViewIndex + 1
     const endIndex = startIndex + pageSize
     const initialEvents = calendarData?.slice(startIndex, endIndex) || []
     setLastViewIndex(endIndex)
