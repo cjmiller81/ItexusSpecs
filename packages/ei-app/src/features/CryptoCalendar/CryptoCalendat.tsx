@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from "react"
-import { Grid, Card, CardContent, Typography, Box } from "@mui/material"
-import { styled, useTheme } from "@mui/system"
-import { useTranslation } from "react-i18next"
-import { DashboardTile } from "@/features/Dashboard/DashboardTile"
-import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector"
-import { Theme } from "@mui/material/styles"
+import React, { useEffect, useState } from "react";
+import { Grid, Card, CardContent, Typography, Box } from "@mui/material";
+import { styled, useTheme } from "@mui/system";
+import { useTranslation } from "react-i18next";
+import { DashboardTile } from "@/features/Dashboard/DashboardTile";
+import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector";
+import { Theme } from "@mui/material/styles";
 
 interface CustomCardProps {
-  theme: Theme
+  theme: Theme;
 }
 
 interface CalendarEvent {
-  id: number
-  title: { en: string }
-  coins: { id: string; name: string; rank: number; symbol: string; fullname: string }[]
-  date_event: string
-  categories: { id: number; name: string }[]
-  proof: string
-  source: string
+  id: number;
+  title: { en: string };
+  coins: { id: string; name: string; rank: number; symbol: string; fullname: string }[];
+  date_event: string;
+  categories: { id: number; name: string }[];
+  proof: string;
+  source: string;
 }
 
 const Container = styled("div")(({ theme }: { theme: Theme }) => ({
   padding: "5px",
   borderRadius: "3px",
   boxShadow: theme.shadows[8],
-}))
+}));
 
 const CustomCard = styled(Card)<CustomCardProps>(({ theme }) => ({
   height: "90px",
@@ -35,13 +35,13 @@ const CustomCard = styled(Card)<CustomCardProps>(({ theme }) => ({
   justifyContent: "space-between",
   borderRadius: "7px",
   margin: "2px",
-}))
+}));
 
 const CardContentCustom = styled(CardContent)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.grey[900],
   padding: "5px",
   flexGrow: 1,
-}))
+}));
 
 const CryptoCalendar = ({
   loading,
@@ -51,44 +51,44 @@ const CryptoCalendar = ({
   setSelectedDate,
   selectedDate,
 }: {
-  loading: boolean
-  title: string
-  icon: React.ReactNode
-  calendarData: CalendarEvent[]
-  setSelectedDate: (date: Date) => void
-  selectedDate: Date
+  loading: boolean;
+  title: string;
+  icon: React.ReactNode;
+  calendarData: CalendarEvent[];
+  setSelectedDate: (date: Date) => void;
+  selectedDate: Date;
 }) => {
-  const { t } = useTranslation("CryptoCalendar")
-  const theme = useTheme<Theme>()
-  const pageSize = 8
-  const [displayEvents, setDisplayEvents] = useState<CalendarEvent[]>([])
-  const [lastViewIndex, setLastViewIndex] = useState<number>(pageSize)
-  const [shouldDisplayReadMore, setShouldDisplayReadMore] = useState<boolean>(false)
+  const { t } = useTranslation("CryptoCalendar");
+  const theme = useTheme<Theme>();
+  const pageSize = 8;
+  const [displayEvents, setDisplayEvents] = useState<CalendarEvent[]>([]);
+  const [lastViewIndex, setLastViewIndex] = useState<number>(pageSize);
+  const [shouldDisplayReadMore, setShouldDisplayReadMore] = useState<boolean>(false);
 
   useEffect(() => {
     if (calendarData) {
-      setDisplayEvents(calendarData.slice(0, pageSize))
-      setLastViewIndex(pageSize)
+      setDisplayEvents(calendarData.slice(0, pageSize));
+      setLastViewIndex(pageSize);
     }
-  }, [selectedDate])
+  }, [selectedDate]);
 
   useEffect(() => {
     setShouldDisplayReadMore(
       calendarData.length > displayEvents.length &&
         displayEvents.length >= pageSize &&
         calendarData.length > lastViewIndex,
-    )
-  }, [displayEvents])
+    );
+  }, [displayEvents]);
 
   const handleReadMore = () => {
-    const startIndex = lastViewIndex
-    const endIndex = startIndex + pageSize
-    const initialEvents = calendarData?.slice(startIndex, endIndex) || []
-    setLastViewIndex(endIndex)
+    const startIndex = lastViewIndex;
+    const endIndex = startIndex + pageSize;
+    const initialEvents = calendarData?.slice(startIndex, endIndex) || [];
+    setLastViewIndex(endIndex);
     if (initialEvents.length > 0) {
-      setDisplayEvents(initialEvents)
+      setDisplayEvents(initialEvents);
     }
-  }
+  };
 
   return (
     <>
@@ -188,7 +188,7 @@ const CryptoCalendar = ({
         </Container>
       </DashboardTile>
     </>
-  )
-}
+  );
+};
 
-export default CryptoCalendar
+export default CryptoCalendar;

@@ -1,60 +1,60 @@
-import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile"
-import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile"
-import { UpdatesTile } from "@/features/Dashboard/UpdatesTile"
-import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile"
-import { useMockGetAllNews } from "@/libs/redux/Apis/NewsApi"
-import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
-import AutoGraphIcon from "@mui/icons-material/AutoGraph"
-import CodeIcon from "@mui/icons-material/Code"
-import NewspaperIcon from "@mui/icons-material/Newspaper"
-import { Grid, Typography, useMediaQuery } from "@mui/material"
-import { fetchWallets, useOry } from "components"
-import { useEffect, useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat"
-import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi"
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined"
-import moment from "moment/moment"
+import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile";
+import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
+import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
+import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
+import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
+import { useMockGetAllNews } from "@/libs/redux/Apis/NewsApi";
+import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import CodeIcon from "@mui/icons-material/Code";
+import NewspaperIcon from "@mui/icons-material/Newspaper";
+import { Grid, Stack, Typography, useMediaQuery } from "@mui/material";
+import { fetchWallets, useOry } from "components";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import moment from "moment/moment";
+import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat";
 
 export default function HomePage() {
-  const { session } = useOry()
-  const firstName = session?.identity?.traits.name.first
-  const { t } = useTranslation("HomePage")
-  const wallets = useAppSelector(state => state.wallets.wallets)
-  const firstLoad = useAppSelector(state => state.wallets.firstLoad)
-  const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets)
-  const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData)
-  const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData)
-  const allCoins = useAppSelector(state => state.allTokensTable.allTokens)
-  const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus)
-  const dispatch = useAppDispatch()
-  const screenWidth = useMediaQuery("(max-width:1440px)")
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const { session } = useOry();
+  const firstName = session?.identity?.traits.name.first;
+  const { t } = useTranslation("HomePage");
+  const wallets = useAppSelector(state => state.wallets.wallets);
+  const firstLoad = useAppSelector(state => state.wallets.firstLoad);
+  const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
+  const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
+  const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
+  const allCoins = useAppSelector(state => state.allTokensTable.allTokens);
+  const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus);
+  const dispatch = useAppDispatch();
+  const screenWidth = useMediaQuery("(max-width:1440px)");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
   // })
-  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"))
+  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"));
   //const { data, isLoading } = useGetAllNewsQuery()
-  const { data, isLoading } = useMockGetAllNews()
+  const { data, isLoading } = useMockGetAllNews();
   useEffect(() => {
-    dispatch(fetchCoins({}))
-  }, [])
+    dispatch(fetchCoins({}));
+  }, []);
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null))
-  }, [firstLoad])
+    if (firstLoad) dispatch(fetchWallets(null));
+  }, [firstLoad]);
 
   useEffect(() => {
-    if (!wallets.length) return
+    if (!wallets.length) return;
 
-    dispatch(fetchHistoricalWalletData())
-  }, [wallets])
+    dispatch(fetchHistoricalWalletData());
+  }, [wallets]);
 
   const coinsMemorized = useMemo(() => {
-    const newTableData = allCoins.slice(0, 10)
+    const newTableData = allCoins.slice(0, 10);
     const calculatedData = newTableData.map<TopTokenData>(data => {
       return {
         tokenId: data.id,
@@ -64,11 +64,11 @@ export default function HomePage() {
         symbol: data.sym,
         price: data.price,
         fulDilVal: data.fulDilVal,
-      }
-    })
+      };
+    });
 
-    return calculatedData
-  }, [allCoins])
+    return calculatedData;
+  }, [allCoins]);
 
   return (
     <>
@@ -82,7 +82,7 @@ export default function HomePage() {
         mt={2}
         spacing={2}
         container
-        sx={{ marginTop: -0.3 }}>
+        sx={{ marginTop: 0 }}>
         <Grid
           xs={4.5}
           item>
@@ -94,6 +94,7 @@ export default function HomePage() {
         </Grid>
         <Grid
           xs={4.5}
+          sx={{ marginBottom: "10px" }}
           item>
           <TopTokensTile
             loading={fetchingTokensStatus === "loading"}
@@ -101,7 +102,6 @@ export default function HomePage() {
             icon={<AutoGraphIcon />}
             tableAssets={coinsMemorized}></TopTokensTile>
         </Grid>
-
         <Grid
           xs={3}
           item>
@@ -122,30 +122,24 @@ export default function HomePage() {
             xs={12}
             md={screenWidth ? 7.4 : 2.92}
             sx={{ maxWidth: 589, width: "100%" }}>
-            <CryptoCalendar
-              loading={false}
-              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-              icon={<CalendarMonthOutlinedIcon />}
-              calendarData={mockCryptoCalendarDataByDate.body || []}
-              setSelectedDate={setSelectedDate}
-              selectedDate={selectedDate}
-            />
+            <Stack>
+              <CryptoCalendar
+                loading={false}
+                title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+                icon={<CalendarMonthOutlinedIcon />}
+                calendarData={mockCryptoCalendarDataByDate.body || []}
+                setSelectedDate={setSelectedDate}
+                selectedDate={selectedDate}
+              />
+              <UpdatesTile
+                icon={<CodeIcon />}
+                title={t("UpdatesTile")}
+                version={process.env.APP_VERSION as string}
+              />
+            </Stack>
           </Grid>
-        </Grid>
-
-        <Grid
-          item
-          xs={9}></Grid>
-        <Grid
-          item
-          xs={3}>
-          <UpdatesTile
-            icon={<CodeIcon />}
-            title={t("UpdatesTile")}
-            version={process.env.APP_VERSION as string}
-          />
         </Grid>
       </Grid>
     </>
-  )
+  );
 }

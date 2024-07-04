@@ -1,16 +1,26 @@
-import { FC, ReactNode } from "react"
-import { Box, Stack, StackProps, useTheme } from "@mui/system"
-import { CircularProgress, Paper, Typography } from "@mui/material"
+import { CircularProgress, Paper, Typography } from "@mui/material";
+import { Box, Stack, StackProps, useTheme } from "@mui/system";
+import { FC, ReactNode } from "react";
 
 export type DashboardTileProps = StackProps & {
-  title: string
-  icon: ReactNode
-  loading?: boolean
-  datePicker?: ReactNode
-}
+  title: string;
+  icon: ReactNode;
+  loading?: boolean;
+  datePicker?: ReactNode;
+  afterTitleComponent?: ReactNode;
+};
 
-export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, loading, datePicker, sx, ...props }) => {
-  const theme = useTheme()
+export const DashboardTile: FC<DashboardTileProps> = ({
+  title,
+  icon,
+  children,
+  loading,
+  afterTitleComponent,
+  datePicker,
+  sx,
+  ...props
+}) => {
+  const theme = useTheme();
   return (
     <Stack
       sx={{
@@ -34,12 +44,13 @@ export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, l
               textWrap: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              fontSize: "1.040rem",
-              letterSpacing: "0.03em",
+              fontSize: "1.020rem",
+              letterSpacing: "0.04em",
             }}
             variant="h6">
             {title}
           </Typography>
+          {afterTitleComponent}
           {loading && (
             <CircularProgress
               sx={{ color: "success.main", marginLeft: "auto", marginRight: 0 }}
@@ -51,5 +62,5 @@ export const DashboardTile: FC<DashboardTileProps> = ({ title, icon, children, l
       </Stack>
       <Paper sx={{ boxShadow: theme.shadows?.[8] }}>{children}</Paper>
     </Stack>
-  )
-}
+  );
+};

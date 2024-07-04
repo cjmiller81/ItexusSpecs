@@ -1,9 +1,9 @@
 import { useAppSelector } from "@/libs/redux/Store"
 import { Box } from "@mui/system"
 import dynamic from "next/dynamic"
-const SymbolOverviewNoSSR = dynamic(() => import("react-ts-tradingview-widgets").then(w => w.AdvancedRealTimeChart), {
-  ssr: false,
-})
+  const SymbolOverviewNoSSR = dynamic(() => import("react-ts-tradingview-widgets").then(w => w.AdvancedRealTimeChart), {
+    ssr: false,
+  })
 
 export default function TradingPage() {
   const mode = useAppSelector(state => state.ui.mode)
