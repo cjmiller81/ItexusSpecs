@@ -10,13 +10,14 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
 import AutoGraphIcon from "@mui/icons-material/AutoGraph"
 import CodeIcon from "@mui/icons-material/Code"
 import NewspaperIcon from "@mui/icons-material/Newspaper"
-import { Grid, Typography } from "@mui/material"
+import { Grid, Typography, useMediaQuery } from "@mui/material"
 import { fetchWallets, useOry } from "components"
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat"
-import { useMockGetCalendarEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi"
+import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi"
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined"
+import moment from "moment/moment"
 
 export default function HomePage() {
   const { session } = useOry()
@@ -30,10 +31,12 @@ export default function HomePage() {
   const allCoins = useAppSelector(state => state.allTokensTable.allTokens)
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus)
   const dispatch = useAppDispatch()
+  const screenWidth = useMediaQuery("(max-width:1440px)")
+  const [selectedDate, setSelectedDate] = useState(new Date())
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
   // })
-  const { data: cryptoCalendarData, isLoading: cryptoCalendarIsLoading } = useMockGetCalendarEventsByDate()
+  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"))
   //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews()
   useEffect(() => {
@@ -98,6 +101,7 @@ export default function HomePage() {
             icon={<AutoGraphIcon />}
             tableAssets={coinsMemorized}></TopTokensTile>
         </Grid>
+
         <Grid
           xs={3}
           item>
@@ -112,16 +116,19 @@ export default function HomePage() {
           mt={2}
           spacing={0}
           container
-          sx={{ display: "flex", justifyContent: "flex-end" }}>
+          sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "15px" }}>
           <Grid
-            xs={4}
             item
-            style={{ maxWidth: 589, width: "100%" }}>
+            xs={12}
+            md={screenWidth ? 7.4 : 2.92}
+            sx={{ maxWidth: 589, width: "100%" }}>
             <CryptoCalendar
-              loading={cryptoCalendarIsLoading}
+              loading={false}
               title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
               icon={<CalendarMonthOutlinedIcon />}
-              calendarData={cryptoCalendarData.body || []}
+              calendarData={mockCryptoCalendarDataByDate.body || []}
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
             />
           </Grid>
         </Grid>

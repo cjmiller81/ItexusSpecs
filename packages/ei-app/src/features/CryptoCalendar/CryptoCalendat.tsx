@@ -4,8 +4,6 @@ import { styled, useTheme } from "@mui/system"
 import { useTranslation } from "react-i18next"
 import { DashboardTile } from "@/features/Dashboard/DashboardTile"
 import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector"
-import { useGetCalendarEventsByDateQuery, useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi"
-import moment from "moment"
 import { Theme } from "@mui/material/styles"
 
 interface CustomCardProps {
@@ -13,11 +11,13 @@ interface CustomCardProps {
 }
 
 interface CalendarEvent {
+  id: number
   title: { en: string }
-  coins: { fullname: string }[]
-  categories: { name: string }[]
-  source: string
+  coins: { id: string; name: string; rank: number; symbol: string; fullname: string }[]
+  date_event: string
+  categories: { id: number; name: string }[]
   proof: string
+  source: string
 }
 
 const Container = styled("div")(({ theme }: { theme: Theme }) => ({
@@ -48,40 +48,39 @@ const CryptoCalendar = ({
   title,
   icon,
   calendarData,
+  setSelectedDate,
+  selectedDate,
 }: {
   loading: boolean
   title: string
   icon: React.ReactNode
   calendarData: CalendarEvent[]
+  setSelectedDate: (date: Date) => void
+  selectedDate: Date
 }) => {
   const { t } = useTranslation("CryptoCalendar")
   const theme = useTheme<Theme>()
   const eventsDisplayed = 8
   const [displayEvents, setDisplayEvents] = useState<CalendarEvent[]>([])
-  const [selectedDate, setSelectedDate] = useState(new Date())
-  const { data: cryptoCalendarDataByDate } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"))
-
-  const { data: dateEvents, isLoading: isLoadingDate } = useGetCalendarEventsByDateQuery({
-    date: moment(selectedDate).format("YYYY-MM-DD"),
-  })
+  const shouldDisplayReadMore = calendarData.length > displayEvents.length && displayEvents.length >= eventsDisplayed
 
   useEffect(() => {
-    if (cryptoCalendarDataByDate && cryptoCalendarDataByDate.body) {
-      setDisplayEvents(cryptoCalendarDataByDate.body.slice(0, eventsDisplayed))
+    if (calendarData && calendarData) {
+      setDisplayEvents(calendarData.slice(0, eventsDisplayed))
     }
   }, [eventsDisplayed, selectedDate])
 
   const handleReadMore = () => {
     const startIndex = eventsDisplayed
     const endIndex = startIndex + eventsDisplayed
-    const initialEvents = cryptoCalendarDataByDate?.body?.slice(startIndex, endIndex) || []
+    const initialEvents = calendarData?.slice(startIndex, endIndex) || []
     if (initialEvents.length > 0) {
       setDisplayEvents(initialEvents)
     }
   }
 
   return (
-    <Box>
+    <>
       <DashboardTile
         title={title}
         icon={icon}
@@ -132,7 +131,8 @@ const CryptoCalendar = ({
                             variant="h6"
                             color="text.primary"
                             component="div"
-                            gutterBottom>
+                            gutterBottom
+                            sx={{ fontSize: "12px" }}>
                             {event.title.en}
                           </Typography>
                           <Typography
@@ -156,7 +156,7 @@ const CryptoCalendar = ({
               ))}
             </Grid>
           )}
-          {cryptoCalendarDataByDate?.body?.length > displayEvents.length && (
+          {shouldDisplayReadMore && (
             <Box mt={1.5}>
               <Typography
                 sx={{
@@ -168,7 +168,7 @@ const CryptoCalendar = ({
                 pl={1.5}
                 variant="h6"
                 component="span"
-                color={theme => theme.palette.primary.main}
+                color={(theme: Theme) => theme.palette.primary.main}
                 onClick={handleReadMore}>
                 {t("ReadMore")}
               </Typography>
@@ -176,7 +176,7 @@ const CryptoCalendar = ({
           )}
         </Container>
       </DashboardTile>
-    </Box>
+    </>
   )
 }
 
