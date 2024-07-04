@@ -60,20 +60,27 @@ const CryptoCalendar = ({
 }) => {
   const { t } = useTranslation("CryptoCalendar")
   const theme = useTheme<Theme>()
-  const eventsDisplayed = 8
+  const pageSize = 8
   const [displayEvents, setDisplayEvents] = useState<CalendarEvent[]>([])
-  const shouldDisplayReadMore = calendarData.length > displayEvents.length && displayEvents.length >= eventsDisplayed
+  const [lastViewIndex, setLastViewIndex] = useState<number>(pageSize)
+  const [shouldDisplayReadMore, setShouldDisplayReadMore] = useState<boolean>(false)
 
   useEffect(() => {
-    if (calendarData && calendarData) {
-      setDisplayEvents(calendarData.slice(0, eventsDisplayed))
+    if (calendarData) {
+      setDisplayEvents(calendarData.slice(0, pageSize))
+      setLastViewIndex(pageSize)
     }
-  }, [eventsDisplayed, selectedDate])
+  }, [pageSize, selectedDate])
+
+  useEffect(() => {
+    setShouldDisplayReadMore(calendarData.length > displayEvents.length && displayEvents.length >= pageSize)
+  }, [displayEvents])
 
   const handleReadMore = () => {
-    const startIndex = eventsDisplayed
-    const endIndex = startIndex + eventsDisplayed
+    const startIndex = lastViewIndex
+    const endIndex = startIndex + pageSize
     const initialEvents = calendarData?.slice(startIndex, endIndex) || []
+    setLastViewIndex(endIndex)
     if (initialEvents.length > 0) {
       setDisplayEvents(initialEvents)
     }
