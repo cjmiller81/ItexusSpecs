@@ -76,12 +76,12 @@ const CryptoCalendar = ({
     setShouldDisplayReadMore(
       calendarData.length > displayEvents.length &&
         displayEvents.length >= pageSize &&
-        calendarData.length !== lastViewIndex,
+        calendarData.length > lastViewIndex,
     )
   }, [displayEvents])
 
   const handleReadMore = () => {
-    const startIndex = lastViewIndex + 1
+    const startIndex = lastViewIndex
     const endIndex = startIndex + pageSize
     const initialEvents = calendarData?.slice(startIndex, endIndex) || []
     setLastViewIndex(endIndex)
