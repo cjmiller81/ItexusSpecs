@@ -1,0 +1,187 @@
+{
+    "status": "success",
+    "data": [
+      {
+        "chain": "Ethereum",
+        "project": "lido",
+        "symbol": "STETH",
+        "tvlUsd": 30173984381,
+        "apyBase": 3.401,
+        "apyReward": null,
+        "apy": 3.401,
+        "rewardTokens": null,
+        "pool": "747c1d2a-c668-4682-b9f9-296708a3dd90",
+        "apyPct1D": 0.361,
+        "apyPct7D": 0.422,
+        "apyPct30D": 0.222,
+        "stablecoin": false,
+        "ilRisk": "no",
+        "exposure": "single",
+        "predictions": {
+          "predictedClass": "Stable/Up",
+          "predictedProbability": 51,
+          "binnedConfidence": 1
+        },
+        "poolMeta": null,
+        "mu": 4.16652,
+        "sigma": 0.04871,
+        "count": 765,
+        "outlier": false,
+        "underlyingTokens": [
+          "0x0000000000000000000000000000000000000000"
+        ],
+        "il7d": null,
+        "apyBase7d": null,
+        "apyMean30d": 3.11497,
+        "volumeUsd1d": null,
+        "volumeUsd7d": null,
+        "apyBaseInception": null
+      },
+      {
+        "chain": "Tron",
+        "project": "justlend",
+        "symbol": "BTC",
+        "tvlUsd": 5044682368,
+        "apyBase": 0.00006,
+        "apyReward": 0,
+        "apy": 0.00006,
+        "rewardTokens": [
+          "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"
+        ],
+        "pool": "71418c17-d2aa-4eff-b68a-806fff9ec951",
+        "apyPct1D": 0,
+        "apyPct7D": -0.00001,
+        "apyPct30D": -0.00004,
+        "stablecoin": false,
+        "ilRisk": "no",
+        "exposure": "single",
+        "predictions": {
+          "predictedClass": "Stable/Up",
+          "predictedProbability": 71,
+          "binnedConfidence": 2
+        },
+        "poolMeta": null,
+        "mu": 0.02137,
+        "sigma": 0.00096,
+        "count": 727,
+        "outlier": false,
+        "underlyingTokens": [
+          "TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9"
+        ],
+        "il7d": null,
+        "apyBase7d": null,
+        "apyMean30d": 0.00008,
+        "volumeUsd1d": null,
+        "volumeUsd7d": null,
+        "apyBaseInception": null
+      },
+      {
+        "chain": "Ethereum",
+        "project": "ether.fi-stake",
+        "symbol": "WEETH",
+        "tvlUsd": 4439487804,
+        "apyBase": 2.69934,
+        "apyReward": null,
+        "apy": 2.69934,
+        "rewardTokens": null,
+        "pool": "46bd2bdf-6d92-4066-b482-e885ee172264",
+        "apyPct1D": -0.02581,
+        "apyPct7D": 0.16085,
+        "apyPct30D": null,
+        "stablecoin": false,
+        "ilRisk": "no",
+        "exposure": "single",
+        "predictions": {
+          "predictedClass": "Stable/Up",
+          "predictedProbability": 61,
+          "binnedConfidence": 1
+        },
+        "poolMeta": null,
+        "mu": 2.74406,
+        "sigma": 0.02684,
+        "count": 30,
+        "outlier": false,
+        "underlyingTokens": [
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        ],
+        "il7d": null,
+        "apyBase7d": 2.72875,
+        "apyMean30d": 2.69538,
+        "volumeUsd1d": null,
+        "volumeUsd7d": null,
+        "apyBaseInception": null
+      },
+      {
+        "chain": "Ethereum",
+        "project": "aave-v3",
+        "symbol": "WSTETH",
+        "tvlUsd": 3796968359,
+        "apyBase": 0.00912,
+        "apyReward": null,
+        "apy": 0.00912,
+        "rewardTokens": null,
+        "pool": "e6435aae-cbe9-4d26-ab2c-a4d533db9972",
+        "apyPct1D": 0.00212,
+        "apyPct7D": 0.00303,
+        "apyPct30D": 0.00751,
+        "stablecoin": false,
+        "ilRisk": "no",
+        "exposure": "single",
+        "predictions": {
+          "predictedClass": "Stable/Up",
+          "predictedProbability": 53,
+          "binnedConfidence": 1
+        },
+        "poolMeta": null,
+        "mu": 0.00472,
+        "sigma": 0.00034,
+        "count": 512,
+        "outlier": false,
+        "underlyingTokens": [
+          "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"
+        ],
+        "il7d": null,
+        "apyBase7d": null,
+        "apyMean30d": 0.00321,
+        "volumeUsd1d": null,
+        "volumeUsd7d": null,
+        "apyBaseInception": null
+      },
+      {
+        "chain": "Ethereum",
+        "project": "rocket-pool",
+        "symbol": "RETH",
+        "tvlUsd": 3634649700,
+        "apyBase": 2.55586,
+        "apyReward": null,
+        "apy": 2.55586,
+        "rewardTokens": null,
+        "pool": "d4b3c522-6127-4b89-bedf-83641cdcd2eb",
+        "apyPct1D": 0,
+        "apyPct7D": -0.55034,
+        "apyPct30D": -0.2223,
+        "stablecoin": false,
+        "ilRisk": "no",
+        "exposure": "single",
+        "predictions": {
+          "predictedClass": "Stable/Up",
+          "predictedProbability": 70,
+          "binnedConfidence": 2
+        },
+        "poolMeta": null,
+        "mu": 3.52344,
+        "sigma": 0.03912,
+        "count": 533,
+        "outlier": false,
+        "underlyingTokens": [
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        ],
+        "il7d": null,
+        "apyBase7d": null,
+        "apyMean30d": 2.85768,
+        "volumeUsd1d": null,
+        "volumeUsd7d": null,
+        "apyBaseInception": null
+      }
+    ]
+  }

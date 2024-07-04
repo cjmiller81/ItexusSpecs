@@ -1,7 +1,8 @@
+import { configureAxiosMockHandlers } from "@/mocks/configureAxiosMockHandlers"
 import { AxiosError } from "axios"
+import { addError, appAxios } from "components"
 import i18n from "i18next"
 import { appStore } from "../redux/Store"
-import { addError, appAxios } from "components"
 
 appAxios.interceptors.response.use(
   async response => {
@@ -21,3 +22,21 @@ appAxios.interceptors.response.use(
     return Promise.reject()
   },
 )
+
+export const axiosBaseQuery =
+  () =>
+  async ({ url, method, data, params, headers }: any) => {
+    const result = await appAxios({
+      url: url,
+      method,
+      data,
+      params,
+      headers,
+    })
+    return { data: result.data }
+  }
+
+if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API === "true") {
+  configureAxiosMockHandlers(appAxios)
+}
+export default appAxios

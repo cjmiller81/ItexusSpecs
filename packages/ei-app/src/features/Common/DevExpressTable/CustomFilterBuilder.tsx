@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { YesNoDialog } from "components"
+import { FilterBuilderItems } from "@/constants/PrefilterTokensTable"
 import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice"
 import { isDeepEqual } from "@/utils/utils"
 import CloseIcon from "@mui/icons-material/Close"
@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Grid,
   IconButton,
   ListItemText,
   MenuItem,
@@ -20,15 +19,14 @@ import {
   Stack,
   TextField,
   Typography,
-  styled,
+  styled
 } from "@mui/material"
+import { YesNoDialog } from "components"
+import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues"
 import FilterBuilderDef from "devextreme-react/filter-builder"
 import { ValueChangedEvent } from "devextreme/ui/filter_builder"
 import React, { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import ReactPlayer from "react-player"
-import { filterBuilderFields } from "../../constants/PrefilterTokensTable"
-import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues"
 
 interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[]
@@ -41,6 +39,7 @@ interface ICustomFilterBuilderProps {
   open?: boolean
   filterLoading?: boolean
   filterDeletingLoading?: boolean
+  filterBuilderFields: FilterBuilderItems[]
 }
 
 export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
@@ -53,13 +52,14 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   onClose,
   filterLoading,
   filterDeletingLoading,
+  filterBuilderFields,
   open,
 }) => {
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null)
   const [filterName, setFilterName] = useState<string | undefined>("")
   const [filterValue, setFilterValue] = useState<object[] | undefined | null>()
   const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>()
-  const [isDeleteFilterModalOpened , setIsDeleteFilterModalOpened] = useState<boolean>(false)
+  const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false)
   const { t } = useTranslation("CustomFilterBuilder")
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
@@ -255,7 +255,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                   </Stack>
                 </FilterControlsContainer>
               </Stack>
-              <Stack>
+              <Stack width="100%">
                 <FilterSelectorContainer>
                   <Typography
                     noWrap
@@ -265,9 +265,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     {t("SelectFilter")}
                   </Typography>
                   <Select
-                    style={{ width: "100%" }}
-                    labelId="demo-controlled-open-select-label"
-                    id="demo-controlled-open-select"
+                    fullWidth
                     size="small"
                     onChange={handleSavedFilterChange}
                     renderValue={_value => {
@@ -290,49 +288,12 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     ))}
                   </Select>
                 </FilterSelectorContainer>
-                {/*
-                <MockContent />
-                */}
               </Stack>
             </ContentContainer>
           </Box>
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-const MockContent = () => {
-  return (
-    <Grid
-      mt={2}
-      spacing={3}
-      container>
-      <Grid
-        xs={6}
-        item>
-        <Typography
-          variant="h2"
-          sx={{ marginBottom: "20px", dixplay: "flex", justifyContent: "center" }}>
-          How to make a custom filter
-        </Typography>
-        <ReactPlayer
-          width={"100%"}
-          url="https://www.youtube.com/watch?v=h0bABvxh67c"
-        />
-      </Grid>
-      <Grid
-        xs={6}
-        item>
-        <Typography
-          sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
-          variant="h4">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab animi optio similique quidem enim vero veritatis
-          sequi dolores obcaecati commodi quae laudantium amet corrupti nobis, cum, laboriosam mollitia ratione?
-          Provident!
-        </Typography>
-      </Grid>
-    </Grid>
   )
 }
 
