@@ -1,5 +1,7 @@
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile";
+import { IncomeTile } from "@/features/Dashboard/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
+import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
 import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
