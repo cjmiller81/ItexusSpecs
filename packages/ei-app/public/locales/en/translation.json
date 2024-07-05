@@ -125,6 +125,9 @@
     "UploadAvatar": "Upload Image/Avatar",
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
+  "Yields":{
+    "SectionTitle": "Yields"
+  },
   "SideBar": {
     "Home": "Home",
     "Investing": "Investing",
@@ -132,7 +135,7 @@
     "MarketCapEqualWeight": "Market Cap Equal Weight",
     "TradingSubpage": "Trading Subpage",
     "Income": "Income",
-    "IncomeSubpage": "Income subpage",
+    "Yields": "Yields",
     "Arbitrage": "Arbitrage",
     "ArbitrageSubpage": "Arbitrage Subpage",
     "Portfolios": "Portfolios",

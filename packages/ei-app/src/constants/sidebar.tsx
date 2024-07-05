@@ -59,7 +59,7 @@ function getPlatformsItems(theme: Theme): SidebarListItem[] {
       icon: <CurrencyExchangeIcon />,
       children: [
         {
-          title: t("IncomeSubpage", { ns: "SideBar" }),
+          title: t("Yields", { ns: "SideBar" }),
           href: "/income",
         },
       ],
