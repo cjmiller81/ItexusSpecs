@@ -1,29 +1,29 @@
-import NotificationsIcon from "@mui/icons-material/Notifications"
-import { Avatar, Button, Typography, useTheme } from "@mui/material"
-import { grey, orange } from "@mui/material/colors"
-import { Box, Stack, darken, lighten } from "@mui/system"
-import { FC, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { DashboardTile, DashboardTileProps } from "./DashboardTile"
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Avatar, Button, Typography, useTheme } from "@mui/material";
+import { grey, orange } from "@mui/material/colors";
+import { Box, Stack, darken, lighten } from "@mui/system";
+import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DashboardTile, DashboardTileProps } from "./DashboardTile";
 
 type Props = Omit<DashboardTileProps, "children"> & {
-  version: string
-}
+  version: string;
+};
 
 export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) => {
-  const { t } = useTranslation("UpdatesTile")
-  const theme = useTheme()
-  const fillGrey = theme.palette.mode === "light" ? grey[600] : grey[500]
-  const fillOrange = theme.palette.mode === "light" ? orange[600] : darken(orange[800], 0.1)
-  const [isNotifyHovered, setNotifyIsHovered] = useState(false)
+  const { t } = useTranslation("UpdatesTile");
+  const theme = useTheme();
+  const fillGrey = theme.palette.mode === "light" ? grey[600] : grey[500];
+  const fillOrange = theme.palette.mode === "light" ? orange[600] : darken(orange[800], 0.1);
+  const [isNotifyHovered, setNotifyIsHovered] = useState(false);
 
   const handleNotifyMouseEnter = () => {
-    setNotifyIsHovered(true)
-  }
+    setNotifyIsHovered(true);
+  };
 
   const handleNotifyMouseLeave = () => {
-    setNotifyIsHovered(false)
-  }
+    setNotifyIsHovered(false);
+  };
 
   return (
     <DashboardTile
@@ -31,6 +31,7 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
       icon={icon}
       sx={{
         ...sx,
+        marginTop: "20px",
       }}
       {...props}>
       <Stack
@@ -118,5 +119,5 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
         </Box>
       </Stack>
     </DashboardTile>
-  )
-}
+  );
+};
