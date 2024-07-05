@@ -1,5 +1,7 @@
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile";
+import { IncomeTile } from "@/features/Dashboard/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
+import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
 import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
@@ -11,7 +13,9 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import CodeIcon from "@mui/icons-material/Code";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Grid, Stack, Typography, useMediaQuery } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
@@ -110,6 +114,22 @@ export default function HomePage() {
             title={t("CryptoNewsTile")}
             icon={<NewspaperIcon />}
             news={data?.items?.length ? data.items.slice(0, 30) : []}></CryptoNewsTile>
+        </Grid>
+
+        <Grid
+          item
+          xs={3}>
+          <IncomeTile
+            icon={<CurrencyExchangeIcon />}
+            title={t("IncomeTile")}></IncomeTile>
+        </Grid>
+
+        <Grid
+          item
+          xs={6}>
+          <TradingViewTile
+            icon={<SyncAltIcon />}
+            title={t("TradingTile")}></TradingViewTile>
         </Grid>
 
         <Grid

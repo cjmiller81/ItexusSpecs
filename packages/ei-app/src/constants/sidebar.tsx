@@ -50,7 +50,7 @@ function getPlatformsItems(theme: Theme): SidebarListItem[] {
       children: [
         {
           title: t("TradingSubpage", { ns: "SideBar" }),
-          href: "/trading",
+          href: "/charts",
         },
       ],
     },
