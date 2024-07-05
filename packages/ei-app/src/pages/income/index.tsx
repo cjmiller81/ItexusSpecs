@@ -1,9 +1,9 @@
-import { PageTitle } from "components"
+import DefiTokensSection from "@/features/Income/DefiTokensSection"
 
 export default function IncomePage() {
   return (
     <>
-      <PageTitle sx={{ textWrap: "nowrap", minWidth: "300px" }}>Income Page Title</PageTitle>
+      <DefiTokensSection persisKey="DefiTokensSection"/>
     </>
   )
 }

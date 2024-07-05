@@ -9,10 +9,11 @@ import { Workbook } from "exceljs"
 import { saveAs } from "file-saver-es"
 import React, { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { CustomFilterBuilder } from "./CustomFilterBuilder"
+import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder"
 import { StyledAccordionSummary } from "./IndexModelingSection"
 import { PrefilterTokensTable } from "./PrefilterTokensTable"
 import { ICoin } from "components/src/models/token/ICoin"
+import { filterBuilderFields } from "../../constants/PrefilterTokensTable"
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string
@@ -80,6 +81,7 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, persis
       </StyledAccordionSummary>
       <AccordionDetails sx={{ bgcolor: "background.paper" }}>
         <CustomFilterBuilder
+          filterBuilderFields={filterBuilderFields}
           filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
           filterDeletingLoading={deletingFilterStatus === "loading"}
           open={filterBuildeOpen}

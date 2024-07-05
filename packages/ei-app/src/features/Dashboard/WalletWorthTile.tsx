@@ -32,7 +32,7 @@ export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props })
       {...props}>
       <AppChart
         series={series}
-        height={362}
+        height={398}
         optionsOverrides={{
           legend: {
             show: true,

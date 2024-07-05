@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { YesNoDialog } from "components"
-import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { isDeepEqual } from "@/utils/utils"
-import CloseIcon from "@mui/icons-material/Close"
-import { LoadingButton } from "@mui/lab"
+import { FilterBuilderItems } from "@/constants/PrefilterTokensTable";
+import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { isDeepEqual } from "@/utils/utils";
+import CloseIcon from "@mui/icons-material/Close";
+import { LoadingButton } from "@mui/lab";
 import {
   Box,
   Button,
@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Grid,
   IconButton,
   ListItemText,
   MenuItem,
@@ -21,26 +20,26 @@ import {
   TextField,
   Typography,
   styled,
-} from "@mui/material"
-import FilterBuilderDef from "devextreme-react/filter-builder"
-import { ValueChangedEvent } from "devextreme/ui/filter_builder"
-import React, { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
-import ReactPlayer from "react-player"
-import { filterBuilderFields } from "../../constants/PrefilterTokensTable"
-import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues"
+} from "@mui/material";
+import { YesNoDialog } from "components";
+import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
+import FilterBuilderDef from "devextreme-react/filter-builder";
+import { ValueChangedEvent } from "devextreme/ui/filter_builder";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ICustomFilterBuilderProps {
-  predefinedFilters: IPrefilterTokensFilterValues[]
-  onCreateFilter: (filter: CreateFilterModel) => void
-  onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void
-  onDeleteFilter: (filterId: string) => void
-  filterToAppply?: object[] | null
-  onApply: (filterValue: object[]) => void
-  onClose: () => void
-  open?: boolean
-  filterLoading?: boolean
-  filterDeletingLoading?: boolean
+  predefinedFilters: IPrefilterTokensFilterValues[];
+  onCreateFilter: (filter: CreateFilterModel) => void;
+  onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void;
+  onDeleteFilter: (filterId: string) => void;
+  filterToAppply?: object[] | null;
+  onApply: (filterValue: object[]) => void;
+  onClose: () => void;
+  open?: boolean;
+  filterLoading?: boolean;
+  filterDeletingLoading?: boolean;
+  filterBuilderFields: FilterBuilderItems[];
 }
 
 export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
@@ -53,64 +52,65 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   onClose,
   filterLoading,
   filterDeletingLoading,
+  filterBuilderFields,
   open,
 }) => {
-  const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null)
-  const [filterName, setFilterName] = useState<string | undefined>("")
-  const [filterValue, setFilterValue] = useState<object[] | undefined | null>()
-  const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>()
-  const [isDeleteFilterModalOpened , setIsDeleteFilterModalOpened] = useState<boolean>(false)
-  const { t } = useTranslation("CustomFilterBuilder")
+  const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
+  const [filterName, setFilterName] = useState<string | undefined>("");
+  const [filterValue, setFilterValue] = useState<object[] | undefined | null>();
+  const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>();
+  const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
+  const { t } = useTranslation("CustomFilterBuilder");
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
     if (isDeepEqual(event.value, filterValue)) {
-      return
+      return;
     }
 
-    setFilterValue(event.value)
-  }
+    setFilterValue(event.value);
+  };
 
   const handleApplyFilter = () => {
-    if (filterValue) onApply(filterValue)
-    else onClose()
-  }
+    if (filterValue) onApply(filterValue);
+    else onClose();
+  };
 
   useEffect(() => {
-    setFilterValue(filterToAppply)
-    const isPredefinedFilter = predefinedFilters.find(filter => isDeepEqual(filter.filter, filterToAppply))
+    setFilterValue(filterToAppply);
+    const isPredefinedFilter = predefinedFilters.find(filter => isDeepEqual(filter.filter, filterToAppply));
 
     if (isPredefinedFilter) {
-      setSelectedSavedFilter(isPredefinedFilter)
-      setFilterName(isPredefinedFilter.text)
+      setSelectedSavedFilter(isPredefinedFilter);
+      setFilterName(isPredefinedFilter.text);
     } else {
-      setSelectedSavedFilter(null)
-      setFilterName("")
+      setSelectedSavedFilter(null);
+      setFilterName("");
     }
-  }, [filterToAppply, open, predefinedFilters])
+  }, [filterToAppply, open, predefinedFilters]);
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
-    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0])
+    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
-      setSelectedSavedFilter(predefinedFilter)
-      setFilterValue(predefinedFilter.filter)
-      setFilterName(predefinedFilter.text)
+      setSelectedSavedFilter(predefinedFilter);
+      setFilterValue(predefinedFilter.filter);
+      setFilterName(predefinedFilter.text);
     }
-  }
+  };
 
   const handleClearFilters = () => {
-    setSelectedSavedFilter(null)
-    setFilterValue(undefined)
-    setFilterName("")
-  }
+    setSelectedSavedFilter(null);
+    setFilterValue(undefined);
+    setFilterName("");
+  };
 
   useEffect(() => {
-    if (!selectedSavedFilter) return
-    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id)
-    if (updatedFilter) setSelectedSavedFilter(updatedFilter)
-  }, [predefinedFilters, selectedSavedFilter])
+    if (!selectedSavedFilter) return;
+    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
+    if (updatedFilter) setSelectedSavedFilter(updatedFilter);
+  }, [predefinedFilters, selectedSavedFilter]);
 
   const handleSaveFilter = () => {
-    if (!filterName) return
+    if (!filterName) return;
     if (selectedSavedFilter) {
       onUpdateFilter({
         id: selectedSavedFilter.id,
@@ -122,7 +122,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
         isPublished: false,
         accessPlanName: "",
         filter: filterValue || [],
-      })
+      });
     } else {
       onCreateFilter({
         text: filterName,
@@ -133,32 +133,32 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
         isPublished: false,
         accessPlanName: "",
         filter: filterValue || [],
-      })
+      });
     }
-  }
+  };
 
   const handleDeleteFilter = (
     filter: IPrefilterTokensFilterValues,
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
-    event.stopPropagation()
-    setFilterToDelete(filter)
-    setIsDeleteFilterModalOpened(true)
-  }
+    event.stopPropagation();
+    setFilterToDelete(filter);
+    setIsDeleteFilterModalOpened(true);
+  };
 
   const onAgree = () => {
     if (!filterToDelete) {
-      return
+      return;
     }
 
-    onDeleteFilter(filterToDelete.id)
-    setIsDeleteFilterModalOpened(false)
+    onDeleteFilter(filterToDelete.id);
+    setIsDeleteFilterModalOpened(false);
 
     if (filterToDelete.id === selectedSavedFilter?.id) {
-      setSelectedSavedFilter(null)
-      setFilterValue(null)
+      setSelectedSavedFilter(null);
+      setFilterValue(null);
     }
-  }
+  };
 
   return (
     <>
@@ -255,7 +255,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                   </Stack>
                 </FilterControlsContainer>
               </Stack>
-              <Stack>
+              <Stack width="100%">
                 <FilterSelectorContainer>
                   <Typography
                     noWrap
@@ -265,13 +265,11 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     {t("SelectFilter")}
                   </Typography>
                   <Select
-                    style={{ width: "100%" }}
-                    labelId="demo-controlled-open-select-label"
-                    id="demo-controlled-open-select"
+                    fullWidth
                     size="small"
                     onChange={handleSavedFilterChange}
                     renderValue={_value => {
-                      return <ListItemText primary={selectedSavedFilter?.text} />
+                      return <ListItemText primary={selectedSavedFilter?.text} />;
                     }}>
                     {predefinedFilters.map(filter => (
                       <MenuItem
@@ -290,68 +288,31 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     ))}
                   </Select>
                 </FilterSelectorContainer>
-                {/*
-                <MockContent />
-                */}
               </Stack>
             </ContentContainer>
           </Box>
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-const MockContent = () => {
-  return (
-    <Grid
-      mt={2}
-      spacing={3}
-      container>
-      <Grid
-        xs={6}
-        item>
-        <Typography
-          variant="h2"
-          sx={{ marginBottom: "20px", dixplay: "flex", justifyContent: "center" }}>
-          How to make a custom filter
-        </Typography>
-        <ReactPlayer
-          width={"100%"}
-          url="https://www.youtube.com/watch?v=h0bABvxh67c"
-        />
-      </Grid>
-      <Grid
-        xs={6}
-        item>
-        <Typography
-          sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}
-          variant="h4">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab animi optio similique quidem enim vero veritatis
-          sequi dolores obcaecati commodi quae laudantium amet corrupti nobis, cum, laboriosam mollitia ratione?
-          Provident!
-        </Typography>
-      </Grid>
-    </Grid>
-  )
-}
+  );
+};
 
 const FilterBuilderComponentContainer = styled(Box)(({ theme }) => ({
   minHeight: theme.spacing(16),
   minWidth: theme.spacing(60),
-}))
+}));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
   marginTop: theme.spacing(2),
   alignSelf: "center",
   width: "80%",
-}))
+}));
 
 const ClearButton = styled(Button)(({ theme }) => ({
   alignSelf: "center",
   width: "50%",
   marginTop: theme.spacing(2),
-}))
+}));
 
 const ContentContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -359,7 +320,7 @@ const ContentContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },
-}))
+}));
 
 const FilterControlsContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -369,7 +330,7 @@ const FilterControlsContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },
-}))
+}));
 
 const FilterSelectorContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
@@ -378,4 +339,4 @@ const FilterSelectorContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     marginTop: theme.spacing(2),
   },
-}))
+}));

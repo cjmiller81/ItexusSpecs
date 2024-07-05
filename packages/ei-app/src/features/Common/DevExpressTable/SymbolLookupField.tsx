@@ -2,7 +2,7 @@ import { FC } from "react"
 import { useMemoizedImage } from "components"
 import { Box, Stack } from "@mui/material"
 
-export const SymbolLookupField: FC<{ iconUrl?: string; symbol: string }> = ({ iconUrl, symbol }) => {
+export const SymbolLookupField: FC<{ iconUrl?: string; text: string }> = ({ iconUrl, text }) => {
   const imageRef = useMemoizedImage(iconUrl)
 
   return (
@@ -14,9 +14,9 @@ export const SymbolLookupField: FC<{ iconUrl?: string; symbol: string }> = ({ ic
         height={25}
         width={25}
         ref={imageRef}
-        alt={symbol}
+        alt={text}
       />
-      <Box>{symbol}</Box>
+      <Box>{text}</Box>
     </Stack>
   )
 }

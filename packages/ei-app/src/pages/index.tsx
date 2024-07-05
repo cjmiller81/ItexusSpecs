@@ -1,11 +1,8 @@
-import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile";
-import { IncomeTile } from "@/features/Dashboard/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
-import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
-import { useMockGetCalendarEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
+import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
 import { useMockGetAllNews } from "@/libs/redux/Apis/NewsApi";
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
@@ -14,13 +11,13 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import CodeIcon from "@mui/icons-material/Code";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
-import SyncAltIcon from "@mui/icons-material/SyncAlt";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography, useMediaQuery } from "@mui/material";
 import { fetchWallets, useOry } from "components";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import moment from "moment/moment";
+import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat";
 
 export default function HomePage() {
   const { session } = useOry();
@@ -34,10 +31,12 @@ export default function HomePage() {
   const allCoins = useAppSelector(state => state.allTokensTable.allTokens);
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus);
   const dispatch = useAppDispatch();
+  const screenWidth = useMediaQuery("(max-width:1440px)");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
   // })
-  const { data: cryptoCalendarData, isLoading: cryptoCalendarIsLoading } = useMockGetCalendarEventsByDate();
+  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"));
   //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews();
   useEffect(() => {
@@ -82,7 +81,8 @@ export default function HomePage() {
       <Grid
         mt={2}
         spacing={2}
-        container>
+        container
+        sx={{ marginTop: 0 }}>
         <Grid
           xs={4.5}
           item>
@@ -94,6 +94,7 @@ export default function HomePage() {
         </Grid>
         <Grid
           xs={4.5}
+          sx={{ marginBottom: "10px" }}
           item>
           <TopTokensTile
             loading={fetchingTokensStatus === "loading"}
@@ -128,21 +129,31 @@ export default function HomePage() {
         </Grid>
 
         <Grid
-          xs={3}
-          item>
-          <Stack spacing={2}>
-            <CryptoCalendar
-              loading={cryptoCalendarIsLoading}
-              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-              icon={<CalendarMonthOutlinedIcon />}
-              calendarData={cryptoCalendarData.body || []}
-            />
-            <UpdatesTile
-              icon={<CodeIcon />}
-              title={t("UpdatesTile")}
-              version={process.env.APP_VERSION as string}
-            />
-          </Stack>
+          mt={2}
+          spacing={0}
+          container
+          sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "15px" }}>
+          <Grid
+            item
+            xs={12}
+            md={screenWidth ? 7.4 : 2.92}
+            sx={{ maxWidth: 589, width: "100%" }}>
+            <Stack>
+              <CryptoCalendar
+                loading={false}
+                title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+                icon={<CalendarMonthOutlinedIcon />}
+                calendarData={mockCryptoCalendarDataByDate.body || []}
+                setSelectedDate={setSelectedDate}
+                selectedDate={selectedDate}
+              />
+              <UpdatesTile
+                icon={<CodeIcon />}
+                title={t("UpdatesTile")}
+                version={process.env.APP_VERSION as string}
+              />
+            </Stack>
+          </Grid>
         </Grid>
       </Grid>
     </>
