@@ -1,5 +1,5 @@
-import { axiosBaseQuery } from "@/libs/axios/axios"
-import { createApi } from "@reduxjs/toolkit/query/react"
+import { axiosBaseQuery } from "@/libs/axios/axios";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const defisApi = createApi({
   reducerPath: "defiPool",
@@ -7,8 +7,8 @@ export const defisApi = createApi({
   endpoints(build) {
     return {
       getPools: build.query({ query: () => ({ url: "/api/defi/pools", method: "get" }) }),
-    }
+    };
   },
-})
+});
 
-export const { useGetPoolsQuery } = defisApi
+export const { useGetPoolsQuery } = defisApi;

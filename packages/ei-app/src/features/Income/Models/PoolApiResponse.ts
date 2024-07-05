@@ -1,5 +1,5 @@
-import { PoolData } from './PoolData'
+import { PoolData } from "./PoolData";
 export type PoolApiResponse = {
-  status: string
-  data: PoolData[]
-}
+  status: string;
+  data: PoolData[];
+};

@@ -1,5 +1,5 @@
 export type Predictions = {
-  predictedClass: string
-  predictedProbability: number
-  binnedConfidence: number
-}
+  predictedClass: string;
+  predictedProbability: number;
+  binnedConfidence: number;
+};

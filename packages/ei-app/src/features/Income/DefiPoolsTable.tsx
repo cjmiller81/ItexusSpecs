@@ -1,34 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin"
 import DataGridDef, {
-    Column,
-    ColumnChooser,
-    Export,
-    FilterBuilderPopup,
-    FilterPanel,
-    FilterRow,
-    HeaderFilter,
-    LoadPanel,
-    Pager,
-    Paging,
-    Search,
+  Column,
+  ColumnChooser,
+  Export,
+  FilterBuilderPopup,
+  FilterPanel,
+  FilterRow,
+  HeaderFilter,
+  LoadPanel,
+  Pager,
+  Paging,
+  Search,
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
 import { ExportingEvent } from "devextreme/ui/data_grid"
 import React, { FC, useCallback, useEffect, useMemo, useRef } from "react"
 import { ChainCellComponent } from "./ChainCellComponent"
+import { PoolData } from "./Models/PoolData"
 import { ProjectCellComponent } from "./ProjectCellComponent"
 import { DefiField, DefiLabel } from "./tableConstants"
-import { PoolData } from "./Models/PoolData"
 
 export interface IPrefilterTokensTable {
-  loading: boolean
-  onCurrentFilterChange: (object?: object[] | null | undefined) => void
-  currentFilter?: object[] | null | undefined
-  dataSource: DataSource<PoolData, string>
-  onFilterBuilderOpen: Function
-  onUpdate: (filteredTokenData: ICoin[]) => void
-  onExport: (e: ExportingEvent<PoolData, any>) => void
+  loading: boolean;
+  onCurrentFilterChange: (object?: object[] | null | undefined) => void;
+  currentFilter?: object[] | null | undefined;
+  dataSource: DataSource<PoolData, string>;
+  onFilterBuilderOpen: Function;
+  onUpdate: (filteredTokenData: ICoin[]) => void;
+  onExport: (e: ExportingEvent<PoolData, any>) => void;
 }
 
 export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
@@ -40,61 +40,61 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   onFilterBuilderOpen,
   onExport,
 }) => {
-  const datagrid = React.createRef<DataGridDef<PoolData, string>>()
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const filterPanelText = useRef<Element | null>(null)
+  const datagrid = React.createRef<DataGridDef<PoolData, string>>();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const filterPanelText = useRef<Element | null>(null);
 
-  const allowedPageSizes = useMemo(() => [5, 10, 20, 50], [])
+  const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
   const updatePrefilteredTokens = async (): Promise<void> => {
-    const grid = datagrid?.current?.instance
+    const grid = datagrid?.current?.instance;
 
-    if (!grid) return
+    if (!grid) return;
 
-    const filteredDataSource = grid.getDataSource()
-    datagrid?.current?.instance?.filter(currentFilter)
-    await grid.refresh()
-    const prefilteredData = filteredDataSource.items() as ICoin[]
-    onUpdate(prefilteredData)
-  }
+    const filteredDataSource = grid.getDataSource();
+    datagrid?.current?.instance?.filter(currentFilter);
+    await grid.refresh();
+    const prefilteredData = filteredDataSource.items() as ICoin[];
+    onUpdate(prefilteredData);
+  };
 
   useEffect(() => {
-    const grid = datagrid?.current?.instance
-    if (!grid) return
-    updatePrefilteredTokens()
-  }, [currentFilter, datagrid, updatePrefilteredTokens])
+    const grid = datagrid?.current?.instance;
+    if (!grid) return;
+    updatePrefilteredTokens();
+  }, [currentFilter, datagrid, updatePrefilteredTokens]);
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      onCurrentFilterChange(filter as object[])
+      onCurrentFilterChange(filter as object[]);
     },
     [onCurrentFilterChange],
-  )
+  );
 
   const handleFilterTextClick = useCallback(
     (_event: Event) => {
-      onFilterBuilderOpen()
+      onFilterBuilderOpen();
     },
     [onFilterBuilderOpen],
-  )
+  );
 
   const onContentReady = () => {
     if (filterPanelText.current) {
-      filterPanelText.current.removeEventListener("click", handleFilterTextClick)
+      filterPanelText.current.removeEventListener("click", handleFilterTextClick);
     }
 
-    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text")
+    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
-      filterPanelText.current = filterPanelTextDiv
-      filterPanelTextDiv.addEventListener("click", handleFilterTextClick)
+      filterPanelText.current = filterPanelTextDiv;
+      filterPanelTextDiv.addEventListener("click", handleFilterTextClick);
     }
-  }
+  };
 
   const toPercentageField = (cellInfo: any) => {
-    const { value } = cellInfo
-    if (!value) return ""
-    return `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
-  }
+    const { value } = cellInfo;
+    if (!value) return "";
+    return `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+  };
 
   return (
     <div ref={containerRef}>
@@ -122,7 +122,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         />
         <FilterBuilderPopup
           onShowing={e => {
-            e.cancel = true
+            e.cancel = true;
           }}
         />
         <HeaderFilter visible={false}>
@@ -177,16 +177,16 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="number"
           allowHiding={false}
           customizeText={(cellInfo: any) => {
-            const { value } = cellInfo
-            if (!value) return ""
+            const { value } = cellInfo;
+            if (!value) return "";
             if (value >= 1_000_000_000) {
-              const billions = value / 1_000_000_000
-              return `$${billions.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}b`
+              const billions = value / 1_000_000_000;
+              return `$${billions.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}b`;
             } else if (value >= 1_000_000) {
-              const millions = value / 1_000_000
-              return `$${millions.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}m`
+              const millions = value / 1_000_000;
+              return `$${millions.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}m`;
             } else {
-              return `$${value.toLocaleString()}`
+              return `$${value.toLocaleString()}`;
             }
           }}
         />
@@ -223,5 +223,5 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         />
       </DataGridDef>
     </div>
-  )
-}
+  );
+};
