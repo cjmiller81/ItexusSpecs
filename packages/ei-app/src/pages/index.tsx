@@ -113,7 +113,7 @@ export default function HomePage() {
 
         <Grid
           item
-          xs={4.5}>
+          xs={3}>
           <IncomeTile
             icon={<CurrencyExchangeIcon />}
             title={t("IncomeTile")}></IncomeTile>
@@ -121,7 +121,7 @@ export default function HomePage() {
 
         <Grid
           item
-          xs={4.5}>
+          xs={6}>
           <TradingViewTile
             icon={<SyncAltIcon />}
             title={t("TradingTile")}></TradingViewTile>
