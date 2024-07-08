@@ -22,6 +22,7 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  OnChangeFn,
 } from "@tanstack/react-table"
 import { TablePagination } from "components/third-party/react-table"
 import moment from "moment"
@@ -167,10 +168,10 @@ export const RFQTable: FC<RFQTableProps> = ({
     }
   }
 
-  const handleFromDateChange = (newToDate: Date | null) => {
-    onFromDateChange(newToDate)
-    if (toDate && newToDate && toDate < newToDate) {
-      onFromDateChange(null)
+  const handleFromDateChange = (newFromDate: Date | null) => {
+    onFromDateChange(newFromDate)
+    if (toDate && newFromDate && toDate < newFromDate) {
+      onToDateChange(null)
     }
   }
 
@@ -197,6 +198,11 @@ export const RFQTable: FC<RFQTableProps> = ({
     if (toDate && fromDate) handleHistoryRequest(fromDate, toDate)
   }
 
+  const handleSortingChange: OnChangeFn<SortingState> = updaterOrValue => {
+    const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue
+    setSorting(newSorting)
+  }
+
   return (
     <Box {...props}>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -207,7 +213,7 @@ export const RFQTable: FC<RFQTableProps> = ({
             data={rows}
             columns={columns}
             sorting={sorting}
-            onSortingChange={setSorting}
+            onSortingChange={handleSortingChange}
             header={
               <TableHeader
                 {...{
@@ -300,7 +306,7 @@ function ReactTable({
   data: HistoryDataParsed[]
   columns: ColumnDef<HistoryDataParsed>[]
   sorting: SortingState
-  onSortingChange: (sorting: SortingState) => void
+  onSortingChange: OnChangeFn<SortingState>
   header: ReactNode
 }) {
   const table = useReactTable({
