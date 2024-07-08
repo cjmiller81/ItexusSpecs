@@ -1,5 +1,14 @@
-import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded"
-import { Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import {
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  Chip,
+} from "@mui/material"
 import Button from "@mui/material/Button"
 import { Box, BoxProps, Stack } from "@mui/system"
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers"
@@ -10,30 +19,124 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table"
 import { TablePagination } from "components/third-party/react-table"
 import moment from "moment"
-import DownloadSvgIcon from "public/assets/images/rfq/csv-download.svg"
-import { FC, ReactNode } from "react"
-import { HistoryDataParsed } from "../../../api/rfq-api/models/HistoryDataParsed"
+import { FC, ReactNode, useState } from "react"
+import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed"
 import MainCard from "@/components/MainCard"
 import ScrollX from "@/components/ScrollX"
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded"
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
+import DownloadOutlined from "@ant-design/icons/DownloadOutlined"
+import Typography from "@mui/material/Typography"
+import { useTranslation } from "react-i18next"
+
+const renderStatusChip = (status: string) => {
+  switch (status) {
+    case "Filled":
+      return (
+        <Chip
+          label="Filled"
+          color="success"
+          variant="outlined"
+          icon={<CheckCircleOutlineIcon />}
+          sx={{ borderRadius: 30 }}
+        />
+      )
+    case "Open":
+      return (
+        <Chip
+          label="Open"
+          color="info"
+          variant="outlined"
+          icon={<InfoOutlinedIcon />}
+          sx={{ borderRadius: 30 }}
+        />
+      )
+    case "Rejected":
+      return (
+        <Chip
+          label="Rejected"
+          color="error"
+          variant="outlined"
+          icon={<ErrorOutlineIcon />}
+          sx={{ borderRadius: 30 }}
+        />
+      )
+    default:
+      return <Chip label={status} />
+  }
+}
 
 const columns: ColumnDef<HistoryDataParsed>[] = [
   {
     accessorKey: "transactTime",
-    header: "Transact Time",
+    header: "Trade Time",
     cell: props =>
       moment(props.getValue() as Date)
         .local()
         .format("YYYY-MM-DD HH:mm:ss"),
   },
-  { accessorKey: "symbol", header: "Symbol" },
-  { accessorKey: "side", header: "Side" },
-  { accessorKey: "filledQty", header: "Filled Quantity" },
-  { accessorKey: "filledPrice", header: "Filled Price" },
-  { accessorKey: "status", header: "Status" },
+  { accessorKey: "symbol", header: "Pair" },
+  {
+    accessorKey: "side",
+    header: "Action",
+    cell: props => {
+      const action = props.getValue() as string
+      let bgColor = "transparent"
+      let textColor = "inherit"
+
+      if (action === "Buy") {
+        bgColor = "rgba(149, 222, 100, 0.2)"
+        textColor = "success.dark"
+      } else if (action === "Sell") {
+        bgColor = "rgba(222, 100, 100, 0.2)"
+        textColor = "error.dark"
+      }
+
+      return (
+        <Box
+          sx={{
+            borderRadius: 10,
+            px: 2,
+            py: 0.4,
+            color: textColor,
+            bgcolor: bgColor,
+            maxWidth: "max-content",
+          }}>
+          {action}
+        </Box>
+      )
+    },
+  },
+  {
+    accessorKey: "filledQty",
+    header: "Quantity",
+    cell: props => {
+      const value = Number(props.getValue() as string)
+      return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })
+    },
+  },
+  {
+    accessorKey: "filledPrice",
+    header: "Price",
+    cell: props => {
+      const value = Number(props.getValue() as string)
+      return value.toLocaleString()
+    },
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: props => renderStatusChip(props.getValue() as string),
+  },
+  { accessorKey: "orderId", header: "Order ID" },
 ]
 
 interface RFQTableProps extends BoxProps {
@@ -54,6 +157,8 @@ export const RFQTable: FC<RFQTableProps> = ({
   onToDateChange,
   ...props
 }) => {
+  const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }])
+
   const handleToDateChange = (newToDate: Date | null) => {
     if (fromDate && newToDate && newToDate < fromDate) {
       onToDateChange(null)
@@ -97,10 +202,12 @@ export const RFQTable: FC<RFQTableProps> = ({
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <MainCard
           content={false}
-          sx={{ bgcolor: "primary.lighter", position: "relative" }}>
+          sx={{ bgcolor: "primary.lighter", position: "relative", width: 1100 }}>
           <ReactTable
             data={rows}
             columns={columns}
+            sorting={sorting}
+            onSortingChange={setSorting}
             header={
               <TableHeader
                 {...{
@@ -135,15 +242,11 @@ function TableHeader({
   handleToDateChange: (date: Date | null) => void
   handleFromDateChange: (date: Date | null) => void
 }) {
+  const { t } = useTranslation("ProfilePage")
   return (
     <Stack
       direction="row"
       alignItems="center">
-      <DownloadSvgIcon
-        onClick={handleDownloadCsv}
-        style={{ cursor: "pointer" }}
-        width="24px"
-        height="24px"></DownloadSvgIcon>
       <DesktopDatePicker
         sx={{ ml: 0.5, minWidth: "150px" }}
         label="From Date*"
@@ -169,8 +272,20 @@ function TableHeader({
       </Button>
       <HistoryRoundedIcon
         onClick={handleHistory}
-        sx={{ cursor: "pointer", ml: theme => theme.spacing(0.5) }}
+        sx={{
+          cursor: "pointer",
+          "&:hover": {
+            color: "primary.main",
+          },
+          ml: theme => theme.spacing(0.5),
+        }}
       />
+      <Button
+        onClick={handleDownloadCsv}
+        sx={{ display: "flex", gap: 0.5, alignItems: "center", padding: "0 1" }}>
+        <DownloadOutlined style={{ cursor: "pointer", fontSize: 20 }} />
+        <Typography>{t("Export")}</Typography>
+      </Button>
     </Stack>
   )
 }
@@ -178,17 +293,24 @@ function TableHeader({
 function ReactTable({
   data,
   columns,
+  sorting,
+  onSortingChange,
   header,
 }: {
   data: HistoryDataParsed[]
   columns: ColumnDef<HistoryDataParsed>[]
+  sorting: SortingState
+  onSortingChange: (sorting: SortingState) => void
   header: ReactNode
 }) {
   const table = useReactTable({
     data,
     columns,
+    state: { sorting },
+    onSortingChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     debugTable: false,
   })
 
@@ -207,8 +329,28 @@ function ReactTable({
                     {headerGroup.headers.map(header => (
                       <TableCell
                         key={header.id}
-                        {...header.column.columnDef.meta}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {...header.column.columnDef.meta}
+                        sortDirection={
+                          header.column.getIsSorted()
+                            ? header.column.getIsSorted() === "desc"
+                              ? "desc"
+                              : "asc"
+                            : false
+                        }>
+                        {header.isPlaceholder ? null : (
+                          <TableSortLabel
+                            active={!!header.column.getIsSorted()}
+                            direction={
+                              header.column.getIsSorted()
+                                ? header.column.getIsSorted() === "desc"
+                                  ? "desc"
+                                  : "asc"
+                                : "asc"
+                            }
+                            onClick={header.column.getToggleSortingHandler()}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </TableSortLabel>
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
