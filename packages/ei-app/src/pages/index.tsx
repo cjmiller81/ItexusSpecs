@@ -16,7 +16,7 @@ import CodeIcon from "@mui/icons-material/Code";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
-import { Grid, Stack, Typography, useMediaQuery } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,7 +35,6 @@ export default function HomePage() {
   const allCoins = useAppSelector(state => state.allTokensTable.allTokens);
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus);
   const dispatch = useAppDispatch();
-  const screenWidth = useMediaQuery("(max-width:1440px)");
   const [selectedDate, setSelectedDate] = useState(new Date());
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
@@ -118,30 +117,27 @@ export default function HomePage() {
 
         <Grid
           item
-          xs={3}>
-          <IncomeTile
-            icon={<CurrencyExchangeIcon />}
-            title={t("IncomeTile")}></IncomeTile>
-        </Grid>
-
-        <Grid
-          item
-          xs={6}>
-          <TradingViewTile
-            icon={<SyncAltIcon />}
-            title={t("TradingTile")}></TradingViewTile>
-        </Grid>
-
-        <Grid
-          mt={2}
-          spacing={0}
+          xs={12}
           container
-          sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "15px" }}>
+          spacing={2}
+          justifyContent="space-between">
           <Grid
             item
-            xs={12}
-            md={screenWidth ? 7.4 : 2.92}
-            sx={{ maxWidth: 589, width: "100%" }}>
+            xs={3}>
+            <IncomeTile
+              icon={<CurrencyExchangeIcon />}
+              title={t("IncomeTile")}></IncomeTile>
+          </Grid>
+          <Grid
+            item
+            xs={6}>
+            <TradingViewTile
+              icon={<SyncAltIcon />}
+              title={t("TradingTile")}></TradingViewTile>
+          </Grid>
+          <Grid
+            item
+            xs={3}>
             <Stack>
               <CryptoCalendar
                 loading={false}

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
 import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector";
 import { Theme } from "@mui/material/styles";
+import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 
 interface CustomCardProps {
   theme: Theme;
@@ -116,56 +117,58 @@ const CryptoCalendar = ({
               </Typography>
             </Grid>
           ) : (
-            <Grid
-              container
-              spacing={0}>
-              {displayEvents.map((event, index) => (
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  key={index}>
-                  <a
-                    href={event.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: "none" }}>
-                    <CustomCard theme={theme}>
-                      <Box sx={{ display: "flex" }}>
-                        <img
-                          src={event.proof}
-                          alt="Proof"
-                          style={{ width: 35, height: 25, objectFit: "cover", marginRight: 10 }}
-                        />
-                        <CardContentCustom theme={theme}>
-                          <Typography
-                            variant="h6"
-                            color="text.primary"
-                            component="div"
-                            gutterBottom
-                            sx={{ fontSize: "12px" }}>
-                            {event.title.en}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            gutterBottom>
-                            {event.coins.map(coin => coin.fullname).join(", ")}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            display="block"
-                            gutterBottom>
-                            {event.categories.map(category => category.name).join(", ")}
-                          </Typography>
-                        </CardContentCustom>
-                      </Box>
-                    </CustomCard>
-                  </a>
-                </Grid>
-              ))}
-            </Grid>
+            <SimpleBarStyled style={{ maxHeight: "282px" }}>
+              <Grid
+                container
+                spacing={0}>
+                {displayEvents.map((event, index) => (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    key={index}>
+                    <a
+                      href={event.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: "none" }}>
+                      <CustomCard theme={theme}>
+                        <Box sx={{ display: "flex" }}>
+                          <img
+                            src={event.proof}
+                            alt="Proof"
+                            style={{ width: 35, height: 25, objectFit: "cover", marginRight: 10 }}
+                          />
+                          <CardContentCustom theme={theme}>
+                            <Typography
+                              variant="h6"
+                              color="text.primary"
+                              component="div"
+                              gutterBottom
+                              sx={{ fontSize: "12px" }}>
+                              {event.title.en}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom>
+                              {event.coins.map(coin => coin.fullname).join(", ")}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                              gutterBottom>
+                              {event.categories.map(category => category.name).join(", ")}
+                            </Typography>
+                          </CardContentCustom>
+                        </Box>
+                      </CustomCard>
+                    </a>
+                  </Grid>
+                ))}
+              </Grid>
+            </SimpleBarStyled>
           )}
           {shouldDisplayReadMore && (
             <Box mt={1.5}>
