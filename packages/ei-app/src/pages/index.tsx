@@ -21,7 +21,7 @@ import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import moment from "moment/moment";
-import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendat";
+import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendar";
 
 export default function HomePage() {
   const { session } = useOry();
