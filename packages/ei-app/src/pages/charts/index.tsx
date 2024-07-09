@@ -10,8 +10,15 @@ export default function TradingPage() {
   return (
     <Box sx={{ mt: 2, height: "770px" }}>
       <SymbolOverviewNoSSR
+        symbol="BTC/USD"
+        copyrightStyles={{
+          parent: {
+            display: "none",
+          },
+        }}
         theme={mode === "light" ? "light" : "dark"}
-        autosize></SymbolOverviewNoSSR>
+        autosize
+      />
     </Box>
   )
 }

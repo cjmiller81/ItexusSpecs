@@ -1,17 +1,18 @@
+import { defisApi } from "@/features/Income/DefiApi"
+import { calendarEventsApi } from "@/libs/redux/Apis/CryptoCalendarApi"
 import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 import { persistStore } from "redux-persist"
-import { RootState, persistedReducer } from "./RootReducer"
 import { newsApi } from "./Apis/NewsApi"
-import { calendarEventsApi } from "@/libs/redux/Apis/CryptoCalendarApi"
+import { RootState, persistedReducer } from "./RootReducer"
 
 const makeStore = () => {
   return configureStore({
     reducer: persistedReducer,
-    middleware: (getDefaultMiddleware) =>
+    middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }).concat(newsApi.middleware, calendarEventsApi.middleware),
+      }).concat(newsApi.middleware, calendarEventsApi.middleware, defisApi.middleware),
   })
 }
 

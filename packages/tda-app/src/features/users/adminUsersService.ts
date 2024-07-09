@@ -30,7 +30,7 @@ export const adminUsersService = {
     return response.data
   },
 
-  updateRoles: async (id: string, roles: any): Promise<void> => {
+  updateRoles: async (id: string | null, roles: any): Promise<void> => {
     const response = await appAxios.patch(`/api/users/${id}`, roles)
     return response.data
   },

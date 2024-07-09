@@ -27,7 +27,7 @@ export const TopTokensTile: FC<Props> = ({ title, icon, tableAssets, ...props })
         rowHeight={35}
         columnHeaderHeight={25}
         sx={{
-          minHeight: "375px",
+          minHeight: "413px",
           "& .MuiDataGrid-main": {
             minHeight: "375px !important",
             height: "375px !important",

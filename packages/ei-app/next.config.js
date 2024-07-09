@@ -4,7 +4,7 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, defaultLoaders }) => {
     // @see: https://github.com/mswjs/msw/issues/1801#issuecomment-1793911389
     if (isServer) {
       // next server build => ignore msw/browser
@@ -30,6 +30,19 @@ const nextConfig = {
       //'@mui/icons-material': require.resolve('@mui/icons-material'),
     }
 
+    config.module.rules.push(
+      {
+        test: /\.svg$/,
+        use: [
+          defaultLoaders.babel,
+          {
+            loader: '@svgr/webpack',
+            options: { babel: false },
+          },
+        ],
+      },
+    );
+
     config.optimization = {
       ...config.optimization,
       // TODO: Enable for production. This is just to track down build errors.
@@ -45,6 +58,7 @@ const nextConfig = {
     TRADIND_VIEW_NEWS_API: process.env.TRADIND_VIEW_NEWS_API,
     NEWS_ICONS_URL: process.env.NEWS_ICONS_URL,
     APP_VERSION: process.env.APP_VERSION,
+    LAMA_PROJECT_ICONS_URL: process.env.LAMA_PROJECT_ICONS_URL
   },
   transpilePackages: ['@mui/icons-material', 'components'],
 }

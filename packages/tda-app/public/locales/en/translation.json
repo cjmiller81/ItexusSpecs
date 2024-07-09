@@ -131,7 +131,10 @@
     "AddNewPermission": "Add Permission",
     "SelectAPermission": "Select a Permission to add for user and set the Value:",
     "ConfirmDeletion": "Confirm Deletion",
-    "DeleteThisPermission": "Are you sure you want to delete this Permission?"
-    }
+    "DeleteThisPermission": "Are you sure you want to delete this Permission?",
+    "Permission": "Permission",
+    "Permissions": "Permissions",
+    "Value": "Value"
   }
+}
 
