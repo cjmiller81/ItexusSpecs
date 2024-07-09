@@ -13,6 +13,7 @@ import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice"
 import { dashboardSlice } from "./Slices/DashboardSlice"
 import { newsApi } from "./Apis/NewsApi"
 import { calendarEventsApi } from "@/libs/redux/Apis/CryptoCalendarApi"
+import { defisApi } from "@/features/Income/DefiApi"
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -27,6 +28,7 @@ export const rootReducer = combineReducers({
   [dashboardSlice.name]: dashboardSlice.reducer,
   [newsApi.reducerPath]: newsApi.reducer,
   [calendarEventsApi.reducerPath]: calendarEventsApi.reducer,
+  [defisApi.reducerPath]: defisApi.reducer
 })
 
 const config = getPersistConfig<RootState>({

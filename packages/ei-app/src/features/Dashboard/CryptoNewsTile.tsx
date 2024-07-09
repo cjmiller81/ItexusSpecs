@@ -27,7 +27,7 @@ export const CryptoNewsTile: FC<Props> = ({ title, icon, news, ...props }) => {
           borderWidth: "1px",
           borderStyle: "solid",
         }}>
-        <SimpleBarStyled style={{ maxHeight: "322px" }}>
+        <SimpleBarStyled style={{ maxHeight: "359px" }}>
           {news.map((article, index) => (
             <Box
               key={article.id}
@@ -63,7 +63,7 @@ export const CryptoNewsTile: FC<Props> = ({ title, icon, news, ...props }) => {
                     </Typography>
                   </AppLink>
                 ) : (
-                  <Typography>{article.title}</Typography>
+                  <Typography sx={{ fontSize: 12 }}>{article.title}</Typography>
                 )}
               </Stack>
               <Divider sx={{ borderWidth: "1px", mt: 1 }} />

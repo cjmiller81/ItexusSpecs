@@ -1,51 +1,26 @@
-import { MenuItem, Select } from "@mui/material";
-import { Box, Stack, styled, useTheme } from "@mui/system";
-import dynamic from "next/dynamic";
-import CoinBaseSvg from "public/coinbase.svg"
-import { FC } from "react";
-import { DashboardTile, DashboardTileProps } from "./DashboardTile";
+import { Box, useTheme } from "@mui/system"
+import dynamic from "next/dynamic"
+import React, { FC } from "react"
+import { DashboardTile, DashboardTileProps } from "./DashboardTile"
 const SymbolOverviewNoSSR = dynamic(() => import("react-ts-tradingview-widgets").then(w => w.AdvancedRealTimeChart), {
   ssr: false,
-});
+})
 const TickerTapeNoSSR = dynamic(() => import("react-ts-tradingview-widgets").then(w => w.TickerTape), {
   ssr: false,
-});
-type Props = Omit<DashboardTileProps, "children"> & {};
+})
+type Props = Omit<DashboardTileProps, "children"> & {}
 
 export const TradingViewTile: FC<Props> = ({ title, icon, ...props }) => {
-  const theme = useTheme();
-  const mode = theme.palette.mode === "dark" ? "dark" : "light";
+  const theme = useTheme()
+  const mode = theme.palette.mode === "dark" ? "dark" : "light"
   return (
     <DashboardTile
-      afterTitleComponent={
-        <VerySmallSelect value="Coinbase"
-          variant="outlined"
-          size="small"
-          displayEmpty
-          inputProps={{ "aria-label": "Without label" }}>
-          <MenuItem value={"Coinbase"}>
-          <Stack direction="row" gap={0.5} alignItems="center">
-            <CoinBaseSvg width={"12px"} height={"12px"}/>
-            {"Coinbase"}
-          </Stack>
-          </MenuItem>
-        </VerySmallSelect>
-      }
       title={title}
       icon={icon}
       {...props}>
-      <Box
-        sx={{
-          div: {
-            "& #widget-ticker-tape-container": {
-              color: "red !important",
-            },
-            body: {
-              border: "2px solid red",
-            },
-          },
-        }}>
-        <TickerTapeNoSSR
+      <Box>
+        <MemoizedTickerTapeNoSSR
+          displayMode="regular"
           symbols={[
             {
               proName: "BITSTAMP:BTCUSD",
@@ -73,32 +48,64 @@ export const TradingViewTile: FC<Props> = ({ title, icon, ...props }) => {
               display: "none",
             },
           }}
-          colorTheme={mode}></TickerTapeNoSSR>
-        <SymbolOverviewNoSSR
-          enabled_features={[]}
+          colorTheme={mode}
+        />
+        <MemoizedSymbolOverviewNoSSR
+          enabled_features={
+            [
+              "hide_left_toolbar_by_default",
+              "header_widget",
+              "header_interval_dialog_button",
+              "hide_last_na_study_output",
+              "dont_show_boolean_study_arguments",
+            ] as any
+          }
+          disabled_features={[
+            "timeframes_toolbar",
+            "volume_force_overlay",
+            "symbol_search_hot_key",
+            "header_indicators",
+            "header_settings",
+            "legend_context_menu",
+            "header_compare",
+            "delete_button_in_legend",
+            "format_button_in_legend",
+            "display_market_status",
+            "header_saveload",
+            "header_undo_redo",
+            "go_to_date",
+            "header_widget",
+            "timeframes_toolbar",
+            "symbol_info",
+            "legend_context_menu",
+            "volume_force_overlay",
+            "left_toolbar",
+            "control_bar",
+            "seconds_resolution",
+            "create_volume_indicator_by_default",
+            "create_volume_indicator_by_default_once",
+            "compare_symbol",
+          ]}
           style="1"
           symbol="BTC/USD"
-          height="543px"
+          height="570px"
           width={"100%"}
           copyrightStyles={{
             parent: {
               display: "none",
             },
           }}
-          theme={mode === "light" ? "light" : "dark"}></SymbolOverviewNoSSR>
+          theme={mode === "light" ? "light" : "dark"}
+        />
       </Box>
     </DashboardTile>
-  );
-};
+  )
+}
 
-const VerySmallSelect = styled(Select)(({ theme }) => ({
-  width: "130px",
-  fontSize: "12px",
-  "& .MuiSelect-root": {},
-  "& .MuiSelect-select": {
-    padding: "2px 4px",
-    minHeight: "0px",
-  },
-  "& .MuiSelect-nativeInput": {},
-  "& .MuiSelect-icon": {},
-}));
+const MemoizedTickerTapeNoSSR = React.memo(TickerTapeNoSSR, (prevProps, nextProps) => {
+  return prevProps.colorTheme === nextProps.colorTheme
+})
+
+const MemoizedSymbolOverviewNoSSR = React.memo(SymbolOverviewNoSSR, (prevProps, nextProps) => {
+  return prevProps.theme === nextProps.theme
+})

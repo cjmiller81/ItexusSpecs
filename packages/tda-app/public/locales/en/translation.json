@@ -11,10 +11,10 @@
     "No": "No",
     "ADD": "Add"
   },
-  "PrefilterTokensSection": {
+  "PrefilterTokensSection":{
     "PrefilterTokens": "Prefilter Tokens"
   },
-  "CustomFilterBuilder": {
+  "CustomFilterBuilder":{
     "DeleteDialogTitle": "Delete filter",
     "ApplyFilter": "Apply filter",
     "SelectFilter": "Select pre-built filter:",
@@ -22,19 +22,19 @@
     "FilterTokens": "Filter Tokens",
     "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
   },
-  "ChangePasswordSection": {
+  "ChangePasswordSection":{
     "ChangePasswordWarning": "Please, set a new password",
     "EnterConfirmPassword": "Enter confirm password",
     "EnterNewPassword": "Enter new password",
     "ConfirmPassword": "Confirm password",
     "NewPassword": "New password",
-    "ChangePassword": "Change Password"
+    "ChangePassword":"Change Password"
   },
-  "ProfileCardMenu": {
+  "ProfileCardMenu":{
     "PersonalInformation": "Personal Information",
     "ChangePassword": "Change Password"
   },
-  "ProfileEditSection": {
+  "ProfileEditSection":{
     "PersonalInformation": "Personal Information",
     "FirstName": "First Name",
     "LastName": "Last Name",
@@ -58,7 +58,7 @@
     "ConfirmPasswordRequired": "Confirm Password is required",
     "PasswordsDoNotMatch": "Passwords do not match"
   },
-  "ory": {
+  "ory":{
     "login.title": "Login",
     "identities.messages.1070004": "Email"
   },
@@ -128,7 +128,10 @@
     "AddNewPermission": "Add Permission",
     "SelectAPermission": "Select a Permission to add for user and set the Value:",
     "ConfirmDeletion": "Confirm Deletion",
-    "DeleteThisPermission": "Are you sure you want to delete this Permission?"
+    "DeleteThisPermission": "Are you sure you want to delete this Permission?",
+    "Permission": "Permission",
+    "Permissions": "Permissions",
+    "Value": "Value"
   }
 }
 

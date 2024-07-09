@@ -1,16 +1,15 @@
-import Box from "@mui/material/Box"
-import { styled } from "@mui/material/styles"
-import { fetchAdminUsers, updateAdminUser } from "features/users/adminUsersSlice"
+import React, { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "libs/redux/Store"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
-import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowModesModel } from "@mui/x-data-grid"
+import Box from "@mui/material/Box"
+import { styled } from "@mui/material/styles"
+import { fetchAdminUsers } from "features/users/adminUsersSlice"
 import { adminUsersService } from "features/users/adminUsersService"
-import { IAdminUser } from "features/users/iAdminUser"
-import { getColumns } from "features/users/usersColumnsDefs"
+import { IAdminUser, TableColumnTitles } from "features/users/iAdminUser"
+import AddNewRoleModal from "features/users/addNewRoleModal"
+import { UsersTable } from "features/users/usersTable"
 
 export default function Users() {
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
   const { adminUsers } = useAppSelector(state => state.adminUsers)
   const dispatch = useAppDispatch()
   const router = useRouter()
@@ -40,21 +39,6 @@ export default function Users() {
     }
   }, [currentUser, router])
 
-  const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true
-    }
-  }
-
-  const processRowUpdate = (newRow: IAdminUser) => {
-    dispatch(updateAdminUser(newRow))
-    return { ...newRow }
-  }
-
-  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-    setRowModesModel(newRowModesModel)
-  }
-
   const fetchPermissions = async () => {
     try {
       const permissions = await adminUsersService.getPermissions()
@@ -80,7 +64,7 @@ export default function Users() {
     }
   }
 
-  const handleRoleModalSave = async (id: string, selectedPermission: string, roleValue: string) => {
+  const handleRoleModalSave = async (id: string | null, selectedPermission: string, roleValue: string) => {
     try {
       const roleKey = `metadata_public/${selectedPermission}`
       await adminUsersService.updateRoles(id, { [roleKey]: roleValue })
@@ -92,44 +76,45 @@ export default function Users() {
     }
   }
 
-  const columns = getColumns(
-    handleDeleteRole,
-    fetchPermissions,
-    permissions,
-    setIsRoleModalOpen,
-    isRoleModalOpen,
-    handleRoleModalSave,
-  )
+  const handleRoleModalClose = () => {
+    setIsRoleModalOpen(false)
+  }
+
+  const transformedAdminUsers: TableColumnTitles[] = adminUsers.map(user => ({
+    id: user.id,
+    AvatarUrl: user.AvatarUrl || "",
+    FirstName: user.FirstName,
+    LastName: user.LastName,
+    Email: user.Email,
+    Newsletter: user.Newsletter,
+    permissions: {
+      IsFifoAdmin: user.metadata_public?.IsFifoAdmin,
+      IsFifoUser: user.metadata_public.IsFifoUser,
+      role: user.metadata_public.role,
+      TalosCanAdminUsers: user.metadata_public?.TalosCanAdminUsers,
+    },
+    title: "",
+    field: "",
+  }))
 
   return (
     <StyledRoot sx={{ padding: 0 }}>
-      <DataGrid<IAdminUser>
-        slots={{
-          footer: () => <></>,
-        }}
-        rowSelection={false}
-        checkboxSelection={false}
-        sx={{
-          borderColor: theme => theme.palette.divider,
-          "& .MuiDataGrid-cell": {
-            borderColor: theme => theme.palette.divider,
-          },
-          "& .MuiDataGrid-columnHeader": {
-            borderColor: theme => theme.palette.divider,
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            borderBottomColor: theme => theme.palette.divider,
-          },
-        }}
-        rows={adminUsers}
-        columns={columns}
-        editMode="row"
-        getRowId={row => row.id}
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
-        getRowHeight={() => "auto"}
+      <UsersTable
+        id={userId}
+        rows={transformedAdminUsers}
+        handleDeleteRole={handleDeleteRole}
+        fetchPermissions={fetchPermissions}
+        permissions={permissions}
+        setIsRoleModalOpen={setIsRoleModalOpen}
+        isRoleModalOpen={isRoleModalOpen}
+        handleRoleModalSave={handleRoleModalSave}
+      />
+
+      <AddNewRoleModal
+        open={isRoleModalOpen}
+        onClose={handleRoleModalClose}
+        permissions={permissions}
+        handleRoleModalSave={handleRoleModalSave}
       />
     </StyledRoot>
   )
@@ -137,7 +122,7 @@ export default function Users() {
 
 const StyledRoot = styled(Box)(({ theme }) => ({
   display: "flex",
-  [theme.breakpoints.down("md")]: {
-    display: "inherit",
-  },
+  justifyContent: "center",
+  alignItems: "center",
+  minHeight: "100vh",
 }))
