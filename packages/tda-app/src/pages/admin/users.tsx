@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import { useRouter } from "next/router";
 import { useAppDispatch, useAppSelector } from "libs/redux/Store";
+import { useRouter } from "next/router";
+import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import { fetchAdminUsers } from "features/users/adminUsersSlice";
 import { adminUsersService } from "features/users/adminUsersService";
@@ -101,6 +101,13 @@ export default function Users() {
     field: "",
   }));
 
+  const StyledRoot = styled(Box)(({ theme }) => ({
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+  }));
+
   return (
     <StyledRoot sx={{ padding: 0 }}>
       <UsersTable
@@ -123,10 +130,3 @@ export default function Users() {
     </StyledRoot>
   );
 }
-
-const StyledRoot = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
-}));

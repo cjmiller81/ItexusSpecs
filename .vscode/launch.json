@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "https://local.emergentcybernetics.net:3000",
-            "webRoot": "${workspaceFolder}/packages/ei-app"
+            "webRoot": "${workspaceFolder}/packages/tda-app"
         }
     ]
 }
