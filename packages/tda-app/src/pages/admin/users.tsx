@@ -10,7 +10,7 @@ import AddNewRoleModal from "features/users/addNewRoleModal";
 import { UsersTable } from "features/users/usersTable";
 
 export default function Users() {
-  const { adminUsers } = useAppSelector(state => state.adminUsers);
+  const { adminUsers, error } = useAppSelector(state => state.adminUsers);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const userId = router.query.userId ? router.query.userId[0] : undefined;
@@ -44,7 +44,7 @@ export default function Users() {
       const permissions = await adminUsersService.getPermissions();
       setPermissions(permissions);
     } catch (error) {
-      console.error(error);
+      throw new Error("Failed to fetch permissions");
     }
   };
 
@@ -60,7 +60,7 @@ export default function Users() {
       await adminUsersService.updateRoles(userId, deleteRole);
       dispatch(fetchAdminUsers());
     } catch (error) {
-      console.error(error);
+      throw new Error("Failed to delete role");
     }
   };
 
@@ -68,17 +68,21 @@ export default function Users() {
     try {
       const roleKey = `metadata_public/${selectedPermission}`;
       await adminUsersService.updateRoles(id, { [roleKey]: roleValue });
-      fetchPermissions();
+      await fetchPermissions();
       dispatch(fetchAdminUsers());
       setIsRoleModalOpen(false);
     } catch (error) {
-      console.error(error);
+      throw new Error("Failed to save role");
     }
   };
 
   const handleRoleModalClose = () => {
     setIsRoleModalOpen(false);
   };
+
+  if (error) {
+    throw new Error("Error loading users");
+  }
 
   const transformedAdminUsers: TableColumnTitles[] = adminUsers.map(user => ({
     id: user.id,
@@ -95,6 +99,13 @@ export default function Users() {
     },
     title: "",
     field: "",
+  }));
+
+  const StyledRoot = styled(Box)(({ theme }) => ({
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
   }));
 
   return (
@@ -119,10 +130,3 @@ export default function Users() {
     </StyledRoot>
   );
 }
-
-const StyledRoot = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
-}));
