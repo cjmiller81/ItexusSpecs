@@ -10,6 +10,8 @@ export interface IAdminUsersSliceState {
   statusCreatingIAdminUsers: Status;
   statusUpdatingIAdminUsers: Status;
   statusDeletingIAdminUsers: Status;
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: IAdminUsersSliceState = {
@@ -19,21 +21,20 @@ const initialState: IAdminUsersSliceState = {
   statusCreatingIAdminUsers: "idle",
   statusUpdatingIAdminUsers: "idle",
   statusDeletingIAdminUsers: "idle",
+  loading: false,
+  error: null,
 };
 
-export const fetchAdminUsers = createAsyncThunk(
-  "adminUsers/fetchAdminUsers",
-  async () => {
-    return await adminUsersService.getAll();
-  }
-);
+export const fetchAdminUsers = createAsyncThunk("adminUsers/fetchAdminUsers", async () => {
+  return await adminUsersService.getAll();
+});
 
 export const updateAdminUser = createAsyncThunk(
   "adminUsers/updateAdminUser",
   async (adminUser: IAdminUser, thunkApi) => {
     await adminUsersService.update(adminUser);
     thunkApi.dispatch(fetchAdminUsers());
-  }
+  },
 );
 
 export const deleteAdminUser = createAsyncThunk(
@@ -41,7 +42,7 @@ export const deleteAdminUser = createAsyncThunk(
   async ({ id }: { id: string }, thunkApi) => {
     await adminUsersService.delete(id);
     thunkApi.dispatch(fetchAdminUsers());
-  }
+  },
 );
 
 export const adminUsersSlice = createSlice({
@@ -50,37 +51,37 @@ export const adminUsersSlice = createSlice({
   reducers: {
     setSelectedUserId: (state, action: PayloadAction<string | null>) => {
       state.selectedUserId = action.payload;
-    }
+    },
   },
 
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(fetchAdminUsers.pending, (state) => {
+      .addCase(fetchAdminUsers.pending, state => {
         state.statusFetchingIAdminUsers = "loading";
       })
       .addCase(fetchAdminUsers.fulfilled, (state, action: PayloadAction<IAdminUser[]>) => {
         state.statusFetchingIAdminUsers = "idle";
         state.adminUsers = action.payload;
       })
-      .addCase(fetchAdminUsers.rejected, (state) => {
+      .addCase(fetchAdminUsers.rejected, state => {
         state.statusFetchingIAdminUsers = "failed";
       })
-      .addCase(updateAdminUser.pending, (state) => {
+      .addCase(updateAdminUser.pending, state => {
         state.statusUpdatingIAdminUsers = "loading";
       })
-      .addCase(updateAdminUser.fulfilled, (state) => {
+      .addCase(updateAdminUser.fulfilled, state => {
         state.statusUpdatingIAdminUsers = "idle";
       })
-      .addCase(updateAdminUser.rejected, (state) => {
+      .addCase(updateAdminUser.rejected, state => {
         state.statusUpdatingIAdminUsers = "failed";
       })
-      .addCase(deleteAdminUser.pending, (state) => {
+      .addCase(deleteAdminUser.pending, state => {
         state.statusDeletingIAdminUsers = "loading";
       })
-      .addCase(deleteAdminUser.fulfilled, (state) => {
+      .addCase(deleteAdminUser.fulfilled, state => {
         state.statusDeletingIAdminUsers = "idle";
       })
-      .addCase(deleteAdminUser.rejected, (state) => {
+      .addCase(deleteAdminUser.rejected, state => {
         state.statusDeletingIAdminUsers = "failed";
       });
   },
