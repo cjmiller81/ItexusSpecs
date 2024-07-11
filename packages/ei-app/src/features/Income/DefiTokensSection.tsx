@@ -14,6 +14,7 @@ import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { defiFilterBuilderFields } from "./tableConstants";
+import SimpleBar from "simplebar-react";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -77,23 +78,24 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails sx={{ bgcolor: "background.paper" }}>
-        <CustomFilterBuilder
-          filterBuilderFields={defiFilterBuilderFields}
-          filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
-          filterDeletingLoading={deletingFilterStatus === "loading"}
-          open={filterBuildeOpen}
-          onCreateFilter={filter => dispatch(createFilter(filter))}
-          onClose={() => setFilterBuilderOpen(false)}
-          predefinedFilters={filters}
-          onUpdateFilter={filter => dispatch(updateFilter(filter))}
-          onApply={filter => {
-            setCurrentFilter(filter);
-            setFilterBuilderOpen(false);
-          }}
-          filterToAppply={currentFilter}
-          onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
-        />
-
+        <SimpleBar style={{ maxHeight: "600px" }}>
+          <CustomFilterBuilder
+            filterBuilderFields={defiFilterBuilderFields}
+            filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+            filterDeletingLoading={deletingFilterStatus === "loading"}
+            open={filterBuildeOpen}
+            onCreateFilter={filter => dispatch(createFilter(filter))}
+            onClose={() => setFilterBuilderOpen(false)}
+            predefinedFilters={filters}
+            onUpdateFilter={filter => dispatch(updateFilter(filter))}
+            onApply={filter => {
+              setCurrentFilter(filter);
+              setFilterBuilderOpen(false);
+            }}
+            filterToAppply={currentFilter}
+            onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+          />
+        </SimpleBar>
         <MemoizedDefiPoolsTable
           onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
           loading={isPoolsLoading}

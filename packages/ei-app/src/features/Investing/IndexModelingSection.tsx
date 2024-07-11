@@ -1,23 +1,24 @@
-import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable"
-import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls"
-import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
-import DownloadIcon from "@mui/icons-material/Download"
-import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material"
-import { useGridApiRef } from "@mui/x-data-grid"
-import { AppAccordionSection, AppNumberInput, AppPercentageField, StyledWalletsTable } from "components"
-import { useTranslation } from "react-i18next"
-import * as XLSX from "xlsx"
+import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable";
+import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
+import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
+import DownloadIcon from "@mui/icons-material/Download";
+import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material";
+import { useGridApiRef } from "@mui/x-data-grid";
+import { AppAccordionSection, AppNumberInput, AppPercentageField, StyledWalletsTable } from "components";
+import { SimpleBarStyled } from "@/components/SimpleBarStyled";
+import { useTranslation } from "react-i18next";
+import * as XLSX from "xlsx";
 
 interface Props extends Omit<AccordionProps, "children"> {
-  title: string
-  tableAssets: InvestingTableAsset[]
-  isEqualWeight?: boolean
-  onTokensChange: (tokens: number) => void
-  onCapitalChange: (capital: number) => void
-  capital: number
-  tokens: number
-  weighted: number
-  persistKey: string
+  title: string;
+  tableAssets: InvestingTableAsset[];
+  isEqualWeight?: boolean;
+  onTokensChange: (tokens: number) => void;
+  onCapitalChange: (capital: number) => void;
+  capital: number;
+  tokens: number;
+  weighted: number;
+  persistKey: string;
 }
 
 export const IndexModelingSection = ({
@@ -32,8 +33,8 @@ export const IndexModelingSection = ({
   persistKey,
   ...props
 }: Props) => {
-  const { t } = useTranslation("IndexModelingSection")
-  const apiRef = useGridApiRef()
+  const { t } = useTranslation("IndexModelingSection");
+  const apiRef = useGridApiRef();
   const onExport = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       tableAssets.map(asset => ({
@@ -43,27 +44,27 @@ export const IndexModelingSection = ({
         weight: asset.weight,
         qty: asset.qty,
       })),
-    )
-    const columnWidth12 = { wch: 12 }
+    );
+    const columnWidth12 = { wch: 12 };
     worksheet["!cols"] = worksheet["!cols"] = [
       columnWidth12,
       columnWidth12,
       columnWidth12,
       columnWidth12,
       columnWidth12,
-    ]
+    ];
 
     for (let i = 2; i < tableAssets.length + 2; i++) {
-      worksheet[`B${i}`].z = currencyFormat
-      worksheet[`C${i}`].z = currencyFormat
-      worksheet[`D${i}`].z = percentageFormat
-      worksheet[`E${i}`].z = qtyFormat
+      worksheet[`B${i}`].z = currencyFormat;
+      worksheet[`C${i}`].z = currencyFormat;
+      worksheet[`D${i}`].z = percentageFormat;
+      worksheet[`E${i}`].z = qtyFormat;
     }
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" })
-    XLSX.utils.book_append_sheet(workbook, worksheet, "assets")
-    XLSX.writeFile(workbook, "assets.xlsx", { compression: true })
-  }
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Price", "Market Cap", "Weight", "Qty"]], { origin: "A1" });
+    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+  };
 
   return (
     <AppAccordionSection
@@ -74,8 +75,8 @@ export const IndexModelingSection = ({
         <Button
           sx={{ mr: 2 }}
           onClick={event => {
-            event.stopPropagation()
-            onExport()
+            event.stopPropagation();
+            onExport();
           }}
           variant="outlined">
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
@@ -115,22 +116,24 @@ export const IndexModelingSection = ({
           />
         </LeftContainer>
         <RightContainer>
-          <StyledIndexModelingTable
-            slots={{
-              footer: () => <></>,
-            }}
-            rowSelection={false}
-            checkboxSelection={false}
-            apiRef={apiRef}
-            getRowId={x => x.id}
-            columns={getIndexModelingTableColumns()}
-            rows={tableAssets}
-          />
+          <SimpleBarStyled style={{ maxHeight: "480px" }}>
+            <StyledIndexModelingTable
+              slots={{
+                footer: () => <></>,
+              }}
+              rowSelection={false}
+              checkboxSelection={false}
+              apiRef={apiRef}
+              getRowId={x => x.id}
+              columns={getIndexModelingTableColumns()}
+              rows={tableAssets}
+            />
+          </SimpleBarStyled>
         </RightContainer>
       </MainContainer>
     </AppAccordionSection>
-  )
-}
+  );
+};
 
 const LeftContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -142,14 +145,14 @@ const LeftContainer = styled(Box)(({ theme }) => ({
   [theme.breakpoints.between("xs", "sm")]: {
     width: "100%",
   },
-}))
+}));
 
 const RightContainer = styled(Box)(({ theme }) => ({
   width: "70%",
   [theme.breakpoints.between("xs", "sm")]: {
     width: "100%",
   },
-}))
+}));
 
 const MainContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
@@ -159,14 +162,14 @@ const MainContainer = styled(Box)(({ theme }) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-}))
+}));
 
 const StyledIndexModelingTable = styled(StyledWalletsTable)(({ _theme }) => ({
   "& .MuiDataGrid-main": {
     height: "auto",
   },
-}))
+}));
 
 export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
   transition: "none",
-}))
+}));
