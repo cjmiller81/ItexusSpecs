@@ -10,7 +10,6 @@ AddDatesProcessing(appAxios)
 
 appAxios.interceptors.request.use(
   config => {
-    config.headers.Authorization = process.env.ACCESS_TOKEN
     return config
   },
   error => {
