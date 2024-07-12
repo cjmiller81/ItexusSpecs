@@ -1,17 +1,17 @@
-import { Typography } from "@mui/material"
-import { blue, grey, red } from "@mui/material/colors"
-import { Box, BoxProps, Stack, TypographyProps, lighten, useTheme } from "@mui/system"
-import { FC } from "react"
+import { Typography } from "@mui/material";
+import { blue, grey, red } from "@mui/material/colors";
+import { Box, BoxProps, Stack, TypographyProps, lighten, useTheme } from "@mui/system";
+import { FC } from "react";
 
 type Props = {
-  cellType: "buy" | "sell"
-  title: string
-  value?: number | null
-  isExpired: boolean
-  isRequesting: boolean
-  onCellClick: () => void
-  contentAlignment?: "center" | "start" | "end"
-}
+  cellType: "buy" | "sell";
+  title: string;
+  value?: number | null;
+  isExpired: boolean;
+  isRequesting: boolean;
+  onCellClick: () => void;
+  contentAlignment?: "center" | "start" | "end";
+};
 
 export const BuySellCell: FC<Props & BoxProps> = ({
   title,
@@ -24,15 +24,15 @@ export const BuySellCell: FC<Props & BoxProps> = ({
   sx,
   ...props
 }) => {
-  const theme = useTheme()
-  let bgColor: string = theme.palette.mode === "dark" ? grey[800] : grey[200]
-
-  if (value && cellType === "buy") {
-    bgColor = theme.palette.mode === "dark" ? red[700] : red[400]
-  }
+  const theme = useTheme();
+  let bgColor: string = theme.palette.mode === "dark" ? grey[800] : grey[200];
 
   if (value && cellType === "sell") {
-    bgColor = theme.palette.mode === "dark" ? blue[700] : blue[400]
+    bgColor = theme.palette.mode === "dark" ? red[700] : red[400];
+  }
+
+  if (value && cellType === "buy") {
+    bgColor = theme.palette.mode === "dark" ? blue[700] : blue[400];
   }
   return (
     <Box
@@ -69,11 +69,11 @@ export const BuySellCell: FC<Props & BoxProps> = ({
         </Typography>
       </Stack>
     </Box>
-  )
-}
+  );
+};
 
 const renderInlargedNum = (value?: number | null) => {
-  const [integerPart, decimalPart] = value ? value.toFixed(5).split(".") : ["", ""]
+  const [integerPart, decimalPart] = value ? value.toFixed(5).split(".") : ["", ""];
   return (
     <Box component="div">
       {integerPart}
@@ -87,7 +87,7 @@ const renderInlargedNum = (value?: number | null) => {
               key={index}>
               {digit}
             </Typography>
-          )
+          );
         } else {
           return (
             <Typography
@@ -96,12 +96,12 @@ const renderInlargedNum = (value?: number | null) => {
               key={index}>
               {digit}
             </Typography>
-          )
+          );
         }
       })}
     </Box>
-  )
-}
+  );
+};
 
 export const ExpiredLabel: FC = ({ ...props }: TypographyProps) => {
   return (
@@ -111,5 +111,5 @@ export const ExpiredLabel: FC = ({ ...props }: TypographyProps) => {
       {...props}>
       Expired
     </Typography>
-  )
-}
+  );
+};
