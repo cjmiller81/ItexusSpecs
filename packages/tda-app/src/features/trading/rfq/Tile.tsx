@@ -1,27 +1,28 @@
-import { Box, Card, TextField, Typography } from "@mui/material"
-import { BoxProps, Stack, styled } from "@mui/system"
-import { Status } from "components"
-import * as React from "react"
-import { BuySellCell, ExpiredLabel } from "./BuySellCell"
-import { ProgressFooter } from "./ProgressBar"
-import { RfqButton, RfqStage } from "./RfqButton"
+import { Box, Card, TextField, Typography, useTheme } from "@mui/material";
+import { BoxProps, Stack, styled } from "@mui/system";
+import { Status } from "components";
+import * as React from "react";
+import { BuySellCell } from "./BuySellCell";
+import { ProgressFooter } from "./ProgressBar";
+import { RfqButton, RfqStage } from "./RfqButton";
+import CircularWithPath from "../../../../src/components/@extended/progress/CircularWithPath";
 
 type TileProps = BoxProps & {
-  symbol1: string | null
-  symbol2: string | null
-  sellCellValue?: number
-  buyCellValue?: number
-  stage: RfqStage
-  statusFetchingRfq: Status
-  amount: number
-  progress: number
-  secondsLeft: number
-  onInitiateRfq: () => void
-  onReject: () => void
-  onAmountChange: (amount: number) => void
-  onSellClick: () => void
-  onBuyClick: () => void
-}
+  symbol1: string | null;
+  symbol2: string | null;
+  sellCellValue?: number;
+  buyCellValue?: number;
+  stage: RfqStage;
+  statusFetchingRfq: Status;
+  amount: number;
+  progress: number;
+  secondsLeft: number;
+  onInitiateRfq: () => void;
+  onReject: () => void;
+  onAmountChange: (amount: number) => void;
+  onSellClick: () => void;
+  onBuyClick: () => void;
+};
 
 const Tile: React.FC<TileProps> = ({
   symbol1,
@@ -40,6 +41,8 @@ const Tile: React.FC<TileProps> = ({
   onInitiateRfq,
   ...props
 }) => {
+  const theme = useTheme();
+
   return (
     <Box {...props}>
       <Card sx={{ p: 2 }}>
@@ -54,23 +57,21 @@ const Tile: React.FC<TileProps> = ({
               width="100%"
               alignItems="center"
               justifyContent="space-between">
-              <Stack alignItems="center">
-                <BuySellCell
-                  cellType="sell"
-                  onCellClick={onSellClick}
-                  isExpired={rfqButtonState === "requote"}
-                  title="SELL"
-                  isRequesting={statusFetchingRfq === "loading"}
-                  value={sellCellValue}
-                />
-              </Stack>
+              <LoadingBuySellCell
+                cellType="sell"
+                onCellClick={onSellClick}
+                isExpired={rfqButtonState === "requote"}
+                title="SELL"
+                isRequesting={statusFetchingRfq === "loading"}
+                value={sellCellValue}
+              />
               <Stack alignItems="center">
                 <RfqButton
                   disabled={!symbol1 || !symbol2 || !amount}
                   sx={{
                     height: "60px",
                     ":disabled": {
-                      bgcolor: theme => theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
+                      bgcolor: theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
                     },
                   }}
                   loading={statusFetchingRfq === "loading" || rfqButtonState === "inProgress"}
@@ -79,19 +80,17 @@ const Tile: React.FC<TileProps> = ({
                   onCancel={onReject}
                   onRequote={onReject}
                 />
-                {rfqButtonState === "requote" && <ExpiredLabel />}
+                {rfqButtonState === "requote" && <CircularWithPath color="secondary" />}
               </Stack>
-              <Stack alignItems="center">
-                <BuySellCell
-                  cellType="buy"
-                  contentAlignment="end"
-                  onCellClick={onBuyClick}
-                  isExpired={rfqButtonState === "requote"}
-                  title="BUY"
-                  isRequesting={statusFetchingRfq === "loading"}
-                  value={buyCellValue}
-                />
-              </Stack>
+              <LoadingBuySellCell
+                cellType="buy"
+                contentAlignment="end"
+                onCellClick={onBuyClick}
+                isExpired={rfqButtonState === "requote"}
+                title="BUY"
+                isRequesting={statusFetchingRfq === "loading"}
+                value={buyCellValue}
+              />
             </Stack>
           </Stack>
           <Stack
@@ -117,8 +116,8 @@ const Tile: React.FC<TileProps> = ({
         </Stack>
       </Card>
     </Box>
-  )
-}
+  );
+};
 
 const ContrastTextField = styled(TextField)({
   "& .Mui-disabled": {
@@ -139,5 +138,41 @@ const ContrastTextField = styled(TextField)({
       color: "inherit !important", // Label color when disabled
     },
   },
-})
-export default Tile
+});
+
+type LoadingBuySellCellProps = {
+  cellType: "sell" | "buy";
+  onCellClick: () => void;
+  isExpired: boolean;
+  title: string;
+  contentAlignment?: "start" | "center" | "end";
+  isRequesting: boolean;
+  value?: number;
+};
+
+const LoadingBuySellCell: React.FC<LoadingBuySellCellProps> = ({
+  cellType,
+  onCellClick,
+  isExpired,
+  title,
+  contentAlignment,
+  isRequesting,
+  value,
+}) => {
+  return (
+    <Stack alignItems="center">
+      <BuySellCell
+        cellType={cellType}
+        onCellClick={onCellClick}
+        isExpired={isExpired}
+        title={title}
+        value={value}
+        isRequesting={isRequesting}
+        contentAlignment={contentAlignment}
+      />
+      {isRequesting && <CircularWithPath color="secondary" />}
+    </Stack>
+  );
+};
+
+export default Tile;
