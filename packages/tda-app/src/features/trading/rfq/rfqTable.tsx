@@ -8,11 +8,11 @@ import {
   TableRow,
   TableSortLabel,
   Chip,
-} from "@mui/material"
-import Button from "@mui/material/Button"
-import { Box, BoxProps, Stack } from "@mui/system"
-import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3"
+} from "@mui/material";
+import Button from "@mui/material/Button";
+import { Box, BoxProps, Stack } from "@mui/system";
+import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {
   ColumnDef,
   HeaderGroup,
@@ -23,20 +23,20 @@ import {
   SortingState,
   useReactTable,
   OnChangeFn,
-} from "@tanstack/react-table"
-import { TablePagination } from "components/third-party/react-table"
-import moment from "moment"
-import { FC, ReactNode, useState } from "react"
-import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed"
-import MainCard from "@/components/MainCard"
-import ScrollX from "@/components/ScrollX"
-import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded"
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined"
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"
-import DownloadOutlined from "@ant-design/icons/DownloadOutlined"
-import Typography from "@mui/material/Typography"
-import { useTranslation } from "react-i18next"
+} from "@tanstack/react-table";
+import { TablePagination } from "components/third-party/react-table";
+import moment from "moment";
+import { FC, ReactNode, useState } from "react";
+import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
+import MainCard from "@/components/MainCard";
+import ScrollX from "@/components/ScrollX";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
+import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
 
 const renderStatusChip = (status: string) => {
   switch (status) {
@@ -49,7 +49,7 @@ const renderStatusChip = (status: string) => {
           icon={<CheckCircleOutlineIcon />}
           sx={{ borderRadius: 30 }}
         />
-      )
+      );
     case "Open":
       return (
         <Chip
@@ -59,7 +59,7 @@ const renderStatusChip = (status: string) => {
           icon={<InfoOutlinedIcon />}
           sx={{ borderRadius: 30 }}
         />
-      )
+      );
     case "Rejected":
       return (
         <Chip
@@ -69,11 +69,11 @@ const renderStatusChip = (status: string) => {
           icon={<ErrorOutlineIcon />}
           sx={{ borderRadius: 30 }}
         />
-      )
+      );
     default:
-      return <Chip label={status} />
+      return <Chip label={status} />;
   }
-}
+};
 
 const columns: ColumnDef<HistoryDataParsed>[] = [
   {
@@ -89,16 +89,16 @@ const columns: ColumnDef<HistoryDataParsed>[] = [
     accessorKey: "side",
     header: "Action",
     cell: props => {
-      const action = props.getValue() as string
-      let bgColor = "transparent"
-      let textColor = "inherit"
+      const action = props.getValue() as string;
+      let bgColor = "transparent";
+      let textColor = "inherit";
 
       if (action === "Buy") {
-        bgColor = "rgba(149, 222, 100, 0.2)"
-        textColor = "success.dark"
+        bgColor = "rgba(149, 222, 100, 0.2)";
+        textColor = "success.dark";
       } else if (action === "Sell") {
-        bgColor = "rgba(222, 100, 100, 0.2)"
-        textColor = "error.dark"
+        bgColor = "rgba(222, 100, 100, 0.2)";
+        textColor = "error.dark";
       }
 
       return (
@@ -113,23 +113,23 @@ const columns: ColumnDef<HistoryDataParsed>[] = [
           }}>
           {action}
         </Box>
-      )
+      );
     },
   },
   {
     accessorKey: "filledQty",
     header: "Quantity",
     cell: props => {
-      const value = Number(props.getValue() as string)
-      return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })
+      const value = Number(props.getValue() as string);
+      return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
     },
   },
   {
     accessorKey: "filledPrice",
     header: "Price",
     cell: props => {
-      const value = Number(props.getValue() as string)
-      return value.toLocaleString()
+      const value = Number(props.getValue() as string);
+      return value.toFixed(5);
     },
   },
   {
@@ -138,15 +138,15 @@ const columns: ColumnDef<HistoryDataParsed>[] = [
     cell: props => renderStatusChip(props.getValue() as string),
   },
   { accessorKey: "orderId", header: "Order ID" },
-]
+];
 
 interface RFQTableProps extends BoxProps {
-  rows: HistoryDataParsed[]
-  handleHistoryRequest: (fromDate: Date, toDate: Date) => void
-  fromDate: Date | null
-  toDate: Date | null
-  onFromDateChange: (date: Date | null) => void
-  onToDateChange: (date: Date | null) => void
+  rows: HistoryDataParsed[];
+  handleHistoryRequest: (fromDate: Date, toDate: Date) => void;
+  fromDate: Date | null;
+  toDate: Date | null;
+  onFromDateChange: (date: Date | null) => void;
+  onToDateChange: (date: Date | null) => void;
 }
 
 export const RFQTable: FC<RFQTableProps> = ({
@@ -158,50 +158,53 @@ export const RFQTable: FC<RFQTableProps> = ({
   onToDateChange,
   ...props
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }])
+  const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
 
   const handleToDateChange = (newToDate: Date | null) => {
     if (fromDate && newToDate && newToDate < fromDate) {
-      onToDateChange(null)
+      onToDateChange(null);
     } else {
-      onToDateChange(newToDate)
+      onToDateChange(newToDate);
     }
-  }
+  };
 
   const handleFromDateChange = (newFromDate: Date | null) => {
-    onFromDateChange(newFromDate)
+    onFromDateChange(newFromDate);
     if (toDate && newFromDate && toDate < newFromDate) {
-      onToDateChange(null)
+      onToDateChange(null);
     }
-  }
+  };
 
   const handleDownloadCsv = () => {
+    const today = new Date();
+    const formattedDate = `${today.getMonth() + 1}_${today.getDate()}_${today.getFullYear()}`;
+
     // Create the CSV content from the data array
-    let csvContent = "Timestamp, Symbol, Side, Quantity, Price, TradeStatus\n"
+    let csvContent = "Timestamp, Symbol, Side, Quantity, Price, TradeStatus\n";
     rows?.forEach((item, key) => {
-      csvContent += `${item.transactTime},${item.symbol},${item.side},${item.filledQty},${item.filledPrice},${item.status}\n`
-    })
+      csvContent += `${item.transactTime},${item.symbol},${item.side},${item.filledQty},${item.filledPrice},${item.status}\n`;
+    });
 
     // Create a Blob object from the CSV content
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
     // Create a temporary anchor element
-    const link = document.createElement("a")
-    link.href = URL.createObjectURL(blob)
-    link.download = "Symbol_Data.csv"
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
 
-    // Simulate a click on the anchor element to trigger the download
-    link.click()
-  }
+    link.download = `Recent_Transactions_${formattedDate}.csv`;
+
+    link.click();
+  };
 
   const handleHistory = () => {
-    if (toDate && fromDate) handleHistoryRequest(fromDate, toDate)
-  }
+    if (toDate && fromDate) handleHistoryRequest(fromDate, toDate);
+  };
 
   const handleSortingChange: OnChangeFn<SortingState> = updaterOrValue => {
-    const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue
-    setSorting(newSorting)
-  }
+    const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue;
+    setSorting(newSorting);
+  };
 
   return (
     <Box {...props}>
@@ -230,8 +233,8 @@ export const RFQTable: FC<RFQTableProps> = ({
         </MainCard>
       </LocalizationProvider>
     </Box>
-  )
-}
+  );
+};
 
 function TableHeader({
   handleDownloadCsv,
@@ -241,14 +244,14 @@ function TableHeader({
   handleToDateChange,
   handleFromDateChange,
 }: {
-  handleDownloadCsv: () => void
-  handleHistory: () => void
-  fromDate: Date | null
-  toDate: Date | null
-  handleToDateChange: (date: Date | null) => void
-  handleFromDateChange: (date: Date | null) => void
+  handleDownloadCsv: () => void;
+  handleHistory: () => void;
+  fromDate: Date | null;
+  toDate: Date | null;
+  handleToDateChange: (date: Date | null) => void;
+  handleFromDateChange: (date: Date | null) => void;
 }) {
-  const { t } = useTranslation("ProfilePage")
+  const { t } = useTranslation("ProfilePage");
   return (
     <Stack
       direction="row"
@@ -293,7 +296,7 @@ function TableHeader({
         <Typography>{t("Export")}</Typography>
       </Button>
     </Stack>
-  )
+  );
 }
 
 function ReactTable({
@@ -303,11 +306,11 @@ function ReactTable({
   onSortingChange,
   header,
 }: {
-  data: HistoryDataParsed[]
-  columns: ColumnDef<HistoryDataParsed>[]
-  sorting: SortingState
-  onSortingChange: OnChangeFn<SortingState>
-  header: ReactNode
+  data: HistoryDataParsed[];
+  columns: ColumnDef<HistoryDataParsed>[];
+  sorting: SortingState;
+  onSortingChange: OnChangeFn<SortingState>;
+  header: ReactNode;
 }) {
   const table = useReactTable({
     data,
@@ -318,7 +321,7 @@ function ReactTable({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     debugTable: false,
-  })
+  });
 
   return (
     <MainCard
@@ -392,7 +395,7 @@ function ReactTable({
         </Stack>
       </ScrollX>
     </MainCard>
-  )
+  );
 }
 
-export default RFQTable
+export default RFQTable;
