@@ -1,20 +1,19 @@
-import AutoGraphIcon from "@mui/icons-material/AutoGraph"
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange"
-import SyncAltIcon from '@mui/icons-material/SyncAlt'
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
-import HomeIcon from "@mui/icons-material/Home"
-import PeopleIcon from "@mui/icons-material/People"
-import React from "react"
-import i18next, { t } from "i18next"
-import ArbitrageIcon from "../../public/arbitrage.svg";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import HomeIcon from "@mui/icons-material/Home";
+import PeopleIcon from "@mui/icons-material/People";
+import React from "react";
+import i18next, { t } from "i18next";
 import DiscordIcon from "../../public/discord.svg";
 import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
 import GitHubIcon from "../../public/gitHub.svg";
-import { Theme } from "@mui/system"
-import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types"
+import { Theme } from "@mui/system";
+import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 
-i18next.setDefaultNamespace("SideBar")
+i18next.setDefaultNamespace("SideBar");
 
 function getHomeItems(): SidebarListItem[] {
   return [
@@ -24,11 +23,10 @@ function getHomeItems(): SidebarListItem[] {
       open: false,
       href: "/",
     },
-  ]
+  ];
 }
 
 function getPlatformsItems(theme: Theme): SidebarListItem[] {
-  const fillColor = theme.palette.mode === 'dark' ? '#ffffff' : '#696969';
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -64,17 +62,7 @@ function getPlatformsItems(theme: Theme): SidebarListItem[] {
         },
       ],
     },
-    {
-      title: t("Arbitrage", { ns: "SideBar" }),
-      icon: <ArbitrageIcon width="21px" height="25px" fill={fillColor} stroke={fillColor}/>,
-      children: [
-        {
-          title: t("ArbitrageSubpage", { ns: "SideBar" }),
-          href: "/arbitrage",
-        },
-      ],
-    },
-  ]
+  ];
 }
 
 function getToolsItems(): SidebarListItem[] {
@@ -90,11 +78,11 @@ function getToolsItems(): SidebarListItem[] {
         },
       ],
     },
-  ]
+  ];
 }
 
-  function getCommunityItems(theme: Theme): SidebarListItem[] {
-  const fillColor = theme.palette.mode === 'dark' ? '#ffffff' : '#696969';
+function getCommunityItems(theme: Theme): SidebarListItem[] {
+  const fillColor = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
   return [
     {
       title: t("Community", { ns: "SideBar" }),
@@ -104,28 +92,55 @@ function getToolsItems(): SidebarListItem[] {
       children: [
         {
           title: t("Discord", { ns: "SideBar" }),
-          icon: <DiscordIcon width="21px" height="21px" fill={fillColor} stroke={fillColor}/>,
+          icon: (
+            <DiscordIcon
+              width="21px"
+              height="21px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
           href: "/#",
         },
         {
           title: t("X", { ns: "SideBar" }),
-          icon: <XIcon width="21px" height="21px" fill={fillColor} stroke={fillColor}/>,
-          href: '/#',
+          icon: (
+            <XIcon
+              width="21px"
+              height="21px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
         },
         {
           title: t("Reddit", { ns: "SideBar" }),
-          icon: <RedditIcon width="24px" height="24px" fill={fillColor} stroke={fillColor}/>,
-          href: '/#',
+          icon: (
+            <RedditIcon
+              width="24px"
+              height="24px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
         },
         {
           title: t("GitHub", { ns: "SideBar" }),
-          icon: <GitHubIcon width="23px" height="23px" fill={fillColor} stroke={fillColor}/>,
-          href: '/#',
+          icon: (
+            <GitHubIcon
+              width="23px"
+              height="23px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
         },
-
-      ]
+      ],
     },
-  ]
+  ];
 }
 
 export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
@@ -146,5 +161,5 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
       title: t("Community", { ns: "SideBar" }),
       sidebarListItems: getCommunityItems(theme),
     },
-  ]
+  ];
 }
