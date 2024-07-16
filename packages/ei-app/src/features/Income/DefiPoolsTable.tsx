@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ICoin } from "components/src/models/token/ICoin"
+import { ICoin } from "components/src/models/token/ICoin";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -12,14 +12,14 @@ import DataGridDef, {
   Pager,
   Paging,
   Search,
-} from "devextreme-react/data-grid"
-import DataSource from "devextreme/data/data_source"
-import { ExportingEvent } from "devextreme/ui/data_grid"
-import React, { FC, useCallback, useEffect, useMemo, useRef } from "react"
-import { ChainCellComponent } from "./ChainCellComponent"
-import { PoolData } from "./Models/PoolData"
-import { ProjectCellComponent } from "./ProjectCellComponent"
-import { DefiField, DefiLabel } from "./tableConstants"
+} from "devextreme-react/data-grid";
+import DataSource from "devextreme/data/data_source";
+import { ExportingEvent } from "devextreme/ui/data_grid";
+import React, { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import { ChainCellComponent } from "./ChainCellComponent";
+import { PoolData } from "./Models/PoolData";
+import { ProjectCellComponent } from "./ProjectCellComponent";
+import { DefiField, DefiLabel } from "./tableConstants";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -144,8 +144,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <ColumnChooser enabled={true} />
 
         <Column
-          dataField={DefiField.Symbol}
-          caption={DefiLabel.Symbol}
+          dataField={DefiField.Pool}
+          caption={DefiLabel.Pool}
           alignment="left"
           visible={true}
           dataType="string"

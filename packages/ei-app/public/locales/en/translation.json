@@ -125,8 +125,8 @@
     "UploadAvatar": "Upload Image/Avatar",
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
-  "Yields":{
-    "SectionTitle": "Yields"
+  "LiquidityPools": {
+    "SectionTitle": "Liquidity Pools"
   },
   "SideBar": {
     "Home": "Home",
@@ -154,7 +154,7 @@
     "IndexModeling": "Index Modeling",
     "RunTest": "Run Test"
   },
-  "UpdatesTile":{
+  "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",
     "CurrentVersion": "Current Version {{version}}",
     "ViewNote": "View Full Release Notes",

@@ -1,7 +1,7 @@
 import { FilterBuilderItems } from "@/constants/PrefilterTokensTable";
 
 export enum DefiField {
-  Symbol = "symbol",
+  Pool = "pool",
   Project = "project",
   Chain = "chain",
   TVL = "tvlUsd",
@@ -9,8 +9,9 @@ export enum DefiField {
   BaseAPY = "apyBase",
   ApyMean30d = "apyMean30d",
 }
+
 export enum DefiLabel {
-  Symbol = "Symbol",
+  Pool = "Pool",
   Project = "Project",
   Chain = "Chain",
   TVL = "TVL",
@@ -21,8 +22,8 @@ export enum DefiLabel {
 
 export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
-    caption: DefiLabel.Symbol,
-    dataField: DefiField.Symbol,
+    caption: DefiLabel.Pool,
+    dataField: DefiField.Pool,
     dataType: "string",
   },
   {
