@@ -139,7 +139,7 @@ const columns: ColumnDef<HistoryDataParsed>[] = [
     header: "Price",
     cell: props => {
       const value = Number(props.getValue() as string);
-      return value.toLocaleString();
+      return value.toFixed(5);
     },
   },
   {
@@ -186,6 +186,9 @@ export const RFQTable: FC<RFQTableProps> = ({
   };
 
   const handleDownloadCsv = () => {
+    const today = new Date();
+    const formattedDate = `${today.getMonth() + 1}_${today.getDate()}_${today.getFullYear()}`;
+
     // Create the CSV content from the data array
     let csvContent = "Timestamp, Symbol, Side, Quantity, Price, TradeStatus\n";
     rows?.forEach((item, key) => {
@@ -198,9 +201,9 @@ export const RFQTable: FC<RFQTableProps> = ({
     // Create a temporary anchor element
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "Symbol_Data.csv";
 
-    // Simulate a click on the anchor element to trigger the download
+    link.download = `Recent_Transactions_${formattedDate}.csv`;
+
     link.click();
   };
 
