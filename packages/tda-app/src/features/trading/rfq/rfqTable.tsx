@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import { Box, BoxProps, Stack } from "@mui/system";
-import { LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {
   ColumnDef,
@@ -42,7 +42,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import { PickersShortcutsItem } from "@mui/x-date-pickers/PickersShortcuts";
-import { DateRange } from "@mui/x-date-pickers-pro/models";
+import { DateRange, DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
@@ -270,11 +270,14 @@ function TableHeader({
     setMenuAnchor(null);
   };
 
-  const handleDateChange = (newValue: DateRange<Dayjs>) => {
+  const handleDateChange = (
+    newValue: DateRange<dayjs.Dayjs>,
+    shortcuts: PickerChangeHandlerContext<DateRangeValidationError>,
+  ) => {
     let newFromDate = newValue[0] ? newValue[0].toDate() : null;
     let newToDate = newValue[1] ? newValue[1].toDate() : null;
 
-    if (newFromDate && fromDate && newFromDate < fromDate) {
+    if (newFromDate && fromDate && newFromDate < fromDate && !shortcuts.hasOwnProperty("shortcut")) {
       newToDate = null;
     }
 
@@ -365,8 +368,7 @@ function TableHeader({
                 }}
                 calendars={2}
                 value={[dayjs(fromDate), dayjs(toDate)]}
-                onChange={handleDateChange}
-                closeOnSelect={false}
+                onChange={(newValue, selectedShortcut) => handleDateChange(newValue, selectedShortcut)}
               />
             </LocalizationProvider>
           </MenuItem>
