@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Divider,
   Table,
@@ -11,7 +12,7 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import { Box, BoxProps, Stack } from "@mui/system";
-import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { LocalizationProvider, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import {
   ColumnDef,
@@ -37,6 +38,15 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
+import dayjs, { Dayjs } from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import { PickersShortcutsItem } from "@mui/x-date-pickers/PickersShortcuts";
+import { DateRange, DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
+import { useTheme } from "@mui/material/styles";
 
 const renderStatusChip = (status: string) => {
   switch (status) {
@@ -252,26 +262,119 @@ function TableHeader({
   handleFromDateChange: (date: Date | null) => void;
 }) {
   const { t } = useTranslation("ProfilePage");
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const theme = useTheme();
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchor(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleDateChange = (
+    newValue: DateRange<dayjs.Dayjs>,
+    shortcuts: PickerChangeHandlerContext<DateRangeValidationError>,
+  ) => {
+    let newFromDate = newValue[0] ? newValue[0].toDate() : null;
+    let newToDate = newValue[1] ? newValue[1].toDate() : null;
+
+    if (newFromDate && fromDate && newFromDate < fromDate && !shortcuts.hasOwnProperty("shortcut")) {
+      newToDate = null;
+    }
+
+    handleFromDateChange(newFromDate);
+    handleToDateChange(newToDate);
+
+    if (newFromDate && newToDate) {
+      handleMenuClose();
+    }
+  };
+
+  const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
+    {
+      label: "This Week",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("week"), today.endOf("week")];
+      },
+    },
+    {
+      label: "Last Week",
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, "day");
+        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
+      },
+    },
+    {
+      label: "Last 7 Days",
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, "day"), today];
+      },
+    },
+    {
+      label: "Current Month",
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf("month"), today.endOf("month")];
+      },
+    },
+    { label: "Reset", getValue: () => [null, null] },
+  ];
+
   return (
     <Stack
       direction="row"
       alignItems="center">
-      <DesktopDatePicker
-        sx={{ ml: 0.5, minWidth: "150px" }}
-        label="From Date*"
-        format="MM/dd/yyyy"
-        value={fromDate}
-        maxDate={toDate ?? undefined}
-        onChange={handleFromDateChange}
-      />
-      <DesktopDatePicker
-        sx={{ ml: 1, minWidth: "150px" }}
-        label="To Date*"
-        format="MM/dd/yyyy"
-        value={toDate}
-        minDate={fromDate ?? undefined}
-        onChange={handleToDateChange}
-      />
+      <Box sx={{ margin: "0 127px" }}>
+        <Button
+          onClick={handleMenuOpen}
+          sx={{
+            ml: 0.5,
+            minWidth: "300px",
+            color: theme.palette.grey[700],
+            border: "1px solid",
+            borderColor: theme.palette.grey[500],
+            alignItems: "center",
+            "&:hover": {
+              borderColor: theme.palette.grey[100],
+              color: theme.palette.grey[700],
+              border: "1px solid",
+              backgroundColor: theme.palette.grey[100],
+            },
+          }}
+          variant="outlined">
+          <span style={{ flex: 1, textAlign: "center", fontSize: 14 }}>
+            {fromDate && toDate
+              ? `${dayjs(fromDate).format("MM/DD/YYYY")}\u00A0—\u00A0${dayjs(toDate).format("MM/DD/YYYY")}`
+              : "Select Date Range"}
+          </span>
+          <InsertInvitationIcon sx={{ ml: 1, color: theme.palette.grey[600], marginLeft: 0 }} />
+        </Button>
+        <Menu
+          anchorEl={menuAnchor}
+          open={Boolean(menuAnchor)}
+          onClose={handleMenuClose}>
+          <MenuItem>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <StaticDateRangePicker
+                slotProps={{
+                  shortcuts: {
+                    items: shortcutsItems,
+                  },
+                  actionBar: { actions: [] },
+                }}
+                calendars={2}
+                value={[dayjs(fromDate), dayjs(toDate)]}
+                onChange={(newValue, selectedShortcut) => handleDateChange(newValue, selectedShortcut)}
+              />
+            </LocalizationProvider>
+          </MenuItem>
+        </Menu>
+      </Box>
       <Button
         sx={{ ml: 4, minWidth: "150px" }}
         variant="contained"
