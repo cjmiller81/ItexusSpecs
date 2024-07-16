@@ -6,7 +6,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import React from "react";
 import i18next, { t } from "i18next";
-import ArbitrageIcon from "../../public/arbitrage.svg";
 import DiscordIcon from "../../public/discord.svg";
 import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
@@ -28,7 +27,6 @@ function getHomeItems(): SidebarListItem[] {
 }
 
 function getPlatformsItems(theme: Theme): SidebarListItem[] {
-  const fillColor = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -61,23 +59,6 @@ function getPlatformsItems(theme: Theme): SidebarListItem[] {
         {
           title: t("SectionTitle", { ns: "LiquidityPools" }),
           href: "/liquidity_pools",
-        },
-      ],
-    },
-    {
-      title: t("Arbitrage", { ns: "SideBar" }),
-      icon: (
-        <ArbitrageIcon
-          width="21px"
-          height="25px"
-          fill={fillColor}
-          stroke={fillColor}
-        />
-      ),
-      children: [
-        {
-          title: t("ArbitrageSubpage", { ns: "SideBar" }),
-          href: "/arbitrage",
         },
       ],
     },
