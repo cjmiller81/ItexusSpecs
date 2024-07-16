@@ -125,7 +125,7 @@
     "UploadAvatar": "Upload Image/Avatar",
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
-  "Yields":{
+  "Yields": {
     "SectionTitle": "Yields"
   },
   "SideBar": {
@@ -136,8 +136,6 @@
     "TradingSubpage": "Charts",
     "Income": "Income",
     "Yields": "Yields",
-    "Arbitrage": "Arbitrage",
-    "ArbitrageSubpage": "Arbitrage Subpage",
     "Portfolios": "Portfolios",
     "MyWallets": "Wallets",
     "Community": "Community",
@@ -154,7 +152,7 @@
     "IndexModeling": "Index Modeling",
     "RunTest": "Run Test"
   },
-  "UpdatesTile":{
+  "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",
     "CurrentVersion": "Current Version {{version}}",
     "ViewNote": "View Full Release Notes",
