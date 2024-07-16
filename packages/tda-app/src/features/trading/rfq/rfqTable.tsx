@@ -284,13 +284,11 @@ function TableHeader({
       newToDate = null;
     }
 
+    handleFromDateChange(newFromDate);
+    handleToDateChange(newToDate);
+
     if (newFromDate && newToDate) {
-      handleFromDateChange(newFromDate);
-      handleToDateChange(newToDate);
       handleMenuClose();
-    } else {
-      handleFromDateChange(newFromDate);
-      handleToDateChange(newToDate);
     }
   };
 
