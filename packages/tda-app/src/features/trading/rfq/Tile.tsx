@@ -42,6 +42,51 @@ const Tile: React.FC<TileProps> = ({
   ...props
 }) => {
   const theme = useTheme();
+  const customFormatNumber = (value: number) => {
+    const stringValue = value.toString();
+    const integerPart = stringValue.slice(0, 4);
+    let decimalPart = stringValue.slice(4);
+
+    if (decimalPart) {
+      decimalPart = decimalPart.slice(0, 5);
+    }
+
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    let formattedNumber = formattedIntegerPart;
+    if (decimalPart && decimalPart !== ".") {
+      formattedNumber += "." + decimalPart;
+    }
+
+    return formattedNumber;
+  };
+
+  const CenteredTextField = styled(TextField)({
+    "& .MuiInputLabel-root": {
+      right: 0,
+      textAlign: "center",
+    },
+    "& .MuiInputLabel-shrink": {
+      margin: "0 auto",
+      position: "absolute",
+      right: "0",
+      border: "none",
+      left: "0",
+      top: "-3px",
+      width: "150px",
+      background: "none",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused": {
+      "& legend ": {
+        display: "none",
+      },
+    },
+  });
+
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.replace(/,/g, "").match(/^-?\d*(\.\d{0,5})?/)![0];
+    onAmountChange(parseFloat(value));
+  };
 
   return (
     <Box {...props}>
@@ -96,15 +141,22 @@ const Tile: React.FC<TileProps> = ({
           <Stack
             mt={8}
             alignItems="center"
+            justifyContent="center"
+            width="100%"
             direction="row"
             gap={theme => theme.spacing(1)}>
-            <ContrastTextField
-              label={symbol1}
-              placeholder="1,000,000"
+            <CenteredTextField
+              label={<CustomLabel variant="body1">USDT</CustomLabel>}
+              placeholder="1,000.000"
               disabled={rfqButtonState !== "requiring"}
-              value={amount}
-              type="number"
-              onChange={e => onAmountChange(parseFloat(e.target.value))}
+              value={customFormatNumber(amount)}
+              type="text"
+              onChange={handleAmountChange}
+              InputProps={{
+                inputProps: {
+                  style: { textAlign: "center" },
+                },
+              }}
             />
           </Stack>
           <ProgressFooter
@@ -118,27 +170,16 @@ const Tile: React.FC<TileProps> = ({
     </Box>
   );
 };
-
-const ContrastTextField = styled(TextField)({
-  "& .Mui-disabled": {
-    color: "inherit !important",
-    "& .MuiInputBase-input.Mui-disabled": {
-      WebkitTextFillColor: "inherit !important",
-    },
-    "& .MuiInput-underline:before": {
-      borderBottomStyle: "solid !important",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomStyle: "solid !important",
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "inherit !important",
-    },
-    "& label.Mui-disabled": {
-      color: "inherit !important", // Label color when disabled
-    },
-  },
-});
+const CustomLabel = styled(Typography)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  textAlign: "center",
+  height: "100%",
+  paddingTop: theme.spacing(1),
+  lineHeight: "normal",
+  margin: 0,
+}));
 
 type LoadingBuySellCellProps = {
   cellType: "sell" | "buy";
