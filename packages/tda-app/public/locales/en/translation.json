@@ -14,11 +14,7 @@
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
   },
-  "ThemeSwitcher":{
-    "Light": "LIGHT MODE",
-    "Dark": "DARK MODE"
-  },
-  "CustomFilterBuilder":{
+  "CustomFilterBuilder": {
     "DeleteDialogTitle": "Delete filter",
     "ApplyFilter": "Apply filter",
     "SelectFilter": "Select pre-built filter:",
