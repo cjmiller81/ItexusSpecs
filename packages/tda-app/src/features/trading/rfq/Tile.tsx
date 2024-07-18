@@ -43,66 +43,32 @@ const Tile: React.FC<TileProps> = ({
 }) => {
   const theme = useTheme();
 
-  const customFormatNumber = (value: number) => {
-    const stringValue = value.toString();
-    const integerPart = stringValue.slice(0, 4);
-    let decimalPart = stringValue.slice(4);
-    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const customFormatNumber = value => {
+    let str = value.toString().replace(/[^0-9]/g, "");
 
-    if (decimalPart) {
+    if (str === "") {
+      return "0";
+    }
+
+    if (str.length > 3) {
+      str = str[0] + "," + str.slice(1);
+    }
+
+    if (str.length > 5) {
+      str = str.slice(0, 5) + "." + str.slice(5);
+    }
+
+    if (str.includes(".")) {
+      let [integerPart, decimalPart] = str.split(".");
       decimalPart = decimalPart.slice(0, 5);
-    }
-    let formattedNumber = formattedIntegerPart;
-    if (decimalPart && decimalPart !== ".") {
-      formattedNumber += "." + decimalPart;
+      str = `${integerPart}.${decimalPart}`;
     }
 
-    return formattedNumber;
+    return str;
   };
 
-  const CenteredTextField = styled(TextField)({
-    "& .Mui-focused .MuiInputAdornment-root": {
-      color: theme.palette.primary.main,
-    },
-    "& .Mui-error .MuiInputAdornment-root": {
-      color: theme.palette.error.main,
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      px: 12,
-      border: `0.7px solid ${theme.palette.divider} !important`,
-    },
-    "& .MuiOutlinedInput-root": {
-      border: `0.7px solid ${theme.palette.grey[200]}`,
-      transition: theme.transitions.create(["border-color", "background-color"]),
-      "&:hover": {
-        borderColor: `${theme.palette.primary.light} !important`,
-      },
-      "&.Mui-focused": {
-        borderColor: theme.palette.primary.light,
-      },
-      backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
-    },
-
-    "& .MuiInputLabel-root": {
-      left: "50%",
-      transform: "translateX(-50%)",
-      backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
-      padding: "0 5px",
-      textAlign: "center",
-      fontSize: "10px !important",
-    },
-    "& .MuiInputLabel-shrink": {
-      left: "53%",
-      transform: "translateX(-50%)",
-      padding: "0 5px",
-      textAlign: "center",
-      top: "-14px !important",
-    },
-  });
-
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.replace(/,/g, "").match(/^-?\d*(\.\d{0,5})?/)![0];
-    onAmountChange(parseFloat(value));
+  const handleAmountChange = e => {
+    onAmountChange(e.target.value);
   };
 
   return (
@@ -158,26 +124,16 @@ const Tile: React.FC<TileProps> = ({
           <Stack
             mt={8}
             alignItems="center"
-            justifyContent="center"
-            width="100%"
             direction="row"
             gap={theme => theme.spacing(1)}>
-            <CenteredTextField
-              label={<CustomLabel variant="body1">USDT</CustomLabel>}
+            <ContrastTextField
+              label={"USDT"}
               placeholder="1,000.000"
               disabled={rfqButtonState !== "requiring"}
               value={customFormatNumber(amount)}
-              type="text"
               onChange={handleAmountChange}
-              variant="outlined"
-              InputProps={{
-                inputProps: {
-                  style: { textAlign: "center" },
-                },
-              }}
             />
           </Stack>
-
           <ProgressFooter
             sx={{ mt: 5 }}
             secondsLeft={secondsLeft}
@@ -190,16 +146,38 @@ const Tile: React.FC<TileProps> = ({
   );
 };
 
-const CustomLabel = styled(Typography)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  textAlign: "center",
-  height: "100%",
-  paddingTop: theme.spacing(1),
-  lineHeight: "normal",
-  margin: 0,
-  fontSize: "10px !important",
+const ContrastTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputLabel-root": {
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
+    padding: "0 5px",
+    textAlign: "center",
+    fontSize: "10px !important",
+  },
+  "& .MuiInputLabel-shrink": {
+    left: "53%",
+    transform: "translateX(-50%)",
+    padding: "0 5px",
+    textAlign: "center",
+    top: "-14px !important",
+  },
+
+  "& legend": {
+    display: "none",
+  },
+
+  "& .MuiInputBase-input": {
+    textAlign: "center",
+  },
+
+  "& .MuiOutlinedInput-root": {
+    boxShadow: "none !important",
+  },
+
+  "& .MuiOutlinedInput-root.Mui-focused": {
+    boxShadow: "none !important",
+  },
 }));
 
 type LoadingBuySellCellProps = {
