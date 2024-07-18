@@ -42,17 +42,16 @@ const Tile: React.FC<TileProps> = ({
   ...props
 }) => {
   const theme = useTheme();
+
   const customFormatNumber = (value: number) => {
     const stringValue = value.toString();
     const integerPart = stringValue.slice(0, 4);
     let decimalPart = stringValue.slice(4);
+    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     if (decimalPart) {
       decimalPart = decimalPart.slice(0, 5);
     }
-
-    const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
     let formattedNumber = formattedIntegerPart;
     if (decimalPart && decimalPart !== ".") {
       formattedNumber += "." + decimalPart;
@@ -62,24 +61,42 @@ const Tile: React.FC<TileProps> = ({
   };
 
   const CenteredTextField = styled(TextField)({
+    "& .Mui-focused .MuiInputAdornment-root": {
+      color: theme.palette.primary.main,
+    },
+    "& .Mui-error .MuiInputAdornment-root": {
+      color: theme.palette.error.main,
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      px: 12,
+      border: `0.7px solid ${theme.palette.divider} !important`,
+    },
+    "& .MuiOutlinedInput-root": {
+      border: `0.7px solid ${theme.palette.grey[200]}`,
+      transition: theme.transitions.create(["border-color", "background-color"]),
+      "&:hover": {
+        borderColor: `${theme.palette.primary.light} !important`,
+      },
+      "&.Mui-focused": {
+        borderColor: theme.palette.primary.light,
+      },
+      backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
+    },
+
     "& .MuiInputLabel-root": {
-      right: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
+      padding: "0 5px",
       textAlign: "center",
+      fontSize: "10px !important",
     },
     "& .MuiInputLabel-shrink": {
-      margin: "0 auto",
-      position: "absolute",
-      right: "0",
-      border: "none",
-      left: "0",
-      top: "-3px",
-      width: "150px",
-      background: "none",
-    },
-    "& .MuiOutlinedInput-root.Mui-focused": {
-      "& legend ": {
-        display: "none",
-      },
+      left: "53%",
+      transform: "translateX(-50%)",
+      padding: "0 5px",
+      textAlign: "center",
+      top: "-14px !important",
     },
   });
 
@@ -152,6 +169,7 @@ const Tile: React.FC<TileProps> = ({
               value={customFormatNumber(amount)}
               type="text"
               onChange={handleAmountChange}
+              variant="outlined"
               InputProps={{
                 inputProps: {
                   style: { textAlign: "center" },
@@ -159,6 +177,7 @@ const Tile: React.FC<TileProps> = ({
               }}
             />
           </Stack>
+
           <ProgressFooter
             sx={{ mt: 5 }}
             secondsLeft={secondsLeft}
@@ -170,6 +189,7 @@ const Tile: React.FC<TileProps> = ({
     </Box>
   );
 };
+
 const CustomLabel = styled(Typography)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
@@ -179,6 +199,7 @@ const CustomLabel = styled(Typography)(({ theme }) => ({
   paddingTop: theme.spacing(1),
   lineHeight: "normal",
   margin: 0,
+  fontSize: "10px !important",
 }));
 
 type LoadingBuySellCellProps = {
