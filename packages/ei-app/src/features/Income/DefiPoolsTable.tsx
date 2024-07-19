@@ -144,8 +144,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <ColumnChooser enabled={true} />
 
         <Column
-          dataField={DefiField.Pool}
-          caption={DefiLabel.Pool}
+          dataField={DefiField.Symbol}
+          caption={DefiLabel.Symbol}
           alignment="left"
           visible={true}
           dataType="string"
