@@ -1,19 +1,17 @@
-import { SimpleBarStyled } from "@/components/SimpleBarStyled"
-import { Article } from "@/libs/redux/Apis/NewsApi"
-import { Divider, Typography } from "@mui/material"
-import { Box, Stack } from "@mui/system"
-import { AppLink } from "components"
-import { FC } from "react"
-import { useTranslation } from "react-i18next"
-import { DashboardTile, DashboardTileProps } from "./DashboardTile"
-import { NewsHeader } from "./NewsHeader"
+import { SimpleBarStyled } from "@/components/SimpleBarStyled";
+import { Article } from "@/libs/redux/Apis/NewsApi";
+import { Divider, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/system";
+import { AppLink } from "components";
+import { FC } from "react";
+import { DashboardTile, DashboardTileProps } from "./DashboardTile";
+import { NewsHeader } from "./NewsHeader";
 
 type Props = Omit<DashboardTileProps, "children"> & {
-  news: Article[]
-}
+  news: Article[];
+};
 
 export const CryptoNewsTile: FC<Props> = ({ title, icon, news, ...props }) => {
-  const { t } = useTranslation("CryptoNewsTile")
   return (
     <DashboardTile
       title={title}
@@ -27,7 +25,7 @@ export const CryptoNewsTile: FC<Props> = ({ title, icon, news, ...props }) => {
           borderWidth: "1px",
           borderStyle: "solid",
         }}>
-        <SimpleBarStyled style={{ maxHeight: "359px" }}>
+        <SimpleBarStyled style={{ maxHeight: "388px" }}>
           {news.map((article, index) => (
             <Box
               key={article.id}
@@ -43,8 +41,8 @@ export const CryptoNewsTile: FC<Props> = ({ title, icon, news, ...props }) => {
                   ago={article.published}
                   source={article.source}
                   tokensIconsUrls={(article.relatedSymbols || []).map(symbol => {
-                    const symbolLogo = symbol["base-currency-logoid"]
-                    return symbolLogo ? `${process.env.NEWS_ICONS_URL}/${symbolLogo}.svg` : undefined
+                    const symbolLogo = symbol["base-currency-logoid"];
+                    return symbolLogo ? `${process.env.NEWS_ICONS_URL}/${symbolLogo}.svg` : undefined;
                   })}
                 />
                 {article.link ? (
@@ -70,24 +68,7 @@ export const CryptoNewsTile: FC<Props> = ({ title, icon, news, ...props }) => {
             </Box>
           ))}
         </SimpleBarStyled>
-        <Box mt={1}>
-          <Typography
-            sx={{
-              cursor: "pointer",
-              "&:hover": {
-                textDecoration: "underline",
-              },
-            }}
-            pl={1.5}
-            variant="body1"
-            target="_blank"
-            color={theme => theme.palette.primary.main}
-            href="https://www.google.com/"
-            component={AppLink}>
-            {t("ReadMore")}
-          </Typography>
-        </Box>
       </Box>
     </DashboardTile>
-  )
-}
+  );
+};
