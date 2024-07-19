@@ -43,6 +43,34 @@ const Tile: React.FC<TileProps> = ({
 }) => {
   const theme = useTheme();
 
+  const customFormatNumber = value => {
+    let str = value.toString().replace(/[^0-9]/g, "");
+
+    if (str === "") {
+      return "0";
+    }
+
+    if (str.length > 3) {
+      str = str[0] + "," + str.slice(1);
+    }
+
+    if (str.length > 5) {
+      str = str.slice(0, 5) + "." + str.slice(5);
+    }
+
+    if (str.includes(".")) {
+      let [integerPart, decimalPart] = str.split(".");
+      decimalPart = decimalPart.slice(0, 5);
+      str = `${integerPart}.${decimalPart}`;
+    }
+
+    return str;
+  };
+
+  const handleAmountChange = e => {
+    onAmountChange(e.target.value);
+  };
+
   return (
     <Box {...props}>
       <Card sx={{ p: 2 }}>
@@ -99,12 +127,11 @@ const Tile: React.FC<TileProps> = ({
             direction="row"
             gap={theme => theme.spacing(1)}>
             <ContrastTextField
-              label={symbol1}
-              placeholder="1,000,000"
+              label={"USDT"}
+              placeholder="1,000.000"
               disabled={rfqButtonState !== "requiring"}
-              value={amount}
-              type="number"
-              onChange={e => onAmountChange(parseFloat(e.target.value))}
+              value={customFormatNumber(amount)}
+              onChange={handleAmountChange}
             />
           </Stack>
           <ProgressFooter
@@ -119,26 +146,39 @@ const Tile: React.FC<TileProps> = ({
   );
 };
 
-const ContrastTextField = styled(TextField)({
-  "& .Mui-disabled": {
-    color: "inherit !important",
-    "& .MuiInputBase-input.Mui-disabled": {
-      WebkitTextFillColor: "inherit !important",
-    },
-    "& .MuiInput-underline:before": {
-      borderBottomStyle: "solid !important",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomStyle: "solid !important",
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "inherit !important",
-    },
-    "& label.Mui-disabled": {
-      color: "inherit !important", // Label color when disabled
-    },
+const ContrastTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputLabel-root": {
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
+    padding: "0 5px",
+    textAlign: "center",
+    fontSize: "10px !important",
   },
-});
+  "& .MuiInputLabel-shrink": {
+    left: "53%",
+    transform: "translateX(-50%)",
+    padding: "0 5px",
+    textAlign: "center",
+    top: "-14px !important",
+  },
+
+  "& legend": {
+    display: "none",
+  },
+
+  "& .MuiInputBase-input": {
+    textAlign: "center",
+  },
+
+  "& .MuiOutlinedInput-root": {
+    boxShadow: "none !important",
+  },
+
+  "& .MuiOutlinedInput-root.Mui-focused": {
+    boxShadow: "none !important",
+  },
+}));
 
 type LoadingBuySellCellProps = {
   cellType: "sell" | "buy";
