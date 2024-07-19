@@ -1,7 +1,7 @@
 import { FilterBuilderItems } from "@/constants/PrefilterTokensTable";
 
 export enum DefiField {
-  Pool = "pool",
+  Symbol = "symbol",
   Project = "project",
   Chain = "chain",
   TVL = "tvlUsd",
@@ -11,7 +11,7 @@ export enum DefiField {
 }
 
 export enum DefiLabel {
-  Pool = "Pool",
+  Symbol = "Symbol",
   Project = "Project",
   Chain = "Chain",
   TVL = "TVL",
@@ -22,8 +22,8 @@ export enum DefiLabel {
 
 export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
-    caption: DefiLabel.Pool,
-    dataField: DefiField.Pool,
+    caption: DefiLabel.Symbol,
+    dataField: DefiField.Symbol,
     dataType: "string",
   },
   {
