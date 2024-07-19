@@ -200,7 +200,7 @@ const LoadingBuySellCell: React.FC<LoadingBuySellCellProps> = ({
   value,
 }) => {
   return (
-    <Stack alignItems="center">
+    <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
       <BuySellCell
         cellType={cellType}
         onCellClick={onCellClick}
@@ -210,8 +210,18 @@ const LoadingBuySellCell: React.FC<LoadingBuySellCellProps> = ({
         isRequesting={isRequesting}
         contentAlignment={contentAlignment}
       />
-      {isRequesting && <CircularWithPath color="secondary" />}
-    </Stack>
+      {isRequesting && (
+        <Box
+          sx={{
+            position: "absolute",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            top: "54%",
+          }}>
+          <CircularWithPath color="secondary" />
+        </Box>
+      )}
+    </Box>
   );
 };
 

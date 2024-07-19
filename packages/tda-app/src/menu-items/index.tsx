@@ -1,10 +1,11 @@
-import tradingExecution from "./tradeExecution"
-import { NavItemType } from "types/menu"
-import accountFunding from "./account-funding"
-import admin from "./admin"
+import tradingExecution from "./tradeExecution";
+import { NavItemType } from "types/menu";
+import settlements from "./settlements";
+import admin from "./admin";
+import accountHistory from "./accountHistory";
 
 const menuItems: { items: NavItemType[] } = {
-  items: [tradingExecution, accountFunding, admin],
-}
+  items: [tradingExecution, settlements, accountHistory, admin],
+};
 
-export default menuItems
+export default menuItems;
