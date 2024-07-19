@@ -40,7 +40,7 @@ const CustomCard = styled(Card)<CustomCardProps>(({ theme }) => ({
 
 const CardContentCustom = styled(CardContent)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.grey[900],
-  padding: "5px",
+  padding: "2px",
   flexGrow: 1,
 }));
 
@@ -63,33 +63,12 @@ const CryptoCalendar = ({
   const theme = useTheme<Theme>();
   const pageSize = 8;
   const [displayEvents, setDisplayEvents] = useState<CalendarEvent[]>([]);
-  const [lastViewIndex, setLastViewIndex] = useState<number>(pageSize);
-  const [shouldDisplayReadMore, setShouldDisplayReadMore] = useState<boolean>(false);
 
   useEffect(() => {
     if (calendarData) {
       setDisplayEvents(calendarData.slice(0, pageSize));
-      setLastViewIndex(pageSize);
     }
   }, [selectedDate]);
-
-  useEffect(() => {
-    setShouldDisplayReadMore(
-      calendarData.length > displayEvents.length &&
-        displayEvents.length >= pageSize &&
-        calendarData.length > lastViewIndex,
-    );
-  }, [displayEvents]);
-
-  const handleReadMore = () => {
-    const startIndex = lastViewIndex;
-    const endIndex = startIndex + pageSize;
-    const initialEvents = calendarData?.slice(startIndex, endIndex) || [];
-    setLastViewIndex(endIndex);
-    if (initialEvents.length > 0) {
-      setDisplayEvents(initialEvents);
-    }
-  };
 
   return (
     <>
@@ -109,7 +88,7 @@ const CryptoCalendar = ({
               container
               justifyContent="center"
               alignItems="center"
-              sx={{ height: 200 }}>
+              sx={{ height: 282 }}>
               <Typography
                 variant="body1"
                 color="text.secondary">
@@ -169,24 +148,6 @@ const CryptoCalendar = ({
                 ))}
               </Grid>
             </SimpleBarStyled>
-          )}
-          {shouldDisplayReadMore && (
-            <Box mt={1.5}>
-              <Typography
-                sx={{
-                  cursor: "pointer",
-                  "&:hover": {
-                    textDecoration: "underline",
-                  },
-                }}
-                pl={1.5}
-                variant="h6"
-                component="span"
-                color={(theme: Theme) => theme.palette.primary.main}
-                onClick={handleReadMore}>
-                {t("ReadMore")}
-              </Typography>
-            </Box>
           )}
         </Container>
       </DashboardTile>

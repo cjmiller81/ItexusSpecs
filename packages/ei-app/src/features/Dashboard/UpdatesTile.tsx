@@ -31,14 +31,14 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
       icon={icon}
       sx={{
         ...sx,
-        marginTop: "15px",
+        marginTop: "27px",
       }}
       {...props}>
       <Stack
         alignItems="center"
         gap={2}
         px={5}
-        sx={{ height: 169, mt: 5 }}>
+        sx={{ height: 195, mt: 5 }}>
         <Typography
           variant="h6"
           fontWeight={700}
