@@ -37,10 +37,9 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
       <Stack
         alignItems="center"
         gap={2}
-        px={5}
-        sx={{ height: 195, mt: 5 }}>
+        sx={{ height: 179, mt: 3, gap: "0px" }}>
         <Typography
-          variant="h6"
+          sx={{ fontSize: "14px" }}
           fontWeight={700}
           letterSpacing={0.5}
           color={fillGrey}>
@@ -51,14 +50,29 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
             py: 1.3,
             px: "10%",
             borderRadius: 2,
+            marginTop: 3,
             "&.Mui-disabled": {
               backgroundColor: fillGrey,
               color: theme => theme.palette.getContrastText(fillGrey),
+            },
+            "@media (max-width: 1800px)": {
+              py: 0.7,
+              mt: 3,
+              padding: "5px 5px",
             },
           }}
           variant="contained"
           disabled>
           <Typography
+            sx={{
+              fontSize: 11,
+              "@media (max-width: 1800px)": {
+                fontSize: 10,
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+                padding: "0 5px",
+              },
+            }}
             noWrap
             fontWeight="bold"
             letterSpacing={1}
@@ -69,7 +83,19 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
           </Typography>
         </Button>
 
-        <Box position={"relative"}>
+        <Box
+          position={"relative"}
+          sx={{
+            marginTop: 4,
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            maxWidth: "200px",
+            marginLeft: "30px",
+            "@media (max-width: 1800px)": {
+              maxWidth: "115px",
+            },
+          }}>
           <Button
             sx={{
               "&:hover": {
@@ -77,18 +103,38 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
                 animation: "none",
                 boxShadow: theme.shadows[1],
               },
+              width: "220px",
               py: 1,
               px: 6,
               borderRadius: 2,
               overflow: "hidden",
               bgcolor: isNotifyHovered ? theme.palette.primary.main : darken(theme.palette.primary.main, 0.1),
+              "@media (max-width: 1800px)": {
+                py: 5,
+                padding: 0,
+              },
             }}
             onMouseEnter={handleNotifyMouseEnter}
             onMouseLeave={handleNotifyMouseLeave}
             variant="contained">
             <Typography
-              fontWeight="bold"
-              textTransform="none"
+              sx={{
+                fontSize: 12,
+                fontWeight: "bold",
+                textTransform: "none",
+                whiteSpace: "nowrap",
+                overflow: "visible",
+                textOverflow: "ellipsis",
+                textAlign: "center",
+                "@media (max-width: 1800px)": {
+                  fontSize: 10,
+                  whiteSpace: "normal",
+                  wordWrap: "break-word",
+                  paddingTop: "0px",
+                  paddingBottom: "0px",
+                  ml: "4px",
+                },
+              }}
               variant="body1">
               {t("NotifyMe")}
             </Typography>
@@ -108,7 +154,7 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
               borderColor: isNotifyHovered ? theme.palette.primary.main : darken(theme.palette.primary.main, 0.1),
               cursor: "pointer",
             }}>
-            <NotificationsIcon sx={{ width: 35, height: 35, color: "white" }}></NotificationsIcon>
+            <NotificationsIcon sx={{ width: 35, height: 35, color: "white" }} />
           </Avatar>
         </Box>
       </Stack>

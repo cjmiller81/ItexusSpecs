@@ -75,13 +75,7 @@ const CryptoCalendar = ({
       <DashboardTile
         title={title}
         icon={icon}
-        loading={loading}
-        datePicker={
-          <CustomDateSelector
-            setSelectedDate={setSelectedDate}
-            selectedDate={selectedDate}
-          />
-        }>
+        loading={loading}>
         <Container theme={theme}>
           {displayEvents.length === 0 ? (
             <Grid
@@ -104,7 +98,7 @@ const CryptoCalendar = ({
                   <Grid
                     item
                     xs={12}
-                    sm={6}
+                    sm={12}
                     key={index}>
                     <a
                       href={event.source}
@@ -149,6 +143,12 @@ const CryptoCalendar = ({
               </Grid>
             </SimpleBarStyled>
           )}
+          <Box sx={{ display: "flex", justifyContent: "center", margin: "3px 1px" }}>
+            <CustomDateSelector
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+            />
+          </Box>
         </Container>
       </DashboardTile>
     </>

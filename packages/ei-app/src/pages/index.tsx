@@ -20,7 +20,6 @@ import { Grid, Stack, Typography } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import moment from "moment/moment";
 import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendar";
 
 export default function HomePage() {
@@ -39,7 +38,7 @@ export default function HomePage() {
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
   // })
-  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(moment(selectedDate).format("YYYY-MM-DD"));
+  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate("2024-07-05");
   //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews();
   useEffect(() => {
@@ -117,7 +116,7 @@ export default function HomePage() {
 
         <Grid
           item
-          xs={12}
+          xs={14}
           container
           spacing={2}
           justifyContent="space-between">
@@ -130,14 +129,14 @@ export default function HomePage() {
           </Grid>
           <Grid
             item
-            xs={6}>
+            xs={7}>
             <TradingViewTile
               icon={<SyncAltIcon />}
               title={t("TradingTile")}></TradingViewTile>
           </Grid>
           <Grid
             item
-            xs={3}>
+            xs={2}>
             <Stack>
               <CryptoCalendar
                 loading={false}
