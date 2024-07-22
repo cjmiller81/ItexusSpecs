@@ -87,7 +87,7 @@ export default function HomePage() {
         container
         sx={{ marginTop: 0 }}>
         <Grid
-          xs={4.5}
+          xs={5}
           item>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
@@ -96,7 +96,7 @@ export default function HomePage() {
             chartData={totalWalletWorthChartData}></WalletWorthTile>
         </Grid>
         <Grid
-          xs={4.5}
+          xs={5}
           sx={{ marginBottom: "10px" }}
           item>
           <TopTokensTile
@@ -106,7 +106,7 @@ export default function HomePage() {
             tableAssets={coinsMemorized}></TopTokensTile>
         </Grid>
         <Grid
-          xs={3}
+          xs={2}
           item>
           <CryptoNewsTile
             loading={isLoading}
