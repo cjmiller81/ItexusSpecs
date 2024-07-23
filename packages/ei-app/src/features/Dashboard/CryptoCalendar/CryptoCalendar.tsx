@@ -3,7 +3,7 @@ import { Grid, Card, CardContent, Typography, Box } from "@mui/material";
 import { styled, useTheme } from "@mui/system";
 import { useTranslation } from "react-i18next";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
-import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector";
+import { CustomDateSelector } from "@/features/Dashboard/CryptoCalendar/CustomDateSelector";
 import { Theme } from "@mui/material/styles";
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 

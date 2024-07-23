@@ -20,7 +20,7 @@ import { Grid, Stack, Typography } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import CryptoCalendar from "@/features/CryptoCalendar/CryptoCalendar";
+import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 
 export default function HomePage() {
   const { session } = useOry();
@@ -38,7 +38,8 @@ export default function HomePage() {
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
   // })
-  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate("2024-07-05");
+  const mockDate = "2024-07-05";
+  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(mockDate);
   //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews();
   useEffect(() => {
