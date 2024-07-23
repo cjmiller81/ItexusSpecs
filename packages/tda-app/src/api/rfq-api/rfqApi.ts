@@ -71,19 +71,40 @@ export const rfqApi = {
       return []
     }
 
-    const parsedData = response.data.map<HistoryDataParsed>(item => ({
-      accountNum: item.accountNumber,
-      QuoteID: "",
-      RFQID: "",
-      filledQty: item.qtyPlaced.toString(),
-      id: item.exchangeOrderId,
-      symbol: item.marketSymbol,
-      transactTime: new Date(item.timeLastUpdated),
-      side: item.instruction,
-      filledPrice: item.priceSubmitted.toString(),
-      status: item.orderStatus,
-    }))
+    const parsedData = mapHistoryData(response.data);
 
     return parsedData.reverse()
   },
+
+  getExecutionHistoryData: async ({ accountNumber, fromDate, toDate }: GetHistoryDataRequest): Promise<HistoryDataParsed[]> => {
+    const requestUrl =
+      fromDate && toDate
+        ? `/api/customers/execution-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
+        : `/api/customers/execution-history?accountNumber=${accountNumber}`
+
+    const response = await appAxios.get<HistoryData[]>(requestUrl)
+
+    if (response?.data?.length === 0) {
+      return []
+    }
+
+    const parsedData = mapHistoryData(response.data);
+
+    return parsedData.reverse()
+  },
+}
+
+const mapHistoryData = (items: HistoryData[]): HistoryDataParsed[] => {
+  return items.map<HistoryDataParsed>(item => ({
+    accountNum: item.accountNumber,
+    QuoteID: "",
+    RFQID: "",
+    filledQty: item.qtyPlaced.toString(),
+    id: item.exchangeOrderId,
+    symbol: item.marketSymbol,
+    transactTime: new Date(item.timeLastUpdated),
+    side: item.instruction,
+    filledPrice: item.priceSubmitted.toString(),
+    status: item.orderStatus,
+  }))
 }

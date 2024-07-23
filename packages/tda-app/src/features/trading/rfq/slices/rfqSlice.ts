@@ -9,14 +9,18 @@ export interface RfqState {
   rfqModel: RfqResponse | null
   statusFetchingRfq: Status
   statusFetchingHistoryData: Status
+  statusFetchingExecutionHistoryData: Status
   historyData: HistoryDataParsed[]
+  executionHistoryData: HistoryDataParsed[]
 }
 
 const initialState: RfqState = {
   statusFetchingRfq: "idle",
   statusFetchingHistoryData: "idle",
+  statusFetchingExecutionHistoryData: "idle",
   rfqModel: null,
   historyData: [],
+  executionHistoryData: [],
 }
 
 export const rfqSlice = createAppSlice({
@@ -44,6 +48,24 @@ export const rfqSlice = createAppSlice({
         },
       },
     ),
+    fetchExecutionHistoryData: create.asyncThunk(
+      async (action: GetHistoryDataRequest) => {
+        const response = await rfqApi.getExecutionHistoryData(action)
+        return response
+      },
+      {
+        pending: state => {
+          state.statusFetchingExecutionHistoryData = "loading"
+        },
+        fulfilled: (state, action) => {
+          state.statusFetchingExecutionHistoryData = "idle"
+          state.executionHistoryData = action.payload
+        },
+        rejected: state => {
+          state.statusFetchingExecutionHistoryData = "failed"
+        },
+      },
+    ),
     fetchRfq: create.asyncThunk(
       async (request: RfqRequest) => {
         const response = await rfqApi.getRfq(request)
@@ -65,4 +87,4 @@ export const rfqSlice = createAppSlice({
   }),
 })
 
-export const { fetchRfq, clearRfq, fetchHistoryData } = rfqSlice.actions
+export const { fetchRfq, clearRfq, fetchHistoryData, fetchExecutionHistoryData } = rfqSlice.actions

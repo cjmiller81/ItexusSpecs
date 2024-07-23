@@ -1,40 +1,40 @@
-import CurrencyDropdown from "@/features/trading/rfq/CurrencyDropdown"
-import { TileSection } from "@/features/trading/rfq/TileSection"
-import RFQTable from "@/features/trading/rfq/rfqTable"
-import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice"
-import { fetchHistoryData } from "@/features/trading/rfq/slices/rfqSlice"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { Stack, Typography } from "@mui/material"
-import moment from "moment"
-import { useEffect, useState } from "react"
+import CurrencyDropdown from "@/features/trading/rfq/CurrencyDropdown";
+import { TileSection } from "@/features/trading/rfq/TileSection";
+import HistoryDataTable from "@/features/trading/rfq/history-data-table/HistoryDataTable";
+import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
+import { fetchExecutionHistoryData } from "@/features/trading/rfq/slices/rfqSlice";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { Stack, Typography } from "@mui/material";
+import moment from "moment";
+import { useEffect, useState } from "react";
 
-export const accountNumber = "EC_TEST"
+export const accountNumber = "EC_TEST";
 
 export default function SpotRFQPage() {
-  const [symbol1, setSymbol1] = useState<string | null>(null)
-  const [symbol2, setSymbol2] = useState<string | null>(null)
-  const [toDate, setToDate] = useState<Date | null>(moment().add(1, "d").toDate())
-  const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate())
-  const { historyData } = useAppSelector(state => state.rfq)
-  const { pairs, statusFetchingPairs } = useAppSelector(state => state.currencies)
-  const dispatch = useAppDispatch()
+  const [symbol1, setSymbol1] = useState<string | null>(null);
+  const [symbol2, setSymbol2] = useState<string | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(moment().add(1, "d").toDate());
+  const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate());
+  const historyData = useAppSelector(state => state.rfq.executionHistoryData);
+  const { pairs } = useAppSelector(state => state.currencies);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if ("Notification" in window) {
-      Notification.requestPermission()
+      Notification.requestPermission();
     }
 
-    getHistoryData()
-    dispatch(fetchPairs({}))
-  }, [])
+    getHistoryData();
+    dispatch(fetchPairs({}));
+  }, []);
 
   const getHistoryData = async () => {
-    if (fromDate && toDate) handleHistoryRequest(fromDate, toDate)
-  }
+    if (fromDate && toDate) handleHistoryRequest(fromDate, toDate);
+  };
 
   const handleHistoryRequest = (fromDate: Date, toDate: Date) => {
-    dispatch(fetchHistoryData({ accountNumber: accountNumber, fromDate, toDate }))
-  }
+    dispatch(fetchExecutionHistoryData({ accountNumber: accountNumber, fromDate, toDate }));
+  };
 
   return (
     <Stack alignItems="center">
@@ -68,7 +68,8 @@ export default function SpotRFQPage() {
           mt={2}
         />
       </Stack>
-      <RFQTable
+      <HistoryDataTable
+        sx={{ width: "100%" }}
         fromDate={fromDate}
         toDate={toDate}
         onFromDateChange={setFromDate}
@@ -78,5 +79,5 @@ export default function SpotRFQPage() {
         handleHistoryRequest={handleHistoryRequest}
       />
     </Stack>
-  )
+  );
 }
