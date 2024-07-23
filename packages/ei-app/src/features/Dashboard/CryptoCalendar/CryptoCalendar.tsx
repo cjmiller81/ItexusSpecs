@@ -3,7 +3,7 @@ import { Grid, Card, CardContent, Typography, Box } from "@mui/material";
 import { styled, useTheme } from "@mui/system";
 import { useTranslation } from "react-i18next";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
-import { CustomDateSelector } from "@/features/CryptoCalendar/CustomDateSelector";
+import { CustomDateSelector } from "@/features/Dashboard/CryptoCalendar/CustomDateSelector";
 import { Theme } from "@mui/material/styles";
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 
@@ -75,13 +75,7 @@ const CryptoCalendar = ({
       <DashboardTile
         title={title}
         icon={icon}
-        loading={loading}
-        datePicker={
-          <CustomDateSelector
-            setSelectedDate={setSelectedDate}
-            selectedDate={selectedDate}
-          />
-        }>
+        loading={loading}>
         <Container theme={theme}>
           {displayEvents.length === 0 ? (
             <Grid
@@ -104,7 +98,7 @@ const CryptoCalendar = ({
                   <Grid
                     item
                     xs={12}
-                    sm={6}
+                    sm={12}
                     key={index}>
                     <a
                       href={event.source}
@@ -149,6 +143,12 @@ const CryptoCalendar = ({
               </Grid>
             </SimpleBarStyled>
           )}
+          <Box sx={{ display: "flex", justifyContent: "center", margin: "3px 1px" }}>
+            <CustomDateSelector
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+            />
+          </Box>
         </Container>
       </DashboardTile>
     </>
