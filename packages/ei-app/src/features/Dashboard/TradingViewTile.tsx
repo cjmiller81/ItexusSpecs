@@ -87,7 +87,7 @@ export const TradingViewTile: FC<Props> = ({ title, icon, ...props }) => {
             "compare_symbol",
           ]}
           style="1"
-          symbol="BTC/USD"
+          symbol="COINBASE:BTCUSD"
           height="570px"
           width={"100%"}
           copyrightStyles={{
