@@ -10,7 +10,7 @@ export default function TradingPage() {
   return (
     <Box sx={{ mt: 2, height: "770px" }}>
       <SymbolOverviewNoSSR
-        symbol="BTC/USD"
+        symbol="COINBASE:BTCUSD"
         copyrightStyles={{
           parent: {
             display: "none",
