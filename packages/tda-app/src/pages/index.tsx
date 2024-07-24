@@ -1,33 +1,37 @@
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import AutoGraphIcon from "@mui/icons-material/AutoGraph";
-import { Grid, Stack, Typography } from "@mui/material";
-import { fetchWallets, useOry } from "components";
-import { useTranslation } from "react-i18next";
-import { CryptoBalance } from "features/dashboard/cryptoBalance";
+import { Grid } from "@mui/material";
+import { CryptoBalance } from "components/CryptoBalance";
+import { FiatBalance } from "components/FiatBalance";
 
 export default function HomePage() {
-  const { session } = useOry();
-  const { t } = useTranslation("HomePage");
-  const dispatch = useAppDispatch();
+  const mockFiatData = [{ currency: "USD", quantity: "2345000" }];
+  const mockCryptoData = [
+    { coin: "BTC", quantity: "16000" },
+    { coin: "ETH", quantity: "25000" },
+    { coin: "USDT", quantity: "22565000" },
+  ];
 
   return (
-    <>
+    <Grid
+      container
+      mt={2}
+      spacing={2}
+      sx={{ marginTop: 0 }}>
       <Grid
-        mt={2}
-        spacing={2}
+        item
+        xs={10}></Grid>
+      <Grid
+        item
         container
-        sx={{ marginTop: 0 }}>
-        <Grid
-          xs={10}
-          item>
-          {/* Other components can be added here */}
+        xs={2}
+        direction="column"
+        spacing={2}>
+        <Grid item>
+          <CryptoBalance data={mockCryptoData} />
         </Grid>
-        <Grid
-          xs={2}
-          item>
-          <CryptoBalance />
+        <Grid item>
+          <FiatBalance data={mockFiatData} />
         </Grid>
       </Grid>
-    </>
+    </Grid>
   );
 }

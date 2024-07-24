@@ -7,6 +7,8 @@ import { ProgressFooter } from "./ProgressBar";
 import { RfqButton, RfqStage } from "./RfqButton";
 import CircularWithPath from "../../../../src/components/@extended/progress/CircularWithPath";
 
+import customFormatNumber from "../../../helpers/customFormatNumber";
+
 type TileProps = BoxProps & {
   symbol1: string | null;
   symbol2: string | null;
@@ -43,29 +45,29 @@ const Tile: React.FC<TileProps> = ({
 }) => {
   const theme = useTheme();
 
-  const customFormatNumber = value => {
-    let str = value.toString().replace(/[^0-9]/g, "");
-
-    if (str === "") {
-      return "0";
-    }
-
-    if (str.length > 3) {
-      str = str[0] + "," + str.slice(1);
-    }
-
-    if (str.length > 5) {
-      str = str.slice(0, 5) + "." + str.slice(5);
-    }
-
-    if (str.includes(".")) {
-      let [integerPart, decimalPart] = str.split(".");
-      decimalPart = decimalPart.slice(0, 5);
-      str = `${integerPart}.${decimalPart}`;
-    }
-
-    return str;
-  };
+  // const customFormatNumber = value => {
+  //   let str = value.toString().replace(/[^0-9]/g, "");
+  //
+  //   if (str === "") {
+  //     return "0";
+  //   }
+  //
+  //   if (str.length > 3) {
+  //     str = str[0] + "," + str.slice(1);
+  //   }
+  //
+  //   if (str.length > 5) {
+  //     str = str.slice(0, 5) + "." + str.slice(5);
+  //   }
+  //
+  //   if (str.includes(".")) {
+  //     let [integerPart, decimalPart] = str.split(".");
+  //     decimalPart = decimalPart.slice(0, 5);
+  //     str = `${integerPart}.${decimalPart}`;
+  //   }
+  //
+  //   return str;
+  // };
 
   const handleAmountChange = e => {
     onAmountChange(e.target.value);

@@ -132,6 +132,13 @@
     "Permission": "Permission",
     "Permissions": "Permissions",
     "Value": "Value"
+  },
+  "Dashboard": {
+    "CryptoBalance": "Crypto Balance",
+    "Coin": "Coin",
+    "Quantity": "Quantity",
+    "FiatBalance": "Fiat Balance",
+    "Currency": "Currency"
   }
 }
 

@@ -3,8 +3,8 @@ import { Box, Stack, StackProps, useTheme } from "@mui/system";
 import { FC, ReactNode } from "react";
 
 export type DashboardTileProps = StackProps & {
-  title: string;
-  icon: ReactNode;
+  title?: string;
+  icon?: ReactNode;
   loading?: boolean;
   datePicker?: ReactNode;
   afterTitleComponent?: ReactNode;
