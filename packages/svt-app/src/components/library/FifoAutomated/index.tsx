@@ -241,6 +241,10 @@ export default function FifoAutomated() {
         setConfiguring(false);
       }
 
+      if(activeStep === 0 && newItems.length){
+        setActiveStep(2);
+        setConfiguring(false)
+      }
       setMutating(false);
     },
     onError: (res: any) => {
