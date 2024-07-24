@@ -14,6 +14,13 @@
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
   },
+  "BalanceWidget":{
+    "FiatBalances": "Fiat Balances",
+    "CryptoBalances": "Crypto Balances",
+    "Currency": "CURRENCY",
+    "Coin": "COIN",
+    "Qty": "QUANTITY"
+  },
   "CustomFilterBuilder": {
     "DeleteDialogTitle": "Delete filter",
     "ApplyFilter": "Apply filter",
