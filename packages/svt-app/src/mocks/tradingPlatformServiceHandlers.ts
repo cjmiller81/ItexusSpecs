@@ -159,7 +159,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     const response: FifoStrategyListResponse = {
       fifoStrategyList_: mockState.strategies
     }
-    return HttpResponse.json(JSON.stringify(response))
+    return HttpResponse.json(response)
   }),
 
   http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/start`, ({ params }) => {

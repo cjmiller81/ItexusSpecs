@@ -60,7 +60,7 @@ export default function AutomationTabs({ capitalAllocation, onAddStrategy, tabs,
     <Box
       sx={{ width: "100%", border: "2px solid #4156be", borderRadius: "6px" }}
     >
-      <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "16px" }}>
+      {/* <Box sx={{ borderBottom: 1, borderColor: "divider", padding: "16px" }}>
       <Button
           variant="outlined"
           onClick={onAddStrategyClick}
@@ -69,7 +69,7 @@ export default function AutomationTabs({ capitalAllocation, onAddStrategy, tabs,
         >
           {"+ Add Strategy"}
         </Button>
-      </Box>
+      </Box> */}
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
