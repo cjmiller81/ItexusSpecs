@@ -3,10 +3,10 @@ import { Typography } from "@mui/material";
 import { ColumnDefResolved } from "@tanstack/react-table";
 import { BalanceModel } from "./BalanceModel";
 
-export const cryptoCoinsColumns: ColumnDefResolved<BalanceModel>[] = [
+export const fiatCoinsColumns: ColumnDefResolved<BalanceModel>[] = [
   {
     accessorKey: "name",
-    header: i18n.t("Coin", { ns: "BalanceWidget" }),
+    header: i18n.t("Currency", { ns: "BalanceWidget" }),
     minSize: 40,
     maxSize: 40,
     cell: cell => (

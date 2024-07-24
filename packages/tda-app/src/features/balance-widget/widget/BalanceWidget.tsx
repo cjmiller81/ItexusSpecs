@@ -8,6 +8,7 @@ import { TableHeader } from "./TableHeader";
 import { TableSecondary } from "./TableSecondary";
 import { Stack } from "@mui/system";
 import { cryptoBalances } from "../mocks/cryptoBalances";
+import { fiatCoinsColumns } from "features/balance-widget/fiatCoinsColumns";
 
 export type BalanceWidgetProps = {
   cryptoCurrencies: BalanceModel[];
@@ -31,7 +32,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
   return (
     <Stack
       spacing={2}
-      width={theme => theme.spacing(20)}
+      width={theme => theme.spacing(24)}
       {...props}>
       <DenseTable
         isOpen={cryptoOpen}
@@ -55,13 +56,13 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
 
       <DenseTable
         isOpen={fiatOpen}
-        columns={cryptoCoinsColumns}
+        columns={fiatCoinsColumns}
         data={fiatCurrencies}
         secondary={
           <TableSecondary
             data={fiatCurrencies}
             fileName="fiat.csv"
-            columns={cryptoCoinsColumns}
+            columns={fiatCoinsColumns}
           />
         }
         title={

@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CryptoBalance } from "components/CryptoBalance";
 import { FiatBalance } from "components/FiatBalance";
+import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export default function ProfilePage() {
   const { t } = useTranslation("ProfilePage");
@@ -168,13 +169,6 @@ export default function ProfilePage() {
       });
   };
 
-  const mockFiatData = [{ currency: "USD", quantity: "2345000" }];
-  const mockCryptoData = [
-    { coin: "BTC", quantity: "16000" },
-    { coin: "ETH", quantity: "25000" },
-    { coin: "USDT", quantity: "22565000" },
-  ];
-
   return (
     <Grid
       container
@@ -226,16 +220,8 @@ export default function ProfilePage() {
       <Grid
         item
         xs={2}
-        container
-        sx={{ pt: 0, mt: 0 }}
-        direction="column"
-        spacing={2}>
-        <Grid item>
-          <CryptoBalance data={mockCryptoData} />
-        </Grid>
-        <Grid item>
-          <FiatBalance data={mockFiatData} />
-        </Grid>
+        sx={{ pt: 0, mt: 0 }}>
+        <BalanceWidgetSection />
       </Grid>
     </Grid>
   );
