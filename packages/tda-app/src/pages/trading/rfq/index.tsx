@@ -4,9 +4,10 @@ import HistoryDataTable from "@/features/trading/rfq/history-data-table/HistoryD
 import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
 import { fetchExecutionHistoryData } from "@/features/trading/rfq/slices/rfqSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export const accountNumber = "EC_TEST";
 
@@ -37,47 +38,98 @@ export default function SpotRFQPage() {
   };
 
   return (
-    <Stack alignItems="center">
-      <Typography
-        variant="h5"
-        noWrap
-        align="center">
-        Request for Quote Portal
-      </Typography>
-      <Typography
-        variant="body2"
-        align="center">
-        Click Initiate RFQ to instantly receive a quote
-      </Typography>
+    <Grid
+      container
+      spacing={3}
+      justifyContent="center"
+      alignItems="center"
+      direction="column">
+      <Grid
+        item
+        xs={12}>
+        <Typography
+          variant="h5"
+          noWrap
+          align="center">
+          Request for Quote Portal
+        </Typography>
+        <Typography
+          variant="body2"
+          align="center">
+          Click Initiate RFQ to instantly receive a quote
+        </Typography>
+      </Grid>
 
-      <Stack sx={{ width: "50%", minWidth: "500px", mt: 3 }}>
-        <CurrencyDropdown
-          mt={1}
-          symbol1={symbol1}
-          symbol2={symbol2}
-          pairs={pairs}
-          onSymbol1Change={symbol => setSymbol1(symbol)}
-          onSymbol2Change={symbol => setSymbol2(symbol)}
-        />
+      <Grid
+        item
+        xs={12}
+        container
+        spacing={3}
+        justifyContent="center">
+        <Grid
+          item
+          xs={12}
+          md={5}
+          container
+          justifyContent="center">
+          <Stack sx={{ width: "100%", minWidth: "500px", mt: 3, ml: 30 }}>
+            <CurrencyDropdown
+              mt={1}
+              symbol1={symbol1}
+              symbol2={symbol2}
+              pairs={pairs}
+              onSymbol1Change={symbol => setSymbol1(symbol)}
+              onSymbol2Change={symbol => setSymbol2(symbol)}
+            />
 
-        <TileSection
-          symbol1={symbol1}
-          symbol2={symbol2}
-          accountNumber={accountNumber}
-          onUpdateHistory={getHistoryData}
-          mt={2}
+            <TileSection
+              symbol1={symbol1}
+              symbol2={symbol2}
+              accountNumber={accountNumber}
+              onUpdateHistory={getHistoryData}
+              mt={2}
+            />
+          </Stack>
+        </Grid>
+
+        <Grid
+          item
+          xs={12}
+          md={2}
+          container
+          alignItems="center"
+          justifyContent="center">
+          <BalanceWidgetSection
+            sx={{
+              top: 0,
+              "@media (min-width: 1022px)": {
+                position: "absolute",
+                right: "-70px",
+              },
+              "@media (max-width: 1022px)": {
+                position: "relative",
+                right: "0",
+              },
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      <Grid
+        item
+        xs={5}
+        container
+        justifyContent="center">
+        <HistoryDataTable
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromDateChange={setFromDate}
+          onToDateChange={setToDate}
+          mt={5}
+          rows={historyData}
+          handleHistoryRequest={handleHistoryRequest}
         />
-      </Stack>
-      <HistoryDataTable
-        sx={{ width: "100%" }}
-        fromDate={fromDate}
-        toDate={toDate}
-        onFromDateChange={setFromDate}
-        onToDateChange={setToDate}
-        mt={5}
-        rows={historyData}
-        handleHistoryRequest={handleHistoryRequest}
-      />
-    </Stack>
+      </Grid>
+    </Grid>
   );
 }

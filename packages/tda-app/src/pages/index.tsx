@@ -1,6 +1,4 @@
 import { Grid } from "@mui/material";
-import { CryptoBalance } from "components/CryptoBalance";
-import { FiatBalance } from "components/FiatBalance";
 import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export default function HomePage() {

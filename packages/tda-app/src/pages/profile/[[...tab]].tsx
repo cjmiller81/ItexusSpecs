@@ -11,8 +11,6 @@ import { profileService, useOry } from "components";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CryptoBalance } from "components/CryptoBalance";
-import { FiatBalance } from "components/FiatBalance";
 import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export default function ProfilePage() {
@@ -221,7 +219,12 @@ export default function ProfilePage() {
         item
         xs={2}
         sx={{ pt: 0, mt: 0 }}>
-        <BalanceWidgetSection />
+        <BalanceWidgetSection
+          sx={{
+            position: "absolute",
+            right: "-70px",
+          }}
+        />
       </Grid>
     </Grid>
   );
