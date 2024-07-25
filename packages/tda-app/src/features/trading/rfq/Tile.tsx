@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, Card, TextField, Typography, useTheme } from "@mui/material";
 import { BoxProps, Stack, styled } from "@mui/system";
 import { Status } from "components";
@@ -42,33 +43,53 @@ const Tile: React.FC<TileProps> = ({
   ...props
 }) => {
   const theme = useTheme();
+  const [handleAmount, setAmount] = useState("1,000");
 
   const customFormatNumber = value => {
-    let str = value.toString().replace(/[^0-9]/g, "");
+    let str = value.toString().replace(/[^0-9.]/g, "");
 
     if (str === "") {
       return "0";
     }
 
-    if (str.length > 3) {
-      str = str[0] + "," + str.slice(1);
-    }
+    let [integerPart, decimalPart] = str.split(".");
 
-    if (str.length > 5) {
-      str = str.slice(0, 5) + "." + str.slice(5);
-    }
+    integerPart = integerPart.replace(/^0+/, "") || "0";
 
-    if (str.includes(".")) {
-      let [integerPart, decimalPart] = str.split(".");
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    if (decimalPart !== undefined) {
       decimalPart = decimalPart.slice(0, 5);
       str = `${integerPart}.${decimalPart}`;
+    } else {
+      str = integerPart;
     }
 
     return str;
   };
 
-  const handleAmountChange = e => {
-    onAmountChange(e.target.value);
+  const handleAmountChange = event => {
+    let value = event.target.value;
+
+    let [integerPart, decimalPart] = value.split(".");
+
+    if (decimalPart !== undefined && decimalPart.length > 5) {
+      decimalPart = decimalPart.slice(0, 5);
+      value = `${integerPart}.${decimalPart}`;
+    }
+
+    let formattedValue = customFormatNumber(value);
+
+    setAmount(formattedValue);
+    onAmountChange(parseFloat(formattedValue.replace(/,/g, ""))); // Pass the raw number without commas
+  };
+
+  const handleBlur = event => {
+    let formattedValue = customFormatNumber(event.target.value);
+    if (formattedValue.endsWith(".")) {
+      formattedValue = formattedValue.slice(0, -1);
+    }
+    setAmount(formattedValue);
   };
 
   return (
@@ -127,11 +148,12 @@ const Tile: React.FC<TileProps> = ({
             direction="row"
             gap={theme => theme.spacing(1)}>
             <ContrastTextField
-              label={"USDT"}
+              label={symbol1 ?? "USDT"}
               placeholder="1,000.000"
               disabled={rfqButtonState !== "requiring"}
-              value={customFormatNumber(amount)}
+              value={handleAmount}
               onChange={handleAmountChange}
+              onBlur={handleBlur}
             />
           </Stack>
           <ProgressFooter

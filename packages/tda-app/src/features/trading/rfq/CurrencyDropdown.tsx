@@ -1,14 +1,14 @@
-import { FC, useEffect } from "react"
-import i18next from "@/libs/i18n/i18n"
-import { Autocomplete, AutocompleteProps, Stack, StackProps, TextField, Typography } from "@mui/material"
-import { CurrencyPair } from "@/api/rfq-api/models/CurrencyPair"
+import { FC, useEffect } from "react";
+import i18next from "@/libs/i18n/i18n";
+import { Autocomplete, AutocompleteProps, Stack, StackProps, TextField, Typography } from "@mui/material";
+import { CurrencyPair } from "@/api/rfq-api/models/CurrencyPair";
 
 interface CurrencyDropdownProps extends StackProps {
-  onSymbol1Change: (newSymbol: string | null) => void
-  onSymbol2Change: (newSymbol: string | null) => void
-  pairs: CurrencyPair[]
-  symbol1: string | null
-  symbol2: string | null
+  onSymbol1Change: (newSymbol: string | null) => void;
+  onSymbol2Change: (newSymbol: string | null) => void;
+  pairs: CurrencyPair[];
+  symbol1: string | null;
+  symbol2: string | null;
 }
 
 export default function CurrencyDropdown({
@@ -19,16 +19,16 @@ export default function CurrencyDropdown({
   pairs,
   ...props
 }: CurrencyDropdownProps) {
-  const leftOptions: string[] = [...new Set(pairs.map<string>(pair => pair.symbol1))]
+  const leftOptions: string[] = [...new Set(pairs.map<string>(pair => pair.symbol1))];
   const rightOptions: string[] = symbol1
     ? [...new Set(pairs.filter(pair => pair.symbol1 === symbol1).map(pair => pair.symbol2))]
-    : []
+    : [];
 
   useEffect(() => {
     if (symbol2 && !pairs.some(pair => pair.symbol1 === symbol1 && pair.symbol2 === symbol2)) {
-      onSymbol2Change(null)
+      onSymbol2Change(null);
     }
-  }, [symbol1])
+  }, [symbol1]);
 
   return (
     <Stack {...props}>
@@ -51,12 +51,12 @@ export default function CurrencyDropdown({
         />
       </Stack>
     </Stack>
-  )
+  );
 }
 
 type AutocomleteSectionProps = Omit<AutocompleteProps<string, false, false, true>, "renderInput"> & {
-  onValueChange: (value: string | null) => void
-}
+  onValueChange: (value: string | null) => void;
+};
 
 const AutocomleteSection: FC<AutocomleteSectionProps> = ({ onValueChange, ...props }) => {
   return (
@@ -73,5 +73,5 @@ const AutocomleteSection: FC<AutocomleteSectionProps> = ({ onValueChange, ...pro
       )}
       {...props}
     />
-  )
-}
+  );
+};
