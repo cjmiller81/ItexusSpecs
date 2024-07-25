@@ -34,7 +34,7 @@ export default function MarketCapWeightedPage() {
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.icons)
   const dispatch = useAppDispatch()
 
-  const { tokensCount, totalCapital, weight, tableData } = useAppSelector(
+  const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.MarketCapWeightedModeling,
   )
 
@@ -63,7 +63,8 @@ export default function MarketCapWeightedPage() {
         }}
         weighted={weight * 100}
         capital={totalCapital}
-        tokens={tokensCount}
+        maxTokens={prefilteredData.length}
+        tokens={tokensCount || 0}
         tableAssets={tableData}
         title={t("IndexModeling")}
       />
