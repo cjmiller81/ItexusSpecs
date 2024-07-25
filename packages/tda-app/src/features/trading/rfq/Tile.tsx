@@ -81,7 +81,7 @@ const Tile: React.FC<TileProps> = ({
     let formattedValue = customFormatNumber(value);
 
     setAmount(formattedValue);
-    onAmountChange(parseFloat(formattedValue.replace(/,/g, ""))); // Pass the raw number without commas
+    onAmountChange(parseFloat(formattedValue.replace(/,/g, "")));
   };
 
   const handleBlur = event => {
