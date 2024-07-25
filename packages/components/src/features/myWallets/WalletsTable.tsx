@@ -1,22 +1,20 @@
 import { darken, lighten, styled } from "@mui/material/styles"
 import { BasicTable } from "../../components/DataDisplay"
 
-export const StyledWalletsTable:any = styled(BasicTable)(({ theme }) => ({
+export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
-  height: 500,
+  minHeight: 300,
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
-    overflowX: "hidden",
+    overflowY: "auto !important",
   },
   "& .MuiDataGrid-main": {
-    height: "444px",
+    height: "auto",
+    maxHeight: "300px",
   },
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
-  },
-  "& .MuiDataGrid-virtualScrollerContent": {
-    overflow: "hidden",
   },
   "& .MuiDataGrid-row": {
     maxHeight: "1000px !important",
