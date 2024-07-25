@@ -11,6 +11,39 @@ const mockState :{
 } = {
   connected: false,
   strategies: [],
+/*
+  connected: true,
+  strategies: [
+    {
+      active: true,
+      atrPeriod: 14,
+      capitalAllocation: 0,
+      entryOrderId: "",
+      hasEntryOrderId: false,
+      entryOrderStatus: "",
+      hasEntryOrderStatus: false,
+      exchange: "Tastytrade",
+      exchangeAccountNumber: "5WU50943",
+      masterSymbol: "AAPL",
+      masterSymbolAssetType: "Future",
+      stopOrderId: "",
+      hasStopOrderId: false,
+      stopOrderStatus: "",
+      hasStopOrderStatus: false,
+      targetOrderId: "",
+      hasTargetOrderId: false,
+      targetOrderStatus: "",
+      hasTargetOrderStatus: false,
+      tradeQty: {
+        units: 1,
+        nanos: 0
+      },
+      tradeSymbol: "AAPL",
+      tradeSymbolAssetType: "Future",
+      userId: ""
+    }
+  ],
+*/
   status: {
     exchangeUsername: "benec",
     accountNumber: "5WU50943",
