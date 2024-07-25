@@ -1,14 +1,14 @@
-import { Box, Typography } from "@mui/material"
-import Button from "@mui/material/Button"
-import LinearProgress from "@mui/material/LinearProgress"
-import { BoxProps } from "@mui/system"
-import { FC } from "react"
+import { Box, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import LinearProgress from "@mui/material/LinearProgress";
+import { BoxProps } from "@mui/system";
+import { FC } from "react";
 
 type ProgressFooterProps = {
-  progress: number
-  secondsLeft: number
-  handleReject: () => void
-}
+  progress: number;
+  secondsLeft: number;
+  handleReject: () => void;
+};
 
 export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
   secondsLeft,
@@ -17,7 +17,7 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
   sx,
   ...props
 }) => {
-  const isInProgress = secondsLeft !== 0
+  const isInProgress = secondsLeft !== 0;
   return (
     <Box
       sx={{
@@ -34,13 +34,14 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
           {isInProgress && `${secondsLeft.toFixed()} seconds`}
         </Typography>
       </Box>
-
       <Box sx={{ flexGrow: 1, width: 500 }}>
-        <LinearProgress
-          sx={{ marginTop: 0, borderRadius: 50 }}
-          variant="determinate"
-          value={progress}
-        />
+        {isInProgress && (
+          <LinearProgress
+            sx={{ marginTop: 0, borderRadius: 50 }}
+            variant="determinate"
+            value={progress}
+          />
+        )}
       </Box>
       <Box
         sx={{ pb: "2px", pl: 2 }}
@@ -48,5 +49,5 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
         {isInProgress && <Button onClick={handleReject}>Reject</Button>}
       </Box>
     </Box>
-  )
-}
+  );
+};
