@@ -34,7 +34,6 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
           {isInProgress && `${secondsLeft.toFixed()} seconds`}
         </Typography>
       </Box>
-
       <Box sx={{ flexGrow: 1, width: 500 }}>
         {isInProgress && (
           <LinearProgress
