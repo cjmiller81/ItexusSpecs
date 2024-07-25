@@ -86,7 +86,7 @@ export default function MarketCapWeightedPage() {
           lookupOptions={lookUpOptions}
           maxChartValue={maxChartValue}
           minChartValue={minChartValue}
-          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({}))}
+          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({tokensAllocation: tokensCount || 0}))}
           onToDateChange={date => dispatch(setToDate({ toDate: date }))}
           onFromDateChange={date => dispatch(setFromDate({ fromDate: date }))}
           onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
