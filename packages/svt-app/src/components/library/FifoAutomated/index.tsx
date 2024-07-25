@@ -243,7 +243,11 @@ export default function FifoAutomated() {
 
       if(activeStep === 0 && newItems.length){
         setActiveStep(2);
-        setConfiguring(false)
+        setConfiguring(false);
+        setStrategyAccountConnectState({
+          ...strategyAccountConnectState,
+          accountNumber: newItems[0].account,
+        });
       }
       setMutating(false);
     },
