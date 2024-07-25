@@ -174,8 +174,9 @@ export default function ProfilePage() {
       <Grid
         item
         container
-        spacing={3}
-        xs={10}>
+        xs={12}
+        md={10}
+        spacing={3}>
         <Grid
           item
           xs={12}
@@ -217,14 +218,15 @@ export default function ProfilePage() {
       </Grid>
       <Grid
         item
-        xs={2}
-        sx={{ pt: 0, mt: 0 }}>
-        <BalanceWidgetSection
-          sx={{
-            position: "absolute",
-            right: "-70px",
-          }}
-        />
+        xs={12}
+        md={2}
+        sx={{
+          pt: { xs: 2, md: 0 },
+          mt: { xs: 2, md: 0 },
+          right: { md: "-60px" },
+          top: { md: 0 },
+        }}>
+        <BalanceWidgetSection />
       </Grid>
     </Grid>
   );

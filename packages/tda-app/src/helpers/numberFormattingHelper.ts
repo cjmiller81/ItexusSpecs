@@ -1,4 +1,4 @@
-const customFormatNumber = value => {
+const numberFormattingHelper = value => {
   let str = value.toString().replace(/[^0-9]/g, "");
 
   if (str === "") {
@@ -22,4 +22,4 @@ const customFormatNumber = value => {
   return str;
 };
 
-export default customFormatNumber;
+export default numberFormattingHelper;

@@ -16,7 +16,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import customFormatNumber from "helpers/customFormatNumber";
+import numberFormattingHelper from "helpers/numberFormattingHelper";
 
 interface ReactTableProps<T> extends Omit<MainCardProps, "children"> {
   columns: ColumnDefResolved<T>[];
@@ -78,7 +78,7 @@ export default function DenseTable<T>({
                   {row.getVisibleCells().map(cell => {
                     const cellContext = cell.getContext();
                     const value = cellContext.getValue();
-                    const formattedValue = cell.column.id === "qty" ? customFormatNumber(value) : value;
+                    const formattedValue = cell.column.id === "qty" ? numberFormattingHelper(value) : value;
                     return (
                       <TableCell
                         key={cell.id}

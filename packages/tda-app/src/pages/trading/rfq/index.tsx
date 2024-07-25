@@ -63,16 +63,14 @@ export default function SpotRFQPage() {
       <Grid
         item
         xs={12}
-        container
         spacing={3}
         justifyContent="center">
         <Grid
           item
           xs={12}
           md={5}
-          container
           justifyContent="center">
-          <Stack sx={{ width: "100%", minWidth: "500px", mt: 3, ml: 30 }}>
+          <Stack sx={{ width: "100%", minWidth: "500px", mt: 3, ml: 5 }}>
             <CurrencyDropdown
               mt={1}
               symbol1={symbol1}
@@ -96,7 +94,6 @@ export default function SpotRFQPage() {
           item
           xs={12}
           md={2}
-          container
           alignItems="center"
           justifyContent="center">
           <BalanceWidgetSection
@@ -118,7 +115,6 @@ export default function SpotRFQPage() {
       <Grid
         item
         xs={5}
-        container
         justifyContent="center">
         <HistoryDataTable
           fromDate={fromDate}
