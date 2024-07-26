@@ -1,24 +1,26 @@
-import { openSnackbar } from "@/api/snackbar"
-import { setOpenedItem } from "@/features/nav-bar/navBarSlice"
-import { ChangePasswordSection } from "@/features/profile/ChangePasswordSection"
-import ProfileCard from "@/features/profile/ProfileCard"
-import ProfileEditSection, { ProfileModel } from "@/features/profile/ProfileEditSection"
-import { TotpSection } from "@/features/profile/TotpSection"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { SnackbarProps } from "@/types/snackbar"
-import { Grid } from "@mui/material"
-import { profileService, useOry } from "components"
-import { useRouter } from "next/router"
-import { useEffect, useRef, useState } from "react"
-import { useTranslation } from "react-i18next"
-export default function ProfilePage() {
-  const { t } = useTranslation("ProfilePage")
-  const router = useRouter()
-  const routeParams = (router.query.tab as string[]) || undefined
+import { openSnackbar } from "@/api/snackbar";
+import { setOpenedItem } from "@/features/nav-bar/navBarSlice";
+import { ChangePasswordSection } from "@/features/profile/ChangePasswordSection";
+import ProfileCard from "@/features/profile/ProfileCard";
+import ProfileEditSection, { ProfileModel } from "@/features/profile/ProfileEditSection";
+import { TotpSection } from "@/features/profile/TotpSection";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { SnackbarProps } from "@/types/snackbar";
+import { Grid } from "@mui/material";
+import { profileService, useOry } from "components";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
-  const tab = routeParams && (router.query.tab as string[]).length ? routeParams[0] : "personal"
-  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
-  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
+export default function ProfilePage() {
+  const { t } = useTranslation("ProfilePage");
+  const router = useRouter();
+  const routeParams = (router.query.tab as string[]) || undefined;
+
+  const tab = routeParams && (router.query.tab as string[]).length ? routeParams[0] : "personal";
+  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false);
+  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false);
   const {
     onUpdateAvatar,
     onUpdateProfile,
@@ -27,24 +29,24 @@ export default function ProfilePage() {
     settingsFlow,
     createSettingsFow,
     onChangePassword,
-  } = useOry()
-  const [codeLoading, setCodeLoading] = useState(false)
-  const [newPasswordLoading, setNewPasswordLoading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const dispatch = useAppDispatch()
-  const openedItem = useAppSelector(state => state.ui.openedItem)
+  } = useOry();
+  const [codeLoading, setCodeLoading] = useState(false);
+  const [newPasswordLoading, setNewPasswordLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
+  const openedItem = useAppSelector(state => state.ui.openedItem);
   useEffect(() => {
-    if (settingsFlow) return
-    createSettingsFow().then()
-  }, [])
+    if (settingsFlow) return;
+    createSettingsFow().then();
+  }, []);
 
   const onAvatarChanged = (file: File) => {
-    setIsAvatarUploading(true)
+    setIsAvatarUploading(true);
     profileService
       .uploadAvatart(file)
       .then(url => onUpdateAvatar(url))
       .catch((error: any) => {
-        const message = error?.response?.data?.error?.reason ?? t("AvatarUploadingError")
+        const message = error?.response?.data?.error?.reason ?? t("AvatarUploadingError");
         openSnackbar({
           open: true,
           message: message,
@@ -52,17 +54,17 @@ export default function ProfilePage() {
           alert: {
             color: "error",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
-      .finally(() => setIsAvatarUploading(false))
-  }
+      .finally(() => setIsAvatarUploading(false));
+  };
 
   const focusInput = () => {
-    inputRef.current?.focus()
-  }
+    inputRef.current?.focus();
+  };
 
   const onChangeDetails = ({ firstName, lastName }: ProfileModel) => {
-    setIsProfileDetailsUpdating(true)
+    setIsProfileDetailsUpdating(true);
     onUpdateProfile(firstName, lastName)
       .then()
       .catch((error: any) => {
@@ -72,13 +74,13 @@ export default function ProfilePage() {
           alert: {
             color: "error",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
-      .finally(() => setIsProfileDetailsUpdating(false))
-  }
+      .finally(() => setIsProfileDetailsUpdating(false));
+  };
 
   const onSubmitCode = async (code: string) => {
-    setCodeLoading(true)
+    setCodeLoading(true);
     onTotpSubmit(code)
       .then(() => {
         openSnackbar({
@@ -88,10 +90,10 @@ export default function ProfilePage() {
           alert: {
             color: "success",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
       .catch(error => {
-        const message = error?.response?.data?.error?.reason ?? t("invalidCode", { ns: "ErrorMessages" })
+        const message = error?.response?.data?.error?.reason ?? t("invalidCode", { ns: "ErrorMessages" });
         openSnackbar({
           open: true,
           message: message,
@@ -99,19 +101,19 @@ export default function ProfilePage() {
           alert: {
             color: "error",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
       .finally(() => {
-        setCodeLoading(false)
-      })
-  }
+        setCodeLoading(false);
+      });
+  };
 
   useEffect(() => {
-    if (tab !== openedItem) dispatch(setOpenedItem({ openedItem: tab}));
+    if (tab !== openedItem) dispatch(setOpenedItem({ openedItem: tab }));
   }, [tab]);
 
   const onTotpUnlinkHandle = async () => {
-    setCodeLoading(true)
+    setCodeLoading(true);
     onTotpUnlink()
       .then(() => {
         openSnackbar({
@@ -120,25 +122,25 @@ export default function ProfilePage() {
           alert: {
             color: "success",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
       .catch(error => {
-        const message = error?.response?.data?.error?.reason ?? t("invalidCode", { ns: "ErrorMessages" })
+        const message = error?.response?.data?.error?.reason ?? t("invalidCode", { ns: "ErrorMessages" });
         openSnackbar({
           open: true,
           message: message,
           alert: {
             color: "error",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
       .finally(() => {
-        setCodeLoading(false)
-      })
-  }
+        setCodeLoading(false);
+      });
+  };
 
   const onSubmitNewPassword = async (passsword: string) => {
-    setNewPasswordLoading(true)
+    setNewPasswordLoading(true);
     onChangePassword(passsword)
       .then(() => {
         openSnackbar({
@@ -147,10 +149,10 @@ export default function ProfilePage() {
           alert: {
             color: "success",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
       .catch(error => {
-        const message = error?.response?.data?.error?.reason ?? t("invalidPasswordFormat", { ns: "ErrorMessages" })
+        const message = error?.response?.data?.error?.reason ?? t("invalidPasswordFormat", { ns: "ErrorMessages" });
         openSnackbar({
           open: true,
           message: message,
@@ -158,12 +160,12 @@ export default function ProfilePage() {
           alert: {
             color: "error",
           },
-        } as SnackbarProps)
+        } as SnackbarProps);
       })
       .finally(() => {
-        setNewPasswordLoading(false)
-      })
-  }
+        setNewPasswordLoading(false);
+      });
+  };
 
   return (
     <Grid
@@ -171,42 +173,61 @@ export default function ProfilePage() {
       spacing={3}>
       <Grid
         item
+        container
         xs={12}
-        md={3}>
-        <ProfileCard
-          isAvatarLoading={isAvatarUploading}
-          avatarLoading={isAvatarUploading}
-          onChangeAvatar={onAvatarChanged}
-          focusInput={focusInput}
-        />
+        md={10}
+        spacing={3}>
+        <Grid
+          item
+          xs={12}
+          md={3}>
+          <ProfileCard
+            isAvatarLoading={isAvatarUploading}
+            avatarLoading={isAvatarUploading}
+            onChangeAvatar={onAvatarChanged}
+            focusInput={focusInput}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={9}>
+          {tab === "details" && (
+            <ProfileEditSection
+              isProfileUpdating={isProfileDetailsUpdating}
+              onProfileUpdated={onChangeDetails}
+            />
+          )}
+          {tab === "password" && (
+            <>
+              <ChangePasswordSection
+                isLoading={newPasswordLoading}
+                settingsFlow={settingsFlow}
+                onChangePassword={onSubmitNewPassword}
+              />
+              <TotpSection
+                onSubmitCode={onSubmitCode}
+                onTotpUnlinkHandle={onTotpUnlinkHandle}
+                settingsFlow={settingsFlow}
+                isCodeSubmitting={codeLoading}
+                sx={{ mt: 2 }}
+              />
+            </>
+          )}
+        </Grid>
       </Grid>
       <Grid
         item
         xs={12}
-        md={9}>
-        {tab === "details" && (
-          <ProfileEditSection
-            isProfileUpdating={isProfileDetailsUpdating}
-            onProfileUpdated={onChangeDetails}
-          />
-        )}
-        {tab === "password" && (
-          <>
-            <ChangePasswordSection
-              isLoading={newPasswordLoading}
-              settingsFlow={settingsFlow}
-              onChangePassword={onSubmitNewPassword}
-            />
-            <TotpSection
-              onSubmitCode={onSubmitCode}
-              onTotpUnlinkHandle={onTotpUnlinkHandle}
-              settingsFlow={settingsFlow}
-              isCodeSubmitting={codeLoading}
-              sx={{ mt: 2 }}
-            />
-          </>
-        )}
+        md={2}
+        sx={{
+          pt: { xs: 2, md: 0 },
+          mt: { xs: 2, md: 0 },
+          right: { md: "-60px" },
+          top: { md: 0 },
+        }}>
+        <BalanceWidgetSection />
       </Grid>
     </Grid>
-  )
+  );
 }
