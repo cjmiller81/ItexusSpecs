@@ -44,6 +44,7 @@ export const TableHeader = ({
   };
 
   const handleDateChange = (
+    // @ts-ignore
     newValue: DateRange<dayjs.Dayjs>,
     shortcuts: PickerChangeHandlerContext<DateRangeValidationError>,
   ) => {
@@ -62,6 +63,7 @@ export const TableHeader = ({
     }
   };
 
+  // @ts-ignore
   const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
     {
       label: "This Week",
@@ -134,6 +136,7 @@ export const TableHeader = ({
                   actionBar: { actions: [] },
                 }}
                 calendars={2}
+                // @ts-ignore
                 value={[dayjs(fromDate), dayjs(toDate)]}
                 onChange={(newValue, selectedShortcut) => handleDateChange(newValue, selectedShortcut)}
               />

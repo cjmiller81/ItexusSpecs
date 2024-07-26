@@ -1,13 +1,11 @@
-import { Box, Card, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Card, Typography, useTheme } from "@mui/material";
 import { BoxProps, Stack, styled } from "@mui/system";
-import { Status } from "components";
+import { DecimalInput, Status } from "components";
 import * as React from "react";
 import { BuySellCell } from "./BuySellCell";
 import { ProgressFooter } from "./ProgressBar";
 import { RfqButton, RfqStage } from "./RfqButton";
 import CircularWithPath from "../../../../src/components/@extended/progress/CircularWithPath";
-
-import numberFormattingHelper from "../../../helpers/numberFormattingHelper";
 
 type TileProps = BoxProps & {
   symbol1: string | null;
@@ -44,10 +42,6 @@ const Tile: React.FC<TileProps> = ({
   ...props
 }) => {
   const theme = useTheme();
-
-  const handleAmountChange = e => {
-    onAmountChange(e.target.value);
-  };
 
   return (
     <Box {...props}>
@@ -105,11 +99,12 @@ const Tile: React.FC<TileProps> = ({
             direction="row"
             gap={theme => theme.spacing(1)}>
             <ContrastTextField
-              label={"USDT"}
+              label={symbol1 ?? "USDT"}
               placeholder="1,000.000"
               disabled={rfqButtonState !== "requiring"}
-              value={numberFormattingHelper(amount)}
-              onChange={handleAmountChange}
+              value={amount}
+              onChange={onAmountChange}
+              maxDecimals={5}
             />
           </Stack>
           <ProgressFooter
@@ -124,7 +119,7 @@ const Tile: React.FC<TileProps> = ({
   );
 };
 
-const ContrastTextField = styled(TextField)(({ theme }) => ({
+const ContrastTextField = styled(DecimalInput)(({ theme }) => ({
   "& .MuiInputLabel-root": {
     left: "50%",
     transform: "translateX(-50%)",
