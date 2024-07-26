@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Box, Card, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Card, Typography, useTheme } from "@mui/material";
 import { BoxProps, Stack, styled } from "@mui/system";
-import { Status } from "components";
+import { DecimalInput, Status } from "components";
 import * as React from "react";
 import { BuySellCell } from "./BuySellCell";
 import { ProgressFooter } from "./ProgressBar";
@@ -43,54 +42,6 @@ const Tile: React.FC<TileProps> = ({
   ...props
 }) => {
   const theme = useTheme();
-  const [handleAmount, setAmount] = useState("1,000");
-
-  const customFormatNumber = value => {
-    let str = value.toString().replace(/[^0-9.]/g, "");
-
-    if (str === "") {
-      return "0";
-    }
-
-    let [integerPart, decimalPart] = str.split(".");
-
-    integerPart = integerPart.replace(/^0+/, "") || "0";
-
-    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-    if (decimalPart !== undefined) {
-      decimalPart = decimalPart.slice(0, 5);
-      str = `${integerPart}.${decimalPart}`;
-    } else {
-      str = integerPart;
-    }
-
-    return str;
-  };
-
-  const handleAmountChange = event => {
-    let value = event.target.value;
-
-    let [integerPart, decimalPart] = value.split(".");
-
-    if (decimalPart !== undefined && decimalPart.length > 5) {
-      decimalPart = decimalPart.slice(0, 5);
-      value = `${integerPart}.${decimalPart}`;
-    }
-
-    let formattedValue = customFormatNumber(value);
-
-    setAmount(formattedValue);
-    onAmountChange(parseFloat(formattedValue.replace(/,/g, "")));
-  };
-
-  const handleBlur = event => {
-    let formattedValue = customFormatNumber(event.target.value);
-    if (formattedValue.endsWith(".")) {
-      formattedValue = formattedValue.slice(0, -1);
-    }
-    setAmount(formattedValue);
-  };
 
   return (
     <Box {...props}>
@@ -151,9 +102,9 @@ const Tile: React.FC<TileProps> = ({
               label={symbol1 ?? "USDT"}
               placeholder="1,000.000"
               disabled={rfqButtonState !== "requiring"}
-              value={handleAmount}
-              onChange={handleAmountChange}
-              onBlur={handleBlur}
+              value={amount}
+              onChange={onAmountChange}
+              maxDecimals={5}
             />
           </Stack>
           <ProgressFooter
@@ -168,7 +119,7 @@ const Tile: React.FC<TileProps> = ({
   );
 };
 
-const ContrastTextField = styled(TextField)(({ theme }) => ({
+const ContrastTextField = styled(DecimalInput)(({ theme }) => ({
   "& .MuiInputLabel-root": {
     left: "50%",
     transform: "translateX(-50%)",
