@@ -2,12 +2,12 @@ import { TextField, TextFieldProps } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import { AppInputProps } from "./AppInputProps";
 
-type AppInputPropsOverride = Omit<AppInputProps, "onChange" | "value"> & {
+type AppInputPropsOverride = AppInputProps & {
   onChange?: (value: number) => void;
   value: number;
 };
 
-export type DecimalInputProps = Omit<TextFieldProps, "onChange"> &
+export type DecimalInputProps = Omit<TextFieldProps, "onChange" | "value"> &
   AppInputPropsOverride & {
     max?: number;
     maxDecimals?: number;
@@ -29,7 +29,7 @@ export const DecimalInput = ({
   useEffect(() => {
       inputRef.current!.value = formatValue(value);
   }, [value]);
-  
+
   const getCursor = () => inputRef!.current!.selectionStart || 0;
   const setCursor = (position: number) => inputRef.current?.setSelectionRange(position, position);
 

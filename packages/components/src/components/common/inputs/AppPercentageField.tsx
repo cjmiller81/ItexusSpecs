@@ -7,9 +7,9 @@ export function AppPercentageField({ ...props }: AppNumberInputProps) {
   return (
     <AppNumberField
       {...props}
-      // @ts-ignore
       inputProps={{
         ...inputProps,
+        value: inputProps?.value || 0,
         InputProps: {
           endAdornment: <Percent />,
         },
