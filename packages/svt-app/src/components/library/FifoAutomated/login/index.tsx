@@ -44,7 +44,7 @@ export default function Login({ handleStatusUpdate, state, onChange }: Props) {
           color={ "white" }
           sx={{ marginBottom: "20px", fontWeight: "900" }}
         >
-          Enter Your TastyTrade™ credentials to connect to the IV League Automation
+          ENTER YOUR TASTYTRADE™ CREDENTIALS TO CONNECT TO THE FIFO TRADING SYSTEM
         </Typography>
         <Grid container>
           <Grid item xs={12}>

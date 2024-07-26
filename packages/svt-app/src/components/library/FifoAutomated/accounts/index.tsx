@@ -37,7 +37,7 @@ export default function Accounts({ accountNumber, tableData, onAccountSelected, 
           gutterBottom
           sx={{ marginBottom: "20px", fontWeight: "900" }}
         >
-          Select which Tastytrade account will run the IV League Automation
+          SELECT WHICH TASTYTRADE ACCOUNT WILL RUN THE FIFO TRADING SYSTEM
         </Typography>
         <Grid container>
           <Grid item xs={12}>

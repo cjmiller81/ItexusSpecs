@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ICategory } from "components/src/models/token/ICatigory"
+import { ICoin } from "components/src/models/token/ICoin"
+import { IPlatform } from "components/src/models/token/IPlatform"
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -14,23 +17,20 @@ import DataGridDef, {
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
 import { ExportingEvent } from "devextreme/ui/data_grid"
-import React, { FC, useCallback, useEffect, useRef, useMemo } from "react"
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
-import { IPlatform } from "components/src/models/token/IPlatform"
-import { ICoin } from "components/src/models/token/ICoin"
-import { ICategory } from "components/src/models/token/ICatigory"
 
 export interface IPrefilterTokensTable {
-  loading: boolean
-  onCurrentFilterChange: (object?: object[] | null | undefined) => void
-  chains: IPlatform[]
-  categories: ICategory[]
-  currentFilter?: object[] | null | undefined
-  dataSource: DataSource<ICoin, string>
-  onFilterBuilderOpen: Function
-  onUpdate: (filteredTokenData: ICoin[]) => void
-  onExport: (e: ExportingEvent<ICoin, any>) => void
+  loading: boolean;
+  onCurrentFilterChange: (object?: object[] | null | undefined) => void;
+  chains: IPlatform[];
+  categories: ICategory[];
+  currentFilter?: object[] | null | undefined;
+  dataSourceTokens: ICoin[];
+  onFilterBuilderOpen: Function;
+  onUpdate: (filteredTokenData: ICoin[]) => void;
+  onExport: (e: ExportingEvent<ICoin, any>) => void;
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
@@ -39,49 +39,93 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   chains,
   onUpdate,
   onCurrentFilterChange,
-  dataSource,
+  dataSourceTokens,
   currentFilter,
   onFilterBuilderOpen,
   onExport,
 }) => {
-  const datagrid = React.createRef<DataGridDef<ICoin, string>>()
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const filterPanelText = useRef<Element | null>(null)
+  const [currentSorter, setCurrentSorter] = useState<any>()
+  const allTokensSource = useMemo(
+    () =>
+      new DataSource<ICoin, string>({
+        store: {
+          type: "array",
+          key: "id",
+          data: dataSourceTokens,
+        },
+      }),
+    [dataSourceTokens],
+  );
 
-  const allowedPageSizes = useMemo(() => [5, 10, 20, 50], [])
+  const datagrid = React.createRef<DataGridDef<ICoin, string>>();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const filterPanelText = useRef<Element | null>(null);
+
+  const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
-    const grid = datagrid?.current?.instance
+    const grid = datagrid?.current?.instance;
 
-    if (!grid) return
+    if (!grid) return;
 
-    const filteredDataSource = grid.getDataSource()
-    datagrid?.current?.instance?.filter(currentFilter)
-    await grid.refresh()
-    const prefilteredData = filteredDataSource.items() as ICoin[]
-    onUpdate(prefilteredData)
-  }, [currentFilter, datagrid, onUpdate])
+    datagrid?.current?.instance?.filter(currentFilter);
+    await grid.refresh();
+    const gridFilter = grid.getCombinedFilter(true);
+
+    handleOnUpdate()
+  }, [currentFilter, datagrid, onUpdate]);
+
+  const onSortingChanged = (e) => {
+    const sortedColumns = e.component.getDataSource().sort();
+    setCurrentSorter(sortedColumns);
+  };
 
   useEffect(() => {
-    const grid = datagrid?.current?.instance
-    if (!grid) return
-    updatePrefilteredTokens()
-  }, [currentFilter, datagrid, updatePrefilteredTokens])
+    handleOnUpdate()
+  }, [currentSorter])
+
+  const handleOnUpdate = () => {
+    const dataGrid = datagrid?.current?.instance;
+    if(!dataGrid){
+      return
+    }
+
+    const filter = dataGrid.getCombinedFilter()
+    const allTokensfilteredDataSource =new DataSource<ICoin, string>({
+      paginate: false,
+      filter: filter,
+      store: {
+        type: "array",
+        key: "id",
+        data: dataSourceTokens,
+      },
+    })
+    
+    allTokensfilteredDataSource.filter(filter);
+    allTokensfilteredDataSource.load();
+    onUpdate(allTokensfilteredDataSource.items() as ICoin[])
+  }
+
+  useEffect(() => {
+    const grid = datagrid?.current?.instance;
+    if (!grid) return;
+    updatePrefilteredTokens();
+  }, [currentFilter, datagrid, updatePrefilteredTokens]);
 
   const categoryToFilterItem = (item: string): { text: string; value: string } => {
     return {
       text: item,
       value: item,
-    }
-  }
+    };
+  };
 
-  const categoriesFilterOperations = ["contains", "anyof", "endswith", "=", "startswith"]
+  const categoriesFilterOperations = ["contains", "anyof", "endswith", "=", "startswith"];
 
   const chainsToFilterItem = (item: string): { text: string; value: string } => {
     return {
       text: item,
       value: item,
-    }
-  }
+    };
+  };
 
   const calculateFilterExpression = useCallback(function (
     this: any,
@@ -90,62 +134,73 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     _target: string,
   ): any {
     try {
-      let column = this
+      let column = this;
       if (filterValues) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let selector = (data: any): boolean => {
           let applyOperation = (arg1: string, arg2: string, op: string): boolean => {
-            if (op === "=") return arg1.toUpperCase() === arg2.toUpperCase()
-            if (op === "anyof") return arg1.toUpperCase().includes(arg2.toUpperCase())
-            if (op === "contains") return arg1.toUpperCase().includes(arg2.toUpperCase())
-            if (op === "startswith") return arg1.toUpperCase().startsWith(arg2.toUpperCase())
-            if (op === "endswith") return arg1.toUpperCase().endsWith(arg2.toUpperCase())
+            if (op === "=") return arg1.toUpperCase() === arg2.toUpperCase();
+            if (op === "anyof") return arg1.toUpperCase().includes(arg2.toUpperCase());
+            if (op === "contains") return arg1.toUpperCase().includes(arg2.toUpperCase());
+            if (op === "startswith") return arg1.toUpperCase().startsWith(arg2.toUpperCase());
+            if (op === "endswith") return arg1.toUpperCase().endsWith(arg2.toUpperCase());
 
-            return false
-          }
+            return false;
+          };
 
-          let values = column.calculateCellValue(data)
+          let values = column.calculateCellValue(data);
           return (
             values &&
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             !!values.find((v: any) => applyOperation(v, filterValues, selectedFilterOperation ?? ""))
-          )
-        }
+          );
+        };
 
-        return [selector, "=", true]
+        return [selector, "=", true];
       }
 
-      return column.defaultCalculateFilterExpression.apply(this, arguments)
+      return column.defaultCalculateFilterExpression.apply(this, arguments);
     } catch (err) {
-      console.error("Error on calculateFilterExpression:", err)
+      console.error("Error on calculateFilterExpression:", err);
     }
-  }, [])
+  }, []);
 
-  const onApplyFilter = useCallback((filter: string | any[] | (() => any)) => {
-    onCurrentFilterChange(filter as object[])
-  }, [onCurrentFilterChange])
+  const onApplyFilter = useCallback(
+    (filter: string | any[] | (() => any)) => {
+      onCurrentFilterChange(filter as object[]);
+    },
+    [onCurrentFilterChange],
+  );
 
-  const handleFilterTextClick = useCallback((_event: Event) => {
-    onFilterBuilderOpen()
-  }, [onFilterBuilderOpen])
+  const handleFilterTextClick = useCallback(
+    (_event: Event) => {
+      onFilterBuilderOpen();
+    },
+    [onFilterBuilderOpen],
+  );
 
   const onContentReady = () => {
     if (filterPanelText.current) {
-      filterPanelText.current.removeEventListener("click", handleFilterTextClick)
+      filterPanelText.current.removeEventListener("click", handleFilterTextClick);
     }
 
-    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text")
+    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
-      filterPanelText.current = filterPanelTextDiv
-      filterPanelTextDiv.addEventListener("click", handleFilterTextClick)
+      filterPanelText.current = filterPanelTextDiv;
+      filterPanelTextDiv.addEventListener("click", handleFilterTextClick);
     }
-  }
+  };
 
   return (
     <div ref={containerRef}>
       <DataGridDef<ICoin>
+        onOptionChanged={(e) => {
+          if (e.fullName.startsWith('columns') && e.fullName.endsWith('sortOrder')) {
+            onSortingChanged(e);
+          }
+        }}
         id="prefilter-tokens-table"
-        dataSource={dataSource}
+        dataSource={allTokensSource}
         showBorders={true}
         ref={datagrid}
         allowColumnReordering={true}
@@ -168,7 +223,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
 
         <FilterBuilderPopup
           onShowing={e => {
-            e.cancel = true
+            e.cancel = true;
           }}
         />
 
@@ -386,5 +441,5 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         />
       </DataGridDef>
     </div>
-  )
-}
+  );
+};

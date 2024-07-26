@@ -1,6 +1,6 @@
-import { BasicTable } from "components"
-import { darken, lighten, styled } from "@mui/material/styles"
-export type Period = "daily" | "weekly" | "monthly"
+import { darken, lighten, styled } from "@mui/material/styles";
+import { BasicTable } from "components";
+export type Period = "daily" | "weekly" | "monthly";
 
 export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
@@ -16,19 +16,16 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
   },
-  "& .MuiDataGrid-virtualScrollerContent": {
-    overflow: "hidden",
-  },
   "& .MuiDataGrid-row": {
     maxHeight: "1000px !important",
   },
   ".MuiDataGrid-cell--withRenderer ": {
     maxHeight: "1000px !important",
   },
-  "& .MuiDataGrid-row--editing":{
+  "& .MuiDataGrid-row--editing": {
     border: "solid",
     borderWidth: "1px",
-    borderColor: theme.palette.primary.main
+    borderColor: theme.palette.primary.main,
   },
   "& .MuiDataGrid-cell--editing[data-field=walletName]": {
     border: "solid",
@@ -42,4 +39,4 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   ".MuiDataGrid-withBorderColor": {
     bgColor: "transparent",
   },
-}))
+}));

@@ -1,18 +1,29 @@
-import { styled } from "@mui/material/styles";
+import { Box } from "@mui/system";
 import { GridRow } from "@mui/x-data-grid";
+import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { BasicTable } from "../../components/DataDisplay";
 import { toTableTokensModels } from "../../utils";
 import { getTokenNamesColumns } from "./TokensTableColumnsDefs";
-import SimpleBar from "simplebar-react";
 
 export const ExpandableRow = (props: any) => {
   const rows = toTableTokensModels(props.row.chainAssets);
   return (
-    <>
-      <GridRow {...props}></GridRow>
+    <Box sx={{ overflowX: "auto" }}>
+      <GridRow {...props} />
       {props.isExpanded(props.rowId) && (
-        <SimpleBarStyled style={{ maxHeight: "300px" }}>
-          <StyledTokensTable
+        <Box
+          px={3}
+          py={1}>
+          <BasicTable
+            scrollbarSize={6}
+            sx={{
+              display: "grid",
+              "& .MuiDataGrid-main": {
+                height: "auto",
+                maxHeight: "10000px",
+              },
+              ...tableScrollSx
+            }}
             slots={{
               pagination: () => {
                 return <></>;
@@ -34,27 +45,14 @@ export const ExpandableRow = (props: any) => {
             columns={getTokenNamesColumns()}
             rows={rows}
           />
-        </SimpleBarStyled>
+        </Box>
       )}
-    </>
+    </Box>
   );
 };
 
-const SimpleBarStyled = styled(SimpleBar)(({ theme }) => ({
-  maxHeight: "200px",
-  "& .simplebar-scrollbar": {
-    width: "8px",
-    backgroundColor: theme.palette.grey[500],
+const tableScrollSx = {
+  "& .MuiDataGrid-virtualScroller": {
+    ...nativeBarSx,
   },
-  "& .simplebar-scrollbar::before": {
-    backgroundColor: theme.palette.grey[800],
-    borderRadius: "4px",
-  },
-  "& .simplebar-scrollbar:hover::before": {
-    backgroundColor: theme.palette.grey[600],
-  },
-}));
-
-const StyledTokensTable = styled(BasicTable)(({}) => ({
-  width: "100%",
-}));
+}

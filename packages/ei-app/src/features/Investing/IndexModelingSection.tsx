@@ -5,7 +5,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, StyledWalletsTable } from "components";
-import { SimpleBarStyled } from "@/components/SimpleBarStyled";
+import { nativeBarSx } from "components";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 
@@ -19,6 +19,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
+  maxTokens: number;
 }
 
 export const IndexModelingSection = ({
@@ -31,6 +32,7 @@ export const IndexModelingSection = ({
   tableAssets,
   isEqualWeight,
   persistKey,
+  maxTokens,
   ...props
 }: Props) => {
   const { t } = useTranslation("IndexModelingSection");
@@ -94,6 +96,7 @@ export const IndexModelingSection = ({
             label={t("Tokens")}
             value={tokens}
             min={0}
+            max={maxTokens}
             onChange={(_, value) => onTokensChange(value || 0)}
           />
           {isEqualWeight && (
@@ -116,23 +119,28 @@ export const IndexModelingSection = ({
           />
         </LeftContainer>
         <RightContainer>
-          <SimpleBarStyled style={{ maxHeight: "480px" }}>
-            <StyledIndexModelingTable
-              slots={{
-                footer: () => <></>,
-              }}
-              rowSelection={false}
-              checkboxSelection={false}
-              apiRef={apiRef}
-              getRowId={x => x.id}
-              columns={getIndexModelingTableColumns()}
-              rows={tableAssets}
-            />
-          </SimpleBarStyled>
+          <StyledWalletsTable
+            sx={{
+              ...tableScrollSx,
+            }}
+            hideFooter
+            rowSelection={false}
+            checkboxSelection={false}
+            apiRef={apiRef}
+            getRowId={x => x.id}
+            columns={getIndexModelingTableColumns()}
+            rows={tableAssets}
+          />
         </RightContainer>
       </MainContainer>
     </AppAccordionSection>
   );
+};
+
+const tableScrollSx = {
+  "& .MuiDataGrid-virtualScroller": {
+    ...nativeBarSx,
+  },
 };
 
 const LeftContainer = styled(Box)(({ theme }) => ({
@@ -164,7 +172,7 @@ const MainContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-const StyledIndexModelingTable = styled(StyledWalletsTable)(({ _theme }) => ({
+const StyledIndexModelingTable = styled(StyledWalletsTable)(() => ({
   "& .MuiDataGrid-main": {
     height: "auto",
   },

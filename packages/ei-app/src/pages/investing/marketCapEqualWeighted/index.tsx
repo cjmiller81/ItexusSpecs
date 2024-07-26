@@ -34,7 +34,7 @@ export default function MarketCapEqualWeightedPage() {
   const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.icons)
   const dispatch = useAppDispatch()
 
-  const { tokensCount, totalCapital, weight, tableData } = useAppSelector(state => state.MarketCapEqualWeightModeling)
+  const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(state => state.MarketCapEqualWeightModeling)
 
   const { t } = useTranslation("MarketCapPage")
 
@@ -60,8 +60,9 @@ export default function MarketCapEqualWeightedPage() {
           dispatch(setTokens(value))
         }}
         weighted={weight * 100}
+        maxTokens={prefilteredData.length}
         capital={totalCapital}
-        tokens={tokensCount}
+        tokens={tokensCount || 0}
         isEqualWeight
         tableAssets={tableData}
         title={t("IndexModeling")}
@@ -84,7 +85,7 @@ export default function MarketCapEqualWeightedPage() {
           lookupOptions={lookUpOptions}
           maxChartValue={maxChartValue}
           minChartValue={minChartValue}
-          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({}))}
+          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({tokensAllocation: tokensCount || 0}))}
           onFromDateChange={date => dispatch(setFromDate({ fromDate: date }))}
           onToDateChange={date => dispatch(setToDate({ toDate: date }))}
           onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}

@@ -1,5 +1,5 @@
-import { Box, BoxProps, Button, useTheme } from "@mui/material";
-import { styled } from "@mui/system";
+import { Box, BoxProps, Button } from "@mui/material";
+import { styled, SxProps, Theme } from "@mui/system";
 import {
   GridCellParams,
   GridEventListener,
@@ -15,6 +15,7 @@ import {
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { Wallet } from "../../models";
 import { TotalWalletWorthData } from "../../slices";
@@ -23,7 +24,6 @@ import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
 import { StyledWalletsTable } from "./WalletsTable";
 import { getWalletsColumns } from "./WalletsTableColumnsDefs";
-import SimpleBar from "simplebar-react";
 
 interface Props extends BoxProps {
   wallets: Wallet[];
@@ -143,9 +143,15 @@ export const MyWalletsSection = ({
         <PageTitle sx={{ mt: 4 }}>{t("Wallets")}</PageTitle>
       </StyledAdaptivePageBox>
 
-      <SimpleBar style={{ maxHeight: "600px" }}>
+      <Box sx={{ width: "100%", overflow: "auto" }}>
         <StyledWalletsTable
           loading={loading}
+          disableVirtualization
+          hideFooter
+          sx={{
+            ...tableScrollSx
+          }}
+          scrollbarSize={7}
           editMode="row"
           rowModesModel={rowModesModel}
           onRowModesModelChange={handleRowModesModelChange}
@@ -164,12 +170,6 @@ export const MyWalletsSection = ({
               wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
             );
           }}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
           onCellClick={onCellClick}
           apiRef={apiRef}
           getRowId={x => x.address}
@@ -185,12 +185,17 @@ export const MyWalletsSection = ({
           rows={wallets}
           rowSelectionModel={selectedWalletsIds}
         />
-      </SimpleBar>
+      </Box>
     </Box>
   );
 };
+const tableScrollSx = {
+  "& .MuiDataGrid-virtualScroller": {
+    ...nativeBarSx,
+  },
+}
 
-export const StyledWalletWorthContainer: any = styled(Box)(({ theme }) => ({
+export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   position: "absolute",
   right: 0,
   top: 0,
@@ -206,7 +211,7 @@ export const StyledWalletWorthContainer: any = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const StyledAdaptivePageBox: any = styled(Box)(({ theme }) => ({
+export const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   flexDirection: "row",
