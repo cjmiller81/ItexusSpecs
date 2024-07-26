@@ -4,7 +4,7 @@ import { AppInputProps } from "./AppInputProps";
 
 type AppInputPropsOverride = AppInputProps & {
   onChange?: (value: number) => void;
-  value: number;
+  value?: number;
 };
 
 export type DecimalInputProps = Omit<TextFieldProps, "onChange" | "value"> &
@@ -27,7 +27,7 @@ export const DecimalInput = ({
   const inputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-      inputRef.current!.value = formatValue(value);
+      inputRef.current!.value = formatValue(value || 0);
   }, [value]);
 
   const getCursor = () => inputRef!.current!.selectionStart || 0;
