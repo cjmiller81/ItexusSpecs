@@ -36,18 +36,6 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, persis
   const dispatch = useAppDispatch()
   const { t } = useTranslation("PrefilterTokensSection")
 
-  const allTokensSource = useMemo(
-    () =>
-      new DataSource<ICoin, string>({
-        store: {
-          type: "array",
-          key: "id",
-          data: allTokens,
-        },
-      }),
-    [allTokens],
-  )
-
   const onExporting = useCallback(async (e: any): Promise<void> => {
     const workbook = new Workbook()
     const worksheet = workbook.addWorksheet("Main sheet")
@@ -106,7 +94,7 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, persis
           chains={allChains}
           currentFilter={currentFilter}
           onCurrentFilterChange={filter => setCurrentFilter(filter)}
-          dataSource={allTokensSource}
+          dataSourceTokens={allTokens}
         />
       </AccordionDetails>
     </StatePersistedAccordion>
@@ -115,7 +103,7 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, persis
 
 const MemoizedPrefilterTokensTable = React.memo(PrefilterTokensTable, (prevProps, nextProps) => {
   return (
-    prevProps.dataSource === nextProps.dataSource &&
+    prevProps.dataSourceTokens === nextProps.dataSourceTokens &&
     prevProps.categories === nextProps.categories &&
     prevProps.chains === nextProps.chains &&
     prevProps.currentFilter === nextProps.currentFilter
