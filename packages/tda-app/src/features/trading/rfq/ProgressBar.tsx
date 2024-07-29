@@ -1,9 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
-import { BoxProps } from "@mui/system";
+import { BoxProps, Stack } from "@mui/system";
 import { FC } from "react";
-
 type ProgressFooterProps = {
   progress: number;
   secondsLeft: number;
@@ -17,37 +16,40 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
   sx,
   ...props
 }) => {
-  const isInProgress = secondsLeft !== 0;
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "space-between",
+        width: "100%",
         ...sx,
       }}
       {...props}>
-      <Box sx={{ width: "100%", pb: "3px", pr: "4px" }}>
-        <Typography
-          sx={{ float: "right", width: "fit-content" }}
-          component="div">
-          {isInProgress && `${secondsLeft.toFixed()} seconds`}
-        </Typography>
-      </Box>
-      <Box sx={{ flexGrow: 1, width: 500 }}>
-        {isInProgress && (
+      <Stack
+        direction="row"
+        alignItems="center">
+        <Box sx={{ width: "100px", pb: "3px", pr: "4px" }}>
+          <Typography
+            sx={{ float: "right", width: "fit-content" }}
+            component="div">
+            {`${secondsLeft.toFixed()} seconds`}
+          </Typography>
+        </Box>
+        <Stack alignItems="center">
           <LinearProgress
-            sx={{ marginTop: 0, borderRadius: 50 }}
+            sx={{ width: 150, marginTop: 0, borderRadius: 50 }}
             variant="determinate"
             value={progress}
           />
-        )}
-      </Box>
-      <Box
-        sx={{ pb: "2px", pl: 2 }}
-        width="100%">
-        {isInProgress && <Button onClick={handleReject}>Reject</Button>}
-      </Box>
+        </Stack>
+
+        <Box
+          sx={{ pb: "2px", pl: 2, width: "100px" }}
+          width="100%">
+          <Button onClick={handleReject}>Reject</Button>
+        </Box>
+      </Stack>
     </Box>
   );
 };

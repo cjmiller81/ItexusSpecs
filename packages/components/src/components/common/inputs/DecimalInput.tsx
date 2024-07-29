@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import React, { KeyboardEventHandler, useEffect, useRef } from "react";
 import { AppInputProps } from "./AppInputProps";
 
 type AppInputPropsOverride = AppInputProps & {
@@ -11,7 +11,6 @@ export type DecimalInputProps = Omit<TextFieldProps, "onChange" | "value"> &
   AppInputPropsOverride & {
     max?: number;
     maxDecimals?: number;
-    postFormatter?: (numberValue: number, formattedValue: string) => string;
   };
 
 export const DecimalInput = ({
@@ -21,53 +20,46 @@ export const DecimalInput = ({
   maxDecimals,
   onSelect,
   onKeyDown,
-  postFormatter,
+  onBlur,
   ...props
 }: DecimalInputProps) => {
   const inputRef = useRef<HTMLInputElement>();
 
   useEffect(() => {
-      inputRef.current!.value = formatValue(value || 0);
+    inputRef.current!.value = formatWithSeparators(value || 0);
   }, [value]);
 
   const getCursor = () => inputRef!.current!.selectionStart || 0;
   const setCursor = (position: number) => inputRef.current?.setSelectionRange(position, position);
 
-  const formatValue = (value: number) => {
-    let formatedValue = value.toFixed(maxDecimals);
-    if (postFormatter) formatedValue = postFormatter(value, formatedValue);
-
-    return formatedValue;
+  const formatWithSeparators = (value: number) => {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: maxDecimals,
+    });
   };
 
+  const testFormattedValue = (value: string) => /^[0-9,.]+$/.test(value);
   const setFormattedValue = (value: string) => (inputRef.current!.value = value);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     let inputValue = event.target.value;
-    if (!/^\d*\.?\d*$/.test(inputValue)) {
-      return;
+    if (!testFormattedValue(inputValue)) {
+      return false;
     }
 
     if (inputValue === "") inputValue = "0";
+  };
 
-    if (maxDecimals === 0 && inputValue.includes(".")) {
-      return;
-    }
-
-    let floatValue = parseFloat(inputValue);
+  const handleBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = event => {
+    const floatValue = parseFloat(inputRef.current!.value.replace(/,/g, ""));
     if (!isNaN(floatValue)) {
-      if (max !== undefined && floatValue >= max) {
-        floatValue = max;
-      }
-
-      const formatedValue = formatValue(floatValue);
-      
-      const newCursor =
-      event.target!.selectionStart! >= formatedValue.length ? formatedValue.length : event.target!.selectionStart!;
-      event.target.value = formatedValue;
-      event.target.setSelectionRange(newCursor, newCursor);
-      handleOnChange(floatValue);
+      const formattedValue = formatWithSeparators(floatValue);
+      setFormattedValue(formattedValue);
     }
+    if (onBlur) onBlur(event);
+
+    handleOnChange(floatValue);
   };
 
   const handleOnChange = (value: number) => {
@@ -83,21 +75,25 @@ export const DecimalInput = ({
     if (onSelect) onSelect(event);
   };
 
+  const handleKeyPress: KeyboardEventHandler<HTMLInputElement> | undefined = event => {
+    if (
+      !event.code.startsWith("Digit") &&
+      !(event.code.startsWith("Period") && !inputRef.current!.value.includes("."))
+    ) {
+      event.preventDefault();
+      return false;
+    }
+  };
   const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = event => {
     const input = inputRef.current;
     let newValue = inputRef.current!.value;
     const decimalIndex = newValue.indexOf(".") + 1;
     const cursor = getCursor();
-    if (input && cursor !== null) {
+    if (input && cursor !== null && newValue.includes(".")) {
       if (event.key === "Backspace") {
         if (decimalIndex === cursor) {
           if (cursor) setCursor(cursor - 1);
           event.preventDefault();
-        } else if (maxDecimals != 0 && cursor > decimalIndex) {
-          event.preventDefault();
-          newValue = newValue.substring(0, cursor - 1) + "0" + newValue.substring(cursor);
-          setFormattedValue(newValue);
-          if (cursor) setCursor(cursor - 1);
         }
       }
       if (event.key === "Delete") {
@@ -110,11 +106,6 @@ export const DecimalInput = ({
           event.preventDefault();
         } else if (cursor === newValue.length) {
           event.preventDefault();
-        } else if (maxDecimals != 0 && cursor >= decimalIndex) {
-          event.preventDefault();
-          newValue = newValue.substring(0, cursor) + "0" + newValue.substring(cursor + 1);
-          setFormattedValue(newValue);
-          setCursor(cursor + 1);
         }
       }
     }
@@ -124,11 +115,13 @@ export const DecimalInput = ({
 
   return (
     <TextField
+      onKeyPress={handleKeyPress}
       type="text"
       inputRef={inputRef}
       onSelect={onSelectChanged}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
+      onBlur={handleBlur}
       {...props}
     />
   );

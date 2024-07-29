@@ -8,14 +8,14 @@ import { usePrevious } from "@/hooks/usePrevious"
 import { useSignalR } from "@/hooks/useSignalR"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { SnackbarProps } from "@/types/snackbar"
-import { BoxProps } from "@mui/system"
+import { CardProps } from "@mui/material"
 import { FC, useEffect, useRef, useState } from "react"
 import useCountDown from "react-countdown-hook"
 import { v4 } from "uuid"
-import { OrderEvent, isOrderEvent } from "./models/OrderEvent"
 import { logoUrl } from "./constants"
+import { OrderEvent, isOrderEvent } from "./models/OrderEvent"
 
-type TileSectionProps = BoxProps & {
+type TileSectionProps = CardProps & {
   symbol1: string | null
   symbol2: string | null
   onUpdateHistory: () => void
@@ -214,16 +214,24 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
     dispatch(clearRfq())
   }
 
+  const currentStage: RfqStage = isTransactionInProgress
+  ? "inProgress"
+  : !rfqModel
+    ? "requiring"
+    : secondsLeft <= 1 && prevSecondsLeft && prevSecondsLeft > 0
+      ? "requote"
+      : "cancelable"
+
   const onSellClick = () => {
     if (isTransactionInProgress) return
-    setShowSellConfirmationPopup(true)
+    setShowSellConfirmationPopup(currentStage !== "requiring")
     setShowBuyConfirmationPopup(false)
   }
 
   const onBuyClick = () => {
     if (isTransactionInProgress) return
     setShowSellConfirmationPopup(false)
-    setShowBuyConfirmationPopup(true)
+    setShowBuyConfirmationPopup(currentStage !== "requiring")
   }
 
   useEffect(() => {
@@ -261,14 +269,6 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
       resetTile()
     }
   }, [timeLeft, rfqModel])
-
-  const currentStage: RfqStage = isTransactionInProgress
-    ? "inProgress"
-    : !rfqModel
-      ? "requiring"
-      : secondsLeft <= 1 && prevSecondsLeft && prevSecondsLeft > 0
-        ? "requote"
-        : "cancelable"
 
   return (
     <>

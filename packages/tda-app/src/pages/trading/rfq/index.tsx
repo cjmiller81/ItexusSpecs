@@ -1,3 +1,4 @@
+import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection";
 import CurrencyDropdown from "@/features/trading/rfq/CurrencyDropdown";
 import { TileSection } from "@/features/trading/rfq/TileSection";
 import HistoryDataTable from "@/features/trading/rfq/history-data-table/HistoryDataTable";
@@ -7,7 +8,6 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Grid, Stack, Typography } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export const accountNumber = "EC_TEST";
 
@@ -63,14 +63,10 @@ export default function SpotRFQPage() {
       <Grid
         item
         xs={12}
-        spacing={3}
+        md={5}
         justifyContent="center">
-        <Grid
-          item
-          xs={12}
-          md={5}
-          justifyContent="center">
-          <Stack sx={{ width: "100%", minWidth: "500px", mt: 3, ml: 5 }}>
+        <Stack direction="row" gap={2}>
+          <Stack >
             <CurrencyDropdown
               mt={1}
               symbol1={symbol1}
@@ -85,23 +81,15 @@ export default function SpotRFQPage() {
               symbol2={symbol2}
               accountNumber={accountNumber}
               onUpdateHistory={getHistoryData}
-              mt={2}
+              sx={{ mt: 5, height: "300px" }}
             />
           </Stack>
-        </Grid>
-
-        <Grid
-          item
-          xs={12}
-          md={2}
-          alignItems="center"
-          justifyContent="center">
           <BalanceWidgetSection
             sx={{
               top: 0,
-              "@media (min-width: 1022px)": {
+              "@media (min-width: 1050px)": {
                 position: "absolute",
-                right: "-70px",
+                right: "0px",
               },
               "@media (max-width: 1022px)": {
                 position: "relative",
@@ -109,7 +97,7 @@ export default function SpotRFQPage() {
               },
             }}
           />
-        </Grid>
+        </Stack>
       </Grid>
 
       <Grid
