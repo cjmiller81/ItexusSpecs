@@ -104,7 +104,7 @@ const mapHistoryData = (items: HistoryData[]): HistoryDataParsed[] => {
     symbol: item.marketSymbol,
     transactTime: new Date(item.timeLastUpdated),
     side: item.instruction,
-    filledPrice: item.priceSubmitted.toString(),
+    filledPrice: item.priceSubmitted?.toString(),
     status: item.orderStatus,
   }))
 }
