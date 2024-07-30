@@ -67,7 +67,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({ accountNumber, data, onCh
                 }}
                 align="left"
               >
-                {row.accountBalance}
+                {row.accountBalance.units + row.accountBalance.nanos}
               </TableCell>
               <TableCell
                 sx={{

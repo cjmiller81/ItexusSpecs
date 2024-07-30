@@ -64,7 +64,10 @@ export default function FifoAutomated() {
   } as TastytradeAccountConnect);
   const [tableData, setTableData] = React.useState<ExchangeAccount[]>([] as ExchangeAccount[]);
   const [exchangeAccountState, setExchangeAccountState] = React.useState<ExchangeAccount>({
-    accountBalance: 0,
+    accountBalance: {
+      units: 0,
+      nanos: 0,
+    },
     accountName: "",
     accountNumber: "",
     authorityLevel: "",
