@@ -45,7 +45,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const [capitalError, setCapitalError] = useState<boolean>(false);
   const [capitalErrorMessage, setCapitalErrorMessage] = useState<string>("");
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
-  const [localCapitalAllocation, setLocalCapitalAllocation] = React.useState<number>(strategyAccountConnectState?.capitalAllocationNext);
+  const [localCapitalAllocation, setLocalCapitalAllocation] = React.useState<number>((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0));
 
   const tabPanels: TabPanel[] = [
     {
@@ -88,7 +88,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const handleClosingOnlyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setPendingClosingOnlyResponse(true);
     setClosingOnlyLocal(checked);
-    onClosingOnlyChange(checked, (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0) ? false : true);
+    onClosingOnlyChange(checked, (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation.units as any) > 0) ? false : true);
   }, [onClosingOnlyChange, strategyAccountConnectState?.capitalAllocation])
 
   const handleCapitalAllocationButton = useCallback(() => {
@@ -102,7 +102,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   const handleCapitalAllocationChange = useCallback((newCapitalAllocation: number):void => {
     currencyValdiation(newCapitalAllocation);
-    if (!(strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)) {
+    if (!(strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation.units as any) > 0)) {
       onCapitalAllocationChange(newCapitalAllocation, true);
     } else {
       setLocalCapitalAllocation(parseFloat(newCapitalAllocation as any));
@@ -119,7 +119,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   useEffect(() => {
     if (pendingCapitalAllocationResponse) {
-      if (parseFloat(localCapitalAllocation as any) === parseFloat(strategyAccountConnectState?.capitalAllocationNext as any)) {
+      if (parseFloat(localCapitalAllocation as any) === parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any)) {
         setPendingCapitalAllocationResponse(false);
       }
     }
@@ -195,7 +195,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                 variant="outlined"
                 onClick={handleAutomationRunningChange}
                 disabled={
-                  !(parseFloat(strategyAccountConnectState.capitalAllocationNext as any) >= 13000)
+                  !(parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any) >= 13000)
                   || pendingAutomationResponse
                   || pendingCapitalAllocationResponse
                   || pendingClosingOnlyResponse
@@ -258,8 +258,8 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                     disabled={false}
                     capitalAllocation={parseFloat(
                         (
-                          ((strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)
-                          && parseFloat(strategyAccountConnectState?.capitalAllocationNext as any) === parseFloat(strategyAccountConnectState?.capitalAllocationStart as any))
+                          ((strategyAccountConnectState?.capitalAllocation && parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any) > 0)
+                          && parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any) === parseFloat((strategyAccountConnectState?.capitalAllocationStart?.units ?? 0) as any))
                             ? localCapitalAllocation
                             : strategyAccountConnectState?.capitalAllocationNext
                         ) as any
@@ -270,7 +270,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                   />
                 </Grid>
                 <Grid item xs={3} md="auto">
-                  { (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)
+                  { (strategyAccountConnectState?.capitalAllocation && parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any) > 0)
                     ? <Button
                         color={"success"}
                         variant="outlined"
@@ -279,7 +279,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                           pendingAutomationResponse
                           || pendingCapitalAllocationResponse
                           || pendingClosingOnlyResponse
-                          || (parseFloat(localCapitalAllocation as any) === parseFloat(strategyAccountConnectState?.capitalAllocationNext as any))
+                          || (parseFloat(localCapitalAllocation as any) === parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any))
                         }
                         sx={{ mr: 1 }}
                       >
@@ -320,7 +320,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <AutomationTabs capitalAllocation={parseFloat(strategyAccountConnectState?.capitalAllocation as any)} tabs={tabPanels} />
+            <AutomationTabs capitalAllocation={parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any)} tabs={tabPanels} />
           </Grid>
         </Grid>
       </Box>

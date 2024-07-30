@@ -46,7 +46,7 @@ export interface ExchangeAccount {
   accountBalance: {
     units: number,
     nanos: number
-  },
+  } | null,
   accountName: string | null
   accountNumber: string
   authorityLevel: string | null
@@ -68,8 +68,14 @@ export interface TastytradeAccountConnect {
 export interface SvtIvlStrategyAccountConnect {
   accountNumber:	string
   riskTolerance: IvlRiskTolerance
-  capitalAllocation: number
-  capitalAllocationNext: number
+  capitalAllocation: {
+    units: number,
+    nanos: number
+  } | null
+  capitalAllocationNext: {
+    units: number,
+    nanos: number
+  } | null
   closingOnly: boolean
 }
 
@@ -84,9 +90,18 @@ export interface SvtIvlEsStrategySetStatus {
   exchangeUsername: string
   accountNumber:	string | null
   riskTolerance:	IvlRiskTolerance
-  capitalAllocation:	number
-  capitalAllocationStart: number
-  capitalAllocationNext: number
+  capitalAllocation:	{
+    units: number,
+    nanos: number
+  } | null
+  capitalAllocationStart: {
+    units: number,
+    nanos: number
+  } | null
+  capitalAllocationNext: {
+    units: number,
+    nanos: number
+  } | null
   contractQty:	number | null
   closingOnly: boolean
 }
@@ -260,7 +275,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
         body: JSON.stringify({
           accountNumber:	accountConnect.accountNumber,
           riskTolerance: accountConnect.riskTolerance,
-          capitalAllocation: accountConnect.capitalAllocation ?? 0,
+          capitalAllocation: accountConnect.capitalAllocation,
           capitalAllocationNext: accountConnect.capitalAllocationNext,
           closingOnly: accountConnect.closingOnly
         } as SvtIvlStrategyAccountConnect)

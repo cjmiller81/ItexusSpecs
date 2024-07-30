@@ -56,9 +56,18 @@ const mockState :{
     exitOrderStatus: null,
     exitOrderSymbol: null,
     closingOnly: false,
-    capitalAllocation: 0,
-    capitalAllocationStart: 15000.00,
-    capitalAllocationNext: 15000.00,
+    capitalAllocation: {
+      units: 0,
+      nanos: 0
+    },
+    capitalAllocationStart: {
+      units: 15000,
+      nanos: 0
+    },
+    capitalAllocationNext: {
+      units: 15000,
+      nanos: 0
+    },
     contractQty: 1,
   } as SvtIvlEsStrategySetStatus
 }
@@ -137,7 +146,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
         } else {
           mockState.status.isStarted = true
           mockState.status.closingOnly = data.closingOnly
-          mockState.status.capitalAllocation = data.capitalAllocation === 0 ? data.capitalAllocationNext : data.capitalAllocation
+          mockState.status.capitalAllocation = (data.capitalAllocation?.units ?? 0) === 0 ? data.capitalAllocationNext : data.capitalAllocation
           mockState.status.capitalAllocationNext = data.capitalAllocationNext
           mockState.status.entryOrderId = "131083"
           mockState.status.entryOrderStatus = "Filled"

@@ -81,8 +81,14 @@ export default function FifoAutomated() {
   const [strategyAccountConnectState, setStrategyAccountConnectState] = React.useState<SvtIvlEsStrategySetStatus>({
     accountNumber: "",
     riskTolerance: IvlRiskTolerance.High,
-    capitalAllocationStart: 0,
-    capitalAllocationNext: 0,
+    capitalAllocationStart: {
+      units: 0,
+      nanos: 0,
+    },
+    capitalAllocationNext: {
+      units: 0,
+      nanos: 0,
+    },
     closingOnly: false,
   } as SvtIvlEsStrategySetStatus);
 

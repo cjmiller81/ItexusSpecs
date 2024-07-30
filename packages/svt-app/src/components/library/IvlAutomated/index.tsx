@@ -75,8 +75,14 @@ export default function IvlAutomated() {
   const [strategyAccountConnectState, setStrategyAccountConnectState] = React.useState<SvtIvlEsStrategySetStatus>({
     accountNumber: "",
     riskTolerance: IvlRiskTolerance.High,
-    capitalAllocationStart: 0,
-    capitalAllocationNext: 0,
+    capitalAllocationStart: {
+      units: 0,
+      nanos: 0,
+    },
+    capitalAllocationNext: {
+      units: 0,
+      nanos: 0,
+    },
     closingOnly: false,
   } as SvtIvlEsStrategySetStatus);
 
@@ -329,9 +335,9 @@ export default function IvlAutomated() {
 
   const handleCapitalAllocation = useCallback((newCapitalAllocation: number, localOnly: boolean = false): void => {
     if (localOnly) {
-      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: { units: newCapitalAllocation, nanos: 0 } });
     } else {
-      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: { units: newCapitalAllocation, nanos: 0 } });
     }
   }, [strategyAccountConnectState, upsertIvlAutomation]);
 
