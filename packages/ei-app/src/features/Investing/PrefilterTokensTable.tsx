@@ -89,20 +89,18 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       return
     }
 
-    const filter = dataGrid.getCombinedFilter()
-    const allTokensfilteredDataSource =new DataSource<ICoin, string>({
-      paginate: false,
-      filter: filter,
-      store: {
-        type: "array",
-        key: "id",
-        data: dataSourceTokens,
-      },
+    const gridDataSource = dataGrid.getDataSource();
+    const tempDataSource = new DataSource({
+      searchExpr: gridDataSource.searchExpr(),
+      store: gridDataSource.store(),
+      filter: gridDataSource.filter(),
+      sort: gridDataSource.sort(),
+      paginate: false
     })
     
-    allTokensfilteredDataSource.filter(filter);
-    allTokensfilteredDataSource.load();
-    onUpdate(allTokensfilteredDataSource.items() as ICoin[])
+    tempDataSource.load();
+    const data = tempDataSource.items() as ICoin[]
+    onUpdate(data as ICoin[])
   }
 
   useEffect(() => {

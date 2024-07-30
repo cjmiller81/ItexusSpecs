@@ -30,7 +30,7 @@ export const marketCapEqualWeightModelingSlice = createAppSlice({
       calculateTableRows(state);
     }),
     setPrefilteredData: create.reducer((state, action: PayloadAction<ICoin[]>) => {
-      state.prefilteredData = action.payload.sort((a, b) => b.mCap - a.mCap);
+      state.prefilteredData = action.payload;
       setTokenstCount(state, state.tokensCount === null && state.prefilteredData.length !== 0 ? defaultTotalTokensCount : state.tokensCount);
       calculateTableRows(state);
     }),
