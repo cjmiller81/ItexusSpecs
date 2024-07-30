@@ -1,13 +1,13 @@
-import { Box, Card, Typography, useTheme } from "@mui/material";
-import { BoxProps, Stack, styled } from "@mui/system";
-import { DecimalInput, Status } from "components";
+import { Box, Card, CardProps, Typography, useTheme } from "@mui/material";
+import { Stack } from "@mui/system";
+import { Status } from "components";
 import * as React from "react";
 import { BuySellCell } from "./BuySellCell";
+import ContrastDecimalField from "./ContrastDecimalField";
 import { ProgressFooter } from "./ProgressBar";
 import { RfqButton, RfqStage } from "./RfqButton";
-import CircularWithPath from "../../../../src/components/@extended/progress/CircularWithPath";
 
-type TileProps = BoxProps & {
+type TileProps = Omit<CardProps, "children"> & {
   symbol1: string | null;
   symbol2: string | null;
   sellCellValue?: number;
@@ -39,25 +39,31 @@ const Tile: React.FC<TileProps> = ({
   onBuyClick,
   statusFetchingRfq,
   onInitiateRfq,
+  sx,
   ...props
 }) => {
   const theme = useTheme();
-
   return (
-    <Box {...props}>
-      <Card sx={{ p: 2 }}>
+    <Card
+      {...props}
+      sx={{ p: 2, ...sx }}>
+      <Stack
+        justifyContent="space-between"
+        height="100%"
+        alignItems="center">
         <Stack alignItems="center">
           <Typography>{`${symbol1 ?? ""}/${symbol2 ?? ""}`}</Typography>
           <Stack
             direction="row"
-            justifyContent="space-between"
             width="100%">
             <Stack
-              direction="row"
+              mt={1}
               width="100%"
+              direction="row"
               alignItems="center"
+              gap={1}
               justifyContent="space-between">
-              <LoadingBuySellCell
+              <BuySellCell
                 cellType="sell"
                 onCellClick={onSellClick}
                 isExpired={rfqButtonState === "requote"}
@@ -65,24 +71,42 @@ const Tile: React.FC<TileProps> = ({
                 isRequesting={statusFetchingRfq === "loading"}
                 value={sellCellValue}
               />
-              <Stack alignItems="center">
-                <RfqButton
-                  disabled={!symbol1 || !symbol2 || !amount}
-                  sx={{
-                    height: "60px",
-                    ":disabled": {
-                      bgcolor: theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
-                    },
-                  }}
-                  loading={statusFetchingRfq === "loading" || rfqButtonState === "inProgress"}
-                  stage={rfqButtonState}
-                  onInitiateRFQ={onInitiateRfq}
-                  onCancel={onReject}
-                  onRequote={onReject}
+              <Stack
+                alignItems="center"
+                spacing={3}>
+                <Box
+                  width="100%"
+                  paddingLeft={2}
+                  paddingRight={2}>
+                  <RfqButton
+                    disabled={!symbol1 || !symbol2 || !amount}
+                    sx={{
+                      height: "45px",
+                      ":disabled": {
+                        bgcolor: theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
+                      },
+                    }}
+                    loading={
+                      statusFetchingRfq === "loading" || rfqButtonState === "inProgress" || rfqButtonState === "requote"
+                    }
+                    stage={rfqButtonState}
+                    onInitiateRFQ={onInitiateRfq}
+                    onCancel={onReject}
+                    onRequote={onReject}
+                  />
+                </Box>
+                <ContrastDecimalField
+                  size="small"
+                  sx={{ input: { padding: "4px" }, width: "100%" }}
+                  label={symbol1 || ""}
+                  placeholder="1,000.000"
+                  disabled={rfqButtonState !== "requiring"}
+                  value={amount}
+                  maxDecimals={5}
+                  onChange={onAmountChange}
                 />
-                {rfqButtonState === "requote" && <CircularWithPath color="secondary" />}
               </Stack>
-              <LoadingBuySellCell
+              <BuySellCell
                 cellType="buy"
                 contentAlignment="end"
                 onCellClick={onBuyClick}
@@ -93,108 +117,46 @@ const Tile: React.FC<TileProps> = ({
               />
             </Stack>
           </Stack>
-          <Stack
-            mt={8}
-            alignItems="center"
-            direction="row"
-            gap={theme => theme.spacing(1)}>
-            <ContrastTextField
-              label={symbol1 ?? "USDT"}
-              placeholder="1,000.000"
-              disabled={rfqButtonState !== "requiring"}
-              value={amount}
-              onChange={onAmountChange}
-              maxDecimals={5}
-            />
-          </Stack>
-          <ProgressFooter
-            sx={{ mt: 5 }}
-            secondsLeft={secondsLeft}
-            progress={progress}
-            handleReject={onReject}
+        </Stack>
+        <Stack
+          mt={5}
+          alignItems="center"
+          direction="row"
+          height="40px"
+          justifyContent="space-between"
+          width="100%">
+          <ContrastDecimalField
+            label="Min Size"
+            size="small"
+            disabled
+            value={10}
+            maxDecimals={2}
+            sx={{ input: { padding: "4px" }, width: "115px" }}
+          />
+
+          {progress > 0 && (
+            <Stack>
+              <ProgressFooter
+                alignSelf="center"
+                width="300px"
+                secondsLeft={secondsLeft}
+                progress={progress}
+                handleReject={onReject}
+              />
+            </Stack>
+          )}
+
+          <ContrastDecimalField
+            label="Min Size"
+            size="small"
+            maxDecimals={2}
+            disabled
+            value={1000}
+            sx={{ input: { padding: "4px" }, width: "115px" }}
           />
         </Stack>
-      </Card>
-    </Box>
-  );
-};
-
-const ContrastTextField = styled(DecimalInput)(({ theme }) => ({
-  "& .MuiInputLabel-root": {
-    left: "50%",
-    transform: "translateX(-50%)",
-    backgroundColor: theme.palette.mode === "dark" ? "#292929 !important" : "transparent",
-    padding: "0 5px",
-    textAlign: "center",
-    fontSize: "10px !important",
-  },
-  "& .MuiInputLabel-shrink": {
-    left: "53%",
-    transform: "translateX(-50%)",
-    padding: "0 5px",
-    textAlign: "center",
-    top: "-14px !important",
-  },
-
-  "& legend": {
-    display: "none",
-  },
-
-  "& .MuiInputBase-input": {
-    textAlign: "center",
-  },
-
-  "& .MuiOutlinedInput-root": {
-    boxShadow: "none !important",
-  },
-
-  "& .MuiOutlinedInput-root.Mui-focused": {
-    boxShadow: "none !important",
-  },
-}));
-
-type LoadingBuySellCellProps = {
-  cellType: "sell" | "buy";
-  onCellClick: () => void;
-  isExpired: boolean;
-  title: string;
-  contentAlignment?: "start" | "center" | "end";
-  isRequesting: boolean;
-  value?: number;
-};
-
-const LoadingBuySellCell: React.FC<LoadingBuySellCellProps> = ({
-  cellType,
-  onCellClick,
-  isExpired,
-  title,
-  contentAlignment,
-  isRequesting,
-  value,
-}) => {
-  return (
-    <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
-      <BuySellCell
-        cellType={cellType}
-        onCellClick={onCellClick}
-        isExpired={isExpired}
-        title={title}
-        value={value}
-        isRequesting={isRequesting}
-        contentAlignment={contentAlignment}
-      />
-      {isRequesting && (
-        <Box
-          sx={{
-            position: "absolute",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            top: "54%",
-          }}>
-          <CircularWithPath color="secondary" />
-        </Box>
-      )}
-    </Box>
+      </Stack>
+    </Card>
   );
 };
 
