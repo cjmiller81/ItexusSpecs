@@ -258,8 +258,8 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                     disabled={false}
                     capitalAllocation={parseFloat(
                         (
-                          ((strategyAccountConnectState?.capitalAllocation && parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any) > 0)
-                          && parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any) === parseFloat((strategyAccountConnectState?.capitalAllocationStart?.units ?? 0) as any))
+                          ((strategyAccountConnectState?.capitalAllocation && parseFloat(((strategyAccountConnectState?.capitalAllocation?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocation?.nanos ?? 0)) as any) > 0)
+                          && parseFloat(((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocationNext?.nanos ?? 0)) as any) === parseFloat(((strategyAccountConnectState?.capitalAllocationStart?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocationStart?.nanos ?? 0)) as any))
                             ? localCapitalAllocation
                             : (strategyAccountConnectState?.capitalAllocationNext?.units ?? 0)
                         ) as any
@@ -270,7 +270,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                   />
                 </Grid>
                 <Grid item xs={3} md="auto">
-                  { (strategyAccountConnectState?.capitalAllocation && parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any) > 0)
+                  { (strategyAccountConnectState?.capitalAllocation && parseFloat(((strategyAccountConnectState?.capitalAllocation?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocation?.nanos ?? 0)) as any) > 0)
                     ? <Button
                         color={"success"}
                         variant="outlined"
@@ -279,7 +279,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                           pendingAutomationResponse
                           || pendingCapitalAllocationResponse
                           || pendingClosingOnlyResponse
-                          || (parseFloat(localCapitalAllocation as any) === parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any))
+                          || (parseFloat(localCapitalAllocation as any) === parseFloat(((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocationNext?.nanos ?? 0)) as any))
                         }
                         sx={{ mr: 1 }}
                       >
@@ -320,7 +320,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <AutomationTabs capitalAllocation={parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any)} tabs={tabPanels} />
+            <AutomationTabs capitalAllocation={parseFloat(((strategyAccountConnectState?.capitalAllocation?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocation?.nanos ?? 0)) as any)} tabs={tabPanels} />
           </Grid>
         </Grid>
       </Box>

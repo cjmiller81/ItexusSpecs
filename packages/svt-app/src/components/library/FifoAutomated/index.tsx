@@ -40,6 +40,7 @@ interface IState {
 
 export default function FifoAutomated() {
   const [activeStep, setActiveStep] = React.useState(0);
+  const [automationRunning, setAutomationRunning] = React.useState(false);
   const [initConfiguring, setInitConfiguring] = React.useState(true);
   const [configuring, setConfiguring] = React.useState(true);
   const [enabled, setEnabled] = React.useState(false);
@@ -248,6 +249,7 @@ export default function FifoAutomated() {
         });
         setInitConfiguring(false);
         setConfiguring(false);
+        setAutomationRunning(newItems[0].status === "Running");
       }
 
       if(activeStep === 0 && newItems.length){
@@ -257,6 +259,7 @@ export default function FifoAutomated() {
           ...strategyAccountConnectState,
           accountNumber: newItems[0].account,
         });
+        setAutomationRunning(newItems[0].status === "Running");
       }
       setMutating(false);
     },
@@ -517,10 +520,11 @@ export default function FifoAutomated() {
             Tastytrade {(isLoginValid() && isAccountNumberValid() && state.loginSubmitted && state.accountSelectionSubmitted && !configuring) ? "connected" : "disconnected"}{" "}
           </span>
           <IconButton
+            disabled={configuring || automationRunning}
             onClick={handleSettingsClicked}
             aria-label="settings"
           >
-            <Settings sx={{ color: (!configuring) ? "white" : "#5e5e5e" }} />
+            <Settings sx={{ color: (!configuring && !automationRunning) ? "white" : "#5e5e5e" }} />
           </IconButton>
         </div>
         <Box
