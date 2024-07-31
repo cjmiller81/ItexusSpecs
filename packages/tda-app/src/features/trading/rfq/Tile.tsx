@@ -147,11 +147,11 @@ const Tile: React.FC<TileProps> = ({
           )}
 
           <ContrastDecimalField
-            label="Min Size"
+            label="Max Size"
             size="small"
             maxDecimals={2}
             disabled
-            value={1000}
+            value={1000000000}
             sx={{ input: { padding: "4px" }, width: "115px" }}
           />
         </Stack>
