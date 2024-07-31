@@ -1,190 +1,119 @@
-import { Box, BoxProps, Button, Stack, StackProps, Typography, styled } from "@mui/material"
-import Chip from "@mui/material/Chip"
-import Divider from "@mui/material/Divider"
-import i18next from "i18next"
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { PageTitle } from "../../../components/TextDisplay/PageTitle"
-import { paymentCards } from "../../../mocks/PaymentCards"
-import { PaymentCardModel } from "../../../models/payments/PaymentCardModel"
-import { ProfileContainer } from "../ProfileContainer"
-import { BillingPlanContainer, PlatinumPlanPlanContainer } from "./PlanContainers"
-
-i18next.setDefaultNamespace("common")
+import { Box, Button, Stack, StackProps, styled, Typography, useTheme } from "@mui/material";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { AppModal } from "../../../components";
+import { PageTitle } from "../../../components/TextDisplay/PageTitle";
+import { addMessage, useAppDispatch } from "../../../slices";
+import { ProfileContainer } from "../ProfileContainer";
+import { PaymentCard } from "./PaymentCard";
+import { PaymentCardModel } from "./PaymentCardModel";
+import { CardModel, PaymentMetodSelector } from "./PaymentMetodSelector";
+import { BillingPlanContainer, PlatinumPlanPlanContainer } from "./PlanContainers";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
-  const { t } = useTranslation(["BillingContainer"])
-
-  const [cards, setCards] = useState(paymentCards)
-
+  const { t } = useTranslation(["BillingContainer"]);
+  const [paymetMethodModal, setPaymentMethodModal] = useState(false);
+  const [cards, setCards] = useState<PaymentCardModel[]>([]);
+  const theme = useTheme();
+  const dispatch = useAppDispatch();
+  
   const onSetDefault = (index: number) => {
     setCards(
       cards.map((card, currentIndex) => ({
         ...card,
         isDefault: index === currentIndex,
       })),
-    )
-  }
+    );
+  };
 
-  const onEdit = () => {}
+  const onEdit = () => {};
+
+  const onAddCard = (card: CardModel) => {
+    setCards(prev => [
+      ...prev,
+      {
+        isDefault: false,
+        number: card.number,
+      },
+    ]);
+    setPaymentMethodModal(false);
+    dispatch(addMessage(t("CardAddedMessage")));
+  };
 
   return (
-    <Stack {...props}>
-      <PageTitle>{t("Plans")}</PageTitle>
-      <PlansContainer>
-        <PlatinumPlanPlanContainer
-          title={t("Platinum")}
-          subtitle={t("PlatinumCost")}
-          buttonTitle={t("ExplorePlans")}
+    <>
+      <AppModal
+        bodyProps={{
+          sx: {
+            minWidth: "700px",
+            minHeight: "400px",
+            [theme.breakpoints.down("md")]: {
+              minWidth: "90%",
+              paddingX: 1,
+            },
+          },
+        }}
+        onClose={() => setPaymentMethodModal(false)}
+        open={paymetMethodModal}>
+        <PaymentMetodSelector
+          onClose={() => setPaymentMethodModal(false)}
+          onAttachCard={onAddCard}
         />
-        <BillingPlanContainer
-          title={t("BillingPeriod")}
-          subtitle={t("BillingCost")}
-          buttonTitle={t("ChangeBillingPeriod")}
-        />
-      </PlansContainer>
-      <ProfileContainer
-        mt={3}
-        endAdortment={
-          <Button
-            sx={{ minWidth: "160px", alignSelf: "center" }}
-            variant="contained">
-            {t("AddNewMethod")}
-          </Button>
-        }
-        title={t("PaymentMethods")}>
-        {cards.map((card, index) => (
-          <RenderPaymentCard
-            key={index}
-            onEdit={onEdit}
-            onSetDefault={() => onSetDefault(index)}
-            {...card}
-            withBottomBorder={index !== cards.length - 1}
+      </AppModal>
+
+      <Stack {...props}>
+        <PageTitle>{t("Plans")}</PageTitle>
+        <PlansContainer>
+          <PlatinumPlanPlanContainer
+            title={t("Platinum")}
+            subtitle={t("PlatinumCost")}
+            buttonTitle={t("ExplorePlans")}
           />
-        ))}
-      </ProfileContainer>
-    </Stack>
-  )
-}
-
-function RenderPaymentCard({
-  withBottomBorder,
-  ...props
-}: PaymentCardModel & { withBottomBorder: boolean } & { onSetDefault: () => void; onEdit: () => void }) {
-  return (
-    <PaymentCard
-      sx={{
-        borderBottom: withBottomBorder ? "solid" : "none",
-        borderWidth: "1px",
-        borderColor: theme => theme.palette.divider,
-      }}
-      {...props}
-    />
-  )
-}
-const PaymentCard = ({
-  name,
-  cardNumber,
-  iconBase64,
-  isDefault,
-  onSetDefault,
-  onEdit,
-  ...props
-}: PaymentCardModel & BoxProps & { onSetDefault: () => void; onEdit: () => void }) => {
-  const { t } = useTranslation("BillingContainer")
-  return (
-    <Stack>
-      <PaymentCardContainer {...props}>
-        <CardDetailsContainer>
-          <img src={iconBase64}></img>
-          <Stack sx={{ width: "100%" }}>
-            <Typography variant="h6">{name}</Typography>
-            <Typography variant="subtitle2">{t("CardEnding", { number: cardNumber })}</Typography>
-          </Stack>
-        </CardDetailsContainer>
-        <CardButtonsContainer>
-          {isDefault ? (
-            <StyledChip
-              label={t("Default")}
-              color="default"
-              size="small"
-              variant="filled"
-            />
-          ) : (
+          <BillingPlanContainer
+            title={t("BillingPeriod")}
+            subtitle={t("BillingCost")}
+            buttonTitle={t("ChangeBillingPeriod")}
+          />
+        </PlansContainer>
+        <ProfileContainer
+          mt={3}
+          endAdortment={
             <Button
-              onClick={onSetDefault}
-              sx={{ minWidth: "85px" }}
-              variant="link">
-              {t("MakeDefault")}
+              onClick={() => setPaymentMethodModal(true)}
+              sx={{ minWidth: "160px", alignSelf: "center" }}
+              variant="contained">
+              {t("AddNewMethod")}
             </Button>
+          }
+          title={t("PaymentMethods")}>
+          {cards.map((card, index) => (
+            <PaymentCard
+              onEdit={onEdit}
+              onSetDefault={() => onSetDefault(index)}
+              key={index}
+              isDefault={card.isDefault}
+              number={card.number}
+              sx={{
+                borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
+                borderWidth: "1px",
+                borderColor: theme => theme.palette.divider,
+              }}
+              {...props}
+            />
+          ))}
+
+          {!cards.length && (
+            <Typography
+              sx={{ margin: "auto", paddingY: 10 }}
+              variant="h5">
+              {t("NoPaymentMethods")}
+            </Typography>
           )}
-          <Divider
-            orientation="vertical"
-            flexItem
-          />
-          <Button
-            onClick={onEdit}
-            variant="link">
-            {t("Edit", { ns: "Common" })}
-          </Button>
-        </CardButtonsContainer>
-      </PaymentCardContainer>
-    </Stack>
-  )
-}
-
-export const PaymentCardContainer:any = styled(Box)(({ theme }) => ({
-  paddingBlock: "24px",
-  display: "flex",
-  alignItems: "center",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    alignItems: "center",
-    gap: theme.spacing(0.5),
-  },
-}))
-
-export const CardDetailsContainer:any = styled(Box)(({ theme }) => ({
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
-  [theme.breakpoints.down("sm")]: {
-    width: "auto",
-  },
-}))
-
-const StyledChip = styled(Chip)(({ theme }) => ({
-  alignSelf: "center",
-  backgroundColor: theme.palette.primary.light,
-  borderRadius: theme.spacing(2),
-  color: theme.palette.primary.main,
-  height: theme.spacing(3),
-  fontSize: "0.8125rem",
-  paddingRight: 4,
-  paddingLeft: 4,
-  fontWeight: 400,
-  textAlign: "center",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-  letterSpacing: 0.1,
-  transition: "none",
-  "&:hover": {
-    background: theme.palette.primary.main,
-    boxShadow: theme.shadows[3],
-    cursor: "pointer",
-    color: theme.palette.mode === "dark" ? theme.palette.common.black : theme.palette.common.white,
-  },
-}))
-
-const CardButtonsContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  minHeight: "24px",
-  gap: theme.spacing(2),
-
-  [theme.breakpoints.down("sm")]: {
-    marginTop: theme.spacing(1),
-  },
-}))
+        </ProfileContainer>
+      </Stack>
+    </>
+  );
+};
 
 const PlansContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -194,4 +123,4 @@ const PlansContainer = styled(Box)(({ theme }) => ({
     flexDirection: "column",
     gap: theme.spacing(2),
   },
-}))
+}));
