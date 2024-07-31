@@ -1,10 +1,15 @@
 import Modal, { ModalProps } from '@mui/material/Modal'
 import { AppModalBody } from './AppModalBody'
+import { TypographyProps } from '@mui/material'
 
-export const AppModal = ({ children, ...props }: ModalProps) => {
+export type AppModalProps = ModalProps & {
+  bodyProps?: TypographyProps
+}
+
+export const AppModal = ({ children, bodyProps, ...props }: AppModalProps) => {
   return (
     <Modal {...props}>
-      <AppModalBody>{children}</AppModalBody>
+      <AppModalBody {...bodyProps}>{children}</AppModalBody>
     </Modal>
   )
 }

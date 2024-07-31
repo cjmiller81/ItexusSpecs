@@ -116,10 +116,25 @@
     "PROFILE": "PROFILE",
     "SECURITY": "SECURITY",
     "WALLETS": "WALLETS",
-    "BILLING": "BILLING",
+    "BILLING": "Plans/Billing",
     "UserProfile": "User Profile",
     "AvatarUploadingError": "Error while loading image",
     "ProfileUpdatingError": "Error while updating profile"
+  },
+  "CardPaymentForm": {
+    "CardNumber": "Card Number",
+    "CVC": "CVC",
+    "ExpirationDate": "Expiration Date"
+  },
+  "PaymentMetodSelector": {
+    "Title": "Payment Options",
+    "CommingSoon": "Comming soon..."
+  },
+  "PaymentTabs": {
+    "Card": "Card",
+    "ApplePay": "Apple Pay",
+    "GooglePay": "Google Pay",
+    "Crypto": "Pay with Crypto"
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",
@@ -187,11 +202,13 @@
     "BillingPeriod": "Billing Period",
     "BillingCost": "Monthly (renews August 16th 2022)",
     "ChangeBillingPeriod": "Change billing period",
-    "CardEnding": "Ending in {{number}}",
+    "CardEnding": "Card Ending In {{number}}",
+    "NoPaymentMethods": "No payment methods yet",
     "Default": "Default",
     "AddNewMethod": "Add New Method",
     "PaymentMethods": "Payment Methods",
-    "MakeDefault": "Make Default"
+    "MakeDefault": "Make Default",
+    "CardAddedMessage": "Card was successfully added"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

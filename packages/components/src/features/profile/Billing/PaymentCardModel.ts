@@ -1,6 +1,4 @@
 export interface PaymentCardModel {
-  name: string
-  cardNumber: string
-  iconBase64: string
+  number: string
   isDefault: boolean
 }
