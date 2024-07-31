@@ -68,7 +68,10 @@ const mockState :{
       units: 15000,
       nanos: 0
     },
-    contractQty: 1,
+    contractQty: {
+      units: 1,
+      nanos: 0
+    },
   } as SvtIvlEsStrategySetStatus
 }
 

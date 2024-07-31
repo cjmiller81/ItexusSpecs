@@ -21,7 +21,15 @@ export enum IvlRiskTolerance {
   High, Medium, Low
 }
 export enum OrderStatus {
-  Submitted, Working, Partial, Filled, PendingCancel, Error, FilledPartiallyAndCancelled, Canceled, Undefined
+  Undefined = -1,
+  Submitted = 0,
+  Working = 2,
+  Partial = 3,
+  Filled = 4,
+  PendingCancel = 5,
+  Error = 6,
+  FilledPartiallyAndCancelled = 7,
+  Canceled = 8,
 }
 
 export interface ExchangePosition {
@@ -82,10 +90,12 @@ export interface SvtIvlStrategyAccountConnect {
 export interface SvtIvlEsStrategySetStatus {
   isStarted: boolean
   entryOrderId:	string | null
-  entryOrderStatus:	string | null
+  entryExchangeOrderId: string | null
+  entryOrderStatus:	OrderStatus | null
   entryOrderSymbol:	string | null
-  exitOrderId:	string | null
-  exitOrderStatus:	string | null
+  exitOrderId: string | null
+  exitExchangeOrderId: string | null
+  exitOrderStatus:	OrderStatus | null
   exitOrderSymbol:	string | null
   exchangeUsername: string
   accountNumber:	string | null
@@ -102,7 +112,10 @@ export interface SvtIvlEsStrategySetStatus {
     units: number,
     nanos: number
   } | null
-  contractQty:	number | null
+  contractQty:	{
+    units: number,
+    nanos: number
+  } | null
   closingOnly: boolean
 }
 export interface CreateFifoStrategyRequest {

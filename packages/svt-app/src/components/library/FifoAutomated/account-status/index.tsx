@@ -142,7 +142,7 @@ export default function AccountStatus({ membership,
           </Select>
         </LabeledStategyOptionField>
         <LabeledStategyOptionField label="Trade Qty">
-          <TextField disabled size="small" value={qty}></TextField>
+          <TextField disabled size="small" value={qty} className="trade-qty-input"></TextField>
         </LabeledStategyOptionField>
         </Stack>
       </AdaptiveSideBox>
