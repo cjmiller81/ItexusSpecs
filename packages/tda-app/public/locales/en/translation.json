@@ -41,6 +41,12 @@
     "PersonalInformation": "Personal Information",
     "ChangePassword": "Change Password"
   },
+  "TradeHistory":{
+    "TradeHistory"  : "Trade History"
+  },
+  "SpotRFQPage":{
+    "RecentTransactions": "Recent Transactions"
+  },
   "ProfileEditSection": {
     "PersonalInformation": "Personal Information",
     "FirstName": "First Name",

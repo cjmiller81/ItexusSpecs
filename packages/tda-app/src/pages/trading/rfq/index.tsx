@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Grid, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export const accountNumber = "EC_TEST";
 
@@ -20,6 +21,7 @@ export default function SpotRFQPage() {
   const { pairs } = useAppSelector(state => state.currencies);
   const dispatch = useAppDispatch();
   const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
+  const {t} = useTranslation("SpotRFQPage");
 
   useEffect(() => {
     if ("Notification" in window) {
@@ -111,6 +113,7 @@ export default function SpotRFQPage() {
         xs={5}
         justifyContent="center">
         <HistoryDataTable
+          title={t("RecentTransactions")}
           fromDate={fromDate}
           toDate={toDate}
           onFromDateChange={setFromDate}

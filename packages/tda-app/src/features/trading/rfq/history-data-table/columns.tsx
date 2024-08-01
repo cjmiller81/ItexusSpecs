@@ -16,6 +16,7 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
           .local()
           .format("YYYY-MM-DD HH:mm:ss"),
     },
+    { accessorKey: "id", header: "Order ID" },
     { accessorKey: "symbol", header: "Pair", minSize: 100 },
     {
       accessorKey: "side",
@@ -69,6 +70,5 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
       accessorKey: "status",
       header: "Status",
       cell: props => <StatusChip status={props.getValue() as string}/>,
-    },
-    { accessorKey: "id", header: "Order ID" },
+    }
   ];

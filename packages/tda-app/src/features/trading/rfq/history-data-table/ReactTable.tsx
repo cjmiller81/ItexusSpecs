@@ -32,12 +32,14 @@ export const ReactTable = ({
   sorting,
   onSortingChange,
   header,
+  title,
 }: {
   data: HistoryDataParsed[];
   columns: ColumnDef<HistoryDataParsed>[];
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
   header: ReactNode;
+  title: string;
 }) => {
   const table = useReactTable({
     data,
@@ -52,7 +54,7 @@ export const ReactTable = ({
 
   return (
     <StyledMainCard
-      title={"Recent Transactions"}
+      title={title}
       content={false}
       secondary={header}>
       <ScrollX>
