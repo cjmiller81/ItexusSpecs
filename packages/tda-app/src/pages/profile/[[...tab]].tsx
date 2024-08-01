@@ -6,21 +6,22 @@ import ProfileEditSection, { ProfileModel } from "@/features/profile/ProfileEdit
 import { TotpSection } from "@/features/profile/TotpSection";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { SnackbarProps } from "@/types/snackbar";
-import { Grid } from "@mui/material";
+import { Grid, Theme, useMediaQuery, useTheme } from "@mui/material";
 import { profileService, useOry } from "components";
+import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export default function ProfilePage() {
   const { t } = useTranslation("ProfilePage");
   const router = useRouter();
   const routeParams = (router.query.tab as string[]) || undefined;
-
+  const theme = useTheme();
   const tab = routeParams && (router.query.tab as string[]).length ? routeParams[0] : "personal";
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false);
   const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false);
+  const isDownMd = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
   const {
     onUpdateAvatar,
     onUpdateProfile,
@@ -40,6 +41,7 @@ export default function ProfilePage() {
     createSettingsFow().then();
   }, []);
 
+  const downMd = theme.breakpoints.down("md");
   const onAvatarChanged = (file: File) => {
     setIsAvatarUploading(true);
     profileService
@@ -166,67 +168,64 @@ export default function ProfilePage() {
         setNewPasswordLoading(false);
       });
   };
-
   return (
     <Grid
       container
       spacing={3}>
       <Grid
         item
-        container
+        order={{ md: 0, xs: 1 }}
         xs={12}
-        md={10}
-        spacing={3}>
-        <Grid
-          item
-          xs={12}
-          md={3}>
-          <ProfileCard
-            isAvatarLoading={isAvatarUploading}
-            avatarLoading={isAvatarUploading}
-            onChangeAvatar={onAvatarChanged}
-            focusInput={focusInput}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={9}>
-          {tab === "details" && (
-            <ProfileEditSection
-              isProfileUpdating={isProfileDetailsUpdating}
-              onProfileUpdated={onChangeDetails}
-            />
-          )}
-          {tab === "password" && (
-            <>
-              <ChangePasswordSection
-                isLoading={newPasswordLoading}
-                settingsFlow={settingsFlow}
-                onChangePassword={onSubmitNewPassword}
-              />
-              <TotpSection
-                onSubmitCode={onSubmitCode}
-                onTotpUnlinkHandle={onTotpUnlinkHandle}
-                settingsFlow={settingsFlow}
-                isCodeSubmitting={codeLoading}
-                sx={{ mt: 2 }}
-              />
-            </>
-          )}
-        </Grid>
+        md={3}>
+        <ProfileCard
+          isAvatarLoading={isAvatarUploading}
+          avatarLoading={isAvatarUploading}
+          onChangeAvatar={onAvatarChanged}
+          focusInput={focusInput}
+        />
       </Grid>
       <Grid
         item
+        order={{ md: 1, xs: 2 }}
         xs={12}
-        md={2}
-        sx={{
-          pt: { xs: 2, md: 0 },
-          mt: { xs: 2, md: 0 },
-          right: { md: "-60px" },
-          top: { md: 0 },
-        }}>
-        <BalanceWidgetSection />
+        md={6.5}>
+        {tab === "details" && (
+          <ProfileEditSection
+            isProfileUpdating={isProfileDetailsUpdating}
+            onProfileUpdated={onChangeDetails}
+          />
+        )}
+        {tab === "password" && (
+          <>
+            <ChangePasswordSection
+              isLoading={newPasswordLoading}
+              settingsFlow={settingsFlow}
+              onChangePassword={onSubmitNewPassword}
+            />
+            <TotpSection
+              onSubmitCode={onSubmitCode}
+              onTotpUnlinkHandle={onTotpUnlinkHandle}
+              settingsFlow={settingsFlow}
+              isCodeSubmitting={codeLoading}
+              sx={{ mt: 2 }}
+            />
+          </>
+        )}
+      </Grid>
+
+      <Grid
+        item
+        order={{ md: 2, xs: 0 }}
+        xs={12}
+        alignItems="center"
+        display="flex"
+        direction="column"
+        md={2.5}>
+        <BalanceWidgetSection
+          justifyContent={isDownMd ? "center" : "inherit"}
+          direction={isDownMd ? "row" : "column"}
+          width={"100%"}
+        />
       </Grid>
     </Grid>
   );

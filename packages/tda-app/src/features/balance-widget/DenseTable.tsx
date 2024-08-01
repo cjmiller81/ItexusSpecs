@@ -1,5 +1,5 @@
 import MainCard, { MainCardProps } from "@/components/MainCard";
-import { Collapse } from "@mui/material";
+import { Box, Collapse } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -45,54 +45,57 @@ export default function DenseTable<T>({
         ".MuiCardHeader-root": {
           padding: 1,
         },
+        height: "fit-content",
         ...sx,
       }}
       {...props}
       content={false}
       title={title}
       secondary={secondary}>
-      <Collapse
-        in={isOpen}
-        timeout="auto"
-        unmountOnExit>
-        <TableContainer
-          component={Paper}
-          sx={{ overflowX: "hidden" }}>
-          <Table size="small">
-            <TableHead>
-              {table.getHeaderGroups().map((headerGroup: HeaderGroup<T>) => (
-                <DenseTableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <TableCell
-                      key={header.id}
-                      {...header.column.columnDef.meta}>
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableCell>
-                  ))}
-                </DenseTableRow>
-              ))}
-            </TableHead>
-            <TableBody>
-              {table.getRowModel().rows.map(row => (
-                <DenseTableRow key={row.id}>
-                  {row.getVisibleCells().map(cell => {
-                    const cellContext = cell.getContext();
-                    const value = cellContext.getValue();
-                    const formattedValue = cell.column.id === "qty" ? numberFormattingHelper(value) : value;
-                    return (
+      <Box>
+        <Collapse
+          in={isOpen}
+          timeout="auto"
+          unmountOnExit>
+          <TableContainer
+            component={Paper}
+            sx={{ overflowX: "hidden" }}>
+            <Table size="small">
+              <TableHead>
+                {table.getHeaderGroups().map((headerGroup: HeaderGroup<T>) => (
+                  <DenseTableRow key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
                       <TableCell
-                        key={cell.id}
-                        {...cell.column.columnDef.meta}>
-                        {formattedValue}
+                        key={header.id}
+                        {...header.column.columnDef.meta}>
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </TableCell>
-                    );
-                  })}
-                </DenseTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Collapse>
+                    ))}
+                  </DenseTableRow>
+                ))}
+              </TableHead>
+              <TableBody>
+                {table.getRowModel().rows.map(row => (
+                  <DenseTableRow key={row.id}>
+                    {row.getVisibleCells().map(cell => {
+                      const cellContext = cell.getContext();
+                      const value = cellContext.getValue();
+                      const formattedValue = cell.column.id === "qty" ? numberFormattingHelper(value) : value;
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          {...cell.column.columnDef.meta}>
+                          {formattedValue}
+                        </TableCell>
+                      );
+                    })}
+                  </DenseTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Collapse>
+      </Box>
     </MainCard>
   );
 }
