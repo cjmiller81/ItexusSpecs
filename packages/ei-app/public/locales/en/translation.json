@@ -87,7 +87,7 @@
     "CryptoNewsTile": "Crypto News",
     "UpdatesTile": "Updates",
     "TradingTile": "Real-Time Trading",
-    "IncomeTile": "Income"
+    "IncomeTile": "Income - Top 10 Liquidity Pools by TVL"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
@@ -129,6 +129,13 @@
   "PaymentMetodSelector": {
     "Title": "Payment Options",
     "CommingSoon": "Comming soon..."
+  },
+  "IncomeTokensColumns":{
+    "Symbol": "Symbol",
+    "Project": "Project",
+    "Chain": "Chain",
+    "TVL": "TVL",
+    "APY": "APY"
   },
   "PaymentTabs": {
     "Card": "Card",

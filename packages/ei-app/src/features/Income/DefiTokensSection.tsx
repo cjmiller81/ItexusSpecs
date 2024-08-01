@@ -21,7 +21,7 @@ type Props = Omit<AccordionProps, "children"> & {
 };
 
 export default function DefiTokensSection({ persisKey, ...props }: Props) {
-  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery({});
+  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );

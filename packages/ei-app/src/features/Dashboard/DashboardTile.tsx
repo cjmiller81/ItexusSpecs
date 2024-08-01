@@ -17,22 +17,17 @@ export const DashboardTile: FC<DashboardTileProps> = ({
   loading,
   afterTitleComponent,
   datePicker,
-  sx,
   ...props
 }) => {
   const theme = useTheme();
   return (
     <Stack
-      sx={{
-        ...sx,
-      }}
       {...props}>
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        gap={1}
-        sx={{}}>
+        gap={1}>
         <Stack
           direction="row"
           alignItems="center"

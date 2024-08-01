@@ -1,9 +1,11 @@
+import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile";
-import { IncomeTile } from "@/features/Dashboard/IncomeTile";
+import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
 import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
+import { useGetPoolsQuery } from "@/features/Income/DefiApi";
 import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
 import { useMockGetAllNews } from "@/libs/redux/Apis/NewsApi";
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice";
@@ -20,7 +22,6 @@ import { Grid, Stack, Typography } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 
 export default function HomePage() {
   const { session } = useOry();
@@ -35,6 +36,7 @@ export default function HomePage() {
   const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus);
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
   //   date: moment(new Date()).format("YYYY-MM-DD"),
   // })
@@ -123,14 +125,16 @@ export default function HomePage() {
           justifyContent="space-between">
           <Grid
             item
-            xs={3}>
+            xs={4}>
             <IncomeTile
+              loading={isPoolsLoading}
+              data={poolsData}
               icon={<CurrencyExchangeIcon />}
               title={t("IncomeTile")}></IncomeTile>
           </Grid>
           <Grid
             item
-            xs={7}>
+            xs={6}>
             <TradingViewTile
               icon={<SyncAltIcon />}
               title={t("TradingTile")}></TradingViewTile>
