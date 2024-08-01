@@ -130,6 +130,13 @@
     "Title": "Payment Options",
     "CommingSoon": "Comming soon..."
   },
+  "IncomeTokensColumns":{
+    "Symbol": "Symbol",
+    "Project": "Project",
+    "Chain": "Chain",
+    "TVL": "TVL",
+    "APY": "APY"
+  },
   "PaymentTabs": {
     "Card": "Card",
     "ApplePay": "Apple Pay",

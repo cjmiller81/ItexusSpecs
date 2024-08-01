@@ -4,8 +4,7 @@ import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import DownloadIcon from "@mui/icons-material/Download";
 import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
-import { AppAccordionSection, AppNumberInput, AppPercentageField, StyledWalletsTable } from "components";
-import { nativeBarSx } from "components";
+import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 

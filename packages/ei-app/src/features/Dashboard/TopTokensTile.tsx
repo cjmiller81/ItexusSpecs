@@ -17,13 +17,15 @@ export type TopTokenData = {
   fulDilVal: number
 }
 
-export const TopTokensTile: FC<Props> = ({ title, icon, tableAssets, ...props }) => {
+export const TopTokensTile: FC<Props> = ({ title, icon, tableAssets, loading, ...props }) => {
   return (
     <DashboardTile
       title={title}
       icon={icon}
+      loading={loading}
       {...props}>
       <DataGrid
+        loading={loading}
         rowHeight={35}
         columnHeaderHeight={25}
         sx={{

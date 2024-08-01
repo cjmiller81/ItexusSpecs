@@ -26,7 +26,7 @@ function getHomeItems(): SidebarListItem[] {
   ];
 }
 
-function getPlatformsItems(theme: Theme): SidebarListItem[] {
+function getPlatformsItems(): SidebarListItem[] {
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -151,7 +151,7 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
     },
     {
       title: t("Platform", { ns: "SideBar" }),
-      sidebarListItems: getPlatformsItems(theme),
+      sidebarListItems: getPlatformsItems(),
     },
     {
       title: t("Tools", { ns: "SideBar" }),
