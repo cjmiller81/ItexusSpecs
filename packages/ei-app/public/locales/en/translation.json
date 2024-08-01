@@ -87,7 +87,7 @@
     "CryptoNewsTile": "Crypto News",
     "UpdatesTile": "Updates",
     "TradingTile": "Real-Time Trading",
-    "IncomeTile": "Income"
+    "IncomeTile": "Income - Top 10 Liquidity Pools by TVL"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
