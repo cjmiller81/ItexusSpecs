@@ -16,6 +16,7 @@ interface RFQTableProps extends BoxProps {
   toDate: Date | null;
   onFromDateChange: (date: Date | null) => void;
   onToDateChange: (date: Date | null) => void;
+  title: string
 }
 
 export const HistoryDataTable: FC<RFQTableProps> = ({
@@ -25,6 +26,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
   toDate,
   onFromDateChange,
   onToDateChange,
+  title,
   ...props
 }) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
@@ -82,6 +84,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
           content={false}
           sx={{ bgcolor: "primary.lighter", position: "relative" }}>
           <ReactTable
+            title={title}
             data={rows}
             columns={columns}
             sorting={sorting}
@@ -89,6 +92,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
             header={
               <TableHeader
                 {...{
+                  title,
                   fromDate,
                   toDate,
                   handleDownloadCsv,
