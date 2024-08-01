@@ -5,7 +5,7 @@ import HistoryDataTable from "@/features/trading/rfq/history-data-table/HistoryD
 import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
 import { fetchExecutionHistoryData } from "@/features/trading/rfq/slices/rfqSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
 
@@ -19,6 +19,7 @@ export default function SpotRFQPage() {
   const historyData = useAppSelector(state => state.rfq.executionHistoryData);
   const { pairs } = useAppSelector(state => state.currencies);
   const dispatch = useAppDispatch();
+  const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
 
   useEffect(() => {
     if ("Notification" in window) {
@@ -47,6 +48,22 @@ export default function SpotRFQPage() {
       <Grid
         item
         xs={12}>
+        <BalanceWidgetSection
+          width={theme => (isRelativeBalances ? "100%" : theme.spacing(24))}
+          direction={isRelativeBalances ? "row" : "column"}
+          sx={{
+            top: 0,
+            position: "absolute",
+            right: 0,
+            ...(isRelativeBalances && {
+              position: "relative",
+            }),
+          }}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={12}>
         <Typography
           variant="h5"
           noWrap
@@ -65,8 +82,10 @@ export default function SpotRFQPage() {
         xs={12}
         md={5}
         justifyContent="center">
-        <Stack direction="row" gap={2}>
-          <Stack >
+        <Stack
+          direction="row"
+          gap={2}>
+          <Stack>
             <CurrencyDropdown
               mt={1}
               symbol1={symbol1}
@@ -84,19 +103,6 @@ export default function SpotRFQPage() {
               sx={{ mt: 5, height: "300px" }}
             />
           </Stack>
-          <BalanceWidgetSection
-            sx={{
-              top: 0,
-              "@media (min-width: 1050px)": {
-                position: "absolute",
-                right: "0px",
-              },
-              "@media (max-width: 1022px)": {
-                position: "relative",
-                right: "0",
-              },
-            }}
-          />
         </Stack>
       </Grid>
 
