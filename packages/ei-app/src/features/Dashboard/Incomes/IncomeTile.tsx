@@ -47,7 +47,7 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
         }}
         rowSelection={false}
         checkboxSelection={false}
-        getRowId={x => x.project}
+        getRowId={x => x.pool}
         columns={getIncomeTokensColumnsDefs()}
         rows={rows}
       />

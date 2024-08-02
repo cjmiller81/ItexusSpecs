@@ -16,11 +16,11 @@ import DataGridDef, {
 import DataSource from "devextreme/data/data_source";
 import { ExportingEvent } from "devextreme/ui/data_grid";
 import React, { FC, useCallback, useEffect, useMemo, useRef } from "react";
-import { ChainCellComponent } from "./ChainCellComponent";
+import { ChainCell } from "./ChainCell";
+import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
 import { ProjectCellComponent } from "./ProjectCellComponent";
 import { DefiField, DefiLabel } from "./tableConstants";
-import { formatTVL } from "./helpers";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -91,12 +91,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     }
   };
 
-  const toPercentageField = (cellInfo: any) => {
-    const { value } = cellInfo;
-    if (!value) return "";
-    return `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
-  };
-
   return (
     <div ref={containerRef}>
       <DataGridDef<PoolData>
@@ -151,6 +145,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           allowHiding={false}
+          cellComponent={toPoolCellField}
         />
         <Column
           dataField={DefiField.Project}
@@ -168,7 +163,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           allowHiding={false}
-          cellComponent={ChainCellComponent}
+          cellComponent={ChainCell}
         />
         <Column
           dataField={DefiField.TVL}
@@ -177,10 +172,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           allowHiding={false}
-          customizeText={(cellInfo: any) => {
-            const { value } = cellInfo;
-            return formatTVL(value);
-          }}
+          customizeText={toDollarAmountField}
         />
         <Column
           dataField={DefiField.APY}
@@ -192,8 +184,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           customizeText={toPercentageField}
         />
         <Column
-          dataField={DefiField.BaseAPY}
-          caption={DefiLabel.BaseAPY}
+          dataField={DefiField.ApyBase}
+          caption={DefiLabel.ApyBase}
           alignment="left"
           visible={true}
           dataType="number"
@@ -201,13 +193,147 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           customizeText={toPercentageField}
         />
         <Column
+          dataField={DefiField.APYReward}
+          caption={DefiLabel.APYReward}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+
+        <Column
+          dataField={DefiField.ApyBase7d}
+          caption={DefiLabel.ApyBase7d}
+          alignment="right"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.Il7d}
+          caption={DefiLabel.Il7d}
+          alignment="right"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.ApyMean30d}
+          caption={DefiLabel.ApyMean30d}
+          alignment="right"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+
+        <Column
+          dataField={DefiField.VolumeUsd1d}
+          caption={DefiLabel.VolumeUsd1d}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toDollarAmountField}
+        />
+
+        <Column
+          dataField={DefiField.VolumeUsd7d}
+          caption={DefiLabel.VolumeUsd7d}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toDollarAmountField}
+        />
+        <Column
+          dataField={DefiField.ApyBaseInception}
+          caption={DefiLabel.ApyBaseInception}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.ApyPct1D}
+          caption={DefiLabel.ApyPct1D}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.ApyPct7D}
+          caption={DefiLabel.ApyPct7D}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
           dataField={DefiField.ApyMean30d}
           caption={DefiLabel.ApyMean30d}
           alignment="left"
-          visible={true}
+          visible={false}
           dataType="number"
-          allowHiding={false}
+          allowHiding={true}
           customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.RewardTokens}
+          caption={DefiLabel.RewardTokens}
+          alignment="left"
+          visible={false}
+          dataType="object"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.Sigma}
+          caption={DefiLabel.Sigma}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.Mu}
+          caption={DefiLabel.Mu}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField={DefiField.Count}
+          caption={DefiLabel.Count}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.Outlier}
+          caption={DefiLabel.Outlier}
+          alignment="left"
+          visible={false}
+          dataType="boolean"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.Stablecoin}
+          caption={DefiLabel.Stablecoin}
+          alignment="left"
+          visible={false}
+          dataType="boolean"
+          allowHiding={true}
         />
         <Export
           enabled={true}
