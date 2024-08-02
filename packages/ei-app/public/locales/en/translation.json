@@ -128,7 +128,7 @@
   },
   "PaymentMetodSelector": {
     "Title": "Payment Options",
-    "CommingSoon": "Comming soon..."
+    "ComingSoon": "Coming soon..."
   },
   "IncomeTokensColumns":{
     "Symbol": "Symbol",

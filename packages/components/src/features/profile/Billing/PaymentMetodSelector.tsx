@@ -45,7 +45,7 @@ export const PaymentMetodSelector: FC<Props> = ({ onClose, onAttachCard, ...prop
         />
       ) : (
         <>
-          <Typography fontSize={14} fontWeight={400} variant="h6">{t("CommingSoon")}</Typography>
+          <Typography fontSize={14} fontWeight={400} variant="h6">{t("ComingSoon")}</Typography>
           <SaveChancelButtons
             disableSaveButton
             sx={{ position: "absolute", bottom: theme => theme.spacing(2), right: theme => theme.spacing(2) }}
