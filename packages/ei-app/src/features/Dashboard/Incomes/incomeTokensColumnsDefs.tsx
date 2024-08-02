@@ -1,5 +1,5 @@
 import { SymbolLookupField } from "@/features/Common/DevExpressTable/SymbolLookupField";
-import { formatTVL } from "@/features/Income/helpers";
+import { toDollarsAmountField } from "@/features/Income/helpers";
 import { PoolData } from "@/features/Income/Models/PoolData";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import i18next from "../../../libs/i18n/i18n";
@@ -69,7 +69,7 @@ export const getIncomeTokensColumnsDefs = (): GridColDef<PoolData>[] => {
       minWidth: 70,
       flex: 1,
       disableColumnMenu: true,
-      valueFormatter: params => formatTVL(params.value),
+      valueFormatter: params => toDollarsAmountField(params.value),
     },
     {
       field: "apy",

@@ -1,4 +1,4 @@
-export const formatTVL = (value?: number | null) => {
+export const toDollarsAmountField = (value?: number | null) => {
   if (!value) return "";
   if (value >= 1_000_000_000) {
     const billions = value / 1_000_000_000;
@@ -9,4 +9,19 @@ export const formatTVL = (value?: number | null) => {
   } else {
     return `$${value.toLocaleString()}`;
   }
+};
+
+export const toDollarAmountField = (cellInfo: any) => {
+  const { value } = cellInfo;
+  return toDollarsAmountField(value);
+};
+
+export const toPoolCellField = ({ data }) => {
+  return data.row.data.poolMeta ? `${data.value} (${data.row.data.poolMeta})` : data.value;
+};
+
+export const toPercentageField = (cellInfo: any) => {
+  const { value } = cellInfo;
+  if (!value) return "";
+  return `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 };
