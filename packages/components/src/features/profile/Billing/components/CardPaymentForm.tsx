@@ -23,31 +23,30 @@ type CardModel = InferType<typeof cardModelSchema>;
 type Props = React.FormHTMLAttributes<HTMLFormElement> & {
   onAttachCard: (cardData: CardModel) => void;
   onClose: () => void;
+  number?: string;
+  cvc?: string;
+  expiry?: string;
 };
 
-export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, ...props }) => {
+export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, number, cvc, expiry, ...props }) => {
   const { t } = useTranslation("CardPaymentForm");
   return (
     <Formik<CardModel>
       validateOnBlur={false}
       validateOnChange={false}
       initialValues={{
-        number: "",
-        cvc: "",
-        expiry: "",
-      }}
-      validate={values => {
-        console.log(values);
+        number: number || "",
+        cvc: cvc || "",
+        expiry: expiry || "",
       }}
       validationSchema={cardModelSchema}
       onSubmit={values => {
         onAttachCard(values);
       }}>
-      {({ errors, handleBlur, handleChange, handleSubmit, values }) => (
+      {({ errors, handleBlur, handleChange, values, initialValues }) => (
         <Form
           style={{ marginTop: "20px", height: "100%", display: "flex", flexDirection: "column", ...style }}
           noValidate
-          onSubmit={handleSubmit}
           {...props}>
           <Grid
             container
@@ -62,6 +61,7 @@ export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, ...pr
                   placeholder: "#### #### #### ####",
                   InputProps: {
                     name: "number",
+                    value: values.number,
                     endAdornment: (
                       <Stack
                         direction="row"
@@ -91,7 +91,6 @@ export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, ...pr
                 format="#### #### #### ####"
                 prefix=""
                 fullWidth
-                value={values.number}
                 onBlur={handleBlur}
                 onChange={handleChange}
                 customInput={AppTextField}
@@ -104,7 +103,7 @@ export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, ...pr
               <PatternFormat
                 sx={{ width: "100px" }}
                 autoComplete="cc-exp"
-                inputProps={{ size: "small", placeholder: "MM/YY", name: "expiry" }}
+                inputProps={{ size: "small", placeholder: "MM/YY", name: "expiry", value: values.expiry }}
                 label="Expiry Date"
                 format="##/##"
                 prefix=""
@@ -122,7 +121,7 @@ export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, ...pr
               <PatternFormat
                 sx={{ width: "100px" }}
                 autoComplete="cc-exp"
-                inputProps={{ size: "small", placeholder: t("CVC"), name: "cvc" }}
+                inputProps={{ size: "small", placeholder: t("CVC"), name: "cvc", value: values.cvc }}
                 label={t("CVC")}
                 format="###"
                 prefix=""
