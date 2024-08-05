@@ -4,7 +4,7 @@ import Stack from "@mui/system/Stack";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { CardPaymentForm } from "./CardPaymentForm";
-import { CardModel } from "./PaymentMetodSelector";
+import { CardModel } from "./PaymentMethodSelector";
 
 type Props = StackProps & {
   onAttachCard: (cardData: CardModel) => void;

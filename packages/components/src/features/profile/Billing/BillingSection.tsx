@@ -9,8 +9,8 @@ import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
 import { PaymentCardTableRow } from "./components/PaymentCardTableRow";
 import { PaymentMethodModal } from "./components/PaymentMethodModal";
-import { PaymentMethodEditor } from "./components/PaymentMetodEditor";
-import { CardModel, PaymentMetodSelector } from "./components/PaymentMetodSelector";
+import { PaymentMethodEditor } from "./components/PaymentMethodEditor";
+import { CardModel, PaymentMethodSelector } from "./components/PaymentMethodSelector";
 import { billingPlans } from "./mocks/billingPlans";
 import { PaymentCardModel } from "./models/PaymentCardModel";
 
@@ -81,7 +81,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       <PaymentMethodModal
         onClose={() => setPaymentMethodModal(false)}
         open={paymetMethodModal}>
-        <PaymentMetodSelector
+        <PaymentMethodSelector
           onClose={() => setPaymentMethodModal(false)}
           onAttachCard={onAddCard}
         />
