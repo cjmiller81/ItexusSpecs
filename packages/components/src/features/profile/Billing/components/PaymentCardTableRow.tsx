@@ -10,7 +10,7 @@ type PaymentCardProps = BoxProps & {
   onEdit: () => void;
 };
 
-export const PaymentCard = ({ number, isDefault, onSetDefault, onEdit, ...props }: PaymentCardProps) => {
+export const PaymentCardTableRow = ({ number, isDefault, onSetDefault, onEdit, ...props }: PaymentCardProps) => {
   const { t } = useTranslation("BillingContainer");
   return (
     <Stack>
