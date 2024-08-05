@@ -1,22 +1,25 @@
-import { Box, Button, Stack, StackProps, styled, Typography, useTheme } from "@mui/material";
+import { Box, Button, Stack, StackProps, styled, Typography, useMediaQuery, useTheme } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppModal } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
 import { addMessage, useAppDispatch } from "../../../slices";
 import { ProfileContainer } from "../ProfileContainer";
-import { PaymentCard } from "./PaymentCard";
-import { PaymentCardModel } from "./PaymentCardModel";
-import { CardModel, PaymentMetodSelector } from "./PaymentMetodSelector";
-import { BillingPlanContainer, PlatinumPlanPlanContainer } from "./PlanContainers";
+import { billingPlans } from "./mocks/billingPlans";
+import { BillingPlan } from "./components/BillingPlan";
+import { PaymentCardTableRow } from "./components/PaymentCardTableRow";
+import { CardModel, PaymentMetodSelector } from "./components/PaymentMetodSelector";
+import { PaymentCardModel } from "./models/PaymentCardModel";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
   const { t } = useTranslation(["BillingContainer"]);
   const [paymetMethodModal, setPaymentMethodModal] = useState(false);
   const [cards, setCards] = useState<PaymentCardModel[]>([]);
   const theme = useTheme();
+  const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const dispatch = useAppDispatch();
-  
+
   const onSetDefault = (index: number) => {
     setCards(
       cards.map((card, currentIndex) => ({
@@ -40,6 +43,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     dispatch(addMessage(t("CardAddedMessage")));
   };
 
+  const twoTilesPerRow = useMediaQuery("(max-width: 1280px)");
   return (
     <>
       <AppModal
@@ -64,16 +68,23 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       <Stack {...props}>
         <PageTitle>{t("Plans")}</PageTitle>
         <PlansContainer>
-          <PlatinumPlanPlanContainer
-            title={t("Platinum")}
-            subtitle={t("PlatinumCost")}
-            buttonTitle={t("ExplorePlans")}
-          />
-          <BillingPlanContainer
-            title={t("BillingPeriod")}
-            subtitle={t("BillingCost")}
-            buttonTitle={t("ChangeBillingPeriod")}
-          />
+          <Grid
+            item
+            container
+            spacing={3}>
+            {billingPlans.map((plan, index) => (
+              <BillingPlan
+                xs={12}
+                sm={6}
+                md={twoTilesPerRow ? 6 : 2}
+                lg={3}
+                onSelectPlan={() => setSelectedPlanIndex(index)}
+                isSelected={index === selectedPlanIndex}
+                key={index}
+                {...plan}
+              />
+            ))}
+          </Grid>
         </PlansContainer>
         <ProfileContainer
           mt={3}
@@ -87,7 +98,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           }
           title={t("PaymentMethods")}>
           {cards.map((card, index) => (
-            <PaymentCard
+            <PaymentCardTableRow
               onEdit={onEdit}
               onSetDefault={() => onSetDefault(index)}
               key={index}
@@ -117,6 +128,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
 const PlansContainer = styled(Box)(({ theme }) => ({
   display: "flex",
+  flexWrap: "nowrap",
   paddingBlock: theme.spacing(1),
   justifyContent: "space-around",
   [theme.breakpoints.down("sm")]: {

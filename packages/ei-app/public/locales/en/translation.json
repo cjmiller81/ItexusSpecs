@@ -150,6 +150,28 @@
   "LiquidityPools": {
     "SectionTitle": "Liquidity Pools"
   },
+  "BillingPlans":{
+    "WalletConnections": "Wallet Connections",
+    "WalletChainsSupported": "Wallets Chains Supported",
+    "PriceUpdates": "Price Updates",
+    "ApiCalls": "API calls",
+    "Basic": "Basic",
+    "PerDay": "1 / day",
+    "UpTo": "up to {{times}}",
+    "PerHour": "1 / hour",
+    "EveryMinutes": "every {{minutes}} minutes",
+    "Unlimited": "unlimited",
+    "RealTimeData": "Real-time data"
+  },
+  "BillingPlan":{
+    "PerMonth": "Per month",
+    "PerYear": "Per year",
+    "ContactUs": "Contact us for custom pricing",
+    "BilledYearly": "Billed yearly",
+    "BilledMonthly": "Billed monthly",
+    "SwitchToPlan": "Switch to plan",
+    "CurrentPlan": "Current plan"
+  },
   "SideBar": {
     "Home": "Home",
     "Investing": "Investing",

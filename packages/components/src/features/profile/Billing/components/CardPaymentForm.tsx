@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { PatternFormat } from "react-number-format";
 import * as Yup from "yup";
 import { InferType } from "yup";
-import AppTextField from "../../../components/common/inputs/AppTextField";
+import AppTextField from "../../../../components/common/inputs/AppTextField";
 import { SaveChancelButtons } from "./SaveChancelButtons";
 
 const requiredError = i18next.t("mandatoryField", { ns: "ErrorMessages" });
