@@ -1,5 +1,5 @@
-import { getTranslator } from "../../../lib";
-import { BillingPlan, PermissionItem } from "./components/BillingPlan";
+import { getTranslator } from "../../../../lib";
+import { BillingPlan, PermissionItem } from "../components/BillingPlan";
 
 const T = getTranslator("BillingPlans");
 const getDefaultPlans = (wallets: string, chains: string, priceUpdates: string, apiCalls: string): PermissionItem[] => {

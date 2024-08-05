@@ -6,7 +6,7 @@ import { AppModal } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
 import { addMessage, useAppDispatch } from "../../../slices";
 import { ProfileContainer } from "../ProfileContainer";
-import { billingPlans } from "./billingPlans";
+import { billingPlans } from "./mocks/billingPlans";
 import { BillingPlan } from "./components/BillingPlan";
 import { PaymentCardTableRow } from "./components/PaymentCardTableRow";
 import { CardModel, PaymentMetodSelector } from "./components/PaymentMetodSelector";
