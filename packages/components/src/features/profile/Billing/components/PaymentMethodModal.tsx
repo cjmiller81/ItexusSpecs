@@ -2,7 +2,7 @@ import { useTheme } from "@mui/material";
 import { FC } from "react";
 import { AppModal, AppModalProps } from "../../../../components";
 
-export const PaymentMetodModal: FC<AppModalProps> = ({ children, ...props }) => {
+export const PaymentMethodModal: FC<AppModalProps> = ({ children, ...props }) => {
   const theme = useTheme();
 
   return (

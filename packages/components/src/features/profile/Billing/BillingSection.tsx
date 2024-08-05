@@ -8,8 +8,8 @@ import { addMessage, useAppDispatch } from "../../../slices";
 import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
 import { PaymentCardTableRow } from "./components/PaymentCardTableRow";
-import { PaymentMetodModal } from "./components/PaymentMethodModal";
-import { PaymentMetodEditor } from "./components/PaymentMetodEditor";
+import { PaymentMethodModal } from "./components/PaymentMethodModal";
+import { PaymentMethodEditor } from "./components/PaymentMetodEditor";
 import { CardModel, PaymentMetodSelector } from "./components/PaymentMetodSelector";
 import { billingPlans } from "./mocks/billingPlans";
 import { PaymentCardModel } from "./models/PaymentCardModel";
@@ -78,29 +78,29 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         onClose={() => setCardToDeleteIndex(undefined)}
       />
 
-      <PaymentMetodModal
+      <PaymentMethodModal
         onClose={() => setPaymentMethodModal(false)}
         open={paymetMethodModal}>
         <PaymentMetodSelector
           onClose={() => setPaymentMethodModal(false)}
           onAttachCard={onAddCard}
         />
-      </PaymentMetodModal>
+      </PaymentMethodModal>
 
-      <PaymentMetodModal
+      <PaymentMethodModal
         onClose={() => setCardToEditIndex(undefined)}
         open={cardToEditIndex !== undefined}>
         <>
           {cardToEditIndex !== undefined && (
-            <PaymentMetodEditor
+            <PaymentMethodEditor
               number={cards[cardToEditIndex].number}
               cvc={cards[cardToEditIndex].cvc}
               expiry={cards[cardToEditIndex].expiry}
               onClose={() => setCardToEditIndex(undefined)}
-              onAttachCard={onEditCard}></PaymentMetodEditor>
+              onAttachCard={onEditCard}></PaymentMethodEditor>
           )}
         </>
-      </PaymentMetodModal>
+      </PaymentMethodModal>
 
       <Stack {...props}>
         <PageTitle>{t("Plans")}</PageTitle>

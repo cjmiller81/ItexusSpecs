@@ -126,7 +126,7 @@
     "CVC": "CVC",
     "ExpirationDate": "Expiration Date"
   },
-  "PaymentMetodSelector": {
+  "PaymentMethodSelector": {
     "Title": "Payment Options",
     "ComingSoon": "Coming soon..."
   },

@@ -14,8 +14,8 @@ type Props = StackProps & {
   expiry?: string;
 };
 
-export const PaymentMetodEditor: FC<Props> = ({ onClose, onAttachCard, number, cvc, expiry, ...props }) => {
-  const { t } = useTranslation("PaymentMetodSelector");
+export const PaymentMethodEditor: FC<Props> = ({ onClose, onAttachCard, number, cvc, expiry, ...props }) => {
+  const { t } = useTranslation("PaymentMethodSelector");
   return (
     <Stack
       spacing={3}
