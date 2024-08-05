@@ -126,7 +126,7 @@
     "CVC": "CVC",
     "ExpirationDate": "Expiration Date"
   },
-  "PaymentMetodSelector": {
+  "PaymentMethodSelector": {
     "Title": "Payment Options",
     "ComingSoon": "Coming soon..."
   },
@@ -237,7 +237,11 @@
     "AddNewMethod": "Add New Method",
     "PaymentMethods": "Payment Methods",
     "MakeDefault": "Make Default",
-    "CardAddedMessage": "Card was successfully added"
+    "CardAddedMessage": "Card was successfully added",
+    "DeleteCardDialogContent": "Are you sure you want to delete this card?",
+    "DeleteCardDialogTitle": "Delete Card",
+    "CardDeletedMessage": "Card was successfully deleted",
+    "CardEditedMessage": "Card was successfully edited"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

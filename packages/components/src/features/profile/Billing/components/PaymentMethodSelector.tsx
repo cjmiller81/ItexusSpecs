@@ -25,9 +25,9 @@ type Props = StackProps & {
   onClose: () => void;
 };
 
-export const PaymentMetodSelector: FC<Props> = ({ onClose, onAttachCard, ...props }) => {
+export const PaymentMethodSelector: FC<Props> = ({ onClose, onAttachCard, ...props }) => {
   const [tab, setTab] = useState<TabsType>("card");
-  const { t } = useTranslation("PaymentMetodSelector");
+  const { t } = useTranslation("PaymentMethodSelector");
   return (
     <Stack
       spacing={3}
