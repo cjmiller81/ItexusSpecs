@@ -34,6 +34,8 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
   const [showSellConfirmationPopup, setShowSellConfirmationPopup] = useState<boolean>(false)
   const prevSecondsLeft = usePrevious(secondsLeft)
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false)
+  const [minSize] = useState(10)
+  const [maxSize] = useState(1_000_000_000)
 
   const handleEvents = (message: any) => {
     if (isOrderEvent(message)) {
@@ -304,6 +306,8 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
         symbol1={symbol1}
         symbol2={symbol2}
         amount={amount}
+        minSize={minSize}
+        maxSize={maxSize}
         onAmountChange={value => setAmount(value)}
         onInitiateRfq={handleInitiateRFQ}
         sellCellValue={rfqModel?.BidPx}
