@@ -2,6 +2,7 @@ import { Box, Card, CardProps, Typography, useTheme } from "@mui/material";
 import { Stack } from "@mui/system";
 import { Status } from "components";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { BuySellCell } from "./BuySellCell";
 import ContrastDecimalField from "./ContrastDecimalField";
 import { ProgressFooter } from "./ProgressBar";
@@ -22,6 +23,8 @@ type TileProps = Omit<CardProps, "children"> & {
   onAmountChange: (amount: number) => void;
   onSellClick: () => void;
   onBuyClick: () => void;
+  minSize: number;
+  maxSize: number;
 };
 
 const Tile: React.FC<TileProps> = ({
@@ -39,10 +42,15 @@ const Tile: React.FC<TileProps> = ({
   onBuyClick,
   statusFetchingRfq,
   onInitiateRfq,
+  minSize,
+  maxSize,
   sx,
   ...props
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation("Tile");
+  const isLessThanMinSize = amount < minSize;
+  const isGreaterThanMaxSize = amount > maxSize;
   return (
     <Card
       {...props}
@@ -79,7 +87,7 @@ const Tile: React.FC<TileProps> = ({
                   paddingLeft={2}
                   paddingRight={2}>
                   <RfqButton
-                    disabled={!symbol1 || !symbol2 || !amount}
+                    disabled={!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize}
                     sx={{
                       height: "45px",
                       ":disabled": {
@@ -95,16 +103,35 @@ const Tile: React.FC<TileProps> = ({
                     onRequote={onReject}
                   />
                 </Box>
-                <ContrastDecimalField
-                  size="small"
-                  sx={{ input: { padding: "4px" }, width: "100%" }}
-                  label={symbol1 || ""}
-                  placeholder="1,000.000"
-                  disabled={rfqButtonState !== "requiring"}
-                  value={amount}
-                  maxDecimals={5}
-                  onChange={onAmountChange}
-                />
+                <Box>
+                  <ContrastDecimalField
+                    size="small"
+                    sx={{
+                      input: { padding: "4px" },
+                      width: "100%",
+                      "& .MuiFormHelperText-root": {
+                        fontSize: "11px",
+                        textAlign: "center",
+                        width: "100%",
+                        position: "absolute",
+                        textWrap: "nowrap",
+                        bottom: "-20px",
+                        ml: "-7px",
+                      },
+                    }}
+                    autoComplete="on"
+                    label={symbol1 || ""}
+                    placeholder="1,000.000"
+                    disabled={rfqButtonState !== "requiring"}
+                    value={amount}
+                    maxDecimals={5}
+                    error={isLessThanMinSize || isGreaterThanMaxSize}
+                    helperText={
+                      isLessThanMinSize ? t("MinSizeError") : isGreaterThanMaxSize ? t("MaxSizeError") : ""
+                    }
+                    onChange={onAmountChange}
+                  />
+                </Box>
               </Stack>
               <BuySellCell
                 cellType="buy"
@@ -129,7 +156,7 @@ const Tile: React.FC<TileProps> = ({
             label="Min Size"
             size="small"
             disabled
-            value={10}
+            value={minSize}
             maxDecimals={2}
             sx={{ input: { padding: "4px" }, width: "115px" }}
           />
@@ -151,7 +178,7 @@ const Tile: React.FC<TileProps> = ({
             size="small"
             maxDecimals={2}
             disabled
-            value={1000000000}
+            value={maxSize}
             sx={{ input: { padding: "4px" }, width: "115px" }}
           />
         </Stack>

@@ -10,6 +10,7 @@ type AppInputPropsOverride = AppInputProps & {
 export type DecimalInputProps = Omit<TextFieldProps, "onChange" | "value"> &
   AppInputPropsOverride & {
     max?: number;
+    min?: number;
     maxDecimals?: number;
   };
 
@@ -17,6 +18,7 @@ export const DecimalInput = ({
   onChange,
   value,
   max,
+  min,
   maxDecimals,
   onSelect,
   onKeyDown,
@@ -52,8 +54,10 @@ export const DecimalInput = ({
   };
 
   const handleBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = event => {
-    const floatValue = parseFloat(inputRef.current!.value.replace(/,/g, ""));
+    let floatValue = parseFloat(inputRef.current!.value.replace(/,/g, ""));
     if (!isNaN(floatValue)) {
+      if (max !== undefined) floatValue = floatValue > max ? max : floatValue;
+      if (min !== undefined) floatValue = floatValue < min ? min : floatValue;
       const formattedValue = formatWithSeparators(floatValue);
       setFormattedValue(formattedValue);
     }
