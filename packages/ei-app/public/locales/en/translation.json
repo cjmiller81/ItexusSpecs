@@ -161,7 +161,8 @@
     "PerHour": "1 / hour",
     "EveryMinutes": "every {{minutes}} minutes",
     "Unlimited": "unlimited",
-    "RealTimeData": "Real-time data"
+    "RealTimeData": "Real-time data",
+    "TotalApiCalls": "{{calls}} Total Requests/day"
   },
   "BillingPlan":{
     "PerMonth": "Per month",
