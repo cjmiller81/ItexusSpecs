@@ -8,3 +8,9 @@
     text-align: right;
   }
 }
+
+.trade-qty-input {
+  input[disabled]:not(input[type=submit]) {
+      background-color: #3b3b3b;
+  }
+}

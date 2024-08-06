@@ -67,7 +67,7 @@ const AccountsTable: React.FC<AccountsTableProps> = ({ accountNumber, data, onCh
                 }}
                 align="left"
               >
-                {row.accountBalance}
+                {"$" + Math.round(parseFloat((row.accountBalance?.units ?? 0) + "." + (row.accountBalance?.nanos ?? 0)) * 100) / 100}
               </TableCell>
               <TableCell
                 sx={{

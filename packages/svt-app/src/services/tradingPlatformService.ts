@@ -21,7 +21,15 @@ export enum IvlRiskTolerance {
   High, Medium, Low
 }
 export enum OrderStatus {
-  Submitted, Working, Partial, Filled, PendingCancel, Error, FilledPartiallyAndCancelled, Canceled, Undefined
+  Undefined = -1,
+  Submitted = 0,
+  Working = 2,
+  Partial = 3,
+  Filled = 4,
+  PendingCancel = 5,
+  Error = 6,
+  FilledPartiallyAndCancelled = 7,
+  Canceled = 8,
 }
 
 export interface ExchangePosition {
@@ -43,7 +51,10 @@ export interface ExchangePosition {
 
 export interface ExchangeAccount {
   exchangeUsername: string
-  accountBalance: number
+  accountBalance: {
+    units: number,
+    nanos: number
+  } | null,
   accountName: string | null
   accountNumber: string
   authorityLevel: string | null
@@ -65,27 +76,48 @@ export interface TastytradeAccountConnect {
 export interface SvtIvlStrategyAccountConnect {
   accountNumber:	string
   riskTolerance: IvlRiskTolerance
-  capitalAllocation: number
-  capitalAllocationNext: number
+  capitalAllocation: {
+    units: number,
+    nanos: number
+  } | null
+  capitalAllocationNext: {
+    units: number,
+    nanos: number
+  } | null
   closingOnly: boolean
 }
 
 export interface SvtIvlEsStrategySetStatus {
   isStarted: boolean
   entryOrderId:	string | null
-  entryOrderStatus:	string | null
+  entryExchangeOrderId: string | null
+  entryOrderStatus:	OrderStatus | null
   entryOrderSymbol:	string | null
-  exitOrderId:	string | null
-  exitOrderStatus:	string | null
+  exitOrderId: string | null
+  exitExchangeOrderId: string | null
+  exitOrderStatus:	OrderStatus | null
   exitOrderSymbol:	string | null
   exchangeUsername: string
   accountNumber:	string | null
   riskTolerance:	IvlRiskTolerance
-  capitalAllocation:	number
-  capitalAllocationStart: number
-  capitalAllocationNext: number
-  contractQty:	number | null
-  closingOnly: boolean
+  capitalAllocation:	{
+    units: number,
+    nanos: number
+  } | null
+  capitalAllocationStart: {
+    units: number,
+    nanos: number
+  } | null
+  capitalAllocationNext: {
+    units: number,
+    nanos: number
+  } | null
+  contractQty:	{
+    units: number,
+    nanos: number
+  } | null
+  closingOnly: boolean,
+  userMessage: string | null,
 }
 export interface CreateFifoStrategyRequest {
   active: boolean,
@@ -172,7 +204,7 @@ export function useUpsertTastytradeConnection(callbacks?: Callbacks) {
   return useMutation(
     "tastytradeConnect",
     async (connection: TastytradeAccountConnect) => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/account/tastytrade/connect?source=WordPress`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/account/tastytrade/connect`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
@@ -184,6 +216,8 @@ export function useUpsertTastytradeConnection(callbacks?: Callbacks) {
         body: JSON.stringify(
           {
             ...connection,
+            rememberToken: "",
+            source: "WordPress",
             epdCustomerId: wp_api_settings.epdCustomerId,
             stripeCustomerId: wp_api_settings.stripeCustomerId,
           }
@@ -212,7 +246,7 @@ export function useGetAccountList(callbacks?: Callbacks) {
   return useMutation(
     "accounts",
     async () => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/accounts`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/accounts`)
 
       let response = await fetch(url.toString(), {
         method: "GET",
@@ -243,7 +277,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
   return useMutation(
     "upsertIvlAutomation",
     async (accountConnect: SvtIvlEsStrategySetStatus) => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es?source=WordPress`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/ivl/es?source=WordPress`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
@@ -255,7 +289,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
         body: JSON.stringify({
           accountNumber:	accountConnect.accountNumber,
           riskTolerance: accountConnect.riskTolerance,
-          capitalAllocation: accountConnect.capitalAllocation ?? 0,
+          capitalAllocation: accountConnect.capitalAllocation,
           capitalAllocationNext: accountConnect.capitalAllocationNext,
           closingOnly: accountConnect.closingOnly
         } as SvtIvlStrategyAccountConnect)
@@ -283,7 +317,7 @@ export function useGetIvlAutomationStatus(callbacks?: Callbacks) {
   return useMutation(
     "ivlAutomationStatus",
     async () => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/ivl/es`)
 
       let response = await fetch(url.toString(), {
         method: "GET",
@@ -317,7 +351,7 @@ export function useStopIvlAutomation(callbacks?: Callbacks) {
   return useMutation(
     "stopIvlAutomation",
     async () => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es/stop`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/ivl/es/stop`)
 
       let response = await fetch(url.toString(), {
         method: "POST",

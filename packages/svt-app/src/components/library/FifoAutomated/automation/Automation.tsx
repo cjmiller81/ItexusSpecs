@@ -44,7 +44,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
     <AutomationTabs
       onAddStrategy={onAddStrategy}
-      capitalAllocation={parseFloat(strategyAccountConnectState?.capitalAllocation as any)}
+      capitalAllocation={parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any)}
       tabs={tabPanels}
       isMutating={isMutating} />
   );

@@ -58,7 +58,10 @@ export default function IvlAutomated() {
   } as TastytradeAccountConnect);
   const [tableData, setTableData] = React.useState<ExchangeAccount[]>([] as ExchangeAccount[]);
   const [exchangeAccountState, setExchangeAccountState] = React.useState<ExchangeAccount>({
-    accountBalance: 0,
+    accountBalance: {
+      units: 0,
+      nanos: 0,
+    },
     accountName: "",
     accountNumber: "",
     authorityLevel: "",
@@ -72,8 +75,14 @@ export default function IvlAutomated() {
   const [strategyAccountConnectState, setStrategyAccountConnectState] = React.useState<SvtIvlEsStrategySetStatus>({
     accountNumber: "",
     riskTolerance: IvlRiskTolerance.High,
-    capitalAllocationStart: 0,
-    capitalAllocationNext: 0,
+    capitalAllocationStart: {
+      units: 0,
+      nanos: 0,
+    },
+    capitalAllocationNext: {
+      units: 0,
+      nanos: 0,
+    },
     closingOnly: false,
   } as SvtIvlEsStrategySetStatus);
 
@@ -221,10 +230,12 @@ export default function IvlAutomated() {
               capitalAllocationNext: strategySetStatus.capitalAllocationNext,
               contractQty: strategySetStatus.contractQty,
               entryOrderId: strategySetStatus.entryOrderId,
+              entryExchangeOrderId: strategySetStatus.entryExchangeOrderId,
               entryOrderStatus: strategySetStatus.entryOrderStatus,
               entryOrderSymbol: strategySetStatus.entryOrderSymbol,
               exchangeUsername: strategySetStatus.exchangeUsername,
               exitOrderId: strategySetStatus.exitOrderId,
+              exitExchangeOrderId: strategySetStatus.exitExchangeOrderId,
               exitOrderStatus: strategySetStatus.exitOrderStatus,
               exitOrderSymbol: strategySetStatus.exitOrderSymbol,
               isStarted: strategySetStatus.isStarted,
@@ -234,6 +245,7 @@ export default function IvlAutomated() {
 
             setStatus("accountSelectionSubmitted", true);
             setAutomationRunning(strategySetStatus.isStarted);
+            setErrorMessage(strategySetStatus.userMessage ?? "");
           }
 
           if (strategySetStatus.exchangeUsername && strategySetStatus.exchangeUsername.length > 0 && strategySetStatus.accountNumber && strategySetStatus.accountNumber.length > 0) {
@@ -326,9 +338,9 @@ export default function IvlAutomated() {
 
   const handleCapitalAllocation = useCallback((newCapitalAllocation: number, localOnly: boolean = false): void => {
     if (localOnly) {
-      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: { units: newCapitalAllocation, nanos: 0 } });
     } else {
-      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: newCapitalAllocation});
+      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: { units: newCapitalAllocation, nanos: 0 } });
     }
   }, [strategyAccountConnectState, upsertIvlAutomation]);
 

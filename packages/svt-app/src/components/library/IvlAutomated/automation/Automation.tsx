@@ -4,7 +4,7 @@ import { Box, Checkbox, Button, Grid, Typography, Stack, FormControlLabel } from
 import AutomationTabs from "./tabs";
 import PositionTable, { IPositionTableRow } from "./position-table";
 import CurrencyInput from "../../InputFields/currency-input";
-import { SvtIvlEsStrategySetStatus } from "../../../../services/tradingPlatformService";
+import { OrderStatus, SvtIvlEsStrategySetStatus } from "../../../../services/tradingPlatformService";
 
 import "./Automation.scss";
 import { LoadIndicator } from "devextreme-react";
@@ -45,7 +45,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const [capitalError, setCapitalError] = useState<boolean>(false);
   const [capitalErrorMessage, setCapitalErrorMessage] = useState<string>("");
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
-  const [localCapitalAllocation, setLocalCapitalAllocation] = React.useState<number>(strategyAccountConnectState?.capitalAllocationNext);
+  const [localCapitalAllocation, setLocalCapitalAllocation] = React.useState<number>((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0));
 
   const tabPanels: TabPanel[] = [
     {
@@ -88,7 +88,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
   const handleClosingOnlyChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
     setPendingClosingOnlyResponse(true);
     setClosingOnlyLocal(checked);
-    onClosingOnlyChange(checked, (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0) ? false : true);
+    onClosingOnlyChange(checked, (strategyAccountConnectState?.capitalAllocation && parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any) > 0) ? false : true);
   }, [onClosingOnlyChange, strategyAccountConnectState?.capitalAllocation])
 
   const handleCapitalAllocationButton = useCallback(() => {
@@ -102,7 +102,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   const handleCapitalAllocationChange = useCallback((newCapitalAllocation: number):void => {
     currencyValdiation(newCapitalAllocation);
-    if (!(strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)) {
+    if (!(strategyAccountConnectState?.capitalAllocation && parseFloat((strategyAccountConnectState?.capitalAllocation?.units ?? 0) as any) > 0)) {
       onCapitalAllocationChange(newCapitalAllocation, true);
     } else {
       setLocalCapitalAllocation(parseFloat(newCapitalAllocation as any));
@@ -119,7 +119,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   useEffect(() => {
     if (pendingCapitalAllocationResponse) {
-      if (parseFloat(localCapitalAllocation as any) === parseFloat(strategyAccountConnectState?.capitalAllocationNext as any)) {
+      if (parseFloat(localCapitalAllocation as any) === parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any)) {
         setPendingCapitalAllocationResponse(false);
       }
     }
@@ -135,36 +135,36 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
 
   useEffect(() => {
     if (
-      strategyAccountConnectState.entryOrderId &&
-      strategyAccountConnectState.exitOrderId
+      strategyAccountConnectState.entryExchangeOrderId as string !== "" &&
+      strategyAccountConnectState.exitExchangeOrderId as string !== ""
     ) {
       setPositionTableData([
         {
           id: 1,
-          orderNumber: strategyAccountConnectState.entryOrderId,
+          orderNumber: strategyAccountConnectState.entryExchangeOrderId as string,
           type: "Entry",
-          status: strategyAccountConnectState.entryOrderStatus as string,
-          symbol: strategyAccountConnectState.exitOrderSymbol as string,
-          qty: strategyAccountConnectState.contractQty as number,
+          status: OrderStatus[strategyAccountConnectState.entryOrderStatus as OrderStatus] as string,
+          symbol: strategyAccountConnectState.entryOrderSymbol as string,
+          qty: (strategyAccountConnectState?.contractQty?.units ?? 0) as number,
         },
         {
           id: 2,
-          orderNumber: strategyAccountConnectState.exitOrderId,
+          orderNumber: strategyAccountConnectState.exitExchangeOrderId as string,
           type: "Exit",
-          status: strategyAccountConnectState.exitOrderStatus as string,
+          status: OrderStatus[strategyAccountConnectState.exitOrderStatus as OrderStatus] as string,
           symbol: strategyAccountConnectState.exitOrderSymbol as string,
-          qty: strategyAccountConnectState.contractQty as number,
+          qty: (strategyAccountConnectState?.contractQty?.units ?? 0) as number,
         },
       ]);
-    } else if (strategyAccountConnectState.entryOrderId) {
+    } else if (strategyAccountConnectState.entryExchangeOrderId as string !== "") {
       setPositionTableData([
         {
           id: 1,
-          orderNumber: strategyAccountConnectState.entryOrderId,
+          orderNumber: strategyAccountConnectState.entryExchangeOrderId as string,
           type: "Entry",
-          status: strategyAccountConnectState.entryOrderStatus as string,
-          symbol: strategyAccountConnectState.exitOrderSymbol as string,
-          qty: strategyAccountConnectState.contractQty as number,
+          status: OrderStatus[strategyAccountConnectState.entryOrderStatus as OrderStatus] as string,
+          symbol: strategyAccountConnectState.entryOrderSymbol as string,
+          qty: (strategyAccountConnectState?.contractQty?.units ?? 0) as number,
         },
       ]);
     } else {
@@ -195,7 +195,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                 variant="outlined"
                 onClick={handleAutomationRunningChange}
                 disabled={
-                  !(parseFloat(strategyAccountConnectState.capitalAllocationNext as any) >= 13000)
+                  !(parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any) >= 13000)
                   || pendingAutomationResponse
                   || pendingCapitalAllocationResponse
                   || pendingClosingOnlyResponse
@@ -258,10 +258,10 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                     disabled={false}
                     capitalAllocation={parseFloat(
                         (
-                          ((strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)
-                          && parseFloat(strategyAccountConnectState?.capitalAllocationNext as any) === parseFloat(strategyAccountConnectState?.capitalAllocationStart as any))
+                          ((strategyAccountConnectState?.capitalAllocation && parseFloat(((strategyAccountConnectState?.capitalAllocation?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocation?.nanos ?? 0)) as any) > 0)
+                          && parseFloat(((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocationNext?.nanos ?? 0)) as any) === parseFloat(((strategyAccountConnectState?.capitalAllocationStart?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocationStart?.nanos ?? 0)) as any))
                             ? localCapitalAllocation
-                            : strategyAccountConnectState?.capitalAllocationNext
+                            : (strategyAccountConnectState?.capitalAllocationNext?.units ?? 0)
                         ) as any
                       )
                     }
@@ -270,7 +270,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                   />
                 </Grid>
                 <Grid item xs={3} md="auto">
-                  { (strategyAccountConnectState?.capitalAllocation && parseFloat(strategyAccountConnectState?.capitalAllocation as any) > 0)
+                  { (strategyAccountConnectState?.capitalAllocation && parseFloat(((strategyAccountConnectState?.capitalAllocation?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocation?.nanos ?? 0)) as any) > 0)
                     ? <Button
                         color={"success"}
                         variant="outlined"
@@ -279,7 +279,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                           pendingAutomationResponse
                           || pendingCapitalAllocationResponse
                           || pendingClosingOnlyResponse
-                          || (parseFloat(localCapitalAllocation as any) === parseFloat(strategyAccountConnectState?.capitalAllocationNext as any))
+                          || (parseFloat(localCapitalAllocation as any) === parseFloat(((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocationNext?.nanos ?? 0)) as any))
                         }
                         sx={{ mr: 1 }}
                       >
@@ -320,7 +320,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
             </Box>
           </Grid>
           <Grid item xs={12}>
-            <AutomationTabs capitalAllocation={parseFloat(strategyAccountConnectState?.capitalAllocation as any)} tabs={tabPanels} />
+            <AutomationTabs capitalAllocation={parseFloat(((strategyAccountConnectState?.capitalAllocation?.units ?? 0) + "." + (strategyAccountConnectState?.capitalAllocation?.nanos ?? 0)) as any)} tabs={tabPanels} />
           </Grid>
         </Grid>
       </Box>
