@@ -245,6 +245,7 @@ export default function IvlAutomated() {
 
             setStatus("accountSelectionSubmitted", true);
             setAutomationRunning(strategySetStatus.isStarted);
+            setErrorMessage(strategySetStatus.userMessage ?? "");
           }
 
           if (strategySetStatus.exchangeUsername && strategySetStatus.exchangeUsername.length > 0 && strategySetStatus.accountNumber && strategySetStatus.accountNumber.length > 0) {

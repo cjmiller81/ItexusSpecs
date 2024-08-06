@@ -116,7 +116,8 @@ export interface SvtIvlEsStrategySetStatus {
     units: number,
     nanos: number
   } | null
-  closingOnly: boolean
+  closingOnly: boolean,
+  userMessage: string | null,
 }
 export interface CreateFifoStrategyRequest {
   active: boolean,
