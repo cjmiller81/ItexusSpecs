@@ -21,7 +21,7 @@ export default function SpotRFQPage() {
   const { pairs } = useAppSelector(state => state.currencies);
   const dispatch = useAppDispatch();
   const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
-  const {t} = useTranslation("SpotRFQPage");
+  const { t } = useTranslation("SpotRFQPage");
 
   useEffect(() => {
     if ("Notification" in window) {
@@ -32,8 +32,27 @@ export default function SpotRFQPage() {
     dispatch(fetchPairs({}));
   }, []);
 
+  useEffect(() => {
+    if (fromDate && toDate)
+      dispatch(
+        fetchExecutionHistoryData({
+          accountNumber: accountNumber,
+          fromDate,
+          toDate,
+        }),
+      );
+  }, [fromDate, toDate]);
+
   const getHistoryData = async () => {
     if (fromDate && toDate) handleHistoryRequest(fromDate, toDate);
+  };
+
+  const onUpdateHistory = async () => {
+    const newToDate = moment().add(1, "d").toDate();
+    const newFromDate = moment().add(-1, "M").toDate();
+    setToDate(newToDate);
+    setFromDate(newFromDate);
+    handleHistoryRequest(newFromDate, newToDate);
   };
 
   const handleHistoryRequest = (fromDate: Date, toDate: Date) => {
@@ -101,7 +120,7 @@ export default function SpotRFQPage() {
               symbol1={symbol1}
               symbol2={symbol2}
               accountNumber={accountNumber}
-              onUpdateHistory={getHistoryData}
+              onUpdateHistory={onUpdateHistory}
               sx={{ mt: 5, height: "300px" }}
             />
           </Stack>

@@ -103,6 +103,7 @@ export const TableHeader = ({
         <Button
           onClick={handleMenuOpen}
           sx={{
+            padding: "5px 11px",
             color: theme.palette.grey[700],
             border: "1px solid",
             borderColor: theme.palette.grey[500],
@@ -120,7 +121,7 @@ export const TableHeader = ({
               ? `${dayjs(fromDate).format("MM/DD/YYYY")}\u00A0—\u00A0${dayjs(toDate).format("MM/DD/YYYY")}`
               : "Select Date Range"}
           </span>
-          <InsertInvitationIcon sx={{ ml: 1, color: theme.palette.grey[600], marginLeft: 0 }} />
+          <InsertInvitationIcon sx={{ ml: 1, color: theme.palette.grey[600] }} />
         </Button>
         <Menu
           anchorEl={menuAnchor}
@@ -144,23 +145,6 @@ export const TableHeader = ({
           </MenuItem>
         </Menu>
       </Box>
-      <Button
-        sx={{ minWidth: "150px" }}
-        variant="contained"
-        disabled={!(fromDate && toDate)}
-        onClick={handleHistory}>
-        Run History
-      </Button>
-      <HistoryRoundedIcon
-        onClick={handleHistory}
-        sx={{
-          cursor: "pointer",
-          "&:hover": {
-            color: "primary.main",
-          },
-          ml: theme => theme.spacing(0.5),
-        }}
-      />
       <Button
         onClick={handleDownloadCsv}
         sx={{ display: "flex", gap: 0.5, alignItems: "center", padding: "0 1" }}>
