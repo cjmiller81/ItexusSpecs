@@ -3,6 +3,8 @@ import { ICoin } from "components/src/models/token/ICoin";
 import DataGridDef, {
   Column,
   ColumnChooser,
+  ColumnChooserSearch,
+  ColumnChooserSelection,
   Export,
   FilterBuilderPopup,
   FilterPanel,
@@ -11,6 +13,7 @@ import DataGridDef, {
   LoadPanel,
   Pager,
   Paging,
+  Position,
   Search,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
@@ -136,7 +139,27 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           showInfo={true}
           showNavigationButtons={true}
         />
-        <ColumnChooser enabled={true} />
+        <ColumnChooser
+          height={500}
+          enabled={true}
+          mode="select">
+          <Position
+            my="right top"
+            at="right bottom"
+            of=".dx-datagrid-column-chooser-button"
+          />
+
+          <ColumnChooserSearch
+            enabled={true}
+            editorOptions={true}
+          />
+
+          <ColumnChooserSelection
+            allowSelectAll={true}
+            selectByClick={true}
+            recursive={true}
+          />
+        </ColumnChooser>
 
         <Column
           dataField={DefiField.Symbol}
@@ -144,7 +167,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
-          allowHiding={false}
+          allowHiding={true}
           cellComponent={toPoolCellField}
         />
         <Column
@@ -153,7 +176,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
-          allowHiding={false}
+          allowHiding={true}
           cellComponent={ProjectCellComponent}
         />
         <Column
@@ -162,7 +185,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
-          allowHiding={false}
+          allowHiding={true}
           cellComponent={ChainCell}
         />
         <Column
@@ -171,7 +194,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="number"
-          allowHiding={false}
+          allowHiding={true}
           customizeText={toDollarAmountField}
         />
         <Column
@@ -180,7 +203,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="number"
-          allowHiding={false}
+          allowHiding={true}
           customizeText={toPercentageField}
         />
         <Column
@@ -189,7 +212,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="number"
-          allowHiding={false}
+          allowHiding={true}
           customizeText={toPercentageField}
         />
         <Column
