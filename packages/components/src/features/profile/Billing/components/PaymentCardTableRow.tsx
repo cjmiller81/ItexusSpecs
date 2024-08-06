@@ -1,5 +1,5 @@
 import PaymentIcon from "@mui/icons-material/Payment";
-import { Box, BoxProps, Button, Chip, Stack, Typography, darken, styled } from "@mui/material";
+import { Box, BoxProps, Button, Chip, Stack, Typography, darken, lighten, styled } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { useTranslation } from "react-i18next";
 
@@ -7,10 +7,18 @@ type PaymentCardProps = BoxProps & {
   number: string;
   isDefault: boolean;
   onSetDefault: () => void;
+  onDelete: () => void;
   onEdit: () => void;
 };
 
-export const PaymentCard = ({ number, isDefault, onSetDefault, onEdit, ...props }: PaymentCardProps) => {
+export const PaymentCardTableRow = ({
+  number,
+  isDefault,
+  onSetDefault,
+  onDelete,
+  onEdit,
+  ...props
+}: PaymentCardProps) => {
   const { t } = useTranslation("BillingContainer");
   return (
     <Stack>
@@ -44,8 +52,24 @@ export const PaymentCard = ({ number, isDefault, onSetDefault, onEdit, ...props 
             flexItem
           />
           <Button
+            onClick={onDelete}
+            sx={{
+              padding: "2px 10px",
+              color: theme => theme.palette.error.main,
+              borderColor: theme => lighten(theme.palette.error.main, 0.5),
+              border: "1px solid",
+            }}
+            variant="link">
+            {t("Delete", { ns: "Common" })}
+          </Button>
+          <Button
             onClick={onEdit}
-            sx={{ padding: "2px 10px" }}
+            sx={{
+              padding: "2px 10px",
+              color: theme => theme.palette.warning.main,
+              borderColor: theme => lighten(theme.palette.warning.main, 0.5),
+              border: "1px solid",
+            }}
             variant="link">
             {t("Edit", { ns: "Common" })}
           </Button>
