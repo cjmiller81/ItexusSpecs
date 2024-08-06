@@ -82,7 +82,8 @@ export const DecimalInput = ({
   const handleKeyPress: KeyboardEventHandler<HTMLInputElement> | undefined = event => {
     if (
       !event.code.startsWith("Digit") &&
-      !(event.code.startsWith("Period") && !inputRef.current!.value.includes("."))
+      !/^Numpad[0-9]$/.test(event.code) &&
+      !(event.code === "Period" || (event.code === "NumpadDecimal" && !inputRef.current!.value.includes(".")))
     ) {
       event.preventDefault();
       return false;
