@@ -34,7 +34,7 @@ export const billingPlans: BillingPlan[] = [
     plans: getDefaultPlans("1", "2", T("PerDay"), T("TotalApiCalls", {calls: "100,000"})),
   },
   {
-    planName: T("Standart"),
+    planName: T("Standard"),
     price: 49,
     plans: getDefaultPlans(T("UpTo", { times: 5 }), "4", T("PerHour"), T("TotalApiCalls", {calls: "200,000"})),
   },
