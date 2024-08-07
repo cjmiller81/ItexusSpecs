@@ -5,6 +5,8 @@ import { IPlatform } from "components/src/models/token/IPlatform"
 import DataGridDef, {
   Column,
   ColumnChooser,
+  ColumnChooserSearch,
+  ColumnChooserSelection,
   Export,
   FilterBuilderPopup,
   FilterPanel,
@@ -13,6 +15,7 @@ import DataGridDef, {
   LoadPanel,
   Pager,
   Paging,
+  Position,
   Search,
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
@@ -241,7 +244,27 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           showInfo={true}
           showNavigationButtons={true}
         />
-        <ColumnChooser enabled={true} />
+         <ColumnChooser
+          height={500}
+          enabled={true}
+          mode="select">
+          <Position
+            my="right top"
+            at="right bottom"
+            of=".dx-datagrid-column-chooser-button"
+          />
+
+          <ColumnChooserSearch
+            enabled={true}
+            editorOptions={true}
+          />
+
+          <ColumnChooserSelection
+            allowSelectAll={true}
+            selectByClick={true}
+            recursive={true}
+          />
+        </ColumnChooser>
         <Column
           dataField={PrefilterTokensField.Symbol}
           caption={PrefilterTokensLabel.Symbol}
