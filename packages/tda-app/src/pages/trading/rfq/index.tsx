@@ -1,11 +1,11 @@
 import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection";
-import CurrencyDropdown from "@/features/trading/rfq/CurrencyDropdown";
 import { TileSection } from "@/features/trading/rfq/TileSection";
+import CurrencyDropdown from "@/features/trading/rfq/components/CurrencyDropdown";
 import HistoryDataTable from "@/features/trading/rfq/history-data-table/HistoryDataTable";
 import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
 import { fetchExecutionHistoryData } from "@/features/trading/rfq/slices/rfqSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Grid, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Grid, Stack, Typography, useMediaQuery } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
