@@ -60,11 +60,9 @@ const SwitchContainer = styled(Box)(() => ({
 }));
 
 const ThemeSwitcher: FC<BoxProps> = props => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const { mode, onChangeMode } = useConfig();
 
   const onChange = () => {
-    setIsDarkMode(!isDarkMode);
     onChangeMode(mode === ThemeMode.LIGHT ? ThemeMode.DARK : ThemeMode.LIGHT);
   };
   return (
@@ -81,7 +79,7 @@ const ThemeSwitcher: FC<BoxProps> = props => {
           control={
             <MaterialUISwitch
               defaultChecked
-              checked={isDarkMode}
+              checked={mode === ThemeMode.DARK}
               onChange={onChange}
             />
           }
