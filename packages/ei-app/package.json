@@ -17,6 +17,10 @@
     "lint": "next lint --fix",
     "test": "jest"
   },
+  "dependencies": {
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.4"
+  },
   "msw": {
     "workerDirectory": [
       "public"

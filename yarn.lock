@@ -14805,6 +14805,9 @@ __metadata:
 "ei-app@workspace:packages/ei-app":
   version: 0.0.0-use.local
   resolution: "ei-app@workspace:packages/ei-app"
+  dependencies:
+    jest: "npm:^29.7.0"
+    ts-jest: "npm:^29.2.4"
   languageName: unknown
   linkType: soft
 
