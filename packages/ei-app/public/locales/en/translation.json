@@ -130,7 +130,7 @@
     "Title": "Payment Options",
     "ComingSoon": "Coming soon..."
   },
-  "IncomeTokensColumns":{
+  "IncomeTokensColumns": {
     "Symbol": "Symbol",
     "Project": "Project",
     "Chain": "Chain",
@@ -147,10 +147,13 @@
     "UploadAvatar": "Upload Image/Avatar",
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
+  "TotalWalletsWorthCard": {
+    "TotalWalletWorth": "Total Wallet Worth"
+  },
   "LiquidityPools": {
     "SectionTitle": "Liquidity Pools"
   },
-  "BillingPlans":{
+  "BillingPlans": {
     "WalletConnections": "Wallet Connections",
     "WalletChainsSupported": "Wallets Chains Supported",
     "PriceUpdates": "Price Updates",
@@ -165,7 +168,7 @@
     "TotalApiCalls": "{{calls}} Total Requests/day",
     "Standard": "Standard"
   },
-  "BillingPlan":{
+  "BillingPlan": {
     "PerMonth": "Per month",
     "PerYear": "Per year",
     "ContactUs": "Contact us for custom pricing",
