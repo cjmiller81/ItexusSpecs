@@ -22,7 +22,6 @@
     "url": "git@info-emergentcybernetics.github.com:EmergentCybernetics/ItexusSpecs.git"
   },
   "scripts": {
-    "test": "node ./__tests__/components.test.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

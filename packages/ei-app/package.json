@@ -14,7 +14,8 @@
     "start": "next start",
     "start:local": "PORT=3000 node server-local-https.js",
     "release": "standard-version",
-    "lint": "next lint --fix"
+    "lint": "next lint --fix",
+    "test": "jest"
   },
   "msw": {
     "workerDirectory": [
