@@ -1,10 +1,11 @@
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { amber } from "@mui/material/colors";
 import { Chip } from "@mui/material";
 import { FC } from "react";
 
 export const StatusChip: FC<{ status: string }> = ({ status }) => {
+  const yellow = amber.A400;
   switch (status) {
     case "Filled":
       return (
@@ -30,10 +31,9 @@ export const StatusChip: FC<{ status: string }> = ({ status }) => {
       return (
         <Chip
           label="Rejected"
-          color="error"
           variant="outlined"
-          icon={<ErrorOutlineIcon />}
-          sx={{ borderRadius: 30, fontSize: "inherit" }}
+          icon={<InfoOutlinedIcon style={{ color: yellow }} />}
+          sx={{ borderRadius: 30, color: yellow, borderColor: yellow }}
         />
       );
     default:

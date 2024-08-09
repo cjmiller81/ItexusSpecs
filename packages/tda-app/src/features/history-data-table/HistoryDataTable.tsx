@@ -78,6 +78,17 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
     setSorting(newSorting);
   };
 
+  const updatedRows = rows.map(transaction => {
+    const newStatus = transaction.status === "Error" ? "Rejected" : transaction.status;
+    const shortId = transaction.id ? transaction.id.slice(0, 4) : transaction.id;
+
+    return {
+      ...transaction,
+      status: newStatus,
+      id: shortId,
+    };
+  });
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <MainCard
