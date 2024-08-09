@@ -3,7 +3,7 @@ import { Stack } from "@mui/system";
 import { Status } from "components";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { BuySellCell } from "./BuySellCell/BuySellCell";
+import BuySellCell from "./BuySellCell";
 import ContrastDecimalField from "./ContrastDecimalField";
 import { ProgressFooter } from "./ProgressBar";
 import { RfqButton, RfqStage } from "./RfqButton";

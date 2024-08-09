@@ -7,7 +7,7 @@ import { usePrevious } from "@/hooks/usePrevious";
 import { useSignalR } from "@/hooks/useSignalR";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { SnackbarProps } from "@/types/snackbar";
-import { CardProps, Snackbar } from "@mui/material";
+import { CardProps } from "@mui/material";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import useCountDown from "react-countdown-hook";
 import { useTranslation } from "react-i18next";
@@ -110,10 +110,17 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
     let formattedAmount = amount.toLocaleString("en-US");
 
     const [symbol1Parsed, symbol2Parsed] = event.marketSymbol.split("-");
-    const snackBarMessage =
-      event.instruction === "Buy"
-        ? `You have Bought ${formattedAmount} ${symbol1Parsed} and Sold ${totalAmountFormatted} ${symbol2Parsed} (Notional Value) at a Rate of ${rfqModel.BidPx}`
-        : `You have Sold ${formattedAmount} ${symbol1Parsed} and Bought ${totalAmountFormatted} ${symbol2Parsed} (Notional Value) at a Rate of ${rfqModel.BidPx}`;
+
+    const snackBarMessage = t(
+      event.instruction === "Buy" ? "BuySnackBarConfirmationText" : "SellSnackBarConfirmationText",
+      {
+        amount: formattedAmount,
+        symbol1: symbol1Parsed,
+        totalAmount: totalAmountFormatted,
+        symbol2: symbol2Parsed,
+        bidPx: rfqModel.BidPx,
+      },
+    );
 
     openSnackbar({
       open: true,
@@ -280,7 +287,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
         alert: {
           variant: "outlined",
           color: "error",
-        }
+        },
       } as SnackbarProps);
     }
   }, [rfqModel]);

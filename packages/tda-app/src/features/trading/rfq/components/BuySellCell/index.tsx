@@ -19,7 +19,7 @@ export type BuySellCellProps = BoxProps & {
   isQuoteSubmitting?: boolean;
 };
 
-export const BuySellCell: FC<BuySellCellProps> = ({
+const BuySellCell: FC<BuySellCellProps> = ({
   title,
   value,
   isExpired,
@@ -85,3 +85,5 @@ export const BuySellCell: FC<BuySellCellProps> = ({
     </Box>
   );
 };
+
+export default BuySellCell;
