@@ -9,7 +9,7 @@ export const accountNumber = "EC_TEST";
 
 const TradeHistory: React.FC = () => {
   const rows = useAppSelector(state => state.rfq.historyData);
-  const {t} = useTranslation("TradeHistory");
+  const { t } = useTranslation("TradeHistory");
   const [toDate, setToDate] = useState<Date | null>(moment().add(1, "d").toDate());
   const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate());
   const dispatch = useAppDispatch();
@@ -17,6 +17,25 @@ const TradeHistory: React.FC = () => {
   useEffect(() => {
     getHistoryData();
   }, []);
+
+  useEffect(() => {
+    if (fromDate && toDate)
+      dispatch(
+        fetchHistoryData({
+          accountNumber: accountNumber,
+          fromDate,
+          toDate,
+        }),
+      );
+  }, [fromDate, toDate]);
+
+  const onUpdateHistory = async () => {
+    const newToDate = moment().add(1, "d").toDate();
+    const newFromDate = moment().add(-1, "M").toDate();
+    setToDate(newToDate);
+    setFromDate(newFromDate);
+    handleHistoryRequest(newFromDate, newToDate);
+  };
 
   const handleHistoryRequest = (fromDate: Date, toDate: Date) => {
     dispatch(fetchHistoryData({ accountNumber: accountNumber, fromDate, toDate }));
@@ -34,7 +53,7 @@ const TradeHistory: React.FC = () => {
       onFromDateChange={setFromDate}
       onToDateChange={setToDate}
       rows={rows}
-      handleHistoryRequest={handleHistoryRequest}
+      handleHistoryRequest={onUpdateHistory}
     />
   );
 };
