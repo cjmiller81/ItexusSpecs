@@ -3,7 +3,7 @@ import { Stack } from "@mui/system";
 import { Status } from "components";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { BuySellCell } from "./BuySellCell";
+import BuySellCell from "./BuySellCell";
 import ContrastDecimalField from "./ContrastDecimalField";
 import { ProgressFooter } from "./ProgressBar";
 import { RfqButton, RfqStage } from "./RfqButton";
@@ -18,6 +18,15 @@ type TileProps = Omit<CardProps, "children"> & {
   amount: number;
   progress: number;
   secondsLeft: number;
+  onSell: () => void;
+  onBuy: () => void;
+  onDiscardSell: () => void;
+  onDiscardBuy: () => void;
+  isSellConfirming?: boolean;
+  sellConfirmingText: string;
+  buyConfirmingText: string;
+  isBuyConfirming?: boolean;
+  isQuoteSubmitting: boolean;
   onInitiateRfq: () => void;
   onReject: () => void;
   onAmountChange: (amount: number) => void;
@@ -44,6 +53,15 @@ const Tile: React.FC<TileProps> = ({
   onInitiateRfq,
   minSize,
   maxSize,
+  sellConfirmingText,
+  buyConfirmingText,
+  isSellConfirming,
+  isBuyConfirming,
+  isQuoteSubmitting,
+  onSell,
+  onBuy,
+  onDiscardSell,
+  onDiscardBuy,
   sx,
   ...props
 }) => {
@@ -72,12 +90,17 @@ const Tile: React.FC<TileProps> = ({
               gap={1}
               justifyContent="space-between">
               <BuySellCell
-                cellType="sell"
+                isQuoteSubmitting={isQuoteSubmitting}
+                confirmationText={sellConfirmingText}
+                isConfirming={isSellConfirming}
                 onCellClick={onSellClick}
+                cellType="sell"
+                onDiscard={onDiscardSell}
+                onConfirm={onSell}
                 isExpired={rfqButtonState === "requote"}
                 title="SELL"
                 isRequesting={statusFetchingRfq === "loading"}
-                value={sellCellValue}
+                value={buyCellValue && sellCellValue ? sellCellValue : null}
               />
               <Stack
                 alignItems="center"
@@ -126,21 +149,24 @@ const Tile: React.FC<TileProps> = ({
                     value={amount}
                     maxDecimals={5}
                     error={isLessThanMinSize || isGreaterThanMaxSize}
-                    helperText={
-                      isLessThanMinSize ? t("MinSizeError") : isGreaterThanMaxSize ? t("MaxSizeError") : ""
-                    }
+                    helperText={isLessThanMinSize ? t("MinSizeError") : isGreaterThanMaxSize ? t("MaxSizeError") : ""}
                     onChange={onAmountChange}
                   />
                 </Box>
               </Stack>
               <BuySellCell
+                isQuoteSubmitting={isQuoteSubmitting}
+                confirmationText={buyConfirmingText}
+                isConfirming={isBuyConfirming}
+                onCellClick={onBuyClick}
                 cellType="buy"
                 contentAlignment="end"
-                onCellClick={onBuyClick}
+                onConfirm={onBuy}
+                onDiscard={onDiscardBuy}
                 isExpired={rfqButtonState === "requote"}
                 title="BUY"
                 isRequesting={statusFetchingRfq === "loading"}
-                value={buyCellValue}
+                value={buyCellValue && sellCellValue ? buyCellValue : null}
               />
             </Stack>
           </Stack>
