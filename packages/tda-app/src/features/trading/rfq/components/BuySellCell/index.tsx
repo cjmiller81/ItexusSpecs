@@ -49,11 +49,16 @@ const BuySellCell: FC<BuySellCellProps> = ({
 
   return (
     <Box
-      borderRadius={2}
-      p={isConfirming ? 0.1 : 1}
-      px={2}
       sx={{
-        minWidth: "190px",
+        padding: isConfirming ? 0 : 1,
+        minWidth: "200px",
+        [theme.breakpoints.down("sm")]: {
+          maxWidth: "125px",
+          minWidth: "125px",
+          p: isConfirming ? 0 : 0.6,
+        },
+        paddingBlock: "8px",
+        borderRadius: "8px",
         width: "100%",
         height: "100%",
         cursor: "pointer",

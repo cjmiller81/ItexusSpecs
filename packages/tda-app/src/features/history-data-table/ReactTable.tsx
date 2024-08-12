@@ -63,9 +63,11 @@ export const ReactTable = ({
             <Table>
               <TableHead>
                 {table.getHeaderGroups().map((headerGroup: HeaderGroup<any>) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableRow
+                    key={headerGroup.id}
+                    sx={{ width: "100%" }}>
                     {headerGroup.headers.map(header => (
-                      <TableCell
+                      <StyledHeaderCell
                         key={header.id}
                         {...header.column.columnDef.meta}
                         sortDirection={
@@ -77,6 +79,10 @@ export const ReactTable = ({
                         }>
                         {header.isPlaceholder ? null : (
                           <TableSortLabel
+                            hideSortIcon={true}
+                            sx={{
+                              width: header.column.getIsSorted() ? "100%" : "0px !important",
+                            }}
                             active={!!header.column.getIsSorted()}
                             direction={
                               header.column.getIsSorted()
@@ -89,7 +95,7 @@ export const ReactTable = ({
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </TableSortLabel>
                         )}
-                      </TableCell>
+                      </StyledHeaderCell>
                     ))}
                   </TableRow>
                 ))}
@@ -98,11 +104,11 @@ export const ReactTable = ({
                 {table.getRowModel().rows.map(row => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map(cell => (
-                      <TableCell
+                      <StyledTableCell
                         key={cell.id}
                         {...cell.column.columnDef.meta}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                      </StyledTableCell>
                     ))}
                   </TableRow>
                 ))}
@@ -126,6 +132,29 @@ export const ReactTable = ({
     </StyledMainCard>
   );
 };
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [theme.breakpoints.down("md")]: {
+    padding: "4px",
+    fontSize: "12px",
+    ":first-of-type": {
+      paddingLeft: "8px !important",
+    },
+  },
+  [theme.breakpoints.down("sm")]: {
+    padding: "2px",
+    paddingLeft: "2px !important",
+    paddingRight: "2px !important",
+    fontSize: "9px",
+    ":first-of-type": {
+      paddingLeft: "4px !important",
+    },
+  },
+}));
+
+const StyledHeaderCell = styled(StyledTableCell)(() => ({
+  alignContent: "left",
+}));
 
 const StyledMainCard = styled(MainCard)(({ theme }) => ({
   "& .MuiCardHeader-root": {

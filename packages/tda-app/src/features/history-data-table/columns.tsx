@@ -1,32 +1,59 @@
-import { Box } from "@mui/system";
-import {
-    ColumnDef
-} from "@tanstack/react-table";
+import { Typography } from "@mui/material";
+import { Box, Theme, useMediaQuery } from "@mui/system";
+import { ColumnDef } from "@tanstack/react-table";
 import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
 import moment from "moment";
 import { StatusChip } from "./StatusChip";
 
-export const columns: ColumnDef<HistoryDataParsed>[] = [
+export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataParsed, any>[] => {
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  return [
     {
       accessorKey: "transactTime",
       header: "Trade Time",
-      minSize: 100,
+      enableResizing: true,
+      meta: {
+        sx: { minWidth: 62 },
+      } as any,
       cell: props =>
         moment(props.getValue() as Date)
           .local()
           .format("YYYY-MM-DD HH:mm:ss"),
     },
-    { accessorKey: "id", header: "Order ID" },
-    { accessorKey: "symbol", header: "Pair", minSize: 100 },
+    {
+      accessorKey: "id",
+      header: "Order ID",
+      enableResizing: true,
+      cell: props => (
+        <Typography
+          fontSize="inherit"
+          maxWidth={isSmall ? 30 : "100%"}
+          noWrap
+          {...props}>
+          {props.getValue()}
+        </Typography>
+      ),
+    },
+    {
+      accessorKey: "symbol",
+      enableResizing: true,
+      header: "Pair",
+      minSize: 100,
+      meta: {
+        sx: {
+          minWidth: 50,
+        },
+      } as any,
+    },
     {
       accessorKey: "side",
       header: "Action",
-      minSize: 100,
+      enableResizing: true,
       cell: props => {
         const action = props.getValue() as string;
         let bgColor = "transparent";
         let textColor = "inherit";
-  
+
         if (action === "Buy") {
           bgColor = "rgba(149, 222, 100, 0.2)";
           textColor = "success.dark";
@@ -34,7 +61,7 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
           bgColor = "rgba(222, 100, 100, 0.2)";
           textColor = "error.dark";
         }
-  
+
         return (
           <Box
             sx={{
@@ -43,7 +70,8 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
               py: 0.4,
               color: textColor,
               bgcolor: bgColor,
-              maxWidth: "max-content",
+              width: "max-content",
+              flex: 1,
             }}>
             {action}
           </Box>
@@ -53,6 +81,7 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
     {
       accessorKey: "filledQty",
       header: "Quantity",
+      enableResizing: true,
       cell: props => {
         const value = Number(props.getValue() as string);
         return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
@@ -61,6 +90,7 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
     {
       accessorKey: "filledPrice",
       header: "Price",
+      enableResizing: true,
       cell: props => {
         const value = Number(props.getValue() as string);
         return value.toFixed(5);
@@ -69,6 +99,8 @@ export const columns: ColumnDef<HistoryDataParsed>[] = [
     {
       accessorKey: "status",
       header: "Status",
-      cell: props => <StatusChip status={props.getValue() as string}/>,
-    }
+      enableResizing: true,
+      cell: props => <StatusChip status={props.getValue() as string} />,
+    },
   ];
+};

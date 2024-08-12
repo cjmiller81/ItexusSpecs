@@ -1,13 +1,14 @@
-import { LoadingButton, LoadingButtonProps } from "@mui/lab"
-import { FC } from "react"
+import { LoadingButton, LoadingButtonProps } from "@mui/lab";
+import { useTheme } from "@mui/material";
+import { FC } from "react";
 
-export type RfqStage = "cancelable" | "requiring" | "requote" | "inProgress"
+export type RfqStage = "cancelable" | "requiring" | "requote" | "inProgress";
 type RfqButtonProps = {
-  onInitiateRFQ: () => void
-  stage: RfqStage
-  onCancel: () => void
-  onRequote: () => void
-}
+  onInitiateRFQ: () => void;
+  stage: RfqStage;
+  onCancel: () => void;
+  onRequote: () => void;
+};
 
 export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps> = ({
   onInitiateRFQ,
@@ -17,21 +18,22 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
   sx,
   ...props
 }) => {
+  const theme = useTheme();
   const onHandleClick = () => {
     switch (stage) {
       case "cancelable":
-        onCancel()
-        break
+        onCancel();
+        break;
       case "requiring":
-        onInitiateRFQ()
-        break
+        onInitiateRFQ();
+        break;
       case "requote":
-        onRequote()
-        break
+        onRequote();
+        break;
       default:
-        throw "Invalid stage value"
+        throw "Invalid stage value";
     }
-  }
+  };
   return (
     <LoadingButton
       {...props}
@@ -39,14 +41,18 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
       variant="contained"
       sx={{
         height: theme => theme.spacing(5),
-        width: "10rem",
+        textWrap: "nowrap",
+        width: "100%",
+        [theme.breakpoints.down("sm")]: {
+          fontSize: "11px",
+        },
         textTransform: "capitalize",
         lineHeight: 1.4,
-        ...sx
+        ...sx,
       }}>
       {stage === "requiring" && "Initiate RFQ"}
       {stage === "cancelable" && "Cancel RFQ"}
       {stage === "requote" && "Requote"}
     </LoadingButton>
-  )
-}
+  );
+};
