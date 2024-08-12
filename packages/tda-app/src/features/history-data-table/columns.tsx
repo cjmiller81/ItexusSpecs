@@ -6,14 +6,13 @@ import moment from "moment";
 import { StatusChip } from "./StatusChip";
 
 export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataParsed, any>[] => {
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   return [
     {
       accessorKey: "transactTime",
       header: "Trade Time",
       enableResizing: true,
       meta: {
-        sx: { minWidth: 62 },
+        sx: { minWidth: 22 },
       } as any,
       cell: props =>
         moment(props.getValue() as Date)
@@ -27,7 +26,12 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
       cell: props => (
         <Typography
           fontSize="inherit"
-          maxWidth={isSmall ? 30 : "100%"}
+          sx={{
+            maxWidth: "100%",
+            [theme.breakpoints.down("sm")]: {
+              maxWidth: 50,
+            }
+          }}
           noWrap
           {...props}>
           {props.getValue()}
