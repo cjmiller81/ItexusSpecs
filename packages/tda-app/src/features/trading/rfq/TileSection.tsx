@@ -74,7 +74,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
         symbol2: symbol2,
         buyAmount: amount.toLocaleString("en-US"),
         sellAmount: ((rfqModel?.OfferPx || 0) * amount).toLocaleString("en-US"),
-        buyValue: (rfqModel?.OfferPx || 0).toFixed(6),
+        buyValue: (rfqModel?.OfferPx || 0).toFixed(4),
       }),
     [amount, rfqModel, symbol1],
   );
@@ -86,7 +86,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
         symbol2: symbol2,
         sellAmount: amount.toLocaleString("en-US"),
         buyAmount: ((rfqModel?.OfferPx || 0) * amount).toLocaleString("en-US"),
-        sellValue: (rfqModel?.OfferPx || 0).toFixed(6),
+        sellValue: (rfqModel?.OfferPx || 0).toFixed(4),
       }),
     [amount, rfqModel, symbol1],
   );

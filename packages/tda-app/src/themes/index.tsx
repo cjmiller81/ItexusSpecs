@@ -34,7 +34,7 @@ export default function ThemeCustomization({ children }: ThemeCustomizationProps
     () => ({
       breakpoints: {
         values: {
-          xs: 0,
+          xs: 480,
           sm: 768,
           md: 1024,
           lg: 1266,
