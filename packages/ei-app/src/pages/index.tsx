@@ -29,7 +29,6 @@ export default function HomePage() {
   const firstName = session?.identity?.traits.name.first;
   const { t } = useTranslation("HomePage");
   const wallets = useAppSelector(state => state.wallets.wallets);
-  const firstLoad = useAppSelector(state => state.wallets.firstLoad);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
@@ -48,11 +47,11 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null));
-  }, [firstLoad]);
+    if (wallets === null) dispatch(fetchWallets(null));
+  }, [wallets]);
 
   useEffect(() => {
-    if (!wallets.length) return;
+    if (!wallets?.length) return;
 
     dispatch(fetchHistoricalWalletData());
   }, [wallets]);

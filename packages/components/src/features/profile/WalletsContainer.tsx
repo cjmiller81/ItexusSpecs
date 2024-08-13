@@ -14,14 +14,14 @@ import { MyWalletsSection } from "../myWallets/MyWalletsSection"
 interface Props extends BoxProps {}
 
 export const WalletsContainer = ({ ...props }: Props) => {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, firstLoad } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
     state => state.wallets,
   )
 
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null))
+    if (wallets === null) dispatch(fetchWallets(null))
   }, [dispatch])
 
   useEffect(() => {
