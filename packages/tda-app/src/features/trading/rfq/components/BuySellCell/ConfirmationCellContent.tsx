@@ -53,7 +53,7 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
           },
         }}
         whiteSpace="pre-line">
-        {t("TradeConfirmation")}
+        {t("TradeConfirmation").toUpperCase()}
       </Typography>
       <Typography
         color={theme.palette.common.white}
