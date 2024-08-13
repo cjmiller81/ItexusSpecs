@@ -1,4 +1,4 @@
-import { HistoryDataTable } from "@/features/trading/rfq/history-data-table/HistoryDataTable";
+import { HistoryDataTable } from "@/features/history-data-table/HistoryDataTable";
 import { fetchHistoryData } from "@/features/trading/rfq/slices/rfqSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import moment from "moment";

@@ -22,13 +22,14 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
   const { t } = useTranslation("ConfirmationCellContent");
   return (
     <Stack
+      width="100%"
       height={"100%"}
       direction="column"
       justifyContent={"space-between"}
       {...props}>
       <Typography
         color={theme.palette.common.white}
-        fontSize={13}
+        fontSize={{ xs: 10, sm: 10, md: 14 }}
         fontWeight={600}
         letterSpacing={1}
         textAlign={"center"}
@@ -40,7 +41,7 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
       </Typography>
       <Typography
         color={theme.palette.common.white}
-        fontSize={10}
+        fontSize={{ xs: 8, sm: 8, md: 10 }}
         textAlign={"center"}
         whiteSpace="pre-line">
         {confirmationText}
@@ -51,6 +52,11 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
         justifyContent={"center"}
         spacing={1}>
         <StyledButton
+          sx={{
+            minWidth: "10px",
+            minHeight: "8px",
+            width: "100%",
+          }}
           onClick={event => {
             event.stopPropagation();
             onNo();
@@ -58,6 +64,11 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
           {t("No", { ns: "Common" })}
         </StyledButton>
         <StyledButton
+          sx={{
+            minWidth: "10px",
+            minHeight: "8px",
+            width: "100%",
+          }}
           loading={isQuoteSubmitting}
           onClick={onYes}>
           {!isQuoteSubmitting && t("Yes", { ns: "Common" })}

@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, useMediaQuery } from "@mui/material";
 import { Stack, StackProps, useTheme } from "@mui/system";
 import { FC } from "react";
 import { InLargedNumberText } from "./InLargedNumberText";
@@ -21,6 +21,9 @@ export const PriceCellContent: FC<BuySellCellProps> = ({ title, value, ...props 
         sx={{
           color: "white",
           fontSize: 22,
+          [theme.breakpoints.down("sm")]: {
+            fontSize: 16,
+          },
           lineHeight: 1,
           fontWeight: 800,
           WebkitTextStroke: theme.palette.mode === "dark" ? "1px black" : "1px black",

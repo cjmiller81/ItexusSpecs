@@ -5,7 +5,7 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import BuySellCell from "./BuySellCell";
 import ContrastDecimalField from "./ContrastDecimalField";
-import { ProgressFooter } from "./ProgressBar";
+import FooterSection from "./FooterSection";
 import { RfqButton, RfqStage } from "./RfqButton";
 
 type TileProps = Omit<CardProps, "children"> & {
@@ -72,7 +72,15 @@ const Tile: React.FC<TileProps> = ({
   return (
     <Card
       {...props}
-      sx={{ p: 2, ...sx }}>
+      sx={{
+        ...sx,
+        [theme.breakpoints.down("sm")]: {
+          borderBlock: "0px",
+          width: "100%",
+          paddingLeft: "6px",
+          paddingRight: "6px",
+        },
+      }}>
       <Stack
         justifyContent="space-between"
         height="100%"
@@ -83,12 +91,16 @@ const Tile: React.FC<TileProps> = ({
             direction="row"
             width="100%">
             <Stack
-              mt={1}
-              width="100%"
-              direction="row"
-              alignItems="center"
-              gap={1}
-              justifyContent="space-between">
+              sx={{
+                gap: "8px",
+                width: "100%",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                [theme.breakpoints.down("sm")]: {
+                  gap: "4px",
+                },
+              }}>
               <BuySellCell
                 isQuoteSubmitting={isQuoteSubmitting}
                 confirmationText={sellConfirmingText}
@@ -105,37 +117,44 @@ const Tile: React.FC<TileProps> = ({
               <Stack
                 alignItems="center"
                 spacing={3}>
-                <Box
-                  width="100%"
-                  paddingLeft={2}
-                  paddingRight={2}>
-                  <RfqButton
-                    disabled={!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize}
-                    sx={{
-                      height: "45px",
-                      ":disabled": {
-                        bgcolor: theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
-                      },
-                    }}
-                    loading={
-                      statusFetchingRfq === "loading" || rfqButtonState === "inProgress" || rfqButtonState === "requote"
-                    }
-                    stage={rfqButtonState}
-                    onInitiateRFQ={onInitiateRfq}
-                    onCancel={onReject}
-                    onRequote={onReject}
-                  />
-                </Box>
+                <RfqButton
+                  disabled={!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize}
+                  sx={{
+                    height: "45px",
+                    width: "100%",
+                    [theme.breakpoints.down("sm")]: {
+                      height: "38px",
+                    },
+                    ":disabled": {
+                      bgcolor: theme.palette.mode === "dark" ? theme.palette.grey[200] : theme.palette.grey[400],
+                    },
+                  }}
+                  loading={
+                    statusFetchingRfq === "loading" || rfqButtonState === "inProgress" || rfqButtonState === "requote"
+                  }
+                  stage={rfqButtonState}
+                  onInitiateRFQ={onInitiateRfq}
+                  onCancel={onReject}
+                  onRequote={onReject}
+                />
                 <Box>
                   <ContrastDecimalField
                     size="small"
                     sx={{
-                      input: { padding: "4px" },
-                      width: "100%",
+                      input: {
+                        padding: "4px",
+                        [theme.breakpoints.down("sm")]: {
+                          padding: "2px",
+                          minWidth: "20px",
+                        },
+                      },
                       "& .MuiFormHelperText-root": {
                         fontSize: "11px",
+                        [theme.breakpoints.down("sm")]: {
+                          fontSize: "4px",
+                          minWidth: "20px",
+                        },
                         textAlign: "center",
-                        width: "100%",
                         position: "absolute",
                         textWrap: "nowrap",
                         bottom: "-20px",
@@ -171,43 +190,15 @@ const Tile: React.FC<TileProps> = ({
             </Stack>
           </Stack>
         </Stack>
-        <Stack
+        <FooterSection
           mt={5}
-          alignItems="center"
-          direction="row"
-          height="40px"
-          justifyContent="space-between"
-          width="100%">
-          <ContrastDecimalField
-            label="Min Size"
-            size="small"
-            disabled
-            value={minSize}
-            maxDecimals={2}
-            sx={{ input: { padding: "4px" }, width: "115px" }}
-          />
-
-          {progress > 0 && (
-            <Stack>
-              <ProgressFooter
-                alignSelf="center"
-                width="300px"
-                secondsLeft={secondsLeft}
-                progress={progress}
-                handleReject={onReject}
-              />
-            </Stack>
-          )}
-
-          <ContrastDecimalField
-            label="Max Size"
-            size="small"
-            maxDecimals={2}
-            disabled
-            value={maxSize}
-            sx={{ input: { padding: "4px" }, width: "115px" }}
-          />
-        </Stack>
+          {...{
+            maxSize,
+            minSize,
+            progress,
+            secondsLeft,
+            onReject,
+          }}></FooterSection>
       </Stack>
     </Card>
   );
