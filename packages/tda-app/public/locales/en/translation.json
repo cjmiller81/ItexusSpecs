@@ -39,8 +39,8 @@
   },
   "TileSection":{
     "QuoteRejected": "Quote Rejected. Please, try again.",
-    "BuyConfirmationText": "Buy {{buyAmount}} {{symbol1}} and Sell {{sellAmount}} {{symbol2}}\n(Notional Value) @ {{buyValue}}",
-    "SellConfirmationText": "Sell {{sellAmount}} {{symbol1}} and Buy {{buyAmount}} {{symbol2}}\n(Notional Value) @ {{sellValue}}",
+    "BuyConfirmationText": "Buy {{buyAmount}} {{symbol1}} / Sell {{sellAmount}}\n{{symbol2}} (Notional Value) @ {{buyValue}}",
+    "SellConfirmationText": "Sell {{sellAmount}} {{symbol1}} / Buy {{buyAmount}}\n{{symbol2}} (Notional Value) @ {{sellValue}}",
     "BuySnackBarConfirmationText": "You have Bought {{amount}} {{symbol1}} and Sold {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
     "SellSnackBarConfirmationText": "You have Sold {{amount}} {{symbol1}} and Bought {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}"
   },
@@ -65,7 +65,7 @@
     "EmailAddress": "Email Address"
   },
   "ConfirmationCellContent":{
-    "TradeConfirmation": "Trade Confirmation"
+    "TradeConfirmation": "TRADE CONFIRMATION"
   },
   "ErrorMessages": {
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",

@@ -46,18 +46,19 @@ const BuySellCell: FC<BuySellCellProps> = ({
   if (value && cellType === "buy") {
     bgColor = theme.palette.mode === "dark" ? blue[700] : blue[400];
   }
-
   return (
     <Box
       sx={{
         padding: isConfirming ? 0 : 1,
         minWidth: "200px",
+        maxWidth: "200px",
+        paddingBlock: "8px",
+        paddingBottom: "0px",
         [theme.breakpoints.down("sm")]: {
           maxWidth: "125px",
           minWidth: "125px",
-          p: isConfirming ? 0 : 0.6,
+          paddingBottom: isConfirming ? "0px" : "2px",
         },
-        paddingBlock: "8px",
         borderRadius: "8px",
         width: "100%",
         height: "100%",
@@ -75,6 +76,7 @@ const BuySellCell: FC<BuySellCellProps> = ({
       onClick={onCellClick}>
       {isConfirming ? (
         <ConfirmationCellContent
+          cellType={cellType}
           isQuoteSubmitting={isQuoteSubmitting}
           onYes={onConfirm}
           onNo={onDiscard}
