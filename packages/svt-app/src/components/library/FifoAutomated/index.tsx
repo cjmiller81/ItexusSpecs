@@ -14,7 +14,7 @@ import Login from "./login";
 import Accounts from "./accounts";
 import AccountStatus from "./account-status";
 import AutomationComponent from "./automation/Automation";
-import { ExchangeAccount, FifoStrategyListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useCreateFifoStrategy, useDeleteStrategy, useGetAccountList, useGetFifoStrategy, useGetIvlAutomationStatus, useStartStrategy, useStopIvlAutomation, useStopStrategy, useUpsertIvlAutomation, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
+import { ExchangeAccount, FifoStrategyListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useCreateFifoStrategy, useDeleteStrategy, useGetAccountList, useGetFifoStrategy, useStartStrategy, useStopStrategy, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
 import { v4 as uuid } from "uuid"
 import "./FifoAutomated.scss";
 import { useMediaQuery } from "@mui/material";
