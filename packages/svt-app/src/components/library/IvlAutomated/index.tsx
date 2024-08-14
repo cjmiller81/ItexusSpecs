@@ -338,9 +338,9 @@ export default function IvlAutomated() {
 
   const handleCapitalAllocation = useCallback((newCapitalAllocation: number, localOnly: boolean = false): void => {
     if (localOnly) {
-      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: { units: newCapitalAllocation, nanos: 0 } });
+      setStrategyAccountConnectState({...strategyAccountConnectState, capitalAllocationNext: { units: Math.floor(newCapitalAllocation), nanos: parseInt((newCapitalAllocation % 1).toFixed(2).substring(2)) } });
     } else {
-      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: { units: newCapitalAllocation, nanos: 0 } });
+      upsertIvlAutomation.mutate({...strategyAccountConnectState, capitalAllocationNext: { units: Math.floor(newCapitalAllocation), nanos: parseInt((newCapitalAllocation % 1).toFixed(2).substring(2)) } });
     }
   }, [strategyAccountConnectState, upsertIvlAutomation]);
 
