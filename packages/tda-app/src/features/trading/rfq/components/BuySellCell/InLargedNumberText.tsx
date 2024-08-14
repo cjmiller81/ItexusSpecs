@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Box, BoxProps } from "@mui/system";
 import { FC } from "react";
 
@@ -6,10 +6,12 @@ type Props = BoxProps & {
   value?: number | null;
 };
 
-export const InLargedNumberText: FC<Props> = ({value}) => {
+export const InLargedNumberText: FC<Props> = ({ value }) => {
   const [integerPart, decimalPart] = value ? value.toFixed(5).split(".") : ["", ""];
-  const smallFontSize = 24;
-  const bigFontSize = 42;
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const smallFontSize = isSmall ? 18 : 24;
+  const bigFontSize = isSmall ? 31 : 42;
   return (
     <Box
       height="100%"
@@ -27,7 +29,14 @@ export const InLargedNumberText: FC<Props> = ({value}) => {
         {integerPart}
       </Typography>
 
-      {Boolean(integerPart.length) && "."}
+      <Typography
+        fontWeight={700}
+        sx={{ color: "white", WebkitTextStroke: "1px black" }}
+        fontSize={smallFontSize}
+        component="span"
+        lineHeight={1}>
+        {Boolean(integerPart.length) && "."}
+      </Typography>
       {decimalPart.split("").map((digit, index) => {
         if (index === 2 || index === 3) {
           return (

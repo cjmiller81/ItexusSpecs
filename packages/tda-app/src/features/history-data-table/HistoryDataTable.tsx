@@ -1,22 +1,22 @@
-import MainCard from "@/components/MainCard";
-import { Box, BoxProps } from "@mui/system";
+import MainCard, { MainCardProps } from "@/components/MainCard";
+import { useTheme } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
 import { FC, useState } from "react";
-import { columns } from "./columns";
 import { TableHeader } from "./Header";
 import { ReactTable } from "./ReactTable";
+import { getHistoryDataTableColumns } from "./columns";
 
-interface RFQTableProps extends BoxProps {
+interface RFQTableProps extends Omit<MainCardProps, "children"> {
   rows: HistoryDataParsed[];
   handleHistoryRequest: (fromDate: Date, toDate: Date) => void;
   fromDate: Date | null;
   toDate: Date | null;
   onFromDateChange: (date: Date | null) => void;
   onToDateChange: (date: Date | null) => void;
-  title: string
+  title: string;
 }
 
 export const HistoryDataTable: FC<RFQTableProps> = ({
@@ -27,10 +27,11 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
   onFromDateChange,
   onToDateChange,
   title,
+  sx,
   ...props
 }) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
-
+  const theme = useTheme();
   const handleToDateChange = (newToDate: Date | null) => {
     if (fromDate && newToDate && newToDate < fromDate) {
       onToDateChange(null);
@@ -78,34 +79,33 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
   };
 
   return (
-    <Box {...props}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <MainCard
-          content={false}
-          sx={{ bgcolor: "primary.lighter", position: "relative" }}>
-          <ReactTable
-            title={title}
-            data={rows}
-            columns={columns}
-            sorting={sorting}
-            onSortingChange={handleSortingChange}
-            header={
-              <TableHeader
-                {...{
-                  title,
-                  fromDate,
-                  toDate,
-                  handleDownloadCsv,
-                  handleHistory,
-                  handleToDateChange,
-                  handleFromDateChange,
-                }}
-              />
-            }
-          />
-        </MainCard>
-      </LocalizationProvider>
-    </Box>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <MainCard
+        content={false}
+        sx={{ bgcolor: "primary.lighter", position: "relative", ...sx }}
+        {...props}>
+        <ReactTable
+          title={title}
+          data={rows}
+          columns={getHistoryDataTableColumns(theme)}
+          sorting={sorting}
+          onSortingChange={handleSortingChange}
+          header={
+            <TableHeader
+              {...{
+                title,
+                fromDate,
+                toDate,
+                handleDownloadCsv,
+                handleHistory,
+                handleToDateChange,
+                handleFromDateChange,
+              }}
+            />
+          }
+        />
+      </MainCard>
+    </LocalizationProvider>
   );
 };
 

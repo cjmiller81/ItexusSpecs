@@ -51,6 +51,7 @@ const CryptoCalendar = ({
   calendarData,
   setSelectedDate,
   selectedDate,
+  sx,
 }: {
   loading: boolean;
   title: string;
@@ -58,6 +59,7 @@ const CryptoCalendar = ({
   calendarData: CalendarEvent[];
   setSelectedDate: (date: Date) => void;
   selectedDate: Date;
+  sx?: object;
 }) => {
   const { t } = useTranslation("CryptoCalendar");
   const theme = useTheme<Theme>();
@@ -75,7 +77,8 @@ const CryptoCalendar = ({
       <DashboardTile
         title={title}
         icon={icon}
-        loading={loading}>
+        loading={loading}
+        sx={sx}>
         <Container theme={theme}>
           {displayEvents.length === 0 ? (
             <Grid

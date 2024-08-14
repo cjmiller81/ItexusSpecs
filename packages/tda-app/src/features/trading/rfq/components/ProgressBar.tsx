@@ -15,7 +15,7 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
   handleReject,
   sx,
   ...props
-}) => {
+}) => { 
   return (
     <Box
       sx={{
@@ -38,7 +38,7 @@ export const ProgressFooter: FC<ProgressFooterProps & BoxProps> = ({
         </Box>
         <Stack alignItems="center">
           <LinearProgress
-            sx={{ width: 150, marginTop: 0, borderRadius: 50 }}
+            sx={{ width: 140, marginTop: 0, borderRadius: 50 }}
             variant="determinate"
             value={progress}
           />

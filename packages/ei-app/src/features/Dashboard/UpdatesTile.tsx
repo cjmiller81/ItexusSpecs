@@ -37,7 +37,7 @@ export const UpdatesTile: FC<Props> = ({ title, icon, version, sx, ...props }) =
       <Stack
         alignItems="center"
         gap={2}
-        sx={{ height: 179, mt: 3, gap: "0px" }}>
+        sx={{ height: 179, mt: 3, gap: "0px", minWidth: "220px" }}>
         <Typography
           sx={{ fontSize: "14px" }}
           fontWeight={700}

@@ -63,9 +63,9 @@ export const ReactTable = ({
             <Table>
               <TableHead>
                 {table.getHeaderGroups().map((headerGroup: HeaderGroup<any>) => (
-                  <TableRow key={headerGroup.id}>
+                  <TableHeaderRow key={headerGroup.id}>
                     {headerGroup.headers.map(header => (
-                      <TableCell
+                      <StyledHeaderCell
                         key={header.id}
                         {...header.column.columnDef.meta}
                         sortDirection={
@@ -89,20 +89,20 @@ export const ReactTable = ({
                             {flexRender(header.column.columnDef.header, header.getContext())}
                           </TableSortLabel>
                         )}
-                      </TableCell>
+                      </StyledHeaderCell>
                     ))}
-                  </TableRow>
+                  </TableHeaderRow>
                 ))}
               </TableHead>
               <TableBody>
                 {table.getRowModel().rows.map(row => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map(cell => (
-                      <TableCell
+                      <StyledTableCell
                         key={cell.id}
                         {...cell.column.columnDef.meta}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                      </StyledTableCell>
                     ))}
                   </TableRow>
                 ))}
@@ -127,10 +127,41 @@ export const ReactTable = ({
   );
 };
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [theme.breakpoints.down("md")]: {
+    padding: "4px",
+    fontSize: "12px",
+    ":first-of-type": {
+      paddingLeft: "8px !important",
+    },
+  },
+  [theme.breakpoints.down("sm")]: {
+    padding: "2px",
+    paddingLeft: "2px !important",
+    paddingRight: "2px !important",
+    fontSize: "8px",
+    ":first-of-type": {
+      paddingLeft: "4px !important",
+    },
+  },
+}));
+
+const StyledHeaderCell = styled(StyledTableCell)(() => ({
+  alignContent: "left",
+}));
+
 const StyledMainCard = styled(MainCard)(({ theme }) => ({
   "& .MuiCardHeader-root": {
     [theme.breakpoints.down("md")]: {
       flexDirection: "column",
+    },
+  },
+}));
+
+const TableHeaderRow = styled(TableRow)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    svg: {
+      width: "11px",
     },
   },
 }));

@@ -17,7 +17,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, firstLoad } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
     state => state.wallets,
   )
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
@@ -31,10 +31,10 @@ export default function MyWalletsPage() {
   const { t } = useTranslation("MyWalletsPage")
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null))
+    if (wallets === null) dispatch(fetchWallets(null))
     dispatch(clearSearchResult())
     dispatch(searchIcons({}))
-  }, [dispatch, firstLoad])
+  }, [dispatch, wallets])
 
   const onChartRefresh = () => {
     if (fromDate && toDate) {

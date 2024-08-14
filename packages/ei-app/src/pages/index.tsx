@@ -18,17 +18,17 @@ import CodeIcon from "@mui/icons-material/Code";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useMediaQuery } from "@mui/material";
 
 export default function HomePage() {
   const { session } = useOry();
   const firstName = session?.identity?.traits.name.first;
   const { t } = useTranslation("HomePage");
   const wallets = useAppSelector(state => state.wallets.wallets);
-  const firstLoad = useAppSelector(state => state.wallets.firstLoad);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
@@ -37,23 +37,21 @@ export default function HomePage() {
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
-  // const { data: calendarEvents, isLoading: isLoadingCalendarEvents } = useGetCalendarEventsByDateQuery({
-  //   date: moment(new Date()).format("YYYY-MM-DD"),
-  // })
   const mockDate = "2024-07-05";
   const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(mockDate);
-  //const { data, isLoading } = useGetAllNewsQuery()
   const { data, isLoading } = useMockGetAllNews();
+  const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
+
   useEffect(() => {
     dispatch(fetchCoins({}));
   }, []);
 
   useEffect(() => {
-    if (firstLoad) dispatch(fetchWallets(null));
-  }, [firstLoad]);
+    if (wallets === null) dispatch(fetchWallets(null));
+  }, [wallets]);
 
   useEffect(() => {
-    if (!wallets.length) return;
+    if (!wallets?.length) return;
 
     dispatch(fetchHistoricalWalletData());
   }, [wallets]);
@@ -89,60 +87,83 @@ export default function HomePage() {
         container
         sx={{ marginTop: 0 }}>
         <Grid
-          xs={5}
-          item>
+          item
+          xs={12}
+          md={6}
+          lg={5}>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
             title={t("WalletsWorthTile")}
             icon={<AccountBalanceWalletIcon />}
-            chartData={totalWalletWorthChartData}></WalletWorthTile>
+            chartData={totalWalletWorthChartData}
+          />
         </Grid>
         <Grid
-          xs={5}
-          sx={{ marginBottom: "10px" }}
-          item>
+          item
+          xs={12}
+          md={6}
+          lg={5}
+          sx={{ marginBottom: "10px" }}>
           <TopTokensTile
             loading={fetchingTokensStatus === "loading"}
             title={t("TopTokensTile")}
             icon={<AutoGraphIcon />}
-            tableAssets={coinsMemorized}></TopTokensTile>
+            tableAssets={coinsMemorized}
+          />
         </Grid>
         <Grid
-          xs={2}
-          item>
+          item
+          xs={12}
+          md={12}
+          lg={2}>
           <CryptoNewsTile
             loading={isLoading}
             title={t("CryptoNewsTile")}
             icon={<NewspaperIcon />}
-            news={data?.items?.length ? data.items.slice(0, 30) : []}></CryptoNewsTile>
+            news={data?.items?.length ? data.items.slice(0, 30) : []}
+          />
         </Grid>
 
         <Grid
           item
-          xs={14}
+          xs={12}
           container
           spacing={2}
           justifyContent="space-between">
           <Grid
             item
-            xs={4}>
+            xs={12}
+            md={6}
+            lg={4}>
             <IncomeTile
               loading={isPoolsLoading}
               data={poolsData}
               icon={<CurrencyExchangeIcon />}
-              title={t("IncomeTile")}></IncomeTile>
+              title={t("IncomeTile")}
+            />
           </Grid>
           <Grid
             item
-            xs={6}>
+            xs={12}
+            md={6}
+            lg={6}>
             <TradingViewTile
               icon={<SyncAltIcon />}
-              title={t("TradingTile")}></TradingViewTile>
+              title={t("TradingTile")}
+            />
           </Grid>
+
           <Grid
             item
-            xs={2}>
-            <Stack>
+            xs={12}
+            md={12}
+            lg={2}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMediumScreen ? "row" : "column",
+                gap: 2,
+              }}>
               <CryptoCalendar
                 loading={false}
                 title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
@@ -150,13 +171,15 @@ export default function HomePage() {
                 calendarData={mockCryptoCalendarDataByDate.body || []}
                 setSelectedDate={setSelectedDate}
                 selectedDate={selectedDate}
+                sx={{ flex: isMediumScreen ? 4 : 1 }}
               />
               <UpdatesTile
                 icon={<CodeIcon />}
                 title={t("UpdatesTile")}
                 version={process.env.APP_VERSION as string}
+                sx={{ flex: isMediumScreen ? 2 : 1 }}
               />
-            </Stack>
+            </Box>
           </Grid>
         </Grid>
       </Grid>

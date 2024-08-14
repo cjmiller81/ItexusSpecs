@@ -29,8 +29,8 @@ export const toTableTokensModel = (chainAsset: ChainAsset): WalletTokensTableMod
 }
 
 //eslint-disable-next-line no-undef
-export const toTotalTokensBalances = (wallets: Wallet[]): { symbol: string; qty: number }[] => {
-  const allChainsAssets = wallets
+export const toTotalTokensBalances = (wallets: Wallet[] | null): { symbol: string; qty: number }[] => {
+  const allChainsAssets = (wallets || [])
     .flatMap(x => x.chainAssets)
     .map(x => toTableTokensModel(x))
     .flat()

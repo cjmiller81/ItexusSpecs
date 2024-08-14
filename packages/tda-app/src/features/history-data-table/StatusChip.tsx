@@ -13,7 +13,7 @@ export const StatusChip: FC<{ status: string }> = ({ status }) => {
           color="success"
           variant="outlined"
           icon={<CheckCircleOutlineIcon />}
-          sx={{ borderRadius: 30 }}
+          sx={{ borderRadius: 30, fontSize: "inherit", padding: 0.1 }}
         />
       );
     case "Open":
@@ -23,7 +23,7 @@ export const StatusChip: FC<{ status: string }> = ({ status }) => {
           color="info"
           variant="outlined"
           icon={<InfoOutlinedIcon />}
-          sx={{ borderRadius: 30 }}
+          sx={{ borderRadius: 30, fontSize: "inherit" }}
         />
       );
     case "Rejected":
@@ -33,10 +33,10 @@ export const StatusChip: FC<{ status: string }> = ({ status }) => {
           color="error"
           variant="outlined"
           icon={<ErrorOutlineIcon />}
-          sx={{ borderRadius: 30 }}
+          sx={{ borderRadius: 30, fontSize: "inherit" }}
         />
       );
     default:
-      return <Chip label={status} />;
+      return <Chip label={status} sx={{ fontSize: "inherit" }} />;
   }
 };

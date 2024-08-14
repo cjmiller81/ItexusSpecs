@@ -1,5 +1,5 @@
-import { Box, BoxProps, Button } from "@mui/material";
-import { styled, SxProps, Theme } from "@mui/system";
+import { Box, BoxProps, Button, CircularProgress } from "@mui/material";
+import { styled } from "@mui/system";
 import {
   GridCellParams,
   GridEventListener,
@@ -26,16 +26,12 @@ import { StyledWalletsTable } from "./WalletsTable";
 import { getWalletsColumns } from "./WalletsTableColumnsDefs";
 
 interface Props extends BoxProps {
-  wallets: Wallet[];
+  wallets: Wallet[] | null;
   selectedWalletsIds: string[];
   loading?: boolean;
-  //eslint-disable-next-line no-unused-vars
   onUpdateWallet: (wallet: Wallet) => void;
-  //eslint-disable-next-line no-unused-vars
   onDeleteWallet: (wallet: string) => void;
-  //eslint-disable-next-line no-unused-vars
   onAddWallet: (wallet: AddressModel) => void;
-  //eslint-disable-next-line no-unused-vars
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
 }
@@ -144,12 +140,20 @@ export const MyWalletsSection = ({
       </StyledAdaptivePageBox>
 
       <Box sx={{ width: "100%", overflow: "auto" }}>
+        <Box sx={{ position: "relative", width: "99%", top: 18, overflowX: "clip" }}>
+          {loading && (
+            <CircularProgress
+              size="20px"
+              sx={{ width: "24px", position: "absolute", right: 0, top: 0 }}
+            />
+          )}
+        </Box>
         <StyledWalletsTable
-          loading={loading}
+          loading={wallets === null && loading}
           disableVirtualization
           hideFooter
           sx={{
-            ...tableScrollSx
+            ...tableScrollSx,
           }}
           scrollbarSize={7}
           editMode="row"
@@ -167,7 +171,7 @@ export const MyWalletsSection = ({
           }}
           onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
             onSelectedChanged(
-              wallets.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+              wallets!.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
             );
           }}
           onCellClick={onCellClick}
@@ -182,7 +186,7 @@ export const MyWalletsSection = ({
             expandedRows: expandedRows,
             onExpandClick: handleExpandClick,
           })}
-          rows={wallets}
+          rows={wallets || []}
           rowSelectionModel={selectedWalletsIds}
         />
       </Box>
@@ -193,7 +197,7 @@ const tableScrollSx = {
   "& .MuiDataGrid-virtualScroller": {
     ...nativeBarSx,
   },
-}
+};
 
 export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   position: "absolute",
