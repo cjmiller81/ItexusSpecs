@@ -7,6 +7,7 @@ import { walletsSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
 import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
+import { balancesWidgetSlice } from "@/features/balance-widget/balancesWidgetSlice"
 
 export const rootReducer = combineReducers({
   [uiSlice.name]: uiSlice.reducer,
@@ -14,6 +15,7 @@ export const rootReducer = combineReducers({
   rfq: rfqSlice.reducer,
   currencies: currenciesSlice.reducer,
   adminUsers: adminUsersSlice.reducer,
+  [balancesWidgetSlice.name]: balancesWidgetSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({

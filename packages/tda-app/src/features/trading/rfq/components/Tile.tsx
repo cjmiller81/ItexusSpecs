@@ -2,6 +2,7 @@ import { Box, Card, CardProps, Typography, useTheme } from "@mui/material";
 import { Stack } from "@mui/system";
 import { Status } from "components";
 import * as React from "react";
+import { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import BuySellCell from "./BuySellCell";
 import ContrastDecimalField from "./ContrastDecimalField";
@@ -27,13 +28,14 @@ type TileProps = Omit<CardProps, "children"> & {
   buyConfirmingText: string;
   isBuyConfirming?: boolean;
   isQuoteSubmitting: boolean;
-  onInitiateRfq: () => void;
+  onInitiateRfq: MouseEventHandler<HTMLButtonElement>;
   onReject: () => void;
   onAmountChange: (amount: number) => void;
   onSellClick: () => void;
   onBuyClick: () => void;
   minSize: number;
   maxSize: number;
+  popoverMessage?: string | null;
 };
 
 const Tile: React.FC<TileProps> = ({
@@ -63,6 +65,7 @@ const Tile: React.FC<TileProps> = ({
   onDiscardSell,
   onDiscardBuy,
   sx,
+  popoverMessage,
   ...props
 }) => {
   const theme = useTheme();
@@ -118,7 +121,9 @@ const Tile: React.FC<TileProps> = ({
                 alignItems="center"
                 spacing={3}>
                 <RfqButton
-                  disabled={!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize}
+                  popoverMessage={popoverMessage}
+                  sellSymbol={symbol1}
+                  disabled={(!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize) && !popoverMessage}
                   sx={{
                     height: "45px",
                     width: "100%",
