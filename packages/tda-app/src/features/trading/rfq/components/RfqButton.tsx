@@ -25,7 +25,7 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
 }) => {
   const theme = useTheme();
   const onHandleClick: MouseEventHandler<HTMLButtonElement> = event => {
-    if (Boolean(popoverMessage)) {
+    if (popoverMessage) {
       onCancel();
       return;
     }

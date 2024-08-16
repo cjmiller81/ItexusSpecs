@@ -123,7 +123,7 @@ const Tile: React.FC<TileProps> = ({
                 <RfqButton
                   popoverMessage={popoverMessage}
                   sellSymbol={symbol1}
-                  disabled={(!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize) && !Boolean(popoverMessage)}
+                  disabled={(!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize) && !popoverMessage}
                   sx={{
                     height: "45px",
                     width: "100%",
