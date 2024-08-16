@@ -1,6 +1,6 @@
 import { blue, grey, red } from "@mui/material/colors";
 import { Box, BoxProps, lighten, useTheme } from "@mui/system";
-import { FC } from "react";
+import { FC, MouseEventHandler } from "react";
 import { ConfirmationCellContent } from "./ConfirmationCellContent";
 import { PriceCellContent } from "./PriceCellContent";
 
@@ -46,6 +46,16 @@ const BuySellCell: FC<BuySellCellProps> = ({
   if (value && cellType === "buy") {
     bgColor = theme.palette.mode === "dark" ? blue[700] : blue[400];
   }
+
+  const handleClick: MouseEventHandler<HTMLDivElement> = event => {
+    if (!value) {
+      event.preventDefault();
+      return;
+    }
+
+    onCellClick();
+  };
+
   return (
     <Box
       sx={{
@@ -73,7 +83,7 @@ const BuySellCell: FC<BuySellCellProps> = ({
         ...sx,
       }}
       {...props}
-      onClick={onCellClick}>
+      onClick={handleClick}>
       {isConfirming ? (
         <ConfirmationCellContent
           cellType={cellType}

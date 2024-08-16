@@ -8,7 +8,7 @@ import { useSignalR } from "@/hooks/useSignalR";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { SnackbarProps } from "@/types/snackbar";
 import { CardProps } from "@mui/material";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import useCountDown from "react-countdown-hook";
 import { useTranslation } from "react-i18next";
 import { v4 } from "uuid";
@@ -32,11 +32,13 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
   const secondsLeft = timeLeft / 1000;
   const [showBuyConfirmationPopup, setShowBuyConfirmationPopup] = useState<boolean>(false);
   const [showSellConfirmationPopup, setShowSellConfirmationPopup] = useState<boolean>(false);
+  const { cryptoCurrencies, fiatCurrencies } = useAppSelector(state => state.balancesWidget);
   const prevSecondsLeft = usePrevious(secondsLeft);
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
   const [minSize] = useState(10);
   const [maxSize] = useState(1_000_000_000);
   const { t } = useTranslation("TileSection");
+  const [popoverMessage, setPopoverMessage] = useState<string | null>();
 
   const handleEvents = (message: any) => {
     if (isOrderEvent(message)) {
@@ -173,7 +175,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
     }
   };
 
-  const handleInitiateRFQ = async () => {
+  const handleInitiateRFQ: MouseEventHandler<HTMLButtonElement> = () => {
     if (amount <= 0 || !(symbol1 && symbol2)) return;
     dispatch(
       fetchRfq({
@@ -254,16 +256,39 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
     setShowBuyConfirmationPopup(false);
     reset();
     dispatch(clearRfq());
+    setPopoverMessage(null);
   };
 
   const onSellClick = () => {
     if (isTransactionInProgress) return;
+    const balanceModel = cryptoCurrencies.find(c => c.name.toLowerCase() === symbol1?.toLowerCase());
+    if (!balanceModel) {
+      setPopoverMessage(t("InsufficientFundsToSell", { currency: symbol1 }));
+      return;
+    }
+
+    if (balanceModel.qty < amount) {
+      setPopoverMessage(t("InsufficientFundsToSell", { currency: symbol1 }));
+      return;
+    }
     setShowSellConfirmationPopup(currentStage !== "requiring");
     setShowBuyConfirmationPopup(false);
   };
 
   const onBuyClick = () => {
     if (isTransactionInProgress) return;
+    let balanceModel = cryptoCurrencies.find(c => c.name.toLowerCase() === symbol2?.toLowerCase());
+    balanceModel = balanceModel ?? fiatCurrencies.find(c => c.name.toLowerCase() === symbol2?.toLowerCase());
+    if (!balanceModel) {
+      setPopoverMessage(t("InsufficientFundsToBuy", { currency1: symbol1, currency2: symbol2 }));
+      return;
+    }
+
+    if (balanceModel.qty < amount * rfqModel!.OfferPx) {
+      setPopoverMessage(t("InsufficientFundsToBuy", { currency1: symbol1, currency2: symbol2 }));
+      return;
+    }
+
     setShowSellConfirmationPopup(false);
     setShowBuyConfirmationPopup(currentStage !== "requiring");
   };
@@ -331,6 +356,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
       onDiscardSell={closeModals}
       isBuyConfirming={showBuyConfirmationPopup}
       isSellConfirming={showSellConfirmationPopup}
+      popoverMessage={popoverMessage}
       {...props}
     />
   );

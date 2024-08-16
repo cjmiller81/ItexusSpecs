@@ -3,29 +3,25 @@ import { BalanceModel } from "../BalanceModel";
 export const fiatBalances: BalanceModel[] = [
   {
     name: "USD",
-    qty: 22564000,
+    qty: 100_000.00,
   },
   {
     name: "EUR",
     qty: 2287000,
-  },
-  {
-    name: "RUB",
-    qty: 3657000,
-  },
+  }
 ];
 
 export const cryptoBalances: BalanceModel[] = [
   {
     name: "BTC",
-    qty: 16000,
+    qty: 100,
   },
   {
     name: "ETH",
-    qty: 25000,
+    qty: 500_000.50,
   },
   {
     name: "USDT",
-    qty: 22565000,
+    qty: 250_000.25,
   },
 ];
