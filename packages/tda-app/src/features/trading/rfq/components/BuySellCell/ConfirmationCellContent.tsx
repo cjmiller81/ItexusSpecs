@@ -82,6 +82,7 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
             cellType={cellType}
             sx={{
               ...(cellType === "sell" ? leftBordered : rightBordered),
+              color: theme.palette.common.black,
             }}
             loading={isQuoteSubmitting}
             onClick={onYes}>
@@ -96,6 +97,7 @@ export const ConfirmationCellContent: FC<BuySellCellProps> = ({
             cellType={cellType}
             sx={{
               ...(cellType === "buy" ? leftBordered : rightBordered),
+              color: theme.palette.common.black,
             }}
             onClick={event => {
               event.stopPropagation();
