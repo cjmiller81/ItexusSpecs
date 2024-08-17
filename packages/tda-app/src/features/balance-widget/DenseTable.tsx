@@ -46,7 +46,20 @@ export default function DenseTable<T>({
           padding: 1,
         },
         height: "fit-content",
+        right: 73,
+        width: "250px",
         ...sx,
+        "@media (max-width: 1485px)": {
+          width: "230px",
+          right: 50,
+        },
+        "@media (max-width: 1250px)": {
+          width: "180px",
+          right: 5,
+        },
+        "@media (max-width: 767px)": {
+          width: "200px",
+        },
       }}
       {...props}
       content={false}
@@ -103,8 +116,11 @@ export default function DenseTable<T>({
 const DenseTableRow = styled(TableRow)(({ theme }) => ({
   ".MuiTableCell-root": {
     paddingLeft: "8px !important",
-    paddingRight: "8px !important",
+    paddingRight: "95px !important",
     fontSize: "11px !important",
+    "@media (max-width: 1250px)": {
+      paddingRight: "30px !important",
+    },
   },
   ".MuiTableCell-head": {
     fontSize: "9px !important",
