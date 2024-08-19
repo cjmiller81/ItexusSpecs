@@ -1,5 +1,6 @@
 import { Stack, StackProps, useMediaQuery, useTheme } from "@mui/system";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { ProgressFooter } from "../ProgressBar";
 import MinMaxField from "./MinMaxField";
 
@@ -13,16 +14,23 @@ type TileProps = StackProps & {
 
 const FooterSection: React.FC<TileProps> = ({ minSize, maxSize, progress, secondsLeft, onReject, ...props }) => {
   const theme = useTheme();
+  const { t } = useTranslation("FooterSection");
   const renderMinSize = () => {
     return (
-      <MinMaxField label="Min Size" value={minSize}/>
-    )
+      <MinMaxField
+        label={t("MinSize")}
+        value={minSize}
+      />
+    );
   };
 
   const renderMaxSize = () => {
     return (
-      <MinMaxField label="Max Size" value={maxSize}/>
-    )
+      <MinMaxField
+        label={t("MaxSize")}
+        value={maxSize}
+      />
+    );
   };
 
   const renderProgress = () => {
