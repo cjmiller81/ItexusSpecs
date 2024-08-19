@@ -3,7 +3,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { Chip, ChipPropsColorOverrides } from "@mui/material";
 import { OverridableStringUnion } from "@mui/types";
-import { FC } from "react";
+import React, { FC } from "react";
 import { OrderStatus } from "../shared/models/orderStatus";
 
 export const StatusChip: FC<{ status: OrderStatus }> = ({ status }) => {
