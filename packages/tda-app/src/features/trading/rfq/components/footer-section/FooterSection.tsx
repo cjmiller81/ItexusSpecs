@@ -1,11 +1,11 @@
 import { Stack, StackProps, useMediaQuery, useTheme } from "@mui/system";
 import * as React from "react";
-import ContrastDecimalField from "./ContrastDecimalField";
-import { ProgressFooter } from "./ProgressBar";
+import { ProgressFooter } from "../ProgressBar";
+import MinMaxField from "./MinMaxField";
 
 type TileProps = StackProps & {
-  minSize: number;
-  maxSize: number;
+  minSize?: number;
+  maxSize?: number;
   progress: number;
   secondsLeft: number;
   onReject: () => void;
@@ -15,28 +15,14 @@ const FooterSection: React.FC<TileProps> = ({ minSize, maxSize, progress, second
   const theme = useTheme();
   const renderMinSize = () => {
     return (
-      <ContrastDecimalField
-        label="Min Size"
-        size="small"
-        disabled
-        value={minSize}
-        maxDecimals={2}
-        sx={{ input: { padding: "4px" }, width: "115px" }}
-      />
-    );
+      <MinMaxField label="Min Size" value={minSize}/>
+    )
   };
 
   const renderMaxSize = () => {
     return (
-      <ContrastDecimalField
-        label="Max Size"
-        size="small"
-        maxDecimals={2}
-        disabled
-        value={maxSize}
-        sx={{ input: { padding: "4px" }, width: "115px" }}
-      />
-    );
+      <MinMaxField label="Max Size" value={maxSize}/>
+    )
   };
 
   const renderProgress = () => {
@@ -76,7 +62,11 @@ const FooterSection: React.FC<TileProps> = ({ minSize, maxSize, progress, second
               {renderMinSize()}
               {renderMaxSize()}
             </Stack>
-            <Stack height="40px" mt={4}>{renderProgress()}</Stack>
+            <Stack
+              height="40px"
+              mt={4}>
+              {renderProgress()}
+            </Stack>
           </Stack>
         </Stack>
       )}

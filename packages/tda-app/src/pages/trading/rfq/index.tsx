@@ -14,12 +14,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const accountNumber = "EC_TEST";
+export const defaultAmount = 1000.0;
 
 export default function SpotRFQPage() {
   const [symbol1, setSymbol1] = useState<string | null>(null);
   const [symbol2, setSymbol2] = useState<string | null>(null);
   const [toDate, setToDate] = useState<Date | null>(moment().add(1, "d").toDate());
   const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate());
+  const [amount, setAmount] = useState(defaultAmount);
   const historyData = useAppSelector(state => state.rfq.executionHistoryData);
   const { pairs } = useAppSelector(state => state.currencies);
   const dispatch = useAppDispatch();
@@ -49,6 +51,17 @@ export default function SpotRFQPage() {
         }),
       );
   }, [fromDate, toDate]);
+
+  useEffect(() => {
+    if (symbol1 && symbol2) {
+      const [minSize, maxSize] = getMinMax(symbol1, symbol2);
+      if (minSize && amount < minSize) {
+        setAmount(minSize);
+      } else if (maxSize && amount > maxSize) {
+        setAmount(maxSize);
+      }
+    }
+  }, [symbol1, symbol2]);
 
   const getHistoryData = async () => {
     if (fromDate && toDate) handleHistoryRequest(fromDate, toDate);
@@ -93,6 +106,18 @@ export default function SpotRFQPage() {
     : null;
 
   const allHistoryItems = currentOrderHistoryItem ? [currentOrderHistoryItem, ...historyData] : historyData;
+
+  const getMinMax = (symbol1: string | null, symbol2?: string | null): [number?, number?] => {
+    let [minSize, maxSize]: [number?, number?] = [undefined, undefined];
+    const pair = pairs.find(pair => pair.symbol1 === symbol1 && pair.symbol2 === symbol2);
+    minSize = pair?.minSize;
+    maxSize = pair?.maxSize;
+
+    return [minSize, maxSize];
+  };
+
+  const [minSize, maxSize] = getMinMax(symbol1, symbol2);
+
   return (
     <Stack
       spacing={3}
@@ -139,6 +164,10 @@ export default function SpotRFQPage() {
           <TileSection
             symbol1={symbol1}
             symbol2={symbol2}
+            minSize={minSize}
+            maxSize={maxSize}
+            onAmoutChanged={setAmount}
+            amount={amount}
             onOrderChanged={onOrderChanged}
             accountNumber={accountNumber}
             onUpdateHistory={onUpdateHistory}
