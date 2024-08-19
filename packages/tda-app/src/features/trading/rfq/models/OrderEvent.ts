@@ -1,3 +1,5 @@
+import { OrderStatus } from "@/features/shared/models/orderStatus"
+
 export interface OrderEvent {
   accountNumber: string
   canceled: boolean
@@ -11,15 +13,7 @@ export interface OrderEvent {
   marketSymbol: string
   orderActions: any[]
   orderId: string
-  orderStatus:
-    | "Submitted"
-    | "Working"
-    | "Filled"
-    | "Error"
-    | "Canceled"
-    | "Partial"
-    | "PendingCancel"
-    | "FilledPartiallyAndCancelled"
+  orderStatus: OrderStatus
   orderType: string
   parametersUseLaddering: boolean
   qtyPlaced: number

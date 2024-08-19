@@ -1,8 +1,9 @@
 import { Typography } from "@mui/material";
-import { Box, Theme, useMediaQuery } from "@mui/system";
+import { Box, Theme } from "@mui/system";
 import { ColumnDef } from "@tanstack/react-table";
 import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
 import moment from "moment";
+import { OrderStatus } from "../shared/models/orderStatus";
 import { StatusChip } from "./StatusChip";
 
 export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataParsed, any>[] => {
@@ -104,7 +105,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
       accessorKey: "status",
       header: "Status",
       enableResizing: true,
-      cell: props => <StatusChip status={props.getValue() as string} />,
+      cell: props => <StatusChip status={props.getValue() as OrderStatus} />,
     },
   ];
 };
