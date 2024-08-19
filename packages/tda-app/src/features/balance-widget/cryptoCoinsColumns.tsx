@@ -9,13 +9,6 @@ export const cryptoCoinsColumns: ColumnDefResolved<BalanceModel>[] = [
     header: i18n.t("Coin", { ns: "BalanceWidget" }),
     minSize: 40,
     maxSize: 40,
-    cell: cell => (
-      <Typography
-        variant="subtitle1"
-        sx={{ fontSize: "12px" }}>
-        {cell.getValue() as string}
-      </Typography>
-    ),
   },
   {
     accessorKey: "qty",
