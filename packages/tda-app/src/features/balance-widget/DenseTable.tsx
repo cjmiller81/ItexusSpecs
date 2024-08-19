@@ -117,8 +117,5 @@ const DenseTableRow = styled(TableRow)(({ theme }) => ({
     "@media (max-width: 1250px)": {
       paddingRight: "30px !important",
     },
-  },
-  ".MuiTableCell-head": {
-    fontSize: "9px !important",
-  },
+  }
 }));

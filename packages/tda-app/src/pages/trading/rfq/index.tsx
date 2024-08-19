@@ -1,7 +1,10 @@
+import { HistoryDataParsed } from "@/api/rfq-api/models/HistoryDataParsed";
+import { RfqResponse } from "@/api/rfq-api/models/RfqResponse";
 import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection";
 import HistoryDataTable from "@/features/history-data-table/HistoryDataTable";
 import { TileSection } from "@/features/trading/rfq/TileSection";
 import CurrencyDropdown from "@/features/trading/rfq/components/CurrencyDropdown";
+import { OrderEvent } from "@/features/trading/rfq/models/OrderEvent";
 import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
 import { fetchExecutionHistoryData } from "@/features/trading/rfq/slices/rfqSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -22,6 +25,10 @@ export default function SpotRFQPage() {
   const dispatch = useAppDispatch();
   const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
   const { t } = useTranslation("SpotRFQPage");
+  const [currentOrder, setCurrentOrder] = useState<{
+    rfqModel: RfqResponse;
+    order: OrderEvent;
+  } | null>(null);
   const theme = useTheme();
   useEffect(() => {
     if ("Notification" in window) {
@@ -59,6 +66,33 @@ export default function SpotRFQPage() {
     dispatch(fetchExecutionHistoryData({ accountNumber: accountNumber, fromDate, toDate }));
   };
 
+  const onOrderChanged = (order: OrderEvent, rfqModel: RfqResponse) => {
+    setCurrentOrder({
+      order,
+      rfqModel,
+    });
+  };
+
+  useEffect(() => {
+    setCurrentOrder(null);
+  }, [historyData]);
+
+  const currentOrderHistoryItem: HistoryDataParsed | null = currentOrder
+    ? {
+        transactTime: new Date(currentOrder.order.timeLastUpdated),
+        filledQty: currentOrder.order.qtyPlaced.toString(),
+        filledPrice: (currentOrder.order.instruction === "Buy"
+          ? currentOrder?.rfqModel?.OfferPx
+          : currentOrder?.rfqModel?.BidPx
+        )?.toString(),
+        id: currentOrder.order.orderId,
+        symbol: currentOrder.order.marketSymbol,
+        side: currentOrder.order.instruction,
+        status: currentOrder.order.orderStatus,
+      }
+    : null;
+
+  const allHistoryItems = currentOrderHistoryItem ? [currentOrderHistoryItem, ...historyData] : historyData;
   return (
     <Stack
       spacing={3}
@@ -105,6 +139,7 @@ export default function SpotRFQPage() {
           <TileSection
             symbol1={symbol1}
             symbol2={symbol2}
+            onOrderChanged={onOrderChanged}
             accountNumber={accountNumber}
             onUpdateHistory={onUpdateHistory}
             sx={{
@@ -127,7 +162,7 @@ export default function SpotRFQPage() {
         onFromDateChange={setFromDate}
         onToDateChange={setToDate}
         mt={5}
-        rows={historyData}
+        rows={allHistoryItems}
         handleHistoryRequest={handleHistoryRequest}
       />
     </Stack>
