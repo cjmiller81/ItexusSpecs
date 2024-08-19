@@ -17,5 +17,15 @@ export const cryptoCoinsColumns: ColumnDefResolved<BalanceModel>[] = [
       </Typography>
     ),
   },
-  { accessorKey: "qty", header: i18n.t("Qty", { ns: "BalanceWidget" }), minSize: 40, maxSize: 40 },
+  {
+    accessorKey: "qty",
+    header: i18n.t("Qty", { ns: "BalanceWidget" }),
+    minSize: 40,
+    maxSize: 40,
+    cell: cell =>
+      (cell.getValue() as number).toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }),
+  },
 ];

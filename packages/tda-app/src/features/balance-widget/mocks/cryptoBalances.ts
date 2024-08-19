@@ -3,7 +3,7 @@ import { BalanceModel } from "../BalanceModel";
 export const fiatBalances: BalanceModel[] = [
   {
     name: "USD",
-    qty: 100_000.00,
+    qty: 10000,
   },
   {
     name: "EUR",
@@ -18,10 +18,10 @@ export const cryptoBalances: BalanceModel[] = [
   },
   {
     name: "ETH",
-    qty: 500_000.50,
+    qty: 5000.50,
   },
   {
     name: "USDT",
-    qty: 250_000.25,
+    qty: 2500.25,
   },
 ];
