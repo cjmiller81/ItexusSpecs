@@ -3,7 +3,7 @@ import { Typography } from "@mui/material";
 import { ColumnDefResolved } from "@tanstack/react-table";
 import { BalanceModel } from "./BalanceModel";
 
-export const fiatCoinsColumns: ColumnDefResolved<BalanceModel>[] = [
+export const fiatCoinsColumns: ColumnDefResolved<BalanceModel, any>[] = [
   {
     accessorKey: "name",
     header: i18n.t("Currency", { ns: "BalanceWidget" }),
@@ -13,9 +13,18 @@ export const fiatCoinsColumns: ColumnDefResolved<BalanceModel>[] = [
       <Typography
         variant="subtitle1"
         sx={{ fontSize: "12px" }}>
-        {cell.getValue() as string}
+        {cell.getValue()}
       </Typography>
     ),
   },
-  { accessorKey: "qty", header: i18n.t("Qty", { ns: "BalanceWidget" }), minSize: 40 },
+  {
+    accessorKey: "qty",
+    header: i18n.t("Qty", { ns: "BalanceWidget" }),
+    minSize: 40,
+    cell: cell =>
+      cell.getValue().toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }),
+  },
 ];
