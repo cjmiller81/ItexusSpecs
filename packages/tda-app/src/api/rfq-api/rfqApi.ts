@@ -10,6 +10,7 @@ import { RfqRawResponse } from "./models/RfqRawResponse"
 import { PlaceOrderRequest } from "./models/PlaceOrderRequest"
 import { CurrencyPair } from "./models/CurrencyPair"
 import { RfqResponse } from "./models/RfqResponse"
+import CurrencyPairRaw from "./models/CurrencyPairRaw"
 
 export const rfqApi = {
   getRfq: async ({ firstSymbol, secondSymbol, currency, qty, signal }: RfqRequest): Promise<RfqResponse[]> => {
@@ -50,12 +51,14 @@ export const rfqApi = {
     )
   },
   getCurrenciesPairs: async (): Promise<CurrencyPair[]> => {
-    const response = await appAxios.get<{ Symbol: string }[]>(`/api/customers/pairs`)
-    return response.data.map<CurrencyPair>(symbolData => {
-      const splitedPair = symbolData.Symbol.split("-")
+    const response = await appAxios.get<CurrencyPairRaw[]>(`/api/customers/pairs`)
+    return response.data.map<CurrencyPair>(pair => {
+      const splitedPair = pair.Symbol.split("-")
       return {
         symbol1: splitedPair[0],
         symbol2: splitedPair[1],
+        minSize: pair.MinimumSize ? parseFloat(pair.MinimumSize) : undefined,
+        maxSize: pair.MaximumSize ? parseFloat(pair.MaximumSize) : undefined,
       }
     })
   },

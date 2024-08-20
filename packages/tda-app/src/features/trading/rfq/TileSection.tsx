@@ -1,3 +1,4 @@
+import { RfqResponse } from "@/api/rfq-api/models/RfqResponse";
 import { rfqApi } from "@/api/rfq-api/rfqApi";
 import { openSnackbar } from "@/api/snackbar";
 import { RfqStage } from "@/features/trading/rfq/components/RfqButton";
@@ -18,15 +19,30 @@ import { OrderEvent, isOrderEvent } from "./models/OrderEvent";
 type TileSectionProps = CardProps & {
   symbol1: string | null;
   symbol2: string | null;
+  minSize?: number;
+  maxSize?: number;
+  amount: number;
+  onAmoutChanged: (value: number) => void
   onUpdateHistory: () => void;
   accountNumber: string;
+  onOrderChanged: (order: OrderEvent, rfqModel: RfqResponse) => void;
 };
 
-export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHistory, accountNumber, ...props }) => {
+export const TileSection: FC<TileSectionProps> = ({
+  symbol1,
+  symbol2,
+  minSize,
+  maxSize,
+  amount,
+  onAmoutChanged,
+  onUpdateHistory,
+  accountNumber,
+  onOrderChanged,
+  ...props
+}) => {
   const { rfqModel, statusFetchingRfq } = useAppSelector(state => state.rfq);
   const dispatch = useAppDispatch();
   const rfqAbortableController = useRef<AbortController>(new AbortController());
-  const [amount, setAmount] = useState(1000.0);
   const placeAbortableController = useRef<AbortController>(new AbortController());
   const [timeLeft, { start, reset }] = useCountDown(10000, 100);
   const secondsLeft = timeLeft / 1000;
@@ -35,8 +51,6 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
   const { cryptoCurrencies, fiatCurrencies } = useAppSelector(state => state.balancesWidget);
   const prevSecondsLeft = usePrevious(secondsLeft);
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
-  const [minSize] = useState(10);
-  const [maxSize] = useState(1_000_000_000);
   const { t } = useTranslation("TileSection");
   const [popoverMessage, setPopoverMessage] = useState<string | null>();
 
@@ -65,6 +79,8 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
         }
       }
     }
+
+    onOrderChanged(message, rfqModel!);
   };
 
   useSignalR("ReceiveOrderUpdate", handleEvents);
@@ -149,6 +165,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
   };
 
   const handleTransactionError = () => {
+    onUpdateHistory();
     setIsTransactionInProgress(false);
     reset();
     const errorMessage = "Order Error! Please try again";
@@ -341,7 +358,7 @@ export const TileSection: FC<TileSectionProps> = ({ symbol1, symbol2, onUpdateHi
       amount={amount}
       minSize={minSize}
       maxSize={maxSize}
-      onAmountChange={value => setAmount(value)}
+      onAmountChange={onAmoutChanged}
       onInitiateRfq={handleInitiateRFQ}
       sellCellValue={rfqModel?.BidPx}
       buyCellValue={rfqModel?.OfferPx}

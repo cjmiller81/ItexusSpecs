@@ -70,6 +70,10 @@
   "ConfirmationCellContent":{
     "TradeConfirmation": "Trade Confirmation"
   },
+  "FooterSection":{
+    "MinSize": "Min Size",
+    "MaxSize": "Max Size"
+  },
   "ErrorMessages": {
     "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
     "invalidCode": "Invalid code.",

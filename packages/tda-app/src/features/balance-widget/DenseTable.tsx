@@ -16,7 +16,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import numberFormattingHelper from "helpers/numberFormattingHelper";
 
 interface ReactTableProps<T> extends Omit<MainCardProps, "children"> {
   columns: ColumnDefResolved<T>[];
@@ -91,14 +90,11 @@ export default function DenseTable<T>({
                 {table.getRowModel().rows.map(row => (
                   <DenseTableRow key={row.id}>
                     {row.getVisibleCells().map(cell => {
-                      const cellContext = cell.getContext();
-                      const value = cellContext.getValue();
-                      const formattedValue = cell.column.id === "qty" ? numberFormattingHelper(value) : value;
                       return (
                         <TableCell
                           key={cell.id}
                           {...cell.column.columnDef.meta}>
-                          {formattedValue}
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       );
                     })}
@@ -121,8 +117,5 @@ const DenseTableRow = styled(TableRow)(({ theme }) => ({
     "@media (max-width: 1250px)": {
       paddingRight: "30px !important",
     },
-  },
-  ".MuiTableCell-head": {
-    fontSize: "9px !important",
-  },
+  }
 }));

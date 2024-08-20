@@ -128,11 +128,31 @@ export const ReactTable = ({
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  "& .MuiChip-root": {
+      maxWidth: "140px",
+      minWidth: "140px",
+    },
   [theme.breakpoints.down("md")]: {
     padding: "4px",
     fontSize: "12px",
     ":first-of-type": {
       paddingLeft: "8px !important",
+    },
+    "& .MuiSvgIcon-root": {
+      height: "10px"
+    },
+
+    "& .MuiChip-root": {
+      maxWidth: "100px",
+      minWidth: "100px",
+      padding: "3px 6px",
+      "& .MuiSvgIcon-root": {
+        height: "20px",
+      },
+      span: {
+        paddingLeft: "8px !important",
+        paddingRight: "8px !important",
+      },
     },
   },
   [theme.breakpoints.down("sm")]: {
@@ -142,6 +162,22 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: "8px",
     ":first-of-type": {
       paddingLeft: "4px !important",
+    },
+    "& .MuiSvgIcon-root": {
+      height: "10px",
+    },
+
+    "& .MuiChip-root": {
+      maxWidth: "70px",
+      minWidth: "70px",
+      padding: "0px 0px",
+      "& .MuiSvgIcon-root": {
+        width: "14px",
+      },
+      span: {
+        paddingLeft: "8px !important",
+        paddingRight: "8px !important",
+      },
     },
   },
 }));

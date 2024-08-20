@@ -5,8 +5,8 @@ import * as React from "react";
 import { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import BuySellCell from "./BuySellCell";
-import ContrastDecimalField from "./ContrastDecimalField";
-import FooterSection from "./FooterSection";
+import { ContrastDecimalField } from "./ContrastDecimalField";
+import FooterSection from "./footer-section/FooterSection";
 import { RfqButton, RfqStage } from "./RfqButton";
 
 type TileProps = Omit<CardProps, "children"> & {
@@ -33,8 +33,8 @@ type TileProps = Omit<CardProps, "children"> & {
   onAmountChange: (amount: number) => void;
   onSellClick: () => void;
   onBuyClick: () => void;
-  minSize: number;
-  maxSize: number;
+  minSize?: number;
+  maxSize?: number;
   popoverMessage?: string | null;
 };
 
@@ -70,9 +70,8 @@ const Tile: React.FC<TileProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation("Tile");
-  const isLessThanMinSize = amount < minSize;
-  const isGreaterThanMaxSize = amount > maxSize;
-
+  const isLessThanMinSize = minSize === undefined ? false : amount < minSize;
+  const isGreaterThanMaxSize = maxSize === undefined ? false : amount > maxSize;
   const boxShadow =
     theme.palette.mode === "dark" ? "0px 4px 12px rgba(255, 255, 255, 0.3)" : "0px 8px 16px rgba(0, 0, 0, 0.4)";
   const borderColor = theme.palette.mode === "dark" ? "#3e3e3e" : theme.palette.grey[300];
