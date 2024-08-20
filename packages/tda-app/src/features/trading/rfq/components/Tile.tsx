@@ -72,11 +72,18 @@ const Tile: React.FC<TileProps> = ({
   const { t } = useTranslation("Tile");
   const isLessThanMinSize = amount < minSize;
   const isGreaterThanMaxSize = amount > maxSize;
+
+  const boxShadow =
+    theme.palette.mode === "dark" ? "0px 4px 12px rgba(255, 255, 255, 0.3)" : "0px 8px 16px rgba(0, 0, 0, 0.4)";
+  const borderColor = theme.palette.mode === "dark" ? "#3e3e3e" : theme.palette.grey[300];
+
   return (
     <Card
       {...props}
       sx={{
         ...sx,
+        boxShadow,
+        border: `2px solid ${borderColor}`,
         [theme.breakpoints.down("sm")]: {
           borderBlock: "0px",
           width: "100%",
@@ -116,6 +123,8 @@ const Tile: React.FC<TileProps> = ({
                 title="SELL"
                 isRequesting={statusFetchingRfq === "loading"}
                 value={buyCellValue && sellCellValue ? sellCellValue : null}
+                label={symbol1}
+                secondsLeft={secondsLeft}
               />
               <Stack
                 alignItems="center"
@@ -123,7 +132,9 @@ const Tile: React.FC<TileProps> = ({
                 <RfqButton
                   popoverMessage={popoverMessage}
                   sellSymbol={symbol1}
-                  disabled={(!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize) && !popoverMessage}
+                  disabled={
+                    (!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize) && !popoverMessage
+                  }
                   sx={{
                     height: "45px",
                     width: "100%",
@@ -191,6 +202,8 @@ const Tile: React.FC<TileProps> = ({
                 title="BUY"
                 isRequesting={statusFetchingRfq === "loading"}
                 value={buyCellValue && sellCellValue ? buyCellValue : null}
+                label={symbol1}
+                secondsLeft={secondsLeft}
               />
             </Stack>
           </Stack>
