@@ -1,5 +1,5 @@
 import { blue, grey, red } from "@mui/material/colors";
-import { Box, BoxProps, lighten, useTheme } from "@mui/system";
+import { Box, BoxProps, useTheme } from "@mui/system";
 import { FC, MouseEventHandler } from "react";
 import { ConfirmationCellContent } from "./ConfirmationCellContent";
 import { PriceCellContent } from "./PriceCellContent";
@@ -17,6 +17,8 @@ export type BuySellCellProps = BoxProps & {
   isConfirming?: boolean;
   onCellClick: () => void;
   isQuoteSubmitting?: boolean;
+  label?: string | null;
+  secondsLeft: number;
 };
 
 const BuySellCell: FC<BuySellCellProps> = ({
@@ -33,18 +35,20 @@ const BuySellCell: FC<BuySellCellProps> = ({
   onCellClick,
   isQuoteSubmitting,
   sx,
+  label,
+  secondsLeft,
   ...props
 }) => {
   const theme = useTheme();
 
-  let bgColor: string = theme.palette.mode === "dark" ? grey[800] : grey[200];
+  let bgColor: string = theme.palette.mode === "dark" ? grey[800] : grey[500];
 
   if (value && cellType === "sell") {
-    bgColor = theme.palette.mode === "dark" ? red[700] : red[400];
+    bgColor = "rgba(255,142,143,0.87)";
   }
 
   if (value && cellType === "buy") {
-    bgColor = theme.palette.mode === "dark" ? blue[700] : blue[400];
+    bgColor = "#88a8d0";
   }
 
   const handleClick: MouseEventHandler<HTMLDivElement> = event => {
@@ -74,10 +78,16 @@ const BuySellCell: FC<BuySellCellProps> = ({
         height: "100%",
         cursor: "pointer",
         backgroundColor: bgColor,
+        border: `2px solid ${theme.palette.mode === "dark" ? theme.palette.grey[100] : theme.palette.grey[500]}`,
+        boxShadow: `0px 4px 12px rgba(0, 0, 0, 0.5)`,
+
         "&:hover": {
           ...(!isConfirming && {
             transition: "0.3s",
-            backgroundColor: lighten(bgColor, 0.2),
+            backgroundColor: cellType === "sell" ? red[600] : cellType === "buy" ? blue[600] : bgColor,
+            "& *": {
+              color: `${theme.palette.common.white} !important`,
+            },
           }),
         },
         ...sx,
@@ -97,6 +107,9 @@ const BuySellCell: FC<BuySellCellProps> = ({
           alignItems={contentAlignment ?? "start"}
           value={value}
           title={title}
+          label={label}
+          cellType={cellType}
+          secondsLeft={secondsLeft}
         />
       )}
     </Box>
