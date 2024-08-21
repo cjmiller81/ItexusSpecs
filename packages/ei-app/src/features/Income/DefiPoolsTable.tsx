@@ -300,15 +300,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           customizeText={toPercentageField}
         />
         <Column
-          dataField={DefiField.ApyMean30d}
-          caption={DefiLabel.ApyMean30d}
-          alignment="left"
-          visible={false}
-          dataType="number"
-          allowHiding={true}
-          customizeText={toPercentageField}
-        />
-        <Column
           dataField={DefiField.RewardTokens}
           caption={DefiLabel.RewardTokens}
           alignment="left"
