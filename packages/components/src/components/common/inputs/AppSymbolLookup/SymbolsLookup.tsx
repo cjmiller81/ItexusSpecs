@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next"
 import { AppInputLabel } from "../AppInputLabel"
 import { AppInputProps } from "../AppInputProps"
 import { ListboxComponent } from "./ListBoxComponent"
+import { ListOnItemsRenderedProps } from "react-window"
 
 const StyledPopper = styled(Popper)({
   [`& .${autocompleteClasses.listbox}`]: {
@@ -22,16 +23,23 @@ const StyledPopper = styled(Popper)({
 export interface LookUpOption {
   label: string
   iconUrl?: string | null
-  tokenId: string
+  id: string
 }
 
-interface Props extends AppInputProps, Omit<AutocompleteProps<LookUpOption, false, false, false, any>, "renderInput"> {
-  options: LookUpOption[]
+export interface SymbolsLookupProps extends AppInputProps, Omit<AutocompleteProps<LookUpOption | null, false, false, false, any>, "renderInput"> {
+  options: (LookUpOption | null)[]
   value?: LookUpOption | null
+  onItemsRendered?: (props: ListOnItemsRenderedProps) => any
 }
 
-export function SymbolLookup({ label, required, tooltip, value, loading, options, ...props }: Props) {
+export function SymbolLookup({ label, required, tooltip, onItemsRendered, value, loading, options, ...props }: SymbolsLookupProps) {
   const { t } = useTranslation("SymbolLookup")
+
+  const onItemsRenderedLocal = (renderProps: ListOnItemsRenderedProps) => {
+    if (onItemsRendered) {
+      onItemsRendered(renderProps)
+    }
+  }
 
   return (
     <div>
@@ -40,17 +48,19 @@ export function SymbolLookup({ label, required, tooltip, value, loading, options
         required={false}
         tooltip={tooltip}
       />
-      <Autocomplete
+      <Autocomplete 
         sx={{
           " .MuiInputBase-root": {
             display: "flex",
             flexWrap: "nowrap",
           },
         }}
-        id="virtualize-demo"
         disableListWrap
         PopperComponent={StyledPopper as any}
-        ListboxComponent={ListboxComponent as any}
+        ListboxComponent={ListboxComponent}
+        ListboxProps={{
+          onItemsRendered: onItemsRenderedLocal
+        } as any}
         options={options}
         {...props}
         value={value}

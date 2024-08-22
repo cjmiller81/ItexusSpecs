@@ -2,28 +2,13 @@ import { Box, ListSubheader, Typography } from "@mui/material"
 import { useTheme } from "@mui/material/styles"
 import useMediaQuery from "@mui/material/useMediaQuery"
 import * as React from "react"
-import { ListChildComponentProps, ReactElementType, VariableSizeList } from "react-window"
+import { ListChildComponentProps, ListOnItemsRenderedProps, ReactElementType, VariableSizeList } from "react-window"
 import { OuterElementType } from "./OuterElementType"
 
 const MAX_LIST_ITEMS = 9
 export default function renderRow(props: ListChildComponentProps) {
-  const { data, index, style } = props
+  const { data, index } = props
   const dataSet = data[index]
-  const inlineStyle = {
-    ...style,
-    top: style.top as number,
-  }
-
-  if (dataSet.hasOwnProperty("group")) {
-    return (
-      <ListSubheader
-        key={dataSet.key}
-        component="div"
-        style={inlineStyle}>
-        {dataSet.group}
-      </ListSubheader>
-    )
-  }
 
   return (
     <Box
@@ -37,7 +22,7 @@ export default function renderRow(props: ListChildComponentProps) {
         src={dataSet[1].iconUrl}
         alt=""
       />
-      <Typography noWrap>{dataSet[1].label}</Typography>
+      <Typography noWrap>{dataSet[1]?.label}</Typography>
     </Box>
   )
 }
@@ -53,9 +38,12 @@ export function useResetCache(data: any) {
 }
 
 export const OuterElementContext = React.createContext({})
-export const ListboxComponent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLElement>>(
-  function ListboxComponent(props, ref) {
-    const { children, ...other } = props
+type Props = React.HTMLAttributes<HTMLElement> & { 
+  onItemsRendered?: ((props: ListOnItemsRenderedProps) => any) | undefined
+  onScrollChanged?: (itemIndex: number) => any
+}
+export const ListboxComponent = React.forwardRef<HTMLDivElement, Props>(
+  function ListboxComponent({ children, onItemsRendered, onScrollChanged, ...other }, ref) {
     const itemData: React.ReactElement[] = []
     ;(children as React.ReactElement[]).forEach((item: React.ReactElement & { children?: React.ReactElement[] }) => {
       itemData.push(item)
@@ -86,6 +74,12 @@ export const ListboxComponent = React.forwardRef<HTMLDivElement, React.HTMLAttri
 
     const gridRef = useResetCache(itemCount)
 
+    const onItemRender = (props: ListOnItemsRenderedProps) => {
+      if(onItemsRendered){
+        onItemsRendered(props)
+      }
+    }
+
     return (
       <div ref={ref}>
         <OuterElementContext.Provider value={other}>
@@ -96,8 +90,9 @@ export const ListboxComponent = React.forwardRef<HTMLDivElement, React.HTMLAttri
             ref={gridRef}
             outerElementType={OuterElementType as ReactElementType}
             innerElementType="ul"
-            itemSize={(index: number) => getChildSize(itemData[index])}
+            itemSize={() => itemSize}
             overscanCount={5}
+            onItemsRendered={onItemRender}
             itemCount={itemCount}>
             {renderRow}
           </VariableSizeList>

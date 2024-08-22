@@ -1,37 +1,45 @@
-import { AppChart } from "@/components/Charts/AppChart"
-import LoadingButton from "@mui/lab/LoadingButton"
-import { Box, BoxProps, MenuItem, Stack } from "@mui/material"
-import { styled } from "@mui/material/styles"
-import { DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers"
-import { AppDatePicker, AppSelect, LookUpOption, PageTitle, SymbolLookup, chartDateFormatString } from "components"
-import moment from "moment"
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-export type Period = "daily" | "weekly" | "monthly"
+import { AppChart } from "@/components/Charts/AppChart";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { Box, BoxProps, MenuItem, Stack } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
+import {
+  AppDatePicker,
+  AppSelect,
+  LookUpOption,
+  OnFetchResponse,
+  PageTitle,
+  SymbolsLookupVirtualized,
+  chartDateFormatString,
+} from "components";
+import moment from "moment";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { LookupPageSize } from "../Common/fetchLookupPage";
+export type Period = "daily" | "weekly" | "monthly";
 
 interface Props extends BoxProps {
-  title: string
-  period: Period
-  onPeriodChange: (period: Period) => void
-  onFromDateChange: (date: Date | null) => void
-  onToDateChange: (date: Date | null) => void
-  fromDate: Date | null
-  toDate: Date | null
-  onChartSubmit: () => void
-  lookupLoading: boolean
-  lookupOptions: LookUpOption[]
-  lookupOption?: LookUpOption | null
-  onOptionChange: (option: LookUpOption | null) => void
-  minChartValue: number
-  maxChartValue: number
-  chartAxisTicks: number
-  chartDataLoading?: boolean
-  onToggleSeries: (seriesIndex: 0 | 1) => void
-  onLookUpSearchChange: (search: string) => void
-  submitButtonDisabled: boolean
-  sumbitButtonText?: string
+  title: string;
+  period: Period;
+  onPeriodChange: (period: Period) => void;
+  onFromDateChange: (date: Date | null) => void;
+  onToDateChange: (date: Date | null) => void;
+  fromDate: Date | null;
+  toDate: Date | null;
+  onChartSubmit: () => void;
+  lookupLoading: boolean;
+  lookupOption?: LookUpOption | null;
+  onOptionChange: (option: LookUpOption | null) => void;
+  minChartValue: number;
+  maxChartValue: number;
+  chartAxisTicks: number;
+  chartDataLoading?: boolean;
+  onToggleSeries: (seriesIndex: 0 | 1) => void;
+  submitButtonDisabled: boolean;
+  sumbitButtonText?: string;
+  onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
   //eslint-disable-next-line no-undef
-  chartSeries?: ApexAxisChartSeries | null
+  chartSeries?: ApexAxisChartSeries | null;
 }
 export const HistoricalWalletsWorth = ({
   title,
@@ -43,7 +51,6 @@ export const HistoricalWalletsWorth = ({
   toDate,
   onChartSubmit,
   lookupLoading,
-  lookupOptions,
   lookupOption,
   onOptionChange,
   minChartValue,
@@ -51,34 +58,34 @@ export const HistoricalWalletsWorth = ({
   chartAxisTicks,
   chartDataLoading,
   onToggleSeries,
-  onLookUpSearchChange,
   submitButtonDisabled,
   chartSeries,
+  onFetchPage,
   sumbitButtonText,
   ...props
 }: Props) => {
-  const { t } = useTranslation("HistoricalWalletsWorth")
+  const { t } = useTranslation("HistoricalWalletsWorth");
 
   const percentageFormatter = (value?: number) => {
     return `${(value ?? 0).toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-    })}%`
-  }
-  const [isFromDateValid, setIsFromDateValid] = useState(true)
-  const [isToDateValid, setIsToDateValid] = useState(true)
-  const [inputSearch, setInputSearch] = useState("")
+    })}%`;
+  };
+  const [isFromDateValid, setIsFromDateValid] = useState(true);
+  const [isToDateValid, setIsToDateValid] = useState(true);
+  const [inputSearch, setInputSearch] = useState("");
 
-  const maxFromDate = (toDate ? moment(toDate).add(-1, "d") : moment().add(-1, "d")).toDate()
-  const minToDate = fromDate ? moment(fromDate).add(1, "d").toDate() : undefined
+  const maxFromDate = (toDate ? moment(toDate).add(-1, "d") : moment().add(-1, "d")).toDate();
+  const minToDate = fromDate ? moment(fromDate).add(1, "d").toDate() : undefined;
 
   const handleDatePickerContext = (
     event: PickerChangeHandlerContext<DateValidationError>,
     setIsValid: (isValid: boolean) => void,
   ) => {
     //eslint-disable-next-line no-extra-boolean-cast
-    setIsValid(!Boolean(event.validationError))
-  }
+    setIsValid(!Boolean(event.validationError));
+  };
   return (
     <StyledWalletWorthContainer {...props}>
       <StyledWalletWorthMenuContainer>
@@ -105,8 +112,8 @@ export const HistoricalWalletsWorth = ({
               disableFuture
               value={fromDate}
               onChange={(date, event) => {
-                onFromDateChange(date)
-                handleDatePickerContext(event, setIsFromDateValid)
+                onFromDateChange(date);
+                handleDatePickerContext(event, setIsFromDateValid);
               }}
               maxDate={maxFromDate}
               label={t("FromDate")}
@@ -117,8 +124,8 @@ export const HistoricalWalletsWorth = ({
               disableFuture
               value={toDate}
               onChange={(date, event) => {
-                onToDateChange(date)
-                handleDatePickerContext(event, setIsToDateValid)
+                onToDateChange(date);
+                handleDatePickerContext(event, setIsToDateValid);
               }}
               maxDate={new Date()}
               minDate={minToDate}
@@ -126,6 +133,8 @@ export const HistoricalWalletsWorth = ({
             />
           </Stack>
           <StyledSymbolLookup
+            pageSize={LookupPageSize}
+            onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
             tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
             loading={lookupLoading}
             disableListWrap
@@ -133,12 +142,10 @@ export const HistoricalWalletsWorth = ({
             onChange={(_event, value) => onOptionChange(value)}
             autoComplete={true}
             onInputChange={(_event, value) => {
-              onLookUpSearchChange(value)
-              setInputSearch(value)
+              setInputSearch(value);
             }}
             filterOptions={x => x}
             inputValue={inputSearch}
-            options={lookupOptions}
             label={t("CompareToSymbol")}
           />
           <LoadingButton
@@ -169,7 +176,7 @@ export const HistoricalWalletsWorth = ({
             chart: {
               events: {
                 legendClick: (_chart: any, seriesIndex?: number) => {
-                  if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1)
+                  if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1);
                 },
               },
               animations: {
@@ -223,8 +230,8 @@ export const HistoricalWalletsWorth = ({
         />
       </Box>
     </StyledWalletWorthContainer>
-  )
-}
+  );
+};
 
 export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   flexDirection: "row",
@@ -234,11 +241,11 @@ export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(4),
   display: "flex",
   width: "100%",
-}))
+}));
 
-export const StyledSymbolLookup = styled(SymbolLookup)(() => ({
+export const StyledSymbolLookup = styled(SymbolsLookupVirtualized)(() => ({
   flexGrow: 1,
-}))
+}));
 
 export const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   flexDirection: "column",
@@ -252,7 +259,7 @@ export const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   },
   alignItems: "center",
   justifyContent: "flex-start",
-}))
+}));
 
 export const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
   width: "100%",
@@ -273,7 +280,7 @@ export const StyledWalletWorthMenu = styled(Box)(({ theme }) => ({
     alignItems: "center",
     justifyContent: "space-around",
   },
-}))
+}));
 
 export const StyledTypographyWalletsWorthTitle = styled(PageTitle)(({ theme }) => ({
   textWrap: "wrap",
@@ -281,4 +288,4 @@ export const StyledTypographyWalletsWorthTitle = styled(PageTitle)(({ theme }) =
     flexBasis: "20%",
     textAlign: "center",
   },
-}))
+}));
