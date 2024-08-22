@@ -19,7 +19,7 @@ export const PriceCellContent: FC<BuySellCellProps> = ({ title, value, label, se
     top: "-9px",
     left: cellType === "buy" ? 0 : "unset",
     right: cellType === "sell" ? 0 : "unset",
-    color: secondsLeft !== 0 ? "grey" : theme.palette.common.white,
+    color: secondsLeft !== 0 ? "#2e2e2e" : theme.palette.common.white,
     borderRadius: cellType === "buy" ? "0 0 4px 0" : "0 0 0 4px",
     fontWeight: 200,
     fontSize: 24,
@@ -32,11 +32,17 @@ export const PriceCellContent: FC<BuySellCellProps> = ({ title, value, label, se
       justifyContent="space-around"
       position="relative"
       {...props}>
-      {label && <Typography sx={labelStyles}>{label}</Typography>}
+      {label && (
+        <Typography
+          sx={labelStyles}
+          className="price-label">
+          {label}
+        </Typography>
+      )}
 
       <Typography
         sx={{
-          color: secondsLeft !== 0 ? "grey" : theme.palette.common.white,
+          color: secondsLeft !== 0 ? "#2e2e2e" : theme.palette.common.white,
           fontSize: 22,
           [theme.breakpoints.down("sm")]: {
             fontSize: 16,

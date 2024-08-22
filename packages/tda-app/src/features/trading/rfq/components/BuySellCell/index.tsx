@@ -80,13 +80,18 @@ const BuySellCell: FC<BuySellCellProps> = ({
         backgroundColor: bgColor,
         border: `2px solid ${theme.palette.mode === "dark" ? theme.palette.grey[100] : theme.palette.grey[500]}`,
         boxShadow: `0px 4px 12px rgba(0, 0, 0, 0.5)`,
+        fontWeight: 200,
 
         "&:hover": {
           ...(!isConfirming && {
             transition: "0.3s",
             backgroundColor: cellType === "sell" ? red[600] : cellType === "buy" ? blue[600] : bgColor,
             "& *": {
+              fontWeight: "700 !important",
               color: `${theme.palette.common.white} !important`,
+            },
+            "& .price-label": {
+              fontWeight: "200 !important",
             },
           }),
         },
@@ -110,6 +115,7 @@ const BuySellCell: FC<BuySellCellProps> = ({
           label={label}
           cellType={cellType}
           secondsLeft={secondsLeft}
+          className="price-label"
         />
       )}
     </Box>
