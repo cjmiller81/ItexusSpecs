@@ -18,12 +18,13 @@ import DataGridDef, {
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
 import { ExportingEvent } from "devextreme/ui/data_grid";
-import React, { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
 import { ProjectCellComponent } from "./ProjectCellComponent";
 import { DefiField, DefiLabel } from "./tableConstants";
+import { useAppSelector } from "@/libs/redux/Store";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -44,15 +45,26 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   onFilterBuilderOpen,
   onExport,
 }) => {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const filterPanelText = useRef<Element | null>(null);
-
+  const { sidebarOpened } = useAppSelector(store => store.ui);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
+  const updateScreenWidth = useCallback(() => {
+    setScreenWidth(window.innerWidth);
+  }, []);
 
-  const updatePrefilteredTokens = async (): Promise<void> => {
+  useEffect(() => {
+    updateScreenWidth();
+    window.addEventListener("resize", updateScreenWidth);
+    return () => {
+      window.removeEventListener("resize", updateScreenWidth);
+    };
+  }, [updateScreenWidth]);
+
+  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
-
     if (!grid) return;
 
     const filteredDataSource = grid.getDataSource();
@@ -60,7 +72,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh();
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
-  };
+  }, [datagrid, currentFilter, onUpdate]);
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
@@ -95,16 +107,22 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   };
 
   return (
-    <div ref={containerRef}>
+    <div
+      className={`custom-accordion-details ${sidebarOpened ? "sidebar-open" : "sidebar-closed"}`}
+      style={{ width: `${sidebarOpened ? screenWidth - 600 : screenWidth - 830}px` }}
+      ref={containerRef}>
       <DataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
+        keyExpr="ID"
+        columnAutoWidth={true}
+        showRowLines={true}
+        width={`${sidebarOpened ? screenWidth - 300 : screenWidth - 130}px`}
         showBorders={true}
         ref={datagrid}
         allowColumnReordering={true}
-        columnHidingEnabled={true}
+        columnHidingEnabled={false}
         onExporting={onExport}
-        width="99%"
         filterBuilder={{
           customOperations: [],
           allowHierarchicalFields: true,
@@ -228,7 +246,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.ApyBase7d}
           caption={DefiLabel.ApyBase7d}
-          alignment="right"
+          alignment="left"
           visible={false}
           dataType="number"
           allowHiding={true}
@@ -237,7 +255,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.Il7d}
           caption={DefiLabel.Il7d}
-          alignment="right"
+          alignment="left"
           visible={false}
           dataType="number"
           allowHiding={true}
@@ -246,7 +264,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.ApyMean30d}
           caption={DefiLabel.ApyMean30d}
-          alignment="right"
+          alignment="left"
           visible={false}
           dataType="number"
           allowHiding={true}
