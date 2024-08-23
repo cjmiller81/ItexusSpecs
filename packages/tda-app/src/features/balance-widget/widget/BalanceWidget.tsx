@@ -17,6 +17,7 @@ export type BalanceWidgetProps = {
   cryptoOpen?: boolean;
   onCryptoToggle: () => void;
   onFiatToggle: () => void;
+  position?: string;
 } & StackProps;
 
 const BalanceWidget: FC<BalanceWidgetProps> = ({
@@ -26,11 +27,10 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
   cryptoOpen,
   onCryptoToggle,
   onFiatToggle,
+  position,
   ...props
 }) => {
   const { t } = useTranslation("BalanceWidget");
-
-  const isProfileDetailsPage = window.location.pathname === "/profile/details";
 
   return (
     <Stack
@@ -38,7 +38,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
       width={theme => theme.spacing(24)}
       {...props}>
       <DenseTable
-        sx={isProfileDetailsPage ? { position: "static" } : {}}
+        sx={position}
         isOpen={cryptoOpen}
         title={
           <TableHeader
@@ -59,7 +59,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
       />
 
       <DenseTable
-        sx={isProfileDetailsPage ? { position: "static" } : {}}
+        sx={position}
         isOpen={fiatOpen}
         columns={fiatCoinsColumns}
         data={fiatCurrencies}

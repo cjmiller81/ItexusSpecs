@@ -12,6 +12,8 @@ const BalanceWidgetSection: FC<StackProps> = props => {
   const cryptoCurrencies = useAppSelector(store => store.balancesWidget.cryptoCurrencies);
   const fiatCurrencies = useAppSelector(store => store.balancesWidget.fiatCurrencies);
 
+  const { position, ...restProps } = props;
+
   return (
     <BalanceWidget
       cryptoCurrencies={cryptoCurrencies}
@@ -20,7 +22,8 @@ const BalanceWidgetSection: FC<StackProps> = props => {
       cryptoOpen={cryptoOpen}
       onCryptoToggle={() => dispatch(toggleCryptoTable())}
       onFiatToggle={() => dispatch(toggleFiatTable())}
-      {...props}></BalanceWidget>
+      {...restProps}
+    />
   );
 };
 
