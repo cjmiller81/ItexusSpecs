@@ -29,12 +29,16 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
   ...props
 }) => {
   const { t } = useTranslation("BalanceWidget");
+
+  const isProfileDetailsPage = window.location.pathname === "/profile/details";
+
   return (
     <Stack
       spacing={2}
       width={theme => theme.spacing(24)}
       {...props}>
       <DenseTable
+        sx={isProfileDetailsPage ? { position: "static" } : {}}
         isOpen={cryptoOpen}
         title={
           <TableHeader
@@ -55,6 +59,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
       />
 
       <DenseTable
+        sx={isProfileDetailsPage ? { position: "static" } : {}}
         isOpen={fiatOpen}
         columns={fiatCoinsColumns}
         data={fiatCurrencies}
