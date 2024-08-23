@@ -1,4 +1,5 @@
 import { FC } from "react";
+import React from "react";
 export const SvgLogo: FC<React.SVGProps<SVGSVGElement>> = props => {
   return (
     <>
