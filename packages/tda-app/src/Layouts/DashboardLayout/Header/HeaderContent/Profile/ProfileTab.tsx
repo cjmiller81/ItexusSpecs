@@ -46,7 +46,7 @@ export default function ProfileTab({ handleLogout }: Props) {
       </ListItemButton>
       <ListItemButton
         selected={selectedIndex === 4}
-        onClick={(event: React.MouseEvent<HTMLDivElement>) => handleListItemClick(event, 4, "/account/funding")}>
+        onClick={(event: React.MouseEvent<HTMLDivElement>) => handleListItemClick(event, 4, "/account_funding")}>
         <ListItemIcon>
           <WalletOutlined />
         </ListItemIcon>

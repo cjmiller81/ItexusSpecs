@@ -70,6 +70,10 @@
   "ConfirmationCellContent":{
     "TradeConfirmation": "Trade Confirmation"
   },
+  "AccountFunding":{
+    "AccountFunding": "Account Funding",
+    "CommingSoon": "Comming soon..."
+  },
   "FooterSection":{
     "MinSize": "Min Size",
     "MaxSize": "Max Size"
