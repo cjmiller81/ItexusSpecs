@@ -1,32 +1,33 @@
-import DownloadOutlined from "@ant-design/icons/DownloadOutlined";
+import { PdfLogo } from "@/components/logo/PdfLogo";
+import { SvgLogo } from "@/components/logo/SvgLogo";
 import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme } from "@mui/material/styles";
-import Typography from "@mui/material/Typography";
-import { Box, styled } from "@mui/system";
+import { Box, Stack, styled } from "@mui/system";
 import { LocalizationProvider, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { DateRange, DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { PickersShortcutsItem } from "@mui/x-date-pickers/PickersShortcuts";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import "jspdf-autotable";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { shortcutsItems } from "./shortcutsItems";
 
 export const TableHeader = ({
   handleDownloadCsv,
+  handleDownloadPdf,
   fromDate,
   toDate,
-  handleHistory,
   handleToDateChange,
   handleFromDateChange,
 }: {
   handleDownloadCsv: () => void;
-  handleHistory: () => void;
   fromDate: Date | null;
   toDate: Date | null;
+  handleDownloadPdf: () => void;
   handleToDateChange: (date: Date | null) => void;
   handleFromDateChange: (date: Date | null) => void;
 }) => {
@@ -61,40 +62,6 @@ export const TableHeader = ({
       handleMenuClose();
     }
   };
-
-  // @ts-ignore
-  const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
-    {
-      label: "This Week",
-      getValue: () => {
-        const today = dayjs();
-        return [today.startOf("week"), today.endOf("week")];
-      },
-    },
-    {
-      label: "Last Week",
-      getValue: () => {
-        const today = dayjs();
-        const prevWeek = today.subtract(7, "day");
-        return [prevWeek.startOf("week"), prevWeek.endOf("week")];
-      },
-    },
-    {
-      label: "Last 7 Days",
-      getValue: () => {
-        const today = dayjs();
-        return [today.subtract(7, "day"), today];
-      },
-    },
-    {
-      label: "Current Month",
-      getValue: () => {
-        const today = dayjs();
-        return [today.startOf("month"), today.endOf("month")];
-      },
-    },
-    { label: "Reset", getValue: () => [null, null] },
-  ];
 
   return (
     <HeaderContainer>
@@ -144,12 +111,16 @@ export const TableHeader = ({
           </MenuItem>
         </Menu>
       </Box>
-      <Button
-        onClick={handleDownloadCsv}
-        sx={{ display: "flex", gap: 0.5, alignItems: "center", padding: "0 1" }}>
-        <DownloadOutlined style={{ cursor: "pointer", fontSize: 20 }} />
-        <Typography>{t("Export")}</Typography>
-      </Button>
+      <Stack
+        direction="row"
+        gap={0}>
+        <Button onClick={handleDownloadCsv}>
+          <SvgLogo />
+        </Button>
+        <Button onClick={handleDownloadPdf}>
+          <PdfLogo />
+        </Button>
+      </Stack>
     </HeaderContainer>
   );
 };

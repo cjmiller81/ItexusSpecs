@@ -15,10 +15,6 @@ const TradeHistory: React.FC = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    getHistoryData();
-  }, []);
-
-  useEffect(() => {
     if (fromDate && toDate)
       dispatch(
         fetchHistoryData({
@@ -48,6 +44,7 @@ const TradeHistory: React.FC = () => {
   return (
     <HistoryDataTable
       title={t("TradeHistory")}
+      fileName={t("TradeHistoryCsvFileName")}
       fromDate={fromDate}
       toDate={toDate}
       onFromDateChange={setFromDate}
