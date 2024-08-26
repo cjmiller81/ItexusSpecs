@@ -17,6 +17,7 @@ export type BalanceWidgetProps = {
   cryptoOpen?: boolean;
   onCryptoToggle: () => void;
   onFiatToggle: () => void;
+  position?: string;
 } & StackProps;
 
 const BalanceWidget: FC<BalanceWidgetProps> = ({
@@ -26,15 +27,18 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
   cryptoOpen,
   onCryptoToggle,
   onFiatToggle,
+  position,
   ...props
 }) => {
   const { t } = useTranslation("BalanceWidget");
+
   return (
     <Stack
       spacing={2}
       width={theme => theme.spacing(24)}
       {...props}>
       <DenseTable
+        sx={{ position }}
         isOpen={cryptoOpen}
         title={
           <TableHeader
@@ -55,6 +59,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
       />
 
       <DenseTable
+        sx={{ position }}
         isOpen={fiatOpen}
         columns={fiatCoinsColumns}
         data={fiatCurrencies}
