@@ -1,5 +1,5 @@
-import { TokenDetails } from "@/models/Wallet/TokenDetails"
-import { appAxios, delay } from "components"
+import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem"
+import { appAxios, delay, PaginatedList } from "components"
 import { ICategory } from "components/src/models/token/ICatigory"
 import { ICoin } from "components/src/models/token/ICoin"
 import { IPlatform } from "components/src/models/token/IPlatform"
@@ -48,11 +48,13 @@ export const iconsApi = {
     return response.data
   },
 
-  getIcons: async (searchQuery?: string, signal?: AbortSignal): Promise<TokenDetails[]> => {
-    const response = await appAxios.get<TokenDetails[]>(`/tokens-search`, {
+  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, signal?: AbortSignal): Promise<PaginatedList<TokenSearchItem>> => {
+    const response = await appAxios.get<PaginatedList<TokenSearchItem>>(`/tokens-searchV2`, {
       signal: signal,
       params: {
         query: searchQuery,
+        pageSize: pageSize || 100,
+        pageNumber: pageNumber || 0,
       },
     })
 
@@ -61,18 +63,18 @@ export const iconsApi = {
 }
 
 export const iconsDelayedApi = {
-  getIcons: async (searchQuery?: string, signal?: AbortSignal, delayTime?: number): Promise<TokenDetails[]> => {
+  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, signal?: AbortSignal, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
     if (delayTime) await delay(delayTime)
     signal?.throwIfAborted()
-    return await iconsApi.getIcons(searchQuery, controller.signal)
+    return await iconsApi.getIcons(searchQuery, pageNumber, pageSize, controller.signal)
   },
 }
 
 let controller = new AbortController()
 export const iconsAbortableApi = {
-  getIcons: async (searchQuery?: string): Promise<TokenDetails[]> => {
+  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
     controller.abort("aborted")
     controller = new AbortController()
-    return await iconsDelayedApi.getIcons(searchQuery, controller.signal, 500)
+    return await iconsDelayedApi.getIcons(searchQuery, pageNumber, pageSize, controller.signal, delayTime || 500)
   },
 }

@@ -6,64 +6,63 @@ import { OverridableStringUnion } from "@mui/types";
 import React, { FC } from "react";
 import { OrderStatus } from "../shared/models/orderStatus";
 
+export const getStatusLabelText = (status: OrderStatus) => {
+  if(!status) return "Error"
+  if (status === "Error") return "Rejected";
+  if (status === "PendingCancel") return "Pending cancel";
+  if (status === "FilledPartiallyAndCancelled") return "Filled partially and cancelled";
+  return status;
+};
+
 export const StatusChip: FC<{ status: OrderStatus }> = ({ status }) => {
   let color: OverridableStringUnion<
     "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning",
     ChipPropsColorOverrides
   >;
-  let label = "";
+  const label = getStatusLabelText(status);
   let icon: React.ReactElement = <></>;
   switch (status) {
     case "Submitted": {
-      label = "Submitted";
       color = "primary";
       icon = <InfoOutlinedIcon />;
       break;
     }
     case "Filled": {
-      label = "Filled";
       color = "success";
       icon = <DoneIcon />;
       break;
     }
     case "Working": {
-      label = "Working";
       color = "primary";
       icon = <InfoOutlinedIcon />;
       break;
     }
     case "Partial": {
-      label = "Partial";
       color = "primary";
       icon = <InfoOutlinedIcon />;
       break;
     }
     case "PendingCancel": {
-      label = "Pending cancel";
       color = "primary";
       icon = <InfoOutlinedIcon />;
       break;
     }
     case "FilledPartiallyAndCancelled": {
-      label = "Filled partially and cancelled";
       color = "warning";
       icon = <WarningAmberIcon />;
       break;
     }
     case "Error": {
-      label = "Rejected";
       color = "error";
       icon = <WarningAmberIcon />;
       break;
     }
     case "Canceled": {
-      label = "Canceled";
       color = "error";
       icon = <WarningAmberIcon />;
       break;
     }
     case undefined: {
-      label = "Error";
       color = "error";
       icon = <WarningAmberIcon />;
       break;

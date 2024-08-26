@@ -186,6 +186,7 @@ export default function SpotRFQPage() {
       <HistoryDataTable
         sx={{ width: "100%" }}
         title={t("RecentTransactions")}
+        fileName={t("RecentTransactionsCsvFileName")}
         fromDate={fromDate}
         toDate={toDate}
         onFromDateChange={setFromDate}

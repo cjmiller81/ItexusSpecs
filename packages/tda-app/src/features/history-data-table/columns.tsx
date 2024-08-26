@@ -1,11 +1,21 @@
+import { HistoryDataParsed } from "@/api/rfq-api/models/HistoryDataParsed";
 import { Typography } from "@mui/material";
 import { Box, Theme } from "@mui/system";
 import { ColumnDef } from "@tanstack/react-table";
-import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
 import moment from "moment";
 import { OrderStatus } from "../shared/models/orderStatus";
 import { StatusChip } from "./StatusChip";
 
+export const formatTransactTime = (date: string) => moment(date).local().format("YYYY-MM-DD HH:mm:ss");
+export const formatOrderId = (orderId: string) => orderId.slice(0, 4);
+export const formatFilledQty = (qty: string) => {
+  const value = Number(qty);
+  return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+};
+export const formatFilledPrice = (filledPrice: string) => {
+  const value = Number(filledPrice);
+  return value.toFixed(5);
+};
 export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataParsed, any>[] => {
   return [
     {
@@ -15,10 +25,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
       meta: {
         sx: { minWidth: 22 },
       } as any,
-      cell: props =>
-        moment(props.getValue() as Date)
-          .local()
-          .format("YYYY-MM-DD HH:mm:ss"),
+      cell: props => formatTransactTime(props.getValue()),
     },
     {
       accessorKey: "id",
@@ -30,12 +37,13 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
           sx={{
             maxWidth: "100%",
             [theme.breakpoints.down("sm")]: {
-              maxWidth: 50,
-            }
+              maxWidth: 90,
+              paddingLeft: 1,
+            },
           }}
           noWrap
           {...props}>
-          {props.getValue()}
+          {formatOrderId(props.getValue())}
         </Typography>
       ),
     },
@@ -87,19 +95,13 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
       accessorKey: "filledQty",
       header: "Quantity",
       enableResizing: true,
-      cell: props => {
-        const value = Number(props.getValue() as string);
-        return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
-      },
+      cell: props => formatFilledQty(props.getValue() as string),
     },
     {
       accessorKey: "filledPrice",
       header: "Price",
       enableResizing: true,
-      cell: props => {
-        const value = Number(props.getValue() as string);
-        return value.toFixed(5);
-      },
+      cell: props => formatFilledPrice(props.getValue() as string),
     },
     {
       accessorKey: "status",

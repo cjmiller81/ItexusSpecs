@@ -1,9 +1,8 @@
-import { AppAccordionSection } from "components"
+import fetchLookupPage from "@/features/Common/fetchLookupPage"
 import { IndexModelingSection } from "@/features/Investing/IndexModelingSection"
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection"
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth"
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { clearSearchResult, searchIcons } from "@/libs/redux/Slices/IconsSlice"
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -16,6 +15,7 @@ import {
 import { setCapital, setPrefilteredData, setTokens } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { Stack } from "@mui/material"
+import { AppAccordionSection } from "components"
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 
@@ -29,28 +29,25 @@ export default function MarketCapWeightedPage() {
     startDate,
     symbolOption,
     statstatusFetchingMarcetCapData,
-    endDate
-  } = useAppSelector(state => state.marketCapWeightedChart)
-  const { iconsFetchingStatus, lookUpOptions } = useAppSelector(state => state.icons)
-  const dispatch = useAppDispatch()
+    endDate,
+  } = useAppSelector(state => state.marketCapWeightedChart);
+  const dispatch = useAppDispatch();
 
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.MarketCapWeightedModeling,
-  )
+  );
 
-  const { t } = useTranslation("MarketCapPage")
+  const { t } = useTranslation("MarketCapPage");
 
   useEffect(() => {
-    dispatch(resetState())
-    dispatch(clearSearchResult())
-    dispatch(searchIcons({}))
-    dispatch(fetchCoins({}))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    dispatch(resetState());
+    dispatch(fetchCoins({}));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Stack gap={2}>
-       <PrefilterTokensSection
+      <PrefilterTokensSection
         persisKey="WeightedPrefilterTokens"
         onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
       />
@@ -59,7 +56,7 @@ export default function MarketCapWeightedPage() {
         persistKey="WeightedIndexModeling"
         onCapitalChange={value => dispatch(setCapital(value))}
         onTokensChange={value => {
-          dispatch(setTokens(value))
+          dispatch(setTokens(value));
         }}
         weighted={weight * 100}
         capital={totalCapital}
@@ -74,6 +71,7 @@ export default function MarketCapWeightedPage() {
         defaultExpanded
         title={t("WeightedChartTitle")}>
         <HistoricalWalletsWorth
+          onFetchPage={fetchLookupPage}
           toDate={endDate}
           sx={{ mt: 4, width: "100%" }}
           sumbitButtonText={t("RunTest")}
@@ -82,14 +80,12 @@ export default function MarketCapWeightedPage() {
           fromDate={startDate}
           chartDataLoading={statstatusFetchingMarcetCapData === "loading"}
           lookupOption={symbolOption}
-          lookupLoading={iconsFetchingStatus === "loading"}
-          lookupOptions={lookUpOptions}
+          lookupLoading={false}
           maxChartValue={maxChartValue}
           minChartValue={minChartValue}
-          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({tokensAllocation: tokensCount || 0}))}
+          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({ tokensAllocation: tokensCount || 0 }))}
           onToDateChange={date => dispatch(setToDate({ toDate: date }))}
           onFromDateChange={date => dispatch(setFromDate({ fromDate: date }))}
-          onLookUpSearchChange={searchValue => dispatch(searchIcons({ query: searchValue }))}
           onOptionChange={option => dispatch(setCompareOption({ compareToOption: option }))}
           onPeriodChange={period => dispatch(setPeriod({ period: period }))}
           period={period}
@@ -99,5 +95,5 @@ export default function MarketCapWeightedPage() {
         />
       </AppAccordionSection>
     </Stack>
-  )
+  );
 }

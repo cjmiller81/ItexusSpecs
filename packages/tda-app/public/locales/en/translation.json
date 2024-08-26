@@ -56,10 +56,13 @@
     "ChangePassword": "Change Password"
   },
   "TradeHistory": {
-    "TradeHistory": "Trade History"
+    "TradeHistory": "Trade History",
+    "TradeHistoryCsvFileName": "Trade_History"
+
   },
   "SpotRFQPage": {
-    "RecentTransactions": "Recent Transactions"
+    "RecentTransactions": "Recent Transactions",
+    "RecentTransactionsCsvFileName": "Recent_Transactions"
   },
   "ProfileEditSection": {
     "PersonalInformation": "Personal Information",
@@ -69,6 +72,10 @@
   },
   "ConfirmationCellContent":{
     "TradeConfirmation": "Trade Confirmation"
+  },
+  "AccountFunding":{
+    "AccountFunding": "Account Funding",
+    "CommingSoon": "Comming soon..."
   },
   "FooterSection":{
     "MinSize": "Min Size",

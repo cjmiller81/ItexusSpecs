@@ -96,7 +96,7 @@ export async function fetchChartData(state: MarketCapEqualWeightChartState, toke
     state.startDate,
     state.endDate || new Date(),
     tokensAllocation,
-    state.symbolOption?.tokenId,
+    state.symbolOption?.id,
   );
   return {
     seriesData: response,

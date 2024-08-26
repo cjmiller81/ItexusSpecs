@@ -4,13 +4,25 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
-import { FC, useState } from "react";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
+import moment from "moment";
+import { FC, useMemo, useState } from "react";
+import {
+  formatFilledPrice,
+  formatFilledQty,
+  formatOrderId,
+  formatTransactTime,
+  getHistoryDataTableColumns,
+} from "./columns";
 import { TableHeader } from "./Header";
 import { ReactTable } from "./ReactTable";
-import { getHistoryDataTableColumns } from "./columns";
+import { getStatusLabelText } from "./StatusChip";
 
 interface RFQTableProps extends Omit<MainCardProps, "children"> {
   rows: HistoryDataParsed[];
+  fileName: string;
   handleHistoryRequest: (fromDate: Date, toDate: Date) => void;
   fromDate: Date | null;
   toDate: Date | null;
@@ -27,6 +39,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
   onFromDateChange,
   onToDateChange,
   title,
+  fileName,
   sx,
   ...props
 }) => {
@@ -64,30 +77,37 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
 
-    link.download = `Recent_Transactions_${formattedDate}.csv`;
+    link.download = `${fileName}_${formattedDate}.csv`;
 
     link.click();
   };
 
-  const handleHistory = () => {
-    if (toDate && fromDate) handleHistoryRequest(fromDate, toDate);
+  const columns = useMemo(() => getHistoryDataTableColumns(theme), []);
+
+  const handleDownloadPdf = () => {
+    const tableColumns = columns as { accessorKey: string; header: string }[];
+    const doc = new jsPDF();
+    autoTable(doc, {
+      head: [tableColumns.map(column => column.header)],
+      body: rows.map(row =>
+        tableColumns.map(({ accessorKey }) => {
+          let value = row[accessorKey];
+          if (accessorKey === "transactTime") return formatTransactTime(value);
+          if (accessorKey === "id") return formatOrderId(value);
+          if (accessorKey === "filledQty") return formatFilledQty(value);
+          if (accessorKey === "filledPrice") return formatFilledPrice(value);
+          if (accessorKey === "status") return getStatusLabelText(value);
+          return value;
+        }),
+      ),
+    });
+    doc.save(`${fileName}_${moment().format("MM_DD_YYYY")}.pdf`);
   };
 
   const handleSortingChange: OnChangeFn<SortingState> = updaterOrValue => {
     const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue;
     setSorting(newSorting);
   };
-
-  const updatedRows = rows.map(transaction => {
-    const newStatus = transaction.status === "Error" ? "Rejected" : transaction.status;
-    const shortId = transaction.id ? transaction.id.slice(0, 4) : transaction.id;
-
-    return {
-      ...transaction,
-      status: newStatus,
-      id: shortId,
-    };
-  });
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -107,8 +127,8 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
                 title,
                 fromDate,
                 toDate,
+                handleDownloadPdf,
                 handleDownloadCsv,
-                handleHistory,
                 handleToDateChange,
                 handleFromDateChange,
               }}
