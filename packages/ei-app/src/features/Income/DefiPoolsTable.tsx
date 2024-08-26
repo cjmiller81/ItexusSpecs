@@ -107,10 +107,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   };
 
   return (
-    <div
-      className={`custom-accordion-details ${sidebarOpened ? "sidebar-open" : "sidebar-closed"}`}
-      style={{ width: `${sidebarOpened ? screenWidth - 600 : screenWidth - 830}px` }}
-      ref={containerRef}>
+    <div ref={containerRef}>
       <DataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
