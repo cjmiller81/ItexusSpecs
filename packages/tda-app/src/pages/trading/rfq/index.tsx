@@ -140,7 +140,7 @@ export default function SpotRFQPage() {
         variant="h5"
         noWrap
         align="center">
-        Request for Quote Portal
+        Spot RFQ
       </Typography>
       <Typography
         variant="body2"
