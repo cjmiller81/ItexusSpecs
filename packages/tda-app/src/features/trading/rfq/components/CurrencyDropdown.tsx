@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import i18next from "@/libs/i18n/i18n";
-import { Autocomplete, AutocompleteProps, Stack, StackProps, TextField, Typography } from "@mui/material";
+import { Autocomplete, AutocompleteProps, Stack, StackProps, TextField, Typography, useTheme } from "@mui/material";
 import { CurrencyPair } from "@/api/rfq-api/models/CurrencyPair";
 
 interface CurrencyDropdownProps extends StackProps {
@@ -59,6 +59,7 @@ type AutocomleteSectionProps = Omit<AutocompleteProps<string, false, false, true
 };
 
 const AutocomleteSection: FC<AutocomleteSectionProps> = ({ onValueChange, ...props }) => {
+  const theme = useTheme();
   return (
     <Autocomplete
       fullWidth
@@ -69,6 +70,11 @@ const AutocomleteSection: FC<AutocomleteSectionProps> = ({ onValueChange, ...pro
           {...params}
           label={i18next.t("ChooseCurrency", { ns: "WalletInputModal" })}
           type="text"
+          InputLabelProps={{
+            sx: {
+              backgroundColor: theme.palette.mode === "dark" ? "#131313 !important" : "#fbfbfb !important",
+            },
+          }}
         />
       )}
       {...props}
