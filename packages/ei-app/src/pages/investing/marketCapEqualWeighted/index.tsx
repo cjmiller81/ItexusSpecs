@@ -84,7 +84,7 @@ export default function MarketCapEqualWeightedPage() {
           lookupLoading={false}
           maxChartValue={maxChartValue}
           minChartValue={minChartValue}
-          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({ tokensAllocation: tokensCount || 0 }))}
+          onChartSubmit={() => dispatch(fetchHistoricalCapWeightedData({ tokensIds: tableData.map(t => t.id) }))}
           onFromDateChange={date => dispatch(setFromDate({ fromDate: date }))}
           onToDateChange={date => dispatch(setToDate({ toDate: date }))}
           onOptionChange={option => dispatch(setCompareOption({ compareToOption: option }))}
