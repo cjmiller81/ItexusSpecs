@@ -47,15 +47,15 @@ export const walletsApi = {
   getHistoricalCapWeightedWalletData: async (
     startDate: Date,
     endDate: Date,
-    tokenCount: number,
+    tokensIds: string[],
     compareSymbolId?: string,
   ): Promise<CapHistoricalWeightedDate[]> => {
-    const response = await appAxios.get(`/model/run/marketCapWeightedIndex`, {
+    const response = await appAxios.get(`/model/run/marketCapWeightedIndex?${tokensIds.map((n, index) => `tokensIds=${n}`).join('&')}`, {
       params: {
         startDate: ToUtcDateFormatted(startDate),
         endDate: ToUtcDateFormatted(endDate),
         compareTokenId: compareSymbolId,
-        tokenCount,
+        tokensIds,
       },
     })
 
