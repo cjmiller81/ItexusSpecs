@@ -26,16 +26,13 @@ export default function MyWalletsPage() {
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(new Date());
+  const [isDatesValid, setIsDatesValid] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 
   const { t } = useTranslation("MyWalletsPage");
 
-  useEffect(() => {
-    if (wallets === null) dispatch(fetchWallets(null));
-  }, [dispatch, wallets]);
-
-  const onChartRefresh = () => {
-    if (fromDate && toDate) {
+  const fetchHistoricalData = () => {
+    if (isDatesValid && fromDate && toDate) {
       dispatch(
         fetchHistoricalWalletData({
           tokenId: symbolOption?.id,
@@ -45,6 +42,20 @@ export default function MyWalletsPage() {
         }),
       );
     }
+  };
+
+  useEffect(() => {
+    if (selectedWallets.length) {
+      fetchHistoricalData();
+    }
+  }, [selectedWallets]);
+
+  useEffect(() => {
+    if (wallets === null) dispatch(fetchWallets(null));
+  }, [dispatch, wallets]);
+
+  const onChartRefresh = () => {
+    fetchHistoricalData();
   };
 
   useEffect(() => {
@@ -81,6 +92,7 @@ export default function MyWalletsPage() {
         chartSeries={chartSeries}
         fromDate={fromDate}
         toDate={toDate}
+        onDatesValidChanged={setIsDatesValid}
         lookupLoading={false}
         maxChartValue={maxChartValue}
         minChartValue={minChartValue}
