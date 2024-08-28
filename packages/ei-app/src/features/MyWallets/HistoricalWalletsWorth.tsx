@@ -24,6 +24,7 @@ interface Props extends BoxProps {
   onPeriodChange: (period: Period) => void;
   onFromDateChange: (date: Date | null) => void;
   onToDateChange: (date: Date | null) => void;
+  onDatesValidChanged?: (isValid: boolean) => void;
   fromDate: Date | null;
   toDate: Date | null;
   onChartSubmit: () => void;
@@ -47,6 +48,7 @@ export const HistoricalWalletsWorth = ({
   onPeriodChange,
   onFromDateChange,
   onToDateChange,
+  onDatesValidChanged,
   fromDate,
   toDate,
   onChartSubmit,
@@ -84,7 +86,9 @@ export const HistoricalWalletsWorth = ({
     setIsValid: (isValid: boolean) => void,
   ) => {
     //eslint-disable-next-line no-extra-boolean-cast
-    setIsValid(!Boolean(event.validationError));
+    const isValid = !Boolean(event.validationError);
+    setIsValid(isValid);
+    if (onDatesValidChanged) onDatesValidChanged(isValid);
   };
   return (
     <StyledWalletWorthContainer {...props}>
