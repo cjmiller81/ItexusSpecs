@@ -29,6 +29,7 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { t } = useTranslation("Yields");
+  const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
     dispatch(fetchFilters({}));
@@ -77,7 +78,12 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
           <PageTitle sx={{ width: "100%" }}>{t("Yields")}</PageTitle>
         </Box>
       </StyledAccordionSummary>
-      <AccordionDetails sx={{ bgcolor: "background.paper" }}>
+      <AccordionDetails
+        sx={{
+          bgcolor: "background.paper",
+          width: `${sidebarOpened ? "calc(100vw - 285px)" : "calc(100vw - 108px)"}`,
+          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+        }}>
         <SimpleBar style={{ maxHeight: "600px" }}>
           <CustomFilterBuilder
             filterBuilderFields={defiFilterBuilderFields}

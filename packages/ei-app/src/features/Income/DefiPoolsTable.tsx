@@ -9,7 +9,6 @@ import DataGridDef, {
   FilterBuilderPopup,
   FilterPanel,
   FilterRow,
-  Scrolling,
   HeaderFilter,
   LoadPanel,
   Pager,
@@ -51,9 +50,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
 
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
-  const updatePrefilteredTokens = async (): Promise<void> => {
+  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
-
     if (!grid) return;
 
     const filteredDataSource = grid.getDataSource();
@@ -61,7 +59,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh();
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
-  };
+  }, [datagrid, currentFilter, onUpdate]);
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
@@ -104,9 +102,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         allowColumnReordering={true}
         columnHidingEnabled={false}
         keyExpr="ID"
-        columnAutoWidth={false}
+        columnAutoWidth={true}
         showRowLines={true}
-        width="1000px"
         showBorders={true}
         onExporting={onExport}
         filterBuilder={{
@@ -117,11 +114,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}>
-        <Scrolling
-          columnRenderingMode="virtual"
-          mode="standard"
-        />
-
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
