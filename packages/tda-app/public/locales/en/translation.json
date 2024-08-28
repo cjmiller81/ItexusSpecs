@@ -37,7 +37,7 @@
     "NewPassword": "New password",
     "ChangePassword": "Change Password"
   },
-  "TileSection":{
+  "TileSection": {
     "QuoteRejected": "Quote Rejected. Please, try again.",
     "BuyConfirmationText": "Buy {{buyAmount}} {{symbol1}} / Sell {{sellAmount}}\n{{symbol2}} (Notional Value) @ {{buyValue}}",
     "SellConfirmationText": "Sell {{sellAmount}} {{symbol1}} / Buy {{buyAmount}}\n{{symbol2}} (Notional Value) @ {{sellValue}}",
@@ -45,7 +45,6 @@
     "SellSnackBarConfirmationText": "You have Sold {{amount}} {{symbol1}} and Bought {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
     "InsufficientFundsToSell": "Insufficient Funds - Not Enough Funds Available to Sell {{currency}}",
     "InsufficientFundsToBuy": "Insufficient Funds - Not Enough Funds Available to Buy {{currency1}} using {{currency2}}"
-
   },
   "Tile": {
     "MinSizeError": "TRADE QUANTITY IS TOO SMALL",
@@ -58,11 +57,13 @@
   "TradeHistory": {
     "TradeHistory": "Trade History",
     "TradeHistoryCsvFileName": "Trade_History"
-
   },
   "SpotRFQPage": {
     "RecentTransactions": "Recent Transactions",
-    "RecentTransactionsCsvFileName": "Recent_Transactions"
+    "RecentTransactionsCsvFileName": "Recent_Transactions",
+    "Export": "Export",
+    "ExportAsPDF": "Export as PDF",
+    "ExportAsCSV": "Export as CSV"
   },
   "ProfileEditSection": {
     "PersonalInformation": "Personal Information",
@@ -70,14 +71,14 @@
     "LastName": "Last Name",
     "EmailAddress": "Email Address"
   },
-  "ConfirmationCellContent":{
+  "ConfirmationCellContent": {
     "TradeConfirmation": "Trade Confirmation"
   },
-  "AccountFunding":{
+  "AccountFunding": {
     "AccountFunding": "Account Funding",
     "CommingSoon": "Comming soon..."
   },
-  "FooterSection":{
+  "FooterSection": {
     "MinSize": "Min Size",
     "MaxSize": "Max Size"
   },

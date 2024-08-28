@@ -1,19 +1,18 @@
-import { PdfLogo } from "@/components/logo/PdfLogo";
-import { SvgLogo } from "@/components/logo/SvgLogo";
-import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Box, styled, Button, Menu, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Box, Stack, styled } from "@mui/system";
-import { LocalizationProvider, PickerChangeHandlerContext } from "@mui/x-date-pickers";
-import { DateRange, DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
+import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import "jspdf-autotable";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { DateRange, DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
+import { PickerChangeHandlerContext } from "@mui/x-date-pickers";
+import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import { shortcutsItems } from "./shortcutsItems";
 
 export const TableHeader = ({
@@ -31,8 +30,9 @@ export const TableHeader = ({
   handleToDateChange: (date: Date | null) => void;
   handleFromDateChange: (date: Date | null) => void;
 }) => {
-  const { t } = useTranslation("ProfilePage");
+  const { t } = useTranslation("SpotRFQPage");
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [exportAnchor, setExportAnchor] = useState<null | HTMLElement>(null);
   const theme = useTheme();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -41,6 +41,14 @@ export const TableHeader = ({
 
   const handleMenuClose = () => {
     setMenuAnchor(null);
+  };
+
+  const handleExportMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setExportAnchor(event.currentTarget);
+  };
+
+  const handleExportMenuClose = () => {
+    setExportAnchor(null);
   };
 
   const handleDateChange = (
@@ -111,16 +119,39 @@ export const TableHeader = ({
           </MenuItem>
         </Menu>
       </Box>
-      <Stack
-        direction="row"
-        gap={0}>
-        <Button onClick={handleDownloadCsv}>
-          <SvgLogo />
-        </Button>
-        <Button onClick={handleDownloadPdf}>
-          <PdfLogo />
-        </Button>
-      </Stack>
+      <Button
+        onClick={handleExportMenuOpen}
+        sx={{
+          padding: "5px 11px",
+          color: theme.palette.grey[700],
+          border: "1px solid",
+          borderColor: theme.palette.grey[500],
+          alignItems: "center",
+          "&:hover": {
+            borderColor: theme.palette.grey[100],
+            color: theme.palette.grey[700],
+            border: "1px solid",
+            backgroundColor: theme.palette.grey[100],
+          },
+        }}
+        variant="outlined">
+        <FileDownloadOutlinedIcon sx={{ marginRight: 0.3 }} />
+        {t("Export")}
+        <KeyboardArrowDownOutlinedIcon sx={{ marginLeft: 1.5 }} />
+      </Button>
+      <Menu
+        anchorEl={exportAnchor}
+        open={Boolean(exportAnchor)}
+        onClose={handleExportMenuClose}>
+        <MenuItem onClick={handleDownloadPdf}>
+          <InsertDriveFileOutlinedIcon sx={{ marginRight: 0.5 }} />
+          {t("ExportAsPDF")}
+        </MenuItem>
+        <MenuItem onClick={handleDownloadCsv}>
+          <DescriptionOutlinedIcon sx={{ marginRight: 0.5 }} />
+          {t("ExportAsCSV")}
+        </MenuItem>
+      </Menu>
     </HeaderContainer>
   );
 };
