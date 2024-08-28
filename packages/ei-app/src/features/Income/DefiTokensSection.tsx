@@ -81,7 +81,7 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
       <AccordionDetails
         sx={{
           bgcolor: "background.paper",
-          width: `${sidebarOpened ? "calc(100vw - 285px)" : "calc(100vw - 108px)"}`,
+          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
         }}>
         <SimpleBar style={{ maxHeight: "600px" }}>
