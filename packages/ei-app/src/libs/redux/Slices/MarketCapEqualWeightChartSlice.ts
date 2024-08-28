@@ -66,8 +66,8 @@ export const marketCapEqualWeightChartSlice = createAppSlice({
       calculateChartSeries(state);
     }),
     fetchHistoricalCapWeightedData: create.asyncThunk(
-      async ({ tokensAllocation }: { tokensAllocation: number }, thunkApi): Promise<ChartSeriesDataResponse> => {
-        return fetchChartData((thunkApi.getState() as RootState).marketCapEqualWeightChart, tokensAllocation);
+      async ({ tokensIds }: { tokensIds: string[] }, thunkApi): Promise<ChartSeriesDataResponse> => {
+        return fetchChartData((thunkApi.getState() as RootState).marketCapEqualWeightChart, tokensIds);
       },
       {
         pending: state => {
@@ -87,7 +87,7 @@ export const marketCapEqualWeightChartSlice = createAppSlice({
   }),
 });
 
-export async function fetchChartData(state: MarketCapEqualWeightChartState, tokensAllocation: number) {
+export async function fetchChartData(state: MarketCapEqualWeightChartState, tokensIds: string[]) {
   if (!state.startDate) {
     throw "startDate is not set";
   }
@@ -95,7 +95,7 @@ export async function fetchChartData(state: MarketCapEqualWeightChartState, toke
   const response = await walletsApi.getHistoricalCapWeightedWalletData(
     state.startDate,
     state.endDate || new Date(),
-    tokensAllocation,
+    tokensIds,
     state.symbolOption?.id,
   );
   return {

@@ -225,6 +225,7 @@ export default function ProfilePage() {
           justifyContent={isDownMd ? "center" : "inherit"}
           direction={isDownMd ? "row" : "column"}
           width={"100%"}
+          position={{ position: "static" }}
         />
       </Grid>
     </Grid>
