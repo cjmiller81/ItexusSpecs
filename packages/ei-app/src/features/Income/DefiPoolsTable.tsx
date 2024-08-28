@@ -45,23 +45,10 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   onFilterBuilderOpen,
   onExport,
 }) => {
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const filterPanelText = useRef<Element | null>(null);
-  const { sidebarOpened } = useAppSelector(store => store.ui);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
-  const updateScreenWidth = useCallback(() => {
-    setScreenWidth(window.innerWidth);
-  }, []);
-
-  useEffect(() => {
-    updateScreenWidth();
-    window.addEventListener("resize", updateScreenWidth);
-    return () => {
-      window.removeEventListener("resize", updateScreenWidth);
-    };
-  }, [updateScreenWidth]);
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -114,7 +101,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         keyExpr="ID"
         columnAutoWidth={true}
         showRowLines={true}
-        width={`${sidebarOpened ? screenWidth - 300 : screenWidth - 130}px`}
         showBorders={true}
         ref={datagrid}
         allowColumnReordering={true}

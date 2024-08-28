@@ -27,22 +27,9 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   );
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const dispatch = useAppDispatch();
   const { t } = useTranslation("Yields");
   const { sidebarOpened } = useAppSelector(store => store.ui);
-
-  const updateScreenWidth = useCallback(() => {
-    setScreenWidth(window.innerWidth);
-  }, []);
-
-  useEffect(() => {
-    updateScreenWidth();
-    window.addEventListener("resize", updateScreenWidth);
-    return () => {
-      window.removeEventListener("resize", updateScreenWidth);
-    };
-  }, [updateScreenWidth]);
 
   useEffect(() => {
     dispatch(fetchFilters({}));
@@ -92,9 +79,11 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails
+        id="Test_id"
         sx={{
           bgcolor: "background.paper",
-          width: `${sidebarOpened ? screenWidth - 282 : screenWidth - 105}px`,
+          width: `${sidebarOpened ? "calc(100vw - 285px)" : "calc(100vw - 108px)"}`,
+          transition: 'width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms'
         }}>
         <SimpleBar style={{ maxHeight: "600px" }}>
           <CustomFilterBuilder
