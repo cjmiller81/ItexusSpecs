@@ -54,6 +54,19 @@
     "PersonalInformation": "Personal Information",
     "ChangePassword": "Change Password"
   },
+  "WithdrawalRequestSection":{
+    "WithdrawalRequest": "Withdrawal Request",
+    "RequestWithdrawal": "Request Withdrawal",
+    "SelectDestination": "Select Destination",
+    "Destination": "Destination",
+    "SelectCurrency": "Select Currency",
+    "Currency": "Currency",
+    "Amount": "Amount",
+    "EnterAmount": "Enter Amount"
+  },
+  "RequestSettlement":{
+    "WithdrawalRequestSubmitted": "Withdrawal Request Submitted"
+  },
   "TradeHistory": {
     "TradeHistory": "Trade History",
     "TradeHistoryCsvFileName": "Trade_History"
