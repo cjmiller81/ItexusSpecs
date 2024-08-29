@@ -1,12 +1,12 @@
 import { TextField } from "@mui/material";
-import { darken, lighten, styled, SxProps, Theme } from "@mui/system";
+import { darken, lighten, styled, Theme } from "@mui/system";
 import { DecimalInput } from "components";
 
-const contrastSxProps: SxProps<Theme> = {
+const contrastStyles = (theme: Theme) => ({
   "& .MuiInputLabel-root": {
     left: "50%",
     transform: "translateX(-50%)",
-    backgroundColor: theme => (theme.palette.mode === "dark" ? "#292929 !important" : "white"),
+    backgroundColor: theme.palette.mode === "dark" ? "#2a2929 !important" : "#fff",
     padding: "0 5px",
     textAlign: "center",
     fontSize: "10px !important",
@@ -39,7 +39,9 @@ const contrastSxProps: SxProps<Theme> = {
   "& .MuiOutlinedInput-root.Mui-focused": {
     boxShadow: "none !important",
   },
-};
+});
 
-export const ContrastDecimalField = styled(DecimalInput)(() => contrastSxProps);
-export const ContrastTextField = styled(TextField)(() => contrastSxProps);
+const StyledContrastDecimalField = styled(DecimalInput)(({ theme }: { theme: Theme }) => contrastStyles(theme));
+const StyledContrastTextField = styled(TextField)(({ theme }: { theme: Theme }) => contrastStyles(theme));
+
+export { StyledContrastDecimalField as ContrastDecimalField, StyledContrastTextField as ContrastTextField };

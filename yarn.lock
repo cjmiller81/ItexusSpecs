@@ -14815,6 +14815,8 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-cli: "npm:^29.7.0"
     jest-environment-jsdom: "npm:^29.7.0"
+    jspdf: "npm:^2.5.1"
+    jspdf-autotable: "npm:^3.8.2"
     lerna: "npm:^8.1.2"
     limiter: "npm:^2.1.0"
     lint-staged: "npm:^12.3.7"
@@ -31006,8 +31008,6 @@ __metadata:
     "@mui/x-date-pickers-pro": "npm:^7.10.0"
     components: "workspace:*"
     jest: "npm:^29.7.0"
-    jspdf: "npm:^2.5.1"
-    jspdf-autotable: "npm:^3.8.2"
     ts-jest: "npm:^29.2.4"
   languageName: unknown
   linkType: soft
