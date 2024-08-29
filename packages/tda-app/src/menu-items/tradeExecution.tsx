@@ -1,6 +1,6 @@
-import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
-import { FormattedMessage } from 'react-intl';
-import { NavItemType } from 'types/menu';
+import CandlestickChartIcon from "@mui/icons-material/CandlestickChart";
+import { FormattedMessage } from "react-intl";
+import { NavItemType } from "types/menu";
 
 const tradeExecution: NavItemType = {
   id: "group-forms-tables-3",
@@ -10,12 +10,12 @@ const tradeExecution: NavItemType = {
     {
       id: "rfq",
       url: "/trading/rfq",
-      title: <FormattedMessage id="rfq" />,
+      title: <FormattedMessage id="Spot RFQ" />,
       type: "item",
       icon: CandlestickChartIcon,
       breadcrumbs: false,
     },
   ],
-}
+};
 
-export default tradeExecution
+export default tradeExecution;
