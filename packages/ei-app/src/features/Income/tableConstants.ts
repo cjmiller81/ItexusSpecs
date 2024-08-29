@@ -12,7 +12,6 @@ export enum DefiField {
   Pool = "pool",
   ApyPct1D = "apyPct1D",
   ApyPct7D = "apyPct7D",
-  ApyPct30D = "apyPct30D",
   Stablecoin = "stablecoin",
   IlRisk = "ilRisk",
   Exposure = "exposure",
@@ -42,7 +41,6 @@ export enum DefiLabel {
   Pool = "Pool",
   ApyPct1D = "Apy Pct 1D",
   ApyPct7D = "Apy Pct 7D",
-  ApyPct30D = "Apy Pct 30D",
   Stablecoin = "Stablecoin",
   IlRisk = "IL Risk",
   Exposure = "Exposure",
@@ -109,11 +107,6 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
     caption: DefiLabel.ApyPct7D,
     dataField: DefiField.ApyPct7D,
-    dataType: "number",
-  },
-  {
-    caption: DefiLabel.ApyPct30D,
-    dataField: DefiField.ApyPct30D,
     dataType: "number",
   },
   {

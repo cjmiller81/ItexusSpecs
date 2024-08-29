@@ -50,9 +50,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
 
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
-  const updatePrefilteredTokens = async (): Promise<void> => {
+  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
-
     if (!grid) return;
 
     const filteredDataSource = grid.getDataSource();
@@ -60,7 +59,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh();
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
-  };
+  }, [datagrid, currentFilter, onUpdate]);
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
@@ -99,12 +98,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
       <DataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
-        showBorders={true}
         ref={datagrid}
         allowColumnReordering={true}
-        columnHidingEnabled={true}
+        columnHidingEnabled={false}
+        keyExpr="ID"
+        columnAutoWidth={true}
+        showRowLines={true}
+        showBorders={true}
         onExporting={onExport}
-        width="99%"
         filterBuilder={{
           customOperations: [],
           allowHierarchicalFields: true,
@@ -228,7 +229,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.ApyBase7d}
           caption={DefiLabel.ApyBase7d}
-          alignment="right"
+          alignment="left"
           visible={false}
           dataType="number"
           allowHiding={true}
@@ -237,7 +238,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.Il7d}
           caption={DefiLabel.Il7d}
-          alignment="right"
+          alignment="left"
           visible={false}
           dataType="number"
           allowHiding={true}
@@ -246,13 +247,12 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.ApyMean30d}
           caption={DefiLabel.ApyMean30d}
-          alignment="right"
+          alignment="left"
           visible={false}
           dataType="number"
           allowHiding={true}
           customizeText={toPercentageField}
         />
-
         <Column
           dataField={DefiField.VolumeUsd1d}
           caption={DefiLabel.VolumeUsd1d}
@@ -293,15 +293,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={DefiField.ApyPct7D}
           caption={DefiLabel.ApyPct7D}
-          alignment="left"
-          visible={false}
-          dataType="number"
-          allowHiding={true}
-          customizeText={toPercentageField}
-        />
-        <Column
-          dataField={DefiField.ApyMean30d}
-          caption={DefiLabel.ApyMean30d}
           alignment="left"
           visible={false}
           dataType="number"
