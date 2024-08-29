@@ -143,6 +143,7 @@
   "admin": "Admin",
   "accounting": "Accounting",
   "request-settlement": "Request Settlement",
+  "funding-instructions": "Funding Instructions",
   "account-history": "Account History",
   "trade-history": "Trade History",
   "settlement-history": "Settlement History",

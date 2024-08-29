@@ -6,6 +6,7 @@ import RequestSettlmentDark from "../../public/requestSettlmentDark.svg";
 import RequestSettlmentLight from "../../public/requestSettlmentLight.svg";
 import RequestSettlmentBlueDark from "../../public/requestSettlmentBlueDark.svg";
 import RequestSettlmentBlueLight from "../../public/requestSettlmentBlueLight.svg";
+import FeedOutlinedIcon from "@mui/icons-material/FeedOutlined";
 import { NavItemType } from "types/menu";
 
 const LightIcon = () => (
@@ -62,6 +63,14 @@ const Settlements: NavItemType = {
       icon: SettlementIcon,
       breadcrumbs: false,
       url: "/settlements/request_settlement",
+    },
+    {
+      id: "funding-instructions",
+      title: <FormattedMessage id="funding-instructions" />,
+      type: "item",
+      icon: FeedOutlinedIcon,
+      breadcrumbs: false,
+      url: "/settlements/funding_instructions",
     },
   ],
 };
