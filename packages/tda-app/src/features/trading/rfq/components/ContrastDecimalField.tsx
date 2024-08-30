@@ -30,9 +30,13 @@ const contrastStyles = (theme: Theme) => ({
   "& .MuiFormLabel-root.Mui-disabled": {
     color: theme => (theme.palette.mode === "dark" ? lighten("#000", 0.6) : darken("#fff", 0.4)),
   },
+  ".MuiOutlinedInput-notchedOutline": {
+    borderColor: `${theme.palette.mode === "light" ? lighten("#000", 0.6) : theme.palette.text.primary} !important`,
+  },
   "& .Mui-disabled": {
     input: {
-      "-webkit-text-fill-color": theme => (theme.palette.mode === "dark" ? lighten("#000", 0.6) : darken("#fff", 0.4)),
+      "-webkit-text-fill-color":
+        theme.palette.mode === "light" ? darken(theme.palette.text.secondary, 0.4) : theme.palette.text.primary,
     },
   },
 

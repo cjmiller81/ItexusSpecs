@@ -208,6 +208,7 @@ const Tile: React.FC<TileProps> = ({
           </Stack>
         </Stack>
         <FooterSection
+          labelsPostfix={symbol1}
           mt={5}
           {...{
             maxSize,
