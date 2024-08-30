@@ -67,6 +67,11 @@
   "RequestSettlement":{
     "WithdrawalRequestSubmitted": "Withdrawal Request Submitted"
   },
+  "WithdrawalRequestConfirmationModal":{
+    "ModalTitle": "Withdrawal Request Received",
+    "ModalText1": "Please allow 24 hours for our response",
+    "ModalText2": "We will contact you with any further required"
+  },
   "TradeHistory": {
     "TradeHistory": "Trade History",
     "TradeHistoryCsvFileName": "Trade_History"

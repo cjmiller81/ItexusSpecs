@@ -1,9 +1,8 @@
-import { openSnackbar } from "@/api/snackbar";
 import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection";
 import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
+import WithdrawalRequestConfirmationModal from "@/features/withdrawal-request/WithdrawalRequestConfirmationModal";
 import WithdrawalRequestSection from "@/features/withdrawal-request/WithdrawalRequestSection";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { SnackbarProps } from "@/types/snackbar";
 import { Grid, useMediaQuery } from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { useEffect, useMemo, useState } from "react";
@@ -15,19 +14,14 @@ const RequestSettlement: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const cryptoCurrencies = useAppSelector(state => state.balancesWidget.cryptoCurrencies);
   const fiatCurrencies = useAppSelector(state => state.balancesWidget.fiatCurrencies);
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   const onRequestWithdrawal = async () => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 400));
     setIsLoading(false);
-    openSnackbar({
-      open: true,
-      message: t("WithdrawalRequestSubmitted"),
-      variant: "alert",
-      alert: {
-        color: "success",
-      },
-    } as SnackbarProps);
+
+    setConfirmationModalOpen(true);
   };
 
 
@@ -37,45 +31,51 @@ const RequestSettlement: React.FC = () => {
   );
 
   return (
-    <Grid
-      container
-      mt={2}
-      spacing={2}>
+    <>
+      <WithdrawalRequestConfirmationModal
+        onClose={() => setConfirmationModalOpen(false)}
+        open={isConfirmationModalOpen}
+      />
       <Grid
-        item
-        xs={12}>
-        <Stack
-          alignItems="center"
-          justifyContent="center">
-          <BalanceWidgetSection
-            width={theme => (isRelativeBalances ? "400px" : theme.spacing(21))}
-            direction={isRelativeBalances ? "row" : "column"}
-            sx={{
-              top: 0,
-              position: "absolute",
-              right: 0,
-              ...(isRelativeBalances && {
-                position: "relative",
-              }),
-            }}
-          />
-        </Stack>
+        container
+        mt={2}
+        spacing={2}>
+        <Grid
+          item
+          xs={12}>
+          <Stack
+            alignItems="center"
+            justifyContent="center">
+            <BalanceWidgetSection
+              width={theme => (isRelativeBalances ? "400px" : theme.spacing(21))}
+              direction={isRelativeBalances ? "row" : "column"}
+              sx={{
+                top: 0,
+                position: "absolute",
+                right: 0,
+                ...(isRelativeBalances && {
+                  position: "relative",
+                }),
+              }}
+            />
+          </Stack>
+        </Grid>
+        <Grid
+          item
+          xs={12}>
+          <Stack
+            justifyContent={isRelativeBalances ? "center" : "flex-start"}
+            alignItems={isRelativeBalances ? "center" : "flex-start"}
+            width={"100%"}>
+            <WithdrawalRequestSection
+              currencies={currenciesList}
+              isLoading={isLoading}
+              onRequestWithdrawal={onRequestWithdrawal}
+            />
+          </Stack>
+        </Grid>
       </Grid>
-      <Grid
-        item
-        xs={12}>
-        <Stack
-          justifyContent={isRelativeBalances ? "center" : "flex-start"}
-          alignItems={isRelativeBalances ? "center" : "flex-start"}
-          width={"100%"}>
-          <WithdrawalRequestSection
-            currencies={currenciesList}
-            isLoading={isLoading}
-            onRequestWithdrawal={onRequestWithdrawal}
-          />
-        </Stack>
-      </Grid>
-    </Grid>
+    </>
   );
 };
 
