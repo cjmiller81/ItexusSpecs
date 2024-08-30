@@ -47,8 +47,8 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
         validateOnChange={false}
         validateOnBlur={false}
         validationSchema={WithdrawalModelSchema}
-        onSubmit={(values, helpers) => {
-          onRequestWithdrawal(values);
+        onSubmit={async (values, helpers) => {
+          await onRequestWithdrawal(values);
           helpers.resetForm();
         }}>
         {({ errors, setFieldValue, handleChange, handleSubmit, touched, values }) => (
