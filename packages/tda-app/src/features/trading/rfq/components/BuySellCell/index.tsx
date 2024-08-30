@@ -85,7 +85,7 @@ const BuySellCell: FC<BuySellCellProps> = ({
         "&:hover": {
           ...(!isConfirming && {
             transition: "0.3s",
-            backgroundColor: cellType === "sell" ? "#410f12" : cellType === "buy" ? "#06192e" : bgColor,
+            backgroundColor: cellType === "sell" ? "#60161b" : cellType === "buy" ? "#0d3157" : bgColor,
             "& *": {
               fontWeight: "700 !important",
               color: `${theme.palette.common.white} !important`,
