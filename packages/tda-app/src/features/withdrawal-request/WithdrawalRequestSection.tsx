@@ -66,7 +66,6 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                   <Stack spacing={1}>
                     <InputLabel> {t("Amount")}</InputLabel>
                     <DecimalInput
-                      autoFocus
                       size="medium"
                       ref={inputRef}
                       name="amount"
@@ -131,7 +130,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                       renderValue={value => {
                         if (value === "") {
                           return (
-                            <Typography color={theme => theme.palette.text.secondary}>{t("SelectCurrency")}</Typography>
+                            <Typography color={theme => theme.palette.text.secondary}>{t("SelectDestination")}</Typography>
                           );
                         }
 
