@@ -1,6 +1,5 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { ContrastDecimalField, ContrastTextField } from "../ContrastDecimalField";
-import React from "react";
 
 type IntersectionType<T, U> = Pick<T, Extract<keyof T, keyof U>> & Pick<U, Extract<keyof U, keyof T>>;
 type CommonType = IntersectionType<

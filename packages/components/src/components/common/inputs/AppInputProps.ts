@@ -1,5 +1,7 @@
+import { ReactNode } from "react"
+
 export interface AppInputProps {
   required?: boolean
-  label?: boolean | string | undefined
+  label?: boolean | ReactNode |string | undefined
   tooltip?: string 
 }
