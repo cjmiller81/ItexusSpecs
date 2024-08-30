@@ -37,7 +37,7 @@ export const toTotalTokensBalances = (wallets: Wallet[] | null): { symbol: strin
 
   const groupedSymbols = new Map<string, { totalBalance: number }>()
   for (const e of allChainsAssets) {
-    const key = e.tokenName.toLowerCase()
+    const key = e.tokenAddress!
     let value = groupedSymbols.get(key)
     if (!value) {
       groupedSymbols.set(key, { totalBalance: e.balance })
