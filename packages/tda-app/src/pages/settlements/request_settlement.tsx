@@ -13,7 +13,8 @@ const RequestSettlement: React.FC = () => {
   const { t } = useTranslation("RequestSettlement");
   const isRelativeBalances = useMediaQuery("(max-width: 1200px)");
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useAppDispatch();
+  const cryptoCurrencies = useAppSelector(state => state.balancesWidget.cryptoCurrencies);
+  const fiatCurrencies = useAppSelector(state => state.balancesWidget.fiatCurrencies);
 
   const onRequestWithdrawal = async () => {
     setIsLoading(true);
@@ -29,15 +30,10 @@ const RequestSettlement: React.FC = () => {
     } as SnackbarProps);
   };
 
-  const { pairs } = useAppSelector(state => state.currencies);
-
-  useEffect(() => {
-    dispatch(fetchPairs({}));
-  }, []);
 
   const currenciesList = useMemo(
-    () => [...new Set([...pairs.map(c => c.symbol1), ...pairs.map(c => c.symbol2)])],
-    [pairs],
+    () => [...new Set([...fiatCurrencies.map(c => c.name), ...cryptoCurrencies.map(c => c.name)])],
+    [cryptoCurrencies, fiatCurrencies],
   );
 
   return (
