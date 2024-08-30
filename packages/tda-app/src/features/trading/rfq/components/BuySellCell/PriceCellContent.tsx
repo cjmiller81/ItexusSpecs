@@ -17,41 +17,54 @@ export const PriceCellContent: FC<BuySellCellProps> = ({ title, value, label, se
     position: "absolute",
     padding: 0,
     top: "-9px",
-    left: cellType === "buy" ? 0 : "unset",
-    right: cellType === "sell" ? 0 : "unset",
-    color: secondsLeft !== 0 ? "#2e2e2e" : theme.palette.common.white,
+    right: 0,
     borderRadius: cellType === "buy" ? "0 0 4px 0" : "0 0 0 4px",
     fontWeight: 200,
     fontSize: 24,
     zIndex: 1,
   };
+
+  const titleStyles = {
+    fontSize: 22,
+    [theme.breakpoints.down("sm")]: {
+      fontSize: 16,
+    },
+    lineHeight: 1,
+    fontWeight: 800,
+    alignItems: "flex-start",
+  };
+
   return (
     <Stack
       height={"100%"}
       direction="column"
       justifyContent="space-around"
       position="relative"
+      sx={{ alignItems: "start" }}
       {...props}>
-      {label && (
-        <Typography
-          sx={labelStyles}
-          className="price-label">
-          {label}
-        </Typography>
+      {cellType === "buy" ? (
+        <>
+          <Typography sx={titleStyles}>{title}</Typography>
+          {label && (
+            <Typography
+              sx={labelStyles}
+              className="price-label">
+              {label}
+            </Typography>
+          )}
+        </>
+      ) : (
+        <>
+          {label && (
+            <Typography
+              sx={labelStyles}
+              className="price-label">
+              {label}
+            </Typography>
+          )}
+          <Typography sx={titleStyles}>{title}</Typography>
+        </>
       )}
-
-      <Typography
-        sx={{
-          color: secondsLeft !== 0 ? "#2e2e2e" : theme.palette.common.white,
-          fontSize: 22,
-          [theme.breakpoints.down("sm")]: {
-            fontSize: 16,
-          },
-          lineHeight: 1,
-          fontWeight: 800,
-        }}>
-        {title}
-      </Typography>
 
       <InLargedNumberText
         value={value}
