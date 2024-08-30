@@ -57,8 +57,12 @@ function getPlatformsItems(): SidebarListItem[] {
       icon: <CurrencyExchangeIcon />,
       children: [
         {
-          title: t("SectionTitle", { ns: "LiquidityPools" }),
+          title: t("LiquidityPools", { ns: "IncomeSection" }),
           href: "/liquidity_pools",
+        },
+        {
+          title: t("Vaults", { ns: "IncomeSection" }),
+          href: "/vaults",
         },
       ],
     },
