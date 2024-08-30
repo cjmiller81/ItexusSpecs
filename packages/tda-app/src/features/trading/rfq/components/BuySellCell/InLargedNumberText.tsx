@@ -7,13 +7,12 @@ type Props = BoxProps & {
   secondsLeft: number;
 };
 
-export const InLargedNumberText: FC<Props> = ({ value, secondsLeft }) => {
+export const InLargedNumberText: FC<Props> = ({ value }) => {
   const [integerPart, decimalPart] = value ? value.toFixed(5).split(".") : ["", ""];
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const smallFontSize = isSmall ? 18 : 24;
   const bigFontSize = isSmall ? 31 : 42;
-  const color = secondsLeft !== 0 ? "#2e2e2e" : theme.palette.common.white;
 
   return (
     <Box
@@ -23,7 +22,7 @@ export const InLargedNumberText: FC<Props> = ({ value, secondsLeft }) => {
         component="span"
         lineHeight={1}
         sx={{
-          color: color,
+          color: theme.palette.common.white,
           fontSize: smallFontSize,
           letterSpacing: 1.3,
         }}>
@@ -32,7 +31,7 @@ export const InLargedNumberText: FC<Props> = ({ value, secondsLeft }) => {
 
       <Typography
         sx={{
-          color: color,
+          color: theme.palette.common.white,
           fontSize: smallFontSize,
         }}
         component="span"
@@ -45,7 +44,7 @@ export const InLargedNumberText: FC<Props> = ({ value, secondsLeft }) => {
         return (
           <Typography
             sx={{
-              color: color,
+              color: theme.palette.common.white,
               fontSize: fontSize,
             }}
             component="span"

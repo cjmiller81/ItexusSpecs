@@ -44,11 +44,11 @@ const BuySellCell: FC<BuySellCellProps> = ({
   let bgColor: string = theme.palette.mode === "dark" ? grey[800] : grey[500];
 
   if (value && cellType === "sell") {
-    bgColor = "rgba(255,142,143,0.87)";
+    bgColor = red[600];
   }
 
   if (value && cellType === "buy") {
-    bgColor = "#88a8d0";
+    bgColor = blue[600];
   }
 
   const handleClick: MouseEventHandler<HTMLDivElement> = event => {
@@ -85,7 +85,7 @@ const BuySellCell: FC<BuySellCellProps> = ({
         "&:hover": {
           ...(!isConfirming && {
             transition: "0.3s",
-            backgroundColor: cellType === "sell" ? red[600] : cellType === "buy" ? blue[600] : bgColor,
+            backgroundColor: cellType === "sell" ? "#410f12" : cellType === "buy" ? "#06192e" : bgColor,
             "& *": {
               fontWeight: "700 !important",
               color: `${theme.palette.common.white} !important`,
