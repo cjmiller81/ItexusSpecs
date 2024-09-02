@@ -9,12 +9,12 @@ import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import SimpleBar from "simplebar-react";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { defiFilterBuilderFields } from "./tableConstants";
-import SimpleBar from "simplebar-react";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -25,6 +25,8 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );
+
+  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
@@ -86,13 +88,14 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         }}>
         <SimpleBar style={{ maxHeight: "600px" }}>
           <CustomFilterBuilder
+            filterType="liquidity-pool"
             filterBuilderFields={defiFilterBuilderFields}
             filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
             filterDeletingLoading={deletingFilterStatus === "loading"}
             open={filterBuildeOpen}
             onCreateFilter={filter => dispatch(createFilter(filter))}
             onClose={() => setFilterBuilderOpen(false)}
-            predefinedFilters={filters}
+            predefinedFilters={liquidityPoolFilters}
             onUpdateFilter={filter => dispatch(updateFilter(filter))}
             onApply={filter => {
               setCurrentFilter(filter);
