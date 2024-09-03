@@ -13,9 +13,11 @@ import {
   Alert,
   useTheme,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const FundingInstructions: React.FC = () => {
   const theme = useTheme();
+  const { t } = useTranslation("FundingInstructions");
 
   const cryptoWallets = [
     { currency: "BTC", protocol: "N/A", address: "************" },
@@ -41,14 +43,13 @@ const FundingInstructions: React.FC = () => {
           component="h1"
           gutterBottom
           color={theme.palette.text.primary}>
-          TDA Deposit Instructions
+          {t("TDADepositInstructions")}
         </Typography>
         <Typography
           variant="body1"
           gutterBottom
           color={theme.palette.text.secondary}>
-          The below funding instructions belong to TDA. In order to fund your account, send crypto to your designated
-          funding wallets, or fiat to the bank funding instructions.
+          {t("InstructionsIntro")}
         </Typography>
 
         <Box my={4}>
@@ -57,12 +58,9 @@ const FundingInstructions: React.FC = () => {
             component="h2"
             gutterBottom
             color={theme.palette.text.primary}>
-            TDA Designated Funding Wallets
+            {t("TDAFundingWallets")}
           </Typography>
-          <Alert severity="info">
-            Please note we need a minimum of one confirmation before the funds can be credited. This can take more time
-            if the amount sent is large.
-          </Alert>
+          <Alert severity="info">{t("WalletsInfoAlert")}</Alert>
           <TableContainer
             component={Paper}
             sx={{
@@ -73,9 +71,9 @@ const FundingInstructions: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: theme.palette.text.primary }}>Currency</TableCell>
-                  <TableCell sx={{ color: theme.palette.text.primary }}>Protocol</TableCell>
-                  <TableCell sx={{ color: theme.palette.text.primary }}>TDA Settlement Address</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{t("Currency")}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{t("Protocol")}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{t("TDASettlementAddress")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -97,7 +95,7 @@ const FundingInstructions: React.FC = () => {
             component="h2"
             gutterBottom
             color={theme.palette.text.primary}>
-            TDA's USD Funding Instructions
+            {t("USDInstructionTitle")}
           </Typography>
           <Box
             component={Paper}
@@ -111,41 +109,37 @@ const FundingInstructions: React.FC = () => {
               component="h4"
               gutterBottom
               color={theme.palette.text.primary}>
-              Bank Wire Instructions:
+              {t("BankWireInstructions")}
             </Typography>
             <Typography variant="body2">
-              <strong>Bank Name:</strong> {bankInstructions.bankName}
+              <strong>{t("BankName")}</strong> {bankInstructions.bankName}
             </Typography>
             <Typography variant="body2">
-              <strong>Account Name:</strong> {bankInstructions.accountName}
+              <strong>{t("AccountName")}</strong> {bankInstructions.accountName}
             </Typography>
             <Typography variant="body2">
-              <strong>Account Number:</strong> {bankInstructions.accountNumber}
+              <strong>{t("AccountNumber")}</strong> {bankInstructions.accountNumber}
             </Typography>
             <Typography variant="body2">
-              <strong>Routing Number (ABA):</strong> {bankInstructions.routingNumber}
+              <strong>{t("RoutingNumber")}</strong> {bankInstructions.routingNumber}
             </Typography>
             <Typography variant="body2">
-              <strong>SWIFT Code:</strong> {bankInstructions.swiftCode}
+              <strong>{t("SWIFTCode")}</strong> {bankInstructions.swiftCode}
             </Typography>
             <Typography variant="body2">
-              <strong>Bank Address:</strong> {bankInstructions.bankAddress}
+              <strong>{t("BankAddress")}</strong> {bankInstructions.bankAddress}
             </Typography>
             <Typography
               variant="body2"
               color={theme.palette.error.main}
               sx={{ mt: 2 }}>
-              <strong>Important:</strong> Please include your TDA account number in the wire transfer memo/reference
-              field.
+              <strong>{t("ImportantNote")}</strong>
             </Typography>
           </Box>
           <Alert
             severity="warning"
             sx={{ mt: 2 }}>
-            TDA does not accept payments from third parties (including omnibus exchange accounts). Third-party funds
-            will be returned after a deduction of a 250 USD processing fee to cover the compliance and accounting costs
-            of handling such transfers. A 48-hour minimum holding period is required to allow us to perform the
-            requisite checks.
+            {t("ThirdPartyWarning")}
           </Alert>
         </Box>
       </Box>

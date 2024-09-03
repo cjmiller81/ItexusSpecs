@@ -54,7 +54,7 @@
     "PersonalInformation": "Personal Information",
     "ChangePassword": "Change Password"
   },
-  "WithdrawalRequestSection":{
+  "WithdrawalRequestSection": {
     "WithdrawalRequest": "Withdrawal Request",
     "RequestWithdrawal": "Request Withdrawal",
     "SelectDestination": "Select Destination",
@@ -64,10 +64,10 @@
     "Amount": "Amount",
     "EnterAmount": "Enter Amount"
   },
-  "RequestSettlement":{
+  "RequestSettlement": {
     "WithdrawalRequestSubmitted": "Withdrawal Request Submitted"
   },
-  "WithdrawalRequestConfirmationModal":{
+  "WithdrawalRequestConfirmationModal": {
     "ModalTitle": "Withdrawal Request Received",
     "ModalText1": "Please allow 24 hours for our response",
     "ModalText2": "We will contact you with any further required"
@@ -199,5 +199,24 @@
     "Quantity": "Quantity",
     "FiatBalance": "Fiat Balance",
     "Currency": "Currency"
+  },
+  "FundingInstructions": {
+    "TDADepositInstructions": "TDA Deposit Instructions",
+    "InstructionsIntro": "The below funding instructions belong to TDA. In order to fund your account, send crypto to your designated funding wallets, or fiat to the bank funding instructions.",
+    "TDAFundingWallets": "TDA Designated Funding Wallets",
+    "WalletsInfoAlert": "Please note we need a minimum of one confirmation before the funds can be credited. This can take more time if the amount sent is large.",
+    "USDInstructionTitle": "TDA's USD Funding Instructions",
+    "BankWireInstructions": "Bank Wire Instructions:",
+    "BankName": "Bank Name:",
+    "AccountName": "Account Name:",
+    "AccountNumber": "Account Number:",
+    "RoutingNumber": "Routing Number (ABA):",
+    "SWIFTCode": "SWIFT Code:",
+    "BankAddress": "Bank Address:",
+    "Currency": "Currency",
+    "Protocol": "Protocol",
+    "TDASettlementAddress": "TDA Settlement Address",
+    "ImportantNote": "Important: Please include your TDA account number in the wire transfer memo/reference field.",
+    "ThirdPartyWarning": "TDA does not accept payments from third parties (including omnibus exchange accounts). Third-party funds will be returned after a deduction of a 250 USD processing fee to cover the compliance and accounting costs of handling such transfers. A 48-hour minimum holding period is required to allow us to perform the requisite checks."
   }
 }
