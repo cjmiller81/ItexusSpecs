@@ -22,7 +22,7 @@ import {
   styled,
 } from "@mui/material";
 import { YesNoDialog } from "components";
-import { IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
+import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
 import React, { useEffect, useState } from "react";
@@ -36,6 +36,7 @@ interface ICustomFilterBuilderProps {
   filterToAppply?: object[] | null;
   onApply: (filterValue: object[]) => void;
   onClose: () => void;
+  filterType: FilterType;
   open?: boolean;
   filterLoading?: boolean;
   filterDeletingLoading?: boolean;
@@ -53,6 +54,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   filterLoading,
   filterDeletingLoading,
   filterBuilderFields,
+  filterType,
   open,
 }) => {
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
@@ -81,7 +83,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
 
     if (isPredefinedFilter) {
       setSelectedSavedFilter(isPredefinedFilter);
-      setFilterName(isPredefinedFilter.text);
+      setFilterName(isPredefinedFilter.name);
     } else {
       setSelectedSavedFilter(null);
       setFilterName("");
@@ -93,7 +95,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     if (predefinedFilter) {
       setSelectedSavedFilter(predefinedFilter);
       setFilterValue(predefinedFilter.filter);
-      setFilterName(predefinedFilter.text);
+      setFilterName(predefinedFilter.name);
     }
   };
 
@@ -114,7 +116,8 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     if (selectedSavedFilter) {
       onUpdateFilter({
         id: selectedSavedFilter.id,
-        text: filterName,
+        name: filterName,
+        filterType: filterType,
         description: filterName,
         icon: "filter",
         isPublic: true,
@@ -125,8 +128,9 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
       });
     } else {
       onCreateFilter({
-        text: filterName,
+        name: filterName,
         description: filterName,
+        filterType: filterType,
         icon: "filter",
         isPublic: true,
         OwnerUserId: "",
@@ -160,6 +164,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     }
   };
 
+  const mapFilterName = (filter: string | null | undefined) => `Personal - ${filter}`;
   return (
     <>
       <YesNoDialog
@@ -269,14 +274,14 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     size="small"
                     onChange={handleSavedFilterChange}
                     renderValue={_value => {
-                      return <ListItemText primary={selectedSavedFilter?.text} />;
+                      return <ListItemText primary={mapFilterName(selectedSavedFilter?.name)} />;
                     }}>
                     {predefinedFilters.map(filter => (
                       <MenuItem
                         selected={false}
                         key={filter.id}
-                        value={[filter.id, filter.text]}>
-                        <ListItemText primary={filter.text} />
+                        value={[filter.id, filter.name]}>
+                        <ListItemText primary={mapFilterName(filter?.name)} />
                         <LoadingButton
                           loading={filter.id === filterToDelete?.id && filterDeletingLoading}
                           onClick={event => handleDeleteFilter(filter, event)}

@@ -150,8 +150,9 @@
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Worth"
   },
-  "LiquidityPools": {
-    "SectionTitle": "Liquidity Pools"
+  "IncomeSection": {
+    "LiquidityPools": "Liquidity Pools",
+    "Vaults": "Vaults"
   },
   "BillingPlans": {
     "WalletConnections": "Wallet Connections",
