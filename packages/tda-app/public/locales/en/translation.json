@@ -72,10 +72,16 @@
     "ModalText1": "Please allow 24 hours for our response",
     "ModalText2": "We will contact you with any further required"
   },
-  "SettlementHistory":{
+  "SettlementHistory": {
     "FileName": "Settlement",
-    "SettlementHistoryTitle": "Settlement history",
     "Title": "Settlement history"
+  },
+  "ShortcutsItems": {
+    "ThisWeek": "This Week",
+    "LastWeek": "Last Week",
+    "Last7Days": "Last 7 Days",
+    "CurrentMonth": "Current Month",
+    "Reset": "Reset"
   },
   "TradeHistory": {
     "TradeHistory": "Trade History",

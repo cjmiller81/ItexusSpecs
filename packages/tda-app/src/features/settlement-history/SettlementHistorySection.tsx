@@ -20,7 +20,7 @@ export const SettlementHistorySection: FC<Props> = ({ ...props }) => {
         onFromDateChange={() => {}}
         onToDateChange={() => {}}
         rows={mockData}
-        title={t("SettlementHistoryTitle")}
+        title={t("Title")}
         {...props}
       />
     </>

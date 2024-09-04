@@ -1,17 +1,20 @@
 import { DateRange } from "@mui/lab";
 import { PickersShortcutsItem } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
+import { getTranslator } from "components";
+
+const T = getTranslator("ShortcutsItems");
 
 export const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
   {
-    label: "This Week",
+    label: T("ThisWeek"),
     getValue: () => {
       const today = dayjs();
       return [today.startOf("week"), today.endOf("week")];
     },
   },
   {
-    label: "Last Week",
+    label: T("LastWeek"),
     getValue: () => {
       const today = dayjs();
       const prevWeek = today.subtract(7, "day");
@@ -19,18 +22,18 @@ export const shortcutsItems: PickersShortcutsItem<DateRange<Dayjs>>[] = [
     },
   },
   {
-    label: "Last 7 Days",
+    label: T("Last7Days"),
     getValue: () => {
       const today = dayjs();
       return [today.subtract(7, "day"), today];
     },
   },
   {
-    label: "Current Month",
+    label: T("CurrentMonth"),
     getValue: () => {
       const today = dayjs();
       return [today.startOf("month"), today.endOf("month")];
     },
   },
-  { label: "Reset", getValue: () => [null, null] },
+  { label: T("Reset"), getValue: () => [null, null] },
 ];
