@@ -9,6 +9,7 @@ import i18next, { t } from "i18next";
 import DiscordIcon from "../../public/discord.svg";
 import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
+import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
@@ -94,6 +95,18 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
       href: "/community",
       open: false,
       children: [
+        {
+          title: t("Telegram", { ns: "SideBar" }),
+          icon: (
+            <TelegramIcon
+              width="21px"
+              height="21px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
+        },
         {
           title: t("Discord", { ns: "SideBar" }),
           icon: (
