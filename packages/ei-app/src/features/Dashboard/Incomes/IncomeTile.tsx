@@ -26,7 +26,7 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
   }, [dispatch]);
 
   return (
-    <DashboardTile {...props}>
+    <DashboardTile loading={loading} {...props}>
       <DataGrid
         autoHeight
         loading={loading}
