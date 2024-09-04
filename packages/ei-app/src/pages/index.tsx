@@ -1,5 +1,6 @@
 import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
-import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile";
+import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
+import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
 import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
 import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
@@ -7,7 +8,6 @@ import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
 import { useGetPoolsQuery } from "@/features/Income/DefiApi";
 import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
-import { useMockGetAllNews } from "@/libs/redux/Apis/NewsApi";
 import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -18,11 +18,10 @@ import CodeIcon from "@mui/icons-material/Code";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMediaQuery } from "@mui/material";
 
 export default function HomePage() {
   const { session } = useOry();
@@ -39,8 +38,8 @@ export default function HomePage() {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const mockDate = "2024-07-05";
   const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(mockDate);
-  const { data, isLoading } = useMockGetAllNews();
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
+  const { news, loadMore, isLoading, setMarket, market } = useNews();
 
   useEffect(() => {
     dispatch(fetchCoins({}));
@@ -117,10 +116,13 @@ export default function HomePage() {
           md={12}
           lg={2}>
           <CryptoNewsTile
-            loading={isLoading}
+            onNewsSourceChange={setMarket}
+            news={news}
+            newsSource={market}
+            onLoadMoreNews={loadMore}
+            isLoading={isLoading}
             title={t("CryptoNewsTile")}
             icon={<NewspaperIcon />}
-            news={data?.items?.length ? data.items.slice(0, 30) : []}
           />
         </Grid>
 
