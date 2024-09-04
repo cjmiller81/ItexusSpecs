@@ -1,7 +1,7 @@
 import { HistoryDataParsed } from "@/api/rfq-api/models/HistoryDataParsed";
 import { RfqResponse } from "@/api/rfq-api/models/RfqResponse";
 import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection";
-import HistoryDataTable from "@/features/history-data-table/HistoryDataTable";
+import HistoryDataTable from "@/features/tables/history-data-table/HistoryDataTable";
 import { TileSection } from "@/features/trading/rfq/TileSection";
 import CurrencyDropdown from "@/features/trading/rfq/components/CurrencyDropdown";
 import { OrderEvent } from "@/features/trading/rfq/models/OrderEvent";

@@ -1,10 +1,10 @@
+import { OrderStatus } from "@/features/shared/models/orderStatus";
 import DoneIcon from "@mui/icons-material/Done";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { Chip, ChipPropsColorOverrides } from "@mui/material";
 import { OverridableStringUnion } from "@mui/types";
 import React, { FC } from "react";
-import { OrderStatus } from "../shared/models/orderStatus";
 
 export const getStatusLabelText = (status: OrderStatus) => {
   if(!status) return "Error"

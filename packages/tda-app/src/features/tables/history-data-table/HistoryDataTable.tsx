@@ -9,16 +9,11 @@ import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
 import { FC, useMemo, useState } from "react";
-import {
-  formatFilledPrice,
-  formatFilledQty,
-  formatOrderId,
-  formatTransactTime,
-  getHistoryDataTableColumns,
-} from "./columns";
 import { TableHeader } from "./Header";
-import { ReactTable } from "./ReactTable";
+import { ReactTable } from "../ReactTable";
 import { getStatusLabelText } from "./StatusChip";
+import { getHistoryDataTableColumns } from "./columns";
+import { formatFilledPrice, formatFilledQty, formatOrderId, formatTransactTime } from "../dataFormatters";
 
 interface RFQTableProps extends Omit<MainCardProps, "children"> {
   rows: HistoryDataParsed[];
