@@ -22,11 +22,10 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { HistoryDataParsed } from "api/rfq-api/models/HistoryDataParsed";
 import { TablePagination } from "components/third-party/react-table";
 import { ReactNode } from "react";
 
-export const ReactTable = ({
+export const ReactTable = <TData extends object>({
   data,
   columns,
   sorting,
@@ -34,14 +33,14 @@ export const ReactTable = ({
   header,
   title,
 }: {
-  data: HistoryDataParsed[];
-  columns: ColumnDef<HistoryDataParsed>[];
+  data: TData[];
+  columns: ColumnDef<TData>[];
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
   header: ReactNode;
   title: string;
 }) => {
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data,
     columns,
     state: { sorting },
@@ -62,7 +61,7 @@ export const ReactTable = ({
           <TableContainer>
             <Table>
               <TableHead>
-                {table.getHeaderGroups().map((headerGroup: HeaderGroup<any>) => (
+                {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (
                   <TableHeaderRow key={headerGroup.id}>
                     {headerGroup.headers.map(header => (
                       <StyledHeaderCell
@@ -109,7 +108,6 @@ export const ReactTable = ({
               </TableBody>
             </Table>
           </TableContainer>
-
           <Divider />
           <Box sx={{ p: 2 }}>
             <TablePagination
@@ -126,6 +124,8 @@ export const ReactTable = ({
     </StyledMainCard>
   );
 };
+
+// Styled components remain the same as in the original code
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   "& .MuiChip-root": {

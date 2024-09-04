@@ -1,11 +1,11 @@
 import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection";
-import { fetchPairs } from "@/features/trading/rfq/slices/currenciesSlice";
+import SettlementHistorySection from "@/features/settlement-history/SettlementHistorySection";
 import WithdrawalRequestConfirmationModal from "@/features/withdrawal-request/WithdrawalRequestConfirmationModal";
 import WithdrawalRequestSection from "@/features/withdrawal-request/WithdrawalRequestSection";
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { useAppSelector } from "@/libs/redux/Store";
 import { Grid, useMediaQuery } from "@mui/material";
 import { Stack } from "@mui/system";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const RequestSettlement: React.FC = () => {
@@ -73,6 +73,11 @@ const RequestSettlement: React.FC = () => {
               onRequestWithdrawal={onRequestWithdrawal}
             />
           </Stack>
+        </Grid>
+        <Grid
+          item
+          xs={12}>
+          <SettlementHistorySection/>
         </Grid>
       </Grid>
     </>

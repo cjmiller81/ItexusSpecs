@@ -1,21 +1,11 @@
 import { HistoryDataParsed } from "@/api/rfq-api/models/HistoryDataParsed";
+import { OrderStatus } from "@/features/shared/models/orderStatus";
 import { Typography } from "@mui/material";
 import { Box, Theme } from "@mui/system";
 import { ColumnDef } from "@tanstack/react-table";
-import moment from "moment";
-import { OrderStatus } from "../shared/models/orderStatus";
+import { formatFilledPrice, formatFilledQty, formatOrderId, formatTransactTime } from "../dataFormatters";
 import { StatusChip } from "./StatusChip";
 
-export const formatTransactTime = (date: string) => moment(date).local().format("YYYY-MM-DD HH:mm:ss");
-export const formatOrderId = (orderId: string) => orderId.slice(0, 4);
-export const formatFilledQty = (qty: string) => {
-  const value = Number(qty);
-  return value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
-};
-export const formatFilledPrice = (filledPrice: string) => {
-  const value = Number(filledPrice);
-  return value.toFixed(5);
-};
 export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataParsed, any>[] => {
   return [
     {
