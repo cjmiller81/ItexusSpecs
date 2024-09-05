@@ -28,7 +28,7 @@ const FooterSection: React.FC<TileProps> = ({
   const renderMinSize = () => {
     return (
       <MinMaxField
-        label={renderLabel(`${t("MinSize")}:`, labelsPostfix)}
+        label={renderLabel(`${t("MinSize")}: `, labelsPostfix)}
         value={minSize}
       />
     );
@@ -58,7 +58,7 @@ const FooterSection: React.FC<TileProps> = ({
   const renderMaxSize = () => {
     return (
       <MinMaxField
-        label={renderLabel(`${t("MaxSize")}:`, labelsPostfix)}
+        label={renderLabel(`${t("MaxSize")}: `, labelsPostfix)}
         value={maxSize}
       />
     );

@@ -94,12 +94,19 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
           sx={{
             padding: "1px 1px",
             position: "absolute",
-            top: 44,
+            top: 96,
             left: "50%",
             transform: "translateX(-50%)",
             fontSize: "40px",
             zIndex: 10,
             bgcolor: "#FFD966",
+            [theme.breakpoints.down("sm")]: {
+              top: 86,
+              ".MuiTypography-root":{
+                paddingTop: "8px",
+                paddingBottom: "8px"
+              }
+            },
           }}>
           <Typography
             noWrap
