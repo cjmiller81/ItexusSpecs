@@ -74,7 +74,7 @@
   },
   "SettlementHistory": {
     "FileName": "Settlement",
-    "Title": "Settlement history"
+    "Title": "Settlement History"
   },
   "ShortcutsItems": {
     "ThisWeek": "This Week",
@@ -212,11 +212,11 @@
     "Currency": "Currency"
   },
   "FundingInstructions": {
-    "TDADepositInstructions": "TDA Deposit Instructions",
+    "TDADepositInstructions": "Deposit Instructions",
     "InstructionsIntro": "The below funding instructions belong to TDA. In order to fund your account, send crypto to your designated funding wallets, or fiat to the bank funding instructions.",
-    "TDAFundingWallets": "TDA Designated Funding Wallets",
+    "TDAFundingWallets": "Designated Funding Wallets",
     "WalletsInfoAlert": "Please note we need a minimum of one confirmation before the funds can be credited. This can take more time if the amount sent is large.",
-    "USDInstructionTitle": "TDA's USD Funding Instructions",
+    "USDInstructionTitle": "USD Funding Instructions",
     "BankWireInstructions": "Bank Wire Instructions:",
     "BankName": "Bank Name:",
     "AccountName": "Account Name:",
