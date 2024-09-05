@@ -24,7 +24,6 @@ const RequestSettlement: React.FC = () => {
     setConfirmationModalOpen(true);
   };
 
-
   const currenciesList = useMemo(
     () => [...new Set([...fiatCurrencies.map(c => c.name), ...cryptoCurrencies.map(c => c.name)])],
     [cryptoCurrencies, fiatCurrencies],
@@ -61,6 +60,7 @@ const RequestSettlement: React.FC = () => {
           </Stack>
         </Grid>
         <Grid
+          sx={{ paddingTop: "53px !important" }}
           item
           xs={12}>
           <Stack
@@ -75,9 +75,10 @@ const RequestSettlement: React.FC = () => {
           </Stack>
         </Grid>
         <Grid
+          sx={{ paddingTop: "15px !important" }}
           item
           xs={12}>
-          <SettlementHistorySection/>
+          <SettlementHistorySection />
         </Grid>
       </Grid>
     </>

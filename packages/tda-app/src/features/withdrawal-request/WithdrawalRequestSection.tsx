@@ -35,7 +35,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
 
   return (
     <MainCard
-      sx={{ maxWidth: "900px", width: "100%" }}
+      sx={{ maxWidth: "800px", width: "100%" }}
       content={false}
       title={t("WithdrawalRequest")}>
       <Formik<WithdrawalModel>
@@ -130,7 +130,9 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                       renderValue={value => {
                         if (value === "") {
                           return (
-                            <Typography color={theme => theme.palette.text.secondary}>{t("SelectDestination")}</Typography>
+                            <Typography color={theme => theme.palette.text.secondary}>
+                              {t("SelectDestination")}
+                            </Typography>
                           );
                         }
 
