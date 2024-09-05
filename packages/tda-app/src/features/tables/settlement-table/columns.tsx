@@ -12,6 +12,11 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
     {
       accessorKey: "settlementId",
       header: "Settlement ID",
+      meta: {
+        sx: {
+          maxWidth: "98px",
+        },
+      } as any,
       enableResizing: true,
       cell: value => formatOrderId(value.getValue()),
     },
@@ -19,9 +24,9 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
       accessorKey: "time",
       header: "Time",
       meta: {
-        sx:{
-          minWidth: "76px"
-        }
+        sx: {
+          minWidth: "76px",
+        },
       } as any,
       enableResizing: true,
       cell: value => formatDate(value.getValue()),
@@ -30,9 +35,9 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
       accessorKey: "date",
       header: "Date",
       meta: {
-        sx:{
-          minWidth: "76px"
-        }
+        sx: {
+          minWidth: "76px",
+        },
       } as any,
       enableResizing: true,
       cell: value => formatDate(value.getValue()),
