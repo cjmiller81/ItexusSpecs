@@ -77,7 +77,7 @@ export const CryptoNewsTile: FC<Props> = ({
             borderStyle: "solid",
           }}>
           <SimpleBarStyled
-            style={{ maxHeight: "343px" }}
+            style={{ maxHeight: "359px" }}
             onWheel={e => e.stopPropagation()}>
             {news.map((article, index) => (
               <Box
@@ -99,7 +99,7 @@ export const CryptoNewsTile: FC<Props> = ({
                       key={article.id}
                       ago={timeAgo(article.date)}
                       source={""}
-                      tokensIconsUrls={[`${process.env.TRADIND_VIEW_NEWS_IMAGES_API}${article.symbol_logo_id}.svg`]}
+                      tokensIconsUrls={[`${process.env.TRADIND_VIEW_NEWS_IMAGES_API}${article?.symbol_logo_id}.svg`]}
                     />
                     {article.uri ? (
                       <AppLink
