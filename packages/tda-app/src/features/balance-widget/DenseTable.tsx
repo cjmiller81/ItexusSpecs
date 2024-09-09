@@ -49,7 +49,7 @@ export default function DenseTable<T>({
         width: "250px",
         ...sx,
         "@media (max-width: 1485px)": {
-          width: "230px",
+          width: "232px",
           right: 50,
         },
         "@media (max-width: 1250px)": {
@@ -117,5 +117,5 @@ const DenseTableRow = styled(TableRow)(({ theme }) => ({
     "@media (max-width: 1250px)": {
       paddingRight: "30px !important",
     },
-  }
+  },
 }));

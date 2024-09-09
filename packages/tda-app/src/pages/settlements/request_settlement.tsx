@@ -51,7 +51,7 @@ const RequestSettlement: React.FC = () => {
               sx={{
                 top: 0,
                 position: "absolute",
-                right: 0,
+                right: 43,
                 ...(isRelativeBalances && {
                   position: "relative",
                 }),
