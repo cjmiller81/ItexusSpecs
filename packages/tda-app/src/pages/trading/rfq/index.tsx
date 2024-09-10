@@ -26,6 +26,7 @@ export default function SpotRFQPage() {
   const { pairs } = useAppSelector(state => state.currencies);
   const dispatch = useAppDispatch();
   const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
+  const isScreenSmall = useMediaQuery("(max-width: 1370px)");
   const { t } = useTranslation("SpotRFQPage");
   const [currentOrder, setCurrentOrder] = useState<{
     rfqModel: RfqResponse;
@@ -122,14 +123,16 @@ export default function SpotRFQPage() {
     <Stack
       spacing={3}
       alignItems="center"
-      whiteSpace="100%">
+      sx={{
+        width: isScreenSmall ? "95%" : "100%",
+      }}>
       <BalanceWidgetSection
         width={theme => (isRelativeBalances ? "auto" : theme.spacing(24))}
         direction={isRelativeBalances ? "row" : "column"}
         sx={{
           top: 0,
           position: "absolute",
-          right: 0,
+          right: 25,
           ...(isRelativeBalances && {
             position: "relative",
           }),

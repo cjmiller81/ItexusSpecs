@@ -20,7 +20,7 @@ export default function HomePage() {
           sx={{
             top: 0,
             position: "absolute",
-            right: 0,
+            right: 30,
             ...(isRelativeBalances && {
               position: "relative",
             }),
