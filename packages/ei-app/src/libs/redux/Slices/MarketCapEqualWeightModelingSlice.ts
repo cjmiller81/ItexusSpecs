@@ -1,8 +1,8 @@
+import { filteredTokensApi, FilteredTokensResponse } from "@/features/Investing/filteredTokensApi";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "components";
-import { ICoin } from "components/src/models/token/ICoin";
-import { MarketCapEqualModelingState, defaultTotalTokensCount, initialState } from "./MarketCapWeightedModelingSlice";
+import { defaultTotalTokensCount, initialState, MarketCapEqualModelingState } from "./MarketCapWeightedModelingSlice";
 
 export const setTokenstCount = (state: MarketCapEqualModelingState, tokensCount: number | null) => {
   if (tokensCount === null) {
@@ -29,11 +29,23 @@ export const marketCapEqualWeightModelingSlice = createAppSlice({
       state.totalCapital = action.payload;
       calculateTableRows(state);
     }),
-    setPrefilteredData: create.reducer((state, action: PayloadAction<ICoin[]>) => {
-      state.prefilteredData = action.payload;
-      setTokenstCount(state, state.tokensCount === null && state.prefilteredData.length !== 0 ? defaultTotalTokensCount : state.tokensCount);
-      calculateTableRows(state);
-    }),
+    fetchIndexModelingTokens: create.asyncThunk(
+      async ({ filter, sort }: { filter: any; sort: any }, thunkApi): Promise<FilteredTokensResponse> => {
+        return await filteredTokensApi.fetchFilteredTokens(sort, filter, 0, 100);
+      },
+      {
+        fulfilled: (state, action) => {
+          state.prefilteredData = action.payload.data;
+          setTokenstCount(
+            state,
+            state.tokensCount === null && state.prefilteredData.length !== 0
+              ? defaultTotalTokensCount
+              : state.tokensCount,
+          );
+          calculateTableRows(state);
+        },
+      },
+    ),
   }),
 });
 
@@ -50,4 +62,4 @@ function calculateTableRows(state: MarketCapEqualModelingState) {
   }));
   state.tableData = newTableData;
 }
-export const { setPrefilteredData, setTokens, setCapital } = marketCapEqualWeightModelingSlice.actions;
+export const { setTokens, setCapital, fetchIndexModelingTokens } = marketCapEqualWeightModelingSlice.actions;

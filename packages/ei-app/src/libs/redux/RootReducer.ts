@@ -13,6 +13,8 @@ import { marketCapEqualWeightModelingSlice } from "./Slices/MarketCapEqualWeight
 import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlice";
 import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice";
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice";
+import { categoriesApi } from "@/features/Investing/categoriesApi";
+import { chainsApi } from "@/features/Investing/chainsApi";
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -23,6 +25,8 @@ export const rootReducer = combineReducers({
   marketCapWeightedChart: marketCapWeightedChartSlice.reducer,
   MarketCapWeightedModeling: marketCapWeightedModelingSlice.reducer,
   allTokensTable: allTokensTableSlice.reducer,
+  [categoriesApi.reducerPath]: categoriesApi.reducer,
+  [chainsApi.reducerPath]: chainsApi.reducer,
   [dashboardSlice.name]: dashboardSlice.reducer,
   [newsApi.reducerPath]: newsApi.reducer,
   [calendarEventsApi.reducerPath]: calendarEventsApi.reducer,

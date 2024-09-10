@@ -17,6 +17,7 @@ import DataGridDef, {
   Paging,
   Position,
   Search,
+  Sorting,
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
 import { ExportingEvent } from "devextreme/ui/data_grid"
@@ -25,40 +26,27 @@ import { PrefilterTokensField, PrefilterTokensLabel } from "../../constants/Pref
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
 
 export interface IPrefilterTokensTable {
-  loading: boolean;
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
   chains: IPlatform[];
   categories: ICategory[];
   currentFilter?: object[] | null | undefined;
-  dataSourceTokens: ICoin[];
+  dataSource: DataSource;
   onFilterBuilderOpen: Function;
-  onUpdate: (filteredTokenData: ICoin[]) => void;
+  onSorterChanged: (sorter: any) => void;
   onExport: (e: ExportingEvent<ICoin, any>) => void;
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
-  loading,
   categories,
   chains,
-  onUpdate,
   onCurrentFilterChange,
-  dataSourceTokens,
+  dataSource,
   currentFilter,
   onFilterBuilderOpen,
+  onSorterChanged,
   onExport,
 }) => {
-  const [currentSorter, setCurrentSorter] = useState<any>()
-  const allTokensSource = useMemo(
-    () =>
-      new DataSource<ICoin, string>({
-        store: {
-          type: "array",
-          key: "id",
-          data: dataSourceTokens,
-        },
-      }),
-    [dataSourceTokens],
-  );
+  const [currentSorter, setCurrentSorter] = useState<any>();
 
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -74,37 +62,28 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh();
     const gridFilter = grid.getCombinedFilter(true);
 
-    handleOnUpdate()
-  }, [currentFilter, datagrid, onUpdate]);
+    handleOnUpdate();
+  }, [currentFilter, datagrid]);
 
-  const onSortingChanged = (e) => {
+  const onSortingChanged = e => {
     const sortedColumns = e.component.getDataSource().sort();
     setCurrentSorter(sortedColumns);
   };
 
   useEffect(() => {
-    handleOnUpdate()
-  }, [currentSorter])
+    handleOnUpdate();
+  }, [currentSorter]);
 
   const handleOnUpdate = () => {
     const dataGrid = datagrid?.current?.instance;
-    if(!dataGrid){
-      return
+    if (!dataGrid) {
+      return;
     }
 
     const gridDataSource = dataGrid.getDataSource();
-    const tempDataSource = new DataSource({
-      searchExpr: gridDataSource.searchExpr(),
-      store: gridDataSource.store(),
-      filter: gridDataSource.filter(),
-      sort: gridDataSource.sort(),
-      paginate: false
-    })
-    
-    tempDataSource.load();
-    const data = tempDataSource.items() as ICoin[]
-    onUpdate(data as ICoin[])
-  }
+    const sort = gridDataSource.sort();
+    onSorterChanged(sort);
+  };
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
@@ -195,13 +174,20 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   return (
     <div ref={containerRef}>
       <DataGridDef<ICoin>
-        onOptionChanged={(e) => {
-          if (e.fullName.startsWith('columns') && e.fullName.endsWith('sortOrder')) {
-            onSortingChanged(e);
+        onOptionChanged={e => {
+          if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
+            setTimeout(() => {
+              onSortingChanged(e);
+            });
           }
         }}
+        remoteOperations={{
+          filtering: true,
+          sorting: true,
+          paging: true,
+        }}
         id="prefilter-tokens-table"
-        dataSource={allTokensSource}
+        dataSource={dataSource}
         showBorders={true}
         ref={datagrid}
         allowColumnReordering={true}
@@ -227,14 +213,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
             e.cancel = true;
           }}
         />
-
+        <Sorting mode="single" />
         <HeaderFilter visible={false}>
           <Search enabled={true} />
         </HeaderFilter>
-        <LoadPanel
-          showPane={loading}
-          enabled
-        />
+        <LoadPanel enabled />
         <Paging defaultPageSize={10} />
         <Pager
           visible={true}
@@ -244,7 +227,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           showInfo={true}
           showNavigationButtons={true}
         />
-         <ColumnChooser
+        <ColumnChooser
           height={500}
           enabled={true}
           mode="select">

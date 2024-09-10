@@ -35,13 +35,4 @@ export const newsApi = createApi({
   }),
 })
 
-export const useMockGetAllNews = () => {
-  return {
-    data: mockNews as ArticleResponse,
-    isLoading: false,
-    error: null,
-    isSuccess: true,
-  }
-}
-
 export const { useGetAllNewsQuery } = newsApi
