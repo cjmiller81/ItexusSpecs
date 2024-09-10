@@ -1,10 +1,11 @@
-import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset"
-import { PayloadAction } from "@reduxjs/toolkit"
-import { Status, createAppSlice } from "components"
-import { ICategory } from "components/src/models/token/ICatigory"
-import { ICoin } from "components/src/models/token/ICoin"
-import { IPlatform } from "components/src/models/token/IPlatform"
-import { setTokenstCount } from "./MarketCapEqualWeightModelingSlice"
+import { filteredTokensApi, FilteredTokensResponse } from "@/features/Investing/filteredTokensApi";
+import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { createAppSlice, Status } from "components";
+import { ICategory } from "components/src/models/token/ICatigory";
+import { ICoin } from "components/src/models/token/ICoin";
+import { IPlatform } from "components/src/models/token/IPlatform";
+import { setTokenstCount } from "./MarketCapEqualWeightModelingSlice";
 
 export interface MarketCapEqualModelingState {
   tokens: ICoin[];
@@ -43,14 +44,23 @@ export const marketCapWeightedModelingSlice = createAppSlice({
       state.totalCapital = action.payload;
       calculateTableRows(state);
     }),
-    setPrefilteredData: create.reducer((state, action: PayloadAction<ICoin[]>) => {
-      state.prefilteredData = action.payload
-      setTokenstCount(
-        state,
-        state.tokensCount === null && state.prefilteredData.length !== 0 ? defaultTotalTokensCount : state.tokensCount,
-      );
-      calculateTableRows(state);
-    }),
+    fetchIndexModelingTokens: create.asyncThunk(
+      async ({ filter, sort }: { filter: any; sort: any }, thunkApi): Promise<FilteredTokensResponse> => {
+        return await filteredTokensApi.fetchFilteredTokens(sort, filter, 0, 100);
+      },
+      {
+        fulfilled: (state, action) => {
+          state.prefilteredData = action.payload.data;
+          setTokenstCount(
+            state,
+            state.tokensCount === null && state.prefilteredData.length !== 0
+              ? defaultTotalTokensCount
+              : state.tokensCount,
+          );
+          calculateTableRows(state);
+        },
+      },
+    ),
   }),
 });
 
@@ -77,4 +87,4 @@ function calculateTableRows(state: MarketCapEqualModelingState) {
 
   state.tableData = calculatedData;
 }
-export const { setPrefilteredData, setTokens, setCapital } = marketCapWeightedModelingSlice.actions;
+export const { setTokens, setCapital, fetchIndexModelingTokens } = marketCapWeightedModelingSlice.actions;

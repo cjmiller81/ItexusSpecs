@@ -7,8 +7,8 @@ import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
 import { useGetPoolsQuery } from "@/features/Income/DefiApi";
+import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
 import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
-import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -31,8 +31,6 @@ export default function HomePage() {
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
-  const allCoins = useAppSelector(state => state.allTokensTable.allTokens);
-  const fetchingTokensStatus = useAppSelector(state => state.allTokensTable.fetchingTokensStatus);
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
@@ -40,10 +38,8 @@ export default function HomePage() {
   const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(mockDate);
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
   const { news, loadMore, isLoading, setMarket, market } = useNews();
-
-  useEffect(() => {
-    dispatch(fetchCoins({}));
-  }, []);
+  const [topTokens, setTopTokens] = useState<TopTokenData[] | null>(null);
+  const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -55,9 +51,10 @@ export default function HomePage() {
     dispatch(fetchHistoricalWalletData());
   }, [wallets]);
 
-  const coinsMemorized = useMemo(() => {
-    const newTableData = allCoins.slice(0, 10);
-    const calculatedData = newTableData.map<TopTokenData>(data => {
+  useEffect(() => {
+    setIsFetchingTopTokens(true);
+    filteredTokensApi.getTopTokens(10).then(response => {
+      const calculatedData = response.data.map<TopTokenData>(data => {
       return {
         tokenId: data.id,
         iconUrl: data.lURI,
@@ -69,8 +66,10 @@ export default function HomePage() {
       };
     });
 
-    return calculatedData;
-  }, [allCoins]);
+      setTopTokens(calculatedData);
+    })
+    .finally(() => setIsFetchingTopTokens(false));
+  }, []);
 
   return (
     <>
@@ -104,10 +103,10 @@ export default function HomePage() {
           lg={5}
           sx={{ marginBottom: "10px" }}>
           <TopTokensTile
-            loading={fetchingTokensStatus === "loading"}
+            loading={isFetchingTopTokens}
             title={t("TopTokensTile")}
             icon={<AutoGraphIcon />}
-            tableAssets={coinsMemorized}
+            tableAssets={topTokens}
           />
         </Grid>
         <Grid

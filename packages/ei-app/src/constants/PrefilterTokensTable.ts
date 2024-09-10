@@ -55,11 +55,6 @@ export const filterBuilderFields: FilterBuilderItems[] = [
     dataType: "string",
   },
   {
-    caption: PrefilterTokensLabel.Name,
-    dataField: PrefilterTokensField.Name,
-    dataType: "string",
-  },
-  {
     caption: PrefilterTokensLabel.Price,
     dataField: PrefilterTokensField.Price,
     dataType: "number",

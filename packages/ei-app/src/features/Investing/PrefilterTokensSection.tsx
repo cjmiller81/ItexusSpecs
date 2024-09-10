@@ -3,39 +3,47 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionProps, Box } from "@mui/material";
 import { PageTitle, StatePersistedAccordion } from "components";
-import { ICoin } from "components/src/models/token/ICoin";
+import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { filterBuilderFields } from "../../constants/PrefilterTokensTable";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { useGetCategoriesQuery } from "./categoriesApi";
+import { useGetChainsQuery } from "./chainsApi";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
-  onFilteredTokensChanged: (filteredTokenData: ICoin[]) => void;
+  dataSource: DataSource;
+  onFilterChanged: (filter: any) => void;
+  onSorterChanged: (sorter: any) => void;
 };
 
-export default function PrefilterTokensSection({ onFilteredTokensChanged, persisKey, ...props }: Props) {
-  const {
-    allTokens,
-    allCategories,
-    allChains,
-    filters,
-    fetchingTokensStatus,
-    updatingFilterStatus,
-    deletingFilterStatus,
-    creatingFilterStatus,
-  } = useAppSelector(state => state.allTokensTable);
+export default function PrefilterTokensSection({
+  onSorterChanged,
+  onFilterChanged,
+  dataSource,
+  persisKey,
+  ...props
+}: Props) {
+  const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
+    state => state.allTokensTable,
+  );
   const marketCapFilters = useMemo(() => filters.filter(f => f.filterType === "market-cap"), [filters]);
-
+  const { data: chainsData } = useGetChainsQuery();
+  const { data: categoriesData } = useGetCategoriesQuery();
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { t } = useTranslation("PrefilterTokensSection");
+
+  useEffect(() => {
+    onFilterChanged(currentFilter);
+  }, [currentFilter]);
 
   const onExporting = useCallback(async (e: any): Promise<void> => {
     const workbook = new Workbook();
@@ -89,14 +97,13 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, persis
 
         <MemoizedPrefilterTokensTable
           onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
-          loading={fetchingTokensStatus === "loading"}
-          onUpdate={onFilteredTokensChanged}
+          dataSource={dataSource}
           onExport={onExporting}
-          categories={allCategories}
-          chains={allChains}
+          onSorterChanged={onSorterChanged}
+          categories={categoriesData || []}
+          chains={chainsData || []}
           currentFilter={currentFilter}
           onCurrentFilterChange={filter => setCurrentFilter(filter)}
-          dataSourceTokens={allTokens}
         />
       </AccordionDetails>
     </StatePersistedAccordion>
@@ -105,7 +112,7 @@ export default function PrefilterTokensSection({ onFilteredTokensChanged, persis
 
 const MemoizedPrefilterTokensTable = React.memo(PrefilterTokensTable, (prevProps, nextProps) => {
   return (
-    prevProps.dataSourceTokens === nextProps.dataSourceTokens &&
+    prevProps.dataSource === nextProps.dataSource &&
     prevProps.categories === nextProps.categories &&
     prevProps.chains === nextProps.chains &&
     prevProps.currentFilter === nextProps.currentFilter
