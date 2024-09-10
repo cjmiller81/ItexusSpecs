@@ -64,7 +64,7 @@ export default function MarketCapEqualWeightedPage() {
           loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
 
           onBeforeSend: (method, ajaxOptions) => {
-            //ajaxOptions.xhrFields = { withCredentials: true };
+            ajaxOptions.xhrFields = { withCredentials: true };
           },
         }),
         paginate: true,
