@@ -1,36 +1,36 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 
 // next
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
 // material-ui
-import List from "@mui/material/List"
-import ListItemButton from "@mui/material/ListItemButton"
-import ListItemIcon from "@mui/material/ListItemIcon"
-import ListItemText from "@mui/material/ListItemText"
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 
 // assets
-import LogoutOutlined from "@ant-design/icons/LogoutOutlined"
-import UserOutlined from "@ant-design/icons/UserOutlined"
-import WalletOutlined from "@ant-design/icons/WalletOutlined"
+import LogoutOutlined from "@ant-design/icons/LogoutOutlined";
+import UserOutlined from "@ant-design/icons/UserOutlined";
+import WalletOutlined from "@ant-design/icons/WalletOutlined";
 
 interface Props {
-  handleLogout: () => void
+  handleLogout: () => void;
 }
 
 // ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 
 export default function ProfileTab({ handleLogout }: Props) {
-  const router = useRouter()
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const router = useRouter();
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleListItemClick = (event: React.MouseEvent<HTMLDivElement>, index: number, route: string = "") => {
-    setSelectedIndex(index)
+    setSelectedIndex(index);
 
     if (route && route !== "") {
-      router.push(route)
+      router.push(route);
     }
-  }
+  };
 
   return (
     <List
@@ -45,14 +45,6 @@ export default function ProfileTab({ handleLogout }: Props) {
         <ListItemText primary="Profile" />
       </ListItemButton>
       <ListItemButton
-        selected={selectedIndex === 4}
-        onClick={(event: React.MouseEvent<HTMLDivElement>) => handleListItemClick(event, 4, "/account_funding")}>
-        <ListItemIcon>
-          <WalletOutlined />
-        </ListItemIcon>
-        <ListItemText primary="Account Funding" />
-      </ListItemButton>
-      <ListItemButton
         selected={selectedIndex === 2}
         onClick={handleLogout}>
         <ListItemIcon>
@@ -61,5 +53,5 @@ export default function ProfileTab({ handleLogout }: Props) {
         <ListItemText primary="Logout" />
       </ListItemButton>
     </List>
-  )
+  );
 }
