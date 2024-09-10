@@ -1,8 +1,7 @@
-import fetchLookupPage from "@/features/Common/fetchLookupPage"
-import { IndexModelingSection } from "@/features/Investing/IndexModelingSection"
-import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection"
-import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth"
-import { fetchCoins } from "@/libs/redux/Slices/AllTokensTableSlice"
+import fetchLookupPage from "@/features/Common/fetchLookupPage";
+import { IndexModelingSection } from "@/features/Investing/IndexModelingSection";
+import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
+import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -10,14 +9,16 @@ import {
   setCompareOption,
   setFromDate,
   setPeriod,
-  setToDate
-} from "@/libs/redux/Slices/MarketCapEqualWeightChartSlice"
-import { setCapital, setPrefilteredData, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { Stack } from "@mui/material"
-import { AppAccordionSection } from "components"
-import { useEffect } from "react"
-import { useTranslation } from "react-i18next"
+  setToDate,
+} from "@/libs/redux/Slices/MarketCapEqualWeightChartSlice";
+import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { Stack } from "@mui/material";
+import { AppAccordionSection } from "components";
+import { createStore } from "devextreme-aspnet-data-nojquery";
+import DataSource from "devextreme/data/data_source";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function MarketCapEqualWeightedPage() {
   const {
@@ -32,7 +33,8 @@ export default function MarketCapEqualWeightedPage() {
     statstatusFetchingMarcetCapData,
   } = useAppSelector(state => state.marketCapEqualWeightChart);
   const dispatch = useAppDispatch();
-
+  const [currentSorter, setCurrentSorter] = useState<any>(null);
+  const [currentFilter, setCurrentFilter] = useState<any>(null);
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.MarketCapEqualWeightModeling,
   );
@@ -41,15 +43,51 @@ export default function MarketCapEqualWeightedPage() {
 
   useEffect(() => {
     dispatch(resetState());
-    dispatch(fetchCoins({}));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    //filteredTokensApi.fetchFilteredTokens(currentSorter, currentFilter)
+    dispatch(
+      fetchIndexModelingTokens({
+        filter: currentFilter,
+        sort: currentSorter,
+      }),
+    );
+  }, [currentSorter, currentFilter]);
+
+  const dataSource = useMemo(
+    () =>
+      new DataSource({
+        store: createStore({
+          key: "id",
+          cacheRawData: true,
+          loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
+
+          onBeforeSend: (method, ajaxOptions) => {
+            ajaxOptions.xhrFields = { withCredentials: true };
+          },
+        }),
+        paginate: true,
+        pageSize: 20,
+      }),
+    [],
+  );
+
+  const onSorterChanged = (sorter: any) => {
+    setCurrentSorter(sorter ? JSON.stringify(sorter) : "[]");
+  };
+
+  const onFilterChanged = (filter: any) => {
+    setCurrentFilter(filter ? JSON.stringify(filter) : "[]");
+  };
 
   return (
     <Stack gap={2}>
       <PrefilterTokensSection
         persisKey="EqualWeightedPrefilterTokens"
-        onFilteredTokensChanged={filteredTokenData => dispatch(setPrefilteredData(filteredTokenData))}
+        dataSource={dataSource}
+        onSorterChanged={onSorterChanged}
+        onFilterChanged={onFilterChanged}
       />
 
       <IndexModelingSection

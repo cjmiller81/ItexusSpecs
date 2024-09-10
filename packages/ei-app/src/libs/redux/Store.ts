@@ -5,6 +5,8 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 import { persistStore } from "redux-persist"
 import { newsApi } from "./Apis/NewsApi"
 import { RootState, persistedReducer } from "./RootReducer"
+import { chainsApi } from "@/features/Investing/chainsApi"
+import { categoriesApi } from "@/features/Investing/categoriesApi"
 
 const makeStore = () => {
   return configureStore({
@@ -12,7 +14,7 @@ const makeStore = () => {
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }).concat(newsApi.middleware, calendarEventsApi.middleware, defisApi.middleware),
+      }).concat(newsApi.middleware, calendarEventsApi.middleware, defisApi.middleware, chainsApi.middleware, categoriesApi.middleware),
   })
 }
 
