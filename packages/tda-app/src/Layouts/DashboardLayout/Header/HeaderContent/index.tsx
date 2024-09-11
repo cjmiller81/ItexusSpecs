@@ -10,11 +10,13 @@ import { MenuOrientation, ThemeMode } from "config";
 import useConfig from "hooks/useConfig";
 import DrawerHeader from "Layouts/DashboardLayout/Drawer/DrawerHeader";
 import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
+import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 
 export default function HeaderContent() {
   const { menuOrientation, mode, onChangeMode } = useConfig();
   const theme = useTheme();
   const downLG = useMediaQuery((theme: Theme) => theme.breakpoints.down("lg"));
+  const isConnected = true;
 
   const localization = useMemo(() => <Localization />, []);
 
@@ -25,6 +27,7 @@ export default function HeaderContent() {
   return (
     <>
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
+      <ConnectionStatus isConnected={isConnected} />
       <Box width="100%"></Box>
       <SupportButton />
       {localization}
