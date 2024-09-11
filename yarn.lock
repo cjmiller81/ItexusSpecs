@@ -14197,12 +14197,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devextreme-aspnet-data-nojquery@npm:^2.9.1":
-  version: 2.9.3
-  resolution: "devextreme-aspnet-data-nojquery@npm:2.9.3"
+"devextreme-aspnet-data-nojquery@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "devextreme-aspnet-data-nojquery@npm:4.0.1"
   peerDependencies:
     devextreme: ">=18.1.0"
-  checksum: 10c0/74ced102de297f8b1e74e6765c688b3dca74ebd41bcefa3ee90f87f03238d468b597ec5f39d8d6eeba38f8106f4f6ae4028e68c4e19d2f4797f67f7b07b759c0
+  checksum: 10c0/5f99ca70e6ae4308288de8e3dce9705e0bca461889fee557b6a5ade27d638eb98d9f5bd919ba11ec226736271e6b980565c6910110b51a5e6d1aa1d333f184be
   languageName: node
   linkType: hard
 
@@ -14791,7 +14791,7 @@ __metadata:
     date-fns: "npm:^3.4.0"
     dayjs: "npm:^1.11.10"
     devextreme: "npm:23.1.3"
-    devextreme-aspnet-data-nojquery: "npm:^2.9.1"
+    devextreme-aspnet-data-nojquery: "npm:^4.0.1"
     devextreme-react: "npm:23.1.3"
     eslint: "npm:8.57.0"
     eslint-config-airbnb-typescript: "npm:17.1.0"
