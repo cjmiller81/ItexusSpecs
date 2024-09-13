@@ -54,20 +54,21 @@
     "PersonalInformation": "Personal Information",
     "ChangePassword": "Change Password"
   },
-  "WithdrawalRequestSection": {
-    "WithdrawalRequest": "Withdrawal Request",
+  "RequestSettlement": {
+    "WithdrawalRequestSubmitted": "Withdrawal Request Submitted",
+    "CryptoWithdrawalRequest": "Cryptocurrency Withdrawal Request",
+    "FiatWithdrawalRequest": "Fiat Currency Withdrawal Request",
     "RequestWithdrawal": "Request Withdrawal",
     "SelectDestination": "Select Destination",
     "Destination": "Destination",
     "SelectCurrency": "Select Currency",
     "Currency": "Currency",
+    "CryptoCurrency": "Cryptocurrency",
+    "FiatCurrency": "Fiat Currency",
     "Amount": "Amount",
     "EnterAmount": "Enter Amount"
   },
-  "RequestSettlement": {
-    "WithdrawalRequestSubmitted": "Withdrawal Request Submitted"
-  },
-  "SettlementHistorySection": {
+  "WithdrawalRequestConfirmationModal": {
     "ModalTitle": "Withdrawal Request Received",
     "ModalText1": "Please allow 24 hours for our response",
     "ModalText2": "We will contact you with any further required"

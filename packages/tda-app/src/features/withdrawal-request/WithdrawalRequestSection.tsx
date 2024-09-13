@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid";
 import InputLabel from "@mui/material/InputLabel";
 import Stack from "@mui/material/Stack";
 import { DecimalInput } from "components";
-import MainCard from "components/MainCard";
+import MainCard, { MainCardProps } from "components/MainCard";
 import { Form, Formik } from "formik";
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,22 +22,24 @@ const WithdrawalModelSchema = object({
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
 
-type Props = {
+type Props = Omit<MainCardProps, "children"> & {
   isLoading: boolean;
+  title: string;
+  currenciesSelectLabel: string;
   currencies: string[];
   onRequestWithdrawal: (withdrawalRequest: WithdrawalModel) => Promise<void>;
   isCurrencyLoading?: boolean;
 };
 
-const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, currencies, isLoading }: Props) => {
+const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, currenciesSelectLabel, title, currencies, isLoading }: Props) => {
   const inputRef = useRef<any>();
-  const { t } = useTranslation("WithdrawalRequestSection");
+  const { t } = useTranslation("RequestSettlement");
 
   return (
     <MainCard
       sx={{ maxWidth: "790px", width: "100%" }}
       content={false}
-      title={t("WithdrawalRequest")}>
+      title={title}>
       <Formik<WithdrawalModel>
         initialValues={{
           amount: 0,
@@ -86,7 +88,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                   xs={12}
                   sm={6}>
                   <Stack spacing={1}>
-                    <InputLabel>{t("Currency")}</InputLabel>
+                    <InputLabel>{currenciesSelectLabel}</InputLabel>
                     <Select
                       fullWidth
                       displayEmpty
