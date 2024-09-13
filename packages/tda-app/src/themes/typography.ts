@@ -44,6 +44,11 @@ export default function Typography(fontFamily: FontFamily): TypographyVariantsOp
       fontSize: '0.875rem',
       lineHeight: 1.57
     },
+    h7: {
+      fontWeight: 400,
+      fontSize: '0.5rem',
+      lineHeight: 1.5
+    },
     caption: {
       fontWeight: 400,
       fontSize: '0.75rem',
