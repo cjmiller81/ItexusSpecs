@@ -13,11 +13,13 @@ declare module "@mui/material/styles/createTypography" {
   interface TypographyOptions {
     body3?: React.CSSProperties
     body4?: React.CSSProperties
+    h7: React.CSSProperties
   }
 
   interface Typography {
     body3: React.CSSProperties
     body4: React.CSSProperties
+    h7: React.CSSProperties
   }
 }
 
@@ -26,6 +28,7 @@ declare module "@mui/material/Typography" {
     subtitle3: true
     body3: true
     body4: true
+    h7: true
   }
 }
 
@@ -85,6 +88,11 @@ const typographyOverrides: TypographyOptions = {
     lineHeight: 1.3,
     letterSpacing: "0.013em",
   },
+  h7: {
+    fontWeight: 500,
+    fontSize: '0.875rem',
+    lineHeight: 1.5
+  },
 }
 
 export const getAppTheme = (mode: PaletteMode): Theme => {
@@ -100,6 +108,10 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
     {
       typography: {
         subtitle2: {
+          fontSize: "0.75rem",
+          color: commonTheme.palette.mode === "dark" ? commonTheme.palette.grey[400] : commonTheme.palette.grey[500],
+        },
+        h7: {
           fontSize: "0.75rem",
           color: commonTheme.palette.mode === "dark" ? commonTheme.palette.grey[400] : commonTheme.palette.grey[500],
         },
