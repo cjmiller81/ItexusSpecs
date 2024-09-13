@@ -10,7 +10,7 @@ export const calendarEventsApi = createApi({
   endpoints: builder => ({
     getCalendarEvents: builder.query<CalendarResponse, { page: number; max: number; fromDate: Date; toDate: Date }>({
       query: ({ page, max, fromDate, toDate }) => ({
-        url: "/events",
+        url: "/api/cal/events",
         method: "GET",
         params: {
           fromDate: moment(fromDate).format("YYYY-MM-DD"),
