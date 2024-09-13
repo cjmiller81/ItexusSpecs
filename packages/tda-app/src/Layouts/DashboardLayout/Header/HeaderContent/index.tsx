@@ -9,6 +9,7 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { MenuOrientation, ThemeMode } from "config";
 import useConfig from "hooks/useConfig";
 import DrawerHeader from "Layouts/DashboardLayout/Drawer/DrawerHeader";
+import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTimeWidget";
 
 export default function HeaderContent() {
   const { menuOrientation, mode, onChangeMode } = useConfig();
@@ -24,6 +25,7 @@ export default function HeaderContent() {
   return (
     <>
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
+      <DateTimeWidget />
       <Box width="100%"></Box>
       {localization}
       <Notification />
