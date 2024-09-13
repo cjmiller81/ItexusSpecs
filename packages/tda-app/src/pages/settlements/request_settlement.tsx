@@ -11,23 +11,23 @@ import { useTranslation } from "react-i18next";
 const RequestSettlement: React.FC = () => {
   const { t } = useTranslation("RequestSettlement");
   const isRelativeBalances = useMediaQuery("(max-width: 1200px)");
-  const [isLoading, setIsLoading] = useState(false);
   const cryptoCurrencies = useAppSelector(state => state.balancesWidget.cryptoCurrencies);
   const fiatCurrencies = useAppSelector(state => state.balancesWidget.fiatCurrencies);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
-  const onRequestWithdrawal = async () => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 400));
-    setIsLoading(false);
-
+  const onRequestCryptoWithdrawal = async () => {
+    // TODO crypto withdrawal request
     setConfirmationModalOpen(true);
   };
 
-  const currenciesList = useMemo(
-    () => [...new Set([...fiatCurrencies.map(c => c.name), ...cryptoCurrencies.map(c => c.name)])],
-    [cryptoCurrencies, fiatCurrencies],
-  );
+  const onRequestFiatoWithdrawal = async () => {
+    // TODO fiat withdrawal request
+    setConfirmationModalOpen(true);
+  };
+
+  const cryptoCurrenciesList = useMemo(() => [...new Set(cryptoCurrencies.map(c => c.name))], [cryptoCurrencies]);
+
+  const fiatCurrenciesList = useMemo(() => [...new Set(fiatCurrencies.map(c => c.name))], [fiatCurrencies]);
 
   return (
     <>
@@ -60,17 +60,29 @@ const RequestSettlement: React.FC = () => {
           </Stack>
         </Grid>
         <Grid
-          sx={{ paddingTop: "53px !important" }}
+          sx={{ paddingTop: "54px !important" }}
           item
           xs={12}>
           <Stack
+            spacing={2}
+            paddingRight={isRelativeBalances ? "0px" : "210px"}
+            direction={isRelativeBalances ? "column" : "row"}
             justifyContent={isRelativeBalances ? "center" : "flex-start"}
             alignItems={isRelativeBalances ? "center" : "flex-start"}
             width={"100%"}>
             <WithdrawalRequestSection
-              currencies={currenciesList}
-              isLoading={isLoading}
-              onRequestWithdrawal={onRequestWithdrawal}
+              title={t("CryptoWithdrawalRequest")}
+              currenciesSelectLabel={t("CryptoCurrency")}
+              currencies={cryptoCurrenciesList}
+              isLoading={false}
+              onRequestWithdrawal={onRequestCryptoWithdrawal}
+            />
+            <WithdrawalRequestSection
+              title={t("FiatWithdrawalRequest")}
+              currenciesSelectLabel={t("FiatCurrency")}
+              currencies={fiatCurrenciesList}
+              isLoading={false}
+              onRequestWithdrawal={onRequestFiatoWithdrawal}
             />
           </Stack>
         </Grid>
