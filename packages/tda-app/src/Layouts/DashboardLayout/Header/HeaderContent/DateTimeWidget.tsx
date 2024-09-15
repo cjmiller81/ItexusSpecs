@@ -18,8 +18,9 @@ const DateTimeWidget: React.FC = () => {
   return (
     <Box
       sx={{
-        width: "280px",
+        width: "300px",
         padding: "2px 10px",
+        marginLeft: "4px",
         border: `1px solid ${palette.grey[600]}`,
         borderRadius: 1,
         backgroundColor: `${palette.grey[100]} !important`,
