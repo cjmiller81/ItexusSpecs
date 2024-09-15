@@ -1,3 +1,4 @@
+import { useGetCalendarEventsQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
 import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
@@ -8,7 +9,6 @@ import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
 import { useGetPoolsQuery } from "@/features/Income/DefiApi";
 import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
-import { useMockGetEventsByDate } from "@/libs/redux/Apis/CryptoCalendarApi";
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
@@ -20,7 +20,8 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import { fetchWallets, useOry } from "components";
-import { useEffect, useMemo, useState } from "react";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
@@ -34,12 +35,16 @@ export default function HomePage() {
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
-  const mockDate = "2024-07-05";
-  const { data: mockCryptoCalendarDataByDate } = useMockGetEventsByDate(mockDate);
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
   const { news, loadMore, isLoading, setMarket, market } = useNews();
   const [topTokens, setTopTokens] = useState<TopTokenData[] | null>(null);
   const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);
+  const { data: calendarEvents } = useGetCalendarEventsQuery({
+    page: 0,
+    max: 30,
+    fromDate: moment(selectedDate).utc().toDate(),
+    toDate: moment(selectedDate).utc().toDate(),
+  });
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -53,7 +58,9 @@ export default function HomePage() {
 
   useEffect(() => {
     setIsFetchingTopTokens(true);
-    filteredTokensApi.getTopTokens(10).then(response => {
+    filteredTokensApi
+      .getTopTokens(10)
+      .then(response => {
       const calculatedData = response.data.map<TopTokenData>(data => {
       return {
         tokenId: data.id,
@@ -169,7 +176,7 @@ export default function HomePage() {
                 loading={false}
                 title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
                 icon={<CalendarMonthOutlinedIcon />}
-                calendarData={mockCryptoCalendarDataByDate.body || []}
+                calendarData={calendarEvents?.body || []}
                 setSelectedDate={setSelectedDate}
                 selectedDate={selectedDate}
                 sx={{ flex: isMediumScreen ? 4 : 1 }}
