@@ -2,37 +2,34 @@ import React, { useState } from "react";
 import { Box, Typography, Switch, useTheme } from "@mui/material";
 
 const TradingSwitch: React.FC = () => {
-  const [isTradingEnabled, setIsTradingEnabled] = useState<boolean>(false);
+  const [isTradingEnabled, setIsTradingEnabled] = useState(false);
   const theme = useTheme();
-
-  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsTradingEnabled(event.target.checked);
-  };
+  const { palette } = theme;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-      }}>
+    <Box sx={{ display: "flex", alignItems: "center", marginLeft: "4px" }}>
       <Switch
         checked={isTradingEnabled}
-        onChange={handleSwitchChange}
+        onChange={() => setIsTradingEnabled(!isTradingEnabled)}
         color="primary"
         sx={{
           "& .MuiSwitch-switchBase.Mui-checked": {
-            color: theme.palette.cyan.main,
+            color: "#00bcd4",
           },
           "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-            backgroundColor: theme.palette.cyan.main,
+            backgroundColor: "#00bcd4",
+          },
+          "& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb": {
+            backgroundColor: `${palette.grey[700]}`,
           },
         }}
       />
       <Typography
         variant="h6"
         sx={{
-          marginLeft: "10px",
-          color: isTradingEnabled ? theme.palette.cyan.main : theme.palette.grey[500],
+          width: "max-content",
+          fontStyle: "italic",
+          color: isTradingEnabled ? "#00bcd4" : theme.palette.grey[500],
         }}>
         {isTradingEnabled ? "Trading Enabled" : "Trading Disabled"}
       </Typography>

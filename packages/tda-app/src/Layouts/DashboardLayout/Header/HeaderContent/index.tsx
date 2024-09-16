@@ -12,6 +12,7 @@ import DrawerHeader from "Layouts/DashboardLayout/Drawer/DrawerHeader";
 import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTimeWidget";
 import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
+import TradingSwitch from "Layouts/DashboardLayout/Header/HeaderContent/TradingSwitch";
 
 export default function HeaderContent() {
   const { menuOrientation, mode, onChangeMode } = useConfig();
@@ -30,6 +31,7 @@ export default function HeaderContent() {
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
       <ConnectionStatus isConnected={isConnected} />
       <DateTimeWidget />
+      <TradingSwitch />
       <Box width="100%"></Box>
       <SupportButton />
       {localization}
