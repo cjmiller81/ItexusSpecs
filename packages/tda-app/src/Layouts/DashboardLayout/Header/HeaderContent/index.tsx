@@ -10,6 +10,7 @@ import { MenuOrientation, ThemeMode } from "config";
 import useConfig from "hooks/useConfig";
 import DrawerHeader from "Layouts/DashboardLayout/Drawer/DrawerHeader";
 import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTimeWidget";
+import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 
 export default function HeaderContent() {
@@ -30,6 +31,7 @@ export default function HeaderContent() {
       <ConnectionStatus isConnected={isConnected} />
       <DateTimeWidget />
       <Box width="100%"></Box>
+      <SupportButton />
       {localization}
       <Notification />
       <ThemeSwitcher ml={1} />
