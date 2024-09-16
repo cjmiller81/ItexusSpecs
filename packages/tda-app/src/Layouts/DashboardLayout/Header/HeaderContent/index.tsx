@@ -9,6 +9,7 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { MenuOrientation, ThemeMode } from "config";
 import useConfig from "hooks/useConfig";
 import DrawerHeader from "Layouts/DashboardLayout/Drawer/DrawerHeader";
+import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 
 export default function HeaderContent() {
@@ -28,6 +29,7 @@ export default function HeaderContent() {
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
       <ConnectionStatus isConnected={isConnected} />
       <Box width="100%"></Box>
+      <SupportButton />
       {localization}
       <Notification />
       <ThemeSwitcher ml={1} />
