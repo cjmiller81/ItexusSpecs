@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Typography, Switch, useTheme } from "@mui/material";
 
-const TradingSwitch: React.FC = () => {
-  const [isTradingEnabled, setIsTradingEnabled] = useState(false);
+interface TradingSwitchProps {
+  isTradingEnabled: boolean;
+  setIsTradingEnabled: (enabled: boolean) => void;
+}
+
+const TradingSwitch: React.FC<TradingSwitchProps> = ({ setIsTradingEnabled, isTradingEnabled }) => {
   const theme = useTheme();
   const { palette } = theme;
 

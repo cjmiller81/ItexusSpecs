@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import Box from "@mui/material/Box";
-import { Theme, useTheme } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Localization from "./Localization";
 import Notification from "./Notification";
@@ -13,10 +13,15 @@ import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTim
 import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 import TradingSwitch from "Layouts/DashboardLayout/Header/HeaderContent/TradingSwitch";
+import { useDispatch, useSelector } from "react-redux";
+import { RfqState, setTradingEnabled } from "features/trading/rfq/slices/rfqSlice";
 
 export default function HeaderContent() {
+  const dispatch = useDispatch();
   const { menuOrientation, mode, onChangeMode } = useConfig();
-  const theme = useTheme();
+
+  const isTradingEnabled = useSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
+
   const downLG = useMediaQuery((theme: Theme) => theme.breakpoints.down("lg"));
   const isConnected = true;
 
@@ -26,12 +31,19 @@ export default function HeaderContent() {
     onChangeMode(mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK);
   };
 
+  const handleToggle = () => {
+    dispatch(setTradingEnabled(!isTradingEnabled));
+  };
+
   return (
     <>
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
       <ConnectionStatus isConnected={isConnected} />
       <DateTimeWidget />
-      <TradingSwitch />
+      <TradingSwitch
+        setIsTradingEnabled={handleToggle}
+        isTradingEnabled={isTradingEnabled}
+      />
       <Box width="100%"></Box>
       <SupportButton />
       {localization}
