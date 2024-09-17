@@ -1,16 +1,25 @@
 import { http, HttpResponse } from 'msw'
 import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
-import { CreateFifoStrategyRequest, FifoStrategyListItem, FifoStrategyListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, SvtIvlStrategyAccountConnect } from '../services/tradingPlatformService'
+import {
+  CreateFifo2StrategyRequest,
+  Fifo2StrategyListItem,
+  Fifo2StrategyListResponse,
+  IvlRiskTolerance,
+  SvtIvlEsStrategySetStatus,
+  SvtIvlStrategyAccountConnect
+} from '../services/tradingPlatformService'
 
 
 const mockState :{
   connected: boolean,
-  strategies: FifoStrategyListItem[]
+  strategies: Fifo2StrategyListItem[]
+  zeroDte: any[]
   status: any
 } = {
   connected: false,
   strategies: [],
+  zeroDte: [],
 /*
   connected: true,
   strategies: [
@@ -91,7 +100,15 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/accounts`, () => {
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/account/tastytrade/connect`, () => {
+    mockState.connected = true
+
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/accounts`, () => {
     console.log("mockState: ", mockState)
     if (mockState.connected) {
       return HttpResponse.json([
@@ -200,14 +217,14 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`, () => {
-    const response: FifoStrategyListResponse = {
-      fifoStrategyList_: mockState.strategies
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade`, () => {
+    const response: Fifo2StrategyListResponse = {
+      fifoStrategyList: mockState.strategies
     }
     return HttpResponse.json(response)
   }),
 
-  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/start`, ({ params }) => {
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/start`, ({ params }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     const item = mockState.strategies
     .find(item =>
@@ -223,7 +240,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/stop`, ({ params, request }) => {
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol/stop`, ({ params, request }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     const item = mockState.strategies
     .find(item =>
@@ -239,7 +256,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol`, ({ params }) => {
+  http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/:accountNumber/:masterSymbol/:tradeSymbol`, ({ params }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     mockState.strategies = mockState.strategies
     .filter(item =>
@@ -252,14 +269,13 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`, async ({request}) => {
-    const data = await request.json() as CreateFifoStrategyRequest;
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade`, async ({request}) => {
+    const data = await request.json() as CreateFifo2StrategyRequest;
     mockState.strategies.push({
       active: data.active,
-      atrPeriod: 14,
-      capitalAllocation: 0,
       entryOrderId: "",
       hasEntryOrderId: false,
+      entryExchangeOrderId: "",
       entryOrderStatus: "",
       hasEntryOrderStatus: false,
       exchange: "Tastytrade",
@@ -268,17 +284,170 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       masterSymbolAssetType: "Future",
       stopOrderId: "",
       hasStopOrderId: false,
+      stopExchangeOrderId: "",
       stopOrderStatus: "",
       hasStopOrderStatus: false,
       targetOrderId: "",
       hasTargetOrderId: false,
+      targetExchangeOrderId: "",
       targetOrderStatus: "",
       hasTargetOrderStatus: false,
       tradeQty: data.tradeQty,
       tradeSymbol: data.tradeSymbol,
       tradeSymbolAssetType: "Future",
-      userId: ""
+      userId: "",
+      waitingReset: false,
+      removed: false,
     })
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol/stop`, ({ params, request }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.zeroDte
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber)
+
+    if (item){
+      item.active = false
+    }
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol`, ({ params }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    mockState.zeroDte = mockState.zeroDte
+    .filter(item =>
+      !(item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber))
+
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`, async ({ params, request }) => {
+
+    const mockResponse = {
+      "zeroDteFlyStrategyList": mockState.zeroDte
+    }
+
+    return new HttpResponse(JSON.stringify(mockResponse), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`, async ({ params, request }) => {
+
+    mockState.zeroDte.push({
+      "active": true,
+      "entryOrderId": "",
+      "hasEntryOrderId": false,
+      "entryExchangeOrderId": "",
+      "hasEntryExchangeOrderId": false,
+      "entryOrderStatus": "",
+      "hasEntryOrderStatus": false,
+      "exchange": "Tastytrade",
+      "exchangeAccountNumber": "5WU50943",
+      "stopOrderId": "",
+      "hasStopOrderId": false,
+      "stopExchangeOrderId": "",
+      "hasStopExchangeOrderId": false,
+      "stopOrderStatus": "",
+      "hasStopOrderStatus": false,
+      "targetOrderId": "",
+      "hasTargetOrderId": false,
+      "targetExchangeOrderId": "",
+      "hasTargetExchangeOrderId": false,
+      "targetOrderStatus": "",
+      "hasTargetOrderStatus": false,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "2a71f4a7-591e-4892-b1c4-444160f3d329",
+      "status": "Flat",
+      "removed": false,
+      "masterSymbol": "SPX",
+      "masterSymbolAssetType": "Equity",
+      "pidAddress": {
+        "address": "0.0.0.0:64089",
+        "id": "$7/Tastytrade.2a71f4a7-591e-4892-b1c4-444160f3d329.5WU50943.SPX"
+      },
+      "callLeg1StreamerSymbol": "",
+      "callLeg2StreamerSymbol": "",
+      "putLeg1StreamerSymbol": "",
+      "putLeg2StreamerSymbol": ""
+    })
+
+    return new HttpResponse(JSON.stringify({
+      "active": true,
+      "entryOrderId": "",
+      "hasEntryOrderId": false,
+      "entryExchangeOrderId": "",
+      "hasEntryExchangeOrderId": false,
+      "entryOrderStatus": "",
+      "hasEntryOrderStatus": false,
+      "exchange": "Tastytrade",
+      "exchangeAccountNumber": "5WU50943",
+      "stopOrderId": "",
+      "hasStopOrderId": false,
+      "stopExchangeOrderId": "",
+      "hasStopExchangeOrderId": false,
+      "stopOrderStatus": "",
+      "hasStopOrderStatus": false,
+      "targetOrderId": "",
+      "hasTargetOrderId": false,
+      "targetExchangeOrderId": "",
+      "hasTargetExchangeOrderId": false,
+      "targetOrderStatus": "",
+      "hasTargetOrderStatus": false,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "2a71f4a7-591e-4892-b1c4-444160f3d329",
+      "status": "Flat",
+      "removed": false,
+      "masterSymbol": "SPX",
+      "masterSymbolAssetType": "Equity",
+      "pidAddress": {
+        "address": "0.0.0.0:64089",
+        "id": "$7/Tastytrade.2a71f4a7-591e-4892-b1c4-444160f3d329.5WU50943.SPX"
+      },
+      "callLeg1StreamerSymbol": "",
+      "callLeg2StreamerSymbol": "",
+      "putLeg1StreamerSymbol": "",
+      "putLeg2StreamerSymbol": ""
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol/start`, ({ params }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.zeroDte
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber)
+
+    if (item){
+      item.active = true
+    }
     return new HttpResponse(null, {
       status: 200
     })
