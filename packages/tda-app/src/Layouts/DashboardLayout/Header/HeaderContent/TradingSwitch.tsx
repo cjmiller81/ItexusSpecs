@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography, Switch, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface TradingSwitchProps {
   isTradingEnabled: boolean;
@@ -7,6 +8,7 @@ interface TradingSwitchProps {
 }
 
 const TradingSwitch: React.FC<TradingSwitchProps> = ({ setIsTradingEnabled, isTradingEnabled }) => {
+  const { t } = useTranslation("NavBar");
   const theme = useTheme();
   const { palette } = theme;
 
@@ -35,7 +37,7 @@ const TradingSwitch: React.FC<TradingSwitchProps> = ({ setIsTradingEnabled, isTr
           fontStyle: "italic",
           color: isTradingEnabled ? "#00bcd4" : theme.palette.grey[500],
         }}>
-        {isTradingEnabled ? "Trading Enabled" : "Trading Disabled"}
+        {isTradingEnabled ? t("TradingEnabled") : t("TradingDisabled")}
       </Typography>
     </Box>
   );
