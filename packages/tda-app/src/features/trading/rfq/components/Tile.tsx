@@ -9,6 +9,9 @@ import { ContrastDecimalField } from "./ContrastDecimalField";
 import FooterSection from "./footer-section/FooterSection";
 import { RfqButton, RfqStage } from "./RfqButton";
 
+import { useSelector } from "react-redux";
+import { RfqState } from "features/trading/rfq/slices/rfqSlice";
+
 type TileProps = Omit<CardProps, "children"> & {
   symbol1: string | null;
   symbol2: string | null;
@@ -70,6 +73,8 @@ const Tile: React.FC<TileProps> = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation("Tile");
+
+  const isTradingEnabled = useSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
   const isLessThanMinSize = minSize === undefined ? false : amount < minSize;
   const isGreaterThanMaxSize = maxSize === undefined ? false : amount > maxSize;
   const boxShadow =
@@ -132,7 +137,13 @@ const Tile: React.FC<TileProps> = ({
                   popoverMessage={popoverMessage}
                   sellSymbol={symbol1}
                   disabled={
-                    (!symbol1 || !symbol2 || !amount || isLessThanMinSize || isGreaterThanMaxSize) && !popoverMessage
+                    (!symbol1 ||
+                      !symbol2 ||
+                      !amount ||
+                      isLessThanMinSize ||
+                      isGreaterThanMaxSize ||
+                      !isTradingEnabled) &&
+                    !popoverMessage
                   }
                   sx={{
                     height: "45px",
