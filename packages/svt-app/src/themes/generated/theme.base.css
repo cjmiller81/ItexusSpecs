@@ -41,6 +41,17 @@
     margin: 0;
   }
 }
+#zero-dte-root {
+  input[type=radio] {
+    height: 100%;
+    margin: 0;
+    width: 100%;
+  }
+
+  p {
+    margin: 0;
+  }
+}
 
 .dx-validationsummary-item {
   cursor: pointer;
