@@ -1,0 +1,16 @@
+.statusBox {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  .statusName {
+    min-width: 150px;
+    text-align: right;
+  }
+}
+
+.trade-qty-input {
+  input[disabled]:not(input[type=submit]) {
+      background-color: #3b3b3b;
+  }
+}

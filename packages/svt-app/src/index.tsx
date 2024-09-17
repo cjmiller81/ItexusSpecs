@@ -7,6 +7,7 @@ import App from './App';
 import IvlAutomatedApp from './IvlAutomatedApp';
 import FifoAutomatedApp from './FifoAutomatedApp';
 import reportWebVitals from './reportWebVitals';
+import ZeroDteApp from './ZeroDteApp';
 
 async function enableMocking() {
   if (process.env.REACT_APP_MOCK_BACKEND_API !== 'true') {
@@ -79,6 +80,24 @@ enableMocking().then(() => {
         <React.StrictMode>
           <StyledEngineProvider injectFirst>
             <FifoAutomatedApp />
+          </StyledEngineProvider>
+        </React.StrictMode>
+      );
+    }
+  }
+  catch (fifoAutomatedRootErr) {
+    console.log(fifoAutomatedRootErr);
+  }
+
+  try {
+    const appZeroDteRootElement = document.getElementById('zero-dte-root') as HTMLElement;
+
+    if (appZeroDteRootElement) {
+      const zeroDteRoot = ReactDOM.createRoot(appZeroDteRootElement);
+      zeroDteRoot.render(
+        <React.StrictMode>
+          <StyledEngineProvider injectFirst>
+            <ZeroDteApp />
           </StyledEngineProvider>
         </React.StrictMode>
       );

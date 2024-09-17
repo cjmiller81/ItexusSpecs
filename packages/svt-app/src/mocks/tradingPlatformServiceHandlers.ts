@@ -14,10 +14,12 @@ import {
 const mockState :{
   connected: boolean,
   strategies: Fifo2StrategyListItem[]
+  zeroDte: any[]
   status: any
 } = {
   connected: false,
   strategies: [],
+  zeroDte: [],
 /*
   connected: true,
   strategies: [
@@ -98,7 +100,15 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/accounts`, () => {
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/account/tastytrade/connect`, () => {
+    mockState.connected = true
+
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/accounts`, () => {
     console.log("mockState: ", mockState)
     if (mockState.connected) {
       return HttpResponse.json([
@@ -289,6 +299,155 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       waitingReset: false,
       removed: false,
     })
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol/stop`, ({ params, request }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.zeroDte
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber)
+
+    if (item){
+      item.active = false
+    }
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol`, ({ params }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    mockState.zeroDte = mockState.zeroDte
+    .filter(item =>
+      !(item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber))
+
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`, async ({ params, request }) => {
+
+    const mockResponse = {
+      "zeroDteFlyStrategyList": mockState.zeroDte
+    }
+
+    return new HttpResponse(JSON.stringify(mockResponse), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`, async ({ params, request }) => {
+
+    mockState.zeroDte.push({
+      "active": true,
+      "entryOrderId": "",
+      "hasEntryOrderId": false,
+      "entryExchangeOrderId": "",
+      "hasEntryExchangeOrderId": false,
+      "entryOrderStatus": "",
+      "hasEntryOrderStatus": false,
+      "exchange": "Tastytrade",
+      "exchangeAccountNumber": "5WU50943",
+      "stopOrderId": "",
+      "hasStopOrderId": false,
+      "stopExchangeOrderId": "",
+      "hasStopExchangeOrderId": false,
+      "stopOrderStatus": "",
+      "hasStopOrderStatus": false,
+      "targetOrderId": "",
+      "hasTargetOrderId": false,
+      "targetExchangeOrderId": "",
+      "hasTargetExchangeOrderId": false,
+      "targetOrderStatus": "",
+      "hasTargetOrderStatus": false,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "2a71f4a7-591e-4892-b1c4-444160f3d329",
+      "status": "Flat",
+      "removed": false,
+      "masterSymbol": "SPX",
+      "masterSymbolAssetType": "Equity",
+      "pidAddress": {
+        "address": "0.0.0.0:64089",
+        "id": "$7/Tastytrade.2a71f4a7-591e-4892-b1c4-444160f3d329.5WU50943.SPX"
+      },
+      "callLeg1StreamerSymbol": "",
+      "callLeg2StreamerSymbol": "",
+      "putLeg1StreamerSymbol": "",
+      "putLeg2StreamerSymbol": ""
+    })
+
+    return new HttpResponse(JSON.stringify({
+      "active": true,
+      "entryOrderId": "",
+      "hasEntryOrderId": false,
+      "entryExchangeOrderId": "",
+      "hasEntryExchangeOrderId": false,
+      "entryOrderStatus": "",
+      "hasEntryOrderStatus": false,
+      "exchange": "Tastytrade",
+      "exchangeAccountNumber": "5WU50943",
+      "stopOrderId": "",
+      "hasStopOrderId": false,
+      "stopExchangeOrderId": "",
+      "hasStopExchangeOrderId": false,
+      "stopOrderStatus": "",
+      "hasStopOrderStatus": false,
+      "targetOrderId": "",
+      "hasTargetOrderId": false,
+      "targetExchangeOrderId": "",
+      "hasTargetExchangeOrderId": false,
+      "targetOrderStatus": "",
+      "hasTargetOrderStatus": false,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "2a71f4a7-591e-4892-b1c4-444160f3d329",
+      "status": "Flat",
+      "removed": false,
+      "masterSymbol": "SPX",
+      "masterSymbolAssetType": "Equity",
+      "pidAddress": {
+        "address": "0.0.0.0:64089",
+        "id": "$7/Tastytrade.2a71f4a7-591e-4892-b1c4-444160f3d329.5WU50943.SPX"
+      },
+      "callLeg1StreamerSymbol": "",
+      "callLeg2StreamerSymbol": "",
+      "putLeg1StreamerSymbol": "",
+      "putLeg2StreamerSymbol": ""
+    }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  }),
+
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol/start`, ({ params }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.zeroDte
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber)
+
+    if (item){
+      item.active = true
+    }
     return new HttpResponse(null, {
       status: 200
     })

@@ -132,6 +132,11 @@ export interface CreateFifoStrategyRequest {
   tradeSymbol: string
 }
 
+export interface CreateZeroDteStrategyRequest {
+  active: boolean,
+  exchangeAccountNumber: string | null,
+}
+
 export interface FifoStrategyListItem {
   active: boolean,
   atrPeriod: number,
@@ -165,7 +170,6 @@ export interface FifoStrategyListResponse
 {
   fifoStrategyList_: FifoStrategyListItem[]
 }
-
 
 export interface CreateFifo2StrategyRequest {
   active: boolean,
@@ -213,6 +217,11 @@ export interface Fifo2StrategyListItem {
 export interface Fifo2StrategyListResponse
 {
   fifoStrategyList: Fifo2StrategyListItem[]
+}
+
+export interface ZeroDteFlyStrategyListResponse
+{
+  zeroDteFlyStrategyList: FifoStrategyListItem[]
 }
 
 interface Callbacks {
@@ -583,6 +592,177 @@ export function useGetFifoStrategy(callbacks?: Callbacks) {
           const jsonData = await response.json()
           return jsonData
         }
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+
+export function useZeroDteStartStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "startZeroDteStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}/start`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useZeroDteStopStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "stopStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}/stop`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useDeleteZeroDteStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "deleteZeroDteStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "DELETE",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useGetZeroDteStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "getZeroDteStrategy",
+    async () => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "GET",
+        headers: headers
+      })
+
+      if (response.ok && response.body) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const jsonData = await response.json()
+          return jsonData
+        }
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
+export function useCreateZeroDteStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "zeroDteFlyStrategy",
+    async (strategy: CreateZeroDteStrategyRequest) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(strategy)
+      })
+
+      if (response.ok) {
+        return true
       }
 
       throw new Error(response.statusText);
