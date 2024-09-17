@@ -14,7 +14,20 @@ import Login from "./login";
 import Accounts from "./accounts";
 import AccountStatus from "./account-status";
 import AutomationComponent from "./automation/Automation";
-import { ExchangeAccount, FifoStrategyListResponse, IvlRiskTolerance, SvtIvlEsStrategySetStatus, TastytradeAccountConnect, useCreateFifoStrategy, useDeleteStrategy, useGetAccountList, useGetFifoStrategy, useStartStrategy, useStopStrategy, useUpsertTastytradeConnection } from "../../../services/tradingPlatformService";
+import {
+  ExchangeAccount,
+  Fifo2StrategyListResponse,
+  IvlRiskTolerance,
+  SvtIvlEsStrategySetStatus,
+  TastytradeAccountConnect,
+  useCreateFifoStrategy,
+  useDeleteStrategy,
+  useGetAccountList,
+  useGetFifoStrategy,
+  useStartStrategy,
+  useStopStrategy,
+  useUpsertTastytradeConnection
+} from "../../../services/tradingPlatformService";
 import { v4 as uuid } from "uuid"
 import "./FifoAutomated.scss";
 import { useMediaQuery } from "@mui/material";
@@ -230,8 +243,8 @@ export default function FifoAutomated() {
   }, [tableData, exchangeAccountState, strategyAccountConnectState, handleExchangeAccount, membership]);
 
   const getStrategies = useGetFifoStrategy({
-    onSuccess: (res: FifoStrategyListResponse) => {
-      const newItems = res.fifoStrategyList_.map<IPositionTableRow>(listItem => ({
+    onSuccess: (res: Fifo2StrategyListResponse) => {
+      const newItems = res.fifoStrategyList.map<IPositionTableRow>(listItem => ({
         id: uuid(),
         account: listItem.exchangeAccountNumber,
         fifoFeed: "SP 500",

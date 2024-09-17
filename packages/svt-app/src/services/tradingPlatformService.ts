@@ -119,6 +119,8 @@ export interface SvtIvlEsStrategySetStatus {
   closingOnly: boolean,
   userMessage: string | null,
 }
+
+
 export interface CreateFifoStrategyRequest {
   active: boolean,
   exchangeAccountNumber: string | null,
@@ -162,6 +164,55 @@ export interface FifoStrategyListItem {
 export interface FifoStrategyListResponse
 {
   fifoStrategyList_: FifoStrategyListItem[]
+}
+
+
+export interface CreateFifo2StrategyRequest {
+  active: boolean,
+  exchangeAccountNumber: string | null,
+  masterSymbol: string,
+  tradeQty: {
+    units: number,
+    nanos: number
+  },
+  tradeSymbol: string
+}
+
+export interface Fifo2StrategyListItem {
+  active: boolean,
+  entryOrderId: string,
+  hasEntryOrderId: boolean,
+  entryExchangeOrderId: string,
+  entryOrderStatus: string,
+  hasEntryOrderStatus: false,
+  exchange: string,
+  exchangeAccountNumber: string,
+  masterSymbol: string,
+  masterSymbolAssetType: string,
+  stopOrderId: string,
+  hasStopOrderId: boolean,
+  stopExchangeOrderId: string,
+  stopOrderStatus: string,
+  hasStopOrderStatus: boolean,
+  targetOrderId: string,
+  hasTargetOrderId: boolean,
+  targetExchangeOrderId: string,
+  targetOrderStatus: string,
+  hasTargetOrderStatus: false,
+  tradeQty: {
+    units: number,
+    nanos: number
+  },
+  tradeSymbol: string,
+  tradeSymbolAssetType: string,
+  userId: string,
+  waitingReset: boolean,
+  removed: boolean
+}
+
+export interface Fifo2StrategyListResponse
+{
+  fifoStrategyList: Fifo2StrategyListItem[]
 }
 
 interface Callbacks {
@@ -381,8 +432,8 @@ export function useStopIvlAutomation(callbacks?: Callbacks) {
 export function useCreateFifoStrategy(callbacks?: Callbacks) {
   return useMutation(
     "createFifoStrategy",
-    async (strategy: CreateFifoStrategyRequest) => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`)
+    async (strategy: CreateFifo2StrategyRequest) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
@@ -416,7 +467,7 @@ export function useStartStrategy(callbacks?: Callbacks) {
   return useMutation(
     "startStrategy",
     async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/start`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/start`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
@@ -449,7 +500,7 @@ export function useStopStrategy(callbacks?: Callbacks) {
   return useMutation(
     "stopStrategy",
     async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/stop`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/stop`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
@@ -482,7 +533,7 @@ export function useDeleteStrategy(callbacks?: Callbacks) {
   return useMutation(
     "deleteStrategy",
     async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
@@ -515,7 +566,7 @@ export function useGetFifoStrategy(callbacks?: Callbacks) {
   return useMutation(
     "getFifoStrategy",
     async () => {
-      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifoStrategy/tastytrade`)
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade`)
 
       const headers = new Headers();
       headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
