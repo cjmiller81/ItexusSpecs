@@ -1,26 +1,82 @@
+import AppleIcon from "@mui/icons-material/Apple";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import GoogleIcon from "@mui/icons-material/Google";
 import ScheduleIcon from "@mui/icons-material/Schedule";
-import { Link, styled, Tooltip, tooltipClasses, TooltipProps, Typography, useTheme } from "@mui/material";
-import { darken, Stack, StackProps } from "@mui/system";
-import { FC } from "react";
+import WindowIcon from "@mui/icons-material/Window";
+import {
+  IconButton,
+  Link,
+  Menu,
+  MenuItem,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import React from "react";
+import { darken, lighten, Stack, StackProps } from "@mui/system";
+import moment from "moment";
+import { FC, MouseEventHandler, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarEvent } from "./eventsResponseModel";
 import ImageSlider from "./ImageSlider";
+
 export type Props = StackProps & {
   event: CalendarEvent;
-  onProofClick: (link: string) => void;
 };
 
-const CalendarEventTile: FC<Props> = ({ event, sx, onProofClick, ...props }) => {
+const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
   const { t } = useTranslation("CalendarEventTile");
   const theme = useTheme();
+  const [anchorEl, setAnchorEl] = useState<null | Element>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOpenCalendarMenuClick: MouseEventHandler<HTMLButtonElement> = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseCalendarMenu = () => {
+    setAnchorEl(null);
+  };
 
   const baseUrl = process.env.COIN_MARKET_CALENDAR_IMAGE_URL;
   const imagesUrls = event.coins.map(coin => `${baseUrl}${coin.id}_normal.png`);
 
+  const googleUrl = new URL("https://calendar.google.com/calendar/render");
+  const googleDateFormatted = moment(event.date_event).format("YYYYMMDD");
+  googleUrl.searchParams.set("action", "TEMPLATE");
+  googleUrl.searchParams.set("text", event.title["en"]);
+  googleUrl.searchParams.set("dates", `${googleDateFormatted}/${googleDateFormatted}`);
+  googleUrl.searchParams.set("details", event.title["en"]);
+  const googleUrlString = googleUrl.toString();
+
+  const outlookUrl = new URL("https://outlook.live.com/calendar/0/deeplink/compose");
+  outlookUrl.searchParams.append("path", "/calendar/action/compose");
+  outlookUrl.searchParams.append("subject", event.title["en"]);
+  outlookUrl.searchParams.append("startdt", moment(event.date_event).format());
+  outlookUrl.searchParams.append("enddt", moment(event.date_event).format());
+  outlookUrl.searchParams.append("body", event.title["en"]);
+  const outlookUrlString = outlookUrl.toString();
+
+  const appleIcsContent = `
+    BEGIN:VCALENDAR
+    VERSION:2.0
+    BEGIN:VEVENT
+    SUMMARY:${event.title["en"]}
+    DTSTART:${googleDateFormatted}
+    DTEND:${googleDateFormatted}
+    DESCRIPTION:${event.title["en"]}
+    END:VEVENT
+    END:VCALENDAR
+    `;
+  const blob = new Blob([appleIcsContent], { type: "text/calendar" });
+  const appleUrl = URL.createObjectURL(blob);
+
   return (
     <Stack
-      sx={{ p: 2, ...sx }}
+      sx={{ p: 1.5, pt: 0.5, ...sx }}
       {...props}>
       <Stack
         direction={"row"}
@@ -80,6 +136,8 @@ const CalendarEventTile: FC<Props> = ({ event, sx, onProofClick, ...props }) => 
           <Typography
             width="100%"
             sx={{
+              fontWeight: 500,
+              letterSpacing: 0.5,
               cursor: "pointer",
               ":hover": {
                 color: darken(theme.palette.primary.main, 0.2),
@@ -94,9 +152,49 @@ const CalendarEventTile: FC<Props> = ({ event, sx, onProofClick, ...props }) => 
           direction={"row"}
           spacing={1}
           alignItems={"center"}>
-          <CalendarMonthIcon
-            color={"primary"}
-            sx={{ width: "20px", height: "20px", cursor: "pointer" }}></CalendarMonthIcon>
+          <IconButton onClick={handleOpenCalendarMenuClick}>
+            <CalendarMonthIcon
+              color={"primary"}
+              sx={{ width: "20px", height: "20px", cursor: "pointer" }}></CalendarMonthIcon>
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleCloseCalendarMenu}
+            MenuListProps={{
+              "aria-labelledby": "basic-button",
+            }}>
+            <MenuItem
+              component={Link}
+              target={"_blank"}
+              href={googleUrlString}
+              onClick={handleCloseCalendarMenu}>
+              <CalendarItemContent
+                title={"Google"}
+                icon={<GoogleIcon />}
+              />
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              target={"_blank"}
+              href={outlookUrlString}
+              onClick={handleCloseCalendarMenu}>
+              <CalendarItemContent
+                title={"Outlook"}
+                icon={<WindowIcon />}
+              />
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              target={"_blank"}
+              href={appleUrl}
+              onClick={handleCloseCalendarMenu}>
+              <CalendarItemContent
+                title={"Apple"}
+                icon={<AppleIcon />}
+              />
+            </MenuItem>
+          </Menu>
           <ScheduleIcon
             color={"primary"}
             sx={{ width: "20px", height: "20px", cursor: "pointer" }}></ScheduleIcon>
@@ -104,47 +202,34 @@ const CalendarEventTile: FC<Props> = ({ event, sx, onProofClick, ...props }) => 
       </Stack>
 
       <Stack
-        direction={"row"}
+        spacing={1}
         alignItems={"center"}>
         <Stack
           alignItems={"center"}
           width={"100%"}>
-          <Link
+          <Typography
+            color="#71A5D7"
+            variant="h7">
+            {event.displayed_date}
+          </Typography>
+          <Typography
             sx={{
-              textAlign: "center",
-              textDecoration: "none",
-              cursor: "pointer",
-              ":hover": { textDecoration: "underline", textDecorationColor: "inherit" },
-            }}>
-            <Typography
-              color={
-                theme.palette.mode === "light" ? darken(theme.palette.primary.main, 0.2) : theme.palette.primary.main
-              }
-              variant="h7">
-              {event.displayed_date}
-            </Typography>
-            <Typography
-              sx={{
-                textDecorationColor:
-                  theme.palette.mode === "light" ? darken(theme.palette.primary.main, 0.4) : theme.palette.primary.main,
-              }}
-              color={
-                theme.palette.mode === "light" ? darken(theme.palette.primary.main, 0.4) : theme.palette.primary.main
-              }
-              variant="h6">
-              {event.title["en"]}
-            </Typography>
-          </Link>
+              fontSize: "16px",
+              textDecorationColor:
+                theme.palette.mode === "light" ? darken(theme.palette.primary.main, 0.4) : theme.palette.primary.main,
+            }}
+            color={
+              theme.palette.mode === "light"
+                ? darken(theme.palette.primary.main, 0.6)
+                : lighten(theme.palette.primary.main, 0.8)
+            }
+            variant="h6">
+            {event.title["en"]}
+          </Typography>
         </Stack>
         <Stack
-          height={"100px"}
           justifyContent={"space-around"}
-          width="200px">
-          <ButtonLink
-            width={"100%"}
-            onClick={() => onProofClick(event.proof)}>
-            {t("Proof")}
-          </ButtonLink>
+          width="100px">
           <ButtonLink
             width={"100%"}
             href={event.source}
@@ -157,6 +242,18 @@ const CalendarEventTile: FC<Props> = ({ event, sx, onProofClick, ...props }) => 
   );
 };
 
+const CalendarItemContent: FC<{ icon: React.ReactNode; title: string }> = ({ icon, title }) => {
+  return (
+    <Stack
+      direction={"row"}
+      alignItems={"center"}
+      spacing={1}>
+      {icon}
+      <Typography variant="subtitle1">{title}</Typography>
+    </Stack>
+  );
+};
+
 const ButtonLink = styled(Link)(({ theme }) => ({
   borderRadius: "50rem",
   boxShadow: "none",
@@ -165,7 +262,7 @@ const ButtonLink = styled(Link)(({ theme }) => ({
   textDecoration: "none",
   borderColor: theme.palette.primary.main,
   color: theme.palette.primary.main,
-  padding: ".5rem 1rem",
+  padding: ".3rem 1rem",
   fontSize: "11px",
   fontWeight: 400,
   textAlign: "center",
