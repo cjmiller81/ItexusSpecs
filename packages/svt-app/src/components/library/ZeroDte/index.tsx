@@ -37,8 +37,7 @@ import "./ZeroDte.scss";
 const steps = ["Select Account", "Account Status / Settings"];
 
 const tradeSymbolOptions = [
-  "/SPX",
-  //"SPY",
+  "SPX",
 ];
 
 interface IState {
@@ -103,8 +102,8 @@ export default function ZeroDte() {
   } as SvtIvlEsStrategySetStatus);
 
   const [fifoFeedOption, setFifoFeedOption] = useState("SP 500");
-  const [tradeSymbolOption, setTradeSymbolOption] = useState("/SPX");
-  const qty = tradeSymbolOption === "/ES" ? 1 : 100;
+  const [tradeSymbolOption, setTradeSymbolOption] = useState("SPX");
+  const qty = tradeSymbolOption === "SPX" ? 1 : 100;
   const [positionTableData, setPositionTableData] = useState<IPositionTableRow[]>([]);
 
   const isDesktop = useMediaQuery("(min-width:800px)");
@@ -270,7 +269,7 @@ export default function ZeroDte() {
         fifoFeed: "SP 500",
         tradeQty: listItem.tradeQty.units,
         status: listItem.active ? "Running" : "Suspended",
-        tradeSymbol: listItem.tradeSymbol,
+        tradeSymbol: listItem.masterSymbol,
       }));
       setPositionTableData(newItems);
 
