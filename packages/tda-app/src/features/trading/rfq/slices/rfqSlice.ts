@@ -44,7 +44,7 @@ export const fetchRfq = createAsyncThunk("rfq/fetchRfq", async (request: RfqRequ
   return response[0];
 });
 
-const rfqSlice = createSlice({
+export const rfqSlice = createSlice({
   name: "rfq",
   initialState,
   reducers: {
