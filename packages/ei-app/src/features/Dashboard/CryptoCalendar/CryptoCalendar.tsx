@@ -28,29 +28,8 @@ const CryptoCalendar = ({
 }) => {
   const { t } = useTranslation("CryptoCalendar");
   const theme = useTheme();
-  const [proofLink, setProofLink] = useState<string | null>(null);
   return (
     <>
-      <AppModal
-        open={Boolean(proofLink)}
-        onClose={() => setProofLink(null)}>
-        <Box p={1.1}>
-          <IconButton
-            onClick={() => setProofLink(null)}
-            sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              color: theme.palette.grey[500],
-            }}>
-            <CloseIcon />
-          </IconButton>
-          <img
-            width="100%"
-            src={proofLink!}></img>
-        </Box>
-      </AppModal>
-
       <DashboardTile
         title={title}
         icon={icon}
@@ -70,7 +49,6 @@ const CryptoCalendar = ({
                     sx={{ borderRadius: "0px" }}
                     key={index}>
                     <CalendarEventTile
-                      onProofClick={setProofLink}
                       event={event}
                     />
                   </Grid>
