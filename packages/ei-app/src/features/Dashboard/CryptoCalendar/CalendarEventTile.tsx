@@ -121,6 +121,7 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
                         },
                       }}
                       noWrap
+                      target="_blank"
                       href={`https://coinmarketcal.com/en/coin/${coin.id}`}
                       component="a">
                       {coin.name}

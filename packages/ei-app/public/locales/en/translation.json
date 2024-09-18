@@ -199,7 +199,10 @@
     "Reddit": "Reddit",
     "GitHub": "GitHub",
     "Platform": "Platform",
-    "Tools": "Tools"
+    "Tools": "Tools",
+    "Updates": "Updates",
+    "Blog": "Blog",
+    "Education": "Education"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
