@@ -137,16 +137,18 @@ const FundingInstructions: React.FC = () => {
                           <InputAdornment position="end">
                             <IconButton
                               sx={{ mr: "1px" }}
-                              fontSize="small"
                               aria-label="toggle address visibility"
                               onClick={() => handleClickShowAddress(index)}
                               onMouseDown={handleMouseDownAddress}
                               edge="end">
-                              {showAddress[index] ? <VisibilityOff /> : <Visibility />}
+                              {showAddress[index] ? (
+                                <VisibilityOff fontSize="small" />
+                              ) : (
+                                <Visibility fontSize="small" />
+                              )}
                             </IconButton>
 
                             <IconButton
-                              fontSize="Small"
                               aria-label="copy address"
                               onClick={() => handleCopyAddress(wallet.address)}
                               edge="end">
