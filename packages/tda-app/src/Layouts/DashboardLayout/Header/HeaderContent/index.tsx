@@ -13,14 +13,14 @@ import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTim
 import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 import TradingSwitch from "Layouts/DashboardLayout/Header/HeaderContent/TradingSwitch";
-import { useDispatch, useSelector } from "react-redux";
 import { RfqState, setTradingEnabled } from "features/trading/rfq/slices/rfqSlice";
+import { useAppDispatch, useAppSelector } from "libs/redux/Store";
 
 export default function HeaderContent() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { menuOrientation, mode, onChangeMode } = useConfig();
 
-  const isTradingEnabled = useSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
+  const isTradingEnabled = useAppSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
 
   const downLG = useMediaQuery((theme: Theme) => theme.breakpoints.down("lg"));
   const isConnected = true;
