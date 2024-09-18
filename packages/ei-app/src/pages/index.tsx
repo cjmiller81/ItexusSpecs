@@ -5,7 +5,6 @@ import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
 import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
 import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
-import { UpdatesTile } from "@/features/Dashboard/UpdatesTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
 import { useGetPoolsQuery } from "@/features/Income/DefiApi";
 import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
@@ -14,7 +13,6 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import CodeIcon from "@mui/icons-material/Code";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
@@ -180,12 +178,6 @@ export default function HomePage() {
                 setSelectedDate={setSelectedDate}
                 selectedDate={selectedDate}
                 sx={{ flex: isMediumScreen ? 4 : 1 }}
-              />
-              <UpdatesTile
-                icon={<CodeIcon />}
-                title={t("UpdatesTile")}
-                version={process.env.APP_VERSION as string}
-                sx={{ flex: isMediumScreen ? 2 : 1 }}
               />
             </Box>
           </Grid>
