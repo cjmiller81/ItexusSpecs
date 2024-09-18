@@ -4,7 +4,7 @@ export enum PrefilterTokensField {
   Id = "id",
   Name = "name",
   Symbol = "sym",
-  Chains = "chains",
+  Chains = "chainsFormatted",
   Price = "price",
   MarketCap = "mCap",
   FullyDilutedValuation = "fulDilVal",
@@ -14,7 +14,7 @@ export enum PrefilterTokensField {
   MaxSupply = "mSup",
   Tokenomics = "tNom",
   IsErc20 = "erc20",
-  Categories = "cats",
+  Categories = "categoriesFormatted",
 }
 export enum PrefilterTokensLabel {
   Id = "Id",
