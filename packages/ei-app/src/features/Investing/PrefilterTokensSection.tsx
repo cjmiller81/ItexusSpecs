@@ -11,8 +11,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { filterBuilderFields } from "../../constants/PrefilterTokensTable";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
-import { useGetCategoriesQuery } from "./categoriesApi";
-import { useGetChainsQuery } from "./chainsApi";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
 
@@ -34,8 +32,6 @@ export default function PrefilterTokensSection({
     state => state.allTokensTable,
   );
   const marketCapFilters = useMemo(() => filters.filter(f => f.filterType === "market-cap"), [filters]);
-  const { data: chainsData } = useGetChainsQuery();
-  const { data: categoriesData } = useGetCategoriesQuery();
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
@@ -100,8 +96,6 @@ export default function PrefilterTokensSection({
           dataSource={dataSource}
           onExport={onExporting}
           onSorterChanged={onSorterChanged}
-          categories={categoriesData || []}
-          chains={chainsData || []}
           currentFilter={currentFilter}
           onCurrentFilterChange={filter => setCurrentFilter(filter)}
         />
@@ -113,8 +107,6 @@ export default function PrefilterTokensSection({
 const MemoizedPrefilterTokensTable = React.memo(PrefilterTokensTable, (prevProps, nextProps) => {
   return (
     prevProps.dataSource === nextProps.dataSource &&
-    prevProps.categories === nextProps.categories &&
-    prevProps.chains === nextProps.chains &&
     prevProps.currentFilter === nextProps.currentFilter
   );
 });
