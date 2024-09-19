@@ -13,6 +13,7 @@ import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -154,6 +155,21 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
             />
           ),
           href: "/#",
+        },
+      ],
+    },
+    {
+      title: t("Updates", { ns: "SideBar" }),
+      icon: <NotificationsActiveIcon />,
+      open: false,
+      children: [
+        {
+          title: t("Blog", { ns: "SideBar" }),
+          href: "/blog",
+        },
+        {
+          title: t("Education", { ns: "SideBar" }),
+          href: "/education",
         },
       ],
     },

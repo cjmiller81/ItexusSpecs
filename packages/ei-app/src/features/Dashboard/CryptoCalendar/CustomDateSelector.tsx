@@ -1,13 +1,8 @@
-import React from "react";
+import { ArrowForwardIos } from "@mui/icons-material";
+import { IconButton, Stack, Typography } from "@mui/material";
 import moment from "moment";
-import { Stack, Typography, IconButton } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
-  const handlePreviousDay = () => {
-    setSelectedDate(prevDate => moment(prevDate).subtract(1, "days").toDate());
-  };
-
   const handleNextDay = () => {
     setSelectedDate(prevDate => moment(prevDate).add(1, "days").toDate());
   };
@@ -16,11 +11,6 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
     <Stack
       direction="row"
       alignItems="center">
-      <IconButton
-        onClick={handlePreviousDay}
-        size="small">
-        <ArrowBackIos fontSize="inherit" />
-      </IconButton>
       <Typography
         sx={{ pt: "2px", fontSize: "medium", textWrap: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
         variant="h6">

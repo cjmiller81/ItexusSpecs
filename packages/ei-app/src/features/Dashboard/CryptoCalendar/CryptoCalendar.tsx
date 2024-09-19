@@ -36,7 +36,7 @@ const CryptoCalendar = ({
         loading={loading}
         sx={sx}>
         <Box>
-          <SimpleBarStyled style={{ height: "282px" }}>
+          <SimpleBarStyled style={{ height: "548px" }}>
             <Grid
               container
               spacing={0}>
