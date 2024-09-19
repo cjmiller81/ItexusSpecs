@@ -8,7 +8,7 @@ interface Props {
 
 export function AutoSidebarLayout({ children }: Props) {
   const dispatch = useAppDispatch();
-  const sidebarOpened = useAppSelector((state: { ui: UiState }) => state.ui.sidebarOpened);
+  const { sidebarOpened } = useAppSelector(state => state.ui);
   const theme = useTheme();
 
   const handleResize = () => {
