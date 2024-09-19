@@ -1,26 +1,10 @@
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import HomeIcon from '@mui/icons-material/Home';
-import PersonIcon from "@mui/icons-material/Person";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import i18next, { t } from "i18next";
 
-
-function getDashboardItems(): SidebarListItem[] {
-  return [
-    {
-      title: i18next.t("Dashboard", { ns: "SideBar" }),
-      icon: <HomeIcon />,
-      open: false,
-      href: "/",
-    },
-  ]
-}
-
-function getFifoStrategiesItems(): SidebarListItem[] {
+function getStrategiesItems(): SidebarListItem[] {
   return [
     {
       title: i18next.t("FifoStrategy", { ns: "SideBar" }),
-      icon: <AccountBalanceWalletIcon />,
       open: false,
       children: [
         {
@@ -41,14 +25,8 @@ function getFifoStrategiesItems(): SidebarListItem[] {
         },
       ],
     },
-  ]
-}
-
-function getIvlItems(): SidebarListItem[] {
-  return [
     {
       title: i18next.t("IvlStrategy", { ns: "SideBar" }),
-      icon: <AccountBalanceWalletIcon />,
       open: false,
       children: [
         {
@@ -61,37 +39,28 @@ function getIvlItems(): SidebarListItem[] {
         },
       ],
     },
-  ]
-}
-
-function getUsersItems(): SidebarListItem[] {
-  return [
     {
-      title: i18next.t("Users", { ns: "SideBar" }),
-      icon: <PersonIcon />,
+      title: i18next.t("ZeroDteStrategy", { ns: "SideBar" }),
       open: false,
-      href: "/users",
+      children: [
+        {
+          title: t("ZeroDteUsers", { ns: "SideBar" }),
+          href: "/strategies/zero-dte/users",
+        },
+        {
+          title: t("ZeroDteReports", { ns: "SideBar" }),
+          href: "/strategies/zero-dte/reports",
+        },
+      ],
     },
-  ]
+  ];
 }
 
 export function getSidebarMenuItems(): SidebarItems[] {
   return [
     {
-      title: t("Dashboard", { ns: "SideBar" }),
-      sidebarListItems: getDashboardItems(),
+      title: t("Strategies", { ns: "SideBar" }),
+      sidebarListItems: getStrategiesItems(),
     },
-    {
-      title: t("Fifo", { ns: "SideBar" }),
-      sidebarListItems: getFifoStrategiesItems(),
-    },
-    {
-      title: t("Ivl", { ns: "SideBar" }),
-      sidebarListItems: getIvlItems(),
-    },
-    {
-      title: t("Users", { ns: "SideBar" }),
-      sidebarListItems: getUsersItems(),
-    },
-  ]
+  ];
 }

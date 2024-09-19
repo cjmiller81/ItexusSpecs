@@ -57,7 +57,7 @@
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
   "SideBar": {
-    "Dashboard": "Dashboard",
+    "Strategies": "Strategies",
     "FifoStrategy": "FIFO Strategy",
     "FifoSignals": "FIFO Signals",
     "FifoTradeInstruments": "FIFO Trade Instruments",
@@ -65,10 +65,10 @@
     "FifoUsers": "FIFO Users",
     "IvlStrategy": "IVL Strategy",
     "IvlUsers": "IVL Users",
-    "Fifo": "FIFO",
-    "Ivl": "IVL",
     "IvlReports": "IVL Reports",
-    "Users": "Users "
+    "ZeroDteStrategy": "0 DTE Strategy",
+    "ZeroDteUsers": "0 DTE Users",
+    "ZeroDteReports": "0 DTE Reports"
   },
   "ColumnsDefs": {
     "ATRMin": "ATR Min",
