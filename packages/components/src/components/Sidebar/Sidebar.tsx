@@ -1,15 +1,14 @@
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import { Box, Divider, IconButton } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import { useState } from "react";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 import { SidebarSection } from "./SidebarSection";
 import { StyledDrawer } from "./StyledDrawer";
 import { StyledDrawerHeader } from "./StyledDrawerHeader";
 import { SidebarItems } from "./types";
-import SimpleBar from "simplebar-react";
-import { styled } from "@mui/material/styles";
-import "simplebar-react/dist/simplebar.min.css";
 
 interface Props {
   open: boolean;
