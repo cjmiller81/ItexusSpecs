@@ -24,7 +24,7 @@ You can define `nohoist` for yarn workspaces. See: https://classic.yarnpkg.com/b
 More on defining `nohoist`. See: https://stackoverflow.com/a/59701469
 You may need to add `nohoist` to the `package.json` IN the sub packages. e.g. `./packages/ei-app/package.json`
 
-### Usage:
+### Usage: 
 
 ##### Component Library:
 

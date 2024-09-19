@@ -9,8 +9,8 @@ import { ContrastDecimalField } from "./ContrastDecimalField";
 import FooterSection from "./footer-section/FooterSection";
 import { RfqButton, RfqStage } from "./RfqButton";
 
-import { useSelector } from "react-redux";
 import { RfqState } from "features/trading/rfq/slices/rfqSlice";
+import { useAppSelector } from "libs/redux/Store";
 
 type TileProps = Omit<CardProps, "children"> & {
   symbol1: string | null;
@@ -74,7 +74,7 @@ const Tile: React.FC<TileProps> = ({
   const theme = useTheme();
   const { t } = useTranslation("Tile");
 
-  const isTradingEnabled = useSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
+  const isTradingEnabled = useAppSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
   const isLessThanMinSize = minSize === undefined ? false : amount < minSize;
   const isGreaterThanMaxSize = maxSize === undefined ? false : amount > maxSize;
   const boxShadow =
