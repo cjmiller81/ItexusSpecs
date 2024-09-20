@@ -23,7 +23,7 @@ const initialState: RfqState = {
   rfqModel: null,
   historyData: [],
   executionHistoryData: [],
-  isTradingEnabled: false,
+  isTradingEnabled: true,
 };
 
 export const fetchHistoryData = createAsyncThunk("rfq/fetchHistoryData", async (action: GetHistoryDataRequest) => {

@@ -9,6 +9,9 @@ export interface UiState {
   horizontalActiveItem?: string;
   cryptotableOpened: boolean;
   fiatTableOpened: boolean;
+  errors: string[];
+  messages: string[];
+  warnings: string[];
 }
 
 const initialState: UiState = {
@@ -16,6 +19,9 @@ const initialState: UiState = {
   mode: "dark",
   cryptotableOpened: true,
   fiatTableOpened: true,
+  errors: [],
+  messages: [],
+  warnings: [],
 };
 
 export const uiSlice = createAppSlice({
@@ -43,4 +49,11 @@ export const uiSlice = createAppSlice({
   }),
 });
 
-export const { toggleSideBar, toggleTheme, setOpenedItem, setHorizontalActiveItem, toggleCryptoTable, toggleFiatTable } = uiSlice.actions;
+export const {
+  toggleSideBar,
+  toggleTheme,
+  setOpenedItem,
+  setHorizontalActiveItem,
+  toggleCryptoTable,
+  toggleFiatTable,
+} = uiSlice.actions;
