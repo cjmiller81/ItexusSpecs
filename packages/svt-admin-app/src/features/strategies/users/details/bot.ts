@@ -18,6 +18,7 @@ export interface Bot {
   hasTargetOrderId: boolean,
   targetOrderStatus: string,
   hasTargetOrderStatus: boolean,
+  qty: number,
   tradeQty: {
     units: number,
     nanos: number

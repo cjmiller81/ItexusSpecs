@@ -38,6 +38,7 @@ export const initBots: Bot[] = [
     hasTargetOrderId: true,
     targetOrderStatus: "Pending",
     hasTargetOrderStatus: true,
+    qty: 1,
     tradeQty: {
       units: 10,
       nanos: 500000000
@@ -47,7 +48,7 @@ export const initBots: Bot[] = [
     userId: "U12365"
   },
   {
-    active: true,
+    active: false,
     atrPeriod: 15,
     capitalAllocation: 100,
     entryOrderId: "E34543456789",
@@ -66,6 +67,7 @@ export const initBots: Bot[] = [
     hasTargetOrderId: true,
     targetOrderStatus: "Pending",
     hasTargetOrderStatus: true,
+    qty: 100,
     tradeQty: {
       units: 10,
       nanos: 500000000
