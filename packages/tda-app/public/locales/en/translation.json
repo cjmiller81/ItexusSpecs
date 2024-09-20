@@ -77,6 +77,13 @@
     "FileName": "Settlement",
     "Title": "Settlement History"
   },
+  "Notification":{
+    "FillBuySell": "Fill: {{side}} {{qty}} {{pair}}",
+    "TradeConfirmation":"TRADE NOTIFICATION",
+    "Price": "Price: {{price}}",
+    "TradeDetails": "Trade Details",
+    "ViewAll": "View All"
+  },
   "ShortcutsItems": {
     "ThisWeek": "This Week",
     "LastWeek": "Last Week",
