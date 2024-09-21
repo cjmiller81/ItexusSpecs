@@ -135,7 +135,11 @@
     "Instruction": "Instruction",
     "IsEntryOrder": "Is Entry Order",
     "IsExitOrder": "Is Exit Order",
-    "ExchangeEntryOrderId": "Exchange Entry OrderId"
+    "ExchangeEntryOrderId": "Exchange Entry OrderId",
+    "StartBot": "Start Bot",
+    "ResetBot": "Reset Bot",
+    "ClosingOnly":"Closing Only",
+    "StopBot": "Stop Bot"
   },
   "UserDetailsSection":{
     "CapitalAllocation": "Capital Allocation",
