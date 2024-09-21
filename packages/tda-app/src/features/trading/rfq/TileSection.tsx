@@ -9,7 +9,7 @@ import { useSignalR } from "@/hooks/useSignalR";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { SnackbarProps } from "@/types/snackbar";
 import { CardProps, useTheme } from "@mui/material";
-import { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import useCountDown from "react-countdown-hook";
 import { useTranslation } from "react-i18next";
 import { v4 } from "uuid";
@@ -17,6 +17,8 @@ import { logoUrl } from "./constants";
 import { OrderEvent, isOrderEvent } from "./models/OrderEvent";
 import { toast } from "react-toastify";
 import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import SuccessToast from "../../../../../components/src/layouts/helpers/succsessToast";
+import ErrorToast from "../../../../../components/src/layouts/helpers/errorToast";
 
 type TileSectionProps = CardProps & {
   symbol1: string | null;
@@ -148,36 +150,7 @@ export const TileSection: FC<TileSectionProps> = ({
       toast.dismiss(toastIdRef.current);
     }
 
-    toastIdRef.current = toast.success(
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <FaCheckCircle
-          style={{
-            width: "24px",
-            height: "24px",
-            margin: "0 10px 0 15px",
-            color: theme.palette.grey[700],
-            backgroundColor: "green",
-            borderRadius: "20px",
-          }}
-        />
-        {snackBarMessage}
-      </div>,
-      {
-        position: "bottom-left",
-        autoClose: 5000,
-        style: {
-          backgroundColor: event.instruction === "Buy" ? "#89cb5c" : "#ca2d2d",
-          color: theme.palette.grey[700],
-          width: "max-content",
-        },
-        progressStyle: {
-          backgroundColor: "white",
-        },
-        onClose: () => {
-          toastIdRef.current = null;
-        },
-      },
-    );
+    toastIdRef.current = toast.success(<SuccessToast message={snackBarMessage} />);
 
     showNotification(event.instruction, symbol1Parsed, symbol2Parsed, formattedAmount, rfqModel.BidPx.toString(), v4());
   };
@@ -193,40 +166,13 @@ export const TileSection: FC<TileSectionProps> = ({
     setIsTransactionInProgress(false);
     reset();
 
-    const errorMessage = t("ErrorText");
-
     if (toastIdRef.current) {
       toast.dismiss(toastIdRef.current);
     }
 
-    toastIdRef.current = toast.error(
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <FaExclamationTriangle
-          style={{
-            width: "24px",
-            height: "24px",
-            margin: "0 10px 0 15px",
-            color: theme.palette.grey[700],
-          }}
-        />
-        <span style={{ fontWeight: "bold", color: "black" }}>{errorMessage}</span>
-      </div>,
-      {
-        position: "bottom-left",
-        autoClose: 5000,
-        style: {
-          backgroundColor: "orange",
-          color: "black",
-          width: "max-content",
-        },
-        progressStyle: {
-          backgroundColor: theme.palette.grey[700],
-        },
-        onClose: () => {
-          toastIdRef.current = null;
-        },
-      },
-    );
+    const errorMessage = t("ErrorText");
+
+    toastIdRef.current = toast.error(<ErrorToast message={errorMessage} />);
 
     if (Notification?.permission === "granted") {
       new Notification(errorMessage, {
@@ -366,15 +312,7 @@ export const TileSection: FC<TileSectionProps> = ({
     if (!rfqModel) return;
 
     if (rfqModel.QuoteStatus === "Rejected") {
-      openSnackbar({
-        open: true,
-        message: t("QuoteRejected"),
-        variant: "alert",
-        alert: {
-          variant: "outlined",
-          color: "error",
-        },
-      } as SnackbarProps);
+      toastIdRef.current = toast.error(<ErrorToast message={t("QuoteRejected")} />);
     }
   }, [rfqModel]);
 

@@ -13,9 +13,8 @@ import i18n from "../libs/i18n/i18n";
 import { appPersistor } from "../libs/redux/Store";
 import { StoreProvider } from "../providers/StoreProvider";
 import Layout from "./Layout";
-
 import { ConfigProvider } from "contexts/ConfigContext";
-import ToastifyLayout from "Layouts/ToastifyLayout";
+import { ToastifyLayout } from "../../../components/src/layouts/ToastifyLayout";
 
 export interface IRootProps extends AppProps {
   children: any;
