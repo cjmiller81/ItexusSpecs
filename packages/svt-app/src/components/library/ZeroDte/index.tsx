@@ -157,8 +157,8 @@ export default function ZeroDte() {
     return (
       membership === "TODO" &&
       !exchangeAccountState.isClosed &&
-      exchangeAccountState.isFuturesApproved &&
-      exchangeAccountState.isMargin
+      exchangeAccountState.isMargin &&
+      exchangeAccountState.suitableOptionsLevel === "No Restrictions"
     );
   }, [exchangeAccountState, membership]);
 

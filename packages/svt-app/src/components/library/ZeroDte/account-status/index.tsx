@@ -92,15 +92,15 @@ export default function AccountStatus({
                 <span>{state.isMargin ? "Margin" : "Not a Margin Account"}</span>
               </div>
             </Grid>
-            <Grid
-              item
-              xs={12}>
+            <Grid item xs={12}>
               <div className="statusBox">
-                <div className="statusName">Futures Trading:</div>
+                <div className="statusName">Suitable Options Level:</div>
                 <span>
-                  <RadioButtonUncheckedIcon sx={{ color: state.isFuturesApproved ? "green" : "red" }} />
+                  <RadioButtonUncheckedIcon
+                    sx={{ color: state.suitableOptionsLevel === "No Restrictions" ? "green" : "red" }}
+                  />
                 </span>
-                <span>{state.isFuturesApproved ? "Approved" : "Not Approved"}</span>
+                <span>{ state.suitableOptionsLevel === "No Restrictions" ? "No Restrictions" : "Restricted" }</span>
               </div>
             </Grid>
           </Grid>
