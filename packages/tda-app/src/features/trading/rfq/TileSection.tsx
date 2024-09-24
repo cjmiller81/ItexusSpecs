@@ -1,13 +1,11 @@
 import { RfqResponse } from "@/api/rfq-api/models/RfqResponse";
 import { rfqApi } from "@/api/rfq-api/rfqApi";
-import { openSnackbar } from "@/api/snackbar";
 import { RfqStage } from "@/features/trading/rfq/components/RfqButton";
 import Tile from "@/features/trading/rfq/components/Tile";
 import { clearRfq, fetchRfq } from "@/features/trading/rfq/slices/rfqSlice";
 import { usePrevious } from "@/hooks/usePrevious";
 import { useSignalR } from "@/hooks/useSignalR";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { SnackbarProps } from "@/types/snackbar";
 import { CardProps, useTheme } from "@mui/material";
 import React, { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import useCountDown from "react-countdown-hook";
@@ -16,9 +14,8 @@ import { v4 } from "uuid";
 import { logoUrl } from "./constants";
 import { OrderEvent, isOrderEvent } from "./models/OrderEvent";
 import { toast } from "react-toastify";
-import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
-import SuccessToast from "../../../../../components/src/layouts/helpers/succsessToast";
-import ErrorToast from "../../../../../components/src/layouts/helpers/errorToast";
+import SuccessToast from "../../../../../components/src/layouts/toasts/successToast";
+import ErrorToast from "../../../../../components/src/layouts/toasts/errorToast";
 
 type TileSectionProps = CardProps & {
   symbol1: string | null;
@@ -150,7 +147,11 @@ export const TileSection: FC<TileSectionProps> = ({
       toast.dismiss(toastIdRef.current);
     }
 
-    toastIdRef.current = toast.success(<SuccessToast message={snackBarMessage} />);
+    SuccessToast({
+      message: snackBarMessage,
+      event: { instruction: event.instruction },
+      style: { progress: { backgroundColor: theme.palette.grey[700] } },
+    });
 
     showNotification(event.instruction, symbol1Parsed, symbol2Parsed, formattedAmount, rfqModel.BidPx.toString(), v4());
   };
@@ -172,7 +173,7 @@ export const TileSection: FC<TileSectionProps> = ({
 
     const errorMessage = t("ErrorText");
 
-    toastIdRef.current = toast.error(<ErrorToast message={errorMessage} />);
+    ErrorToast({ message: errorMessage, style: { progress: { backgroundColor: theme.palette.grey[700] } } });
 
     if (Notification?.permission === "granted") {
       new Notification(errorMessage, {
@@ -312,7 +313,7 @@ export const TileSection: FC<TileSectionProps> = ({
     if (!rfqModel) return;
 
     if (rfqModel.QuoteStatus === "Rejected") {
-      toastIdRef.current = toast.error(<ErrorToast message={t("QuoteRejected")} />);
+      ErrorToast({ message: t("QuoteRejected"), style: { progress: { backgroundColor: theme.palette.grey[700] } } });
     }
   }, [rfqModel]);
 
