@@ -1,7 +1,7 @@
 import React from "react";
 import { toast, ToastPosition } from "react-toastify";
 import { FaExclamationTriangle } from "react-icons/fa";
-import { getDefaultStyles } from "./errorToastStylesHelper";
+import { getErrorStyles } from "./errorToastStylesHelper";
 
 interface ErrorToastProps {
   message: string;
@@ -25,7 +25,7 @@ const ErrorToast: React.FC<ErrorToastProps> = ({
   position = "bottom-left",
   ...props
 }) => {
-  const defaultStyles = getDefaultStyles();
+  const defaultStyles = getErrorStyles();
 
   const combinedStyles = {
     icon: { ...defaultStyles.icon, ...style.icon },

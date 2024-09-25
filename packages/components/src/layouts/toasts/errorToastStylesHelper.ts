@@ -1,4 +1,4 @@
-export const getDefaultStyles = () => ({
+export const getErrorStyles = () => ({
   icon: {
     width: "24px",
     height: "24px",
