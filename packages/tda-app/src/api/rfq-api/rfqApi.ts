@@ -11,6 +11,21 @@ import { CurrencyPair } from "./models/CurrencyPair";
 import { RfqResponse } from "./models/RfqResponse";
 import CurrencyPairRaw from "./models/CurrencyPairRaw";
 
+const transformHistoryData = (items: HistoryData[]): HistoryDataParsed[] => {
+  return items.map<HistoryDataParsed>(item => ({
+    accountNum: item.accountNumber,
+    QuoteID: "",
+    RFQID: "",
+    filledQty: item.qtyPlaced.toString(),
+    id: item.exchangeOrderId,
+    symbol: item.marketSymbol,
+    transactTime: new Date(item.timeLastUpdated),
+    side: item.instruction,
+    filledPrice: item.priceSubmitted?.toString(),
+    status: item.orderStatus,
+  }));
+};
+
 export const rfqApi = {
   getRfq: async ({ firstSymbol, secondSymbol, currency, qty, signal }: RfqRequest): Promise<RfqResponse[]> => {
     const { data } = await appAxios.get<RfqRawResponse[]>(
@@ -65,12 +80,12 @@ export const rfqApi = {
   },
 
   getHistoryData: async ({ accountNumber, fromDate, toDate }: GetHistoryDataRequest): Promise<HistoryDataParsed[]> => {
-    const requestUrl =
+    const requestURL =
       fromDate && toDate
         ? `/api/customers/order-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
         : `/api/customers/order-history?accountNumber=${accountNumber}`;
 
-    const response = await appAxios.get<{ aCount: number; history: HistoryData[] }>(requestUrl);
+    const response = await appAxios.get<{ aCount: number; history: HistoryData[] }>(requestURL);
 
     const flattenedHistory = response?.data?.history?.flat() || [];
 
@@ -78,7 +93,7 @@ export const rfqApi = {
       return [];
     }
 
-    const parsedData = mapHistoryData(flattenedHistory);
+    const parsedData = transformHistoryData(flattenedHistory);
 
     return parsedData.reverse();
   },
@@ -88,12 +103,12 @@ export const rfqApi = {
     fromDate,
     toDate,
   }: GetHistoryDataRequest): Promise<HistoryDataParsed[]> => {
-    const requestUrl =
+    const requestURL =
       fromDate && toDate
         ? `/api/customers/execution-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
         : `/api/customers/execution-history?accountNumber=${accountNumber}`;
 
-    const response = await appAxios.get<{ aCount: number; history: HistoryData[] }>(requestUrl);
+    const response = await appAxios.get<{ aCount: number; history: HistoryData[] }>(requestURL);
 
     const flattenedHistory = response?.data?.history?.flat() || [];
 
@@ -101,23 +116,8 @@ export const rfqApi = {
       return [];
     }
 
-    const parsedData = mapHistoryData(flattenedHistory);
+    const parsedData = transformHistoryData(flattenedHistory);
 
     return parsedData.reverse();
   },
-};
-
-const mapHistoryData = (items: HistoryData[]): HistoryDataParsed[] => {
-  return items.map<HistoryDataParsed>(item => ({
-    accountNum: item.accountNumber,
-    QuoteID: "",
-    RFQID: "",
-    filledQty: item.qtyPlaced.toString(),
-    id: item.exchangeOrderId,
-    symbol: item.marketSymbol,
-    transactTime: new Date(item.timeLastUpdated),
-    side: item.instruction,
-    filledPrice: item.priceSubmitted?.toString(),
-    status: item.orderStatus,
-  }));
 };
