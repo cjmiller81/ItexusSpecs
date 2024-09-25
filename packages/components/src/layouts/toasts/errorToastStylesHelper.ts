@@ -1,4 +1,4 @@
-export const defaultStyles = {
+export const getDefaultStyles = () => ({
   icon: {
     width: "24px",
     height: "24px",
@@ -13,4 +13,4 @@ export const defaultStyles = {
     alignItems: "center",
   },
   progress: {},
-};
+});
