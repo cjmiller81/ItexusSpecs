@@ -11,6 +11,7 @@ import { PlaceOrderRequest } from "./models/PlaceOrderRequest"
 import { CurrencyPair } from "./models/CurrencyPair"
 import { RfqResponse } from "./models/RfqResponse"
 import CurrencyPairRaw from "./models/CurrencyPairRaw"
+import { HistoryPageData } from "./models/HistoryPageData"
 
 export const rfqApi = {
   getRfq: async ({ firstSymbol, secondSymbol, currency, qty, signal }: RfqRequest): Promise<RfqResponse[]> => {
@@ -85,13 +86,13 @@ export const rfqApi = {
         ? `/api/customers/execution-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
         : `/api/customers/execution-history?accountNumber=${accountNumber}`
 
-    const response = await appAxios.get<HistoryData[]>(requestUrl)
+    const response = await appAxios.get<HistoryPageData>(requestUrl)
 
-    if (response?.data?.length === 0) {
+    if (response?.data.history?.length === 0) {
       return []
     }
 
-    const parsedData = mapHistoryData(response.data);
+    const parsedData = mapHistoryData(response.data.history);
 
     return parsedData.reverse()
   },
