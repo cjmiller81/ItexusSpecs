@@ -171,12 +171,10 @@ export const TileSection: FC<TileSectionProps> = ({
       toast.dismiss(toastIdRef.current);
     }
 
-    const errorMessage = t("ErrorText");
-
-    ErrorToast({ message: errorMessage, style: { progress: { backgroundColor: theme.palette.grey[700] } } });
+    ErrorToast({ message: t("ErrorText"), style: { progress: { backgroundColor: theme.palette.grey[700] } } });
 
     if (Notification?.permission === "granted") {
-      new Notification(errorMessage, {
+      new Notification(t("ErrorText"), {
         icon: logoUrl,
         dir: "ltr",
       });
