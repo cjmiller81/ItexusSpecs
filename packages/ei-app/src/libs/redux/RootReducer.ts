@@ -2,6 +2,7 @@ import { calendarEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarA
 import { defisApi } from "@/features/Income/DefiApi";
 import { categoriesApi } from "@/features/Investing/categoriesApi";
 import { chainsApi } from "@/features/Investing/chainsApi";
+// import { vaultsApi } from "@/libs/yourApiPath"; // Adjust this import based on your actual file structure
 import { combineReducers } from "@reduxjs/toolkit";
 import { uiSlice, walletsSlice } from "components";
 import { getPersistConfig } from "redux-deep-persist";
@@ -14,6 +15,7 @@ import { marketCapEqualWeightModelingSlice } from "./Slices/MarketCapEqualWeight
 import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlice";
 import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice";
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice";
+import { vaultsApi } from "@/features/Income/VaultsApi";
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -29,6 +31,7 @@ export const rootReducer = combineReducers({
   [dashboardSlice.name]: dashboardSlice.reducer,
   [calendarEventsApi.reducerPath]: calendarEventsApi.reducer,
   [defisApi.reducerPath]: defisApi.reducer,
+  [vaultsApi.reducerPath]: vaultsApi.reducer, // Add vaultsApi reducer here
 });
 
 const config = getPersistConfig<RootState>({

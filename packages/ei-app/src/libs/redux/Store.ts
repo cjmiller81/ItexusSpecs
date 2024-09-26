@@ -2,6 +2,7 @@ import { calendarEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarA
 import { defisApi } from "@/features/Income/DefiApi";
 import { categoriesApi } from "@/features/Investing/categoriesApi";
 import { chainsApi } from "@/features/Investing/chainsApi";
+import { vaultsApi } from "@/features/Income/VaultsApi"; // Make sure this path is correct
 import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
@@ -9,11 +10,17 @@ import { RootState, persistedReducer } from "./RootReducer";
 
 const makeStore = () => {
   return configureStore({
-    reducer: persistedReducer,
+    reducer: persistedReducer, // Use the persistedReducer directly
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }).concat(calendarEventsApi.middleware, defisApi.middleware, chainsApi.middleware, categoriesApi.middleware),
+      }).concat(
+        calendarEventsApi.middleware,
+        defisApi.middleware,
+        chainsApi.middleware,
+        categoriesApi.middleware,
+        vaultsApi.middleware, // Include vaultsApi middleware here
+      ),
   });
 };
 

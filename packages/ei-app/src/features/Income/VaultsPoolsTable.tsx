@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import DataGridDef, {
-  Column,
-  Export,
-  FilterRow,
-  HeaderFilter,
-  LoadPanel,
-  Pager,
-  Paging,
-} from "devextreme-react/data-grid";
+import DataGridDef, { Column, Export, FilterRow, LoadPanel, Pager, Paging } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
 import { ExportingEvent } from "devextreme/ui/data_grid";
 import React, { FC, useMemo } from "react";
@@ -18,11 +10,12 @@ export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<PoolData, string>;
   onExport: (e: ExportingEvent<PoolData, any>) => void;
+  totalApy: number | null; // Add totalApy to props
 }
 
-export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSource, onExport }) => {
+export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSource, onExport, totalApy }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
-
+  console.log(totalApy, "TA!!!!!!!!!");
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
   // Function to calculate safety score based on risks
@@ -49,7 +42,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
         showBorders={true}
         onExporting={onExport}
         keyExpr="name">
-        {" "}
         <FilterRow visible={true} />
         <LoadPanel
           showPane={loading}
@@ -73,8 +65,27 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           headerFilter={{ visible: true }}
         />
         <Column
-          dataField="tokenProviderId"
-          caption="Token Provider ID"
+          dataField="chain"
+          caption="Chain"
+          alignment="left"
+          dataType="string"
+          allowHiding={false}
+          headerFilter={{ visible: true }}
+        />
+        <Column
+          dataField="boost" // This should be the name of the field containing boost info
+          caption="Boosts"
+          alignment="left"
+          dataType="string"
+          allowHiding={false}
+          cellRender={cellData => {
+            const boost = cellData.value; // Get the boost value
+            return <span>{boost ? boost.value : "No Boost"}</span>; // Adjust based on your boost structure
+          }}
+        />
+        <Column
+          dataField="platformId" // Change this to the correct field based on the API response
+          caption="Platform" // Updated column header
           alignment="left"
           dataType="string"
           allowHiding={false}
@@ -85,6 +96,10 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           alignment="left"
           dataType="number"
           allowHiding={false}
+          calculateCellValue={data => {
+            // If 'totalApy' is available, use it; otherwise, fall back to individual pool's APY
+            return data.apy || totalApy || 0;
+          }}
           customizeText={toPercentageField}
         />
         <Column
@@ -104,7 +119,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           customizeText={toDollarAmountField}
         />
         {/* Safety Column with Vertical Bars */}
-        // Safety Column with Vertical Bars
         <Column
           caption="Safety"
           alignment="left"
