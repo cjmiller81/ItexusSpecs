@@ -44,7 +44,8 @@
     "BuySnackBarConfirmationText": "You have Bought {{amount}} {{symbol1}} and Sold {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
     "SellSnackBarConfirmationText": "You have Sold {{amount}} {{symbol1}} and Bought {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
     "InsufficientFundsToSell": "Insufficient Funds - Not Enough Funds Available to Sell {{currency}}",
-    "InsufficientFundsToBuy": "Insufficient Funds - Not Enough Funds Available to Buy {{currency1}} using {{currency2}}"
+    "InsufficientFundsToBuy": "Insufficient Funds - Not Enough Funds Available to Buy {{currency1}} using {{currency2}}",
+    "ErrorText": "ORDER ERROR: TRADE REJECTED OR NOT CONFIRMED, PLEASE TRY AGAIN"
   },
   "Tile": {
     "MinSizeError": "TRADE QUANTITY IS TOO SMALL",

@@ -1,20 +1,21 @@
 import { RfqResponse } from "@/api/rfq-api/models/RfqResponse";
 import { rfqApi } from "@/api/rfq-api/rfqApi";
-import { openSnackbar } from "@/api/snackbar";
 import { RfqStage } from "@/features/trading/rfq/components/RfqButton";
 import Tile from "@/features/trading/rfq/components/Tile";
 import { clearRfq, fetchRfq } from "@/features/trading/rfq/slices/rfqSlice";
 import { usePrevious } from "@/hooks/usePrevious";
 import { useSignalR } from "@/hooks/useSignalR";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { SnackbarProps } from "@/types/snackbar";
-import { CardProps } from "@mui/material";
-import { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
+import { CardProps, useTheme } from "@mui/material";
+import React, { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import useCountDown from "react-countdown-hook";
 import { useTranslation } from "react-i18next";
 import { v4 } from "uuid";
 import { logoUrl } from "./constants";
 import { OrderEvent, isOrderEvent } from "./models/OrderEvent";
+import { toast } from "react-toastify";
+import SuccessToast from "../../../../../components/src/layouts/toasts/successToast";
+import ErrorToast from "../../../../../components/src/layouts/toasts/errorToast";
 
 type TileSectionProps = CardProps & {
   symbol1: string | null;
@@ -22,7 +23,7 @@ type TileSectionProps = CardProps & {
   minSize?: number;
   maxSize?: number;
   amount: number;
-  onAmoutChanged: (value: number) => void
+  onAmoutChanged: (value: number) => void;
   onUpdateHistory: () => void;
   accountNumber: string;
   onOrderChanged: (order: OrderEvent, rfqModel: RfqResponse) => void;
@@ -53,6 +54,8 @@ export const TileSection: FC<TileSectionProps> = ({
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
   const { t } = useTranslation("TileSection");
   const [popoverMessage, setPopoverMessage] = useState<string | null>();
+  const theme = useTheme();
+  const toastIdRef = useRef<string | number | null>(null);
 
   const handleEvents = (message: any) => {
     if (isOrderEvent(message)) {
@@ -123,37 +126,32 @@ export const TileSection: FC<TileSectionProps> = ({
     if (!rfqModel || !isTransactionInProgress) return;
     setIsTransactionInProgress(false);
 
-    let totalAmount = rfqModel.BidPx * amount;
-    let totalAmountFormatted = totalAmount.toLocaleString("en-US");
-    let formattedAmount = amount.toLocaleString("en-US");
+    const totalAmount = rfqModel.BidPx * amount;
+    const totalAmountFormatted = totalAmount.toLocaleString("en-US");
+    const formattedAmount = amount.toLocaleString("en-US");
 
-    const [symbol1Parsed, symbol2Parsed] = event.marketSymbol.split("-");
+    const [symbol1Parsed = "", symbol2Parsed = ""] = event.marketSymbol?.split("-") || [];
 
     const snackBarMessage = t(
       event.instruction === "Buy" ? "BuySnackBarConfirmationText" : "SellSnackBarConfirmationText",
       {
         amount: formattedAmount,
-        symbol1: symbol1Parsed,
+        symbol1: symbol1Parsed || symbol1,
         totalAmount: totalAmountFormatted,
-        symbol2: symbol2Parsed,
+        symbol2: symbol2Parsed || symbol2,
         bidPx: rfqModel.BidPx,
       },
     );
 
-    openSnackbar({
-      open: true,
+    if (toastIdRef.current) {
+      toast.dismiss(toastIdRef.current);
+    }
+
+    SuccessToast({
       message: snackBarMessage,
-      variant: "alert",
-      autoHideDuration: 5000,
-      anchorOrigin: {
-        vertical: "top",
-        horizontal: "center",
-      },
-      alert: {
-        variant: "outlined",
-        color: "primary",
-      },
-    } as SnackbarProps);
+      event: { instruction: event.instruction },
+      style: { progress: { backgroundColor: theme.palette.grey[700] } },
+    });
 
     showNotification(event.instruction, symbol1Parsed, symbol2Parsed, formattedAmount, rfqModel.BidPx.toString(), v4());
   };
@@ -168,24 +166,15 @@ export const TileSection: FC<TileSectionProps> = ({
     onUpdateHistory();
     setIsTransactionInProgress(false);
     reset();
-    const errorMessage = "Order Error! Please try again";
-    openSnackbar({
-      open: true,
-      message: errorMessage,
-      variant: "alert",
-      autoHideDuration: 5000,
-      anchorOrigin: {
-        vertical: "top",
-        horizontal: "center",
-      },
-      alert: {
-        variant: "outlined",
-        color: "error",
-      },
-    } as SnackbarProps);
+
+    if (toastIdRef.current) {
+      toast.dismiss(toastIdRef.current);
+    }
+
+    ErrorToast({ message: t("ErrorText"), style: { progress: { backgroundColor: theme.palette.grey[700] } } });
 
     if (Notification?.permission === "granted") {
-      new Notification(errorMessage, {
+      new Notification(t("ErrorText"), {
         icon: logoUrl,
         dir: "ltr",
       });
@@ -322,15 +311,7 @@ export const TileSection: FC<TileSectionProps> = ({
     if (!rfqModel) return;
 
     if (rfqModel.QuoteStatus === "Rejected") {
-      openSnackbar({
-        open: true,
-        message: t("QuoteRejected"),
-        variant: "alert",
-        alert: {
-          variant: "outlined",
-          color: "error",
-        },
-      } as SnackbarProps);
+      ErrorToast({ message: t("QuoteRejected"), style: { progress: { backgroundColor: theme.palette.grey[700] } } });
     }
   }, [rfqModel]);
 
