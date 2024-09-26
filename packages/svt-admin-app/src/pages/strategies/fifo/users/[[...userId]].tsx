@@ -35,6 +35,7 @@ export default function Reports() {
   const userId = router.query.userId ? router.query.userId[0] : undefined
   const [rightBarOpen, setRightBarOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<IFifoUser | undefined>()
+  const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>()
 
   useEffect(() => {
     dispatch(fetchFifoUsers())
@@ -102,12 +103,20 @@ export default function Reports() {
     setRowModesModel(newRowModesModel)
   }
 
+  const handleRowClick: GridEventListener<'rowClick'> = (params: GridRowParams) => {
+    if (ivlUsers.indexOf(params.row) === 0) {
+      handleViewClick(params.id);
+      handleSetSelection(params.id);
+    }
+  };
+
   const columns = getColumns(
     handleSaveClick,
     handleEditClick,
     handleDeleteClick,
     handleCancelClick,
     handleViewClick,
+    handleSetSelection,
     rowModesModel,
     theme,
     currentUser?.id,
@@ -118,7 +127,22 @@ export default function Reports() {
   }
 
   return (
-    <StyledRoot sx={{ padding: 0 }}>
+    <StyledRoot sx={{ 
+      padding: 0 ,
+      '& .red': {
+        backgroundColor: 'red',
+        color: 'white',
+        fontWeight: 600
+      },
+      '& .dark-yellow': {
+        backgroundColor: '#FDDA0D',
+        color: 'black',
+        fontWeight: 600
+      },
+      '& .selected-row': {
+        backgroundColor: '#f2f2f2'
+      }
+      }}>
       <DataGrid<IFifoUser>
         slots={{
           footer: () => <></>,
@@ -133,7 +157,9 @@ export default function Reports() {
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
+        onRowClick={handleRowClick}
         processRowUpdate={processRowUpdate}
+        getRowClassName={(params) => params.id === selectedRow ? 'selected-row': ''}
       />
 
       {currentUser && (

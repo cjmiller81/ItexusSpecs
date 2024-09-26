@@ -1,9 +1,11 @@
 export interface IvlUser {
   id: string
   exchangeUsername: string
+  email: string,
   connectionStatus: string
   accountNumber: string
   botStatus: string
-  capitalAllocation: number
-  stripeCustomerId: string
+  lastFill: number
+  fillTime: Date
+  openQty: number
 }

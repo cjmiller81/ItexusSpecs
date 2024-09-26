@@ -6,14 +6,24 @@ export const initFifoUsers: IFifoUser[] = [
   {
     "id": "WP1234",
     "exchangeUsername": "tasty1234",
-    "connectionStatus": "Connected",
-    "botCount": 2
+    "email": "tasty1234@gmail.com",
+    "accountNumber": "FFE32324",
+    "botStatus": "flat",
+    "lastFill": 342343,
+    "fillTime": new Date(),
+    "openQty": 3,
+    "connectionStatus": "Disconnected",
   },
   {
     "id": "WP5678",
     "exchangeUsername": "tasty5678",
+    "email": "tasty5678@gmail.com",
+    "accountNumber": "RRTT23234",
+    "botStatus": "error",
+    "lastFill": 43434.5454,
+    "fillTime": new Date(),
+    "openQty": 1,
     "connectionStatus": "Connected",
-    "botCount": 1
   }
 ]
 
