@@ -44,25 +44,6 @@ const FundingInstructions: React.FC = () => {
     navigator.clipboard.writeText(address);
   };
 
-  const handleClickOutside = (event: MouseEvent) => {
-    inputRefs.current.forEach((inputRef, index) => {
-      if (inputRef && !inputRef.contains(event.target as Node)) {
-        setShowAddress(prevState => ({
-          ...prevState,
-          [index]: false,
-        }));
-      }
-    });
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   const cryptoWallets = [
     { currency: "BTC", protocol: "N/A", address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" },
     { currency: "USDT", protocol: "ERC20", address: "0x4E9ce36E442e55EcD9025B9a6E0D88485d628A67" },
