@@ -11,7 +11,7 @@ export const getSuccessStyles = (backgroundColor: string) => ({
   },
   toast: {
     backgroundColor,
-    color: "#f5f5f5",
+    color: "black",
     width: "max-content",
     display: "flex",
     alignItems: "center",
