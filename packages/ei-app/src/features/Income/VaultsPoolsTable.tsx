@@ -15,7 +15,6 @@ export interface IPrefilterTokensTable {
 
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSource, onExport, totalApy }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
-  console.log(totalApy, "TA!!!!!!!!!");
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
   // Function to calculate safety score based on risks
@@ -78,10 +77,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           alignment="left"
           dataType="string"
           allowHiding={false}
-          cellRender={cellData => {
-            const boost = cellData.value; // Get the boost value
-            return <span>{boost ? boost.value : "No Boost"}</span>; // Adjust based on your boost structure
-          }}
         />
         <Column
           dataField="platformId" // Change this to the correct field based on the API response
@@ -101,14 +96,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
             return data.apy || totalApy || 0;
           }}
           customizeText={toPercentageField}
-        />
-        <Column
-          caption="Daily"
-          alignment="left"
-          dataType="number"
-          calculateCellValue={data => data.apy / 365}
-          customizeText={toPercentageField}
-          allowHiding={false}
         />
         <Column
           dataField="tvl"

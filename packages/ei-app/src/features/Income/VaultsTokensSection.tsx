@@ -51,7 +51,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       try {
         const response = await fetch("https://api.beefy.finance/vaults");
         const data = await response.json();
-        console.log(data); // Check API response structure
+        console.log(data, "vaults"); // Check API response structure
         setPoolsData(data);
       } catch (error) {
         console.error("Error fetching Beefy API data:", error);
@@ -61,21 +61,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     };
 
     fetchBeefyData();
-  }, []);
-
-  // Fetch boosts data
-  useEffect(() => {
-    const fetchBoostData = async () => {
-      try {
-        const response = await fetch("https://api.beefy.finance/boosts");
-        const data = await response.json();
-        setBoostsData(data);
-      } catch (error) {
-        console.error("Error fetching Boosts API data:", error);
-      }
-    };
-
-    fetchBoostData();
   }, []);
 
   // Fetch chain logos
@@ -105,7 +90,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     const fetchApyData = async () => {
       const response = await fetch("https://api.beefy.finance/apy/breakdown");
       const data = await response.json();
-      console.log(data, "!!!!!!!!!!!");
+      console.log(data, "apy");
       setTotalApy(data.totalApy); // Assuming 'totalApy' is a direct key
     };
 
@@ -114,9 +99,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
   // Combine pools and boosts data
   const combinedPoolsData = useMemo(() => {
-    console.log(poolsData, "poolsData!!@#$");
-    console.log(boostsData, "boostsData!!@#$");
-
     return poolsData.map(pool => {
       const boost = boostsData.find(boost => boost.poolId === pool.id);
       return {
