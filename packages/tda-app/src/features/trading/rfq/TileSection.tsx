@@ -153,7 +153,8 @@ export const TileSection: FC<TileSectionProps> = ({
       style: { progress: { backgroundColor: theme.palette.grey[700] } },
     });
 
-    showNotification(event.instruction, symbol1Parsed, symbol2Parsed, formattedAmount, rfqModel.BidPx.toString(), v4());
+    // * BROWSER NOTIFICATIONS. SAVED AND WILL BE USED LATER *
+    // showNotification(event.instruction, symbol1Parsed, symbol2Parsed, formattedAmount, rfqModel.BidPx.toString(), v4());
   };
 
   const handleUpdateHistoryStatus = () => {
@@ -194,25 +195,26 @@ export const TileSection: FC<TileSectionProps> = ({
     );
   };
 
-  const showNotification = (
-    side: "Buy" | "Sell",
-    symbol1: string,
-    symbol2: string,
-    qty: string,
-    priceString: string,
-    id: string,
-  ) => {
-    if (!("Notification" in window) || Notification.permission !== "granted") {
-      return;
-    }
-
-    const options: NotificationOptions = {
-      body: `${side} ${symbol1} ${qty} vs ${symbol2} @ ${priceString}`,
-      icon: logoUrl,
-      dir: "ltr",
-    };
-    new Notification(`Trade Accepted: ID ${id}`, options);
-  };
+  //  * BROWSER NOTIFICATIONS. SAVED AND WILL BE USED LATER *
+  // const showNotification = (
+  //   side: "Buy" | "Sell",
+  //   symbol1: string,
+  //   symbol2: string,
+  //   qty: string,
+  //   priceString: string,
+  //   id: string,
+  // ) => {
+  //   if (!("Notification" in window) || Notification.permission !== "granted") {
+  //     return;
+  //   }
+  //
+  //   const options: NotificationOptions = {
+  //     body: `${side} ${symbol1} ${qty} vs ${symbol2} @ ${priceString}`,
+  //     icon: logoUrl,
+  //     dir: "ltr",
+  //   };
+  //   new Notification(`Trade Accepted: ID ${id}`, options);
+  // };
 
   const addQuote = async (tradeSide: "Buy" | "Sell") => {
     if (!rfqModel || !symbol1 || !symbol2) return;
