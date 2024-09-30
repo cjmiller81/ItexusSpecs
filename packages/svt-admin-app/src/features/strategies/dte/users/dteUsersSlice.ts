@@ -30,7 +30,7 @@ export const dteUsersSlice = createAppSlice({
       updateDteUser: create.asyncThunk(
         async (dteUser: IDteUser, thunkApi) => {
           await dteUsersService.update(dteUser)
-          thunkApi.dispatch(fetchDteUsers())
+          thunkApi.dispatch(fetchDteUsers(null))
         },
         {
           pending: state => {
