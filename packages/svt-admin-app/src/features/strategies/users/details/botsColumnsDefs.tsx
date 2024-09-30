@@ -11,20 +11,11 @@ export function getBotColumnsDefs(
   const columns: GridColDef<Bot>[] = [
     {
       field: "active",
-      headerAlign: "left",
-      disableColumnMenu: true,
-      sortable: false,
       headerName: i18next.t("Active", { ns: "ColumnsDefs" }),
-      minWidth: 50,
+      minWidth: 100,
       editable: true,
-      renderCell: params => {
-        return (
-          <Checkbox
-            checked={params.row.active}
-            sx={{ marginLeft: "auto", marginRight: "auto" }}></Checkbox>
-        );
-      },
       flex: 1,
+      type: "boolean",
     },
     {
       field: "startBot",
@@ -88,7 +79,7 @@ export function getBotColumnsDefs(
               color: theme => theme.palette.error.main,
               backgroundColor: theme => theme.palette.error.light,
             }}>
-            {i18next.t("StartBot", { ns: "ColumnsDefs" })}
+            {i18next.t("StopBot", { ns: "ColumnsDefs" })}
           </StyledCellButton>
         );
       },
