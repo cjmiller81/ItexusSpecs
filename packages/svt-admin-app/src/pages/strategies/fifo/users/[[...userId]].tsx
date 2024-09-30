@@ -24,6 +24,7 @@ import {
   GridRowId,
   GridRowModes,
   GridRowModesModel,
+  GridRowParams,
 } from "@mui/x-data-grid"
 
 export default function Reports() {
