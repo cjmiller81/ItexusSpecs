@@ -14,8 +14,7 @@ import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuild
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { defiFilterBuilderFields } from "./tableConstants";
-import axios from "axios";
-import { chains } from "@/features/Income/CryptocurrencyList";
+import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -31,16 +30,23 @@ interface ApyData {
 
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const [poolsData, setPoolsData] = useState<PoolData[]>([]);
-  const [isPoolsLoading, setIsPoolsLoading] = useState(true);
   const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
   const [currentFilter, setCurrentFilter] = useState<object | null>(null);
-  const [logos, setLogos] = useState<{ [key: string]: string }>({});
   const [totalApy, setTotalApy] = useState<ApyData | null>(null);
   const [tvlData, setTvlData] = useState<{ [key: string]: number }>({});
 
+  const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );
+
+  useEffect(() => {
+    if (!isVaultsLoading) {
+      setPoolsData(vaultsData.vaults);
+      setTotalApy(vaultsData.apy);
+      setTvlData(vaultsData.tvl);
+    }
+  }, [vaultsData, isVaultsLoading]);
 
   const dispatch = useAppDispatch();
   const { t } = useTranslation("Yields");
@@ -50,74 +56,8 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  useEffect(() => {
-    const fetchBeefyData = async () => {
-      setIsPoolsLoading(true);
-      try {
-        const response = await fetch("https://api.beefy.finance/vaults");
-        const data = await response.json();
-        setPoolsData(data);
-      } catch (error) {
-        console.error("Error fetching Beefy API data:", error);
-      } finally {
-        setIsPoolsLoading(false);
-      }
-    };
-
-    fetchBeefyData();
-  }, []);
-
-  useEffect(() => {
-    const fetchChainLogos = async () => {
-      const logoData: { [key: string]: string } = {};
-      try {
-        const logoPromises = Object.entries(chains).map(async ([chain, symbol]) => {
-          const response = await axios.get(`https://api.coingecko.com/api/v3/coins/ethereum/contract/${symbol}`);
-          const coinData = response.data;
-          if (coinData?.image?.thumb) {
-            logoData[chain] = coinData.image.thumb;
-          }
-        });
-        await Promise.all(logoPromises);
-        setLogos(logoData);
-      } catch (error) {
-        console.error("Error fetching chain logos:", error);
-      }
-    };
-
-    fetchChainLogos();
-  }, []);
-
-  useEffect(() => {
-    const fetchApyData = async () => {
-      try {
-        const response = await fetch("https://api.beefy.finance/apy/breakdown");
-        const apyData: ApyData = await response.json();
-        console.log(apyData, "totalApy");
-        setTotalApy(apyData);
-      } catch (error) {
-        console.error("Error fetching APY data:", error);
-      }
-    };
-
-    fetchApyData();
-  }, []);
-
-  useEffect(() => {
-    const fetchTvlData = async () => {
-      try {
-        const response = await fetch("https://api.beefy.finance/tvl");
-        const tvlData = await response.json();
-        setTvlData(tvlData);
-      } catch (error) {
-        console.error("Error fetching TVL data:", error);
-      }
-    };
-
-    fetchTvlData();
-  }, []);
-
   const combinedPoolsData = useMemo(() => {
+    if (!poolsData || !totalApy || !tvlData) return [];
     return poolsData.map((pool, index) => {
       let tvl = null;
       for (const key of Object.keys(tvlData)) {
@@ -216,19 +156,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           <PageTitle sx={{ width: "100%" }}>{t("Yields")}</PageTitle>
         </Box>
       </StyledAccordionSummary>
-
-      <div>
-        {Object.entries(logos).map(([chain, logoUrl]) => (
-          <div key={chain}>
-            <h4>{chain}</h4>
-            <img
-              src={logoUrl}
-              alt={`${chain} logo`}
-            />
-          </div>
-        ))}
-      </div>
-
       <AccordionDetails
         sx={{
           bgcolor: "background.paper",
@@ -257,7 +184,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
         <MemoizedDefiPoolsTable
           onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
-          loading={isPoolsLoading}
+          loading={isVaultsLoading}
           onUpdate={() => {}}
           onExport={onExporting}
           currentFilter={currentFilter}
