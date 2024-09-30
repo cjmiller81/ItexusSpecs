@@ -47,7 +47,7 @@ export const dteUsersSlice = createAppSlice({
       deleteDteUser: create.asyncThunk(
         async ({ id }: { id: string }, thunkApi) => {
           await dteUsersService.delete(id)
-          thunkApi.dispatch(fetchDteUsers())
+          thunkApi.dispatch(fetchDteUsers(null))
         },
         {
           pending: state => {
