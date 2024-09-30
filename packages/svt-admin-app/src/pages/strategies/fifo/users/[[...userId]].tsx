@@ -104,7 +104,7 @@ export default function Reports() {
   }
 
   const handleRowClick: GridEventListener<'rowClick'> = (params: GridRowParams) => {
-    if (ivlUsers.indexOf(params.row) === 0) {
+    if (fifoUsers.indexOf(params.row) === 0) {
       handleViewClick(params.id);
       handleSetSelection(params.id);
     }
