@@ -15,7 +15,6 @@ import { marketCapEqualWeightModelingSlice } from "./Slices/MarketCapEqualWeight
 import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlice";
 import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice";
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice";
-import { vaultsApi } from "@/features/Income/VaultsApi";
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -31,7 +30,6 @@ export const rootReducer = combineReducers({
   [dashboardSlice.name]: dashboardSlice.reducer,
   [calendarEventsApi.reducerPath]: calendarEventsApi.reducer,
   [defisApi.reducerPath]: defisApi.reducer,
-  [vaultsApi.reducerPath]: vaultsApi.reducer, // Add vaultsApi reducer here
 });
 
 const config = getPersistConfig<RootState>({
