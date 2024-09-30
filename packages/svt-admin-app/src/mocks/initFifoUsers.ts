@@ -38,7 +38,7 @@ export const initBots: Bot[] = [
     hasEntryOrderStatus: true,
     exchange: "NYSE",
     exchangeAccountNumber: "ACC0987654321",
-    masterSymbol: "AAPL",
+    masterSymbol: "/ES",
     masterSymbolAssetType: "Equity",
     stopOrderId: "SO123456789",
     hasStopOrderId: true,
@@ -53,7 +53,7 @@ export const initBots: Bot[] = [
       units: 10,
       nanos: 500000000
     },
-    tradeSymbol: "AAPL",
+    tradeSymbol: "/ES",
     tradeSymbolAssetType: "Equity",
     userId: "U12365"
   },
@@ -67,7 +67,7 @@ export const initBots: Bot[] = [
     hasEntryOrderStatus: true,
     exchange: "NYSE",
     exchangeAccountNumber: "AFGGH0987654321",
-    masterSymbol: "AAPL",
+    masterSymbol: "/ES",
     masterSymbolAssetType: "Equity",
     stopOrderId: "SO123456789",
     hasStopOrderId: true,
@@ -82,7 +82,7 @@ export const initBots: Bot[] = [
       units: 10,
       nanos: 500000000
     },
-    tradeSymbol: "AAPL",
+    tradeSymbol: "SPY",
     tradeSymbolAssetType: "Equity",
     userId: "U79537"
   }
