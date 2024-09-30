@@ -1,9 +1,9 @@
 import React from "react";
 
-const CryptoAddresses: React.FC = () => {
+const ManageBankAccounts: React.FC = () => {
   return (
     <div>
-      <h1 style={styles.title}>Crypto Addresses page</h1>
+      <h1 style={styles.title}>Manage Bank Accounts Page</h1>
     </div>
   );
 };
@@ -16,4 +16,4 @@ const styles = {
   },
 };
 
-export default CryptoAddresses;
+export default ManageBankAccounts;
