@@ -2,7 +2,6 @@ import { calendarEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarA
 import { defisApi } from "@/features/Income/DefiApi";
 import { categoriesApi } from "@/features/Investing/categoriesApi";
 import { chainsApi } from "@/features/Investing/chainsApi";
-// import { vaultsApi } from "@/libs/yourApiPath"; // Adjust this import based on your actual file structure
 import { combineReducers } from "@reduxjs/toolkit";
 import { uiSlice, walletsSlice } from "components";
 import { getPersistConfig } from "redux-deep-persist";
