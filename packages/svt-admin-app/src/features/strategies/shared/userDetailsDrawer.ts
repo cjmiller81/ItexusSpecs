@@ -2,15 +2,15 @@ import { CSSObject, Drawer, Theme } from "@mui/material"
 import { styled } from "@mui/material/styles"
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: "600px",
+  width: "45vw",
   [theme.breakpoints.down("md")]: {
-    width: "500px",
+    width: "45vw",
   },
   [theme.breakpoints.down("sm")]: {
-    width: "300px",
+    width: "45vw",
   },
   [theme.breakpoints.down("xs")]: {
-    width: "100px",
+    width: "45vw",
   },
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
