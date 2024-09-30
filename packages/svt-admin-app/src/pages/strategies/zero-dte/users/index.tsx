@@ -24,7 +24,7 @@ export default function Reports() {
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
 
   useEffect(() => {
-    dispatch(fetchDteUsers())
+    dispatch(fetchDteUsers({}))
   }, [dispatch])
 
   useEffect(() => {
