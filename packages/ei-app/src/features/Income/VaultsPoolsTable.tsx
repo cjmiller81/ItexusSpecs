@@ -1,32 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import DataGridDef, { Column, Export, FilterRow, LoadPanel, Pager, Paging } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import { ExportingEvent } from "devextreme/ui/data_grid";
 import React, { FC, useMemo } from "react";
 import { PoolData } from "./Models/PoolData";
 import { toDollarAmountField, toPercentageField } from "./helpers";
 
+interface PoolApy {
+  totalApy: number;
+}
+
+interface ApyData {
+  [pool: string]: PoolApy;
+}
+
 export interface IPrefilterTokensTable {
+  onFilterBuilderOpen: () => void;
   loading: boolean;
+  onUpdate: () => void;
+  onExport: (e: any) => Promise<void>;
+  currentFilter: object | null;
+  onCurrentFilterChange: (filter: any) => void;
   dataSource: DataSource<PoolData, string>;
-  onExport: (e: ExportingEvent<PoolData, any>) => void;
-  totalApy: number | null; // Add totalApy to props
+  totalApy: ApyData | null;
 }
 
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSource, onExport, totalApy }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
-  // Function to calculate safety score based on risks
   const calculateSafetyScore = (risks: string[]) => {
     if (!risks || risks.length === 0) return 0;
 
-    let score = 3; // Default to maximum score
+    let score = 3;
 
     if (risks.includes("IL_HIGH")) score -= 1;
     if (risks.includes("MCAP_MICRO")) score -= 1;
 
-    return Math.max(score, 0); // Score ranges between 0 and 3
+    return Math.max(score, 0);
   };
 
   return (
@@ -72,15 +82,15 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           headerFilter={{ visible: true }}
         />
         <Column
-          dataField="boost" // This should be the name of the field containing boost info
+          dataField="boost"
           caption="Boosts"
           alignment="left"
           dataType="string"
           allowHiding={false}
         />
         <Column
-          dataField="platformId" // Change this to the correct field based on the API response
-          caption="Platform" // Updated column header
+          dataField="platformId"
+          caption="Platform"
           alignment="left"
           dataType="string"
           allowHiding={false}
@@ -92,8 +102,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           dataType="number"
           allowHiding={false}
           calculateCellValue={data => {
-            // If 'totalApy' is available, use it; otherwise, fall back to individual pool's APY
-            return data.apy || totalApy || 0;
+            const apyValue = data.totalApy !== undefined ? data.totalApy : data.apy || 0;
+            const apyStr = apyValue.toString();
+            return apyStr.length > 8 ? apyStr.slice(0, 8) : apyStr;
           }}
           customizeText={toPercentageField}
         />
@@ -105,7 +116,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, dataSourc
           allowHiding={false}
           customizeText={toDollarAmountField}
         />
-        {/* Safety Column with Vertical Bars */}
         <Column
           caption="Safety"
           alignment="left"

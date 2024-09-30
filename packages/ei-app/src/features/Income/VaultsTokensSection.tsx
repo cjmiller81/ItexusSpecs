@@ -21,15 +21,22 @@ type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
 };
 
+interface PoolApy {
+  totalApy: number;
+}
+
+interface ApyData {
+  [pool: string]: PoolApy;
+}
+
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const [poolsData, setPoolsData] = useState<PoolData[]>([]);
-  const [boostsData, setBoostsData] = useState<any[]>([]);
   const [isPoolsLoading, setIsPoolsLoading] = useState(true);
-  const [selectedChain, setSelectedChain] = useState<string>("");
   const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
   const [currentFilter, setCurrentFilter] = useState<object | null>(null);
   const [logos, setLogos] = useState<{ [key: string]: string }>({});
-  const [totalApy, setTotalApy] = useState<number | null>(null);
+  const [totalApy, setTotalApy] = useState<ApyData | null>(null);
+  const [tvlData, setTvlData] = useState<{ [key: string]: number }>({});
 
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
@@ -39,19 +46,16 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const { t } = useTranslation("Yields");
   const { sidebarOpened } = useAppSelector(store => store.ui);
 
-  // Fetch filters on mount
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  // Fetch vaults data from Beefy API
   useEffect(() => {
     const fetchBeefyData = async () => {
       setIsPoolsLoading(true);
       try {
         const response = await fetch("https://api.beefy.finance/vaults");
         const data = await response.json();
-        console.log(data, "vaults"); // Check API response structure
         setPoolsData(data);
       } catch (error) {
         console.error("Error fetching Beefy API data:", error);
@@ -63,7 +67,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     fetchBeefyData();
   }, []);
 
-  // Fetch chain logos
   useEffect(() => {
     const fetchChainLogos = async () => {
       const logoData: { [key: string]: string } = {};
@@ -72,11 +75,11 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           const response = await axios.get(`https://api.coingecko.com/api/v3/coins/ethereum/contract/${symbol}`);
           const coinData = response.data;
           if (coinData?.image?.thumb) {
-            logoData[chain] = coinData.image.thumb; // Store the logo URL
+            logoData[chain] = coinData.image.thumb;
           }
         });
-        await Promise.all(logoPromises); // Wait for all logo fetches
-        setLogos(logoData); // Set logos after fetching
+        await Promise.all(logoPromises);
+        setLogos(logoData);
       } catch (error) {
         console.error("Error fetching chain logos:", error);
       }
@@ -85,53 +88,103 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     fetchChainLogos();
   }, []);
 
-  // Fetch total APY data
   useEffect(() => {
     const fetchApyData = async () => {
-      const response = await fetch("https://api.beefy.finance/apy/breakdown");
-      const data = await response.json();
-      console.log(data, "apy");
-      setTotalApy(data.totalApy); // Assuming 'totalApy' is a direct key
+      try {
+        const response = await fetch("https://api.beefy.finance/apy/breakdown");
+        const apyData: ApyData = await response.json();
+        console.log(apyData, "totalApy");
+        setTotalApy(apyData);
+      } catch (error) {
+        console.error("Error fetching APY data:", error);
+      }
     };
 
     fetchApyData();
-  }, []); // Runs only once after the component is mounted
+  }, []);
 
-  // Combine pools and boosts data
+  useEffect(() => {
+    const fetchTvlData = async () => {
+      try {
+        const response = await fetch("https://api.beefy.finance/tvl");
+        const tvlData = await response.json();
+        setTvlData(tvlData);
+      } catch (error) {
+        console.error("Error fetching TVL data:", error);
+      }
+    };
+
+    fetchTvlData();
+  }, []);
+
   const combinedPoolsData = useMemo(() => {
-    return poolsData.map(pool => {
-      const boost = boostsData.find(boost => boost.poolId === pool.id);
+    return poolsData.map((pool, index) => {
+      let tvl = null;
+      for (const key of Object.keys(tvlData)) {
+        if (tvlData[key][pool.pool] !== undefined) {
+          tvl = tvlData[key][pool.pool];
+          break;
+        }
+      }
+
+      if (tvl === null) {
+        const keys = Object.keys(tvlData);
+        if (keys.length > index) {
+          const fallbackKey = keys[index];
+          const fallbackData = tvlData[fallbackKey];
+          if (fallbackData) {
+            tvl = Object.values(fallbackData)[0];
+          }
+        }
+      }
+
+      let apy: string | null = null;
+
+      if (totalApy && typeof totalApy === "object") {
+        for (const key of Object.keys(totalApy)) {
+          const poolApy = totalApy[key][pool.pool];
+          if (poolApy !== undefined) {
+            const apyValue = poolApy.totalApy?.toString();
+            apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
+            break;
+          }
+        }
+
+        if (apy === null) {
+          const apyKeys = Object.keys(totalApy);
+          if (apyKeys.length > index) {
+            const fallbackApyKey = apyKeys[index];
+            const fallbackApyData = totalApy[fallbackApyKey];
+            if (fallbackApyData) {
+              const fallbackApyValue = fallbackApyData.totalApy?.toString();
+              apy = fallbackApyValue?.length > 8 ? fallbackApyValue.slice(0, 8) : fallbackApyValue;
+            }
+          }
+        }
+      }
+
       return {
         ...pool,
-        boostName: boost ? boost.name : "", // Show the name if boost exists, otherwise an empty string
-        totalApy: totalApy, // Add totalApy to the pool data
+        tvl,
+        apy,
       };
     });
-  }, [poolsData, boostsData, totalApy]);
+  }, [poolsData, totalApy, tvlData]);
 
-  // Filter liquidity pool filters
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
 
-  // Filter data based on selected chain
-  const filteredData = useMemo(() => {
-    if (selectedChain === "") return combinedPoolsData;
-    return combinedPoolsData.filter(pool => pool.chain === selectedChain);
-  }, [combinedPoolsData, selectedChain]);
-
-  // Data source for Defi Pools Table (filtered data)
   const filteredTokensSource = useMemo(
     () =>
       new DataSource<PoolData, string>({
         store: {
           type: "array",
           key: "id",
-          data: filteredData,
+          data: combinedPoolsData,
         },
       }),
-    [filteredData, totalApy],
+    [combinedPoolsData],
   );
 
-  // Exporting data to Excel
   const onExporting = useCallback(async (e: any): Promise<void> => {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet("Main sheet");
@@ -197,7 +250,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
               setCurrentFilter(filter);
               setFilterBuilderOpen(false);
             }}
-            filterToApply={currentFilter}
+            filterToAppply={currentFilter}
             onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
           />
         </SimpleBar>
@@ -209,14 +262,14 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           onExport={onExporting}
           currentFilter={currentFilter}
           onCurrentFilterChange={filter => setCurrentFilter(filter)}
-          dataSource={filteredTokensSource} // Use filtered data source
+          dataSource={filteredTokensSource}
+          totalApy={totalApy}
         />
       </AccordionDetails>
     </StatePersistedAccordion>
   );
 }
 
-// Memoized version of VaultsPoolsTable to avoid unnecessary re-renders
 const MemoizedDefiPoolsTable = React.memo(VaultsPoolsTable, (prevProps, nextProps) => {
   return prevProps.dataSource === nextProps.dataSource && prevProps.currentFilter === nextProps.currentFilter;
 });
