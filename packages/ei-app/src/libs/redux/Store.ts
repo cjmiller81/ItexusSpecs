@@ -2,6 +2,7 @@ import { calendarEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarA
 import { defisApi } from "@/features/Income/DefiApi";
 import { categoriesApi } from "@/features/Investing/categoriesApi";
 import { chainsApi } from "@/features/Investing/chainsApi";
+import { vaultsApi } from "@/features/Income/VaultsApi";
 import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
@@ -13,7 +14,13 @@ const makeStore = () => {
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         serializableCheck: false,
-      }).concat(calendarEventsApi.middleware, defisApi.middleware, chainsApi.middleware, categoriesApi.middleware),
+      }).concat(
+        vaultsApi.middleware,
+        calendarEventsApi.middleware,
+        defisApi.middleware,
+        chainsApi.middleware,
+        categoriesApi.middleware,
+      ),
   });
 };
 
