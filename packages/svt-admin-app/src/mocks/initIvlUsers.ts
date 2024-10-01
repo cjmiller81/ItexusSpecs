@@ -1,5 +1,6 @@
 import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
+import { Bot } from "@/features/strategies/ivl/users/details/bot"
 import { CapitalAllocation } from "@/features/strategies/ivl/users/details/capitalAllocation"
 import { Order } from "@/features/strategies/ivl/users/details/order"
 
@@ -53,6 +54,37 @@ export const initOrders: Order[] = [
     transactionTime: new Date("2024-04-24 22:04:41.232"),
   },
 ]
+
+export const initBots: Bot[] = [
+  {
+    active: true,
+    atrPeriod: 14,
+    capitalAllocation: 150000,
+    entryOrderId: "EO123456789",
+    hasEntryOrderId: true,
+    entryOrderStatus: "Filled",
+    hasEntryOrderStatus: true,
+    exchange: "NYSE",
+    exchangeAccountNumber: "ACC0987654321",
+    masterSymbolAssetType: "Equity",
+    stopOrderId: "SO123456789",
+    hasStopOrderId: true,
+    stopOrderStatus: "Working",
+    hasStopOrderStatus: true,
+    targetOrderId: "TO123456789",
+    hasTargetOrderId: true,
+    targetOrderStatus: "Working",
+    hasTargetOrderStatus: true,
+    qty: 1,
+    tradeQty: {
+      units: 10,
+      nanos: 500000000
+    },
+    tradeSymbol: "/ES",
+    tradeSymbolAssetType: "Equity",
+    userId: "WP1234"
+  }
+];
 
 export const initAllocations: CapitalAllocation[] = [
   {

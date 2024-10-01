@@ -1,0 +1,29 @@
+export interface Bot {
+    active: boolean,
+    atrPeriod: number,
+    capitalAllocation: number,
+    entryOrderId: string,
+    hasEntryOrderId: boolean,
+    entryOrderStatus: string,
+    hasEntryOrderStatus: boolean,
+    exchange: string,
+    exchangeAccountNumber: string,
+    masterSymbolAssetType: string,
+    stopOrderId: string,
+    hasStopOrderId: boolean,
+    stopOrderStatus: string,
+    hasStopOrderStatus: boolean,
+    targetOrderId: string,
+    hasTargetOrderId: boolean,
+    targetOrderStatus: string,
+    hasTargetOrderStatus: boolean,
+    qty: number,
+    tradeQty: {
+      units: number,
+      nanos: number
+    },
+    tradeSymbol: string,
+    tradeSymbolAssetType: string,
+    userId: string,
+  }
+  
