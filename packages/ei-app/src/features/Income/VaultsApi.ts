@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 export const vaultsApi = createApi({
   reducerPath: "vaults",
@@ -16,7 +16,11 @@ export const vaultsApi = createApi({
 
           return { data: { vaults: vaultsData, apy: apyData, tvl: tvlData } };
         } catch (error: any) {
-          return { error: { message: error.message } };
+          const baseQueryError: FetchBaseQueryError = {
+            status: "CUSTOM_ERROR",
+            error: error.message || "An error occurred while fetching data",
+          };
+          return { error: baseQueryError };
         }
       },
     }),

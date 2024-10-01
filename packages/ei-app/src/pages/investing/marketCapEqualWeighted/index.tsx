@@ -36,7 +36,7 @@ export default function MarketCapEqualWeightedPage() {
   const [currentSorter, setCurrentSorter] = useState<any>(null);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
-    state => state.MarketCapEqualWeightModeling,
+    state => state.marketCapWeightedModeling,
   );
 
   const { t } = useTranslation("MarketCapPage");
