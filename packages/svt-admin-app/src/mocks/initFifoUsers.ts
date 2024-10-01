@@ -6,14 +6,24 @@ export const initFifoUsers: IFifoUser[] = [
   {
     "id": "WP1234",
     "exchangeUsername": "tasty1234",
-    "connectionStatus": "Connected",
-    "botCount": 2
+    "email": "tasty1234@gmail.com",
+    "accountNumber": "FFE32324",
+    "botStatus": "flat",
+    "lastFill": 342343,
+    "fillTime": new Date(),
+    "openQty": 3,
+    "connectionStatus": "Disconnected",
   },
   {
     "id": "WP5678",
     "exchangeUsername": "tasty5678",
+    "email": "tasty5678@gmail.com",
+    "accountNumber": "RRTT23234",
+    "botStatus": "error",
+    "lastFill": 43434.5454,
+    "fillTime": new Date(),
+    "openQty": 1,
     "connectionStatus": "Connected",
-    "botCount": 1
   }
 ]
 
@@ -28,7 +38,7 @@ export const initBots: Bot[] = [
     hasEntryOrderStatus: true,
     exchange: "NYSE",
     exchangeAccountNumber: "ACC0987654321",
-    masterSymbol: "AAPL",
+    masterSymbol: "/ES",
     masterSymbolAssetType: "Equity",
     stopOrderId: "SO123456789",
     hasStopOrderId: true,
@@ -43,7 +53,7 @@ export const initBots: Bot[] = [
       units: 10,
       nanos: 500000000
     },
-    tradeSymbol: "AAPL",
+    tradeSymbol: "/ES",
     tradeSymbolAssetType: "Equity",
     userId: "U12365"
   },
@@ -57,7 +67,7 @@ export const initBots: Bot[] = [
     hasEntryOrderStatus: true,
     exchange: "NYSE",
     exchangeAccountNumber: "AFGGH0987654321",
-    masterSymbol: "AAPL",
+    masterSymbol: "/ES",
     masterSymbolAssetType: "Equity",
     stopOrderId: "SO123456789",
     hasStopOrderId: true,
@@ -72,7 +82,7 @@ export const initBots: Bot[] = [
       units: 10,
       nanos: 500000000
     },
-    tradeSymbol: "AAPL",
+    tradeSymbol: "SPY",
     tradeSymbolAssetType: "Equity",
     userId: "U79537"
   }
