@@ -9,6 +9,7 @@ import storage from "redux-persist/lib/storage"
 import {
   fifoTradeInstrumentsSlice
 } from "@/features/strategies/tradeInstruments/fifoTradeInstrumentsSlice"
+import { dteUsersSlice } from "@/features/strategies/dte/users/dteUsersSlice"
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -16,6 +17,7 @@ export const rootReducer = combineReducers({
   fifoTradeInstruments: fifoTradeInstrumentsSlice.reducer,
   ivlUsers: ivlUsersSlice.reducer,
   fifoUsers: fifoUsersSlice.reducer,
+  dteUsers: dteUsersSlice.reducer
 })
 
 const config = getPersistConfig<RootState>({
