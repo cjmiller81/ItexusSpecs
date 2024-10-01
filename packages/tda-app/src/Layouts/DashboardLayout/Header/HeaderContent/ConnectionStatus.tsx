@@ -3,7 +3,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 
 interface ConnectionStatusProps {
-  isConnected: boolean;
+  isConnected: boolean | null;
 }
 
 const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
@@ -66,9 +66,9 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
             <Box
               sx={{
                 position: "absolute",
-                top: "1.3px",
+                top: "1.7px",
                 left: "50%",
-                transform: "translateX(-50%)",
+                transform: "translateX(-55%)",
                 color: "#e96e6b",
                 fontSize: "9px",
                 fontWeight: "bold",
