@@ -22,6 +22,55 @@ export function getColumns(
 ) {
   const columns: GridColDef<IvlUser>[] = [
     {
+      field: "actions",
+      type: "actions",
+      headerName: "Details",
+      width: 60,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
+
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              key="0"
+              icon={<SaveIcon />}
+              label={i18next.t("Save", { ns: "Common" })}
+              sx={{
+                color: "primary.main",
+              }}
+              onClick={() => handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              key="3"
+              icon={<CancelIcon />}
+              label={i18next.t("Cancel", { ns: "Common" })}
+              className="textPrimary"
+              onClick={() => handleCancelClick(id)}
+              color="inherit"
+            />
+          ]
+        }
+        
+        const selectedIconColor = lighten(theme.palette.text.primary, 0.4)
+        return [
+          <GridActionsCellItem
+            key="3"
+            icon={<VisibilityIcon sx={{fill: currentUserId !== id ? selectedIconColor : theme.palette.text.primary}} />}
+            label={i18next.t("View", { ns: "Common" })}
+            className="textPrimary"
+            onClick={() => 
+              { 
+                handleViewClick(id);
+                handleSetSelection(id);
+              }
+            }
+            color="inherit"
+          />,
+        ]
+      },
+    },
+    {
       field: "id",
       headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
       minWidth: 100,
@@ -118,70 +167,6 @@ export function getColumns(
       editable: true,
       type: "number",
       flex: 1,
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Details",
-      width: 120,
-      cellClassName: "actions",
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              key="0"
-              icon={<SaveIcon />}
-              label={i18next.t("Save", { ns: "Common" })}
-              sx={{
-                color: "primary.main",
-              }}
-              onClick={() => handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              key="3"
-              icon={<CancelIcon />}
-              label={i18next.t("Cancel", { ns: "Common" })}
-              className="textPrimary"
-              onClick={() => handleCancelClick(id)}
-              color="inherit"
-            />
-          ]
-        }
-        
-        const selectedIconColor = lighten(theme.palette.text.primary, 0.4)
-        return [
-          <GridActionsCellItem
-            key="4"
-            icon={<EditIcon />}
-            label={i18next.t("Edit", { ns: "Common" })}
-            className="textPrimary"
-            onClick={() => handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key="5"
-            icon={<DeleteIcon />}
-            label={i18next.t("Delete", { ns: "Common" })}
-            onClick={() => handleDeleteClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key="3"
-            icon={<VisibilityIcon sx={{fill: currentUserId !== id ? selectedIconColor : theme.palette.text.primary}} />}
-            label={i18next.t("View", { ns: "Common" })}
-            className="textPrimary"
-            onClick={() => 
-              { 
-                handleViewClick(id);
-                handleSetSelection(id);
-              }
-            }
-            color="inherit"
-          />,
-        ]
-      },
     },
   ]
 

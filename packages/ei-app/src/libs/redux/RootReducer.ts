@@ -1,7 +1,8 @@
-import { calendarEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
-import { defisApi } from "@/features/Income/DefiApi";
+import { vaultsApi } from "@/features/Income/VaultsApi";
 import { categoriesApi } from "@/features/Investing/categoriesApi";
 import { chainsApi } from "@/features/Investing/chainsApi";
+import { calendarEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
+import { defisApi } from "@/features/Income/DefiApi";
 import { combineReducers } from "@reduxjs/toolkit";
 import { uiSlice, walletsSlice } from "components";
 import { getPersistConfig } from "redux-deep-persist";
@@ -20,10 +21,11 @@ export const rootReducer = combineReducers({
   wallets: walletsSlice.reducer,
   walletWorthChart: walletWorthChartSlice.reducer,
   marketCapEqualWeightChart: marketCapEqualWeightChartSlice.reducer,
-  MarketCapEqualWeightModeling: marketCapEqualWeightModelingSlice.reducer,
+  marketCapEqualWeightModeling: marketCapEqualWeightModelingSlice.reducer,
   marketCapWeightedChart: marketCapWeightedChartSlice.reducer,
-  MarketCapWeightedModeling: marketCapWeightedModelingSlice.reducer,
+  marketCapWeightedModeling: marketCapWeightedModelingSlice.reducer,
   allTokensTable: allTokensTableSlice.reducer,
+  [vaultsApi.reducerPath]: vaultsApi.reducer,
   [categoriesApi.reducerPath]: categoriesApi.reducer,
   [chainsApi.reducerPath]: chainsApi.reducer,
   [dashboardSlice.name]: dashboardSlice.reducer,

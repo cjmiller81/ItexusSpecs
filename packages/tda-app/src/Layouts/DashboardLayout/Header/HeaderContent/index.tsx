@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Box from "@mui/material/Box";
 import { Theme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -13,17 +13,22 @@ import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTim
 import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 import TradingSwitch from "Layouts/DashboardLayout/Header/HeaderContent/TradingSwitch";
-import { RfqState, setTradingEnabled } from "features/trading/rfq/slices/rfqSlice";
+import { setTradingEnabled } from "features/trading/rfq/slices/rfqSlice";
 import { useAppDispatch, useAppSelector } from "libs/redux/Store";
+import { fetchConnectionStatus } from "Layouts/DashboardLayout/Header/HeaderContent/statusConnectionSlice";
 
 export default function HeaderContent() {
   const dispatch = useAppDispatch();
   const { menuOrientation, mode, onChangeMode } = useConfig();
 
-  const isTradingEnabled = useAppSelector((state: { rfq: RfqState }) => state.rfq.isTradingEnabled);
+  useEffect(() => {
+    dispatch(fetchConnectionStatus());
+  }, [dispatch]);
+
+  const isTradingEnabled = useAppSelector(state => state.rfq.isTradingEnabled);
+  const isConnected = useAppSelector(state => state.statusConnection.isConnected);
 
   const downLG = useMediaQuery((theme: Theme) => theme.breakpoints.down("lg"));
-  const isConnected = true;
 
   const localization = useMemo(() => <Localization />, []);
 

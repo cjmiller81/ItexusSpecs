@@ -1,9 +1,9 @@
-import Vaults from "@/features/Income/Vaults";
+import VaultsTokensSection from "@/features/Income/VaultsTokensSection";
 
 export default function VaultsPage() {
   return (
     <>
-      <Vaults persisKey="Vaults" />
+      <VaultsTokensSection persisKey="VaultsTokensSection" />
     </>
   );
 }

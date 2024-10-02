@@ -22,7 +22,6 @@ import {
   GridRowId,
   GridRowModes,
   GridRowModesModel,
-  GridRowParams,
 } from "@mui/x-data-grid"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -41,6 +40,17 @@ export default function Reports() {
   useEffect(() => {
     dispatch(fetchIvlUsers({}))
   }, [dispatch])
+
+  useEffect(() => {
+    if (ivlUsers.length > 0) {
+      const id = ivlUsers[0].id;
+      router.push(`/strategies/ivl/users/${id}`, undefined, {
+        shallow: true,
+      })
+      handleSetSelection(id);
+      handleViewClick(id);
+    }
+  }, [ivlUsers])
 
   useEffect(() => {
     if (ivlUsers && !currentUser) {
@@ -105,13 +115,6 @@ export default function Reports() {
     setRowModesModel(newRowModesModel)
   }
 
-  const handleRowClick: GridEventListener<'rowClick'> = (params: GridRowParams) => {
-    if (ivlUsers.indexOf(params.row) === 0) {
-      handleViewClick(params.id);
-      handleSetSelection(params.id);
-    }
-  };
-
   const columns = getColumns(
     handleSaveClick,
     handleEditClick,
@@ -142,7 +145,7 @@ export default function Reports() {
         fontWeight: 600
       },
       '& .selected-row': {
-        backgroundColor: '#f2f2f2'
+        backgroundColor: theme.palette.mode === 'dark' ? '#6f7171' : '#d4d4d4'
       }
       }}>
       <DataGrid<IvlUser>
@@ -159,7 +162,6 @@ export default function Reports() {
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
-        onRowClick={handleRowClick}
         processRowUpdate={processRowUpdate}
         getRowClassName={(params) => params.id === selectedRow ? 'selected-row': ''}
       />
