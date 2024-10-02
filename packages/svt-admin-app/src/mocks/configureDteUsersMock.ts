@@ -1,12 +1,15 @@
 import MockAdapter from "axios-mock-adapter"
 import { IDteUser } from "@/features/strategies/dte/users/iDteUser"
-import { initDteUsers } from "./initDteUsers"
+import { initBots, initDteUsers } from "./initDteUsers"
+import { Bot } from "@/features/strategies/dte/users/details/bot"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
-  dteUsers: IDteUser[]
+  dteUsers: IDteUser[],
+  bots: Bot[]
 } = {
-  dteUsers: initDteUsers
+  dteUsers: initDteUsers,
+  bots: initBots
 }
 
 export function configureDteUsersMock(mock: MockAdapter) {
@@ -25,6 +28,11 @@ export function configureDteUsersMock(mock: MockAdapter) {
     const existedSignalIndex = mockState.dteUsers.findIndex(user => id === user.id)
     if (existedSignalIndex !== -1) mockState.dteUsers.splice(existedSignalIndex, 1, fifoUser)
     return [200]
+  })
+
+  const getBotRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/bots`)
+  mock.onGet(getBotRegExp).reply(() => {
+    return [200, mockState.bots]
   })
 
   mock.onDelete(putUserRegExp).reply(config => {

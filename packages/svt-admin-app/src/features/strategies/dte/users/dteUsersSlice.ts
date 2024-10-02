@@ -2,8 +2,10 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice, Status } from "components";
 import { IDteUser } from "./iDteUser";
 import { dteUsersService } from "./dteUsersService";
+import { Bot } from "./details/bot";
 
 type UserDetails = {
+  bots: Bot[]
 }
 
 export interface IDteUsersSliceState {
@@ -80,7 +82,10 @@ export const dteUsersSlice = createAppSlice({
       ),
       fetchUserDetails: create.asyncThunk(
         async ({ userId }: { userId: string }): Promise<UserDetails> => {
-          return {}
+          const [bots] = await Promise.all([
+            dteUsersService.getUserBots(userId)
+          ])
+          return {bots} 
         },
         {
           pending: state => {
@@ -98,4 +103,4 @@ export const dteUsersSlice = createAppSlice({
     }),
 });
   
-export const { deleteDteUser, fetchDteUsers, updateDteUser } = dteUsersSlice.actions
+export const { deleteDteUser, fetchDteUsers, updateDteUser, fetchUserDetails } = dteUsersSlice.actions

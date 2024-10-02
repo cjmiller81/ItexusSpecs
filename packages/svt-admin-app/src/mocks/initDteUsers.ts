@@ -1,3 +1,4 @@
+import { Bot } from "@/features/strategies/dte/users/details/bot";
 import { IDteUser } from "@/features/strategies/dte/users/iDteUser";
 
 export const initDteUsers: IDteUser[] = [
@@ -23,5 +24,35 @@ export const initDteUsers: IDteUser[] = [
       "openQty": 0,
       "connectionStatus": "Connected",
     }
-  ]
+]
+
+export const initBots: Bot[] = [
+{
+    active: true,
+    atrPeriod: 14,
+    capitalAllocation: 150000,
+    entryOrderId: "EO123456789",
+    hasEntryOrderId: true,
+    entryOrderStatus: "Filled",
+    hasEntryOrderStatus: true,
+    exchange: "NYSE",
+    exchangeAccountNumber: "ACC0987654321",
+    masterSymbolAssetType: "Equity",
+    stopOrderId: "SO123456789",
+    hasStopOrderId: true,
+    hasStopOrderStatus: true,
+    targetOrderId: "TO123456789",
+    hasTargetOrderId: true,
+    targetOrderStatus: "Working",
+    hasTargetOrderStatus: true,
+    qty: 1,
+    tradeQty: {
+      units: 10,
+      nanos: 500000000
+    },
+    tradeSymbol: "SPX",
+    tradeSymbolAssetType: "Equity",
+    userId: "WP1234"
+  }
+];
   

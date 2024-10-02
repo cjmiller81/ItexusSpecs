@@ -5,16 +5,17 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
 import { useEffect, useState } from "react"
 import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowParams } from "@mui/x-data-grid"
-import { deleteDteUser, fetchDteUsers, updateDteUser } from "@/features/strategies/dte/users/dteUsersSlice"
+import { deleteDteUser, fetchDteUsers, fetchUserDetails, updateDteUser } from "@/features/strategies/dte/users/dteUsersSlice"
 import { tableSx } from "@/features/strategies/shared/tableSx"
 import { Box, IconButton } from "@mui/material"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import { getColumns } from "@/features/strategies/dte/users/dteUsersColumnsDefs"
+import UserDetailsSection from "@/features/strategies/dte/users/details/userDetailsSections"
 
 export default function Reports() { 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
-  const { dteUsers } = useAppSelector(state => state.dteUsers)
+  const { dteUsers, userDetails } = useAppSelector(state => state.dteUsers)
   const dispatch = useAppDispatch()
   const theme = useTheme()
   const router = useRouter()
@@ -30,6 +31,9 @@ export default function Reports() {
   useEffect(() => {
     if (dteUsers.length > 0) {
       const id = dteUsers[0].id;
+      router.push(`/strategies/zero-dte/users/${id}`, undefined, {
+        shallow: true,
+      })
       handleSetSelection(id);
       handleViewClick(id);
     }
@@ -39,6 +43,7 @@ export default function Reports() {
     if (dteUsers && !currentUser) {
       const currentUser = dteUsers.find(user => user.id === userId)
       setCurrentUser(currentUser)
+      setRightBarOpen(Boolean(currentUser))
     }
   }, [dteUsers, dispatch, userId])
 
@@ -49,6 +54,11 @@ export default function Reports() {
       })
       return
     }
+
+    dispatch(fetchUserDetails({ userId: currentUser.id }))
+    router.push(`/strategies/zero-dte/users/${currentUser.id}`, undefined, {
+      shallow: true,
+    })
   }, [currentUser])
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
@@ -142,7 +152,7 @@ export default function Reports() {
       getRowClassName={(params) => params.id === selectedRow ? 'selected-row': ''}
     />
 
-    {(currentUser || rightBarOpen) && (
+    {currentUser && (
       <StyledDrawer
         anchor="right"
         variant="permanent"
@@ -159,6 +169,15 @@ export default function Reports() {
             {rightBarOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
+        {userDetails && currentUser && (
+          <UserDetailsSection
+            theme={theme}
+            opened={rightBarOpen}
+            sx={{ padding: 2, paddingLeft: () => (rightBarOpen ? "auto" : "50px") }}
+            {...userDetails}
+            user={currentUser}
+          />
+        )}
       </StyledDrawer>
     )}
   </StyledRoot>
