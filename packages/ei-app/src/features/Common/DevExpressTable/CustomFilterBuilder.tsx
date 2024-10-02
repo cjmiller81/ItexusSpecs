@@ -33,7 +33,7 @@ interface ICustomFilterBuilderProps {
   onCreateFilter: (filter: CreateFilterModel) => void;
   onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void;
   onDeleteFilter: (filterId: string) => void;
-  filterToAppply?: object[] | null;
+  filterToAppply?: object | null;
   onApply: (filterValue: object[]) => void;
   onClose: () => void;
   filterType: FilterType;
@@ -78,7 +78,12 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   };
 
   useEffect(() => {
-    setFilterValue(filterToAppply);
+    if (filterToAppply && !Array.isArray(filterToAppply)) {
+      setFilterValue([filterToAppply]);
+    } else {
+      setFilterValue(filterToAppply);
+    }
+
     const isPredefinedFilter = predefinedFilters.find(filter => isDeepEqual(filter.filter, filterToAppply));
 
     if (isPredefinedFilter) {
@@ -336,6 +341,7 @@ const FilterControlsContainer = styled(Box)(({ theme }) => ({
     flexDirection: "column",
   },
 }));
+
 
 const FilterSelectorContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",

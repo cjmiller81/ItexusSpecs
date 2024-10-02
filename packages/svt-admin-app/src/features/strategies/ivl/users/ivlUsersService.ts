@@ -3,6 +3,7 @@ import { IvlUser } from "./IvlUser"
 import { CapitalAllocation } from "./details/capitalAllocation"
 import { Billing } from "./details/billing"
 import { Order } from "./details/order"
+import { Bot } from "./details/bot"
 
 export const ivlUsersService = {
   update: async (user: IvlUser): Promise<void> => {
@@ -18,6 +19,10 @@ export const ivlUsersService = {
   },
   getUserOrders: async (userId: string): Promise<Order[]> => {
     const response = await appAxios.get<Order[]>(`/api/ivl/users/${userId}/orders`)
+    return response.data
+  },
+  getUserBots: async (userId: string): Promise<Bot[]> => {
+    const response = await appAxios.get<Bot[]>(`/api/ivl/users/${userId}/bots`)
     return response.data
   },
   getUserCapitalAllocations: async (userId: string): Promise<CapitalAllocation[]> => {

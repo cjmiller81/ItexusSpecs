@@ -1,73 +1,61 @@
-import { Button, Checkbox, FormControlLabel, Typography } from "@mui/material"
+import { Typography } from "@mui/material"
 import { Box, BoxProps, Stack, Theme, styled } from "@mui/system"
 import { DataGrid } from "@mui/x-data-grid"
 import { useTranslation } from "react-i18next"
 import { IvlUser } from "../IvlUser"
 import { getOrderColumnsColumns } from "../ordersColumnsDefs"
 import { smallTableSx } from "../../../shared/tableSx"
-import UserMetricCard from "./UserMetricCard"
 import { Billing } from "./billing"
 import { getBillingColumnsDefs } from "./billingColumnsDefs"
 import { CapitalAllocation } from "./capitalAllocation"
 import { getCapitalAllocationColumnsDefs } from "./capitalAllocationColumnsDefs"
 import { Order } from "./order"
+import { Bot } from "./bot"
+import { getBotColumnsDefs } from "./botsColumnsDefs"
 
 type Props = BoxProps & {
   user: IvlUser
   orders: Order[]
+  bots: Bot[]
   allocations: CapitalAllocation[]
   billings: Billing[]
   theme: Theme
   opened?: boolean
 }
-export default function UserDetailsSection({ opened, user, orders, allocations, billings, theme, ...props }: Props) {
+export default function UserDetailsSection({ opened, user, orders, allocations, billings, bots, theme, ...props }: Props) {
   const { t } = useTranslation("UserDetailsSection")
-  const totalAllocation = allocations.reduce((acc, allocation) => acc + allocation.capitalAllocation, 0)
 
-  const botStatusColor = user.botStatus === "Active" ? theme.palette.warning.main : theme.palette.success.main
-  const botStatusVariant = user.botStatus === "Active" ? "error" : "success"
-  const botStatusText = user.botStatus === "Active" ? t("StopAutomation") : t("StartAutomation")
+  console.warn(bots)
+  const handleStopClick = () => {};
+  const handleStartClick = () => {};
+  const handleResetClick = () => {};
 
-  const capitalAllocationCardColor =
-    theme.palette.mode === "dark" ? theme.palette.primary.dark : theme.palette.primary.main
-  const ordersCardColor = theme.palette.mode === "dark" ? theme.palette.warning.dark : theme.palette.warning.light
-  const botStatusCardColor = theme.palette.mode === "dark" ? theme.palette.success.dark : theme.palette.success.main
   return (
     <Box {...props}>
-      <StyledMetricsBox>
-        <UserMetricCard
-          sx={{ backgroundColor: capitalAllocationCardColor }}
-          title={t("CapitalAllocation")}
-          subtitle={totalAllocation.toLocaleString("en-US", {
-            style: "currency",
-            currency: "USD",
-          })}></UserMetricCard>
-        <UserMetricCard
-          sx={{ backgroundColor: ordersCardColor }}
-          title={t("OrdersPlaced")}
-          subtitle={orders.length.toString()}></UserMetricCard>
-        <UserMetricCard
-          sx={{ backgroundColor: botStatusCardColor }}
-          title={t("BotStatus")}
-          subtitle={user.botStatus}></UserMetricCard>
-      </StyledMetricsBox>
-
-      {opened && (
-        <ClosingOnlyBox>
-          <Button
-            variant="outlined"
-            color={botStatusVariant}
-            sx={{ borderColor: botStatusColor, color: botStatusColor, maxWidth: "200px" }}>
-            {botStatusText}
-          </Button>
-
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label={t("ClosingOnly")}
-          />
-        </ClosingOnlyBox>
-      )}
-
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("Bots")}
+      </Typography>  
+      <DataGrid<Bot>
+        slots={{
+          footer: () => <></>,
+        }}
+        sx={{
+          ...smallTableSx,
+          "& .MuiDataGrid-cell[data-field=startBot]": {
+            paddingTop: "0px",
+            paddingBottom: "0px",
+          },
+        }}
+        rows={bots}
+        rowHeight={25}
+        isCellEditable={() => false}
+        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
+        editMode="row"
+        getRowId={row => row.userId}
+      />
       <Typography
         mt={2}
         align="center"

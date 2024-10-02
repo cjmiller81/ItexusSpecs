@@ -28,10 +28,17 @@ export default function Reports() {
   }, [dispatch])
 
   useEffect(() => {
+    if (dteUsers.length > 0) {
+      const id = dteUsers[0].id;
+      handleSetSelection(id);
+      handleViewClick(id);
+    }
+  }, [dteUsers])
+
+  useEffect(() => {
     if (dteUsers && !currentUser) {
       const currentUser = dteUsers.find(user => user.id === userId)
       setCurrentUser(currentUser)
-      setRightBarOpen(Boolean(currentUser))
     }
   }, [dteUsers, dispatch, userId])
 
@@ -84,13 +91,6 @@ export default function Reports() {
     setRowModesModel(newRowModesModel)
   }
 
-  const handleRowClick: GridEventListener<'rowClick'> = (params: GridRowParams) => {
-    if (dteUsers.indexOf(params.row) === 0) {
-      handleViewClick(params.id);
-      handleSetSelection(params.id);
-    }
-  };
-
   const columns = getColumns(
     handleSaveClick,
     handleEditClick,
@@ -121,7 +121,7 @@ export default function Reports() {
       fontWeight: 600
     },
     '& .selected-row': {
-      backgroundColor: '#f2f2f2'
+      backgroundColor: theme.palette.mode === 'dark' ? '#6f7171' : '#d4d4d4'
     }
     }}>
     <DataGrid<IDteUser>
@@ -138,12 +138,11 @@ export default function Reports() {
       rowModesModel={rowModesModel}
       onRowModesModelChange={handleRowModesModelChange}
       onRowEditStop={handleRowEditStop}
-      onRowClick={handleRowClick}
       processRowUpdate={processRowUpdate}
       getRowClassName={(params) => params.id === selectedRow ? 'selected-row': ''}
     />
 
-    {currentUser && (
+    {(currentUser || rightBarOpen) && (
       <StyledDrawer
         anchor="right"
         variant="permanent"

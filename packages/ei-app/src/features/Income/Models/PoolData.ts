@@ -1,6 +1,10 @@
-import { Predictions } from "./Predictions"
+type Predictions = {
+  predictionValue: number;
+  predictionDate: string;
+};
 
 export type PoolData = {
+  id?: string;
   chain: string;
   project: string;
   symbol: string;
