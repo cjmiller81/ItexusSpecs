@@ -1,19 +1,24 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { Grid, Typography } from "@mui/material";
 
 const ManageBankAccounts: React.FC = () => {
+  const { t } = useTranslation("ManageBankAccounts");
   return (
-    <div>
-      <h1 style={styles.title}>Manage Bank Accounts Page</h1>
-    </div>
+    <>
+      <Typography variant="h3">{t("manage-bank-accounts")}</Typography>
+      <Grid
+        container
+        mt={2}
+        spacing={2}>
+        <Grid
+          item
+          xs={12}>
+          <div>{/*#########*/}</div>
+        </Grid>
+      </Grid>
+    </>
   );
-};
-
-const styles = {
-  title: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    color: "#eae8e8",
-  },
 };
 
 export default ManageBankAccounts;
