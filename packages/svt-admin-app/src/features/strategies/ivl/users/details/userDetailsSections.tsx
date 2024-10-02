@@ -24,8 +24,7 @@ type Props = BoxProps & {
 }
 export default function UserDetailsSection({ opened, user, orders, allocations, billings, bots, theme, ...props }: Props) {
   const { t } = useTranslation("UserDetailsSection")
-
-  console.warn(bots)
+  
   const handleStopClick = () => {};
   const handleStartClick = () => {};
   const handleResetClick = () => {};
