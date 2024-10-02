@@ -164,7 +164,7 @@ export default function Notification() {
                     }}>
                     <>
                       {notifications.slice(0, 3).map(notification => {
-                        const isSuccess = notification.status === "Filled";
+                        const isSuccess = notification.side === "Buy";
                         return (
                           <>
                             <ListItemButton
