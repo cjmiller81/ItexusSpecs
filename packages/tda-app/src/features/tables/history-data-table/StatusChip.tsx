@@ -79,9 +79,9 @@ export const StatusChip: FC<{ status: OrderStatus }> = ({ status }) => {
         borderRadius: "30px",
         fontSize: "inherit",
         height: "auto",
-        padding: "5px 10px",
-        width: "max-content !important",
-        minWidth: "auto !important",
+        padding: "5px 0px",
+        width: "115px !important",
+        minWidth: "115px !important",
       }}
     />
   );
