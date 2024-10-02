@@ -140,7 +140,7 @@ export default function SpotRFQPage() {
       />
 
       <Typography
-        variant="h5"
+        variant="h3"
         noWrap
         align="center">
         Spot RFQ
