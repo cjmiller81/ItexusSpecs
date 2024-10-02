@@ -31,7 +31,7 @@ const RequestSettlement: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("request-settlement-title")}</Typography>
+      <Typography variant="h3">{t("RequestSettlementTitle")}</Typography>
       <Grid
         container
         mt={2}

@@ -6,7 +6,7 @@ const ManageBankAccounts: React.FC = () => {
   const { t } = useTranslation("ManageBankAccounts");
   return (
     <>
-      <Typography variant="h3">{t("manage-bank-accounts")}</Typography>
+      <Typography variant="h3">{t("ManageBankAccountsTitle")}</Typography>
       <Grid
         container
         mt={2}

@@ -56,7 +56,7 @@
     "ChangePassword": "Change Password"
   },
   "RequestSettlement": {
-    "request-settlement-title": "Request settlement",
+    "RequestSettlementTitle": "Request settlement",
     "WithdrawalRequestSubmitted": "Withdrawal Request Submitted",
     "CryptoWithdrawalRequest": "Cryptocurrency Withdrawal Request",
     "FiatWithdrawalRequest": "Fiat Currency Withdrawal Request",
@@ -80,10 +80,10 @@
     "Title": "Settlement History"
   },
   "ManageBankAccounts": {
-    "manage-bank-accounts": "Manage Bank Accounts"
+    "ManageBankAccountsTitle": "Manage Bank Accounts"
   },
   "ManageCryptoAddresses": {
-    "manage-crypto-addresses": "Manage Crypto Addresses"
+    "ManageCryptoAddressesTitle": "Manage Crypto Addresses"
   },
   "Notification": {
     "FillBuySell": "Fill: {{side}} {{qty}} {{pair}}",
@@ -224,7 +224,7 @@
     "Currency": "Currency"
   },
   "FundingInstructions": {
-    "funding-instructions-title": "Funding Instructions",
+    "FundingInstructionsTitle": "Funding Instructions",
     "TDADepositInstructions": "Deposit Instructions",
     "InstructionsIntro": "The below funding instructions belong to TDA. In order to fund your account, send crypto to your designated funding wallets, or fiat to the bank funding instructions.",
     "TDAFundingWallets": "Designated Funding Wallets",

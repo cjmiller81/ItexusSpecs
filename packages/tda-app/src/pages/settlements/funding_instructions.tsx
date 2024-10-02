@@ -63,7 +63,7 @@ const FundingInstructions: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("funding-instructions-title")}</Typography>
+      <Typography variant="h3">{t("FundingInstructionsTitle")}</Typography>
       <Grid
         container
         mt={2}

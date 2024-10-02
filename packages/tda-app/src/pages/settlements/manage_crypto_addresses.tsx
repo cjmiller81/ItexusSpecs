@@ -6,7 +6,7 @@ const ManageCryptoAddresses: React.FC = () => {
   const { t } = useTranslation("ManageCryptoAddresses");
   return (
     <>
-      <Typography variant="h3">{t("manage-crypto-addresses")}</Typography>
+      <Typography variant="h3">{t("ManageCryptoAddressesTitle")}</Typography>
       <Grid
         container
         mt={2}
