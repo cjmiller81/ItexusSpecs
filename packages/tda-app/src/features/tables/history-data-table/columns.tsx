@@ -95,7 +95,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: () => <div style={{ marginLeft: "20px" }}>Status</div>,
       enableResizing: true,
       cell: props => <StatusChip status={props.getValue() as OrderStatus} />,
     },

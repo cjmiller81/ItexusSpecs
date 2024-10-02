@@ -7,7 +7,7 @@ import { OverridableStringUnion } from "@mui/types";
 import React, { FC } from "react";
 
 export const getStatusLabelText = (status: OrderStatus) => {
-  if(!status) return "Error"
+  if (!status) return "Error";
   if (status === "Error") return "Rejected";
   if (status === "PendingCancel") return "Pending cancel";
   if (status === "FilledPartiallyAndCancelled") return "Filled partially and cancelled";
@@ -75,7 +75,14 @@ export const StatusChip: FC<{ status: OrderStatus }> = ({ status }) => {
       color={color}
       variant="outlined"
       icon={icon}
-      sx={{ borderRadius: "30px", fontSize: "inherit", height: "auto", padding: "5px 10px" }}
+      sx={{
+        borderRadius: "30px",
+        fontSize: "inherit",
+        height: "auto",
+        padding: "5px 0px",
+        width: "115px !important",
+        minWidth: "115px !important",
+      }}
     />
   );
 };
