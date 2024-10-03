@@ -87,7 +87,7 @@ export const rfqApi = {
 
     const response = await appAxios.get<{ aCount: number; history: HistoryData[] }>(requestURL);
 
-    const flattenedHistory = response?.data?.history?.flat() || [];
+    const flattenedHistory = response?.data?.flat() || [];
 
     if (flattenedHistory.length === 0) {
       return [];
