@@ -38,11 +38,13 @@ export default function UserDetailsSection({ opened, user, orders, bots, openPos
       return { text: "-", color: "#84b067" };
     }
 
-    const sumPanAndL = openPositions
-      .map(x => x.pAndL)
-      .filter(x => x !== undefined)
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-
+    let sumPanAndL = 0;
+    openPositions.forEach(x => {
+      if (x.pAndL) {
+        sumPanAndL += x.pAndL
+      }
+    })
+    
     return { 
       text: formatCurrencyToString(sumPanAndL, openPositions[0].currencySymbol),
       color: sumPanAndL >= 0 ? "#84b067" : "#ff7782" 
