@@ -8,7 +8,7 @@ export function getOpenPositionColumns() {
     {
       field: "instrument",
       headerName: i18next.t("Instrument", { ns: "ColumnsDefs" }),
-      minWidth: 55,
+      minWidth: 110,
       editable: true,
       flex: 1,
       type: "string",
