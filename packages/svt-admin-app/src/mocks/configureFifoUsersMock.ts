@@ -1,19 +1,21 @@
 import { IFifoUser } from "@/features/strategies/users/iFifoUser"
 import MockAdapter from "axios-mock-adapter"
-import { initBots, initFifoUsers, initOrders } from "./initFifoUsers"
+import { initBots, initFifoUsers, initOpenPosition, initOrders } from "./initFifoUsers"
 import { Order } from "@/features/strategies/users/details/order"
 import { Bot } from "@/features/strategies/users/details/bot"
+import { OpenPosition } from "@/features/strategies/users/details/openPosition"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
   fifoUsers: IFifoUser[],
   bots: Bot[],
   orders: Order[],
- 
+  openPositions: OpenPosition[] 
 } = {
   fifoUsers: initFifoUsers,
   bots: initBots,
   orders: initOrders,
+  openPositions: initOpenPosition
 }
 
 export function configureFifoUsersMock(mock: MockAdapter) {
@@ -29,6 +31,11 @@ export function configureFifoUsersMock(mock: MockAdapter) {
   const getOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/fifo\/users\/([^/]+)\/orders`)
   mock.onGet(getOrdersRegExp).reply(() => {
     return [200, mockState.orders]
+  })
+  const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/fifo\/users\/([^/]+)\/open-positions`) 
+  mock.onGet(getOpenPositionsRegExp).reply((config) => {
+    const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
+    return [200, mockState.openPositions.filter(position => position.userId === userId)]
   })
   // eslint-disable-next-line
   const putUserRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/fifo\/users\/*`)
