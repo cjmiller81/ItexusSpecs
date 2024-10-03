@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Grid, Typography } from "@mui/material";
 
 export const accountNumber = "EC_TEST";
 
@@ -42,16 +43,28 @@ const TradeHistory: React.FC = () => {
   };
 
   return (
-    <HistoryDataTable
-      title={t("TradeHistory")}
-      fileName={t("TradeHistoryCsvFileName")}
-      fromDate={fromDate}
-      toDate={toDate}
-      onFromDateChange={setFromDate}
-      onToDateChange={setToDate}
-      rows={rows}
-      handleHistoryRequest={onUpdateHistory}
-    />
+    <>
+      <Typography variant="h3">{t("TradeHistory")}</Typography>
+      <Grid
+        container
+        mt={2}
+        spacing={2}>
+        <Grid
+          item
+          xs={12}>
+          <HistoryDataTable
+            title={t("TradeHistory")}
+            fileName={t("TradeHistoryCsvFileName")}
+            fromDate={fromDate}
+            toDate={toDate}
+            onFromDateChange={setFromDate}
+            onToDateChange={setToDate}
+            rows={rows}
+            handleHistoryRequest={onUpdateHistory}
+          />
+        </Grid>
+      </Grid>
+    </>
   );
 };
 

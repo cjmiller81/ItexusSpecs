@@ -3,7 +3,7 @@ import SettlementHistorySection from "@/features/settlement-history/SettlementHi
 import WithdrawalRequestConfirmationModal from "@/features/withdrawal-request/WithdrawalRequestConfirmationModal";
 import WithdrawalRequestSection from "@/features/withdrawal-request/WithdrawalRequestSection";
 import { useAppSelector } from "@/libs/redux/Store";
-import { Grid, useMediaQuery } from "@mui/material";
+import { Grid, Typography, useMediaQuery } from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,10 +31,7 @@ const RequestSettlement: React.FC = () => {
 
   return (
     <>
-      <WithdrawalRequestConfirmationModal
-        onClose={() => setConfirmationModalOpen(false)}
-        open={isConfirmationModalOpen}
-      />
+      <Typography variant="h3">{t("RequestSettlementTitle")}</Typography>
       <Grid
         container
         mt={2}
@@ -42,55 +39,68 @@ const RequestSettlement: React.FC = () => {
         <Grid
           item
           xs={12}>
-          <Stack
-            alignItems="center"
-            justifyContent="center">
-            <BalanceWidgetSection
-              width={theme => (isRelativeBalances ? "400px" : theme.spacing(21))}
-              direction={isRelativeBalances ? "row" : "column"}
-              sx={{
-                top: 0,
-                position: "absolute",
-                right: 43,
-                ...(isRelativeBalances && {
-                  position: "relative",
-                }),
-              }}
-            />
-          </Stack>
-        </Grid>
-        <Grid
-          sx={{ paddingTop: "54px !important" }}
-          item
-          xs={12}>
-          <Stack
-            spacing={2}
-            paddingRight={isRelativeBalances ? "0px" : "210px"}
-            direction={isRelativeBalances ? "column" : "row"}
-            justifyContent={isRelativeBalances ? "center" : "flex-start"}
-            alignItems={isRelativeBalances ? "center" : "flex-start"}
-            width={"100%"}>
-            <WithdrawalRequestSection
-              title={t("CryptoWithdrawalRequest")}
-              currenciesSelectLabel={t("CryptoCurrency")}
-              currencies={cryptoCurrenciesList}
-              isLoading={false}
-              onRequestWithdrawal={onRequestCryptoWithdrawal}
-            />
-            <WithdrawalRequestSection
-              title={t("FiatWithdrawalRequest")}
-              currenciesSelectLabel={t("FiatCurrency")}
-              currencies={fiatCurrenciesList}
-              isLoading={false}
-              onRequestWithdrawal={onRequestFiatoWithdrawal}
-            />
-          </Stack>
-        </Grid>
-        <Grid
-          sx={{ paddingTop: "15px !important" }}
-          item
-          xs={12}>
-          <SettlementHistorySection />
+          <WithdrawalRequestConfirmationModal
+            onClose={() => setConfirmationModalOpen(false)}
+            open={isConfirmationModalOpen}
+          />
+          <Grid
+            container
+            mt={2}
+            spacing={2}>
+            <Grid
+              item
+              xs={12}>
+              <Stack
+                alignItems="center"
+                justifyContent="center">
+                <BalanceWidgetSection
+                  width={theme => (isRelativeBalances ? "400px" : theme.spacing(21))}
+                  direction={isRelativeBalances ? "row" : "column"}
+                  sx={{
+                    top: 0,
+                    position: "absolute",
+                    right: 43,
+                    ...(isRelativeBalances && {
+                      position: "relative",
+                    }),
+                  }}
+                />
+              </Stack>
+            </Grid>
+            <Grid
+              sx={{ paddingTop: "54px !important" }}
+              item
+              xs={12}>
+              <Stack
+                spacing={2}
+                paddingRight={isRelativeBalances ? "0px" : "210px"}
+                direction={isRelativeBalances ? "column" : "row"}
+                justifyContent={isRelativeBalances ? "center" : "flex-start"}
+                alignItems={isRelativeBalances ? "center" : "flex-start"}
+                width={"100%"}>
+                <WithdrawalRequestSection
+                  title={t("CryptoWithdrawalRequest")}
+                  currenciesSelectLabel={t("CryptoCurrency")}
+                  currencies={cryptoCurrenciesList}
+                  isLoading={false}
+                  onRequestWithdrawal={onRequestCryptoWithdrawal}
+                />
+                <WithdrawalRequestSection
+                  title={t("FiatWithdrawalRequest")}
+                  currenciesSelectLabel={t("FiatCurrency")}
+                  currencies={fiatCurrenciesList}
+                  isLoading={false}
+                  onRequestWithdrawal={onRequestFiatoWithdrawal}
+                />
+              </Stack>
+            </Grid>
+            <Grid
+              sx={{ paddingTop: "15px !important" }}
+              item
+              xs={12}>
+              <SettlementHistorySection />
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </>
