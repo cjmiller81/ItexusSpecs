@@ -143,7 +143,13 @@
     "StartBot": "Start Bot",
     "ResetBot": "Reset Bot",
     "ClosingOnly":"Closing Only",
-    "StopBot": "Stop Bot"
+    "StopBot": "Stop Bot",
+
+    "Instrument": "Instrument",
+    "Qty": "QTY",
+    "AvgPrice": "Avg Price",
+    "PandL": "P&L",
+    "Flat": "Flat"
   },
   "UserDetailsSection":{
     "CapitalAllocation": "Capital Allocation",
@@ -154,6 +160,8 @@
     "Billings": "Billings",
     "Bots": "Bots",
     "StopAutomation": "Stop Automation",
-    "StartAutomation": "Start Automation"
+    "StartAutomation": "Start Automation",
+    "OpenPositions": "Open Positions",
+    "OpenPANDL": "Open P&L"
   }
 }

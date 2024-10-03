@@ -1,6 +1,7 @@
 import { IFifoUser } from "@/features/strategies/users/iFifoUser"
 import { Order } from "@/features/strategies/users/details/order"
 import { Bot } from "@/features/strategies/users/details/bot"
+import { OpenPosition } from "@/features/strategies/users/details/openPosition"
 
 export const initFifoUsers: IFifoUser[] = [
   {
@@ -10,7 +11,7 @@ export const initFifoUsers: IFifoUser[] = [
     "accountNumber": "FFE32324",
     "botStatus": "flat",
     "lastFill": 342343,
-    "fillTime": new Date(),
+    "fillTime": new Date("2024-05-01 12:00:01.029"),
     "openQty": 3,
     "connectionStatus": "Disconnected",
   },
@@ -21,7 +22,29 @@ export const initFifoUsers: IFifoUser[] = [
     "accountNumber": "RRTT23234",
     "botStatus": "error",
     "lastFill": 43434.5454,
-    "fillTime": new Date(),
+    "fillTime": new Date("2024-05-01 14:00:01.029"),
+    "openQty": 1,
+    "connectionStatus": "Connected",
+  },
+  {
+    "id": "WP91011",
+    "exchangeUsername": "tasty91011",
+    "email": "tasty91011@gmail.com",
+    "accountNumber": "RRTT23234",
+    "botStatus": "error",
+    "lastFill": 43434.5454,
+    "fillTime": new Date("2024-05-01 17:00:01.029"),
+    "openQty": 1,
+    "connectionStatus": "Connected",
+  },
+  {
+    "id": "WP121314",
+    "exchangeUsername": "tasty121314",
+    "email": "tasty121314@gmail.com",
+    "accountNumber": "RRTT23234",
+    "botStatus": "flat",
+    "lastFill": 4343,
+    "fillTime": new Date("2024-05-01 19:00:01.029"),
     "openQty": 1,
     "connectionStatus": "Connected",
   }
@@ -88,7 +111,6 @@ export const initBots: Bot[] = [
   }
 ]
 
-
 export const initOrders: Order[] = [
   {
     "id": "005a7378-e6e9-47fd-b6f4-8893136f5d14",
@@ -115,5 +137,44 @@ export const initOrders: Order[] = [
     "status": "Working",
     "exchangeEntryOrderId": "1234567890",
     "transactionTime": "2024-04-24 22:04:41.232"
+  }
+]
+
+export const initOpenPosition: OpenPosition[] = [
+  {
+    "id": "53423kfddf",
+    "userId": "WP1234",
+    "avgPrice": 5725.75,
+    "currencySymbol": "$",
+    "instrument": "/ES",
+    "qty": 1,
+    "pAndL": 12.50
+  },
+  {
+    "id": "tkrtr4434",
+    "userId": "WP5678",
+    "avgPrice": 5725.75,
+    "currencySymbol": "$",
+    "instrument": "/ES",
+    "qty": 1,
+    "pAndL": -12.50
+  },
+  {
+    "id": "tkrtr4435",
+    "userId": "WP5678",
+    "avgPrice": 5725.75,
+    "currencySymbol": "$",
+    "instrument": "/ES",
+    "qty": 1,
+    "pAndL": 2
+  },
+  {
+    "id": "tkrtr4436",
+    "userId": "WP121314",
+    "avgPrice": 57.25,
+    "currencySymbol": "$",
+    "instrument": "/ES",
+    "qty": 1,
+    "pAndL": 0
   }
 ]

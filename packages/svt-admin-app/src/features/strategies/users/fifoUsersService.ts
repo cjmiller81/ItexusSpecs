@@ -2,6 +2,7 @@ import appAxios from "@/libs/axios/axios"
 import { IFifoUser } from "./iFifoUser"
 import {  Bot } from "./details/bot"
 import { Order } from "./details/order"
+import { OpenPosition } from "./details/openPosition"
 
 export const fifoUsersService = {
   update: async (user: IFifoUser): Promise<void> => {
@@ -17,6 +18,10 @@ export const fifoUsersService = {
   },
   getUserBots: async (userId: string): Promise<Bot[]> => {
     const response = await appAxios.get<Bot[]>(`/api/fifo/users/${userId}/bots`)
+    return response.data
+  },
+  getOpenPositions: async (userId: string): Promise<OpenPosition[]> => {
+    const response = await appAxios.get<OpenPosition[]>(`/api/fifo/users/${userId}/open-positions`)
     return response.data
   },
   getUserOrders: async (userId: string): Promise<Order[]> => {
