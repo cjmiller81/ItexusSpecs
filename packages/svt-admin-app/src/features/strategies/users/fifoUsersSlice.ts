@@ -4,10 +4,12 @@ import { IFifoUser } from "./iFifoUser";
 import { fifoUsersService } from "./fifoUsersService";
 import { Bot } from "./details/bot";
 import { Order } from "./details/order";
+import { OpenPosition } from "./details/openPosition";
 
 type UserDetails = {
   orders: Order[];
   bots: Bot[];
+  openPositions: OpenPosition[]
 };
 
 export interface IFifoUsersSliceState {
@@ -39,11 +41,12 @@ export const fetchFifoUsers = createAsyncThunk(
 export const fetchUserDetails = createAsyncThunk(
   "fifoUsers/fetchUserDetails",
   async ({ userId }: { userId: string }) => {
-    const [bots, orders] = await Promise.all([
+    const [bots, orders, openPositions] = await Promise.all([
       fifoUsersService.getUserBots(userId),
       fifoUsersService.getUserOrders(userId),
+      fifoUsersService.getOpenPositions(userId)
     ]);
-    return { bots, orders };
+    return { bots, orders, openPositions };
   }
 );
 
