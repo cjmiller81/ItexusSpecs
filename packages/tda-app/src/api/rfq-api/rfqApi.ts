@@ -85,7 +85,7 @@ export const rfqApi = {
         ? `/api/customers/order-history?accountNumber=${accountNumber}&startDate=${moment(fromDate).format("YYYY-MM-DD")}&endDate=${moment(toDate).format("YYYY-MM-DD")}`
         : `/api/customers/order-history?accountNumber=${accountNumber}`;
 
-    const response = await appAxios.get<{ aCount: number; history: HistoryData[] }>(requestURL);
+    const response = await appAxios.get<HistoryData[][]>(requestURL);
 
     const flattenedHistory = response?.data?.flat() || [];
 
