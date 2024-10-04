@@ -20,7 +20,7 @@
     "FilterTokens": "Filter Tokens",
     "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
   },
-  "CalendarEventTile":{
+  "CalendarEventTile": {
     "Proof": "Proof",
     "Source": "Source"
   },
@@ -268,5 +268,8 @@
     "CryptoCalendarTitle": "Crypto Calendar:",
     "NoEventsAvailable": "No events available on this date",
     "ReadMore": "Read More >"
+  },
+  "Vaults": {
+    "VaultsTitle": "Vaults"
   }
 }

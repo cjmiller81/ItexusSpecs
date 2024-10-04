@@ -31,7 +31,7 @@ interface ApyData {
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const [poolsData, setPoolsData] = useState<PoolData[]>([]);
   const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
-  const [currentFilter, setCurrentFilter] = useState<object | null>(null);
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [totalApy, setTotalApy] = useState<ApyData | null>(null);
   const [tvlData, setTvlData] = useState<{ [key: string]: number }>({});
 
@@ -49,7 +49,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   }, [vaultsData, isVaultsLoading]);
 
   const dispatch = useAppDispatch();
-  const { t } = useTranslation("Yields");
+  const { t } = useTranslation("Vaults");
   const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
@@ -153,7 +153,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       {...props}>
       <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{t("Yields")}</PageTitle>
+          <PageTitle sx={{ width: "100%" }}>{t("VaultsTitle")}</PageTitle>
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails
@@ -164,7 +164,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         }}>
         <SimpleBar style={{ maxHeight: "600px" }}>
           <CustomFilterBuilder
-            filterType="liquidity-pool"
+            filterType="vaults"
             filterBuilderFields={defiFilterBuilderFields}
             filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
             filterDeletingLoading={deletingFilterStatus === "loading"}
@@ -190,7 +190,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           currentFilter={currentFilter}
           onCurrentFilterChange={filter => setCurrentFilter(filter)}
           dataSource={filteredTokensSource}
-          totalApy={totalApy}
         />
       </AccordionDetails>
     </StatePersistedAccordion>
