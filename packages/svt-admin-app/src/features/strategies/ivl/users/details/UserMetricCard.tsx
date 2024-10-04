@@ -7,7 +7,7 @@ type Props = PaperProps & {
 }
 export default function UserMetricCard({ title, subtitle, ...props }: Props) {
   return (
-    <Paper {...props} style={{ width: "160px", display: "flex", justifyContent: "center"}} elevation={3}>
+    <Paper {...props} style={{ width: "160px", maxHeight: "70px", display: "flex", justifyContent: "center"}} elevation={3}>
       <Stack direction="column" spacing={0} sx={{ justifyContent: "center", alignItems: "center", padding: 2 }}>
         {title && 
         (<Typography sx={{ fontSize: "10px" }}>{title}</Typography>)}
