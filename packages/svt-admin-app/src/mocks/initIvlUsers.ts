@@ -2,6 +2,7 @@ import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
 import { Bot } from "@/features/strategies/ivl/users/details/bot"
 import { CapitalAllocation } from "@/features/strategies/ivl/users/details/capitalAllocation"
+import { OpenPosition } from "@/features/strategies/ivl/users/details/openPosition"
 import { Order } from "@/features/strategies/ivl/users/details/order"
 
 export const initIvlUsers: IvlUser[] = [
@@ -178,4 +179,25 @@ export const initBillings: Billing[] = [
     status: "failed",
     transactionTime: new Date("2024-05-01 12:00:01.029"),
   },
+]
+
+export const initOpenPosition: OpenPosition[] = [
+  {
+    "id": "53423kfddf",
+    "userId": "WP1234",
+    "avgPrice": 4.75,
+    "currencySymbol": "$",
+    "instrument": "31 OCT 24 6090 Call",
+    "qty": -1,
+    "pAndL": 200
+  },
+  {
+    "id": "tkrtr4434",
+    "userId": "WP1234",
+    "avgPrice": 2.25,
+    "currencySymbol": "$",
+    "instrument": "31 OCT 24 4375 Put",
+    "qty": -1,
+    "pAndL": -100
+  }
 ]
