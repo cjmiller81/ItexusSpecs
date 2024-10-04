@@ -1,4 +1,5 @@
 import { Bot } from "@/features/strategies/dte/users/details/bot";
+import { OpenPosition } from "@/features/strategies/dte/users/details/openPosition";
 import { IDteUser } from "@/features/strategies/dte/users/iDteUser";
 
 export const initDteUsers: IDteUser[] = [
@@ -55,4 +56,43 @@ export const initBots: Bot[] = [
     userId: "WP1234"
   }
 ];
+
+export const initOpenPosition: OpenPosition[] = [
+  {
+    "id": "53423kfddf",
+    "userId": "WP1234",
+    "avgPrice": 24.5,
+    "currencySymbol": "$",
+    "instrument": "26 SEP 24 5725 Call",
+    "qty": -1,
+    "pAndL": 300
+  },
+  {
+    "id": "tkrtr4434",
+    "userId": "WP1234",
+    "avgPrice": 5.1,
+    "currencySymbol": "$",
+    "instrument": "26 SEP 24 5725 Put",
+    "qty": -1,
+    "pAndL": 100
+  },
+  {
+    "id": "tkrtr4435",
+    "userId": "WP1234",
+    "avgPrice": 11.2,
+    "currencySymbol": "$",
+    "instrument": "26 SEP 24 5750 Call",
+    "qty": 1,
+    "pAndL": -50
+  },
+  {
+    "id": "tkrtr4436",
+    "userId": "WP1234",
+    "avgPrice": 1.95,
+    "currencySymbol": "$",
+    "instrument": "26 SEP 24 5700 Put",
+    "qty": 1,
+    "pAndL": -50
+  }
+]
   
