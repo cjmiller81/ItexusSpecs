@@ -1,6 +1,7 @@
 import appAxios from "@/libs/axios/axios"
 import { IDteUser } from "./iDteUser"
 import { Bot } from "./details/bot"
+import { OpenPosition } from "./details/openPosition"
 
 export const dteUsersService = {
   update: async (user: IDteUser): Promise<void> => {
@@ -16,6 +17,10 @@ export const dteUsersService = {
   },
   getUserBots: async (userId: string): Promise<Bot[]> => {
     const response = await appAxios.get<Bot[]>(`/api/zero-dte/users/${userId}/bots`)
+    return response.data
+  },
+  getOpenPositions: async (userId: string): Promise<OpenPosition[]> => {
+    const response = await appAxios.get<OpenPosition[]>(`/api/zero-dte/users/${userId}/open-positions`)
     return response.data
   },
 }

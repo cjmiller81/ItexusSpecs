@@ -1,20 +1,29 @@
 import MockAdapter from "axios-mock-adapter"
 import { IDteUser } from "@/features/strategies/dte/users/iDteUser"
-import { initBots, initDteUsers } from "./initDteUsers"
+import { initBots, initDteUsers, initOpenPosition } from "./initDteUsers"
 import { Bot } from "@/features/strategies/dte/users/details/bot"
+import { OpenPosition } from "@/features/strategies/users/details/openPosition"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
   dteUsers: IDteUser[],
-  bots: Bot[]
+  bots: Bot[],
+  openPositions: OpenPosition[]
 } = {
   dteUsers: initDteUsers,
-  bots: initBots
+  bots: initBots,
+  openPositions: initOpenPosition
 }
 
 export function configureDteUsersMock(mock: MockAdapter) {
   mock.onGet(`${process.env.API_BASE_URL}\/api\/zero-dte\/users`).reply(() => {
     return [200, mockState.dteUsers]
+  })
+
+  const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/open-positions`) 
+  mock.onGet(getOpenPositionsRegExp).reply((config) => {
+    const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
+    return [200, mockState.openPositions.filter(position => position.userId === userId)]
   })
 
   // eslint-disable-next-line
