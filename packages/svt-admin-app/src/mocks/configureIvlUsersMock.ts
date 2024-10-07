@@ -1,10 +1,11 @@
 import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
 import MockAdapter from "axios-mock-adapter"
-import { initAllocations, initBillings, initBots, initIvlUsers, initOrders } from "./initIvlUsers"
+import { initAllocations, initBillings, initBots, initIvlUsers, initOpenPosition, initOrders } from "./initIvlUsers"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
 import { CapitalAllocation } from "@/features/strategies/ivl/users/details/capitalAllocation"
 import { Order } from "@/features/strategies/ivl/users/details/order"
 import { Bot } from "@/features/strategies/ivl/users/details/bot"
+import { OpenPosition } from "@/features/strategies/ivl/users/details/openPosition"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
@@ -12,13 +13,15 @@ const mockState: {
   orders: Order[],
   billings: Billing[],
   allocations: CapitalAllocation[],
-  bots: Bot[]
+  bots: Bot[],
+  openPositions: OpenPosition[]
 } = {
   ivlUsers: initIvlUsers,
   orders: initOrders,
   allocations: initAllocations,
   billings: initBillings,
-  bots: initBots
+  bots: initBots,
+  openPositions: initOpenPosition
 }
 
 export function configureIvlUsersMock(mock: MockAdapter) {
@@ -45,6 +48,11 @@ export function configureIvlUsersMock(mock: MockAdapter) {
   mock.onGet(getOrdersRegExp).reply((config) => {
     const userId = getOrdersRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.orders.filter(order => order.userId === userId)]
+  })
+  const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/open-positions`) 
+  mock.onGet(getOpenPositionsRegExp).reply((config) => {
+    const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
+    return [200, mockState.openPositions.filter(position => position.userId === userId)]
   })
   // eslint-disable-next-line
   const putUserRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/*`)

@@ -6,12 +6,14 @@ import { Billing } from "./details/billing"
 import { CapitalAllocation } from "./details/capitalAllocation"
 import { Order } from "./details/order"
 import { Bot } from "./details/bot"
+import { OpenPosition } from "./details/openPosition"
 
 type UserDetails = {
   orders: Order[],
   billings: Billing[],
   allocations: CapitalAllocation[],
-  bots: Bot[]
+  bots: Bot[],
+  openPositions: OpenPosition[]
 }
 
 export interface IvlUsersSliceState {
@@ -90,13 +92,14 @@ export const ivlUsersSlice = createAppSlice({
     ),
     fetchUserDetails: create.asyncThunk(
       async ({ userId }: { userId: string }): Promise<UserDetails> => {
-        const [billings, allocations, orders, bots] = await Promise.all([
+        const [billings, allocations, orders, bots, openPositions] = await Promise.all([
           ivlUsersService.getUserBillings(userId),
           ivlUsersService.getUserCapitalAllocations(userId),
           ivlUsersService.getUserOrders(userId),
-          ivlUsersService.getUserBots(userId)
+          ivlUsersService.getUserBots(userId),
+          ivlUsersService.getOpenPositions(userId)
         ])
-        return {billings, allocations, orders, bots} 
+        return {billings, allocations, orders, bots, openPositions} 
       },
       {
         pending: state => {
