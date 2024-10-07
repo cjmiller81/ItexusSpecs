@@ -1,54 +1,56 @@
-import { IFifoUser } from "@/features/strategies/users/iFifoUser"
-import { Order } from "@/features/strategies/users/details/order"
-import { Bot } from "@/features/strategies/users/details/bot"
-import { OpenPosition } from "@/features/strategies/users/details/openPosition"
+import { IFifoUser } from "@/features/strategies/users/iFifoUser";
+import { Order } from "@/features/strategies/users/details/order";
+import { Bot } from "@/features/strategies/users/details/bot";
+import { OpenPosition } from "@/features/strategies/users/details/openPosition";
+import { ICurrentDayFills } from "@/features/strategies/users/details/currentDayFillsInterface";
+import { WorkingOrder } from "@/features/strategies/users/details/workingOrder";
 
 export const initFifoUsers: IFifoUser[] = [
   {
-    "id": "WP1234",
-    "exchangeUsername": "tasty1234",
-    "email": "tasty1234@gmail.com",
-    "accountNumber": "FFE32324",
-    "botStatus": "flat",
-    "lastFill": 342343,
-    "fillTime": new Date("2024-05-01 12:00:01.029"),
-    "openQty": 3,
-    "connectionStatus": "Disconnected",
+    id: "WP1234",
+    exchangeUsername: "tasty1234",
+    email: "tasty1234@gmail.com",
+    accountNumber: "FFE32324",
+    botStatus: "flat",
+    lastFill: 342343,
+    fillTime: new Date("2024-05-01 12:00:01.029"),
+    openQty: 3,
+    connectionStatus: "Disconnected",
   },
   {
-    "id": "WP5678",
-    "exchangeUsername": "tasty5678",
-    "email": "tasty5678@gmail.com",
-    "accountNumber": "RRTT23234",
-    "botStatus": "error",
-    "lastFill": 43434.5454,
-    "fillTime": new Date("2024-05-01 14:00:01.029"),
-    "openQty": 1,
-    "connectionStatus": "Connected",
+    id: "WP5678",
+    exchangeUsername: "tasty5678",
+    email: "tasty5678@gmail.com",
+    accountNumber: "RRTT23234",
+    botStatus: "error",
+    lastFill: 43434.5454,
+    fillTime: new Date("2024-05-01 14:00:01.029"),
+    openQty: 1,
+    connectionStatus: "Connected",
   },
   {
-    "id": "WP91011",
-    "exchangeUsername": "tasty91011",
-    "email": "tasty91011@gmail.com",
-    "accountNumber": "RRTT23234",
-    "botStatus": "error",
-    "lastFill": 43434.5454,
-    "fillTime": new Date("2024-05-01 17:00:01.029"),
-    "openQty": 1,
-    "connectionStatus": "Connected",
+    id: "WP91011",
+    exchangeUsername: "tasty91011",
+    email: "tasty91011@gmail.com",
+    accountNumber: "RRTT23234",
+    botStatus: "error",
+    lastFill: 43434.5454,
+    fillTime: new Date("2024-05-01 17:00:01.029"),
+    openQty: 1,
+    connectionStatus: "Connected",
   },
   {
-    "id": "WP121314",
-    "exchangeUsername": "tasty121314",
-    "email": "tasty121314@gmail.com",
-    "accountNumber": "RRTT23234",
-    "botStatus": "flat",
-    "lastFill": 4343,
-    "fillTime": new Date("2024-05-01 19:00:01.029"),
-    "openQty": 1,
-    "connectionStatus": "Connected",
-  }
-]
+    id: "WP121314",
+    exchangeUsername: "tasty121314",
+    email: "tasty121314@gmail.com",
+    accountNumber: "RRTT23234",
+    botStatus: "flat",
+    lastFill: 4343,
+    fillTime: new Date("2024-05-01 19:00:01.029"),
+    openQty: 1,
+    connectionStatus: "Connected",
+  },
+];
 
 export const initBots: Bot[] = [
   {
@@ -74,11 +76,11 @@ export const initBots: Bot[] = [
     qty: 1,
     tradeQty: {
       units: 10,
-      nanos: 500000000
+      nanos: 500000000,
     },
     tradeSymbol: "/ES",
     tradeSymbolAssetType: "Equity",
-    userId: "U12365"
+    userId: "U12365",
   },
   {
     active: false,
@@ -103,78 +105,163 @@ export const initBots: Bot[] = [
     qty: 100,
     tradeQty: {
       units: 10,
-      nanos: 500000000
+      nanos: 500000000,
     },
     tradeSymbol: "SPY",
     tradeSymbolAssetType: "Equity",
-    userId: "U79537"
-  }
-]
+    userId: "U79537",
+  },
+];
 
 export const initOrders: Order[] = [
   {
-    "id": "005a7378-e6e9-47fd-b6f4-8893136f5d14",
-    "userId": "WP5678",
-    "accountNumber": "ABC5678",
-    "tradeSymbol": "/ES",
-    "exchangeOrderId": "1234567890",
-    "instruction": "Sell To Open",
-    "isEntryOrder": true,
-    "isExitOrder": false,
-    "status": "Filled",
-    "exchangeEntryOrderId": "",
-    "transactionTime": "2024-04-24 21:00:01.422"
+    id: "005a7378-e6e9-4tryd-b6f4-889313634547",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "12345678",
+    instruction: "Buy to Open",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "12345678",
+    orderId: "12345678",
+    transactionTime: "2024-09-20 08:00:00",
   },
   {
-    "id": "004e10d2-4cd1-46d6-8791-710f63425f68",
-    "userId": "WP5678",
-    "accountNumber": "ABC5678",
-    "tradeSymbol": "SPY",
-    "exchangeOrderId": "2345678901",
-    "instruction": "Buy To Close",
-    "isEntryOrder": false,
-    "isExitOrder": true,
-    "status": "Working",
-    "exchangeEntryOrderId": "1234567890",
-    "transactionTime": "2024-04-24 22:04:41.232"
-  }
-]
+    id: "005a7378-e459-47fd-b6f4-8893136f53467",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "98653731",
+    instruction: "Sell to Close",
+    isEntryOrder: false,
+    isExitOrder: true,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "12345678",
+    orderId: "98653731",
+    transactionTime: "2024-09-20 09:00:00",
+  },
+  {
+    id: "005a7378-e6e9-47345d-b6f4-889313645645",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "55555654",
+    instruction: "Buy to Open",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "23rewf",
+    orderId: "55555654",
+    transactionTime: "2024-09-20 08:00",
+  },
+];
+
+export const initCurrentDayFills: ICurrentDayFills[] = [
+  {
+    id: "005a7378-e6e9-47345d-b6f4-88931365435435",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "55555654",
+    instruction: "Buy to Open",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "",
+    orderId: "11155654",
+    transactionTime: "2024-09-20 08:00",
+  },
+  {
+    id: "005a7378-e6e9-47345d-b6f4-889345634545",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "55555654",
+    instruction: "Buy to Open",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "155475",
+    orderId: "22255654",
+    transactionTime: "2024-09-20 08:00",
+  },
+  {
+    id: "005a7378-e6e9-47345d-b6f4-88456456545",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "55555654",
+    instruction: "Sell to Close",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "",
+    orderId: "33355654",
+    transactionTime: "2024-09-20 08:00",
+  },
+];
+
+export const initWorkingOrders: WorkingOrder[] = [
+  {
+    id: "005a7378-e459-47fd-b6f4-889313rtyty543",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "/ES",
+    exchangeOrderId: "12345678",
+    instruction: "Sell to Close",
+    isEntryOrder: false,
+    isExitOrder: true,
+    status: "Working",
+    exchangeEntryOrderId: "",
+    entryId: "12345678",
+    orderId: "12456487",
+    transactionTime: "2024-09-20 08:00:00",
+  },
+];
 
 export const initOpenPosition: OpenPosition[] = [
   {
-    "id": "53423kfddf",
-    "userId": "WP1234",
-    "avgPrice": 5725.75,
-    "currencySymbol": "$",
-    "instrument": "/ES",
-    "qty": 1,
-    "pAndL": 12.50
+    id: "53423kfddf",
+    userId: "WP1234",
+    avgPrice: 5725.75,
+    currencySymbol: "$",
+    instrument: "/ES",
+    qty: 1,
+    pAndL: 12.5,
   },
   {
-    "id": "tkrtr4434",
-    "userId": "WP5678",
-    "avgPrice": 5725.75,
-    "currencySymbol": "$",
-    "instrument": "/ES",
-    "qty": 1,
-    "pAndL": -12.50
+    id: "tkrtr4434",
+    userId: "WP5678",
+    avgPrice: 5725.75,
+    currencySymbol: "$",
+    instrument: "/ES",
+    qty: 1,
+    pAndL: -12.5,
   },
   {
-    "id": "tkrtr4435",
-    "userId": "WP5678",
-    "avgPrice": 5725.75,
-    "currencySymbol": "$",
-    "instrument": "/ES",
-    "qty": 1,
-    "pAndL": 2
+    id: "tkrtr4435",
+    userId: "WP5678",
+    avgPrice: 5725.75,
+    currencySymbol: "$",
+    instrument: "/ES",
+    qty: 1,
+    pAndL: 2,
   },
   {
-    "id": "tkrtr4436",
-    "userId": "WP121314",
-    "avgPrice": 57.25,
-    "currencySymbol": "$",
-    "instrument": "/ES",
-    "qty": 1,
-    "pAndL": 0
-  }
-]
+    id: "tkrtr4436",
+    userId: "WP121314",
+    avgPrice: 57.25,
+    currencySymbol: "$",
+    instrument: "/ES",
+    qty: 1,
+    pAndL: 0,
+  },
+];

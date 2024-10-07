@@ -16,20 +16,34 @@ import { getOpenPositionColumns } from "./openPositionColumnsDefs";
 import { formatCurrencyToString } from "@/utils/common";
 import { useMemo } from "react";
 import { getCurrentDayFillsColumns } from "@/features/strategies/users/details/currentDayFillsColumnsDefs";
+import { WorkingOrder } from "@/features/strategies/users/details/workingOrder";
+import { ICurrentDayFills } from "@/features/strategies/users/details/currentDayFillsInterface";
+import { getWorkingOrdersColumns } from "@/features/strategies/users/details/workingOrdersColumnsDefs";
 
 type Props = BoxProps & {
   user: IFifoUser;
   orders: Order[];
+  currentDayFills: ICurrentDayFills[];
+  workingOrders: WorkingOrder[];
   bots: Bot[];
   openPositions: OpenPosition[];
   theme: Theme;
   opened?: boolean;
 };
 
-export default function UserDetailsSection({ opened, user, orders, bots, openPositions, theme, ...props }: Props) {
+export default function UserDetailsSection({
+  opened,
+  user,
+  orders,
+  currentDayFills,
+  workingOrders,
+  bots,
+  openPositions,
+  theme,
+  ...props
+}: Props) {
   const { t } = useTranslation("UserDetailsSection");
   const dispatch = useDispatch();
-
   const handleDeleteBotClick = (id: GridRowId) => {
     dispatch(deleteFifoBot({ userId: user.id, botId: encodeURIComponent(id as string) }));
   };
@@ -98,6 +112,48 @@ export default function UserDetailsSection({ opened, user, orders, bots, openPos
         mt={2}
         align="center"
         variant="h6">
+        {t("CurrentDayFills")}
+      </Typography>
+      <Stack>
+        <DataGrid<Order>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={smallTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={currentDayFills}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getCurrentDayFillsColumns()}
+          getRowId={row => row.id}
+        />
+      </Stack>
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("WorkingOrder")}
+      </Typography>
+      <Stack>
+        <DataGrid<Order>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={smallTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={workingOrders}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getWorkingOrdersColumns()}
+          getRowId={row => row.id}
+        />
+      </Stack>
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
         {t("Bots")}
       </Typography>
       <DataGrid<Bot>
@@ -136,28 +192,6 @@ export default function UserDetailsSection({ opened, user, orders, bots, openPos
           rowHeight={25}
           isCellEditable={() => false}
           columns={getOrderColumnsColumns()}
-          getRowId={row => row.id}
-        />
-      </Stack>
-
-      <Typography
-        mt={2}
-        align="center"
-        variant="h6">
-        {t("CurrentDayFills")}
-      </Typography>
-      <Stack>
-        <DataGrid<Order>
-          slots={{
-            footer: () => <></>,
-          }}
-          sx={smallTableSx}
-          rowSelection={false}
-          checkboxSelection={false}
-          rows={orders}
-          rowHeight={25}
-          isCellEditable={() => false}
-          columns={getCurrentDayFillsColumns()}
           getRowId={row => row.id}
         />
       </Stack>

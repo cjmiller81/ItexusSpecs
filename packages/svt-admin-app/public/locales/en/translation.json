@@ -154,6 +154,7 @@
     "ClosingOnly": "Closing Only",
     "Orders": "Orders",
     "CurrentDayFills": "Current Day Fills",
+    "WorkingOrder": "Working Order",
     "Billings": "Billings",
     "Bots": "Bots",
     "StopAutomation": "Stop Automation",
