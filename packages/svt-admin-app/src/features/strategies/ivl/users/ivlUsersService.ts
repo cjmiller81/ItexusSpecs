@@ -4,6 +4,7 @@ import { CapitalAllocation } from "./details/capitalAllocation"
 import { Billing } from "./details/billing"
 import { Order } from "./details/order"
 import { Bot } from "./details/bot"
+import { OpenPosition } from "./details/openPosition"
 
 export const ivlUsersService = {
   update: async (user: IvlUser): Promise<void> => {
@@ -31,6 +32,10 @@ export const ivlUsersService = {
   },
   getUserBillings: async (userId: string): Promise<Billing[]> => {
     const response = await appAxios.get<Billing[]>(`/api/ivl/users/${userId}/billing`)
+    return response.data
+  },
+  getOpenPositions: async (userId: string): Promise<OpenPosition[]> => {
+    const response = await appAxios.get<OpenPosition[]>(`/api/ivl/users/${userId}/open-positions`)
     return response.data
   },
 }
