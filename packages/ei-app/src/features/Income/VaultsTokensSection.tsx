@@ -12,9 +12,9 @@ import { useTranslation } from "react-i18next";
 import SimpleBar from "simplebar-react";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
-import { PoolData } from "./Models/PoolData";
-import { defiFilterBuilderFields } from "./tableConstants";
+import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
+import { vaultsFilterBuilderFields } from "@/features/Income/vaultsTableConstants";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -29,7 +29,7 @@ interface ApyData {
 }
 
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
-  const [poolsData, setPoolsData] = useState<PoolData[]>([]);
+  const [vaults, setVaults] = useState<VaultsData[]>([]);
   const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [totalApy, setTotalApy] = useState<ApyData | null>(null);
@@ -42,7 +42,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
   useEffect(() => {
     if (!isVaultsLoading) {
-      setPoolsData(vaultsData.vaults);
+      setVaults(vaultsData.vaults);
       setTotalApy(vaultsData.apy);
       setTvlData(vaultsData.tvl);
     }
@@ -56,13 +56,20 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  const combinedPoolsData = useMemo(() => {
-    if (!poolsData || !totalApy || !tvlData) return [];
-    return poolsData.map((pool, index) => {
-      let tvl = null;
+  const combinedVaults = useMemo(() => {
+    if (!vaults || !totalApy || !tvlData) return [];
+
+    return vaults.map((pool, index) => {
+      let tvl: number | null = null;
+      const poolKey = pool.pool;
+
+      if (typeof poolKey !== "string") {
+        return { ...pool, tvl, apy: null };
+      }
+
       for (const key of Object.keys(tvlData)) {
-        if (tvlData[key][pool.pool] !== undefined) {
-          tvl = tvlData[key][pool.pool];
+        if (tvlData[key][poolKey] !== undefined) {
+          tvl = tvlData[key][poolKey];
           break;
         }
       }
@@ -82,7 +89,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
       if (totalApy && typeof totalApy === "object") {
         for (const key of Object.keys(totalApy)) {
-          const poolApy = totalApy[key][pool.pool];
+          const poolApy = totalApy[key]?.[poolKey];
           if (poolApy !== undefined) {
             const apyValue = poolApy.totalApy?.toString();
             apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
@@ -109,20 +116,20 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         apy,
       };
     });
-  }, [poolsData, totalApy, tvlData]);
+  }, [vaults, totalApy, tvlData]);
 
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
 
   const filteredTokensSource = useMemo(
     () =>
-      new DataSource<PoolData, string>({
+      new DataSource<VaultsData, string>({
         store: {
           type: "array",
           key: "id",
-          data: combinedPoolsData,
+          data: combinedVaults,
         },
       }),
-    [combinedPoolsData],
+    [combinedVaults],
   );
 
   const onExporting = useCallback(async (e: any): Promise<void> => {
@@ -165,7 +172,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         <SimpleBar style={{ maxHeight: "600px" }}>
           <CustomFilterBuilder
             filterType="vaults"
-            filterBuilderFields={defiFilterBuilderFields}
+            filterBuilderFields={vaultsFilterBuilderFields}
             filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
             filterDeletingLoading={deletingFilterStatus === "loading"}
             open={filterBuilderOpen}

@@ -20,16 +20,16 @@ import DataSource from "devextreme/data/data_source";
 import { ExportingEvent } from "devextreme/ui/data_grid";
 import React, { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import { toDollarAmountField, toPercentageField } from "./helpers";
-import { PoolData } from "./Models/PoolData";
+import { VaultsData } from "./Models/VaultsData";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
   currentFilter?: object[] | null | undefined;
-  dataSource: DataSource<PoolData, string>;
+  dataSource: DataSource<VaultsData, string>;
   onFilterBuilderOpen: Function;
   onUpdate: (filteredTokenData: ICoin[]) => void;
-  onExport: (e: ExportingEvent<PoolData, any>) => void;
+  onExport: (e: ExportingEvent<VaultsData, any>) => void;
 }
 
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
@@ -41,7 +41,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
   onFilterBuilderOpen,
   onExport,
 }) => {
-  const datagrid = React.createRef<DataGridDef<PoolData, string>>();
+  const datagrid = React.createRef<DataGridDef<VaultsData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const filterPanelText = useRef<Element | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
@@ -102,8 +102,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
 
   return (
     <div ref={containerRef}>
-      <DataGridDef<PoolData>
-        id="defi-tokens-table"
+      <DataGridDef<VaultsData>
+        id="vaults-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
         allowColumnReordering={true}
