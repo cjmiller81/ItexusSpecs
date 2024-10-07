@@ -3,9 +3,11 @@ import { createAppSlice, Status } from "components";
 import { IDteUser } from "./iDteUser";
 import { dteUsersService } from "./dteUsersService";
 import { Bot } from "./details/bot";
+import { OpenPosition } from "./details/openPosition";
 
 type UserDetails = {
   bots: Bot[]
+  openPositions: OpenPosition[]
 }
 
 export interface IDteUsersSliceState {
@@ -82,10 +84,11 @@ export const dteUsersSlice = createAppSlice({
       ),
       fetchUserDetails: create.asyncThunk(
         async ({ userId }: { userId: string }): Promise<UserDetails> => {
-          const [bots] = await Promise.all([
-            dteUsersService.getUserBots(userId)
+          const [bots, openPositions] = await Promise.all([
+            dteUsersService.getUserBots(userId),
+            dteUsersService.getOpenPositions(userId)
           ])
-          return {bots} 
+          return {bots, openPositions} 
         },
         {
           pending: state => {
