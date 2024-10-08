@@ -1,0 +1,20 @@
+export type VaultsData = {
+  id: string;
+  name: string;
+  chain: string;
+  platformId: string;
+  tvl: number;
+  apy: number;
+  risks: string[];
+  boost?: string;
+  totalApy?: number;
+  stablecoin?: boolean;
+  rewardTokens?: string[];
+  poolMeta?: string | null;
+  volumeUsd1d?: number | null;
+  volumeUsd7d?: number | null;
+  apyBase?: number | null;
+  apyReward?: number | null;
+  ilRisk?: string;
+  pool?: string;
+};
