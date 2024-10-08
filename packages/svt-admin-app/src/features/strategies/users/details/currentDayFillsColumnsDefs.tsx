@@ -57,7 +57,7 @@ export function getCurrentDayFillsColumns() {
     },
     {
       field: "orderId",
-      headerName: i18next.t("Order ID", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("OrderID", { ns: "ColumnsDefs" }),
       minWidth: 80,
       editable: true,
       flex: 1,
@@ -65,7 +65,7 @@ export function getCurrentDayFillsColumns() {
     },
     {
       field: "entryId",
-      headerName: i18next.t("Entry ID", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("EntryID", { ns: "ColumnsDefs" }),
       minWidth: 60,
       editable: true,
       flex: 1,
