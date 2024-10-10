@@ -131,10 +131,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         dataSource={dataSource}
         showBorders={true}
         ref={datagrid}
+        width="100%"
+        columnAutoWidth={true}
         allowColumnReordering={true}
-        columnHidingEnabled={true}
+        columnHidingEnabled={false}
         onExporting={onExport}
-        width="99%"
         filterBuilder={{
           customOperations: [],
           allowHierarchicalFields: true,
@@ -214,7 +215,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               minimumFractionDigits: 6,
             })
           }
-          hidingPriority={11}
         />
         <Column
           dataField={PrefilterTokensField.MarketCap}
@@ -232,7 +232,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               minimumFractionDigits: 0,
             })
           }
-          hidingPriority={10}
         />
         <Column
           dataField={PrefilterTokensField.FullyDilutedValuation}
@@ -250,7 +249,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               minimumFractionDigits: 0,
             })
           }
-          hidingPriority={6}
         />
         <Column
           dataField={PrefilterTokensField.Tokenomics}
@@ -266,7 +264,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               minimumFractionDigits: 2,
             })
           }
-          hidingPriority={9}
         />
         <Column
           dataField={PrefilterTokensField.Volume}
@@ -278,7 +275,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
-          hidingPriority={7}
         />
         <Column
           dataField={PrefilterTokensField.Chains}
@@ -288,8 +284,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           minWidth={150}
           width={200}
-          allowHiding={true}
-          hidingPriority={4}>
+          allowHiding={true}>
         </Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
@@ -298,7 +293,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="boolean"
           minWidth={130}
-          hidingPriority={8}
         />
         <Column
           dataField={PrefilterTokensField.Categories}
@@ -307,8 +301,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           minWidth={150}
-          width={200}
-          hidingPriority={5}>
+          width={200}>
         </Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
@@ -320,7 +313,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
-          hidingPriority={3}
         />
         <Column
           dataField={PrefilterTokensField.TotalSupply}
@@ -332,7 +324,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
-          hidingPriority={2}
         />
         <Column
           dataField={PrefilterTokensField.MaxSupply}
@@ -344,7 +335,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
-          hidingPriority={1}
         />
         <Column
           dataField={PrefilterTokensField.Id}
@@ -352,7 +342,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="center"
           visible={false}
           minWidth={100}
-          hidingPriority={0}
         />
         <Export
           enabled={true}
