@@ -19,7 +19,7 @@ export interface MarketCapEqualModelingState {
   tableData: InvestingTableAsset[];
 }
 
-export const defaultTotalTokensCount: number = 10;
+export const defaultTotalTokensCount: number = 200;
 export const initialState: MarketCapEqualModelingState = {
   statusFetchingModelingData: "idle",
   tokens: [],
