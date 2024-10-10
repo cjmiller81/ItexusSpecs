@@ -80,7 +80,20 @@
     "Title": "Settlement History"
   },
   "ManageBankAccounts": {
-    "ManageBankAccountsTitle": "Manage Bank Accounts"
+    "ManageBankAccountsTitle": "Manage Bank Accounts",
+    "AddANewBankAccount": "Add a New Bank Account",
+    "FillInTheDetails": "Fill in the details below to submit a new bank account.",
+    "Country": "Country",
+    "Currency": "Currency",
+    "CustomNameTag": "Custom Name Tag",
+    "BankName": "Bank Name",
+    "AccountType": "Account Type",
+    "AccountNumber": "Account Number",
+    "Status": "Status",
+    "RemoveAccount": "Remove Account",
+    "AccountHolderName": "Name on Bank Account",
+    "RoutingNumber": "Routing Number",
+    "BICSwiftCode": "BIC / SWIFT Code (If International)"
   },
   "ManageCryptoAddresses": {
     "ManageCryptoAddressesTitle": "Manage Crypto Addresses"
