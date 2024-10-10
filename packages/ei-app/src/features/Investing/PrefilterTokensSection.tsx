@@ -36,6 +36,7 @@ export default function PrefilterTokensSection({
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { t } = useTranslation("PrefilterTokensSection");
+  const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
     onFilterChanged(currentFilter);
@@ -72,7 +73,11 @@ export default function PrefilterTokensSection({
           <PageTitle sx={{ width: "100%" }}>{t("PrefilterTokens")}</PageTitle>
         </Box>
       </StyledAccordionSummary>
-      <AccordionDetails sx={{ bgcolor: "background.paper" }}>
+      <AccordionDetails sx={{ 
+          bgcolor: "background.paper",
+          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms"
+        }}>
         <CustomFilterBuilder
           filterType="market-cap"
           filterBuilderFields={filterBuilderFields}

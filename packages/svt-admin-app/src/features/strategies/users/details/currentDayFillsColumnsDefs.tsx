@@ -17,7 +17,7 @@ export function getCurrentDayFillsColumns() {
     {
       field: "instruction",
       headerName: i18next.t("Instruction", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      minWidth: 70,
       editable: true,
       flex: 1,
       type: "string",
@@ -25,7 +25,7 @@ export function getCurrentDayFillsColumns() {
     {
       field: "isEntryOrder",
       headerName: i18next.t("IsEntryOrder", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      minWidth: 80,
       editable: true,
       flex: 1,
       type: "boolean",
@@ -33,7 +33,7 @@ export function getCurrentDayFillsColumns() {
     {
       field: "isExitOrder",
       headerName: i18next.t("IsExitOrder", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      minWidth: 80,
       editable: true,
       flex: 1,
       type: "boolean",
@@ -41,7 +41,7 @@ export function getCurrentDayFillsColumns() {
     {
       field: "status",
       headerName: i18next.t("Status", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      minWidth: 60,
       editable: true,
       flex: 1,
       type: "string",
@@ -49,7 +49,7 @@ export function getCurrentDayFillsColumns() {
     {
       field: "transactionTime",
       headerName: i18next.t("TransactionTime", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      minWidth: 140,
       editable: true,
       flex: 1,
       type: "dateTime",
@@ -57,16 +57,16 @@ export function getCurrentDayFillsColumns() {
     },
     {
       field: "orderId",
-      headerName: i18next.t("OrderId", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      headerName: i18next.t("OrderID", { ns: "ColumnsDefs" }),
+      minWidth: 80,
       editable: true,
       flex: 1,
       type: "string",
     },
     {
       field: "entryId",
-      headerName: i18next.t("EntryId", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      headerName: i18next.t("EntryID", { ns: "ColumnsDefs" }),
+      minWidth: 60,
       editable: true,
       flex: 1,
       type: "string",

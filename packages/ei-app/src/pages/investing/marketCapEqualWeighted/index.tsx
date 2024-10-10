@@ -89,7 +89,7 @@ export default function MarketCapEqualWeightedPage() {
         onSorterChanged={onSorterChanged}
         onFilterChanged={onFilterChanged}
       />
-
+      
       <IndexModelingSection
         persistKey="EqualWeightedIndexModeling"
         onCapitalChange={value => dispatch(setCapital(value))}
@@ -97,7 +97,6 @@ export default function MarketCapEqualWeightedPage() {
           dispatch(setTokens(value));
         }}
         weighted={weight * 100}
-        maxTokens={prefilteredData.length}
         capital={totalCapital}
         tokens={tokensCount || 0}
         isEqualWeight
