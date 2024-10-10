@@ -112,6 +112,30 @@ export default function UserDetailsSection({
         mt={2}
         align="center"
         variant="h6">
+        {t("Bots")}
+      </Typography>
+      <DataGrid<Bot>
+        slots={{
+          footer: () => <></>,
+        }}
+        sx={{
+          ...smallTableSx,
+          "& .MuiDataGrid-cell[data-field=startBot]": {
+            paddingTop: "0px",
+            paddingBottom: "0px",
+          },
+        }}
+        rows={bots}
+        rowHeight={25}
+        isCellEditable={() => false}
+        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
+        editMode="row"
+        getRowId={row => row.userId}
+      />
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
         {t("CurrentDayFills")}
       </Typography>
       <Stack>
@@ -147,51 +171,6 @@ export default function UserDetailsSection({
           rowHeight={25}
           isCellEditable={() => false}
           columns={getWorkingOrdersColumns()}
-          getRowId={row => row.id}
-        />
-      </Stack>
-      <Typography
-        mt={2}
-        align="center"
-        variant="h6">
-        {t("Bots")}
-      </Typography>
-      <DataGrid<Bot>
-        slots={{
-          footer: () => <></>,
-        }}
-        sx={{
-          ...smallTableSx,
-          "& .MuiDataGrid-cell[data-field=startBot]": {
-            paddingTop: "0px",
-            paddingBottom: "0px",
-          },
-        }}
-        rows={bots}
-        rowHeight={25}
-        isCellEditable={() => false}
-        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
-        editMode="row"
-        getRowId={row => row.userId}
-      />
-      <Typography
-        mt={2}
-        align="center"
-        variant="h6">
-        {t("Orders")}
-      </Typography>
-      <Stack>
-        <DataGrid<Order>
-          slots={{
-            footer: () => <></>,
-          }}
-          sx={smallTableSx}
-          rowSelection={false}
-          checkboxSelection={false}
-          rows={orders}
-          rowHeight={25}
-          isCellEditable={() => false}
-          columns={getOrderColumnsColumns()}
           getRowId={row => row.id}
         />
       </Stack>
