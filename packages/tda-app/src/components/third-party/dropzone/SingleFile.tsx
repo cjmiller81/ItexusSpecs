@@ -1,30 +1,30 @@
 // material-ui
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CardMedia from '@mui/material/CardMedia';
-import Stack from '@mui/material/Stack';
+import { styled } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import CardMedia from "@mui/material/CardMedia";
+import Stack from "@mui/material/Stack";
 
 // third-party
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from "react-dropzone";
 
 // project import
-import RejectionFiles from './RejectionFiles';
-import PlaceholderContent from './PlaceholderContent';
+import RejectionFiles from "./RejectionFiles";
+import PlaceholderContent from "./PlaceholderContent";
 
 // types
-import { CustomFile, UploadProps } from 'types/dropzone';
+import { CustomFile, UploadProps } from "types/dropzone";
 
-const DropzoneWrapper = styled('div')(({ theme }) => ({
-  outline: 'none',
-  overflow: 'hidden',
-  position: 'relative',
+const DropzoneWrapper = styled("div")(({ theme }) => ({
+  outline: "none",
+  overflow: "hidden",
+  position: "relative",
   padding: theme.spacing(5, 1),
   borderRadius: theme.shape.borderRadius,
-  transition: theme.transitions.create('padding'),
+  transition: theme.transitions.create("padding"),
   background: theme.palette.background.paper,
   border: `1px dashed ${theme.palette.secondary.main}`,
-  '&:hover': { opacity: 0.72, cursor: 'pointer' }
+  "&:hover": { opacity: 0.72, cursor: "pointer" },
 }));
 
 // ==============================|| UPLOAD - SINGLE FILE ||============================== //
@@ -32,19 +32,19 @@ const DropzoneWrapper = styled('div')(({ theme }) => ({
 export default function SingleFileUpload({ error, file, setFieldValue, sx }: UploadProps) {
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     accept: {
-      'image/*': []
+      "image/*": [],
     },
     multiple: false,
     onDrop: (acceptedFiles: CustomFile[]) => {
       setFieldValue(
-        'files',
+        "files",
         acceptedFiles.map((file: CustomFile) =>
           Object.assign(file, {
-            preview: URL.createObjectURL(file)
-          })
-        )
+            preview: URL.createObjectURL(file),
+          }),
+        ),
       );
-    }
+    },
   });
 
   const thumbs =
@@ -58,10 +58,10 @@ export default function SingleFileUpload({ error, file, setFieldValue, sx }: Upl
           top: 8,
           left: 8,
           borderRadius: 2,
-          position: 'absolute',
-          width: 'calc(100% - 16px)',
-          height: 'calc(100% - 16px)',
-          bgcolor: 'background.paper'
+          position: "absolute",
+          width: "calc(100% - 16px)",
+          height: "calc(100% - 16px)",
+          bgcolor: "background.paper",
         }}
         onLoad={() => {
           URL.revokeObjectURL(item.preview!);
@@ -70,35 +70,40 @@ export default function SingleFileUpload({ error, file, setFieldValue, sx }: Upl
     ));
 
   const onRemove = () => {
-    setFieldValue('files', null);
+    setFieldValue("files", null);
   };
 
   return (
-    <Box sx={{ width: '100%', ...sx }}>
+    <Box sx={{ width: "100%", ...sx }}>
       <DropzoneWrapper
         {...getRootProps()}
         sx={{
           ...(isDragActive && { opacity: 0.72 }),
           ...((isDragReject || error) && {
-            color: 'error.main',
-            borderColor: 'error.light',
-            bgcolor: 'error.lighter'
+            color: "error.main",
+            borderColor: "error.light",
+            bgcolor: "error.lighter",
           }),
           ...(file && {
-            padding: '12% 0'
-          })
-        }}
-      >
+            padding: "12% 0",
+          }),
+        }}>
         <input {...getInputProps()} />
         <PlaceholderContent />
         {thumbs}
       </DropzoneWrapper>
 
-      {fileRejections.length > 0 && <RejectionFiles fileRejections={fileRejections} />}
+      {fileRejections.length > 0 && <RejectionFiles fileRejections={[...fileRejections]} />}
 
       {file && file.length > 0 && (
-        <Stack direction="row" justifyContent="flex-end" sx={{ mt: 1.5 }}>
-          <Button variant="contained" color="error" onClick={onRemove}>
+        <Stack
+          direction="row"
+          justifyContent="flex-end"
+          sx={{ mt: 1.5 }}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={onRemove}>
             Remove
           </Button>
         </Stack>
