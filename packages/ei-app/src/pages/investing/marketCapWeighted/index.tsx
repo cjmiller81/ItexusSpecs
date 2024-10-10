@@ -98,7 +98,6 @@ export default function MarketCapWeightedPage() {
         }}
         weighted={weight * 100}
         capital={totalCapital}
-        maxTokens={prefilteredData.length}
         tokens={tokensCount || 0}
         tableAssets={tableData}
         title={t("IndexModeling")}

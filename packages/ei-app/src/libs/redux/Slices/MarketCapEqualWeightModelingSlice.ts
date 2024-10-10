@@ -11,10 +11,8 @@ export const setTokenstCount = (state: MarketCapEqualModelingState, tokensCount:
     return;
   }
   const tokensCountToSet = tokensCount === null ? defaultTotalTokensCount : tokensCount;
-  const newTokensCount =
-    tokensCountToSet > state.prefilteredData.length ? state.prefilteredData.length : tokensCountToSet;
-  state.tokensCount = newTokensCount;
-  state.weight = 1 / newTokensCount;
+  state.tokensCount = tokensCountToSet;
+  state.weight = 1 / tokensCountToSet;
 };
 
 export const marketCapEqualWeightModelingSlice = createAppSlice({
@@ -39,8 +37,8 @@ export const marketCapEqualWeightModelingSlice = createAppSlice({
           setTokenstCount(
             state,
             state.tokensCount === null && state.prefilteredData.length !== 0
-              ? defaultTotalTokensCount
-              : state.tokensCount,
+            ? defaultTotalTokensCount
+            : state.tokensCount,
           );
           calculateTableRows(state);
         },

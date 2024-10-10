@@ -18,7 +18,6 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
-  maxTokens: number;
 }
 
 export const IndexModelingSection = ({
@@ -31,7 +30,6 @@ export const IndexModelingSection = ({
   tableAssets,
   isEqualWeight,
   persistKey,
-  maxTokens,
   ...props
 }: Props) => {
   const { t } = useTranslation("IndexModelingSection");
@@ -95,7 +93,6 @@ export const IndexModelingSection = ({
             label={t("Tokens")}
             value={tokens}
             min={0}
-            max={maxTokens}
             onChange={(_, value) => onTokensChange(value || 0)}
           />
           {isEqualWeight && (
