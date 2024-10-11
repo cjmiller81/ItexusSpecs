@@ -7,13 +7,17 @@ import { CapitalAllocation } from "./details/capitalAllocation"
 import { Order } from "./details/order"
 import { Bot } from "./details/bot"
 import { OpenPosition } from "./details/openPosition"
+import { IWorkingOrder } from "./details/workingOrderInterface"
+import { ICurrentDayFills } from "./details/currentDayFillsInterface"
 
 type UserDetails = {
   orders: Order[],
   billings: Billing[],
   allocations: CapitalAllocation[],
   bots: Bot[],
-  openPositions: OpenPosition[]
+  openPositions: OpenPosition[],
+  workingOrders: IWorkingOrder[],
+  currentDayFills: ICurrentDayFills[]
 }
 
 export interface IvlUsersSliceState {
@@ -92,14 +96,16 @@ export const ivlUsersSlice = createAppSlice({
     ),
     fetchUserDetails: create.asyncThunk(
       async ({ userId }: { userId: string }): Promise<UserDetails> => {
-        const [billings, allocations, orders, bots, openPositions] = await Promise.all([
+        const [billings, allocations, orders, bots, openPositions, currentDayFills, workingOrders] = await Promise.all([
           ivlUsersService.getUserBillings(userId),
           ivlUsersService.getUserCapitalAllocations(userId),
           ivlUsersService.getUserOrders(userId),
           ivlUsersService.getUserBots(userId),
-          ivlUsersService.getOpenPositions(userId)
+          ivlUsersService.getOpenPositions(userId),
+          ivlUsersService.getCurrentDayFills(userId),
+          ivlUsersService.getUserWorkingOrders(userId)
         ])
-        return {billings, allocations, orders, bots, openPositions} 
+        return {billings, allocations, orders, bots, openPositions, currentDayFills, workingOrders} 
       },
       {
         pending: state => {

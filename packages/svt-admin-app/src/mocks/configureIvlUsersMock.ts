@@ -1,11 +1,13 @@
 import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
 import MockAdapter from "axios-mock-adapter"
-import { initAllocations, initBillings, initBots, initIvlUsers, initOpenPosition, initOrders } from "./initIvlUsers"
+import { initAllocations, initBillings, initBots, initCurrentDayFills, initIvlUsers, initOpenPosition, initOrders, initWorkingOrders } from "./initIvlUsers"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
 import { CapitalAllocation } from "@/features/strategies/ivl/users/details/capitalAllocation"
 import { Order } from "@/features/strategies/ivl/users/details/order"
 import { Bot } from "@/features/strategies/ivl/users/details/bot"
 import { OpenPosition } from "@/features/strategies/ivl/users/details/openPosition"
+import { IWorkingOrder } from "@/features/strategies/ivl/users/details/workingOrderInterface"
+import { ICurrentDayFills } from "@/features/strategies/ivl/users/details/currentDayFillsInterface"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
@@ -14,14 +16,18 @@ const mockState: {
   billings: Billing[],
   allocations: CapitalAllocation[],
   bots: Bot[],
-  openPositions: OpenPosition[]
+  openPositions: OpenPosition[],
+  workingOrders: IWorkingOrder[],
+  currentDayFills: ICurrentDayFills[]
 } = {
   ivlUsers: initIvlUsers,
   orders: initOrders,
   allocations: initAllocations,
   billings: initBillings,
   bots: initBots,
-  openPositions: initOpenPosition
+  openPositions: initOpenPosition,
+  workingOrders: initWorkingOrders,
+  currentDayFills: initCurrentDayFills
 }
 
 export function configureIvlUsersMock(mock: MockAdapter) {
@@ -54,6 +60,14 @@ export function configureIvlUsersMock(mock: MockAdapter) {
     const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.openPositions.filter(position => position.userId === userId)]
   })
+  const currentDayFillsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/current-day-fills`);
+  mock.onGet(currentDayFillsRegExp).reply(() => {
+    return [200, mockState.currentDayFills];
+  });
+  const getWorkingOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/([^/]+)\/working-orders`);
+  mock.onGet(getWorkingOrdersRegExp).reply(() => {
+    return [200, mockState.workingOrders];
+  });
   // eslint-disable-next-line
   const putUserRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/ivl\/users\/*`)
   mock.onPut(putUserRegExp).reply(config => {

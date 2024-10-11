@@ -2,8 +2,10 @@ import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
 import { Bot } from "@/features/strategies/ivl/users/details/bot"
 import { CapitalAllocation } from "@/features/strategies/ivl/users/details/capitalAllocation"
+import { ICurrentDayFills } from "@/features/strategies/ivl/users/details/currentDayFillsInterface"
 import { OpenPosition } from "@/features/strategies/ivl/users/details/openPosition"
 import { Order } from "@/features/strategies/ivl/users/details/order"
+import { IWorkingOrder } from "@/features/strategies/ivl/users/details/workingOrderInterface"
 
 export const initIvlUsers: IvlUser[] = [
   {
@@ -201,3 +203,39 @@ export const initOpenPosition: OpenPosition[] = [
     "pAndL": -100
   }
 ]
+
+export const initCurrentDayFills: ICurrentDayFills[] = [
+  {
+    id: "005a7378-e6e9-47345d-b6f4-88931365435435",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "6090 C | 4375 P",
+    exchangeOrderId: "55555654",
+    instruction: "Sell to Open",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "",
+    orderId: "55555654",
+    transactionTime: "2024-09-20 13:15",
+  },
+];
+
+export const initWorkingOrders: IWorkingOrder[] = [
+  {
+    id: "005a7378-e459-47fd-b6f4-889313rtyty543",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "6090 C | 4375 P",
+    exchangeOrderId: "12345678",
+    instruction: "Buy to Close",
+    isEntryOrder: false,
+    isExitOrder: true,
+    status: "Working",
+    exchangeEntryOrderId: "",
+    entryId: "55555654",
+    orderId: "77653731",
+    transactionTime: new Date("2024-09-20 13:15:00"),
+  },
+];
