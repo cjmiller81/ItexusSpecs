@@ -10,6 +10,7 @@ import cryptoAddressesReducer from "../../features/tables/crypto-addresses-table
 import { getPersistConfig } from "redux-deep-persist";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import bankAccountReducer from "../../features/tables/manage-bank-account-table/BankAccountsSlice";
 
 export const rootReducer = combineReducers({
   [uiSlice.name]: uiSlice.reducer,
@@ -20,6 +21,7 @@ export const rootReducer = combineReducers({
   [balancesWidgetSlice.name]: balancesWidgetSlice.reducer,
   statusConnection: statusConnectionReducer,
   cryptoAddresses: cryptoAddressesReducer,
+  bankAccounts: bankAccountReducer,
 });
 
 const config = getPersistConfig<RootState>({

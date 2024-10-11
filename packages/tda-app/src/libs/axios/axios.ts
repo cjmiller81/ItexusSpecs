@@ -1,9 +1,8 @@
-import { configureAxiosMockHandlers } from "@/mocks/configureAxiosMockHandlers";
+import { configureAxiosMockHandler } from "@/mocks/configureAxiosMockHandler";
 import axios, { AxiosError } from "axios";
 import { AddDatesProcessing, addError } from "components";
 import i18next from "i18next";
 import { appStore } from "../redux/Store";
-import { configureAxiosMockCryptoAddrHandler } from "mocks/configureAxiosMoc‎kCryptoAddrHandler";
 
 export const appAxios = axios.create({
   baseURL: process.env.API_BASE_URL,
@@ -31,8 +30,7 @@ appAxios.interceptors.response.use(
 );
 
 if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API) {
-  configureAxiosMockHandlers(appAxios);
-  configureAxiosMockCryptoAddrHandler(appAxios);
+  configureAxiosMockHandler(appAxios);
 } else {
   console.log("Mock backend API is disabled");
 }

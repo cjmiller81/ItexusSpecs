@@ -5,6 +5,8 @@ import { Billing } from "./details/billing"
 import { Order } from "./details/order"
 import { Bot } from "./details/bot"
 import { OpenPosition } from "./details/openPosition"
+import { ICurrentDayFills } from "./details/currentDayFillsInterface"
+import { IWorkingOrder } from "./details/workingOrderInterface"
 
 export const ivlUsersService = {
   update: async (user: IvlUser): Promise<void> => {
@@ -36,6 +38,14 @@ export const ivlUsersService = {
   },
   getOpenPositions: async (userId: string): Promise<OpenPosition[]> => {
     const response = await appAxios.get<OpenPosition[]>(`/api/ivl/users/${userId}/open-positions`)
+    return response.data
+  },
+  getCurrentDayFills: async (userId: string): Promise<ICurrentDayFills[]> => {
+    const response = await appAxios.get<ICurrentDayFills[]>(`/api/ivl/users/${userId}/current-day-fills`)
+    return response.data
+  },
+  getUserWorkingOrders: async (userId: string): Promise<IWorkingOrder[]> => {
+    const response = await appAxios.get<IWorkingOrder[]>(`/api/ivl/users/${userId}/working-orders`)
     return response.data
   },
 }

@@ -80,7 +80,30 @@
     "Title": "Settlement History"
   },
   "ManageBankAccounts": {
-    "ManageBankAccountsTitle": "Manage Bank Accounts"
+    "ManageBankAccountsTitle": "Manage Bank Accounts",
+    "AddANewBankAccount": "Add a New Bank Account",
+    "FillInTheDetails": "Fill in the details below to submit a new bank account.",
+    "SubmitNewAccount": "Submit New Account",
+    "Country": "Country",
+    "Currency": "Currency",
+    "CustomNameTag": "Custom Name Tag",
+    "BankName": "Bank Name",
+    "AccountType": "Account Type",
+    "AccountNumber": "Account Number",
+    "Status": "Status",
+    "RemoveAccount": "Remove Account",
+    "AccountHolderName": "Name on Bank Account",
+    "RoutingNumber": "Routing Number",
+    "BICSwiftCode": "BIC / SWIFT Code (If International)",
+    "DomesticBank": "Domestic Bank",
+    "InternationalBank": "International Bank",
+    "DragDropOrSelectFile": "Drag & Drop or Select file",
+    "DropFilesHereOrClick": "Drop files here or click",
+    "Browse": "browse",
+    "ThroughYourMachine": "through your machine",
+    "UploadedFiles": "Uploaded Files",
+    "Submit": "Submit",
+    "UploadBankStatement": "Upload Bank Statement"
   },
   "ManageCryptoAddresses": {
     "ManageCryptoAddressTitle": "Manage Crypto Addresses",
@@ -155,7 +178,19 @@
     "NewPasswordRequired": "New Password is required",
     "PasswordRequirementsError": "Password must contain at least 8 characters, one uppercase, one number and one special case character",
     "ConfirmPasswordRequired": "Confirm Password is required",
-    "PasswordsDoNotMatch": "Passwords do not match"
+    "PasswordsDoNotMatch": "Passwords do not match",
+    "AccountTypeIsRequired": "Account type is required",
+    "CountryIsRequired": "Country is required",
+    "CurrencyIsRequired": "Currency is required",
+    "AccountHolderNameIsRequired": "Account holder name is required",
+    "BankNameIsRequired": "Bank name is required",
+    "AccountNumberIsRequired": "Account number is required",
+    "RoutingNumberIsRequired": "Routing number is required",
+    "BICSWIFTCodeIsRequired": "BIC / SWIFT code is required",
+    "WalletAddressIsRequired": "Wallet Address is required",
+    "BlockchainIsRequired": "Blockchain is required",
+    "FirstNameIsRequired": "First Name is required",
+    "LastNameIsRequired": "Last Name is required"
   },
   "ory": {
     "login.title": "Login",

@@ -14,6 +14,7 @@ import {
   selectWallets,
   updateWallet,
 } from "components";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -24,9 +25,9 @@ export default function MyWalletsPage() {
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
     useAppSelector(state => state.walletWorthChart);
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
-  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, 'day').toDate());
   const [toDate, setToDate] = useState<Date | null>(new Date());
-  const [isDatesValid, setIsDatesValid] = useState<boolean>(false);
+  const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
 
   const { t } = useTranslation("MyWalletsPage");
