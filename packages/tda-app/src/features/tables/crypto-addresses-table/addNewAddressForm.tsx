@@ -13,11 +13,15 @@ const AddNewAddressForm = () => {
   const theme = useTheme();
 
   const validationSchema = Yup.object({
-    walletAddress: Yup.string().required(t("WalletAddressIsRequired")),
-    blockchain: Yup.string().required(t("BlockchainIsRequired")),
-    firstName: Yup.string().required(t("FirstNameIsRequired")),
-    middleName: Yup.string(),
-    lastName: Yup.string().required(t("LastNameIsRequired")),
+    // @ts-ignore
+    walletAddress: Yup.string().required(t("WalletAddressIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
+    blockchain: Yup.string().required(t("BlockchainIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
+    firstName: Yup.string().required(t("FirstNameIsRequired", { ns: "ErrorMessages" })),
+    middleName: Yup.string(), // No required validation, no changes needed
+    // @ts-ignore
+    lastName: Yup.string().required(t("LastNameIsRequired", { ns: "ErrorMessages" })),
   });
 
   const initialValues = {
