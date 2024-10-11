@@ -9,6 +9,7 @@ import statusConnectionReducer from "Layouts/DashboardLayout/Header/HeaderConten
 import { getPersistConfig } from "redux-deep-persist";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import bankAccountReducer from "../../features/tables/manage-bank-account-table/BankAccountsSlice";
 
 export const rootReducer = combineReducers({
   [uiSlice.name]: uiSlice.reducer,
@@ -18,6 +19,7 @@ export const rootReducer = combineReducers({
   adminUsers: adminUsersSlice.reducer,
   [balancesWidgetSlice.name]: balancesWidgetSlice.reducer,
   statusConnection: statusConnectionReducer,
+  bankAccounts: bankAccountReducer,
 });
 
 const config = getPersistConfig<RootState>({
