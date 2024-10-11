@@ -19,26 +19,26 @@ import { addBankAccount } from "features/tables/manage-bank-account-table/BankAc
 import { v4 as uuid } from "uuid";
 import Typography from "@mui/material/Typography";
 
-const validationSchema = Yup.object().shape({
-  accountType: Yup.string().required("Account type is required"),
-  country: Yup.string().required("Country is required"),
-  currency: Yup.string().required("Currency is required"),
-  accountHolderName: Yup.string().required("Account holder name is required"),
-  bankName: Yup.string().required("Bank name is required"),
-  accountNumber: Yup.string().required("Account number is required"),
-  routingNumber: Yup.string().required("Routing number is required"),
-  bicSwiftCode: Yup.string().required("BIC / SWIFT code is required"),
-});
-
 const SubmitNewAccPopUp: React.FC<{
   open: boolean;
   onClose: () => void;
-  files;
-  setFiles;
+  files: any[];
+  setFiles: React.Dispatch<React.SetStateAction<any[]>>;
   t: (key: string) => string;
 }> = ({ t, open, onClose, setFiles, files }) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+
+  const validationSchema = Yup.object().shape({
+    accountType: Yup.string().required(t("AccountTypeIsRequired")),
+    country: Yup.string().required(t("CountryIsRequired")),
+    currency: Yup.string().required(t("CurrencyIsRequired")),
+    accountHolderName: Yup.string().required(t("AccountHolderNameIsRequired")),
+    bankName: Yup.string().required(t("BankNameIsRequired")),
+    accountNumber: Yup.string().required(t("AccountNumberIsRequired")),
+    routingNumber: Yup.string().required(t("RoutingNumberIsRequired")),
+    bicSwiftCode: Yup.string().required(t("BICSWIFTCodeIsRequired")),
+  });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
@@ -86,7 +86,14 @@ const SubmitNewAccPopUp: React.FC<{
         },
       }}
       fullWidth>
-      <DialogTitle sx={{ fontSize: 16, color: theme.palette.grey[600] }}>{t("AddANewBankAccount")}</DialogTitle>
+      <DialogTitle
+        sx={{
+          fontSize: 16,
+          fontWeight: "bold",
+          color: theme.palette.grey[600],
+        }}>
+        {t("AddANewBankAccount")}
+      </DialogTitle>
       <Formik
         initialValues={{
           accountType: "",
@@ -130,7 +137,7 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="country"
                   margin="normal">
-                  <MenuItem value={t("USA")}>{t("USA")}</MenuItem>
+                  <MenuItem value="USA">{t("USA")}</MenuItem>
                 </Field>
                 <ErrorMessage
                   name="country"
@@ -148,9 +155,9 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="currency"
                   margin="normal">
-                  <MenuItem value={t("USD")}>{t("USD")}</MenuItem>
-                  <MenuItem value={t("BRL")}>{t("BRL")}</MenuItem>
-                  <MenuItem value={t("EUR")}>{t("EUR")}</MenuItem>
+                  <MenuItem value="USD">{t("USD")}</MenuItem>
+                  <MenuItem value="BRL">{t("BRL")}</MenuItem>
+                  <MenuItem value="EUR">{t("EUR")}</MenuItem>
                 </Field>
                 <ErrorMessage
                   name="currency"
@@ -277,14 +284,7 @@ const SubmitNewAccPopUp: React.FC<{
                     onChange={handleFileChange}
                     style={{ display: "none" }}
                   />
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      ml: 7,
-                    }}>
+                  <Box sx={{ textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <img
                       src="/uploadCloud.svg"
                       alt="upload icon"
@@ -308,17 +308,15 @@ const SubmitNewAccPopUp: React.FC<{
                   </Box>
                 </Box>
 
-                <Box sx={{ mt: 1 }}>
-                  {files.length > 0 && (
-                    <Typography variant="body2">
-                      {t("UploadedFiles")}
-                      <ul>
-                        {files.map((file, index) => (
-                          <li key={index}>{file.name}</li>
-                        ))}
-                      </ul>
-                    </Typography>
-                  )}
+                <Box mt={1}>
+                  {files.map((file, index) => (
+                    <Chip
+                      key={index}
+                      label={file.name}
+                      onDelete={() => setFiles(prevFiles => prevFiles.filter((_, i) => i !== index))}
+                      sx={{ marginRight: 0.5, marginBottom: 0.5 }}
+                    />
+                  ))}
                 </Box>
               </Stack>
 
