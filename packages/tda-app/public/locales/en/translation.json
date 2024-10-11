@@ -83,6 +83,7 @@
     "ManageBankAccountsTitle": "Manage Bank Accounts",
     "AddANewBankAccount": "Add a New Bank Account",
     "FillInTheDetails": "Fill in the details below to submit a new bank account.",
+    "SubmitNewAccount:": "Submit New Account",
     "Country": "Country",
     "Currency": "Currency",
     "CustomNameTag": "Custom Name Tag",
@@ -93,7 +94,16 @@
     "RemoveAccount": "Remove Account",
     "AccountHolderName": "Name on Bank Account",
     "RoutingNumber": "Routing Number",
-    "BICSwiftCode": "BIC / SWIFT Code (If International)"
+    "BICSwiftCode": "BIC / SWIFT Code (If International)",
+    "DomesticBank": "Domestic Bank",
+    "InternationalBank": "International Bank",
+    "DragDropOrSelectFile": "Drag & Drop or Select file",
+    "DropFilesHereOrClick": "Drop files here or click ",
+    "Browse": "browse",
+    "ThroughYourMachine": "through your machine",
+    "UploadedFiles:": "Uploaded Files:",
+    "Submit:": "Submit",
+    "UploadBankStatement:": "Upload Bank Statement"
   },
   "ManageCryptoAddresses": {
     "ManageCryptoAddressesTitle": "Manage Crypto Addresses"

@@ -23,6 +23,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ReactNode } from "react";
+import Box from "@mui/material/Box";
+import { TablePagination } from "components/third-party/react-table";
 
 const ReactTable = <TData extends object>({
   data,
@@ -105,6 +107,16 @@ const ReactTable = <TData extends object>({
             </Table>
           </TableContainer>
           <Divider />
+          <Box sx={{ p: 2 }}>
+            <TablePagination
+              {...{
+                setPageSize: table.setPageSize,
+                setPageIndex: table.setPageIndex,
+                getState: table.getState,
+                getPageCount: table.getPageCount,
+              }}
+            />
+          </Box>
         </Stack>
       </ScrollX>
     </StyledMainCard>

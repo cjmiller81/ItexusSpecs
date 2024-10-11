@@ -111,8 +111,8 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="accountType"
                   margin="normal">
-                  <MenuItem value="Domestic Bank">{t("DomesticBank")}</MenuItem>
-                  <MenuItem value="International Bank">{t("InternationalBank")}</MenuItem>
+                  <MenuItem value={t("DomesticBank")}>{t("DomesticBank")}</MenuItem>
+                  <MenuItem value={t("InternationalBank")}>{t("InternationalBank")}</MenuItem>
                 </Field>
                 <ErrorMessage
                   name="accountType"
@@ -130,7 +130,7 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="country"
                   margin="normal">
-                  <MenuItem value="USA">{t("USA")}</MenuItem>
+                  <MenuItem value={t("USA")}>{t("USA")}</MenuItem>
                 </Field>
                 <ErrorMessage
                   name="country"
@@ -148,12 +148,28 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="currency"
                   margin="normal">
-                  <MenuItem value="USD">{t("USD")}</MenuItem>
-                  <MenuItem value="BRL">{t("BRL")}</MenuItem>
-                  <MenuItem value="EUR">{t("EUR")}</MenuItem>
+                  <MenuItem value={t("USD")}>{t("USD")}</MenuItem>
+                  <MenuItem value={t("BRL")}>{t("BRL")}</MenuItem>
+                  <MenuItem value={t("EUR")}>{t("EUR")}</MenuItem>
                 </Field>
                 <ErrorMessage
                   name="currency"
+                  render={msg => <div style={{ color: "red" }}>{msg}</div>}
+                />
+              </Stack>
+
+              <Stack
+                spacing={0.5}
+                sx={{ mt: 1 }}>
+                <InputLabel>{t("CustomNameTag")}</InputLabel>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  name="customName"
+                  margin="normal"
+                />
+                <ErrorMessage
+                  name="customName"
                   render={msg => <div style={{ color: "red" }}>{msg}</div>}
                 />
               </Stack>
@@ -279,14 +295,14 @@ const SubmitNewAccPopUp: React.FC<{
                         variant="h6"
                         sx={{ color: theme.palette.grey[500] }}
                         component="div">
-                        {t("Drag & Drop or Select file")}
+                        {t("DragDropOrSelectFile")}
                       </Typography>
                       <Typography
                         sx={{ color: theme.palette.grey[500], mt: 1, fontSize: "10px" }}
                         component="div">
-                        {t("Drop files here or click ")}
-                        <span style={{ color: "rgb(22, 104, 220)", textDecoration: "underline" }}>{t("browse")}</span>
-                        {t(" through your machine")}
+                        {t("DropFilesHereOrClick")}
+                        <span style={{ color: "rgb(22, 104, 220)", textDecoration: "underline" }}>{t("Browse")}</span>
+                        {t("ThroughYourMachine")}
                       </Typography>
                     </Box>
                   </Box>
@@ -295,7 +311,7 @@ const SubmitNewAccPopUp: React.FC<{
                 <Box sx={{ mt: 1 }}>
                   {files.length > 0 && (
                     <Typography variant="body2">
-                      {t("Uploaded Files:")}
+                      {t("UploadedFiles")}
                       <ul>
                         {files.map((file, index) => (
                           <li key={index}>{file.name}</li>

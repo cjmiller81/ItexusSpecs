@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Grid, Typography, useTheme, Chip } from "@mui/material";
 import SubmitNewAccPopUp from "./submit_new_account_popUp";
 import MainCard from "../../../src/components/MainCard";
@@ -8,6 +7,7 @@ import { getManageBankAccountTableColumns } from "features/tables/manage-bank-ac
 import { useAppDispatch, useAppSelector } from "libs/redux/Store";
 import { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { deleteBankAccount, fetchBankAccounts } from "features/tables/manage-bank-account-table/BankAccountsSlice";
+import { useTranslation } from "react-i18next";
 
 const ManageBankAccounts: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -61,9 +61,9 @@ const ManageBankAccounts: React.FC = () => {
         <Grid
           item
           xs={12}>
-          <Typography variant="h3">{t("Add a New Bank Account")}</Typography>
+          <Typography variant="h3">{t("AddANewBankAccount")}</Typography>
           <Chip
-            label="Submit New Account"
+            label={t("SubmitNewAccount")}
             onClick={handlePopupOpen}
             color="primary"
             sx={{ cursor: "pointer", mt: 2 }}
