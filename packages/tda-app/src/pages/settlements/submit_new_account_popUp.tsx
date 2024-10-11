@@ -30,13 +30,21 @@ const SubmitNewAccPopUp: React.FC<{
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object().shape({
-    accountType: Yup.string().required(t("AccountTypeIsRequired", { ns: "ManageBankAccounts" })),
+    // @ts-ignore
+    accountType: Yup.string().required(t("AccountTypeIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     country: Yup.string().required(t("CountryIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     currency: Yup.string().required(t("CurrencyIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     accountHolderName: Yup.string().required(t("AccountHolderNameIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     bankName: Yup.string().required(t("BankNameIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     accountNumber: Yup.string().required(t("AccountNumberIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     routingNumber: Yup.string().required(t("RoutingNumberIsRequired", { ns: "ErrorMessages" })),
+    // @ts-ignore
     bicSwiftCode: Yup.string().required(t("BICSWIFTCodeIsRequired", { ns: "ErrorMessages" })),
   });
 
