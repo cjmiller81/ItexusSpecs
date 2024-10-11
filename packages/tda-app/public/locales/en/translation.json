@@ -93,10 +93,13 @@
     "AddANewAddress": "Add a New Address",
     "AddressWhitelist": "Address Whitelist",
     "WalletAddress": "Wallet Address",
-    "Blockchain": "Blockchain",
     "FirstName": "First Name",
     "MiddleName": "Middle Name",
-    "LastName": "Last Name"
+    "LastName": "Last Name",
+    "WalletAddressIsRequired": "Wallet Address is required",
+    "BlockchainIsRequired": "Blockchain is required",
+    "FirstNameIsRequired": "First Name is required",
+    "LastNameIsRequired": "Last Name is required"
   },
   "Notification": {
     "FillBuySell": "Fill: {{side}} {{qty}} {{pair}}",
