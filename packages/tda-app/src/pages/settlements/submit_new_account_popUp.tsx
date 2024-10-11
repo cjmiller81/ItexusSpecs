@@ -30,14 +30,14 @@ const SubmitNewAccPopUp: React.FC<{
   const dispatch = useAppDispatch();
 
   const validationSchema = Yup.object().shape({
-    accountType: Yup.string().required(t("AccountTypeIsRequired")),
-    country: Yup.string().required(t("CountryIsRequired")),
-    currency: Yup.string().required(t("CurrencyIsRequired")),
-    accountHolderName: Yup.string().required(t("AccountHolderNameIsRequired")),
-    bankName: Yup.string().required(t("BankNameIsRequired")),
-    accountNumber: Yup.string().required(t("AccountNumberIsRequired")),
-    routingNumber: Yup.string().required(t("RoutingNumberIsRequired")),
-    bicSwiftCode: Yup.string().required(t("BICSWIFTCodeIsRequired")),
+    accountType: Yup.string().required(t("AccountTypeIsRequired", { ns: "ManageBankAccounts" })),
+    country: Yup.string().required(t("CountryIsRequired", { ns: "ErrorMessages" })),
+    currency: Yup.string().required(t("CurrencyIsRequired", { ns: "ErrorMessages" })),
+    accountHolderName: Yup.string().required(t("AccountHolderNameIsRequired", { ns: "ErrorMessages" })),
+    bankName: Yup.string().required(t("BankNameIsRequired", { ns: "ErrorMessages" })),
+    accountNumber: Yup.string().required(t("AccountNumberIsRequired", { ns: "ErrorMessages" })),
+    routingNumber: Yup.string().required(t("RoutingNumberIsRequired", { ns: "ErrorMessages" })),
+    bicSwiftCode: Yup.string().required(t("BICSWIFTCodeIsRequired", { ns: "ErrorMessages" })),
   });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

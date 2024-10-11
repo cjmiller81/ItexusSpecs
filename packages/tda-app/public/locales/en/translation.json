@@ -103,15 +103,7 @@
     "ThroughYourMachine": "through your machine",
     "UploadedFiles": "Uploaded Files",
     "Submit": "Submit",
-    "UploadBankStatement": "Upload Bank Statement",
-    "AccountTypeIsRequired": "Account type is required",
-    "CountryIsRequired": "Country is required",
-    "CurrencyIsRequired": "Currency is required",
-    "AccountHolderNameIsRequired": "Account holder name is required",
-    "BankNameIsRequired": "Bank name is required",
-    "AccountNumberIsRequired": "Account number is required",
-    "RoutingNumberIsRequired": "Routing number is required",
-    "BICSWIFTCodeIsRequired": "BIC / SWIFT code is required"
+    "UploadBankStatement": "Upload Bank Statement"
   },
   "ManageCryptoAddresses": {
     "ManageCryptoAddressesTitle": "Manage Crypto Addresses"
@@ -170,7 +162,19 @@
     "NewPasswordRequired": "New Password is required",
     "PasswordRequirementsError": "Password must contain at least 8 characters, one uppercase, one number and one special case character",
     "ConfirmPasswordRequired": "Confirm Password is required",
-    "PasswordsDoNotMatch": "Passwords do not match"
+    "PasswordsDoNotMatch": "Passwords do not match",
+    "AccountTypeIsRequired": "Account type is required",
+    "CountryIsRequired": "Country is required",
+    "CurrencyIsRequired": "Currency is required",
+    "AccountHolderNameIsRequired": "Account holder name is required",
+    "BankNameIsRequired": "Bank name is required",
+    "AccountNumberIsRequired": "Account number is required",
+    "RoutingNumberIsRequired": "Routing number is required",
+    "BICSWIFTCodeIsRequired": "BIC / SWIFT code is required",
+    "WalletAddressIsRequired": "Wallet Address is required",
+    "BlockchainIsRequired": "Blockchain is required",
+    "FirstNameIsRequired": "First Name is required",
+    "LastNameIsRequired": "Last Name is required"
   },
   "ory": {
     "login.title": "Login",
