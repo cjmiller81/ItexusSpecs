@@ -44,8 +44,22 @@ const SubmitNewAccPopUp: React.FC<{
     accountNumber: Yup.string().required(t("AccountNumberIsRequired", { ns: "ErrorMessages" })),
     // @ts-ignore
     routingNumber: Yup.string().required(t("RoutingNumberIsRequired", { ns: "ErrorMessages" })),
-    // @ts-ignore
-    bicSwiftCode: Yup.string().required(t("BICSWIFTCodeIsRequired", { ns: "ErrorMessages" })),
+    bicSwiftCode: Yup.string().test(
+      "bic-swift-code-required",
+      // @ts-ignore
+      t("BICSWIFTCodeIsRequired", { ns: "ErrorMessages" }),
+      function (value) {
+        const { accountType } = this.parent;
+        if (accountType === t("InternationalBank") && !value) {
+          return this.createError({
+            path: "bicSwiftCode",
+            // @ts-ignore
+            message: t("BICSWIFTCodeIsRequired", { ns: "ErrorMessages" }),
+          });
+        }
+        return true;
+      },
+    ),
   });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,6 +244,7 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="accountNumber"
                   margin="normal"
+                  autoComplete="off"
                 />
                 <ErrorMessage
                   name="accountNumber"
@@ -246,6 +261,7 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="routingNumber"
                   margin="normal"
+                  autoComplete="off"
                 />
                 <ErrorMessage
                   name="routingNumber"
@@ -262,6 +278,7 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="bicSwiftCode"
                   margin="normal"
+                  autoComplete="off"
                 />
                 <ErrorMessage
                   name="bicSwiftCode"
