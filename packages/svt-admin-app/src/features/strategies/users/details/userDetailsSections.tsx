@@ -4,12 +4,11 @@ import { Box, BoxProps, Stack, Theme, styled, SxProps } from "@mui/system";
 import { DataGrid, GridRowId } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { smallTableSx } from "../../shared/tableSx";
+import { adaptiveHeightTableSx } from "../../shared/tableSx";
 import { IFifoUser } from "../iFifoUser";
 import { Bot } from "./bot";
 import { getBotColumnsDefs } from "./botsColumnsDefs";
 import { Order } from "./order";
-import { getOrderColumnsColumns } from "./ordersColumnsDefs";
 import UserMetricCard from "./UserMetricCard";
 import { OpenPosition } from "./openPosition";
 import { getOpenPositionColumns } from "./openPositionColumnsDefs";
@@ -119,7 +118,7 @@ export default function UserDetailsSection({
           footer: () => <></>,
         }}
         sx={{
-          ...smallTableSx,
+          ...adaptiveHeightTableSx,
           "& .MuiDataGrid-cell[data-field=startBot]": {
             paddingTop: "0px",
             paddingBottom: "0px",
@@ -143,7 +142,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={currentDayFills}
@@ -164,7 +163,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={workingOrders}

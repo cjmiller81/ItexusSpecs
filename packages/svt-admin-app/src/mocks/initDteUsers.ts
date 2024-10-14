@@ -1,5 +1,7 @@
 import { Bot } from "@/features/strategies/dte/users/details/bot";
+import { ICurrentDayFills } from "@/features/strategies/dte/users/details/currentDayFillsInterface";
 import { OpenPosition } from "@/features/strategies/dte/users/details/openPosition";
+import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface";
 import { IDteUser } from "@/features/strategies/dte/users/iDteUser";
 
 export const initDteUsers: IDteUser[] = [
@@ -95,4 +97,40 @@ export const initOpenPosition: OpenPosition[] = [
     "pAndL": -50
   }
 ]
+
+export const initCurrentDayFills: ICurrentDayFills[] = [
+  {
+    id: "005a7378-e6e9-47345d-b6f4-88931365435435",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "5750 | 5725 | 5700",
+    exchangeOrderId: "55555654",
+    instruction: "Sell to Open",
+    isEntryOrder: true,
+    isExitOrder: false,
+    status: "Filled",
+    exchangeEntryOrderId: "",
+    entryId: "",
+    orderId: "55555654",
+    transactionTime: new Date("2024-09-20 9:00"),
+  },
+];
+
+export const initWorkingOrders: IWorkingOrder[] = [
+  {
+    id: "005a7378-e459-47fd-b6f4-889313rtyty543",
+    userId: "WP5678",
+    accountNumber: "ABC5678",
+    tradeSymbol: "5750 | 5725 | 5700",
+    exchangeOrderId: "12345678",
+    instruction: "Buy to Close",
+    isEntryOrder: false,
+    isExitOrder: true,
+    status: "Working",
+    exchangeEntryOrderId: "",
+    entryId: "55555654",
+    orderId: "77653731",
+    transactionTime: new Date("2024-09-20 9:00:00"),
+  },
+];
   

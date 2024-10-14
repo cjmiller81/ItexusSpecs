@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material";
-import { Box, BoxProps, SxProps, Theme, styled } from "@mui/system";
+import { Box, BoxProps, Stack, SxProps, Theme, styled } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { IDteUser } from "../iDteUser";
-import { smallTableSx } from "@/features/strategies/shared/tableSx";
+import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
 import { Bot } from "./bot";
 import { getBotColumnsDefs } from "./botsColumnDefs";
 import { OpenPosition } from "./openPosition";
@@ -11,17 +11,31 @@ import { useMemo } from "react";
 import { formatCurrencyToString } from "@/utils/common";
 import UserMetricCard from "./UserMetricCard";
 import { getOpenPositionColumns } from "./openPositionColumnsDefs";
+import { ICurrentDayFills } from "./currentDayFillsInterface";
+import { IWorkingOrder } from "./workingOrderInterface";
+import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
+import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
 
 
 type Props = BoxProps & {
   user: IDteUser;
   bots: Bot[];
+  currentDayFills: ICurrentDayFills[];
+  workingOrders: IWorkingOrder[];
   openPositions: OpenPosition[];
   theme: Theme;
   opened?: boolean;
 };
 
-export default function UserDetailsSection({ opened, user, bots, openPositions, theme, ...props }: Props) {
+export default function UserDetailsSection({ 
+  opened, 
+  user, 
+  bots, 
+  openPositions, 
+  theme, 
+  currentDayFills,
+  workingOrders,
+  ...props }: Props) {
   const { t } = useTranslation("UserDetailsSection");
 
   const handleStopClick = () => {};
@@ -96,7 +110,7 @@ export default function UserDetailsSection({ opened, user, bots, openPositions, 
           footer: () => <></>,
         }}
         sx={{
-          ...smallTableSx,
+          ...adaptiveHeightTableSx,
           "& .MuiDataGrid-cell[data-field=startBot]": {
             paddingTop: "0px",
             paddingBottom: "0px",
@@ -109,6 +123,48 @@ export default function UserDetailsSection({ opened, user, bots, openPositions, 
         editMode="row"
         getRowId={row => row.userId}
       />
+       <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("CurrentDayFills")}
+      </Typography>
+      <Stack>
+        <DataGrid<ICurrentDayFills>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={adaptiveHeightTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={currentDayFills}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getCurrentDayFillsColumns()}
+          getRowId={row => row.id}
+        />
+      </Stack>
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("WorkingOrder")}
+      </Typography>
+      <Stack>
+        <DataGrid<IWorkingOrder>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={adaptiveHeightTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={workingOrders}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getWorkingOrdersColumns()}
+          getRowId={row => row.id}
+        />
+      </Stack>
     </Box>
   );
 }

@@ -64,3 +64,30 @@ export const smallTableSx: SxProps<Theme>= {
     minHeight: "10px",
   },
 }
+
+export const adaptiveHeightTableSx: SxProps<Theme>= {
+  ...tableSx,
+  height: "inherit !important",
+  maxHeight: "218px",
+  minHeight: "83px",
+  "& .MuiDataGrid-main": {
+    maxHeight: "215px",
+    minHeight: "80px",
+  },
+  "& .MuiDataGrid-cell":{
+    padding: 0.5,
+    minWidth: "auto important",
+    fontSize: "10.5px"
+  },
+  "& .MuiDataGrid-columnHeader":{
+    padding: 0.5,
+    fontSize: "11px",
+    width: "auto !important"
+  },
+  "& .MuiDataGrid-columnHeaders":{
+    height: "20px !important",
+  },
+  "& .MuiDataGrid-row":{
+    minHeight: "10px",
+  },
+}
