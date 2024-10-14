@@ -17,6 +17,10 @@ import { OpenPosition } from "./openPosition"
 import { useMemo } from "react"
 import { formatCurrencyToString } from "@/utils/common"
 import { getOpenPositionColumns } from "./openPositionColumnsDefs"
+import { ICurrentDayFills } from "./currentDayFillsInterface"
+import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs"
+import { IWorkingOrder } from "./workingOrderInterface"
+import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs"
 
 type Props = BoxProps & {
   user: IvlUser
@@ -25,10 +29,24 @@ type Props = BoxProps & {
   allocations: CapitalAllocation[]
   billings: Billing[],
   openPositions: OpenPosition[]
+  currentDayFills: ICurrentDayFills[]
+  workingOrders: IWorkingOrder[]
   theme: Theme
   opened?: boolean
 }
-export default function UserDetailsSection({ opened, user, orders, allocations, billings, openPositions, bots, theme, ...props }: Props) {
+export default function UserDetailsSection({ 
+  opened, 
+  user,
+  orders, 
+  allocations, 
+  billings, 
+  openPositions, 
+  bots, 
+  currentDayFills,
+  workingOrders,
+  theme, 
+  ...props 
+}: Props) {
   const { t } = useTranslation("UserDetailsSection")
   
   const handleStopClick = () => {};
@@ -175,6 +193,48 @@ export default function UserDetailsSection({ opened, user, orders, allocations, 
           isCellEditable={() => false}
           columns={getCapitalAllocationColumnsDefs()}
           editMode="row"
+          getRowId={row => row.id}
+        />
+      </Stack>
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("CurrentDayFills")}
+      </Typography>
+      <Stack>
+        <DataGrid<ICurrentDayFills>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={smallTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={currentDayFills}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getCurrentDayFillsColumns()}
+          getRowId={row => row.id}
+        />
+      </Stack>
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("WorkingOrder")}
+      </Typography>
+      <Stack>
+        <DataGrid<IWorkingOrder>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={smallTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={workingOrders}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getWorkingOrdersColumns()}
           getRowId={row => row.id}
         />
       </Stack>
