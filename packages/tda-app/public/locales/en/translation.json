@@ -106,7 +106,23 @@
     "UploadBankStatement": "Upload Bank Statement"
   },
   "ManageCryptoAddresses": {
-    "ManageCryptoAddressesTitle": "Manage Crypto Addresses"
+    "ManageCryptoAddressTitle": "Manage Crypto Addresses",
+    "Address": "Address",
+    "Status": "Status",
+    "AddressTagMemo": "Address Tag/Memo",
+    "Blockchain": "Blockchain",
+    "RemoveAddress": "Remove Address",
+    "Delete": "Delete",
+    "AddANewAddress": "Add a New Address",
+    "AddressWhitelist": "Address Whitelist",
+    "WalletAddress": "Wallet Address",
+    "FirstName": "First Name",
+    "MiddleName": "Middle Name",
+    "LastName": "Last Name",
+    "WalletAddressIsRequired": "Wallet Address is required",
+    "BlockchainIsRequired": "Blockchain is required",
+    "FirstNameIsRequired": "First Name is required",
+    "LastNameIsRequired": "Last Name is required"
   },
   "Notification": {
     "FillBuySell": "Fill: {{side}} {{qty}} {{pair}}",
