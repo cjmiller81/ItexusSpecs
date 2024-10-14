@@ -1,18 +1,24 @@
 import MockAdapter from "axios-mock-adapter"
 import { IDteUser } from "@/features/strategies/dte/users/iDteUser"
-import { initBots, initDteUsers, initOpenPosition } from "./initDteUsers"
+import { initBots, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
 import { Bot } from "@/features/strategies/dte/users/details/bot"
 import { OpenPosition } from "@/features/strategies/users/details/openPosition"
+import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface"
+import { ICurrentDayFills } from "@/features/strategies/dte/users/details/currentDayFillsInterface"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
   dteUsers: IDteUser[],
   bots: Bot[],
-  openPositions: OpenPosition[]
+  openPositions: OpenPosition[],
+  workingOrders: IWorkingOrder[],
+  currentDayFills: ICurrentDayFills[]
 } = {
   dteUsers: initDteUsers,
   bots: initBots,
-  openPositions: initOpenPosition
+  openPositions: initOpenPosition,
+  workingOrders: initWorkingOrders,
+  currentDayFills: initCurrentDayFills
 }
 
 export function configureDteUsersMock(mock: MockAdapter) {
@@ -25,6 +31,16 @@ export function configureDteUsersMock(mock: MockAdapter) {
     const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.openPositions.filter(position => position.userId === userId)]
   })
+
+  const currentDayFillsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/current-day-fills`);
+  mock.onGet(currentDayFillsRegExp).reply(() => {
+    return [200, mockState.currentDayFills];
+  });
+
+  const getWorkingOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/working-orders`);
+  mock.onGet(getWorkingOrdersRegExp).reply(() => {
+    return [200, mockState.workingOrders];
+  });
 
   // eslint-disable-next-line
   const putUserRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/*`)
