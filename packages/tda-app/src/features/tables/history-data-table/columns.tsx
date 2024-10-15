@@ -10,7 +10,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
   return [
     {
       accessorKey: "transactTime",
-      header: "Trade Time",
+      header: () => <Typography fontSize="15px">Trade Time</Typography>,
       enableResizing: true,
       meta: {
         sx: { minWidth: 22 },
@@ -19,7 +19,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "id",
-      header: "Order ID",
+      header: () => <Typography fontSize="15px">Order ID</Typography>,
       enableResizing: true,
       cell: props => (
         <Typography
@@ -39,8 +39,8 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "symbol",
+      header: () => <Typography fontSize="15px">Pair</Typography>,
       enableResizing: true,
-      header: "Pair",
       minSize: 100,
       meta: {
         sx: {
@@ -50,7 +50,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "side",
-      header: "Action",
+      header: () => <Typography fontSize="15px">Action</Typography>,
       enableResizing: true,
       cell: props => {
         const action = props.getValue() as string;
@@ -83,19 +83,25 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "filledQty",
-      header: "Quantity",
+      header: () => <Typography fontSize="15px">Quantity</Typography>,
       enableResizing: true,
       cell: props => formatFilledQty(props.getValue() as string),
     },
     {
       accessorKey: "filledPrice",
-      header: "Price",
+      header: () => <Typography fontSize="15px">Price</Typography>,
       enableResizing: true,
       cell: props => formatFilledPrice(props.getValue() as string),
     },
     {
       accessorKey: "status",
-      header: () => <div style={{ marginLeft: "20px" }}>Status</div>,
+      header: () => (
+        <Typography
+          fontSize="15px"
+          style={{ marginLeft: "20px" }}>
+          Status
+        </Typography>
+      ),
       enableResizing: true,
       cell: props => <StatusChip status={props.getValue() as OrderStatus} />,
     },

@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { forwardRef, CSSProperties, ReactElement, Ref } from 'react';
+import { forwardRef, CSSProperties, ReactElement, Ref } from "react";
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
-import Card, { CardProps } from '@mui/material/Card';
-import CardContent, { CardContentProps } from '@mui/material/CardContent';
-import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
-import Typography from '@mui/material/Typography';
+import { useTheme } from "@mui/material/styles";
+import Card, { CardProps } from "@mui/material/Card";
+import CardContent, { CardContentProps } from "@mui/material/CardContent";
+import CardHeader, { CardHeaderProps } from "@mui/material/CardHeader";
+import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
 
 // project-import
-import Highlighter from './third-party/Highlighter';
-import { ThemeMode } from 'config';
+import Highlighter from "./third-party/Highlighter";
+import { ThemeMode } from "config";
 
 // types
-import { KeyedObject } from 'types/root';
+import { KeyedObject } from "types/root";
 
 // header style
 const headerSX = {
   p: 2.5,
-  '& .MuiCardHeader-action': { m: '0px auto', alignSelf: 'center' }
+  "& .MuiCardHeader-action": { m: "0px auto", alignSelf: "center" },
 };
 
 // ==============================|| CUSTOM - MAIN CARD ||============================== //
@@ -32,16 +32,17 @@ export interface MainCardProps extends KeyedObject {
   subheader?: ReactElement | string;
   style?: CSSProperties;
   content?: boolean;
-  contentSX?: CardContentProps['sx'];
+  contentSX?: CardContentProps["sx"];
   darkTitle?: boolean;
   divider?: boolean;
-  sx?: CardProps['sx'];
-  secondary?: CardHeaderProps['action'];
+  sx?: CardProps["sx"];
+  secondary?: CardHeaderProps["action"];
   shadow?: string;
   title?: ReactElement | string;
   codeHighlight?: boolean;
   codeString?: string;
   modal?: boolean;
+  titleFontSize?: string | number;
 }
 
 function MainCard(
@@ -61,9 +62,10 @@ function MainCard(
     codeHighlight = false,
     codeString,
     modal = false,
+    titleFontSize = "16px",
     ...others
   }: MainCardProps,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLDivElement>,
 ) {
   const theme = useTheme();
   boxShadow = theme.palette.mode === ThemeMode.DARK ? boxShadow || true : boxShadow;
@@ -71,47 +73,65 @@ function MainCard(
   return (
     <Card
       sx={{
-        position: 'relative',
-        border: border ? '1px solid' : 'none',
+        position: "relative",
+        border: border ? "1px solid" : "none",
         borderRadius: 1,
-        borderColor: theme.palette.mode === ThemeMode.DARK ? 'divider' : 'grey.A800',
-        boxShadow: boxShadow && (!border || theme.palette.mode === ThemeMode.DARK) ? shadow || theme.customShadows.z1 : 'none',
-        ':hover': {
-          boxShadow: boxShadow ? shadow || theme.customShadows.z1 : 'none'
+        borderColor: theme.palette.mode === ThemeMode.DARK ? "divider" : "grey.A800",
+        boxShadow:
+          boxShadow && (!border || theme.palette.mode === ThemeMode.DARK) ? shadow || theme.customShadows.z1 : "none",
+        ":hover": {
+          boxShadow: boxShadow ? shadow || theme.customShadows.z1 : "none",
         },
         ...(theme.palette.mode === ThemeMode.DARK && {
-          backgroundImage: 'none'
+          backgroundImage: "none",
         }),
         ...(codeHighlight && {
-          '& pre': {
+          "& pre": {
             margin: 0,
-            padding: '12px !important',
+            padding: "12px !important",
             fontFamily: theme.typography.fontFamily,
-            fontSize: '0.75rem'
-          }
+            fontSize: "0.75rem",
+          },
         }),
         ...(modal && {
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: { xs: `calc( 100% - 50px)`, sm: 'auto' },
-          '& .MuiCardContent-root': {
-            overflowY: 'auto',
-            minHeight: 'auto',
-            maxHeight: `calc(100vh - 200px)`
-          }
+          position: "absolute" as "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: { xs: `calc( 100% - 50px)`, sm: "auto" },
+          "& .MuiCardContent-root": {
+            overflowY: "auto",
+            minHeight: "auto",
+            maxHeight: `calc(100vh - 200px)`,
+          },
         }),
-        ...sx
+        ...sx,
       }}
       ref={ref}
-      {...others}
-    >
+      {...others}>
       {/* card header and action */}
       {!darkTitle && title && (
-        <CardHeader sx={headerSX} titleTypographyProps={{ variant: 'subtitle1' }} title={title} action={secondary} subheader={subheader} />
+        <CardHeader
+          sx={headerSX}
+          titleTypographyProps={{ variant: "subtitle1", sx: { fontSize: titleFontSize } }}
+          title={title}
+          action={secondary}
+          subheader={subheader}
+        />
       )}
-      {darkTitle && title && <CardHeader sx={headerSX} title={<Typography variant="h4">{title}</Typography>} action={secondary} />}
+      {darkTitle && title && (
+        <CardHeader
+          sx={headerSX}
+          title={
+            <Typography
+              variant="h4"
+              sx={{ fontSize: titleFontSize }}>
+              {title}
+            </Typography>
+          }
+          action={secondary}
+        />
+      )}
 
       {/* content & header divider */}
       {title && divider && <Divider />}
@@ -120,11 +140,14 @@ function MainCard(
       {content && <CardContent sx={contentSX}>{children}</CardContent>}
       {!content && children}
 
-      {/* card footer - clipboard & highlighter  */}
+      {/* card footer - clipboard & highlighter */}
       {codeString && (
         <>
-          <Divider sx={{ borderStyle: 'dashed' }} />
-          <Highlighter codeString={codeString} codeHighlight={codeHighlight} />
+          <Divider sx={{ borderStyle: "dashed" }} />
+          <Highlighter
+            codeString={codeString}
+            codeHighlight={codeHighlight}
+          />
         </>
       )}
     </Card>
