@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid"
 import { useTranslation } from "react-i18next"
 import { IvlUser } from "../IvlUser"
 import { getOrderColumnsColumns } from "../ordersColumnsDefs"
-import { smallTableSx } from "../../../shared/tableSx"
+import { adaptiveHeightTableSx } from "../../../shared/tableSx"
 import { Billing } from "./billing"
 import { getBillingColumnsDefs } from "./billingColumnsDefs"
 import { CapitalAllocation } from "./capitalAllocation"
@@ -122,7 +122,7 @@ export default function UserDetailsSection({
           footer: () => <></>,
         }}
         sx={{
-          ...smallTableSx,
+          ...adaptiveHeightTableSx,
           "& .MuiDataGrid-cell[data-field=startBot]": {
             paddingTop: "0px",
             paddingBottom: "0px",
@@ -146,7 +146,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={orders}
@@ -165,7 +165,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={billings}
@@ -185,7 +185,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={allocations}
@@ -207,7 +207,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={currentDayFills}
@@ -228,7 +228,7 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
-          sx={smallTableSx}
+          sx={adaptiveHeightTableSx}
           rowSelection={false}
           checkboxSelection={false}
           rows={workingOrders}

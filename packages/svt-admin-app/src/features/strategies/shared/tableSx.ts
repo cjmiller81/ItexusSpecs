@@ -68,11 +68,11 @@ export const smallTableSx: SxProps<Theme>= {
 export const adaptiveHeightTableSx: SxProps<Theme>= {
   ...tableSx,
   height: "inherit !important",
-  minHeight: "50px",
-  maxHeight: "300px",
+  maxHeight: "218px",
+  minHeight: "83px",
   "& .MuiDataGrid-main": {
-    maxHeight: "300px",
-    minHeight: "50px",
+    maxHeight: "215px",
+    minHeight: "80px",
   },
   "& .MuiDataGrid-cell":{
     padding: 0.5,

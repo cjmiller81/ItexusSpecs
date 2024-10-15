@@ -3,7 +3,7 @@ import { Box, BoxProps, Stack, SxProps, Theme, styled } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { IDteUser } from "../iDteUser";
-import { adaptiveHeightTableSx, smallTableSx } from "@/features/strategies/shared/tableSx";
+import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
 import { Bot } from "./bot";
 import { getBotColumnsDefs } from "./botsColumnDefs";
 import { OpenPosition } from "./openPosition";
@@ -110,7 +110,7 @@ export default function UserDetailsSection({
           footer: () => <></>,
         }}
         sx={{
-          ...smallTableSx,
+          ...adaptiveHeightTableSx,
           "& .MuiDataGrid-cell[data-field=startBot]": {
             paddingTop: "0px",
             paddingBottom: "0px",
