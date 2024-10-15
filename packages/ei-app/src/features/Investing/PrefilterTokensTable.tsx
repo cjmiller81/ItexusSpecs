@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ICategory } from "components/src/models/token/ICatigory"
 import { ICoin } from "components/src/models/token/ICoin"
-import { IPlatform } from "components/src/models/token/IPlatform"
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -12,24 +10,29 @@ import DataGridDef, {
   FilterPanel,
   FilterRow,
   HeaderFilter,
+  Item,
   LoadPanel,
   Pager,
   Paging,
   Position,
   Search,
   Sorting,
+  Toolbar,
 } from "devextreme-react/data-grid"
 import DataSource from "devextreme/data/data_source"
 import { ExportingEvent } from "devextreme/ui/data_grid"
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
+import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
+import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder"
+import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
+import { reconfigureFilterPanelStyles } from "@/common/devextreme-filter"
+import SimpleBar from "simplebar-react"
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
-  currentFilter?: object[] | null | undefined;
   dataSource: DataSource;
-  onFilterBuilderOpen: Function;
   onSorterChanged: (sorter: any) => void;
   onExport: (e: ExportingEvent<ICoin, any>) => void;
 }
@@ -37,16 +40,24 @@ export interface IPrefilterTokensTable {
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   onCurrentFilterChange,
   dataSource,
-  currentFilter,
-  onFilterBuilderOpen,
   onSorterChanged,
   onExport,
 }) => {
   const [currentSorter, setCurrentSorter] = useState<any>();
-
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const filterPanelText = useRef<Element | null>(null);
+  const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
+    state => state.allTokensTable,
+  );
+  const marketCapFilters = useMemo(() => filters.filter(f => f.filterType === "market-cap"), [filters]);
+  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+
+  useEffect(() => {
+    onCurrentFilterChange(currentFilter);
+  }, [currentFilter]);
+
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -89,27 +100,13 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       onCurrentFilterChange(filter as object[]);
+      setCurrentFilter(filter as object[]);
     },
     [onCurrentFilterChange],
   );
 
-  const handleFilterTextClick = useCallback(
-    (_event: Event) => {
-      onFilterBuilderOpen();
-    },
-    [onFilterBuilderOpen],
-  );
-
   const onContentReady = () => {
-    if (filterPanelText.current) {
-      filterPanelText.current.removeEventListener("click", handleFilterTextClick);
-    }
-
-    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
-    if (filterPanelTextDiv) {
-      filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", handleFilterTextClick);
-    }
+    reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
   return (
@@ -143,11 +140,12 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}>
+        onFilterValueChange={onApplyFilter}
+        >
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
-          customizeText={e => `Click here to refine filter model: ${e.text}`}
+          customizeText={e => e.text ? e.text : 'No Filter Applied' }
         />
 
         <FilterBuilderPopup
@@ -190,6 +188,35 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
             recursive={true}
           />
         </ColumnChooser>
+
+        <Toolbar>
+           <Item location="before" sx={{ minWidth: "600px" }}>
+           <SimpleBar style={{ maxHeight: "600px" }}>
+             <CustomFilterBuilder
+               filterType="market-cap"
+               filterBuilderFields={filterBuilderFields}
+               filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+               filterDeletingLoading={deletingFilterStatus === "loading"}
+               open={filterBuildeOpen}
+               onCreateFilter={filter => dispatch(createFilter(filter))}
+               onClose={() => setFilterBuilderOpen(false)}
+               onOpen={() => setFilterBuilderOpen(true)}
+               predefinedFilters={marketCapFilters}
+               onUpdateFilter={filter => dispatch(updateFilter(filter))}
+               onDisableFilter={() => setCurrentFilter(null)}
+               onApply={filter => {
+                setCurrentFilter(filter);
+                setFilterBuilderOpen(false);
+               }}
+               filterToAppply={currentFilter}
+               onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+             />
+            </SimpleBar>
+          </Item>
+          <Item name="exportButton" />
+          <Item name="columnChooserButton" />
+        </Toolbar>
+
         <Column
           dataField={PrefilterTokensField.Symbol}
           caption={PrefilterTokensLabel.Symbol}
