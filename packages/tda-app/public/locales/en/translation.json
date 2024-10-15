@@ -45,11 +45,13 @@
     "SellSnackBarConfirmationText": "You have Sold {{amount}} {{symbol1}} and Bought {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
     "InsufficientFundsToSell": "Insufficient Funds - Not Enough Funds Available to Sell {{currency}}",
     "InsufficientFundsToBuy": "Insufficient Funds - Not Enough Funds Available to Buy {{currency1}} using {{currency2}}",
-    "ErrorText": "ORDER ERROR: TRADE REJECTED OR NOT CONFIRMED, PLEASE TRY AGAIN"
+    "ErrorText": "ORDER ERROR: TRADE REJECTED OR NOT CONFIRMED, PLEASE TRY AGAIN",
+    "InputQuantityToTradeInInputBoxBelow": "Input quantity to trade in input box below"
   },
   "Tile": {
     "MinSizeError": "TRADE QUANTITY IS TOO SMALL",
-    "MaxSizeError": "TRADE QUANTITY IS TOO LARGE"
+    "MaxSizeError": "TRADE QUANTITY IS TOO LARGE",
+    "ClickInitiateRFQ": "Click Initiate RFQ to receive a quote to buy/sell the selected crypto pair"
   },
   "ProfileCardMenu": {
     "PersonalInformation": "Personal Information",
@@ -147,7 +149,9 @@
     "RecentTransactionsCsvFileName": "Recent_Transactions",
     "Export": "Export",
     "ExportAsPDF": "Export as PDF",
-    "ExportAsCSV": "Export as CSV"
+    "ExportAsCSV": "Export as CSV",
+    "ChooseTradingPairs": "Choose Trading Pairs",
+    "Quantity": "Quantity"
   },
   "ProfileEditSection": {
     "PersonalInformation": "Personal Information",
@@ -200,7 +204,7 @@
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
     "Personal": "Personal",
-    "ChooseCurrency": "Choose currency"
+    "ChooseAsset": "Choose Asset"
   },
   "MyWalletsSection": {
     "AddWallet": "+Add Wallet",

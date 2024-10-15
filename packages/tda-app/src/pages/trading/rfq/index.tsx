@@ -12,6 +12,11 @@ import { Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Box from "@mui/material/Box";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import * as React from "react";
 
 export const accountNumber = "EC_TEST";
 export const defaultAmount = 1000.0;
@@ -145,45 +150,62 @@ export default function SpotRFQPage() {
         align="center">
         Spot RFQ
       </Typography>
-      <Typography
-        variant="body2"
-        align="center">
-        Click Initiate RFQ to instantly receive a quote
-      </Typography>
-
       <Stack
         direction="row"
         gap={2}>
-        <Stack>
-          <CurrencyDropdown
-            mt={1}
-            symbol1={symbol1}
-            symbol2={symbol2}
-            pairs={pairs}
-            onSymbol1Change={symbol => setSymbol1(symbol)}
-            onSymbol2Change={symbol => setSymbol2(symbol)}
-          />
+        <Box
+          sx={{
+            padding: "8px 20px 20px 20px",
+            borderRadius: "3px",
+            backgroundColor: theme.palette.grey[100],
+            margin: "auto",
+          }}>
+          <Box style={{ display: "flex", alignItems: "center" }}>
+            <Typography sx={{ fontSize: "19px", mb: 0.2 }}>{t("ChooseTradingPairs")}</Typography>
+            <Tooltip
+              title="Select currencies from the two dropdowns to trade the crypto pair"
+              placement="right">
+              <IconButton
+                size="small"
+                sx={{ position: "relative", top: "-5px", left: "-4px" }}>
+                <InfoOutlinedIcon
+                  sx={{ fontSize: "15px" }}
+                  fontSize="small"
+                />
+              </IconButton>
+            </Tooltip>
+          </Box>
 
-          <TileSection
-            symbol1={symbol1}
-            symbol2={symbol2}
-            minSize={minSize}
-            maxSize={maxSize}
-            onAmoutChanged={setAmount}
-            amount={amount}
-            onOrderChanged={onOrderChanged}
-            accountNumber={accountNumber}
-            onUpdateHistory={onUpdateHistory}
-            sx={{
-              mt: 5,
-              height: "300px",
-              p: 2,
-              [theme.breakpoints.down("sm")]: {
-                width: "100%",
-              },
-            }}
-          />
-        </Stack>
+          <Stack>
+            <CurrencyDropdown
+              mt={1}
+              symbol1={symbol1}
+              symbol2={symbol2}
+              pairs={pairs}
+              onSymbol1Change={symbol => setSymbol1(symbol)}
+              onSymbol2Change={symbol => setSymbol2(symbol)}
+            />
+            <TileSection
+              symbol1={symbol1}
+              symbol2={symbol2}
+              minSize={minSize}
+              maxSize={maxSize}
+              onAmoutChanged={setAmount}
+              amount={amount}
+              onOrderChanged={onOrderChanged}
+              accountNumber={accountNumber}
+              onUpdateHistory={onUpdateHistory}
+              sx={{
+                mt: 5,
+                height: "300px",
+                p: 2,
+                [theme.breakpoints.down("sm")]: {
+                  width: "100%",
+                },
+              }}
+            />
+          </Stack>
+        </Box>
       </Stack>
 
       <HistoryDataTable
