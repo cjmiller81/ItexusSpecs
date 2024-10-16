@@ -10,7 +10,6 @@ import dayjs from "dayjs";
 import { DateRange, DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
 import { PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import { shortcutsItems } from "./shortcutsItems";
@@ -78,18 +77,16 @@ export const TableHeader = ({
           onClick={handleMenuOpen}
           sx={{
             padding: "5px 11px",
-            color: theme.palette.grey[700],
-            border: "1px solid",
-            borderColor: theme.palette.grey[500],
             alignItems: "center",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.grey[700],
+            boxShadow: `2px 2px 6px ${theme.palette.grey[200]}`,
             "&:hover": {
-              borderColor: theme.palette.grey[100],
+              backgroundColor: theme.palette.primary.light,
               color: theme.palette.grey[700],
-              border: "1px solid",
-              backgroundColor: theme.palette.grey[100],
+              boxShadow: `2px 2px 6px ${theme.palette.grey[200]}`,
             },
-          }}
-          variant="outlined">
+          }}>
           <span style={{ flex: 1, textAlign: "center", fontSize: 14 }}>
             {fromDate && toDate
               ? `${dayjs(fromDate).format("MM/DD/YYYY")}\u00A0—\u00A0${dayjs(toDate).format("MM/DD/YYYY")}`
@@ -124,20 +121,15 @@ export const TableHeader = ({
         sx={{
           padding: "5px 11px",
           color: theme.palette.grey[700],
-          border: "1px solid",
-          borderColor: theme.palette.grey[500],
+          border: "none",
           alignItems: "center",
           "&:hover": {
-            borderColor: theme.palette.grey[100],
-            color: theme.palette.grey[700],
-            border: "1px solid",
-            backgroundColor: theme.palette.grey[100],
+            border: "none",
           },
         }}
         variant="outlined">
         <FileDownloadOutlinedIcon sx={{ marginRight: 0.3 }} />
         {t("Export")}
-        <KeyboardArrowDownOutlinedIcon sx={{ marginLeft: 1.5 }} />
       </Button>
       <Menu
         anchorEl={exportAnchor}

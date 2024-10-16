@@ -55,6 +55,7 @@ export const ReactTable = <TData extends object>({
     <StyledMainCard
       title={title}
       content={false}
+      titleFontSize="22px"
       secondary={header}>
       <ScrollX>
         <Stack>
@@ -129,9 +130,9 @@ export const ReactTable = <TData extends object>({
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   "& .MuiChip-root": {
-      maxWidth: "140px",
-      minWidth: "140px",
-    },
+    maxWidth: "140px",
+    minWidth: "140px",
+  },
   [theme.breakpoints.down("md")]: {
     padding: "4px",
     fontSize: "12px",
@@ -139,7 +140,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       paddingLeft: "8px !important",
     },
     "& .MuiSvgIcon-root": {
-      height: "10px"
+      height: "10px",
     },
 
     "& .MuiChip-root": {
@@ -186,10 +187,13 @@ const StyledHeaderCell = styled(StyledTableCell)(() => ({
   alignContent: "left",
 }));
 
-const StyledMainCard = styled(MainCard)(({ theme }) => ({
+const StyledMainCard = styled(MainCard)<{ titleFontSize?: string }>(({ theme, titleFontSize }) => ({
   "& .MuiCardHeader-root": {
     [theme.breakpoints.down("md")]: {
       flexDirection: "column",
+    },
+    "& .MuiTypography-root": {
+      fontSize: titleFontSize || "inherit",
     },
   },
 }));
