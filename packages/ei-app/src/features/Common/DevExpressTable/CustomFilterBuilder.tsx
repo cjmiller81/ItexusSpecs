@@ -185,14 +185,15 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
           color={"success"}
           onClick={() => onOpen()}
           startIcon={<TuneIcon />}>
-            Build a Strategy Filter
+            {t("BuildStrategyFilter")}
         </StyledFilterButton>
         <StyledFilterButton 
           sx={{minWidth: 150}}
           variant="contained"
           color={"error"}
           disabled={!filterValue}
-          onClick={() => handleClearFilters()}>Clear Filter
+          onClick={() => handleClearFilters()}>
+            {t("ClearFilter")}
         </StyledFilterButton>
       </StyledAdaptivePageBox>
       <YesNoDialog

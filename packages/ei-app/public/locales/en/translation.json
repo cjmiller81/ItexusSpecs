@@ -15,6 +15,8 @@
   "CustomFilterBuilder": {
     "DeleteDialogTitle": "Delete filter",
     "ApplyFilter": "Apply filter",
+    "BuildStrategyFilter": "Build a Strategy Filter",
+    "ClearFilter": "Clear Filter",
     "SelectFilter": "Select pre-built filter:",
     "SaveFilterAs": "Save filter as:",
     "FilterTokens": "Filter Tokens",
