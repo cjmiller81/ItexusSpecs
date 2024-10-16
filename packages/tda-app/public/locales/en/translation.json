@@ -151,6 +151,7 @@
     "ExportAsPDF": "Export as PDF",
     "ExportAsCSV": "Export as CSV",
     "ChooseTradingPairs": "Choose Trading Pairs",
+    "SelectCurrencies": "Select currencies from the two dropdowns to trade the crypto pair",
     "Quantity": "Quantity"
   },
   "ProfileEditSection": {

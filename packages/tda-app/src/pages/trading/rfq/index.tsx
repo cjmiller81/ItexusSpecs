@@ -163,7 +163,7 @@ export default function SpotRFQPage() {
           <Box style={{ display: "flex", alignItems: "center" }}>
             <Typography sx={{ fontSize: "19px", mb: 0.2 }}>{t("ChooseTradingPairs")}</Typography>
             <Tooltip
-              title="Select currencies from the two dropdowns to trade the crypto pair"
+              title={t("SelectCurrencies")}
               placement="right">
               <IconButton
                 size="small"
