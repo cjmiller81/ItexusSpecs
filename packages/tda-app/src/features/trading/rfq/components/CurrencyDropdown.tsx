@@ -31,11 +31,14 @@ export default function CurrencyDropdown({
   }, [symbol1]);
 
   return (
-    <Stack {...props}>
+    <Stack
+      {...props}
+      justifyContent="center"
+      alignItems="center">
       <Stack
         direction="row"
         alignItems="center"
-        width="100%"
+        width="70%"
         justifyContent="space-between">
         <AutocomleteSection
           value={symbol1}
@@ -68,11 +71,11 @@ const AutocomleteSection: FC<AutocomleteSectionProps> = ({ onValueChange, ...pro
       renderInput={params => (
         <TextField
           {...params}
-          label={i18next.t("ChooseCurrency", { ns: "WalletInputModal" })}
+          label={i18next.t("ChooseAsset", { ns: "WalletInputModal" })}
           type="text"
           InputLabelProps={{
             sx: {
-              backgroundColor: theme.palette.mode === "dark" ? "#131313 !important" : "#fbfbfb !important",
+              backgroundColor: `${theme.palette.grey[100]} !important`,
             },
           }}
         />
