@@ -1,5 +1,4 @@
-import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionProps, Box } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
@@ -9,12 +8,9 @@ import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import SimpleBar from "simplebar-react";
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
-import { vaultsFilterBuilderFields } from "@/features/Income/vaultsTableConstants";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -30,15 +26,11 @@ interface ApyData {
 
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const [vaults, setVaults] = useState<VaultsData[]>([]);
-  const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [totalApy, setTotalApy] = useState<ApyData | null>(null);
   const [tvlData, setTvlData] = useState<{ [key: string]: number }>({});
-
   const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
-  const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
-    state => state.allTokensTable,
-  );
+  const { t } = useTranslation("Vaults");
+  const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
     if (!isVaultsLoading) {
@@ -47,14 +39,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       setTvlData(vaultsData.tvl);
     }
   }, [vaultsData, isVaultsLoading]);
-
-  const dispatch = useAppDispatch();
-  const { t } = useTranslation("Vaults");
-  const { sidebarOpened } = useAppSelector(store => store.ui);
-
-  useEffect(() => {
-    dispatch(fetchFilters({}));
-  }, [dispatch]);
 
   const combinedVaults = useMemo(() => {
     if (!vaults || !totalApy || !tvlData) return [];
@@ -118,8 +102,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     });
   }, [vaults, totalApy, tvlData]);
 
-  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
-
   const filteredTokensSource = useMemo(
     () =>
       new DataSource<VaultsData, string>({
@@ -169,33 +151,10 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
         }}>
-        <SimpleBar style={{ maxHeight: "600px" }}>
-          <CustomFilterBuilder
-            filterType="vaults"
-            filterBuilderFields={vaultsFilterBuilderFields}
-            filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
-            filterDeletingLoading={deletingFilterStatus === "loading"}
-            open={filterBuilderOpen}
-            onCreateFilter={filter => dispatch(createFilter(filter))}
-            onClose={() => setFilterBuilderOpen(false)}
-            predefinedFilters={liquidityPoolFilters}
-            onUpdateFilter={filter => dispatch(updateFilter(filter))}
-            onApply={filter => {
-              setCurrentFilter(filter);
-              setFilterBuilderOpen(false);
-            }}
-            filterToAppply={currentFilter}
-            onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
-          />
-        </SimpleBar>
-
         <MemoizedDefiPoolsTable
-          onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
           loading={isVaultsLoading}
           onUpdate={() => {}}
           onExport={onExporting}
-          currentFilter={currentFilter}
-          onCurrentFilterChange={filter => setCurrentFilter(filter)}
           dataSource={filteredTokensSource}
         />
       </AccordionDetails>
@@ -204,5 +163,5 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 }
 
 const MemoizedDefiPoolsTable = React.memo(VaultsPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource && prevProps.currentFilter === nextProps.currentFilter;
+  return prevProps.dataSource === nextProps.dataSource;
 });

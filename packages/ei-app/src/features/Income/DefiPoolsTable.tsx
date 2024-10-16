@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
+import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -10,27 +11,30 @@ import DataGridDef, {
   FilterPanel,
   FilterRow,
   HeaderFilter,
+  Item,
   LoadPanel,
   Pager,
   Paging,
   Position,
   Search,
+  Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
 import { ExportingEvent } from "devextreme/ui/data_grid";
-import React, { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
 import { ProjectCellComponent } from "./ProjectCellComponent";
-import { DefiField, DefiLabel } from "./tableConstants";
+import { DefiField, defiFilterBuilderFields, DefiLabel } from "./tableConstants";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import SimpleBar from "simplebar-react";
+import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
-  onCurrentFilterChange: (object?: object[] | null | undefined) => void;
-  currentFilter?: object[] | null | undefined;
   dataSource: DataSource<PoolData, string>;
-  onFilterBuilderOpen: Function;
   onUpdate: (filteredTokenData: ICoin[]) => void;
   onExport: (e: ExportingEvent<PoolData, any>) => void;
 }
@@ -38,16 +42,18 @@ export interface IPrefilterTokensTable {
 export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   loading,
   onUpdate,
-  onCurrentFilterChange,
   dataSource,
-  currentFilter,
-  onFilterBuilderOpen,
   onExport,
 }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const filterPanelText = useRef<Element | null>(null);
-
+  const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
+    state => state.allTokensTable,
+  );
+  const dispatch = useAppDispatch();
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
+  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
@@ -61,37 +67,22 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     onUpdate(prefilteredData);
   }, [datagrid, currentFilter, onUpdate]);
 
+  const onApplyFilter = useCallback(
+    (filter: string | any[] | (() => any)) => {
+      setCurrentFilter(filter as object[]);
+    },
+    [setCurrentFilter],
+  );
+
+  const onContentReady = () => {
+    reconfigureFilterPanelStyles(containerRef, currentFilter);
+  };
+
   useEffect(() => {
     const grid = datagrid?.current?.instance;
     if (!grid) return;
     updatePrefilteredTokens();
   }, [currentFilter, datagrid, updatePrefilteredTokens]);
-
-  const onApplyFilter = useCallback(
-    (filter: string | any[] | (() => any)) => {
-      onCurrentFilterChange(filter as object[]);
-    },
-    [onCurrentFilterChange],
-  );
-
-  const handleFilterTextClick = useCallback(
-    (_event: Event) => {
-      onFilterBuilderOpen();
-    },
-    [onFilterBuilderOpen],
-  );
-
-  const onContentReady = () => {
-    if (filterPanelText.current) {
-      filterPanelText.current.removeEventListener("click", handleFilterTextClick);
-    }
-
-    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
-    if (filterPanelTextDiv) {
-      filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", handleFilterTextClick);
-    }
-  };
 
   return (
     <div ref={containerRef}>
@@ -117,7 +108,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
-          customizeText={e => `Click here to refine filter model: ${e.text}`}
+          customizeText={e => e.text ? e.text : 'No Filter Applied' }
         />
         <FilterBuilderPopup
           onShowing={e => {
@@ -149,19 +140,44 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
             at="right bottom"
             of=".dx-datagrid-column-chooser-button"
           />
-
           <ColumnChooserSearch
             enabled={true}
             editorOptions={true}
           />
-
           <ColumnChooserSelection
             allowSelectAll={true}
             selectByClick={true}
             recursive={true}
           />
         </ColumnChooser>
-
+        <Toolbar>
+          <Item location="before">
+            <SimpleBar style={{ maxHeight: "600px" }}>
+              <CustomFilterBuilder
+                filterType="liquidity-pool"
+                filterBuilderFields={defiFilterBuilderFields}
+                filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+                filterDeletingLoading={deletingFilterStatus === "loading"}
+                open={filterBuildeOpen}
+                onCreateFilter={filter => dispatch(createFilter(filter))}
+                onClose={() => setFilterBuilderOpen(false)}
+                onOpen={() => setFilterBuilderOpen(true)}
+                predefinedFilters={liquidityPoolFilters}
+                onUpdateFilter={filter => dispatch(updateFilter(filter))}
+                onDisableFilter={() => setCurrentFilter(null)}
+                onApply={filter => {
+                  setCurrentFilter(filter);
+                  setFilterBuilderOpen(false);
+                }}
+                filterToAppply={currentFilter}
+                onDeleteFilter={filterId => dispatch(
+                  deleteFilter({ id: filterId }))}
+              />
+           </SimpleBar>
+        </Item>
+          <Item name="exportButton" />
+          <Item name="columnChooserButton" />
+        </Toolbar>
         <Column
           dataField={DefiField.Symbol}
           caption={DefiLabel.Symbol}
@@ -349,6 +365,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="boolean"
           allowHiding={true}
         />
+
         <Export
           enabled={true}
           allowExportSelectedData={true}
