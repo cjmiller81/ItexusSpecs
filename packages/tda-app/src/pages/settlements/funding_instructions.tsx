@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import {
   Container,
   Box,
@@ -13,25 +13,31 @@ import {
   Alert,
   useTheme,
   Grid,
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import FormControl from "@mui/material/FormControl";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import { Visibility } from "@mui/icons-material";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import FileCopyOutlinedIcon from "@mui/icons-material/FileCopyOutlined";
 
 const FundingInstructions: React.FC = () => {
   const theme = useTheme();
   const { t } = useTranslation("FundingInstructions");
-  const [showAddress, setShowAddress] = React.useState<{ [key: number]: boolean }>({});
-
+  const [showAddress, setShowAddress] = useState<{ [key: number]: boolean }>({});
+  const [showBankDetails, setShowBankDetails] = useState<{ [key: number]: boolean }>({});
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleClickShowAddress = (index: number) => {
     setShowAddress(prevState => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+  };
+
+  const handleClickShowBankDetails = (index: number) => {
+    setShowBankDetails(prevState => ({
       ...prevState,
       [index]: !prevState[index],
     }));
@@ -52,14 +58,14 @@ const FundingInstructions: React.FC = () => {
     { currency: "SOL", protocol: "N/A", address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e" },
   ];
 
-  const bankInstructions = {
-    bankName: "************",
-    accountName: "************",
-    accountNumber: "************",
-    routingNumber: "************",
-    swiftCode: "************",
-    bankAddress: "************",
-  };
+  const bankInstructions = [
+    { title: "Bank Name", value: "Worlds Private Bank" },
+    { title: "Account Name", value: "Johnson" },
+    { title: "Account Number", value: "634C0532925" },
+    { title: "Routing Number", value: "E442e55EcD9025" },
+    { title: "Swift Code", value: "TfTL5SLmv7Divf" },
+    { title: "Bank Address", value: "Manhattan, NY 10036, United States" },
+  ];
 
   return (
     <>
@@ -98,11 +104,7 @@ const FundingInstructions: React.FC = () => {
                 <Alert severity="info">{t("WalletsInfoAlert")}</Alert>
                 <TableContainer
                   component={Paper}
-                  sx={{
-                    my: 2,
-                    backgroundColor: theme.palette.background.paper,
-                    color: theme.palette.text.primary,
-                  }}>
+                  sx={{ my: 2, backgroundColor: theme.palette.background.paper }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -158,8 +160,8 @@ const FundingInstructions: React.FC = () => {
 
               <Box my={4}>
                 <Typography
-                  variant="h5"
-                  component="h2"
+                  variant="h4"
+                  component="h1"
                   gutterBottom
                   color={theme.palette.text.primary}>
                   {t("InstructionTitle")}
@@ -167,47 +169,95 @@ const FundingInstructions: React.FC = () => {
                 <Box
                   component={Paper}
                   p={2}
-                  sx={{
-                    backgroundColor: theme.palette.background.paper,
-                    color: theme.palette.text.primary,
-                  }}>
+                  sx={{ backgroundColor: theme.palette.background.paper }}>
                   <Typography
-                    variant="body3"
-                    component="h4"
-                    gutterBottom
+                    variant="h5"
+                    component="h2"
                     color={theme.palette.text.primary}>
                     {t("BankWireInstructions")}
                   </Typography>
-                  <Typography variant="body2">
-                    <strong>{t("BankName")}</strong> {bankInstructions.bankName}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>{t("AccountName")}</strong> {bankInstructions.accountName}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>{t("AccountNumber")}</strong> {bankInstructions.accountNumber}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>{t("RoutingNumber")}</strong> {bankInstructions.routingNumber}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>{t("SWIFTCode")}</strong> {bankInstructions.swiftCode}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>{t("BankAddress")}</strong> {bankInstructions.bankAddress}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color={theme.palette.error.main}
-                    sx={{ mt: 2 }}>
-                    <strong>{t("ImportantNote")}</strong>
-                  </Typography>
+
+                  <Grid container>
+                    <Grid
+                      item
+                      xs={12}>
+                      <Box sx={{ maxWidth: "570px", mt: 2 }}>
+                        <Box component={Paper}>
+                          <Grid
+                            container
+                            spacing={1}
+                            alignItems="center">
+                            {bankInstructions.map((instruction, index) => (
+                              <React.Fragment key={index}>
+                                <Grid
+                                  sx={{
+                                    margin: "5px 0 !important",
+                                    padding: "0 15px !important",
+                                  }}
+                                  item
+                                  xs={4}>
+                                  <Typography
+                                    variant="body1"
+                                    sx={{ fontSize: 16 }}
+                                    color={theme.palette.text.primary}>
+                                    {t(instruction.title.replace(/\s+/g, ""))}
+                                  </Typography>
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={8}>
+                                  <FormControl
+                                    fullWidth
+                                    variant="outlined">
+                                    <OutlinedInput
+                                      value={instruction.value}
+                                      type={showBankDetails[index] ? "text" : "password"}
+                                      readOnly
+                                      endAdornment={
+                                        <InputAdornment position="end">
+                                          <IconButton
+                                            sx={{ mr: 0.5 }}
+                                            aria-label={`toggle ${instruction.title.toLowerCase()} visibility`}
+                                            onClick={() => handleClickShowBankDetails(index)}
+                                            onMouseDown={handleMouseDownAddress}
+                                            edge="end">
+                                            {showBankDetails[index] ? (
+                                              <VisibilityOff fontSize="small" />
+                                            ) : (
+                                              <Visibility fontSize="small" />
+                                            )}
+                                          </IconButton>
+                                          <IconButton
+                                            aria-label={`copy ${instruction.title.toLowerCase()}`}
+                                            onClick={() => handleCopyAddress(instruction.value)}
+                                            edge="end">
+                                            <FileCopyOutlinedIcon />
+                                          </IconButton>
+                                        </InputAdornment>
+                                      }
+                                    />
+                                  </FormControl>
+                                </Grid>
+                              </React.Fragment>
+                            ))}
+                          </Grid>
+                        </Box>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        color={theme.palette.error.main}
+                        sx={{ mt: 2 }}>
+                        <strong>{t("ImportantNote")}</strong>
+                      </Typography>
+
+                      <Alert
+                        severity="warning"
+                        sx={{ mt: 2 }}>
+                        {t("ThirdPartyWarning")}
+                      </Alert>
+                    </Grid>
+                  </Grid>
                 </Box>
-                <Alert
-                  severity="warning"
-                  sx={{ mt: 2 }}>
-                  {t("ThirdPartyWarning")}
-                </Alert>
               </Box>
             </Box>
           </Container>

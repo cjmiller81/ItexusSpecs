@@ -75,7 +75,7 @@ const BuySellCell: FC<BuySellCellProps> = ({
         },
         borderRadius: "8px",
         width: "100%",
-        height: "100%",
+        height: "100px",
         cursor: "pointer",
         backgroundColor: bgColor,
         border: `2px solid ${theme.palette.mode === "dark" ? theme.palette.grey[100] : theme.palette.grey[500]}`,
