@@ -3,6 +3,7 @@ import { FilterBuilderItems } from "@/constants/PrefilterTokensTable";
 import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { isDeepEqual } from "@/utils/utils";
 import CloseIcon from "@mui/icons-material/Close";
+import TuneIcon from '@mui/icons-material/Tune';
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -33,9 +34,11 @@ interface ICustomFilterBuilderProps {
   onCreateFilter: (filter: CreateFilterModel) => void;
   onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void;
   onDeleteFilter: (filterId: string) => void;
+  onDisableFilter: () => void;
   filterToAppply?: object | null;
   onApply: (filterValue: object[]) => void;
   onClose: () => void;
+  onOpen: () => void;
   filterType: FilterType;
   open?: boolean;
   filterLoading?: boolean;
@@ -48,9 +51,11 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   onCreateFilter,
   onUpdateFilter,
   onDeleteFilter,
+  onDisableFilter,
   filterToAppply,
   onApply,
   onClose,
+  onOpen,
   filterLoading,
   filterDeletingLoading,
   filterBuilderFields,
@@ -105,6 +110,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   };
 
   const handleClearFilters = () => {
+    onDisableFilter();
     setSelectedSavedFilter(null);
     setFilterValue(undefined);
     setFilterName("");
@@ -172,6 +178,24 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const mapFilterName = (filter: string | null | undefined) => `Personal - ${filter}`;
   return (
     <>
+      <StyledAdaptivePageBox>
+        <StyledFilterButton 
+          variant="contained" 
+          sx={{minWidth: 250}}
+          color={"success"}
+          onClick={() => onOpen()}
+          startIcon={<TuneIcon />}>
+            {t("BuildStrategyFilter")}
+        </StyledFilterButton>
+        <StyledFilterButton 
+          sx={{minWidth: 150}}
+          variant="contained"
+          color={"error"}
+          disabled={!filterValue}
+          onClick={() => handleClearFilters()}>
+            {t("ClearFilter")}
+        </StyledFilterButton>
+      </StyledAdaptivePageBox>
       <YesNoDialog
         content={t("DeleteDialogContent")}
         title={t("DeleteDialogTitle")}
@@ -342,12 +366,29 @@ const FilterControlsContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-
 const FilterSelectorContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   display: "flex",
   gap: theme.spacing(2),
   [theme.breakpoints.down("md")]: {
     marginTop: theme.spacing(2),
+  },
+}));
+
+const StyledAdaptivePageBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  minHeight: "30px",
+  flexDirection: "row",
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "column",
+    alignItems: "self-start",
+    justifyContent: "flex-start",
+  },
+}));
+
+const StyledFilterButton = styled(Button)(({ theme }) => ({
+  marginRight: theme.spacing(1),
+  [theme.breakpoints.down("md")]: {
+    marginRight: theme.spacing(2),
   },
 }));

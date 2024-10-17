@@ -13,19 +13,17 @@ const AddNewAddressForm = () => {
   const theme = useTheme();
 
   const validationSchema = Yup.object({
-    // @ts-ignore
     walletAddress: Yup.string().required(t("WalletAddressIsRequired", { ns: "ErrorMessages" })),
-    // @ts-ignore
+    addressTagMemo: Yup.string().required(t("AddressTagMemoIsRequired", { ns: "ErrorMessages" })),
     blockchain: Yup.string().required(t("BlockchainIsRequired", { ns: "ErrorMessages" })),
-    // @ts-ignore
     firstName: Yup.string().required(t("FirstNameIsRequired", { ns: "ErrorMessages" })),
-    middleName: Yup.string(), // No required validation, no changes needed
-    // @ts-ignore
+    middleName: Yup.string(),
     lastName: Yup.string().required(t("LastNameIsRequired", { ns: "ErrorMessages" })),
   });
 
   const initialValues = {
     walletAddress: "",
+    addressTagMemo: "",
     blockchain: "",
     firstName: "",
     middleName: "",
@@ -37,11 +35,11 @@ const AddNewAddressForm = () => {
       id: uuid(),
       status: "Unverified",
       walletAddress: values.walletAddress,
+      addressTagMemo: values.addressTagMemo,
       blockchain: values.blockchain,
       firstName: values.firstName,
       middleName: values.middleName,
       lastName: values.lastName,
-      addressTagMemo: "Business Wallet",
     };
 
     await dispatch(addCryptoAddress(newCryptoAddress));
@@ -75,7 +73,7 @@ const AddNewAddressForm = () => {
             <Grid
               item
               xs={12}
-              sm={6}>
+              sm={4}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -94,7 +92,26 @@ const AddNewAddressForm = () => {
             <Grid
               item
               xs={12}
-              sm={6}>
+              sm={4}>
+              <Stack
+                spacing={0.5}
+                sx={{ mt: 1 }}>
+                <InputLabel>{t("AddressTagMemo")}</InputLabel>
+                <Field
+                  as={TextField}
+                  fullWidth
+                  name="addressTagMemo"
+                  variant="outlined"
+                  margin="normal"
+                />
+                <ErrorMessage name="addressTagMemo">{msg => <div style={{ color: "red" }}>{msg}</div>}</ErrorMessage>
+              </Stack>
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              sm={4}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>

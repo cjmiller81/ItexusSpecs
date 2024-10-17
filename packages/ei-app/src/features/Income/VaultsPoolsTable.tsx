@@ -10,24 +10,29 @@ import DataGridDef, {
   FilterPanel,
   FilterRow,
   HeaderFilter,
+  Item,
   LoadPanel,
   Pager,
   Paging,
   Position,
   Search,
+  Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
 import { ExportingEvent } from "devextreme/ui/data_grid";
-import React, { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toDollarAmountField, toPercentageField } from "./helpers";
 import { VaultsData } from "./Models/VaultsData";
+import SimpleBar from "simplebar-react";
+import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { vaultsFilterBuilderFields } from "./vaultsTableConstants";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
-  onCurrentFilterChange: (object?: object[] | null | undefined) => void;
-  currentFilter?: object[] | null | undefined;
   dataSource: DataSource<VaultsData, string>;
-  onFilterBuilderOpen: Function;
   onUpdate: (filteredTokenData: ICoin[]) => void;
   onExport: (e: ExportingEvent<VaultsData, any>) => void;
 }
@@ -35,16 +40,19 @@ export interface IPrefilterTokensTable {
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
   loading,
   onUpdate,
-  onCurrentFilterChange,
   dataSource,
-  currentFilter,
-  onFilterBuilderOpen,
   onExport,
 }) => {
   const datagrid = React.createRef<DataGridDef<VaultsData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const filterPanelText = useRef<Element | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
+  const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
+  const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
+    state => state.allTokensTable,
+  );
+  const dispatch = useAppDispatch();
+  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -55,6 +63,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh();
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
+
   }, [datagrid, currentFilter, onUpdate]);
 
   useEffect(() => {
@@ -63,30 +72,19 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
     updatePrefilteredTokens();
   }, [currentFilter, datagrid, updatePrefilteredTokens]);
 
+  useEffect(() => {
+    dispatch(fetchFilters({}));
+  }, [dispatch]);
+
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      onCurrentFilterChange(filter as object[]);
+      setCurrentFilter(filter as object[]);
     },
-    [onCurrentFilterChange],
-  );
-
-  const handleFilterTextClick = useCallback(
-    (_event: Event) => {
-      onFilterBuilderOpen();
-    },
-    [onFilterBuilderOpen],
+    [setCurrentFilter]
   );
 
   const onContentReady = () => {
-    if (filterPanelText.current) {
-      filterPanelText.current.removeEventListener("click", handleFilterTextClick);
-    }
-
-    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
-    if (filterPanelTextDiv) {
-      filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", handleFilterTextClick);
-    }
+    reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
   const calculateSafetyScore = (risks: string[]) => {
@@ -124,7 +122,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
-          customizeText={e => `Click here to refine filter model: ${e.text}`}
+          customizeText={e => e.text ? e.text : 'No Filter Applied' }
         />
         <FilterBuilderPopup
           onShowing={e => {
@@ -147,6 +145,34 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
           showInfo={true}
           showNavigationButtons={true}
         />
+
+        <Toolbar>
+          <Item location="before">
+          <SimpleBar style={{ maxHeight: "600px" }}>
+          <CustomFilterBuilder
+            filterType="vaults"
+            filterBuilderFields={vaultsFilterBuilderFields}
+            filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+            filterDeletingLoading={deletingFilterStatus === "loading"}
+            open={filterBuilderOpen}
+            onCreateFilter={filter => dispatch(createFilter(filter))}
+            onClose={() => setFilterBuilderOpen(false)}
+            onOpen={() => setFilterBuilderOpen(true)}
+            predefinedFilters={liquidityPoolFilters}
+            onUpdateFilter={filter => dispatch(updateFilter(filter))}
+            onDisableFilter={() => setCurrentFilter(null)}
+            onApply={filter => {
+              setCurrentFilter(filter);
+              setFilterBuilderOpen(false);
+            }}
+            filterToAppply={currentFilter}
+            onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))} />
+        </SimpleBar>
+        </Item>
+          <Item name="exportButton" />
+          <Item name="columnChooserButton" />
+        </Toolbar>
+
         <ColumnChooser
           height={500}
           enabled={true}

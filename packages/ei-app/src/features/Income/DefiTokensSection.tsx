@@ -1,4 +1,4 @@
-import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionProps, Box } from "@mui/material";
@@ -9,12 +9,9 @@ import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import SimpleBar from "simplebar-react";
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
-import { defiFilterBuilderFields } from "./tableConstants";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -22,15 +19,9 @@ type Props = Omit<AccordionProps, "children"> & {
 
 export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
-  const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
-    state => state.allTokensTable,
-  );
-
-  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
-  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
   const { t } = useTranslation("Yields");
+  
   const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
@@ -38,8 +29,7 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   }, [dispatch]);
 
   const allTokensSource = useMemo(
-    () =>
-      new DataSource<PoolData, string>({
+    () => new DataSource<PoolData, string>({
         store: {
           type: "array",
           key: "pool",
@@ -86,32 +76,11 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
           width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
         }}>
-        <SimpleBar style={{ maxHeight: "600px" }}>
-          <CustomFilterBuilder
-            filterType="liquidity-pool"
-            filterBuilderFields={defiFilterBuilderFields}
-            filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
-            filterDeletingLoading={deletingFilterStatus === "loading"}
-            open={filterBuildeOpen}
-            onCreateFilter={filter => dispatch(createFilter(filter))}
-            onClose={() => setFilterBuilderOpen(false)}
-            predefinedFilters={liquidityPoolFilters}
-            onUpdateFilter={filter => dispatch(updateFilter(filter))}
-            onApply={filter => {
-              setCurrentFilter(filter);
-              setFilterBuilderOpen(false);
-            }}
-            filterToAppply={currentFilter}
-            onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
-          />
-        </SimpleBar>
         <MemoizedDefiPoolsTable
-          onFilterBuilderOpen={() => setFilterBuilderOpen(true)}
           loading={isPoolsLoading}
+          
           onUpdate={() => {}}
           onExport={onExporting}
-          currentFilter={currentFilter}
-          onCurrentFilterChange={filter => setCurrentFilter(filter)}
           dataSource={allTokensSource}
         />
       </AccordionDetails>
@@ -120,5 +89,5 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 }
 
 const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource && prevProps.currentFilter === nextProps.currentFilter;
+  return prevProps.dataSource === nextProps.dataSource;
 });

@@ -1,6 +1,7 @@
 import { LoadingButton, LoadingButtonProps } from "@mui/lab";
 import { Box, Paper, Typography, useTheme } from "@mui/material";
-import { FC, MouseEventHandler, TouchEventHandler } from "react";
+import React, { FC, MouseEventHandler, TouchEventHandler } from "react";
+import { useTranslation } from "react-i18next";
 
 export type RfqStage = "cancelable" | "requiring" | "requote" | "inProgress" | "insufficientFunds";
 type RfqButtonProps = {
@@ -24,6 +25,7 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
   ...props
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation("SpotRFQPage");
   const onHandleClick: MouseEventHandler<HTMLButtonElement> = event => {
     if (popoverMessage) {
       onCancel();
@@ -68,70 +70,73 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
   };
 
   return (
-    <Box
-      width="100%"
-      position="relative">
-      <LoadingButton
-        {...props}
-        onClick={onClick}
-        variant="contained"
-        sx={{
-          height: theme => theme.spacing(5),
-          textWrap: "nowrap",
-          width: "100%",
-          [theme.breakpoints.down("sm")]: {
-            fontSize: "11px",
-          },
-          textTransform: "capitalize",
-          lineHeight: 1.4,
-          ...sx,
-        }}>
-        {getMessage()}
-      </LoadingButton>
-      {popoverMessage && (
-        <Paper
-          variant="outlined"
+    <>
+      <Box
+        width="100%"
+        sx={{ marginTop: "1px !important" }}
+        position="relative">
+        <LoadingButton
+          {...props}
+          onClick={onClick}
+          variant="contained"
           sx={{
-            padding: "1px 1px",
-            position: "absolute",
-            top: 96,
-            left: "50%",
-            transform: "translateX(-50%)",
-            fontSize: "40px",
-            zIndex: 10,
-            bgcolor: "#FFD966",
+            height: theme => theme.spacing(5),
+            textWrap: "nowrap",
+            width: "100%",
             [theme.breakpoints.down("sm")]: {
-              top: 86,
-              ".MuiTypography-root":{
-                paddingTop: "8px",
-                paddingBottom: "8px"
-              }
+              fontSize: "11px",
             },
+            textTransform: "capitalize",
+            lineHeight: 1.4,
+            ...sx,
           }}>
-          <Typography
-            noWrap
-            textAlign="center"
-            color={theme => theme.palette.common.black}
+          {getMessage()}
+        </LoadingButton>
+        {popoverMessage && (
+          <Paper
+            variant="outlined"
             sx={{
-              p: 1,
-              py: 2,
-              width: "570px",
-              [theme.breakpoints.down("md")]: {
-                width: "570px",
-              },
+              padding: "1px 1px",
+              position: "absolute",
+              top: 96,
+              left: "50%",
+              transform: "translateX(-50%)",
+              fontSize: "40px",
+              zIndex: 10,
+              bgcolor: "#FFD966",
               [theme.breakpoints.down("sm")]: {
-                width: "410px",
-                fontSize: "11.5px",
-              },
-              [theme.breakpoints.down("xs")]: {
-                width: "365px",
-                fontSize: "10.2px",
+                top: 86,
+                ".MuiTypography-root": {
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                },
               },
             }}>
-            {popoverMessage}
-          </Typography>
-        </Paper>
-      )}
-    </Box>
+            <Typography
+              noWrap
+              textAlign="center"
+              color={theme => theme.palette.common.black}
+              sx={{
+                p: 1,
+                py: 2,
+                width: "570px",
+                [theme.breakpoints.down("md")]: {
+                  width: "570px",
+                },
+                [theme.breakpoints.down("sm")]: {
+                  width: "410px",
+                  fontSize: "11.5px",
+                },
+                [theme.breakpoints.down("xs")]: {
+                  width: "365px",
+                  fontSize: "10.2px",
+                },
+              }}>
+              {popoverMessage}
+            </Typography>
+          </Paper>
+        )}
+      </Box>
+    </>
   );
 };

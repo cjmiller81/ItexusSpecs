@@ -5,12 +5,13 @@ import * as React from "react";
 import { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import BuySellCell from "./BuySellCell";
-import { ContrastDecimalField } from "./ContrastDecimalField";
 import FooterSection from "./footer-section/FooterSection";
 import { RfqButton, RfqStage } from "./RfqButton";
-
 import { RfqState } from "features/trading/rfq/slices/rfqSlice";
 import { useAppSelector } from "libs/redux/Store";
+import IconButton from "@mui/material/IconButton";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Tooltip from "@mui/material/Tooltip";
 
 type TileProps = Omit<CardProps, "children"> & {
   symbol1: string | null;
@@ -87,6 +88,8 @@ const Tile: React.FC<TileProps> = ({
       sx={{
         ...sx,
         boxShadow,
+        mt: 2,
+        height: "215px",
         border: `2px solid ${borderColor}`,
         [theme.breakpoints.down("sm")]: {
           borderBlock: "0px",
@@ -100,7 +103,6 @@ const Tile: React.FC<TileProps> = ({
         height="100%"
         alignItems="center">
         <Stack alignItems="center">
-          <Typography>{`${symbol1 ?? ""}/${symbol2 ?? ""}`}</Typography>
           <Stack
             direction="row"
             width="100%">
@@ -132,7 +134,9 @@ const Tile: React.FC<TileProps> = ({
               />
               <Stack
                 alignItems="center"
+                sx={{ marginTop: "10px !important" }}
                 spacing={3}>
+                <Typography>{`${symbol1 ?? ""}/${symbol2 ?? ""}`}</Typography>
                 <RfqButton
                   popoverMessage={popoverMessage}
                   sellSymbol={symbol1}
@@ -163,42 +167,20 @@ const Tile: React.FC<TileProps> = ({
                   onCancel={onReject}
                   onRequote={onReject}
                 />
-                <Box>
-                  <ContrastDecimalField
-                    size="small"
-                    sx={{
-                      input: {
-                        padding: "4px",
-                        [theme.breakpoints.down("sm")]: {
-                          padding: "2px",
-                          minWidth: "20px",
-                        },
-                      },
-                      "& .MuiFormHelperText-root": {
-                        fontSize: "11px",
-                        [theme.breakpoints.down("sm")]: {
-                          fontSize: "4px",
-                          minWidth: "20px",
-                        },
-                        textAlign: "center",
-                        position: "absolute",
-                        textWrap: "nowrap",
-                        bottom: "-20px",
-                        ml: "-7px",
-                      },
-                    }}
-                    autoComplete="on"
-                    label={symbol1 || ""}
-                    placeholder="1,000.000"
-                    disabled={rfqButtonState !== "requiring"}
-                    value={amount}
-                    maxDecimals={5}
-                    error={isLessThanMinSize || isGreaterThanMaxSize}
-                    helperText={isLessThanMinSize ? t("MinSizeError") : isGreaterThanMaxSize ? t("MaxSizeError") : ""}
-                    onChange={onAmountChange}
-                  />
-                </Box>
+                <Tooltip
+                  title={t("ClickInitiateRFQ")}
+                  placement="bottom">
+                  <IconButton
+                    sx={{ marginTop: "1px !important" }}
+                    size="small">
+                    <InfoOutlinedIcon
+                      sx={{ fontSize: "15px" }}
+                      fontSize="small"
+                    />
+                  </IconButton>
+                </Tooltip>
               </Stack>
+
               <BuySellCell
                 isQuoteSubmitting={isQuoteSubmitting}
                 confirmationText={buyConfirmingText}

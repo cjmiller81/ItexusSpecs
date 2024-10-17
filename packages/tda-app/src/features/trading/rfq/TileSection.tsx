@@ -10,12 +10,17 @@ import { CardProps, useTheme } from "@mui/material";
 import React, { FC, MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import useCountDown from "react-countdown-hook";
 import { useTranslation } from "react-i18next";
-import { v4 } from "uuid";
 import { logoUrl } from "./constants";
 import { OrderEvent, isOrderEvent } from "./models/OrderEvent";
 import { toast } from "react-toastify";
 import SuccessToast from "../../../../../components/src/layouts/toasts/successToast";
 import ErrorToast from "../../../../../components/src/layouts/toasts/errorToast";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { ContrastDecimalField } from "features/trading/rfq/components/ContrastDecimalField";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 type TileSectionProps = CardProps & {
   symbol1: string | null;
@@ -56,6 +61,8 @@ export const TileSection: FC<TileSectionProps> = ({
   const [popoverMessage, setPopoverMessage] = useState<string | null>();
   const theme = useTheme();
   const toastIdRef = useRef<string | number | null>(null);
+  const isLessThanMinSize = minSize === undefined ? false : amount < minSize;
+  const isGreaterThanMaxSize = maxSize === undefined ? false : amount > maxSize;
 
   const handleEvents = (message: any) => {
     if (isOrderEvent(message)) {
@@ -330,34 +337,110 @@ export const TileSection: FC<TileSectionProps> = ({
   }, [timeLeft, rfqModel]);
 
   return (
-    <Tile
-      isQuoteSubmitting={isTransactionInProgress}
-      sellConfirmingText={sellConfirmationText}
-      buyConfirmingText={buyConfirmationText}
-      stage={currentStage}
-      onReject={resetTile}
-      symbol1={symbol1}
-      symbol2={symbol2}
-      amount={amount}
-      minSize={minSize}
-      maxSize={maxSize}
-      onAmountChange={onAmoutChanged}
-      onInitiateRfq={handleInitiateRFQ}
-      sellCellValue={rfqModel?.BidPx}
-      buyCellValue={rfqModel?.OfferPx}
-      statusFetchingRfq={statusFetchingRfq}
-      onBuyClick={onBuyClick}
-      onSellClick={onSellClick}
-      progress={(100 * secondsLeft) / 10}
-      secondsLeft={secondsLeft}
-      onBuy={handleBuy}
-      onSell={handleSell}
-      onDiscardBuy={closeModals}
-      onDiscardSell={closeModals}
-      isBuyConfirming={showBuyConfirmationPopup}
-      isSellConfirming={showSellConfirmationPopup}
-      popoverMessage={popoverMessage}
-      {...props}
-    />
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          mt: 1,
+        }}>
+        <Box style={{ display: "flex", alignItems: "center" }}>
+          <Typography sx={{ fontSize: "19px", margin: "10px 0 15px 15px" }}>{t("Quantity")}</Typography>
+          <Tooltip
+            title={t("InputQuantityToTradeInInputBoxBelow")}
+            placement="right">
+            <IconButton
+              size="small"
+              sx={{ position: "relative", top: "-5px", left: "-4px" }}>
+              <InfoOutlinedIcon
+                sx={{ fontSize: "15px" }}
+                fontSize="small"
+              />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <ContrastDecimalField
+          size="small"
+          sx={{
+            width: "85px",
+
+            input: {
+              height: "25px",
+              padding: "4px",
+              [theme.breakpoints.down("sm")]: {
+                padding: "2px",
+                minWidth: "20px",
+              },
+            },
+            "& .MuiOutlinedInput-root": {
+              borderColor: theme.palette.grey[500],
+              "& fieldset": {
+                borderWidth: "1.5px",
+              },
+            },
+            "& .MuiFormHelperText-root": {
+              fontSize: "11px",
+              [theme.breakpoints.down("sm")]: {
+                fontSize: "4px",
+                minWidth: "20px",
+              },
+              textAlign: "center",
+              position: "absolute",
+              textWrap: "nowrap",
+              bottom: "-20px",
+              ml: "-7px",
+              top: "-30px",
+            },
+            "& .MuiInputLabel-root": {
+              backgroundColor: `${theme.palette.grey[100]} !important`,
+              padding: "0 4px",
+              marginLeft: "-2px",
+            },
+          }}
+          autoComplete="on"
+          label={symbol1 || ""}
+          placeholder="1,000.000"
+          disabled={!currentStage}
+          value={amount}
+          maxDecimals={5}
+          error={isLessThanMinSize || isGreaterThanMaxSize}
+          helperText={isLessThanMinSize ? t("MinSizeError") : isGreaterThanMaxSize ? t("MaxSizeError") : ""}
+          onChange={onAmoutChanged}
+        />
+      </Box>
+      <Tile
+        isQuoteSubmitting={isTransactionInProgress}
+        sellConfirmingText={sellConfirmationText}
+        buyConfirmingText={buyConfirmationText}
+        stage={currentStage}
+        onReject={resetTile}
+        symbol1={symbol1}
+        symbol2={symbol2}
+        amount={amount}
+        minSize={minSize}
+        maxSize={maxSize}
+        onAmountChange={onAmoutChanged}
+        onInitiateRfq={handleInitiateRFQ}
+        sellCellValue={rfqModel?.BidPx}
+        buyCellValue={rfqModel?.OfferPx}
+        statusFetchingRfq={statusFetchingRfq}
+        onBuyClick={onBuyClick}
+        onSellClick={onSellClick}
+        progress={(100 * secondsLeft) / 10}
+        secondsLeft={secondsLeft}
+        onBuy={handleBuy}
+        onSell={handleSell}
+        onDiscardBuy={closeModals}
+        onDiscardSell={closeModals}
+        isBuyConfirming={showBuyConfirmationPopup}
+        isSellConfirming={showSellConfirmationPopup}
+        popoverMessage={popoverMessage}
+        {...props}
+      />
+    </>
   );
 };
