@@ -13,7 +13,7 @@ import {
 } from "@/libs/redux/Slices/MarketCapEqualWeightChartSlice";
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
@@ -83,13 +83,21 @@ export default function MarketCapEqualWeightedPage() {
 
   return (
     <Stack gap={2}>
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 0 }}>
+        {t("MarketCapEqualWeight")}
+      </Typography>
+
       <PrefilterTokensSection
         persisKey="EqualWeightedPrefilterTokens"
         dataSource={dataSource}
         onSorterChanged={onSorterChanged}
         onFilterChanged={onFilterChanged}
       />
-      
+
       <IndexModelingSection
         persistKey="EqualWeightedIndexModeling"
         onCapitalChange={value => dispatch(setCapital(value))}

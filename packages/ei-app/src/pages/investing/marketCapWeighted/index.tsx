@@ -13,7 +13,7 @@ import {
 } from "@/libs/redux/Slices/MarketCapWeightedChartSlice";
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
@@ -83,6 +83,14 @@ export default function MarketCapWeightedPage() {
 
   return (
     <Stack gap={2}>
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 0 }}>
+        {t("MarketCapWeighted")}
+      </Typography>
+
       <PrefilterTokensSection
         dataSource={dataSource}
         onSorterChanged={onSorterChanged}

@@ -206,11 +206,17 @@
     "Blog": "Blog",
     "Education": "Education"
   },
+  "LiquidityPoolsPage": {
+    "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
+    "PrefilterLiquidityPools": "Prefilter Liquidity Pools"
+  },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
     "IndexModeling": "Index Modeling",
-    "RunTest": "Run Test"
+    "RunTest": "Run Test",
+    "MarketCapWeighted": "Market Cap Weighted Index Investing Strategy Model",
+    "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model"
   },
   "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",
@@ -272,6 +278,7 @@
     "ReadMore": "Read More >"
   },
   "Vaults": {
-    "VaultsTitle": "Vaults"
+    "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",
+    "VaultsTitle": "Prefilter Vaults"
   }
 }

@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box } from "@mui/material";
+import { AccordionDetails, AccordionProps, Box, Typography } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -136,29 +136,38 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   }, []);
 
   return (
-    <StatePersistedAccordion
-      persistKey={persisKey}
-      defaultExpanded
-      {...props}>
-      <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{t("VaultsTitle")}</PageTitle>
-        </Box>
-      </StyledAccordionSummary>
-      <AccordionDetails
-        sx={{
-          bgcolor: "background.paper",
-          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
-          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
-        }}>
-        <MemoizedDefiPoolsTable
-          loading={isVaultsLoading}
-          onUpdate={() => {}}
-          onExport={onExporting}
-          dataSource={filteredTokensSource}
-        />
-      </AccordionDetails>
-    </StatePersistedAccordion>
+    <>
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 0 }}>
+        {t("VaultsPageTitle")}
+      </Typography>
+      <StatePersistedAccordion
+        persistKey={persisKey}
+        defaultExpanded
+        {...props}>
+        <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+            <PageTitle sx={{ width: "100%" }}>{t("VaultsTitle")}</PageTitle>
+          </Box>
+        </StyledAccordionSummary>
+        <AccordionDetails
+          sx={{
+            bgcolor: "background.paper",
+            width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+            transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+          }}>
+          <MemoizedDefiPoolsTable
+            loading={isVaultsLoading}
+            onUpdate={() => {}}
+            onExport={onExporting}
+            dataSource={filteredTokensSource}
+          />
+        </AccordionDetails>
+      </StatePersistedAccordion>
+    </>
   );
 }
 
