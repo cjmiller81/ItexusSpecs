@@ -1,4 +1,5 @@
 export type VaultsData = {
+  status: string
   id: string;
   name: string;
   chain: string;

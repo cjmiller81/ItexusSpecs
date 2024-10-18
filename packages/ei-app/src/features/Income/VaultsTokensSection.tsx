@@ -45,59 +45,43 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
     return vaults.map((pool, index) => {
       let tvl: number | null = null;
-      const poolKey = pool.pool;
-
-      if (typeof poolKey !== "string") {
-        return { ...pool, tvl, apy: null };
-      }
-
-      for (const key of Object.keys(tvlData)) {
-        if (tvlData[key][poolKey] !== undefined) {
-          tvl = tvlData[key][poolKey];
-          break;
-        }
-      }
-
-      if (tvl === null) {
-        const keys = Object.keys(tvlData);
-        if (keys.length > index) {
-          const fallbackKey = keys[index];
-          const fallbackData = tvlData[fallbackKey];
-          if (fallbackData) {
-            tvl = Object.values(fallbackData)[0];
-          }
-        }
-      }
-
       let apy: string | null = null;
 
-      if (totalApy && typeof totalApy === "object") {
-        for (const key of Object.keys(totalApy)) {
-          const poolApy = totalApy[key]?.[poolKey];
-          if (poolApy !== undefined) {
-            const apyValue = poolApy.totalApy?.toString();
-            apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
-            break;
-          }
-        }
+      const poolKey = pool.id;
 
-        if (apy === null) {
-          const apyKeys = Object.keys(totalApy);
-          if (apyKeys.length > index) {
-            const fallbackApyKey = apyKeys[index];
-            const fallbackApyData = totalApy[fallbackApyKey];
-            if (fallbackApyData) {
-              const fallbackApyValue = fallbackApyData.totalApy?.toString();
-              apy = fallbackApyValue?.length > 8 ? fallbackApyValue.slice(0, 8) : fallbackApyValue;
-            }
-          }
+      if (typeof poolKey !== "string") {
+        return { ...pool, tvl, apy };
+      }
+
+      const tvlFound = Object.entries(tvlData).find(([key]) => tvlData[key][poolKey] !== undefined);
+      if (tvlFound) {
+        tvl = tvlFound[1][poolKey];
+      } else {
+        const fallbackKey = Object.keys(tvlData)[index];
+        if (fallbackKey && tvlData[fallbackKey]) {
+          tvl = Object.values(tvlData[fallbackKey])[0];
         }
       }
+
+      const apyFound = Object.entries(totalApy).find(([key]) => totalApy[key]?.[poolKey] !== undefined);
+      if (apyFound) {
+        const apyValue = apyFound[1][poolKey]?.totalApy?.toString();
+        apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
+      } else {
+        const fallbackApyKey = Object.keys(totalApy)[index];
+        if (fallbackApyKey && totalApy[fallbackApyKey]) {
+          const fallbackApyValue = totalApy[fallbackApyKey].totalApy?.toString();
+          apy = fallbackApyValue?.length > 8 ? fallbackApyValue.slice(0, 8) : fallbackApyValue;
+        }
+      }
+
+      const isRetired = pool.status === "eol";
 
       return {
         ...pool,
         tvl,
         apy,
+        isRetired,
       };
     });
   }, [vaults, totalApy, tvlData]);
