@@ -112,7 +112,7 @@ export default function DenseTable<T>({
 const DenseTableRow = styled(TableRow)(({ theme }) => ({
   ".MuiTableCell-root": {
     paddingLeft: "8px !important",
-    paddingRight: "95px !important",
+    paddingRight: "55px !important",
     fontSize: "11px !important",
     "@media (max-width: 1250px)": {
       paddingRight: "30px !important",
