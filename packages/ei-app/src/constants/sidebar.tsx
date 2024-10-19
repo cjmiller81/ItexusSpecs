@@ -13,7 +13,7 @@ import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -51,6 +51,10 @@ function getPlatformsItems(): SidebarListItem[] {
         {
           title: t("TradingSubpage", { ns: "SideBar" }),
           href: "/charts",
+        },
+        {
+          title: t("Derivatives", { ns: "SideBar" }),
+          href: "/derivatives",
         },
       ],
     },
@@ -91,7 +95,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
   const fillColor = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
   return [
     {
-      title: t("Community", { ns: "SideBar" }),
+      title: t("CommunitySubMenu", { ns: "SideBar" }),
       icon: <PeopleIcon />,
       href: "/community",
       open: false,
