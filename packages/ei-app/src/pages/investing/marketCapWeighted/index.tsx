@@ -11,7 +11,7 @@ import {
   setPeriod,
   setToDate,
 } from "@/libs/redux/Slices/MarketCapWeightedChartSlice";
-import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
+import { defaultTotalTokensCount, fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Stack } from "@mui/material";
 import { AppAccordionSection } from "components";
@@ -33,6 +33,7 @@ export default function MarketCapWeightedPage() {
     endDate,
   } = useAppSelector(state => state.marketCapWeightedChart);
   const dispatch = useAppDispatch();
+  const [take, setCurrentTake] = useState<number>(0);
   const [currentSorter, setCurrentSorter] = useState<any>(null);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
 
@@ -64,14 +65,25 @@ export default function MarketCapWeightedPage() {
     dispatch(resetState());
   }, []);
 
-  useEffect(() => {
-    dispatch(
-      fetchIndexModelingTokens({
-        filter: currentFilter,
-        sort: currentSorter,
-      }),
-    );
-  }, [currentSorter, currentFilter]);
+  useEffect(() => { 
+    if (tokensCount && prefilteredData.length >= tokensCount) {
+      return;
+    }
+
+    const additionalPageSize = 10;
+    const currentTake = tokensCount
+      ? Math.max(tokensCount, prefilteredData.length + additionalPageSize)
+      : defaultTotalTokensCount;
+
+    if (!take || currentTake !== take) {
+      setCurrentTake(currentTake);  
+      dispatch(fetchIndexModelingTokens({
+          filter: currentFilter,
+          sort: currentSorter,
+          take: currentTake
+        }));
+    }
+  }, [currentSorter, currentFilter, tokensCount]);
 
   const onSorterChanged = (sorter: any) => {
     setCurrentSorter(sorter ? JSON.stringify(sorter) : "[]");
