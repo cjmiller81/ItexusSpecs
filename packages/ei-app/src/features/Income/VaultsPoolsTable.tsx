@@ -37,12 +37,7 @@ export interface IPrefilterTokensTable {
   onExport: (e: ExportingEvent<VaultsData, any>) => void;
 }
 
-export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
-  loading,
-  onUpdate,
-  dataSource,
-  onExport,
-}) => {
+export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport }) => {
   const datagrid = React.createRef<DataGridDef<VaultsData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
@@ -63,7 +58,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
     await grid.refresh();
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
-
   }, [datagrid, currentFilter, onUpdate]);
 
   useEffect(() => {
@@ -80,7 +74,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
     (filter: string | any[] | (() => any)) => {
       setCurrentFilter(filter as object[]);
     },
-    [setCurrentFilter]
+    [setCurrentFilter],
   );
 
   const onContentReady = () => {
@@ -122,7 +116,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
-          customizeText={e => e.text ? e.text : 'No Filter Applied' }
+          customizeText={e => (e.text ? e.text : "No Filter Applied")}
         />
         <FilterBuilderPopup
           onShowing={e => {
@@ -145,34 +139,33 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
           showInfo={true}
           showNavigationButtons={true}
         />
-
         <Toolbar>
           <Item location="before">
-          <SimpleBar style={{ maxHeight: "600px" }}>
-          <CustomFilterBuilder
-            filterType="vaults"
-            filterBuilderFields={vaultsFilterBuilderFields}
-            filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
-            filterDeletingLoading={deletingFilterStatus === "loading"}
-            open={filterBuilderOpen}
-            onCreateFilter={filter => dispatch(createFilter(filter))}
-            onClose={() => setFilterBuilderOpen(false)}
-            onOpen={() => setFilterBuilderOpen(true)}
-            predefinedFilters={liquidityPoolFilters}
-            onUpdateFilter={filter => dispatch(updateFilter(filter))}
-            onDisableFilter={() => setCurrentFilter(null)}
-            onApply={filter => {
-              setCurrentFilter(filter);
-              setFilterBuilderOpen(false);
-            }}
-            filterToAppply={currentFilter}
-            onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))} />
-        </SimpleBar>
-        </Item>
+            <SimpleBar style={{ maxHeight: "600px" }}>
+              <CustomFilterBuilder
+                filterType="vaults"
+                filterBuilderFields={vaultsFilterBuilderFields}
+                filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+                filterDeletingLoading={deletingFilterStatus === "loading"}
+                open={filterBuilderOpen}
+                onCreateFilter={filter => dispatch(createFilter(filter))}
+                onClose={() => setFilterBuilderOpen(false)}
+                onOpen={() => setFilterBuilderOpen(true)}
+                predefinedFilters={liquidityPoolFilters}
+                onUpdateFilter={filter => dispatch(updateFilter(filter))}
+                onDisableFilter={() => setCurrentFilter(null)}
+                onApply={filter => {
+                  setCurrentFilter(filter);
+                  setFilterBuilderOpen(false);
+                }}
+                filterToAppply={currentFilter}
+                onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+              />
+            </SimpleBar>
+          </Item>
           <Item name="exportButton" />
           <Item name="columnChooserButton" />
         </Toolbar>
-
         <ColumnChooser
           height={500}
           enabled={true}
@@ -233,6 +226,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="number"
           allowHiding={false}
           customizeText={toDollarAmountField}
+          sortOrder="desc"
+          sortIndex={0}
         />
         <Column
           dataField="apy"
