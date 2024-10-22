@@ -45,8 +45,8 @@ export const marketCapWeightedModelingSlice = createAppSlice({
       calculateTableRows(state);
     }),
     fetchIndexModelingTokens: create.asyncThunk(
-      async ({ filter, sort }: { filter: any; sort: any }, thunkApi): Promise<FilteredTokensResponse> => {
-        return await filteredTokensApi.fetchFilteredTokens(sort, filter, 0, 100);
+      async ({ filter, sort, take }: { filter: any; sort: any, take: number }, thunkApi): Promise<FilteredTokensResponse> => {
+        return await filteredTokensApi.fetchFilteredTokens(sort, filter, 0, take);
       },
       {
         fulfilled: (state, action) => {
@@ -66,7 +66,6 @@ export const marketCapWeightedModelingSlice = createAppSlice({
 
 function calculateTableRows(state: MarketCapEqualModelingState) {
   const newTableData = state.prefilteredData.slice(0, state.tokensCount || 0);
-
   const marketCapSum = newTableData.reduce((accumulator, tokenData) => {
     return accumulator + tokenData.mCap;
   }, 0);

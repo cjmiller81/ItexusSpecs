@@ -12,6 +12,7 @@ import {
   setToDate,
 } from "@/libs/redux/Slices/MarketCapEqualWeightChartSlice";
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
+import { defaultTotalTokensCount } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
@@ -34,9 +35,10 @@ export default function MarketCapEqualWeightedPage() {
   } = useAppSelector(state => state.marketCapEqualWeightChart);
   const dispatch = useAppDispatch();
   const [currentSorter, setCurrentSorter] = useState<any>(null);
+  const [take, setCurrentTake] = useState<number>(0);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
-    state => state.marketCapWeightedModeling,
+    state => state.marketCapEqualWeightModeling,
   );
 
   const { t } = useTranslation("MarketCapPage");
@@ -45,15 +47,27 @@ export default function MarketCapEqualWeightedPage() {
     dispatch(resetState());
   }, []);
 
+
   useEffect(() => {
-    //filteredTokensApi.fetchFilteredTokens(currentSorter, currentFilter)
-    dispatch(
-      fetchIndexModelingTokens({
-        filter: currentFilter,
-        sort: currentSorter,
-      }),
-    );
-  }, [currentSorter, currentFilter]);
+    if (tokensCount && prefilteredData.length >= tokensCount) {
+      return;
+    }
+
+    const additionalPageSize = 10;
+    const currentTake = tokensCount
+      ? Math.max(tokensCount, prefilteredData.length + additionalPageSize)
+      : defaultTotalTokensCount;
+
+    if (!take || currentTake !== take) {
+      setCurrentTake(currentTake);  
+      dispatch(fetchIndexModelingTokens({
+          filter: currentFilter,
+          sort: currentSorter,
+          take: currentTake
+        }));
+    }
+  }, [currentSorter, currentFilter, tokensCount]);
+
 
   const dataSource = useMemo(
     () =>
