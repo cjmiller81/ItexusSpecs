@@ -51,7 +51,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
-  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
+  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
