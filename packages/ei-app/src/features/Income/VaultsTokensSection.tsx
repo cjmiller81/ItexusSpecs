@@ -1,6 +1,6 @@
 import { useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box } from "@mui/material";
+import { AccordionDetails, AccordionProps, Box, Typography } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -45,59 +45,43 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
     return vaults.map((pool, index) => {
       let tvl: number | null = null;
-      const poolKey = pool.pool;
-
-      if (typeof poolKey !== "string") {
-        return { ...pool, tvl, apy: null };
-      }
-
-      for (const key of Object.keys(tvlData)) {
-        if (tvlData[key][poolKey] !== undefined) {
-          tvl = tvlData[key][poolKey];
-          break;
-        }
-      }
-
-      if (tvl === null) {
-        const keys = Object.keys(tvlData);
-        if (keys.length > index) {
-          const fallbackKey = keys[index];
-          const fallbackData = tvlData[fallbackKey];
-          if (fallbackData) {
-            tvl = Object.values(fallbackData)[0];
-          }
-        }
-      }
-
       let apy: string | null = null;
 
-      if (totalApy && typeof totalApy === "object") {
-        for (const key of Object.keys(totalApy)) {
-          const poolApy = totalApy[key]?.[poolKey];
-          if (poolApy !== undefined) {
-            const apyValue = poolApy.totalApy?.toString();
-            apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
-            break;
-          }
-        }
+      const poolKey = pool.id;
 
-        if (apy === null) {
-          const apyKeys = Object.keys(totalApy);
-          if (apyKeys.length > index) {
-            const fallbackApyKey = apyKeys[index];
-            const fallbackApyData = totalApy[fallbackApyKey];
-            if (fallbackApyData) {
-              const fallbackApyValue = fallbackApyData.totalApy?.toString();
-              apy = fallbackApyValue?.length > 8 ? fallbackApyValue.slice(0, 8) : fallbackApyValue;
-            }
-          }
+      if (typeof poolKey !== "string") {
+        return { ...pool, tvl, apy };
+      }
+
+      const tvlFound = Object.entries(tvlData).find(([key]) => tvlData[key][poolKey] !== undefined);
+      if (tvlFound) {
+        tvl = tvlFound[1][poolKey];
+      } else {
+        const fallbackKey = Object.keys(tvlData)[index];
+        if (fallbackKey && tvlData[fallbackKey]) {
+          tvl = Object.values(tvlData[fallbackKey])[0];
         }
       }
+
+      const apyFound = Object.entries(totalApy).find(([key]) => totalApy[key]?.[poolKey] !== undefined);
+      if (apyFound) {
+        const apyValue = apyFound[1][poolKey]?.totalApy?.toString();
+        apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
+      } else {
+        const fallbackApyKey = Object.keys(totalApy)[index];
+        if (fallbackApyKey && totalApy[fallbackApyKey]) {
+          const fallbackApyValue = totalApy[fallbackApyKey].totalApy?.toString();
+          apy = fallbackApyValue?.length > 8 ? fallbackApyValue.slice(0, 8) : fallbackApyValue;
+        }
+      }
+
+      const isRetired = pool.status === "eol";
 
       return {
         ...pool,
         tvl,
         apy,
+        isRetired,
       };
     });
   }, [vaults, totalApy, tvlData]);
@@ -136,29 +120,38 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   }, []);
 
   return (
-    <StatePersistedAccordion
-      persistKey={persisKey}
-      defaultExpanded
-      {...props}>
-      <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{t("VaultsTitle")}</PageTitle>
-        </Box>
-      </StyledAccordionSummary>
-      <AccordionDetails
-        sx={{
-          bgcolor: "background.paper",
-          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
-          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
-        }}>
-        <MemoizedDefiPoolsTable
-          loading={isVaultsLoading}
-          onUpdate={() => {}}
-          onExport={onExporting}
-          dataSource={filteredTokensSource}
-        />
-      </AccordionDetails>
-    </StatePersistedAccordion>
+    <>
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 0 }}>
+        {t("VaultsPageTitle")}
+      </Typography>
+      <StatePersistedAccordion
+        persistKey={persisKey}
+        defaultExpanded
+        {...props}>
+        <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+            <PageTitle sx={{ width: "100%" }}>{t("VaultsTitle")}</PageTitle>
+          </Box>
+        </StyledAccordionSummary>
+        <AccordionDetails
+          sx={{
+            bgcolor: "background.paper",
+            width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+            transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+          }}>
+          <MemoizedDefiPoolsTable
+            loading={isVaultsLoading}
+            onUpdate={() => {}}
+            onExport={onExporting}
+            dataSource={filteredTokensSource}
+          />
+        </AccordionDetails>
+      </StatePersistedAccordion>
+    </>
   );
 }
 

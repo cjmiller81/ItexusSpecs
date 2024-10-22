@@ -1,7 +1,7 @@
 import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box } from "@mui/material";
+import { AccordionDetails, AccordionProps, Box, Typography } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -20,8 +20,8 @@ type Props = Omit<AccordionProps, "children"> & {
 export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const dispatch = useAppDispatch();
-  const { t } = useTranslation("Yields");
-  
+  const { t } = useTranslation("LiquidityPoolsPage");
+
   const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
@@ -29,7 +29,8 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   }, [dispatch]);
 
   const allTokensSource = useMemo(
-    () => new DataSource<PoolData, string>({
+    () =>
+      new DataSource<PoolData, string>({
         store: {
           type: "array",
           key: "pool",
@@ -61,30 +62,38 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   }, []);
 
   return (
-    <StatePersistedAccordion
-      persistKey={persisKey}
-      defaultExpanded
-      {...props}>
-      <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{t("Yields")}</PageTitle>
-        </Box>
-      </StyledAccordionSummary>
-      <AccordionDetails
-        sx={{
-          bgcolor: "background.paper",
-          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
-          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
-        }}>
-        <MemoizedDefiPoolsTable
-          loading={isPoolsLoading}
-          
-          onUpdate={() => {}}
-          onExport={onExporting}
-          dataSource={allTokensSource}
-        />
-      </AccordionDetails>
-    </StatePersistedAccordion>
+    <>
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 0 }}>
+        {t("PageTitleLiquidityPools")}
+      </Typography>
+      <StatePersistedAccordion
+        persistKey={persisKey}
+        defaultExpanded
+        {...props}>
+        <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+            <PageTitle sx={{ width: "100%" }}>{t("PrefilterLiquidityPools")}</PageTitle>
+          </Box>
+        </StyledAccordionSummary>
+        <AccordionDetails
+          sx={{
+            bgcolor: "background.paper",
+            width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+            transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+          }}>
+          <MemoizedDefiPoolsTable
+            loading={isPoolsLoading}
+            onUpdate={() => {}}
+            onExport={onExporting}
+            dataSource={allTokensSource}
+          />
+        </AccordionDetails>
+      </StatePersistedAccordion>
+    </>
   );
 }
 
