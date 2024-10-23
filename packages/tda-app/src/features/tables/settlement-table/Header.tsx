@@ -78,15 +78,21 @@ export const TableHeader = ({
           onClick={handleMenuOpen}
           sx={{
             padding: "5px 11px",
-            color: theme.palette.grey[700],
-            border: "1px solid",
-            borderColor: theme.palette.grey[500],
             alignItems: "center",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[100],
+            boxShadow: 3,
+            ...theme.applyStyles("dark", {
+              boxShadow: `0px 3px 3px rgba(255, 255, 255, 0.2), 0px 3px 4px rgba(255, 255, 255, 0.14), 0px 1px 8px rgba(255, 255, 255, 0.12)`,
+            }),
             "&:hover": {
-              borderColor: theme.palette.grey[100],
-              color: theme.palette.grey[700],
-              border: "1px solid",
-              backgroundColor: theme.palette.grey[100],
+              backgroundColor: theme.palette.primary.dark,
+              color: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[100],
+              borderColor: "none",
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `0px 3px 3px rgba(255, 255, 255, 0.2), 0px 3px 4px rgba(255, 255, 255, 0.14), 0px 1px 8px rgba(255, 255, 255, 0.12)`
+                  : `0px 4px 12px rgba(0, 0, 0, 0.5)`,
             },
           }}
           variant="outlined">
@@ -95,7 +101,9 @@ export const TableHeader = ({
               ? `${dayjs(fromDate).format("MM/DD/YYYY")}\u00A0—\u00A0${dayjs(toDate).format("MM/DD/YYYY")}`
               : "Select Date Range"}
           </span>
-          <InsertInvitationIcon sx={{ ml: 1, color: theme.palette.grey[600] }} />
+          <InsertInvitationIcon
+            sx={{ ml: 1, color: theme.palette.mode === "dark" ? theme.palette.grey[700] : theme.palette.grey[100] }}
+          />
         </Button>
         <Menu
           anchorEl={menuAnchor}
@@ -124,20 +132,15 @@ export const TableHeader = ({
         sx={{
           padding: "5px 11px",
           color: theme.palette.grey[700],
-          border: "1px solid",
-          borderColor: theme.palette.grey[500],
+          border: "none",
           alignItems: "center",
           "&:hover": {
-            borderColor: theme.palette.grey[100],
-            color: theme.palette.grey[700],
-            border: "1px solid",
-            backgroundColor: theme.palette.grey[100],
+            border: "none",
           },
         }}
         variant="outlined">
         <FileDownloadOutlinedIcon sx={{ marginRight: 0.3 }} />
         {t("Export")}
-        <KeyboardArrowDownOutlinedIcon sx={{ marginLeft: 1.5 }} />
       </Button>
       <Menu
         anchorEl={exportAnchor}
