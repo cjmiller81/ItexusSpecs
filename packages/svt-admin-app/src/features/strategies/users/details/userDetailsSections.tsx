@@ -156,7 +156,7 @@ export default function UserDetailsSection({
         mt={2}
         align="center"
         variant="h6">
-        {t("WorkingOrder")}
+        {t("WorkingOrders")}
       </Typography>
       <Stack>
         <DataGrid<Order>
