@@ -48,6 +48,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   const dispatch = useAppDispatch();
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const filterPanelText = useRef<Element | null>(null);
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -78,6 +79,18 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   );
 
   const onContentReady = () => {
+    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
+    if (filterPanelTextDiv) {
+      filterPanelText.current = filterPanelTextDiv;
+      filterPanelTextDiv.addEventListener("click", 
+        () => {
+          if (currentFilter && currentFilter.length > 0) {
+            setFilterBuilderOpen(true)
+          }
+        }
+      );
+    }
+
     reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 

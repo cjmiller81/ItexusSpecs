@@ -55,6 +55,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
+  const filterPanelText = useRef<Element | null>(null);
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -75,6 +76,18 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   );
 
   const onContentReady = () => {
+    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
+    if (filterPanelTextDiv) {
+      filterPanelText.current = filterPanelTextDiv;
+      filterPanelTextDiv.addEventListener("click", 
+        () => {
+          if (currentFilter && currentFilter.length > 0) {
+            setFilterBuilderOpen(true)
+          }
+        }
+      );
+    }
+
     reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
