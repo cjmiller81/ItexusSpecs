@@ -22,6 +22,18 @@ const WithdrawalModelSchema = object({
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
 
+interface TransformedCryptoAddress {
+  id: string;
+  walletAddress: string;
+  addressTagMemo?: string;
+}
+
+interface TransformedBankAccounts {
+  id: string;
+  bankName: string;
+  accountNumber?: string;
+}
+
 type Props = Omit<MainCardProps, "children"> & {
   isLoading: boolean;
   title: string;
@@ -29,9 +41,19 @@ type Props = Omit<MainCardProps, "children"> & {
   currencies: string[];
   onRequestWithdrawal: (withdrawalRequest: WithdrawalModel) => Promise<void>;
   isCurrencyLoading?: boolean;
+  transformedCryptoAddresses?: TransformedCryptoAddress[];
+  transformedBankAccounts?: TransformedBankAccounts[];
 };
 
-const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, currenciesSelectLabel, title, currencies, isLoading }: Props) => {
+const WithdrawalRequestSection: React.FC<Props> = ({
+  onRequestWithdrawal,
+  currenciesSelectLabel,
+  title,
+  currencies,
+  isLoading,
+  transformedCryptoAddresses = [],
+  transformedBankAccounts = [],
+}: Props) => {
   const inputRef = useRef<any>();
   const { t } = useTranslation("RequestSettlement");
 
@@ -66,7 +88,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                   xs={12}
                   sm={6}>
                   <Stack spacing={1}>
-                    <InputLabel> {t("Amount")}</InputLabel>
+                    <InputLabel>{t("Amount")}</InputLabel>
                     <DecimalInput
                       size="medium"
                       ref={inputRef}
@@ -138,21 +160,79 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                           );
                         }
 
+                        const selectedCryptoAddress = transformedCryptoAddresses.find(
+                          addr => addr.walletAddress === value,
+                        );
+                        const selectedBankAccount = transformedBankAccounts.find(
+                          account => account.accountNumber === value,
+                        );
+
+                        if (selectedCryptoAddress) {
+                          return (
+                            <Typography
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: "200px",
+                              }}>
+                              {selectedCryptoAddress.addressTagMemo
+                                ? `${selectedCryptoAddress.addressTagMemo} | ${selectedCryptoAddress.walletAddress}`
+                                : selectedCryptoAddress.walletAddress}
+                            </Typography>
+                          );
+                        } else if (selectedBankAccount) {
+                          return (
+                            <Typography
+                              sx={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: "200px",
+                              }}>
+                              {`${selectedBankAccount.bankName} | ${selectedBankAccount.accountNumber}`}
+                            </Typography>
+                          );
+                        }
+
                         return <Typography>{value}</Typography>;
                       }}
-                      placeholder={t("SelectDestination")}>
-                      {["Destination1", "Destination2"].map(customer => (
+                      placeholder={t("SelectDestination")}
+                      sx={{ width: "100%" }}>
+                      {transformedCryptoAddresses.map(address => (
                         <MenuItem
-                          key={customer}
-                          value={customer}>
-                          {customer}
+                          key={address.id}
+                          value={address.walletAddress}>
+                          <Typography
+                            sx={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "200px",
+                            }}>
+                            {address.addressTagMemo
+                              ? `${address.addressTagMemo} | ${address.walletAddress}`
+                              : address.walletAddress}
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                      {transformedBankAccounts.map(account => (
+                        <MenuItem
+                          key={account.id}
+                          value={account.accountNumber}>
+                          <Typography
+                            sx={{
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "200px",
+                            }}>
+                            {`${account.bankName} | ${account.accountNumber}`}
+                          </Typography>
                         </MenuItem>
                       ))}
                     </Select>
                   </Stack>
-                  {touched.destination && errors.destination && (
-                    <FormHelperText error>{errors.destination}</FormHelperText>
-                  )}
                 </Grid>
                 <Grid
                   item
