@@ -22,13 +22,13 @@ const WithdrawalModelSchema = object({
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
 
-interface TransformedCryptoAddress {
+interface ICryptoAddress {
   id: string;
   walletAddress: string;
   addressTagMemo?: string;
 }
 
-interface TransformedBankAccounts {
+interface IBankAccount {
   id: string;
   bankName: string;
   accountNumber?: string;
@@ -41,8 +41,15 @@ type Props = Omit<MainCardProps, "children"> & {
   currencies: string[];
   onRequestWithdrawal: (withdrawalRequest: WithdrawalModel) => Promise<void>;
   isCurrencyLoading?: boolean;
-  transformedCryptoAddresses?: TransformedCryptoAddress[];
-  transformedBankAccounts?: TransformedBankAccounts[];
+  cryptoAddresses?: ICryptoAddress[];
+  bankAccounts?: IBankAccount[];
+};
+
+const textEllipsisStyle = {
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  maxWidth: "200px",
 };
 
 const WithdrawalRequestSection: React.FC<Props> = ({
@@ -51,8 +58,8 @@ const WithdrawalRequestSection: React.FC<Props> = ({
   title,
   currencies,
   isLoading,
-  transformedCryptoAddresses = [],
-  transformedBankAccounts = [],
+  cryptoAddresses = [],
+  bankAccounts = [],
 }: Props) => {
   const inputRef = useRef<any>();
   const { t } = useTranslation("RequestSettlement");
@@ -122,17 +129,16 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                             <Typography color={theme => theme.palette.text.secondary}>{t("SelectCurrency")}</Typography>
                           );
                         }
-
                         return <Typography>{value}</Typography>;
                       }}
                       value={values.currency}
                       onChange={handleChange}
                       placeholder={t("SelectCurrency")}>
-                      {currencies.map(customer => (
+                      {currencies.map(currency => (
                         <MenuItem
-                          key={customer}
-                          value={customer}>
-                          {customer}
+                          key={currency}
+                          value={currency}>
+                          {currency}
                         </MenuItem>
                       ))}
                     </Select>
@@ -160,22 +166,12 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                           );
                         }
 
-                        const selectedCryptoAddress = transformedCryptoAddresses.find(
-                          addr => addr.walletAddress === value,
-                        );
-                        const selectedBankAccount = transformedBankAccounts.find(
-                          account => account.accountNumber === value,
-                        );
+                        const selectedCryptoAddress = cryptoAddresses.find(addr => addr.walletAddress === value);
+                        const selectedBankAccount = bankAccounts.find(account => account.accountNumber === value);
 
                         if (selectedCryptoAddress) {
                           return (
-                            <Typography
-                              sx={{
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                maxWidth: "200px",
-                              }}>
+                            <Typography sx={textEllipsisStyle}>
                               {selectedCryptoAddress.addressTagMemo
                                 ? `${selectedCryptoAddress.addressTagMemo} | ${selectedCryptoAddress.walletAddress}`
                                 : selectedCryptoAddress.walletAddress}
@@ -183,13 +179,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                           );
                         } else if (selectedBankAccount) {
                           return (
-                            <Typography
-                              sx={{
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                maxWidth: "200px",
-                              }}>
+                            <Typography sx={textEllipsisStyle}>
                               {`${selectedBankAccount.bankName} | ${selectedBankAccount.accountNumber}`}
                             </Typography>
                           );
@@ -199,34 +189,22 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                       }}
                       placeholder={t("SelectDestination")}
                       sx={{ width: "100%" }}>
-                      {transformedCryptoAddresses.map(address => (
+                      {cryptoAddresses.map(address => (
                         <MenuItem
                           key={address.id}
                           value={address.walletAddress}>
-                          <Typography
-                            sx={{
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "200px",
-                            }}>
+                          <Typography sx={textEllipsisStyle}>
                             {address.addressTagMemo
                               ? `${address.addressTagMemo} | ${address.walletAddress}`
                               : address.walletAddress}
                           </Typography>
                         </MenuItem>
                       ))}
-                      {transformedBankAccounts.map(account => (
+                      {bankAccounts.map(account => (
                         <MenuItem
                           key={account.id}
                           value={account.accountNumber}>
-                          <Typography
-                            sx={{
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "200px",
-                            }}>
+                          <Typography sx={textEllipsisStyle}>
                             {`${account.bankName} | ${account.accountNumber}`}
                           </Typography>
                         </MenuItem>

@@ -10,18 +10,6 @@ import { useTranslation } from "react-i18next";
 import { fetchCryptoAddress } from "features/tables/crypto-addresses-table/cryptoAddressesSlice";
 import { fetchBankAccounts } from "features/tables/manage-bank-account-table/BankAccountsSlice";
 
-interface TransformedCryptoAddress {
-  id: string;
-  walletAddress: string;
-  addressTagMemo?: string;
-}
-
-interface TransformedBankAccount {
-  id: string;
-  bankName: string;
-  accountNumber: string;
-}
-
 const RequestSettlement: React.FC = () => {
   const { t } = useTranslation("RequestSettlement");
   const isRelativeBalances = useMediaQuery("(max-width: 1200px)");
@@ -31,35 +19,11 @@ const RequestSettlement: React.FC = () => {
   const cryptoAddresses = useAppSelector(state => state.cryptoAddresses.accounts);
   const bankAccounts = useAppSelector(state => state.bankAccounts.accounts);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [transformedCryptoAddresses, setTransformedCryptoAddresses] = useState<TransformedCryptoAddress[]>([]);
-  const [transformedBankAccounts, setTransformedBankAccounts] = useState<TransformedBankAccount[]>([]);
 
   useEffect(() => {
     dispatch(fetchCryptoAddress());
     dispatch(fetchBankAccounts());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (cryptoAddresses) {
-      const transformed = cryptoAddresses.map(address => ({
-        id: address.id,
-        walletAddress: address.walletAddress,
-        addressTagMemo: address.addressTagMemo,
-      }));
-      setTransformedCryptoAddresses(transformed);
-    }
-  }, [cryptoAddresses]);
-
-  useEffect(() => {
-    if (bankAccounts) {
-      const transformed = bankAccounts.map(account => ({
-        id: account.id,
-        bankName: account.bankName,
-        accountNumber: account.accountNumber,
-      }));
-      setTransformedBankAccounts(transformed);
-    }
-  }, [bankAccounts]);
 
   const onRequestCryptoWithdrawal = async () => {
     // TODO crypto withdrawal request
@@ -129,15 +93,15 @@ const RequestSettlement: React.FC = () => {
                   currencies={cryptoCurrenciesList}
                   isLoading={false}
                   onRequestWithdrawal={onRequestCryptoWithdrawal}
-                  transformedCryptoAddresses={transformedCryptoAddresses}
+                  cryptoAddresses={cryptoAddresses}
                 />
                 <WithdrawalRequestSection
                   title={t("FiatWithdrawalRequest")}
-                  currenciesSelectLabel={t("BankAccount")}
+                  currenciesSelectLabel={t("FiatCurrency")}
                   currencies={fiatCurrenciesList}
                   isLoading={false}
                   onRequestWithdrawal={onRequestFiatoWithdrawal}
-                  transformedBankAccounts={transformedBankAccounts}
+                  bankAccounts={bankAccounts}
                 />
               </Stack>
             </Grid>
