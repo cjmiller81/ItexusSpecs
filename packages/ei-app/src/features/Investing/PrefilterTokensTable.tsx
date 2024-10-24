@@ -53,6 +53,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const dispatch = useAppDispatch();
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const filterPanelText = useRef<Element | null>(null);
 
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
@@ -106,6 +107,18 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   );
 
   const onContentReady = () => {
+    const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
+    if (filterPanelTextDiv) {
+      filterPanelText.current = filterPanelTextDiv;
+      filterPanelTextDiv.addEventListener("click", 
+        () => {
+          if (currentFilter && currentFilter.length > 0) {
+            setFilterBuilderOpen(true)
+          }
+        }
+      );
+    }
+
     reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
