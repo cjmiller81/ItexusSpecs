@@ -36,6 +36,7 @@ export default function MarketCapWeightedPage() {
   const [take, setCurrentTake] = useState<number>(0);
   const [currentSorter, setCurrentSorter] = useState<any>(null);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
+  const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
 
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.marketCapWeightedModeling,
@@ -75,15 +76,40 @@ export default function MarketCapWeightedPage() {
       ? Math.max(tokensCount, prefilteredData.length + additionalPageSize)
       : defaultTotalTokensCount;
 
-    if (!take || currentTake !== take) {
+    if (currentTake > 0 && (!take || currentTake !== take)) {
       setCurrentTake(currentTake);  
-      dispatch(fetchIndexModelingTokens({
+      refreshIndexModelingData(currentTake);
+    }
+  }, [tokensCount]);
+
+  useEffect(() => { 
+    if (take > 0) {
+      refreshIndexModelingData(take);
+    }
+  }, [currentSorter, currentFilter]);
+
+  const refreshIndexModelingData = (currentTake) => {
+    if (!indexModelRequestPromise) {
+      var requestPromise = dispatch(fetchIndexModelingTokens({
+        filter: currentFilter,
+        sort: currentSorter,
+        take: currentTake
+      }));
+      
+      setIndexModelRequestPromise(requestPromise);
+    }
+    else {
+      indexModelRequestPromise.then(() => {
+        dispatch(fetchIndexModelingTokens({
           filter: currentFilter,
           sort: currentSorter,
           take: currentTake
         }));
+
+        setIndexModelRequestPromise(null);
+      })
     }
-  }, [currentSorter, currentFilter, tokensCount]);
+  }
 
   const onSorterChanged = (sorter: any) => {
     setCurrentSorter(sorter ? JSON.stringify(sorter) : "[]");

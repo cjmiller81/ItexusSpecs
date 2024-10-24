@@ -40,6 +40,7 @@ export default function MarketCapEqualWeightedPage() {
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.marketCapEqualWeightModeling,
   );
+  const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
 
   const { t } = useTranslation("MarketCapPage");
 
@@ -48,7 +49,7 @@ export default function MarketCapEqualWeightedPage() {
   }, []);
 
 
-  useEffect(() => {
+  useEffect(() => { 
     if (tokensCount && prefilteredData.length >= tokensCount) {
       return;
     }
@@ -58,16 +59,40 @@ export default function MarketCapEqualWeightedPage() {
       ? Math.max(tokensCount, prefilteredData.length + additionalPageSize)
       : defaultTotalTokensCount;
 
-    if (!take || currentTake !== take) {
+    if (currentTake > 0 && (!take || currentTake !== take)) {
       setCurrentTake(currentTake);  
-      dispatch(fetchIndexModelingTokens({
+      refreshIndexModelingData(currentTake);
+    }
+  }, [tokensCount]);
+
+  useEffect(() => { 
+    if (take > 0) {
+      refreshIndexModelingData(take);
+    }
+  }, [currentSorter, currentFilter]);
+
+  const refreshIndexModelingData = (currentTake) => {
+    if (!indexModelRequestPromise) {
+      var requestPromise = dispatch(fetchIndexModelingTokens({
+        filter: currentFilter,
+        sort: currentSorter,
+        take: currentTake
+      }));
+      
+      setIndexModelRequestPromise(requestPromise);
+    }
+    else {
+      indexModelRequestPromise.then(() => {
+        dispatch(fetchIndexModelingTokens({
           filter: currentFilter,
           sort: currentSorter,
           take: currentTake
         }));
-    }
-  }, [currentSorter, currentFilter, tokensCount]);
 
+        setIndexModelRequestPromise(null);
+      })
+    }
+  }
 
   const dataSource = useMemo(
     () =>
