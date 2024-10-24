@@ -8,6 +8,10 @@ function getStrategiesItems(): SidebarListItem[] {
       open: false,
       children: [
         {
+          title: t("FifoUsers", { ns: "SideBar" }),
+          href: "/strategies/fifo/users",
+        },
+        {
           title: t("FifoSignals", { ns: "SideBar" }),
           href: "/strategies/fifo/signals",
         },
@@ -18,10 +22,6 @@ function getStrategiesItems(): SidebarListItem[] {
         {
           title: t("FifoReports", { ns: "SideBar" }),
           href: "/strategies/fifo/reports",
-        },
-        {
-          title: t("FifoUsers", { ns: "SideBar" }),
-          href: "/strategies/fifo/users",
         },
       ],
     },
