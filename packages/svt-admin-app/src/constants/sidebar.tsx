@@ -1,6 +1,15 @@
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import i18next, { t } from "i18next";
 
+function getUsersItems(): SidebarListItem[] {
+  return [
+    {
+      title: i18next.t("UserList", { ns: "SideBar" }),
+      href: "/users/list",
+    },
+  ];
+}
+
 function getStrategiesItems(): SidebarListItem[] {
   return [
     {
@@ -58,6 +67,10 @@ function getStrategiesItems(): SidebarListItem[] {
 
 export function getSidebarMenuItems(): SidebarItems[] {
   return [
+    {
+      title: t("Users", { ns: "SideBar" }),
+      sidebarListItems: getUsersItems(),
+    },
     {
       title: t("Strategies", { ns: "SideBar" }),
       sidebarListItems: getStrategiesItems(),
