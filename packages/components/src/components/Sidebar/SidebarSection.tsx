@@ -33,7 +33,6 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
         </Collapse>
       }>
       {items.map((item, index) => {
-        debugger;
         if (!item.children?.length && item.href) {
           return (
             <Box key={index}>
