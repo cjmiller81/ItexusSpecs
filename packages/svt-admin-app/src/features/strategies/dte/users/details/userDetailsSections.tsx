@@ -16,7 +16,6 @@ import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
 
-
 type Props = BoxProps & {
   user: IDteUser;
   bots: Bot[];
@@ -27,15 +26,16 @@ type Props = BoxProps & {
   opened?: boolean;
 };
 
-export default function UserDetailsSection({ 
-  opened, 
-  user, 
-  bots, 
-  openPositions, 
-  theme, 
+export default function UserDetailsSection({
+  opened,
+  user,
+  bots,
+  openPositions,
+  theme,
   currentDayFills,
   workingOrders,
-  ...props }: Props) {
+  ...props
+}: Props) {
   const { t } = useTranslation("UserDetailsSection");
 
   const handleStopClick = () => {};
@@ -50,19 +50,20 @@ export default function UserDetailsSection({
     let sumPanAndL = 0;
     openPositions.forEach(x => {
       if (x.pAndL) {
-        sumPanAndL += x.pAndL
+        sumPanAndL += x.pAndL;
       }
-    })
-    
-    return { 
+    });
+
+    return {
       text: formatCurrencyToString(sumPanAndL, openPositions[0].currencySymbol),
-      color: sumPanAndL >= 0 ? "#84b067" : "#ff7782" 
+      color: sumPanAndL >= 0 ? "#84b067" : "#ff7782",
     };
   }, [openPositions]);
 
   const getOpenPositionStyleAndValue = useMemo(() => {
-    return openPositions && openPositions.length > 0 ? { color: "#89d08d", text: t("OpenPositions")}
-                                                     : { color: "#bfbfbf", text: t("Flat")}
+    return openPositions && openPositions.length > 0
+      ? { color: "#89d08d", text: t("OpenPositions") }
+      : { color: "#bfbfbf", text: t("Flat") };
   }, [openPositions]);
 
   return (
@@ -77,13 +78,11 @@ export default function UserDetailsSection({
         <UserMetricCard
           sx={{ backgroundColor: getOpenPositionStyleAndValue.color }}
           title={undefined}
-          subtitle={getOpenPositionStyleAndValue.text}>
-        </UserMetricCard>
+          subtitle={getOpenPositionStyleAndValue.text}></UserMetricCard>
         <UserMetricCard
           sx={{ backgroundColor: getPandLStyleAndValue.color }}
-          title={t("OpenPANDL")} 
-          subtitle={getPandLStyleAndValue.text}>
-        </UserMetricCard>
+          title={t("OpenPANDL")}
+          subtitle={getPandLStyleAndValue.text}></UserMetricCard>
         <DataGrid<OpenPosition>
           slots={{
             footer: () => <></>,
@@ -123,7 +122,7 @@ export default function UserDetailsSection({
         editMode="row"
         getRowId={row => row.userId}
       />
-       <Typography
+      <Typography
         mt={2}
         align="center"
         variant="h6">
@@ -148,7 +147,7 @@ export default function UserDetailsSection({
         mt={2}
         align="center"
         variant="h6">
-        {t("WorkingOrder")}
+        {t("WorkingOrders")}
       </Typography>
       <Stack>
         <DataGrid<IWorkingOrder>
@@ -189,7 +188,7 @@ export const ClosingOnlyBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const OpenPositionTableSx: SxProps<Theme>= {
+export const OpenPositionTableSx: SxProps<Theme> = {
   height: "inherit !important",
   maxHeight: "110px",
   minHeight: "50px",
@@ -201,18 +200,18 @@ export const OpenPositionTableSx: SxProps<Theme>= {
   "& .MuiDataGrid-footerContainer": {
     height: "30px",
   },
-  "& .MuiDataGrid-cell":{
+  "& .MuiDataGrid-cell": {
     padding: 0.5,
     minWidth: "auto important",
-    fontSize: "10.5px"
+    fontSize: "10.5px",
   },
-  "& .MuiDataGrid-columnHeader":{
+  "& .MuiDataGrid-columnHeader": {
     padding: 0.5,
     fontSize: "11px",
     height: "10px",
-    width: "auto !important"
+    width: "auto !important",
   },
-  "& .MuiDataGrid-row":{
+  "& .MuiDataGrid-row": {
     minHeight: "10px",
   },
-}
+};
