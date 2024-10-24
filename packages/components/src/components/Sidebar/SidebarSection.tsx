@@ -1,15 +1,16 @@
-import { Box, Collapse, ListSubheader } from "@mui/material"
-import List from "@mui/material/List"
-import { SidebarItem } from "./SidebarItem"
-import { SidebarListItem } from "./types"
+import { Box, Collapse, ListItemButton, ListItemText, ListSubheader } from "@mui/material";
+import List from "@mui/material/List";
+import { SidebarItem } from "./SidebarItem";
+import { SidebarListItem } from "./types";
+import { AppLink } from "../common";
 
 interface Props {
-  sectionName: string
-  items: (SidebarListItem & {open: boolean})[]
-  open: boolean
-  toggleSide: Function
+  sectionName: string;
+  items: (SidebarListItem & { open: boolean })[];
+  open: boolean;
+  toggleSide: Function;
   //eslint-disable-next-line no-unused-vars
-  onSetItemOpen: (title: string, open: boolean) => void
+  onSetItemOpen: (title: string, open: boolean) => void;
 }
 
 export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide }: Props) => {
@@ -31,17 +32,38 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
           </ListSubheader>
         </Collapse>
       }>
-      {items.map((item, index) => (
-        <Box key={index}>
-          <SidebarItem
-            key={index} 
-            item={item}
-            open={item.open}
-            setOpen={open => onSetItemOpen(item.title, open)}
-            isSidebarOpened={open}
-          />
-        </Box>
-      ))}
+      {items.map((item, index) => {
+        debugger;
+        if (!item.children?.length && item.href) {
+          return (
+            <Box key={index}>
+              <AppLink
+                key={item.title}
+                passHref
+                href={item.href}
+                shallow>
+                <ListItemButton sx={{ pl: 1.5, justifyContent: "flex-start" }}>
+                  <ListItemText
+                    primary={item.title}
+                    sx={{ textAlign: "left" }}
+                  />
+                </ListItemButton>
+              </AppLink>
+            </Box>
+          );
+        }
+        return (
+          <Box key={index}>
+            <SidebarItem
+              key={index}
+              item={item}
+              open={item.open}
+              setOpen={open => onSetItemOpen(item.title, open)}
+              isSidebarOpened={open}
+            />
+          </Box>
+        );
+      })}
     </List>
-  )
-}
+  );
+};
