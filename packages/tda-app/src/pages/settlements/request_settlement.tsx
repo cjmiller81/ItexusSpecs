@@ -2,18 +2,28 @@ import BalanceWidgetSection from "@/features/balance-widget/BalanceWidgetSection
 import SettlementHistorySection from "@/features/settlement-history/SettlementHistorySection";
 import WithdrawalRequestConfirmationModal from "@/features/withdrawal-request/WithdrawalRequestConfirmationModal";
 import WithdrawalRequestSection from "@/features/withdrawal-request/WithdrawalRequestSection";
-import { useAppSelector } from "@/libs/redux/Store";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Grid, Typography, useMediaQuery } from "@mui/material";
 import { Stack } from "@mui/system";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { fetchCryptoAddress } from "features/tables/crypto-addresses-table/cryptoAddressesSlice";
+import { fetchBankAccounts } from "features/tables/manage-bank-account-table/BankAccountsSlice";
 
 const RequestSettlement: React.FC = () => {
   const { t } = useTranslation("RequestSettlement");
   const isRelativeBalances = useMediaQuery("(max-width: 1200px)");
+  const dispatch = useAppDispatch();
   const cryptoCurrencies = useAppSelector(state => state.balancesWidget.cryptoCurrencies);
   const fiatCurrencies = useAppSelector(state => state.balancesWidget.fiatCurrencies);
+  const cryptoAddresses = useAppSelector(state => state.cryptoAddresses.accounts);
+  const bankAccounts = useAppSelector(state => state.bankAccounts.accounts);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchCryptoAddress());
+    dispatch(fetchBankAccounts());
+  }, [dispatch]);
 
   const onRequestCryptoWithdrawal = async () => {
     // TODO crypto withdrawal request
@@ -26,7 +36,6 @@ const RequestSettlement: React.FC = () => {
   };
 
   const cryptoCurrenciesList = useMemo(() => [...new Set(cryptoCurrencies.map(c => c.name))], [cryptoCurrencies]);
-
   const fiatCurrenciesList = useMemo(() => [...new Set(fiatCurrencies.map(c => c.name))], [fiatCurrencies]);
 
   return (
@@ -84,6 +93,7 @@ const RequestSettlement: React.FC = () => {
                   currencies={cryptoCurrenciesList}
                   isLoading={false}
                   onRequestWithdrawal={onRequestCryptoWithdrawal}
+                  cryptoAddresses={cryptoAddresses}
                 />
                 <WithdrawalRequestSection
                   title={t("FiatWithdrawalRequest")}
@@ -91,6 +101,7 @@ const RequestSettlement: React.FC = () => {
                   currencies={fiatCurrenciesList}
                   isLoading={false}
                   onRequestWithdrawal={onRequestFiatoWithdrawal}
+                  bankAccounts={bankAccounts}
                 />
               </Stack>
             </Grid>

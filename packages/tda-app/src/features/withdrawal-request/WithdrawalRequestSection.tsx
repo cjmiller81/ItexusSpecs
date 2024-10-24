@@ -22,6 +22,18 @@ const WithdrawalModelSchema = object({
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
 
+interface ICryptoAddress {
+  id: string;
+  walletAddress: string;
+  addressTagMemo?: string;
+}
+
+interface IBankAccount {
+  id: string;
+  bankName: string;
+  accountNumber?: string;
+}
+
 type Props = Omit<MainCardProps, "children"> & {
   isLoading: boolean;
   title: string;
@@ -29,9 +41,26 @@ type Props = Omit<MainCardProps, "children"> & {
   currencies: string[];
   onRequestWithdrawal: (withdrawalRequest: WithdrawalModel) => Promise<void>;
   isCurrencyLoading?: boolean;
+  cryptoAddresses?: ICryptoAddress[];
+  bankAccounts?: IBankAccount[];
 };
 
-const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, currenciesSelectLabel, title, currencies, isLoading }: Props) => {
+const textEllipsisStyle = {
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  maxWidth: "200px",
+};
+
+const WithdrawalRequestSection: React.FC<Props> = ({
+  onRequestWithdrawal,
+  currenciesSelectLabel,
+  title,
+  currencies,
+  isLoading,
+  cryptoAddresses = [],
+  bankAccounts = [],
+}: Props) => {
   const inputRef = useRef<any>();
   const { t } = useTranslation("RequestSettlement");
 
@@ -66,7 +95,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                   xs={12}
                   sm={6}>
                   <Stack spacing={1}>
-                    <InputLabel> {t("Amount")}</InputLabel>
+                    <InputLabel>{t("Amount")}</InputLabel>
                     <DecimalInput
                       size="medium"
                       ref={inputRef}
@@ -100,17 +129,16 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                             <Typography color={theme => theme.palette.text.secondary}>{t("SelectCurrency")}</Typography>
                           );
                         }
-
                         return <Typography>{value}</Typography>;
                       }}
                       value={values.currency}
                       onChange={handleChange}
                       placeholder={t("SelectCurrency")}>
-                      {currencies.map(customer => (
+                      {currencies.map(currency => (
                         <MenuItem
-                          key={customer}
-                          value={customer}>
-                          {customer}
+                          key={currency}
+                          value={currency}>
+                          {currency}
                         </MenuItem>
                       ))}
                     </Select>
@@ -138,21 +166,51 @@ const WithdrawalRequestSection: React.FC<Props> = ({ onRequestWithdrawal, curren
                           );
                         }
 
+                        const selectedCryptoAddress = cryptoAddresses.find(addr => addr.walletAddress === value);
+                        const selectedBankAccount = bankAccounts.find(account => account.accountNumber === value);
+
+                        if (selectedCryptoAddress) {
+                          return (
+                            <Typography sx={textEllipsisStyle}>
+                              {selectedCryptoAddress.addressTagMemo
+                                ? `${selectedCryptoAddress.addressTagMemo} | ${selectedCryptoAddress.walletAddress}`
+                                : selectedCryptoAddress.walletAddress}
+                            </Typography>
+                          );
+                        } else if (selectedBankAccount) {
+                          return (
+                            <Typography sx={textEllipsisStyle}>
+                              {`${selectedBankAccount.bankName} | ${selectedBankAccount.accountNumber}`}
+                            </Typography>
+                          );
+                        }
+
                         return <Typography>{value}</Typography>;
                       }}
-                      placeholder={t("SelectDestination")}>
-                      {["Destination1", "Destination2"].map(customer => (
+                      placeholder={t("SelectDestination")}
+                      sx={{ width: "100%" }}>
+                      {cryptoAddresses.map(address => (
                         <MenuItem
-                          key={customer}
-                          value={customer}>
-                          {customer}
+                          key={address.id}
+                          value={address.walletAddress}>
+                          <Typography sx={textEllipsisStyle}>
+                            {address.addressTagMemo
+                              ? `${address.addressTagMemo} | ${address.walletAddress}`
+                              : address.walletAddress}
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                      {bankAccounts.map(account => (
+                        <MenuItem
+                          key={account.id}
+                          value={account.accountNumber}>
+                          <Typography sx={textEllipsisStyle}>
+                            {`${account.bankName} | ${account.accountNumber}`}
+                          </Typography>
                         </MenuItem>
                       ))}
                     </Select>
                   </Stack>
-                  {touched.destination && errors.destination && (
-                    <FormHelperText error>{errors.destination}</FormHelperText>
-                  )}
                 </Grid>
                 <Grid
                   item
