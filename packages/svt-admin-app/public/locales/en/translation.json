@@ -57,6 +57,8 @@
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
   "SideBar": {
+    "Users": "Users",
+    "UserList": "User List",
     "Strategies": "Strategies",
     "FifoStrategy": "FIFO Strategy",
     "FifoSignals": "FIFO Signals",

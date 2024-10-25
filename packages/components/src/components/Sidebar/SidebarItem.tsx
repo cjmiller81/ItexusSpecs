@@ -14,16 +14,22 @@ interface Props {
   setOpen: (open: boolean) => void;
 }
 
+const StyledListItemButton = styled(ListItemButton)({
+  "& > .MuiBox-root": {
+    display: "none",
+  },
+});
+
 export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
   return (
     <ListItem
       disablePadding
       sx={{ display: "block", padding: 0 }}>
-      <ListItemButton
+      <StyledListItemButton
         sx={{
           minHeight: 48,
-          px: 2.5,
-          pl: 1.5,
+          paddingLeft: 1.5,
+          paddingRight: 2.5,
         }}
         onClick={() => setOpen(!open)}>
         {item.icon && (
@@ -36,70 +42,33 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
             {item.icon}
           </ListItemIcon>
         )}
-        {!item.icon && !open && (
-          <Box minWidth={"30px"}></Box>
-        )}
-        <>
-          {item.children ? (
-            <>
-              <StyledTitleListItemText
-                primary={item.title}
-                sx={{ opacity: 1 }}
-              />
-              {open ? <ExpandLess /> : <ExpandMore />}
-            </>
-          ) : (
-            <>
-              {item.href ? (
-                <AppLink
-                  key={item.title}
-                  passHref
-                  href={item.href}
-                  shallow>
-                  <StyledTitleListItemText
-                    primary={item.title}
-                    sx={{ opacity: 1 }}
-                  />
-                </AppLink>
-              ) : (
-                <StyledTitleListItemText
-                  primary={item.title}
-                  sx={{ opacity: 1}}
-                />
-              )}
-            </>
-          )}
-        </>
-      </ListItemButton>
+        <ListItemText
+          primary={item.title}
+          sx={{ opacity: 1, textAlign: "left" }}
+        />
+        {item.children ? open ? <ExpandLess /> : <ExpandMore /> : null}
+      </StyledListItemButton>
+
       {item.children && (
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
-            {item.children.map(child => {
-              return (
-                <AppLink
-                  key={child.title}
-                  passHref
-                  href={child.href}
-                  shallow>
-                  <ListItemButton sx={{ pl: 3 }}>
-                    <Box sx={{ stroke: "green" }}>{child.icon}</Box>
-                    <ListItemText
-                      primary={child.title}
-                      sx={{ ml: 2 }}
-                    />
-                  </ListItemButton>
-                </AppLink>
-              );
-            })}
+            {item.children.map(child => (
+              <AppLink
+                key={child.title}
+                passHref
+                href={child.href}
+                shallow>
+                <ListItemButton sx={{ pl: 3, justifyContent: "flex-start" }}>
+                  <ListItemText
+                    primary={child.title}
+                    sx={{ textAlign: "left" }}
+                  />
+                </ListItemButton>
+              </AppLink>
+            ))}
           </List>
         </Collapse>
       )}
     </ListItem>
   );
 }
-
-const StyledTitleListItemText = styled(ListItemText)(() => ({
-  span: {
-    fontWeight: 500,
-  },
-}));

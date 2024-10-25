@@ -28,6 +28,7 @@ import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@mui/material/styles"
 
 interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
@@ -68,6 +69,30 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>();
   const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
   const { t } = useTranslation("CustomFilterBuilder");
+  const theme = useTheme()
+
+  useEffect(() => {
+    if (filterToAppply && !Array.isArray(filterToAppply)) {
+      setFilterValue([filterToAppply]);
+    } else {
+      setFilterValue(filterToAppply);
+    }
+
+    const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
+    if (isPredefinedFilter) {
+      setSelectedSavedFilter(isPredefinedFilter);
+      setFilterName(isPredefinedFilter.name);
+    } else {
+      setSelectedSavedFilter(null);
+      setFilterName("");
+    }
+  }, [filterToAppply, open, predefinedFilters]);
+
+  useEffect(() => {
+    if (!selectedSavedFilter) return;
+    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
+    if (updatedFilter) setSelectedSavedFilter(updatedFilter);
+  }, [predefinedFilters, selectedSavedFilter]);
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
     if (isDeepEqual(event.value, filterValue)) {
@@ -81,24 +106,6 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     if (filterValue) onApply(filterValue);
     else onClose();
   };
-
-  useEffect(() => {
-    if (filterToAppply && !Array.isArray(filterToAppply)) {
-      setFilterValue([filterToAppply]);
-    } else {
-      setFilterValue(filterToAppply);
-    }
-
-    const isPredefinedFilter = predefinedFilters.find(filter => isDeepEqual(filter.filter, filterToAppply));
-
-    if (isPredefinedFilter) {
-      setSelectedSavedFilter(isPredefinedFilter);
-      setFilterName(isPredefinedFilter.name);
-    } else {
-      setSelectedSavedFilter(null);
-      setFilterName("");
-    }
-  }, [filterToAppply, open, predefinedFilters]);
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
     const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
@@ -115,12 +122,6 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     setFilterValue(undefined);
     setFilterName("");
   };
-
-  useEffect(() => {
-    if (!selectedSavedFilter) return;
-    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
-    if (updatedFilter) setSelectedSavedFilter(updatedFilter);
-  }, [predefinedFilters, selectedSavedFilter]);
 
   const handleSaveFilter = () => {
     if (!filterName) return;
@@ -152,6 +153,16 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
     }
   };
 
+  const handleApplyFilterChange = (event: SelectChangeEvent<string>) => {
+    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
+    if (predefinedFilter) {
+      onApply([predefinedFilter.filter])
+      setSelectedSavedFilter(predefinedFilter);
+      setFilterValue(predefinedFilter.filter);
+      setFilterName(predefinedFilter.name);
+    }
+  };
+
   const handleDeleteFilter = (
     filter: IPrefilterTokensFilterValues,
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -176,9 +187,48 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   };
 
   const mapFilterName = (filter: string | null | undefined) => `Personal - ${filter}`;
+  const mapButtonFilterName = (filter: string | null | undefined) => {
+    return filter ? `Personal - ${filter}` : 'SELECT PRE-BUILT FILTER';
+  }
+
   return (
     <>
       <StyledAdaptivePageBox>
+      <Select
+        fullWidth
+        size="small"
+        displayEmpty
+        onChange={handleApplyFilterChange}
+        sx={{
+          minWidth: 250, 
+          maxWidth: 250, 
+          maxHeight: 32, 
+          marginRight: 1, 
+          backgroundColor: '#03A9F4', 
+          color: theme.palette.mode === 'dark' ? '#363640' : 'white', 
+          fontWeight: 600,
+          textAlign: "center",
+          borderColor: '#03A9F4',
+          '& .MuiSelect-icon': {
+            fill: theme.palette.mode === 'dark' ? '#363640' : 'white',
+          }}}
+          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name) }>
+          {predefinedFilters.map(filter => (
+            <MenuItem
+                selected={false}
+                key={filter.id}
+                value={[filter.id, filter.name]}>
+                <ListItemText primary={mapFilterName(filter?.name)} />
+                <LoadingButton
+                  loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                  onClick={event => handleDeleteFilter(filter, event)}
+                  variant="contained"
+                  color="error">
+                    {t("Delete", { ns: "Common" })}
+                </LoadingButton>
+              </MenuItem>
+            ))}
+        </Select>
         <StyledFilterButton 
           variant="contained" 
           sx={{minWidth: 250}}
