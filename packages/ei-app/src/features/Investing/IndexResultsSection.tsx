@@ -9,8 +9,6 @@ interface Props extends Omit<AccordionProps, "children"> {
 }
 
 const IndexResultsSection = ({ title, ...props }: Props) => {
-  const { t } = useTranslation("IndexResults");
-
   return (
     <AppAccordionSection
       persistKey="IndexResultsSection"
