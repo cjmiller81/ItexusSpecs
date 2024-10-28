@@ -158,7 +158,8 @@ export default function SpotRFQPage() {
           sx={{
             padding: "8px 20px 20px 20px",
             borderRadius: "3px",
-            backgroundColor: lighten(theme.palette.grey[100], 0.2),
+            backgroundColor:
+              theme.palette.mode === "light" ? lighten(theme.palette.grey[100], 0.2) : theme.palette.grey[100],
             margin: "auto",
           }}>
           <Box style={{ display: "flex", alignItems: "center" }}>
