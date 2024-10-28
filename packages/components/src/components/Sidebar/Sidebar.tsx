@@ -58,7 +58,7 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
             return (
               <Box key={sidebarItemindex}>
                 <SidebarSection
-                  sectionName={item.title}
+                  sectionName={item.title !== "Home" ? item.title : ""}
                   items={item.sidebarListItems.map(item => ({
                     ...item,
                     open: Boolean(opened.get(`${sidebarItemindex}-${item.title}`) || false),
