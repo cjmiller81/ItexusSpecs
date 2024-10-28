@@ -10,14 +10,17 @@ import { DecimalInput } from "components";
 import MainCard, { MainCardProps } from "components/MainCard";
 import { Form, Formik } from "formik";
 import React, { useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "react-i18next";
 import { InferType, number, object, string } from "yup";
 
 const requiredError = i18n.t("mandatoryField", { ns: "ErrorMessages" });
 const WithdrawalModelSchema = object({
+  id: string().optional(),
   amount: number().required(requiredError).min(0.1),
   currency: string().required(requiredError),
   destination: string().required(requiredError),
+  label: string().optional(),
 });
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
@@ -35,6 +38,7 @@ interface IBankAccount {
 }
 
 type Props = Omit<MainCardProps, "children"> & {
+  id?: string;
   isLoading: boolean;
   title: string;
   currenciesSelectLabel: string;
@@ -60,10 +64,13 @@ const WithdrawalRequestSection: React.FC<Props> = ({
   isLoading,
   cryptoAddresses = [],
   bankAccounts = [],
+  id,
 }: Props) => {
   const inputRef = useRef<any>();
   const { t } = useTranslation("RequestSettlement");
 
+  const initialId = id || cryptoAddresses[0]?.id || bankAccounts[0]?.id || uuidv4();
+  console.log(cryptoAddresses, bankAccounts, "currencies");
   return (
     <MainCard
       sx={{ maxWidth: "790px", width: "100%" }}
@@ -71,12 +78,12 @@ const WithdrawalRequestSection: React.FC<Props> = ({
       title={title}>
       <Formik<WithdrawalModel>
         initialValues={{
+          id: initialId,
           amount: 0,
           currency: "",
           destination: "",
+          label: currenciesSelectLabel,
         }}
-        validateOnChange={false}
-        validateOnBlur={false}
         validationSchema={WithdrawalModelSchema}
         onSubmit={async (values, helpers) => {
           await onRequestWithdrawal(values);
@@ -154,9 +161,8 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                     <Select
                       fullWidth
                       name="destination"
-                      onChange={handleChange}
-                      displayEmpty
                       value={values.destination}
+                      onChange={handleChange}
                       renderValue={value => {
                         if (value === "") {
                           return (
@@ -166,15 +172,12 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                           );
                         }
 
-                        const selectedCryptoAddress = cryptoAddresses.find(addr => addr.walletAddress === value);
-                        const selectedBankAccount = bankAccounts.find(account => account.accountNumber === value);
-
+                        const selectedCryptoAddress = cryptoAddresses.find(addr => addr.id === value);
+                        const selectedBankAccount = bankAccounts.find(account => account.id === value);
                         if (selectedCryptoAddress) {
                           return (
                             <Typography sx={textEllipsisStyle}>
-                              {selectedCryptoAddress.addressTagMemo
-                                ? `${selectedCryptoAddress.addressTagMemo} | ${selectedCryptoAddress.walletAddress}`
-                                : selectedCryptoAddress.walletAddress}
+                              {`${selectedCryptoAddress.addressTagMemo} | ${selectedCryptoAddress.walletAddress}`}
                             </Typography>
                           );
                         } else if (selectedBankAccount) {
@@ -184,46 +187,38 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                             </Typography>
                           );
                         }
-
                         return <Typography>{value}</Typography>;
-                      }}
-                      placeholder={t("SelectDestination")}
-                      sx={{ width: "100%" }}>
-                      {cryptoAddresses.map(address => (
+                      }}>
+                      {(cryptoAddresses.length ? cryptoAddresses : bankAccounts).map(option => (
                         <MenuItem
-                          key={address.id}
-                          value={address.walletAddress}>
+                          key={option.id}
+                          value={option.id}>
                           <Typography sx={textEllipsisStyle}>
-                            {address.addressTagMemo
-                              ? `${address.addressTagMemo} | ${address.walletAddress}`
-                              : address.walletAddress}
-                          </Typography>
-                        </MenuItem>
-                      ))}
-                      {bankAccounts.map(account => (
-                        <MenuItem
-                          key={account.id}
-                          value={account.accountNumber}>
-                          <Typography sx={textEllipsisStyle}>
-                            {`${account.bankName} | ${account.accountNumber}`}
+                            {option.walletAddress
+                              ? `${option.addressTagMemo ? `${option.addressTagMemo} | ` : ""}${option.walletAddress}`
+                              : `${option.bankName} - ${option.accountNumber}`}
                           </Typography>
                         </MenuItem>
                       ))}
                     </Select>
                   </Stack>
+                  {touched.destination && errors.destination && (
+                    <FormHelperText error>{errors.destination}</FormHelperText>
+                  )}
                 </Grid>
                 <Grid
                   item
                   xs={12}
                   sm={6}>
-                  <Box px={3}>
+                  <Box>
                     <LoadingButton
                       fullWidth
-                      disabled={values.amount <= 0 || values.currency === "" || values.destination === ""}
+                      disableElevation
                       loading={isLoading}
                       sx={{ px: 10, mt: 3.5, height: 40, textWrap: "nowrap" }}
                       type="submit"
-                      variant="contained">
+                      variant="contained"
+                      color="primary">
                       {t("RequestWithdrawal")}
                     </LoadingButton>
                   </Box>

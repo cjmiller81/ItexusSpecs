@@ -9,6 +9,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { fetchCryptoAddress } from "features/tables/crypto-addresses-table/cryptoAddressesSlice";
 import { fetchBankAccounts } from "features/tables/manage-bank-account-table/BankAccountsSlice";
+import { WithdrawalModel } from "@/features/withdrawal-request/WithdrawalRequestSection";
 
 const RequestSettlement: React.FC = () => {
   const { t } = useTranslation("RequestSettlement");
@@ -25,13 +26,11 @@ const RequestSettlement: React.FC = () => {
     dispatch(fetchBankAccounts());
   }, [dispatch]);
 
-  const onRequestCryptoWithdrawal = async () => {
-    // TODO crypto withdrawal request
+  const onRequestCryptoWithdrawal = async (withdrawalRequest: WithdrawalModel) => {
     setConfirmationModalOpen(true);
   };
 
-  const onRequestFiatoWithdrawal = async () => {
-    // TODO fiat withdrawal request
+  const onRequestFiatoWithdrawal = async (withdrawalRequest: WithdrawalModel) => {
     setConfirmationModalOpen(true);
   };
 
@@ -69,9 +68,7 @@ const RequestSettlement: React.FC = () => {
                     top: 0,
                     position: "absolute",
                     right: 43,
-                    ...(isRelativeBalances && {
-                      position: "relative",
-                    }),
+                    ...(isRelativeBalances && { position: "relative" }),
                   }}
                 />
               </Stack>
