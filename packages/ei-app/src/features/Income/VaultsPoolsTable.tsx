@@ -28,7 +28,7 @@ import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuild
 import { vaultsFilterBuilderFields } from "./vaultsTableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
-import { reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -114,7 +114,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         allowColumnReordering={true}
         columnHidingEnabled={false}
         keyExpr="ID"
-        columnAutoWidth={true}
+        onCellClick={descOrderingAfterClick}
+        columnAutoWidth={false}
         showRowLines={true}
         showBorders={true}
         onExporting={onExport}

@@ -31,3 +31,11 @@ export const reconfigureFilterPanelStyles = (containerRef, isActiveFilter) => {
       filterText.style.color = isActiveFilter ? "#03a9f4" : "#808080";
     }
 }
+
+export const descOrderingAfterClick = (e) => {
+  if (e.rowType === "header" && e.column && !e.column.sortOrder) {
+    setTimeout(() => {
+      e.component.columnOption(e.column.dataField, "sortOrder", "desc");  
+    });
+  }
+}
