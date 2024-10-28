@@ -70,7 +70,6 @@ const WithdrawalRequestSection: React.FC<Props> = ({
   const { t } = useTranslation("RequestSettlement");
 
   const initialId = id || cryptoAddresses[0]?.id || bankAccounts[0]?.id || uuidv4();
-  console.log(cryptoAddresses, bankAccounts, "currencies");
   return (
     <MainCard
       sx={{ maxWidth: "790px", width: "100%" }}
@@ -78,11 +77,11 @@ const WithdrawalRequestSection: React.FC<Props> = ({
       title={title}>
       <Formik<WithdrawalModel>
         initialValues={{
-          id: initialId,
+          id: initialId || "",
           amount: 0,
           currency: "",
           destination: "",
-          label: currenciesSelectLabel,
+          label: currenciesSelectLabel || "",
         }}
         validationSchema={WithdrawalModelSchema}
         onSubmit={async (values, helpers) => {

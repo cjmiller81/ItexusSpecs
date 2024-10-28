@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { fetchCryptoAddress } from "features/tables/crypto-addresses-table/cryptoAddressesSlice";
 import { fetchBankAccounts } from "features/tables/manage-bank-account-table/BankAccountsSlice";
 import { WithdrawalModel } from "@/features/withdrawal-request/WithdrawalRequestSection";
+import { currencyWithdrawal } from "api/currencyWithdrawal";
 
 const RequestSettlement: React.FC = () => {
   const { t } = useTranslation("RequestSettlement");
@@ -27,11 +28,33 @@ const RequestSettlement: React.FC = () => {
   }, [dispatch]);
 
   const onRequestCryptoWithdrawal = async (withdrawalRequest: WithdrawalModel) => {
-    setConfirmationModalOpen(true);
+    try {
+      await currencyWithdrawal.submitCurrencyWithdrawal({
+        id: withdrawalRequest.id,
+        amount: withdrawalRequest.amount,
+        currency: withdrawalRequest.currency,
+        destination: withdrawalRequest.destination,
+        label: withdrawalRequest.label,
+      });
+      setConfirmationModalOpen(true);
+    } catch (error) {
+      console.error("Error requesting crypto withdrawal:", error);
+    }
   };
 
   const onRequestFiatoWithdrawal = async (withdrawalRequest: WithdrawalModel) => {
-    setConfirmationModalOpen(true);
+    try {
+      await currencyWithdrawal.submitCurrencyWithdrawal({
+        id: withdrawalRequest.id,
+        amount: withdrawalRequest.amount,
+        currency: withdrawalRequest.currency,
+        destination: withdrawalRequest.destination,
+        label: withdrawalRequest.label,
+      });
+      setConfirmationModalOpen(true);
+    } catch (error) {
+      console.error("Error requesting fiat withdrawal:", error);
+    }
   };
 
   const cryptoCurrenciesList = useMemo(() => [...new Set(cryptoCurrencies.map(c => c.name))], [cryptoCurrencies]);
