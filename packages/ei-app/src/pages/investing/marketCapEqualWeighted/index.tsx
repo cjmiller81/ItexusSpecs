@@ -154,7 +154,7 @@ export default function MarketCapEqualWeightedPage() {
         title={t("IndexModeling")}
       />
 
-      <IndexResultsSection title={t("Index Results (Compare to Position)")} />
+      <IndexResultsSection title={t("IndexResults")} />
 
       <AppAccordionSection
         persistKey="EqualWeightedHistoricalWalletsWorth"

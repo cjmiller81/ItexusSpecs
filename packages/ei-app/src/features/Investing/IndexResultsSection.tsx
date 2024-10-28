@@ -9,7 +9,7 @@ interface Props extends Omit<AccordionProps, "children"> {
 }
 
 const IndexResultsSection = ({ title, ...props }: Props) => {
-  const { t } = useTranslation("IndexResultsSection");
+  const { t } = useTranslation("IndexResults");
 
   return (
     <AppAccordionSection
@@ -17,7 +17,6 @@ const IndexResultsSection = ({ title, ...props }: Props) => {
       defaultExpanded={false}
       title={title}
       {...props}>
-      {}
       <Box sx={{ padding: 2 }}>
         <Typography>{}</Typography>
       </Box>
