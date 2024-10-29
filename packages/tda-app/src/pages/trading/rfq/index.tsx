@@ -17,6 +17,7 @@ import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import * as React from "react";
+import { lighten } from "@mui/system";
 
 export const accountNumber = "EC_TEST";
 export const defaultAmount = 1000.0;
@@ -157,11 +158,12 @@ export default function SpotRFQPage() {
           sx={{
             padding: "8px 20px 20px 20px",
             borderRadius: "3px",
-            backgroundColor: theme.palette.grey[100],
+            backgroundColor:
+              theme.palette.mode === "light" ? lighten(theme.palette.grey[100], 0.2) : theme.palette.grey[100],
             margin: "auto",
           }}>
           <Box style={{ display: "flex", alignItems: "center" }}>
-            <Typography sx={{ fontSize: "19px", mb: 0.2 }}>{t("ChooseTradingPairs")}</Typography>
+            <Typography sx={{ fontSize: "16px", mb: 0.2 }}>{t("ChooseTradingPairs")}</Typography>
             <Tooltip
               title={t("SelectCurrencies")}
               placement="right">

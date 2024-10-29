@@ -27,7 +27,7 @@ import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder"
 import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { reconfigureFilterPanelStyles } from "@/common/devextreme-filter"
+import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter"
 import SimpleBar from "simplebar-react"
 
 export interface IPrefilterTokensTable {
@@ -142,7 +142,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         showBorders={true}
         ref={datagrid}
         width="100%"
-        columnAutoWidth={true}
+        onCellClick={descOrderingAfterClick}
+        columnAutoWidth={false}
         allowColumnReordering={true}
         columnHidingEnabled={false}
         onExporting={onExport}
