@@ -105,6 +105,7 @@ const SubmitNewAccPopUp: React.FC<{
         "& .MuiPaper-root": {
           backgroundColor: theme.palette.grey[50],
           color: "#000",
+          borderRadius: "10px",
         },
       }}
       fullWidth>
