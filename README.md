@@ -1,5 +1,5 @@
 # ECHO - UI 
-A Trading Tlatform UI.
+A Trading Tlatform UI .
 
 ### Prerequisites: 
 
