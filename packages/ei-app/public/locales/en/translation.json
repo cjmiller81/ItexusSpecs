@@ -221,6 +221,9 @@
     "MarketCapWeighted": "Market Cap Weighted Index Investing Strategy Model",
     "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model"
   },
+  "TradingPage": {
+    "TradingCharts": "Trading Charts"
+  },
   "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",
     "CurrentVersion": "Current Version {{version}}",
