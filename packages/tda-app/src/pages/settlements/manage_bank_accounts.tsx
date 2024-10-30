@@ -49,7 +49,7 @@ const ManageBankAccounts: React.FC = () => {
         spacing={2}>
         <MainCard
           content={false}
-          sx={{ bgcolor: "primary.lighter", position: "relative", width: "100%" }}>
+          sx={{ bgcolor: "primary.lighter", position: "relative", width: "100%", borderRadius: "10px" }}>
           <ReactTable
             data={bankAccounts}
             columns={getManageBankAccountTableColumns(theme, handleRemoveAccount, t)}

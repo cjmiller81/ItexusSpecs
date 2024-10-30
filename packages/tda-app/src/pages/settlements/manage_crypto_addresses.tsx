@@ -9,6 +9,7 @@ import { OnChangeFn, SortingState } from "@tanstack/react-table";
 import { deleteCryptoAddress, fetchCryptoAddress } from "features/tables/crypto-addresses-table/cryptoAddressesSlice";
 import AddNewAddressForm from "features/tables/crypto-addresses-table/addNewAddressForm";
 import Box from "@mui/material/Box";
+import { borderRadius } from "@mui/system";
 
 const ManageCryptoAddresses: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -42,7 +43,7 @@ const ManageCryptoAddresses: React.FC = () => {
           xs={12}>
           <MainCard
             content={false}
-            sx={{ bgcolor: "primary.lighter", position: "relative", width: "100%" }}>
+            sx={{ bgcolor: "primary.lighter", position: "relative", width: "100%", borderRadius: "10px" }}>
             <CryptoAddressesTable
               data={cryptoAddresses}
               columns={getManageCryptoAddressesTableColumns(theme, handleRemoveAccount, t)}
