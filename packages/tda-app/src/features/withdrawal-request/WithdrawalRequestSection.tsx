@@ -66,7 +66,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({
 
   return (
     <MainCard
-      sx={{ maxWidth: "790px", width: "100%" }}
+      sx={{ maxWidth: "790px", width: "100%", borderRadius: "10px" }}
       content={false}
       title={title}>
       <Formik<WithdrawalModel>

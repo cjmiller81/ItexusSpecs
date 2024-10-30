@@ -57,7 +57,7 @@ const AddNewAddressForm = () => {
           onSubmit={handleSubmit}
           sx={{
             padding: "20px",
-            borderRadius: "3px",
+            borderRadius: "10px",
             backgroundColor: theme.palette.grey[100],
             margin: "auto",
           }}>
