@@ -30,7 +30,7 @@ import { DefiField, defiFilterBuilderFields, DefiLabel } from "./tableConstants"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
-import { reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -99,7 +99,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         allowColumnReordering={true}
         columnHidingEnabled={false}
         keyExpr="ID"
-        columnAutoWidth={true}
+        onCellClick={descOrderingAfterClick}
+        columnAutoWidth={false}
         showRowLines={true}
         showBorders={true}
         onExporting={onExport}

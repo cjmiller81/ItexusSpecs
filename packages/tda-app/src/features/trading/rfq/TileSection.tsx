@@ -345,16 +345,15 @@ export const TileSection: FC<TileSectionProps> = ({
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
-          mt: 1,
         }}>
         <Box style={{ display: "flex", alignItems: "center" }}>
-          <Typography sx={{ fontSize: "19px", margin: "10px 0 15px 15px" }}>{t("Quantity")}</Typography>
+          <Typography sx={{ fontSize: "16px", margin: "5px 0 17px 15px" }}>{t("Quantity")}</Typography>
           <Tooltip
             title={t("InputQuantityToTradeInInputBoxBelow")}
             placement="right">
             <IconButton
               size="small"
-              sx={{ position: "relative", top: "-5px", left: "-4px" }}>
+              sx={{ position: "relative", top: "-7px", left: "-4px" }}>
               <InfoOutlinedIcon
                 sx={{ fontSize: "15px" }}
                 fontSize="small"
@@ -367,9 +366,8 @@ export const TileSection: FC<TileSectionProps> = ({
           size="small"
           sx={{
             width: "85px",
-
             input: {
-              height: "25px",
+              height: "18px",
               padding: "4px",
               [theme.breakpoints.down("sm")]: {
                 padding: "2px",
@@ -408,9 +406,16 @@ export const TileSection: FC<TileSectionProps> = ({
           value={amount}
           maxDecimals={5}
           error={isLessThanMinSize || isGreaterThanMaxSize}
-          helperText={isLessThanMinSize ? t("MinSizeError") : isGreaterThanMaxSize ? t("MaxSizeError") : ""}
           onChange={onAmoutChanged}
         />
+
+        <Typography
+          variant="body2"
+          color="error"
+          sx={{ mt: 1, minHeight: "24px" }}>
+          {isLessThanMinSize ? t("MinSizeError", { ns: "Tile" }) : ""}
+          {isGreaterThanMaxSize ? t("MaxSizeError", { ns: "Tile" }) : ""}
+        </Typography>
       </Box>
       <Tile
         isQuoteSubmitting={isTransactionInProgress}

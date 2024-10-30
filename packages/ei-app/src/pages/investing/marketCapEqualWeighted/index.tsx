@@ -1,5 +1,6 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { IndexModelingSection } from "@/features/Investing/IndexModelingSection";
+import IndexResultsSection from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import {
@@ -48,8 +49,7 @@ export default function MarketCapEqualWeightedPage() {
     dispatch(resetState());
   }, []);
 
-
-  useEffect(() => { 
+  useEffect(() => {
     if (tokensCount && prefilteredData.length >= tokensCount) {
       return;
     }
@@ -60,39 +60,42 @@ export default function MarketCapEqualWeightedPage() {
       : defaultTotalTokensCount;
 
     if (currentTake > 0 && (!take || currentTake !== take)) {
-      setCurrentTake(currentTake);  
+      setCurrentTake(currentTake);
       refreshIndexModelingData(currentTake);
     }
   }, [tokensCount]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (take > 0) {
       refreshIndexModelingData(take);
     }
   }, [currentSorter, currentFilter]);
 
-  const refreshIndexModelingData = (currentTake) => {
+  const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
-      var requestPromise = dispatch(fetchIndexModelingTokens({
-        filter: currentFilter,
-        sort: currentSorter,
-        take: currentTake
-      }));
-      
-      setIndexModelRequestPromise(requestPromise);
-    }
-    else {
-      indexModelRequestPromise.then(() => {
-        dispatch(fetchIndexModelingTokens({
+      var requestPromise = dispatch(
+        fetchIndexModelingTokens({
           filter: currentFilter,
           sort: currentSorter,
-          take: currentTake
-        }));
+          take: currentTake,
+        }),
+      );
+
+      setIndexModelRequestPromise(requestPromise);
+    } else {
+      indexModelRequestPromise.then(() => {
+        dispatch(
+          fetchIndexModelingTokens({
+            filter: currentFilter,
+            sort: currentSorter,
+            take: currentTake,
+          }),
+        );
 
         setIndexModelRequestPromise(null);
-      })
+      });
     }
-  }
+  };
 
   const dataSource = useMemo(
     () =>
@@ -150,6 +153,8 @@ export default function MarketCapEqualWeightedPage() {
         tableAssets={tableData}
         title={t("IndexModeling")}
       />
+
+      <IndexResultsSection title={t("IndexResults")} />
 
       <AppAccordionSection
         persistKey="EqualWeightedHistoricalWalletsWorth"
