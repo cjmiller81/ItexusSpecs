@@ -74,6 +74,10 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
   const blob = new Blob([appleIcsContent], { type: "text/calendar" });
   const appleUrl = URL.createObjectURL(blob);
 
+  const handleEventTitleClick = () => {
+    window.open(event.source, "_blank");
+  };
+
   return (
     <Stack
       sx={{ p: 1.5, pt: 0.5, ...sx }}
@@ -145,6 +149,7 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
                 textDecoration: "underline",
               },
             }}
+            onClick={handleEventTitleClick}
             color={
               theme.palette.primary.main
             }>{`${event.coins[0].name}${event.coins.length > 1 && ` and ${event.coins.length - 1} others`}`}</Typography>
@@ -227,16 +232,6 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
             variant="h6">
             {event.title["en"]}
           </Typography>
-        </Stack>
-        <Stack
-          justifyContent={"space-around"}
-          width="100px">
-          <ButtonLink
-            width={"100%"}
-            href={event.source}
-            target="_blank">
-            {t("Source")}
-          </ButtonLink>
         </Stack>
       </Stack>
     </Stack>
