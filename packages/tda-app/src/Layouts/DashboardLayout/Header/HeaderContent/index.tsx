@@ -20,6 +20,8 @@ import { fetchConnectionStatus } from "Layouts/DashboardLayout/Header/HeaderCont
 export default function HeaderContent() {
   const dispatch = useAppDispatch();
   const { menuOrientation, mode, onChangeMode } = useConfig();
+  const isPad = useMediaQuery("(max-width: 1030px)");
+  const isMobile = useMediaQuery("(max-width: 715px)");
 
   useEffect(() => {
     dispatch(fetchConnectionStatus());
@@ -40,7 +42,8 @@ export default function HeaderContent() {
     dispatch(setTradingEnabled(!isTradingEnabled));
   };
 
-  return (
+  // Render the desktop layout
+  const renderDesktopLayout = () => (
     <>
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
       <ConnectionStatus isConnected={isConnected} />
@@ -57,4 +60,36 @@ export default function HeaderContent() {
       <Profile />
     </>
   );
+
+  // Render the mobile layout
+  const renderMobileLayout = () => (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      width="100%">
+      <Box>
+        <DrawerHeader open={true} />
+      </Box>
+      <Box sx={{ display: isMobile ? "contents" : "flex", mb: 1.5 }}>
+        <ConnectionStatus isConnected={isConnected} />
+        <DateTimeWidget />
+        <TradingSwitch
+          setIsTradingEnabled={handleToggle}
+          isTradingEnabled={isTradingEnabled}
+        />
+        <SupportButton />
+      </Box>
+
+      <Box sx={{ display: isMobile ? "contents" : "flex" }}>
+        {localization}
+        <Notification />
+        <ThemeSwitcher />
+        <Profile />
+      </Box>
+    </Box>
+  );
+
+  // Render the appropriate layout based on screen size
+  return isPad ? renderMobileLayout() : renderDesktopLayout();
 }
