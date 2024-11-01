@@ -32,7 +32,7 @@ export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo
     return HttpResponse.json(chains)
   }),
 
-  http.get(`${process.env.BACKEND_API_URL}/model/run/marketCapWeightedIndex`, () => {
+  http.post(`${process.env.BACKEND_API_URL}/model/run/marketCapWeightedIndex`, () => {
     /*
     var url = new URL(request.url)
     let tokenCount = 8
