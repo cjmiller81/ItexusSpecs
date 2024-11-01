@@ -33,6 +33,8 @@ export default function SpotRFQPage() {
   const dispatch = useAppDispatch();
   const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
   const isScreenSmall = useMediaQuery("(max-width: 1370px)");
+  const isPad = useMediaQuery("(max-width: 1030px)");
+  const isMobile = useMediaQuery("(max-width: 715px)");
   const { t } = useTranslation("SpotRFQPage");
   const [currentOrder, setCurrentOrder] = useState<{
     rfqModel: RfqResponse;
@@ -128,15 +130,13 @@ export default function SpotRFQPage() {
   return (
     <Stack
       spacing={3}
-      alignItems="center"
-      sx={{
-        width: isScreenSmall ? "95%" : "100%",
-      }}>
+      alignItems="center">
       <BalanceWidgetSection
         width={theme => (isRelativeBalances ? "auto" : theme.spacing(24))}
         direction={isRelativeBalances ? "row" : "column"}
         sx={{
-          top: 0,
+          // top: isMobile ? 330 : 0,
+          marginTop: isMobile ? "296px !important" : isPad ? "110px !important" : 0,
           position: "absolute",
           right: 25,
           ...(isRelativeBalances && {

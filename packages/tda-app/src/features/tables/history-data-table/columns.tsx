@@ -83,9 +83,19 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "filledQty",
-      header: () => <Typography fontSize="15px">Quantity</Typography>,
+      header: () => (
+        <Typography
+          sx={{ width: "40px" }}
+          fontSize="15px">
+          Quantity
+        </Typography>
+      ),
       enableResizing: true,
-      cell: props => formatFilledQty(props.getValue() as string),
+      cell: props => (
+        <div style={{ maxWidth: "60px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {formatFilledQty(props.getValue() as string)}
+        </div>
+      ),
     },
     {
       accessorKey: "filledPrice",

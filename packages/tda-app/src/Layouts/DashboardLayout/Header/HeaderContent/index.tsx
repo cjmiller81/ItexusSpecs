@@ -42,7 +42,6 @@ export default function HeaderContent() {
     dispatch(setTradingEnabled(!isTradingEnabled));
   };
 
-  // Render the desktop layout
   const renderDesktopLayout = () => (
     <>
       {menuOrientation === MenuOrientation.HORIZONTAL && !downLG && <DrawerHeader open={true} />}
@@ -61,7 +60,6 @@ export default function HeaderContent() {
     </>
   );
 
-  // Render the mobile layout
   const renderMobileLayout = () => (
     <Box
       display="flex"
@@ -90,6 +88,5 @@ export default function HeaderContent() {
     </Box>
   );
 
-  // Render the appropriate layout based on screen size
   return isPad ? renderMobileLayout() : renderDesktopLayout();
 }
