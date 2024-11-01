@@ -50,12 +50,11 @@ export const walletsApi = {
     tokensIds: string[],
     compareSymbolId?: string,
   ): Promise<CapHistoricalWeightedDate[]> => {
-    const response = await appAxios.get(`/model/run/marketCapWeightedIndex?${tokensIds.map((n, index) => `tokensIds=${n}`).join('&')}`, {
+    const response = await appAxios.post('/model/run/marketCapWeightedIndex', tokensIds, {
       params: {
         startDate: ToUtcDateFormatted(startDate),
         endDate: ToUtcDateFormatted(endDate),
-        compareTokenId: compareSymbolId,
-        tokensIds,
+        compareTokenId: compareSymbolId
       },
     })
 
