@@ -88,7 +88,7 @@ const Tile: React.FC<TileProps> = ({
       sx={{
         ...sx,
         boxShadow,
-        mt: 2,
+        mt: 0.5,
         height: "215px",
         border: `2px solid ${borderColor}`,
         [theme.breakpoints.down("sm")]: {

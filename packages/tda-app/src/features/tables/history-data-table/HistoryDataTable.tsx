@@ -108,7 +108,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <MainCard
         content={false}
-        sx={{ bgcolor: "primary.lighter", position: "relative", ...sx }}
+        sx={{ bgcolor: "primary.lighter", position: "relative", ...sx, borderRadius: "10px" }}
         {...props}>
         <ReactTable
           title={title}

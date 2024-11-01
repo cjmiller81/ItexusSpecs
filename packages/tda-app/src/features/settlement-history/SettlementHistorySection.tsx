@@ -12,7 +12,7 @@ export const SettlementHistorySection: FC<Props> = ({ ...props }) => {
   return (
     <>
       <SettlementTable
-        sx={{ width: "100%" }}
+        sx={{ width: "100%", borderRadius: "10px" }}
         fileName={t("FileName")}
         fromDate={moment().add(-1, "M").toDate()}
         toDate={moment().toDate()}

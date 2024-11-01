@@ -97,7 +97,7 @@ const RequestSettlement: React.FC = () => {
               </Stack>
             </Grid>
             <Grid
-              sx={{ paddingTop: "54px !important" }}
+              sx={{ paddingTop: "54px !important", borderRadius: "10px" }}
               item
               xs={12}>
               <Stack

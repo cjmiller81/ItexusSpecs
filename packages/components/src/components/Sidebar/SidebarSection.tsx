@@ -11,9 +11,10 @@ interface Props {
   toggleSide: Function;
   //eslint-disable-next-line no-unused-vars
   onSetItemOpen: (title: string, open: boolean) => void;
+  icon?: React.ReactNode;
 }
 
-export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide }: Props) => {
+export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide, icon }: Props) => {
   return (
     <List
       sx={{ width: "100%", bgcolor: "background.paper", pb: 0 }}
@@ -42,6 +43,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                 href={item.href}
                 shallow>
                 <ListItemButton sx={{ pl: 1.5, justifyContent: "flex-start" }}>
+                  {item.icon && <span style={{ marginRight: "12px", marginTop: "2px" }}>{item.icon}</span>}
                   <ListItemText
                     primary={item.title}
                     sx={{ textAlign: "left" }}

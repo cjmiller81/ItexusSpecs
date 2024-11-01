@@ -104,7 +104,7 @@ const FundingInstructions: React.FC = () => {
                 <Alert severity="info">{t("WalletsInfoAlert")}</Alert>
                 <TableContainer
                   component={Paper}
-                  sx={{ my: 2, backgroundColor: theme.palette.background.paper }}>
+                  sx={{ my: 2, backgroundColor: theme.palette.background.paper, borderRadius: "10px" }}>
                   <Table>
                     <TableHead>
                       <TableRow>
@@ -169,7 +169,7 @@ const FundingInstructions: React.FC = () => {
                 <Box
                   component={Paper}
                   p={2}
-                  sx={{ backgroundColor: theme.palette.background.paper }}>
+                  sx={{ backgroundColor: theme.palette.background.paper, borderRadius: "10px" }}>
                   <Typography
                     variant="h5"
                     component="h2"

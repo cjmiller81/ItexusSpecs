@@ -88,6 +88,9 @@ export const RfqButton: FC<Omit<RfqButtonProps, "children"> & LoadingButtonProps
             },
             textTransform: "capitalize",
             lineHeight: 1.4,
+            "&.Mui-disabled": {
+              color: theme.palette.grey[600],
+            },
             ...sx,
           }}>
           {getMessage()}

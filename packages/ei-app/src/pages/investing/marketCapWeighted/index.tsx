@@ -1,5 +1,6 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { IndexModelingSection } from "@/features/Investing/IndexModelingSection";
+import IndexResultsSection from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import {
@@ -11,7 +12,12 @@ import {
   setPeriod,
   setToDate,
 } from "@/libs/redux/Slices/MarketCapWeightedChartSlice";
-import { defaultTotalTokensCount, fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
+import {
+  defaultTotalTokensCount,
+  fetchIndexModelingTokens,
+  setCapital,
+  setTokens,
+} from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
@@ -33,14 +39,13 @@ export default function MarketCapWeightedPage() {
     endDate,
   } = useAppSelector(state => state.marketCapWeightedChart);
   const dispatch = useAppDispatch();
-  const [take, setCurrentTake] = useState<number>(0);
   const [currentSorter, setCurrentSorter] = useState<any>(null);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
-
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.marketCapWeightedModeling,
   );
+  const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
 
   const { t } = useTranslation("MarketCapPage");
 
@@ -66,7 +71,7 @@ export default function MarketCapWeightedPage() {
     dispatch(resetState());
   }, []);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (tokensCount && prefilteredData.length >= tokensCount) {
       return;
     }
@@ -77,39 +82,41 @@ export default function MarketCapWeightedPage() {
       : defaultTotalTokensCount;
 
     if (currentTake > 0 && (!take || currentTake !== take)) {
-      setCurrentTake(currentTake);  
-      refreshIndexModelingData(currentTake);
+      setCurrentTake(currentTake);
     }
   }, [tokensCount]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (take > 0) {
       refreshIndexModelingData(take);
     }
-  }, [currentSorter, currentFilter]);
-
-  const refreshIndexModelingData = (currentTake) => {
+  }, [currentSorter, currentFilter, take]);
+  
+  const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
-      var requestPromise = dispatch(fetchIndexModelingTokens({
-        filter: currentFilter,
-        sort: currentSorter,
-        take: currentTake
-      }));
-      
-      setIndexModelRequestPromise(requestPromise);
-    }
-    else {
-      indexModelRequestPromise.then(() => {
-        dispatch(fetchIndexModelingTokens({
+      var requestPromise = dispatch(
+        fetchIndexModelingTokens({
           filter: currentFilter,
           sort: currentSorter,
-          take: currentTake
-        }));
+          take: currentTake,
+        }),
+      );
+
+      setIndexModelRequestPromise(requestPromise);
+    } else {
+      indexModelRequestPromise.then(() => {
+        dispatch(
+          fetchIndexModelingTokens({
+            filter: currentFilter,
+            sort: currentSorter,
+            take: currentTake,
+          }),
+        );
 
         setIndexModelRequestPromise(null);
-      })
+      });
     }
-  }
+  };
 
   const onSorterChanged = (sorter: any) => {
     setCurrentSorter(sorter ? JSON.stringify(sorter) : "[]");
@@ -148,6 +155,8 @@ export default function MarketCapWeightedPage() {
         tableAssets={tableData}
         title={t("IndexModeling")}
       />
+
+      <IndexResultsSection title={t("IndexResults")} />
 
       <AppAccordionSection
         persistKey="WeightedHistoricalWalletsWorth"

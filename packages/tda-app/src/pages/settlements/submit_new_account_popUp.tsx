@@ -18,7 +18,7 @@ import { useAppDispatch } from "libs/redux/Store";
 import { addBankAccount } from "features/tables/manage-bank-account-table/BankAccountsSlice";
 import { v4 as uuid } from "uuid";
 import Typography from "@mui/material/Typography";
-
+import Countries from "common/countries";
 const SubmitNewAccPopUp: React.FC<{
   open: boolean;
   onClose: () => void;
@@ -105,6 +105,7 @@ const SubmitNewAccPopUp: React.FC<{
         "& .MuiPaper-root": {
           backgroundColor: theme.palette.grey[50],
           color: "#000",
+          borderRadius: "10px",
         },
       }}
       fullWidth>
@@ -159,7 +160,13 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="country"
                   margin="normal">
-                  <MenuItem value="USA">{t("USA")}</MenuItem>
+                  {Countries.map((country, index) => (
+                    <MenuItem
+                      key={index}
+                      value={country}>
+                      {t(country)}
+                    </MenuItem>
+                  ))}
                 </Field>
                 <ErrorMessage
                   name="country"

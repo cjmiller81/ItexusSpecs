@@ -38,7 +38,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
       width={theme => theme.spacing(24)}
       {...props}>
       <DenseTable
-        sx={{ position, maxWidth: "200px" }}
+        sx={{ position, maxWidth: "200px", borderRadius: "10px" }}
         isOpen={cryptoOpen}
         title={
           <TableHeader
@@ -59,7 +59,7 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
       />
 
       <DenseTable
-        sx={{ position, maxWidth: "200px" }}
+        sx={{ position, maxWidth: "200px", borderRadius: "10px" }}
         isOpen={fiatOpen}
         columns={fiatCoinsColumns}
         data={fiatCurrencies}
