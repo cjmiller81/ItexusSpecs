@@ -7,7 +7,7 @@ import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
 import { RootState, persistedReducer } from "./RootReducer";
-import { coinsApi,categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
+import { categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 
 const makeStore = () => {
   return configureStore({
@@ -19,7 +19,6 @@ const makeStore = () => {
         vaultsApi.middleware,
         calendarEventsApi.middleware,
         categoriesEventsApi.middleware,
-        coinsApi.middleware,
         defisApi.middleware,
         chainsApi.middleware,
         categoriesApi.middleware,

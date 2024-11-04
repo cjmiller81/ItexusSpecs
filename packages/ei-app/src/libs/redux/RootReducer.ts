@@ -1,7 +1,7 @@
 import { vaultsApi } from "@/features/Income/VaultsApi";
 import { categoriesApi } from "@/features/Investing/categoriesApi";
 import { chainsApi } from "@/features/Investing/chainsApi";
-import { calendarEventsApi,coinsApi,categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
+import { calendarEventsApi,categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import { defisApi } from "@/features/Income/DefiApi";
 import { combineReducers } from "@reduxjs/toolkit";
 import { uiSlice, walletsSlice } from "components";
@@ -30,7 +30,6 @@ export const rootReducer = combineReducers({
   [chainsApi.reducerPath]: chainsApi.reducer,
   [dashboardSlice.name]: dashboardSlice.reducer,
   [calendarEventsApi.reducerPath]: calendarEventsApi.reducer,
-  [coinsApi.reducerPath]: coinsApi.reducer,
   [categoriesEventsApi.reducerPath]: categoriesEventsApi.reducer,
   
   [defisApi.reducerPath]: defisApi.reducer,

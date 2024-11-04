@@ -1,35 +1,19 @@
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
-import {
-  Box,
-  Divider,
-  Grid,
-  ListItemText,
-  MenuItem,
-  Select,
-  TextField,
-  Chip,
-  IconButton,
-  FormControl,
-  InputLabel,
-} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
+import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CalendarEventTile from "./CalendarEventTile";
-import { CalendarEvent, Category, Coin } from "./eventsResponseModel";
-import { useGetCoinsQuery, useGetCategoriesQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
-import { CategoriesResponse } from "./eventsResponseModel";
-import { SelectChangeEvent } from "@mui/material/Select";
-import { OnFetchResponse, SymbolsLookupVirtualized, LookUpOption } from "components";
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { setCompareOption } from "@/libs/redux/Slices/MarketCapEqualWeightChartSlice";
-
-const TOP_COIN_LIMITS = {
-  "top-100": 100,
-  "top-300": 300,
-  "top-500": 500,
-};
+import { CalendarEvent, CategoriesResponse, Coin } from "./eventsResponseModel";
+import { useGetCategoriesQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { ClearIcon } from "@mui/x-date-pickers";
+import { CustomDateSelector } from "./CustomDateSelector";
+import {
+  CoinsLookupVirtualized,
+  OnFetchResponse,
+} from "../../../../../components/src/components/common/inputs/AppSymbolLookup/CoinsLookupVirtualized";
+import { LookUpOption } from "../../../../../components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
 
 const CryptoCalendar = ({
   loading,
@@ -51,16 +35,11 @@ const CryptoCalendar = ({
   sx?: object;
 }) => {
   const { t } = useTranslation("CryptoCalendar");
-  const [selectedCoins, setSelectedCoins] = useState<string[]>([]);
+  const [selectedCoins, setSelectedCoins] = useState<LookUpOption[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [searchCoin, setSearchCoin] = useState<string>("");
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [categoriesData, setCategoriesData] = useState<CategoriesResponse | null>(null);
-  const [offset, setOffset] = useState(0);
-  const limit = 20;
-  const { data: coinsData, isLoading: fetchLoading } = useGetCoinsQuery({ offset, limit });
   const { data: items } = useGetCategoriesQuery();
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (items) {
@@ -69,30 +48,14 @@ const CryptoCalendar = ({
   }, [items]);
 
   const categories = categoriesData?.body || [];
-  const [coins, setCoins] = useState<Coin[]>([]);
-
   const [inputSearch, setInputSearch] = useState("");
 
-  useEffect(() => {
-    if (coinsData?.body) {
-      setCoins(prevCoins => {
-        const existingIds = new Set(prevCoins.map(coin => coin.id));
-        const newCoins = coinsData.body.filter(coin => !existingIds.has(coin.id));
-        return [...prevCoins, ...newCoins];
-      });
-    }
-  }, [coinsData]);
-
-  if (fetchLoading) return <div>downloading coins...</div>;
-
-  const filteredCoins = coins.filter(coin => coin.fullname.toLowerCase().includes(searchCoin.toLowerCase()));
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchCategory.toLowerCase()),
   );
 
-  const handleCoinSelect = (event: SelectChangeEvent<string[]>) => {
-    const value = event.target.value;
-    setSelectedCoins(typeof value === "string" ? value.split(",") : value);
+  const handleCoinSelect = (value: LookUpOption[]) => {
+    setSelectedCoins(value);
   };
 
   const handleCategorySelect = (event: SelectChangeEvent<string[]>) => {
@@ -106,25 +69,10 @@ const CryptoCalendar = ({
       event.categories.some(category => selectedCategories.includes(category.id.toString()));
 
     const matchesCoin =
-      selectedCoins.length === 0 || event.coins.some(coin => selectedCoins.includes(coin.id.toString()));
-
-    if (selectedCoins.some(coin => Object.keys(TOP_COIN_LIMITS).includes(coin))) {
-      const limit =
-        TOP_COIN_LIMITS[
-          selectedCoins.find(coin => Object.keys(TOP_COIN_LIMITS).includes(coin)) as keyof typeof TOP_COIN_LIMITS
-        ];
-      const topCoins = coins.slice(0, limit).map(coin => coin.id.toString());
-      return matchesCategory && event.coins.some(coin => topCoins.includes(coin.id.toString()));
-    }
+      selectedCoins.length === 0 || event.coins.some(coin => selectedCoins.map(c => c.id).includes(coin.id.toString()));
 
     return matchesCategory && matchesCoin;
   });
-
-  const handleResetCoins = () => {
-    setSelectedCoins([]);
-    setSearchCoin("");
-    setOffset(0);
-  };
 
   const handleResetCategories = () => {
     setSelectedCategories([]);
@@ -134,10 +82,6 @@ const CryptoCalendar = ({
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const bottom =
       event.currentTarget.scrollHeight === event.currentTarget.scrollTop + event.currentTarget.clientHeight;
-
-    if (bottom && coins.length < (coinsData?.body?.length || 0)) {
-      setOffset(prevOffset => prevOffset + limit);
-    }
   };
 
   return (
@@ -148,104 +92,33 @@ const CryptoCalendar = ({
       sx={sx}>
       <Box>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-          <FormControl sx={{ width: "49%" }}>
-            <Select
-              endAdornment={
-                selectedCoins.length > 0 ? (
-                  <IconButton
-                    onClick={handleResetCoins}
-                    size="small"
-                    aria-label="clear selection"
-                    sx={{ mr: 1, p: 0 }}>
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                ) : null
-              }
-              multiple
-              value={selectedCoins}
-              onChange={handleCoinSelect}
-              displayEmpty
-              renderValue={selected => {
-                if (selectedCoins.length === 0) {
-                  return <em>Coins</em>;
-                } else if (selectedCoins.length === 1) {
-                  const selectedCoins = coins.find(coin => coin.id.toString() === selected[0]);
-                  return selectedCoins ? selectedCoins.name : "";
-                } else {
-                  return `${selectedCoins.length} selected`;
-                }
-              }}
-              sx={{
-                minHeight: "30px", // Минимальная высота самого Select
-                fontSize: "0.875rem", // Размер шрифта
-                ".MuiSelect-select": {
-                  paddingTop: "4px",
-                  paddingBottom: "4px",
-                  paddingLeft: "8px",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderRadius: "4px",
-                },
-              }}>
-              <MenuItem disabled>
-                <em>Coins</em>
-              </MenuItem>
-              <MenuItem disableRipple>
-                <TextField
-                  placeholder="Coin search"
-                  variant="outlined"
-                  size="small"
-                  value={searchCoin}
-                  onChange={e => setSearchCoin(e.target.value)}
-                  sx={{ width: "100%", mb: 1 }}
-                />
-              </MenuItem>
-              <MenuItem value="top-100">Top 100 Coins</MenuItem>
-              <MenuItem value="top-300">Top 300 Coins</MenuItem>
-              <MenuItem value="top-500">Top 500 Coins</MenuItem>
-              {filteredCoins.length > 0 ? (
-                filteredCoins.map(coin => (
-                  <MenuItem
-                    key={coin.id}
-                    value={coin.id}>
-                    <ListItemText primary={coin.fullname} />
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem disabled>
-                  <em>No results</em>
-                </MenuItem>
-              )}
-            </Select>
-          </FormControl>
-
-          <FormControl sx={{ width: "49%" }}>
-            <SymbolsLookupVirtualized
+          <FormControl sx={{ width: "50%" }}>
+            <CoinsLookupVirtualized
               pageSize={50}
               onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
-              tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
               loading={false}
               disableListWrap
-              value={null}
+              value={selectedCoins}
               onChange={(_event, value) => {
-                handleCoinSelect;
+                handleCoinSelect(value);
               }}
               autoComplete={true}
-              onInputChange={(_event, value) => {}}
+              onInputChange={(_event, value) => {
+                setInputSearch(value);
+              }}
               filterOptions={x => x}
               inputValue={inputSearch}
               label={t("Coins")}
             />
           </FormControl>
 
-          <FormControl sx={{ width: "49%" }}>
+          <FormControl sx={{ width: "50%" }}>
             <Select
               endAdornment={
                 selectedCategories.length > 0 ? (
                   <IconButton
                     onClick={handleResetCategories}
                     size="small"
-                    aria-label="clear selection"
                     sx={{ mr: 1, p: 0 }}>
                     <ClearIcon fontSize="small" />
                   </IconButton>
@@ -257,49 +130,31 @@ const CryptoCalendar = ({
               displayEmpty
               renderValue={selected => {
                 if (selectedCategories.length === 0) {
-                  return <em>Categories</em>;
+                  return t("Category");
                 } else if (selectedCategories.length === 1) {
                   const selectedCategory = categories.find(category => category.id.toString() === selected[0]);
                   return selectedCategory ? selectedCategory.name : "";
                 } else {
-                  return `${selectedCategories.length} selected`;
+                  return `${selectedCategories.length} ${t("selected")}`;
                 }
               }}
               sx={{
                 minHeight: "30px",
-                fontSize: "0.875rem",
                 ".MuiSelect-select": {
                   paddingTop: "4px",
+                  textOverflow: "clip",
                   paddingBottom: "4px",
-                  paddingLeft: "8px",
+                  paddingLeft: "4px",
+                  fontSize: 12,
                 },
               }}>
-              <MenuItem disabled>
-                <em>Categories</em>
-              </MenuItem>
-              <MenuItem disableRipple>
-                <TextField
-                  placeholder="Category search"
-                  variant="outlined"
-                  size="small"
-                  value={searchCategory}
-                  onChange={e => setSearchCategory(e.target.value)}
-                  sx={{ width: "100%", mb: 1 }}
-                />
-              </MenuItem>
-              {filteredCategories.length > 0 ? (
-                filteredCategories.map(category => (
-                  <MenuItem
-                    key={category.id}
-                    value={category.id.toString()}>
-                    <ListItemText primary={category.name} />
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem disabled>
-                  <em>No results</em>
+              {filteredCategories.map(category => (
+                <MenuItem
+                  key={category.id}
+                  value={category.id.toString()}>
+                  <ListItemText primary={category.name} />
                 </MenuItem>
-              )}
+              ))}
             </Select>
           </FormControl>
         </Box>
@@ -334,6 +189,12 @@ const CryptoCalendar = ({
           sx={{ width: "100%" }}
           variant="fullWidth"
         />
+        <Box sx={{ display: "flex", justifyContent: "center", margin: "3px 1px" }}>
+          <CustomDateSelector
+            setSelectedDate={setSelectedDate}
+            selectedDate={selectedDate}
+          />
+        </Box>
       </Box>
     </DashboardTile>
   );

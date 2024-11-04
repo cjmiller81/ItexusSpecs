@@ -1,5 +1,5 @@
   import { createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-  import { CalendarResponse, CategoriesResponse, Coins } from "./eventsResponseModel";
+  import { CalendarResponse, CategoriesResponse } from "./eventsResponseModel";
   import moment from "moment";
 
   export const calendarEventsApi = createApi({
@@ -24,28 +24,6 @@
   });
 
   export const { useGetCalendarEventsQuery } = calendarEventsApi;
-
-  export const coinsApi = createApi({
-    reducerPath: "coinsApi",
-    baseQuery: fetchBaseQuery({
-      baseUrl: process.env.BACKEND_API_URL,
-    }),
-    endpoints: (builder) => ({
-      // Изменяем `getCoins`, чтобы он принимал `offset` и `limit` в качестве параметров для ленивой загрузки
-      getCoins: builder.query<Coins, { offset: number; limit: number }>({
-        query: ({ offset, limit }) => ({
-          url: "/api/cal/coins",
-          method: "GET",
-          params: {
-            offset,
-            limit,
-          },
-        }),
-      }),
-    }),
-  });
-  
-  export const { useGetCoinsQuery } = coinsApi;
 
 export const categoriesEventsApi = createApi({
   reducerPath: "categoriesEventsApi",

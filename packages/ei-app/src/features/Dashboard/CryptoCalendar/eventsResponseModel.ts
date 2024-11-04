@@ -12,10 +12,6 @@ export type Coin = {
     symbol: string;
     fullname: string;
 };
-export type Coins = {
-    _metadata: Metadata,
-    body: Coin[],
-};
 
 export type Category = {
     id: number;
