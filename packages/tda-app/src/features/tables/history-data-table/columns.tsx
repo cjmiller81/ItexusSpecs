@@ -6,7 +6,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatFilledPrice, formatFilledQty, formatOrderId, formatTransactTime } from "../dataFormatters";
 import { StatusChip } from "./StatusChip";
 
-export const getHistoryDataTableColumns = (theme: Theme, isPad: boolean, t): ColumnDef<HistoryDataParsed, any>[] => {
+type TranslateFunction = (key: string, options?: any) => string;
+
+export const getHistoryDataTableColumns = (
+  theme: Theme,
+  isPad: boolean,
+  t: TranslateFunction,
+): ColumnDef<HistoryDataParsed, any>[] => {
   return [
     {
       accessorKey: "transactTime",

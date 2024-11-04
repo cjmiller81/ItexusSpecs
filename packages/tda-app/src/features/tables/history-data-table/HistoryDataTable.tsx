@@ -83,7 +83,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
     link.click();
   };
 
-  const columns = useMemo(() => getHistoryDataTableColumns(theme, isPad), []);
+  const columns = useMemo(() => getHistoryDataTableColumns(theme, isPad, t), []);
 
   const handleDownloadPdf = () => {
     const tableColumns = columns as { accessorKey: string; header: string }[];
