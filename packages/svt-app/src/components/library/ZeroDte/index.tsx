@@ -267,7 +267,6 @@ export default function ZeroDte() {
       const newItems = res.zeroDteFlyStrategyList.map<IPositionTableRow>(listItem => ({
         id: uuid(),
         account: listItem.exchangeAccountNumber,
-        fifoFeed: "SP 500",
         tradeQty: listItem.tradeQty.units,
         status: listItem.active ? "Running" : "Suspended",
         tradeSymbol: listItem.masterSymbol,
@@ -524,7 +523,6 @@ export default function ZeroDte() {
     setPositionTableData([
       ...positionTableData,
       {
-        fifoFeed: fifoFeedOption,
         status: "Running",
         tradeSymbol: tradeSymbolOption,
         tradeQty: qty,
