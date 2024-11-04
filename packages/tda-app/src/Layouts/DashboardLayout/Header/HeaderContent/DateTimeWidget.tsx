@@ -18,28 +18,36 @@ const DateTimeWidget: React.FC = () => {
   return (
     <Box
       sx={{
-        padding: "2px 8px",
-        marginLeft: "4px",
-        display: "inline-table",
-        border: `1px solid ${palette.grey[600]}`,
-        borderRadius: 1,
-        backgroundColor: `${palette.grey[100]} !important`,
-        color: `${palette.grey[600]} !important`,
-        textAlign: "center",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}>
-      <Typography
-        variant="h6"
+      <Box
         sx={{
-          letterSpacing: "0.6px",
-          fontSize: "0.75rem",
-          fontFamily: theme.typography.fontFamily,
-          fontVariantNumeric: "tabular-nums",
+          padding: "2px 8px",
+          maxHeight: "8px",
+          marginLeft: "4px",
+          display: "inline-table",
+          border: `1px solid ${palette.grey[600]}`,
+          borderRadius: 1,
+          backgroundColor: `${palette.grey[100]} !important`,
+          color: `${palette.grey[600]} !important`,
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}>
-        {currentDateTime}
-      </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            letterSpacing: "0.6px",
+            fontSize: "0.75rem",
+            fontFamily: theme.typography.fontFamily,
+            fontVariantNumeric: "tabular-nums",
+          }}>
+          {currentDateTime}
+        </Typography>
+      </Box>
     </Box>
   );
 };

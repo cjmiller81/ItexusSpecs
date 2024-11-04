@@ -14,6 +14,8 @@ import { ReactTable } from "../ReactTable";
 import { getStatusLabelText } from "./StatusChip";
 import { getHistoryDataTableColumns } from "./columns";
 import { formatFilledPrice, formatFilledQty, formatOrderId, formatTransactTime } from "../dataFormatters";
+import { useMediaQuery } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface RFQTableProps extends Omit<MainCardProps, "children"> {
   rows: HistoryDataParsed[];
@@ -40,6 +42,10 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
 }) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
   const theme = useTheme();
+  const { t } = useTranslation("TradeHistory");
+  const isDesktop = useMediaQuery("(max-width: 1030px)");
+  const isPad = useMediaQuery("(max-width: 714px)");
+
   const handleToDateChange = (newToDate: Date | null) => {
     if (fromDate && newToDate && newToDate < fromDate) {
       onToDateChange(null);
@@ -77,7 +83,7 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
     link.click();
   };
 
-  const columns = useMemo(() => getHistoryDataTableColumns(theme), []);
+  const columns = useMemo(() => getHistoryDataTableColumns(theme, isPad), []);
 
   const handleDownloadPdf = () => {
     const tableColumns = columns as { accessorKey: string; header: string }[];
@@ -108,12 +114,19 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <MainCard
         content={false}
-        sx={{ bgcolor: "primary.lighter", position: "relative", ...sx, borderRadius: "10px" }}
+        sx={{
+          bgcolor: "primary.lighter",
+          position: "relative",
+          borderRadius: "10px",
+          ...sx,
+          ...(isDesktop && { mt: "50px" }),
+          ...(isPad && { mt: "230px" }),
+        }}
         {...props}>
         <ReactTable
           title={title}
           data={rows}
-          columns={getHistoryDataTableColumns(theme)}
+          columns={getHistoryDataTableColumns(theme, isPad, t)}
           sorting={sorting}
           onSortingChange={handleSortingChange}
           header={

@@ -11,7 +11,7 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
     },
     {
       accessorKey: "settlementId",
-      header: "Settlement ID",
+      header: "ID",
       meta: {
         sx: {
           maxWidth: "98px",
@@ -25,7 +25,7 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
       header: "Time",
       meta: {
         sx: {
-          minWidth: "76px",
+          minWidth: "60px",
         },
       } as any,
       enableResizing: true,
@@ -36,7 +36,7 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
       header: "Date",
       meta: {
         sx: {
-          minWidth: "76px",
+          minWidth: "60px",
         },
       } as any,
       enableResizing: true,
@@ -45,12 +45,22 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
     {
       accessorKey: "amount",
       header: "Amount",
+      meta: {
+        sx: {
+          maxWidth: "80px",
+        },
+      } as any,
       enableResizing: true,
       cell: value => formatFilledQty(value.getValue()),
     },
     {
       accessorKey: "currency",
-      header: "Currency",
+      header: "Curr",
+      meta: {
+        sx: {
+          maxWidth: "40px",
+        },
+      } as any,
       enableResizing: true,
     },
     {
