@@ -36,11 +36,11 @@ export default function MarketCapEqualWeightedPage() {
   } = useAppSelector(state => state.marketCapEqualWeightChart);
   const dispatch = useAppDispatch();
   const [currentSorter, setCurrentSorter] = useState<any>(null);
-  const [take, setCurrentTake] = useState<number>(0);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.marketCapEqualWeightModeling,
   );
+  const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
 
   const { t } = useTranslation("MarketCapPage");
@@ -61,7 +61,6 @@ export default function MarketCapEqualWeightedPage() {
 
     if (currentTake > 0 && (!take || currentTake !== take)) {
       setCurrentTake(currentTake);
-      refreshIndexModelingData(currentTake);
     }
   }, [tokensCount]);
 
@@ -69,7 +68,7 @@ export default function MarketCapEqualWeightedPage() {
     if (take > 0) {
       refreshIndexModelingData(take);
     }
-  }, [currentSorter, currentFilter]);
+  }, [currentSorter, currentFilter, take]);
 
   const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {

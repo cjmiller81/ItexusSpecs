@@ -7,12 +7,14 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import YesNoDialog from "../modals/Modals/YesNoDialog";
 
 export type StrategyStatus = "Running" | "Suspended";
 export interface IPositionTableRow {
   id: string;
+  entryOrderStatus: string;
+  targetOrderStatus: string;
   account: string | null;
   fifoFeed: string;
   tradeSymbol: string;
@@ -25,11 +27,23 @@ interface PositionTableProps {
   onStop: (id: IPositionTableRow) => void;
   onDelete: (id: IPositionTableRow) => void;
   onStart: (id: IPositionTableRow) => void;
+  onForceExit: (id: IPositionTableRow) => void;
   isMutating: boolean;
 }
 
-const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete, data, isMutating }) => {
+const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete, onForceExit, data, isMutating }) => {
   const [strategyToDelete, setStrategyToDelete] = useState<null | IPositionTableRow>(null);
+  const [isForceExitApplied, setForceExitApplied] = useState<boolean>(false);
+
+  useEffect(() => {
+    setForceExitApplied(false);
+  }, [data]); 
+
+  const onForceExitClick = (id: IPositionTableRow) => {
+    setForceExitApplied(true);
+    onForceExit(id);
+  }
+
   return (
     <>
       <YesNoDialog
@@ -91,13 +105,28 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
                         Start
                       </Button>
                     )}
-                    <Button
-                      sx={{ color: "error.light" }}
-                      onClick={() => setStrategyToDelete(row)}
-                      disabled={isMutating}
-                      size="small">
-                      Delete
-                    </Button>
+                    {row.entryOrderStatus === "Filled" 
+                      && row.targetOrderStatus === "Working" 
+                      && !isForceExitApplied 
+                      ? (
+                        <Button
+                        sx={{ color: "error.dark" }}
+                        onClick={() => onForceExitClick(row)}
+                        disabled={isMutating}
+                        size="small">
+                        FORCE EXIT 
+                      </Button>
+                      ) 
+                      : (
+                        <Button
+                          sx={{ color: "error.light" }}
+                          onClick={() => setStrategyToDelete(row)}
+                          disabled={isMutating}
+                          size="small">
+                          Delete
+                        </Button>
+                      )
+                    }
                   </Stack>
                 </TableCell>
               </TableRow>

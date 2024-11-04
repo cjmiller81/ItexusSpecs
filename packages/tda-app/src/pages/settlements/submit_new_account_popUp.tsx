@@ -18,6 +18,8 @@ import { useAppDispatch } from "libs/redux/Store";
 import { addBankAccount } from "features/tables/manage-bank-account-table/BankAccountsSlice";
 import { v4 as uuid } from "uuid";
 import Typography from "@mui/material/Typography";
+import Countries from "common/countries";
+import Currencies from "@/common/currencies";
 
 const SubmitNewAccPopUp: React.FC<{
   open: boolean;
@@ -160,7 +162,13 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="country"
                   margin="normal">
-                  <MenuItem value="USA">{t("USA")}</MenuItem>
+                  {Countries.map((country, index) => (
+                    <MenuItem
+                      key={index}
+                      value={country}>
+                      {t(country)}
+                    </MenuItem>
+                  ))}
                 </Field>
                 <ErrorMessage
                   name="country"
@@ -178,9 +186,13 @@ const SubmitNewAccPopUp: React.FC<{
                   fullWidth
                   name="currency"
                   margin="normal">
-                  <MenuItem value="USD">{t("USD")}</MenuItem>
-                  <MenuItem value="BRL">{t("BRL")}</MenuItem>
-                  <MenuItem value="EUR">{t("EUR")}</MenuItem>
+                  {Currencies.map((currency, index) => (
+                    <MenuItem
+                      key={index}
+                      value={currency}>
+                      {t(currency)}
+                    </MenuItem>
+                  ))}
                 </Field>
                 <ErrorMessage
                   name="currency"

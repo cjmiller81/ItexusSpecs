@@ -15,14 +15,17 @@ import { InferType, number, object, string } from "yup";
 
 const requiredError = i18n.t("mandatoryField", { ns: "ErrorMessages" });
 const WithdrawalModelSchema = object({
+  id: string().optional(),
   amount: number().required(requiredError).min(0.1),
   currency: string().required(requiredError),
   destination: string().required(requiredError),
+  label: string().optional(),
 });
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
 
 interface ICryptoAddress {
+  blockchain: string;
   id: string;
   walletAddress: string;
   addressTagMemo?: string;
@@ -154,7 +157,21 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                     <Select
                       fullWidth
                       name="destination"
-                      onChange={handleChange}
+                      onChange={e => {
+                        const value = e.target.value;
+
+                        const selectedCryptoAddress = cryptoAddresses.find(addr => addr.walletAddress === value);
+                        const selectedBankAccount = bankAccounts.find(account => account.accountNumber === value);
+
+                        let formattedValue = "";
+                        if (selectedCryptoAddress) {
+                          formattedValue = `${selectedCryptoAddress.addressTagMemo || "Personal Wallet"} | ${selectedCryptoAddress.blockchain}`;
+                        } else if (selectedBankAccount) {
+                          formattedValue = `${selectedBankAccount.bankName} | ${selectedBankAccount.accountNumber}`;
+                        }
+
+                        setFieldValue("destination", formattedValue);
+                      }}
                       displayEmpty
                       value={values.destination}
                       renderValue={value => {
@@ -165,27 +182,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                             </Typography>
                           );
                         }
-
-                        const selectedCryptoAddress = cryptoAddresses.find(addr => addr.walletAddress === value);
-                        const selectedBankAccount = bankAccounts.find(account => account.accountNumber === value);
-
-                        if (selectedCryptoAddress) {
-                          return (
-                            <Typography sx={textEllipsisStyle}>
-                              {selectedCryptoAddress.addressTagMemo
-                                ? `${selectedCryptoAddress.addressTagMemo} | ${selectedCryptoAddress.walletAddress}`
-                                : selectedCryptoAddress.walletAddress}
-                            </Typography>
-                          );
-                        } else if (selectedBankAccount) {
-                          return (
-                            <Typography sx={textEllipsisStyle}>
-                              {`${selectedBankAccount.bankName} | ${selectedBankAccount.accountNumber}`}
-                            </Typography>
-                          );
-                        }
-
-                        return <Typography>{value}</Typography>;
+                        return <Typography sx={textEllipsisStyle}>{value}</Typography>;
                       }}
                       placeholder={t("SelectDestination")}
                       sx={{ width: "100%" }}>
@@ -194,9 +191,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                           key={address.id}
                           value={address.walletAddress}>
                           <Typography sx={textEllipsisStyle}>
-                            {address.addressTagMemo
-                              ? `${address.addressTagMemo} | ${address.walletAddress}`
-                              : address.walletAddress}
+                            {`${address.addressTagMemo || "Personal Wallet"} | ${address.blockchain}`}
                           </Typography>
                         </MenuItem>
                       ))}

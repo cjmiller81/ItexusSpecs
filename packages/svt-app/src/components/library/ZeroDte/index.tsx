@@ -22,6 +22,7 @@ import {
   useGetAccountList,
   useGetZeroDteStrategy,
   useUpsertTastytradeConnection,
+  useZeroDteForceExitStrategy,
   useZeroDteStartStrategy,
   useZeroDteStopStrategy,
   ZeroDteFlyStrategyListResponse,
@@ -270,6 +271,8 @@ export default function ZeroDte() {
         tradeQty: listItem.tradeQty.units,
         status: listItem.active ? "Running" : "Suspended",
         tradeSymbol: listItem.masterSymbol,
+        entryOrderStatus: listItem.entryOrderStatus,
+        targetOrderStatus: listItem.targetOrderStatus
       }));
       setPositionTableData(newItems);
 
@@ -347,6 +350,16 @@ export default function ZeroDte() {
     onError: (res: any) => {
       setMutating(false);
       console.error("useStopStrategy", res);
+    },
+  });
+
+  const forceExitDteStrategy = useZeroDteForceExitStrategy({
+    onSuccess: (res: any) => {
+      getAccountList.mutate();
+    },
+    onError: (res: any) => {
+      setMutating(false);
+      console.error("forceStopExitOrderStrategy", res);
     },
   });
 
@@ -517,6 +530,8 @@ export default function ZeroDte() {
         tradeQty: qty,
         account: strategyAccountConnectState.accountNumber,
         id: uuid(),
+        entryOrderStatus: "",
+        targetOrderStatus: ""
       },
     ]);
   };
@@ -533,6 +548,15 @@ export default function ZeroDte() {
   const onStopStrategy = (row: IPositionTableRow) => {
     setMutating(true);
     stopFifoStrategy.mutate({
+      accountNumber: row.account as string,
+      masterSymbol: encodeURIComponent(row.tradeSymbol),
+      tradeSymbol: encodeURIComponent(row.tradeSymbol),
+    });
+  };
+
+  const onForceExitStrategy = (row: IPositionTableRow) => {
+    setMutating(true);
+    forceExitDteStrategy.mutate({
       accountNumber: row.account as string,
       masterSymbol: encodeURIComponent(row.tradeSymbol),
       tradeSymbol: encodeURIComponent(row.tradeSymbol),
@@ -658,6 +682,7 @@ export default function ZeroDte() {
                     onDeleteStrategy={onDeleteStrategy}
                     onStopStrategy={onStopStrategy}
                     onStartStrategy={onStartStrategy}
+                    onForceExitStrategy={onForceExitStrategy}
                     onAddStrategy={() => {
                       setActiveStep(1);
                       setConfiguring(true);

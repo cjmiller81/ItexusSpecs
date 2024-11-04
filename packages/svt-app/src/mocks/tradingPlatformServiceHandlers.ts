@@ -320,6 +320,23 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol/forceStopExitOrder`, ({ params, request }) => {
+    const {accountNumber, masterSymbol, tradeSymbol} = params
+    const item = mockState.zeroDte
+    .find(item =>
+      item.masterSymbol === masterSymbol
+      && tradeSymbol === item.tradeSymbol
+      && item.exchangeAccountNumber === accountNumber)
+
+    if (item){
+      item.entryOrderStatus = "";
+      item.targetOrderStatus = "";
+    }
+    return new HttpResponse(null, {
+      status: 200
+    })
+  }),
+
   http.delete(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/:accountNumber/:masterSymbol`, ({ params }) => {
     const {accountNumber, masterSymbol, tradeSymbol} = params
     mockState.zeroDte = mockState.zeroDte
@@ -355,7 +372,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       "hasEntryOrderId": false,
       "entryExchangeOrderId": "",
       "hasEntryExchangeOrderId": false,
-      "entryOrderStatus": "",
+      "entryOrderStatus": "Filled",
       "hasEntryOrderStatus": false,
       "exchange": "Tastytrade",
       "exchangeAccountNumber": "5WU50943",
@@ -369,7 +386,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       "hasTargetOrderId": false,
       "targetExchangeOrderId": "",
       "hasTargetExchangeOrderId": false,
-      "targetOrderStatus": "",
+      "targetOrderStatus": "Working",
       "hasTargetOrderStatus": false,
       "tradeQty": {
         "units": 1,
