@@ -675,6 +675,39 @@ export function useZeroDteStopStrategy(callbacks?: Callbacks) {
   )
 }
 
+export function useZeroDteForceExitStrategy(callbacks?: Callbacks) {
+  return useMutation(
+    "forceStopExitOrderStrategy",
+    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+      let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}/forceStopExitOrder`)
+
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${wp_api_settings.accessToken}`);
+      headers.append("Content-Type", "application/json");
+
+      let response = await fetch(url.toString(), {
+        method: "POST",
+        headers: headers
+      })
+
+      if (response.ok) {
+        return true
+      }
+
+      throw new Error(response.statusText);
+    },
+    {
+      retry: false,
+      onSuccess: (res) => {
+        callbacks?.onSuccess(res)
+      },
+      onError: (err: any) => {
+        callbacks?.onError(err)
+      }
+    }
+  )
+}
+
 export function useDeleteZeroDteStrategy(callbacks?: Callbacks) {
   return useMutation(
     "deleteZeroDteStrategy",
