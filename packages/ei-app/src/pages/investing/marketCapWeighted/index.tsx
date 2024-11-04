@@ -39,14 +39,13 @@ export default function MarketCapWeightedPage() {
     endDate,
   } = useAppSelector(state => state.marketCapWeightedChart);
   const dispatch = useAppDispatch();
-  const [take, setCurrentTake] = useState<number>(0);
   const [currentSorter, setCurrentSorter] = useState<any>(null);
   const [currentFilter, setCurrentFilter] = useState<any>(null);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
-
   const { tokensCount, totalCapital, weight, tableData, prefilteredData } = useAppSelector(
     state => state.marketCapWeightedModeling,
   );
+  const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
 
   const { t } = useTranslation("MarketCapPage");
 
@@ -84,7 +83,6 @@ export default function MarketCapWeightedPage() {
 
     if (currentTake > 0 && (!take || currentTake !== take)) {
       setCurrentTake(currentTake);
-      refreshIndexModelingData(currentTake);
     }
   }, [tokensCount]);
 
@@ -92,8 +90,8 @@ export default function MarketCapWeightedPage() {
     if (take > 0) {
       refreshIndexModelingData(take);
     }
-  }, [currentSorter, currentFilter]);
-
+  }, [currentSorter, currentFilter, take]);
+  
   const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
       var requestPromise = dispatch(
