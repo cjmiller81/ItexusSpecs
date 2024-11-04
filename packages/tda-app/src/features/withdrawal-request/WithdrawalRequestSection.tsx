@@ -15,9 +15,11 @@ import { InferType, number, object, string } from "yup";
 
 const requiredError = i18n.t("mandatoryField", { ns: "ErrorMessages" });
 const WithdrawalModelSchema = object({
+  id: string().optional(),
   amount: number().required(requiredError).min(0.1),
   currency: string().required(requiredError),
   destination: string().required(requiredError),
+  label: string().optional(),
 });
 
 export type WithdrawalModel = InferType<typeof WithdrawalModelSchema>;
