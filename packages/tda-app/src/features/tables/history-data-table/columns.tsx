@@ -6,11 +6,17 @@ import { ColumnDef } from "@tanstack/react-table";
 import { formatFilledPrice, formatFilledQty, formatOrderId, formatTransactTime } from "../dataFormatters";
 import { StatusChip } from "./StatusChip";
 
-export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataParsed, any>[] => {
+type TranslateFunction = (key: string, options?: any) => string;
+
+export const getHistoryDataTableColumns = (
+  theme: Theme,
+  isPad: boolean,
+  t: TranslateFunction,
+): ColumnDef<HistoryDataParsed, any>[] => {
   return [
     {
       accessorKey: "transactTime",
-      header: () => <Typography fontSize="15px">Trade Time</Typography>,
+      header: () => <Typography fontSize={isPad ? "8px" : "15px"}>{t("TradeTime")}</Typography>,
       enableResizing: true,
       meta: {
         sx: { minWidth: 22 },
@@ -19,13 +25,13 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "id",
-      header: () => <Typography fontSize="15px">Order ID</Typography>,
+      header: () => <Typography fontSize={isPad ? "8px" : "15px"}>{t("ORDERID")}</Typography>,
       enableResizing: true,
       cell: props => (
         <Typography
           fontSize="inherit"
           sx={{
-            maxWidth: "100%",
+            maxWidth: "80%",
             [theme.breakpoints.down("sm")]: {
               maxWidth: 90,
               paddingLeft: 1,
@@ -39,7 +45,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "symbol",
-      header: () => <Typography fontSize="15px">Pair</Typography>,
+      header: () => <Typography fontSize={isPad ? "8px" : "15px"}>{t("Pair")}</Typography>,
       enableResizing: true,
       minSize: 100,
       meta: {
@@ -50,7 +56,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "side",
-      header: () => <Typography fontSize="15px">Action</Typography>,
+      header: () => <Typography fontSize={isPad ? "8px" : "15px"}>{t("Action")}</Typography>,
       enableResizing: true,
       cell: props => {
         const action = props.getValue() as string;
@@ -73,7 +79,7 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
               py: 0.4,
               color: textColor,
               bgcolor: bgColor,
-              width: "max-content",
+              width: "50px !important",
               flex: 1,
             }}>
             {action}
@@ -83,13 +89,23 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
     },
     {
       accessorKey: "filledQty",
-      header: () => <Typography fontSize="15px">Quantity</Typography>,
+      header: () => (
+        <Typography
+          sx={{ width: "55px" }}
+          fontSize={isPad ? "8px" : "15px"}>
+          {t("Quantity")}
+        </Typography>
+      ),
       enableResizing: true,
-      cell: props => formatFilledQty(props.getValue() as string),
+      cell: props => (
+        <div style={{ maxWidth: "60px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {formatFilledQty(props.getValue() as string)}
+        </div>
+      ),
     },
     {
       accessorKey: "filledPrice",
-      header: () => <Typography fontSize="15px">Price</Typography>,
+      header: () => <Typography fontSize={isPad ? "8px" : "15px"}>{t("Price")}</Typography>,
       enableResizing: true,
       cell: props => formatFilledPrice(props.getValue() as string),
     },
@@ -97,9 +113,9 @@ export const getHistoryDataTableColumns = (theme: Theme): ColumnDef<HistoryDataP
       accessorKey: "status",
       header: () => (
         <Typography
-          fontSize="15px"
-          style={{ marginLeft: "20px" }}>
-          Status
+          fontSize={isPad ? "8px" : "15px"}
+          style={{ marginLeft: !isPad ? "50px" : "10px" }}>
+          {t("Status")}
         </Typography>
       ),
       enableResizing: true,
