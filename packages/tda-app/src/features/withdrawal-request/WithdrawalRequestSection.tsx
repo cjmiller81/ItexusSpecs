@@ -34,6 +34,7 @@ interface ICryptoAddress {
 interface IBankAccount {
   id: string;
   bankName: string;
+  customName: string;
   accountNumber?: string;
 }
 
@@ -167,7 +168,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                         if (selectedCryptoAddress) {
                           formattedValue = `${selectedCryptoAddress.addressTagMemo || "Personal Wallet"} | ${selectedCryptoAddress.blockchain}`;
                         } else if (selectedBankAccount) {
-                          formattedValue = `${selectedBankAccount.bankName} | ${selectedBankAccount.accountNumber}`;
+                          formattedValue = `${selectedBankAccount.customName} | ${selectedBankAccount.bankName}`;
                         }
 
                         setFieldValue("destination", formattedValue);
@@ -200,7 +201,7 @@ const WithdrawalRequestSection: React.FC<Props> = ({
                           key={account.id}
                           value={account.accountNumber}>
                           <Typography sx={textEllipsisStyle}>
-                            {`${account.bankName} | ${account.accountNumber}`}
+                            {`${account.customName} | ${account.bankName}`}
                           </Typography>
                         </MenuItem>
                       ))}
