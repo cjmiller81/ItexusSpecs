@@ -9,7 +9,8 @@ import { useGetCategoriesQuery } from "@/features/Dashboard/CryptoCalendar/calen
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { ClearIcon } from "@mui/x-date-pickers";
 import { CustomDateSelector } from "./CustomDateSelector";
-import { CoinsLookupVirtualized, LookUpOption, OnFetchResponse } from "components";
+import { CoinsLookupVirtualized, OnFetchResponse } from "components";
+import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
 
 const CryptoCalendar = ({
   loading,
