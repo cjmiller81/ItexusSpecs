@@ -23797,6 +23797,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dpd-app@workspace:packages/dpd-app":
+  version: 0.0.0-use.local
+  resolution: "dpd-app@workspace:packages/dpd-app"
+  dependencies:
+    components: "workspace:*"
+  languageName: unknown
+  linkType: soft
+
 "npm-package-arg@npm:^11.0.0":
   version: 11.0.2
   resolution: "npm-package-arg@npm:11.0.2"
