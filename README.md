@@ -1,7 +1,7 @@
 # ECHO - UI 
 A Trading Tlatform UI .
 
-### Prerequisites: 
+### Prerequisites:
 
 Before you can use this repo, you must have the following software installed:
 
