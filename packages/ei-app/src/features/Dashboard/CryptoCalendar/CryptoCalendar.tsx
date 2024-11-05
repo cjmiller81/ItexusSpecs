@@ -9,11 +9,7 @@ import { useGetCategoriesQuery } from "@/features/Dashboard/CryptoCalendar/calen
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { ClearIcon } from "@mui/x-date-pickers";
 import { CustomDateSelector } from "./CustomDateSelector";
-import {
-  CoinsLookupVirtualized,
-  OnFetchResponse,
-} from "../../../../../components/src/components/common/inputs/AppSymbolLookup/CoinsLookupVirtualized";
-import { LookUpOption } from "../../../../../components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
+import { CoinsLookupVirtualized, LookUpOption, OnFetchResponse } from "components";
 
 const CryptoCalendar = ({
   loading,
@@ -34,7 +30,7 @@ const CryptoCalendar = ({
   selectedDate: Date;
   sx?: object;
 }) => {
-  const { t } = useTranslation("CryptoCalendar");
+  const { t } = useTranslation(["CryptoCalendar", "Common"]);
   const [selectedCoins, setSelectedCoins] = useState<LookUpOption[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchCategory, setSearchCategory] = useState<string>("");
@@ -65,7 +61,7 @@ const CryptoCalendar = ({
     if (selected.length === 1) {
       const selectedCategory = categories.find(category => category.id.toString() === selected[0]);
       return selectedCategory ? selectedCategory.name : "";
-    } else return `${selected.length} ${t("Selected")}`;
+    } else return `${selected.length} ${t("Selected", { ns: "Common" })}`;
   };
   const handleCategorySelect = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;

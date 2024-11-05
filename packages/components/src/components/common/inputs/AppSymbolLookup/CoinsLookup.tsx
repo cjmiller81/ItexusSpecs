@@ -83,7 +83,7 @@ export function CoinsLookup({
       onItemsRendered(renderProps);
     }
   };
-  const { t } = useTranslation("CoinsLookup");
+  const { t } = useTranslation(["CoinsLookup", "Common"]);
   const topOptions = [
     { id: "100", label: t("Top 100 Coins") },
     { id: "300", label: t("Top 300 Coins") },
@@ -103,7 +103,7 @@ export function CoinsLookup({
       const shortName = value[0].label.split("-")[0].trim();
       setNameOfButton(shortName);
     } else {
-      setNameOfButton(`${value.length} ${t("Selected")}`);
+      setNameOfButton(`${value.length} ${t("Selected", { ns: "Common" })}`);
     }
   }, [value]);
 
@@ -123,8 +123,6 @@ export function CoinsLookup({
     const hasTop300 = result.some(option => option.id === "300");
     const hasTop500 = result.some(option => option.id === "500");
 
-    console.log(newValue);
-    console.log(activeTopSelection);
     if (
       (hasTop100 && activeTopSelection === t("Top100Coins")) ||
       (hasTop300 && activeTopSelection === t("Top300Coins")) ||
