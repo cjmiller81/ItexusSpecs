@@ -1,13 +1,12 @@
 import { combineReducers } from "@reduxjs/toolkit"
-import { uiSlice, walletsSlice } from "components"
+import { uiSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
 import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 
 
 export const rootReducer = combineReducers({
-  ui: uiSlice.reducer,
-  wallets: walletsSlice.reducer,
+  ui: uiSlice.reducer
 })
 
 const config = getPersistConfig<RootState>({

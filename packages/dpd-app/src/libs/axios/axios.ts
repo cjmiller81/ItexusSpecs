@@ -1,8 +1,15 @@
-import { AxiosError } from "axios"
-import { addError, appAxios } from "components"
+import { configureAxiosMockHandlers } from "@/mocks/configureAxiosMockHandlers"
+import axios, { AxiosError } from "axios"
+import { AddDatesProcessing, addError } from "components"
 import i18next from "i18next"
 import { appStore } from "../redux/Store"
 
+export const appAxios = axios.create({
+  baseURL: process.env.API_BASE_URL,
+  withCredentials: true,
+})
+
+AddDatesProcessing(appAxios)
 appAxios.interceptors.response.use(
   async response => {
     return response
@@ -21,5 +28,9 @@ appAxios.interceptors.response.use(
     return Promise.reject()
   },
 )
+
+if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API) {
+  configureAxiosMockHandlers(appAxios)
+}
 
 export default appAxios
