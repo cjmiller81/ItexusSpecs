@@ -14,13 +14,6 @@ import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useTranslation } from "react-i18next";
 import { ClearIcon } from "@mui/x-date-pickers";
-import { t } from "i18next";
-
-const topOptions = [
-  { id: "100", label: t("Top 100 Coins") },
-  { id: "300", label: t("Top 300 Coins") },
-  { id: "500", label: t("Top 500 Coins") },
-];
 
 export interface LookUpOption {
   label: string;
@@ -91,6 +84,11 @@ export function CoinsLookup({
     }
   };
   const { t } = useTranslation("CoinsLookup");
+  const topOptions = [
+    { id: "100", label: t("Top 100 Coins") },
+    { id: "300", label: t("Top 300 Coins") },
+    { id: "500", label: t("Top 500 Coins") },
+  ];
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const theme = useTheme();
@@ -102,19 +100,10 @@ export function CoinsLookup({
     if (value.length === 0) {
       setNameOfButton("Coins");
     } else if (value.length === 1) {
-      const selectedValue = value[0].label;
-      if (selectedValue.includes(t("Top 100 Coins"))) {
-        setNameOfButton(t("Top 100"));
-      } else if (selectedValue.includes(t("Top 300 Coins"))) {
-        setNameOfButton(t("Top 300"));
-      } else if (selectedValue.includes(t("Top 500 Coins"))) {
-        setNameOfButton(t("Top 500"));
-      } else {
-        const shortName = selectedValue.split("-")[0].trim();
-        setNameOfButton(shortName);
-      }
+      const shortName = value[0].label.split("-")[0].trim();
+      setNameOfButton(shortName);
     } else {
-      setNameOfButton(`${value.length} ${t("selected")}`);
+      setNameOfButton(`${value.length} ${t("Selected")}`);
     }
   }, [value]);
 
@@ -126,42 +115,40 @@ export function CoinsLookup({
   const [activeTopSelection, setActiveTopSelection] = React.useState("");
 
   const handleChange = (event: React.SyntheticEvent, newValue: LookUpOption[], reason: AutocompleteChangeReason) => {
-    const hasTop100 = newValue.some(option => option.label === t("Top 100 Coins"));
-    const hasTop300 = newValue.some(option => option.label === t("Top 300 Coins"));
-    const hasTop500 = newValue.some(option => option.label === t("Top 500 Coins"));
+    if (!props.onChange) {
+      return;
+    }
+    var result = newValue;
+    const hasTop100 = result.some(option => option.id === "100");
+    const hasTop300 = result.some(option => option.id === "300");
+    const hasTop500 = result.some(option => option.id === "500");
 
+    console.log(newValue);
+    console.log(activeTopSelection);
     if (
-      (hasTop100 && activeTopSelection === t("Top 100 Coins")) ||
-      (hasTop300 && activeTopSelection === t("Top 300 Coins")) ||
-      (hasTop500 && activeTopSelection === t("Top 500 Coins"))
+      (hasTop100 && activeTopSelection === t("Top100Coins")) ||
+      (hasTop300 && activeTopSelection === t("Top300Coins")) ||
+      (hasTop500 && activeTopSelection === t("Top500Coins"))
     ) {
       setActiveTopSelection("");
-      newValue = [];
+      result = [];
     } else {
       if (hasTop100) {
-        newValue = [...options.slice(0, 100)];
-        setActiveTopSelection(t("Top 100 Coins"));
-      } else if (hasTop300) {
-        newValue = [...options.slice(0, 300)];
-        setActiveTopSelection(t("Top 300 Coins"));
-      } else if (hasTop500) {
-        newValue = [...options.slice(0, 500)];
-        setActiveTopSelection(t("Top 500 Coins"));
-      } else {
-        setActiveTopSelection("");
+        result = [...options.slice(0, 100)];
+        setActiveTopSelection(t("Top100Coins"));
+      }
+
+      if (hasTop300) {
+        result = [...options.slice(0, 300)];
+        setActiveTopSelection(t("Top300Coins"));
+      }
+
+      if (hasTop500) {
+        result = [...options.slice(0, 500)];
+        setActiveTopSelection(t("Top500Coins"));
       }
     }
-
-    newValue = newValue.filter(
-      option =>
-        option.label !== t("Top 100 Coins") &&
-        option.label !== t("Top 300 Coins") &&
-        option.label !== t("Top 500 Coins"),
-    );
-
-    if (props.onChange) {
-      props.onChange(event, newValue, reason);
-    }
+    props.onChange(event, result, reason);
   };
 
   const handleClose = () => {

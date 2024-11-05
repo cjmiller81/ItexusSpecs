@@ -58,6 +58,15 @@ const CryptoCalendar = ({
     setSelectedCoins(value);
   };
 
+  const getRenderValue = selected => {
+    if (selected.length === 0) {
+      return t("Category");
+    }
+    if (selected.length === 1) {
+      const selectedCategory = categories.find(category => category.id.toString() === selected[0]);
+      return selectedCategory ? selectedCategory.name : "";
+    } else return `${selected.length} ${t("Selected")}`;
+  };
   const handleCategorySelect = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;
     setSelectedCategories(typeof value === "string" ? value.split(",") : value);
@@ -128,16 +137,7 @@ const CryptoCalendar = ({
               value={selectedCategories}
               onChange={handleCategorySelect}
               displayEmpty
-              renderValue={selected => {
-                if (selectedCategories.length === 0) {
-                  return t("Category");
-                } else if (selectedCategories.length === 1) {
-                  const selectedCategory = categories.find(category => category.id.toString() === selected[0]);
-                  return selectedCategory ? selectedCategory.name : "";
-                } else {
-                  return `${selectedCategories.length} ${t("selected")}`;
-                }
-              }}
+              renderValue={getRenderValue}
               sx={{
                 minHeight: "30px",
                 ".MuiSelect-select": {

@@ -251,13 +251,13 @@
   "CoinsLookup": {
     "Search": "Search",
     "Coins": "Coins",
-    "selected": "selected",
-    "Top 100 Coins": "Top 100 Coins",
-    "Top 300 Coins": "Top 300 Coins",
-    "Top 500 Coins": "Top 500 Coins",
-    "Top 100": "Top 100",
-    "Top 300": "Top 300",
-    "Top 500": "Top 500"
+    "Top100Coins": "Top 100 Coins",
+    "Top300Coins": "Top 300 Coins",
+    "Top500Coins": "Top 500 Coins",
+    "Top100": "Top 100",
+    "Top300": "Top 300",
+    "Top500": "Top 500",
+    "Selected": "selected"
   },
   "MarketCapEqualWeight": {
     "Index": "Index"
@@ -295,7 +295,7 @@
     "ReadMore": "Read More >",
     "Categories": "Categories",
     "Coins": "Coins",
-    "selected": "selected"
+    "Selected": "selected"
 
   },
   "Vaults": {
