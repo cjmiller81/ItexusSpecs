@@ -57,8 +57,8 @@ const RequestSettlement: React.FC = () => {
     }
   };
 
-  const cryptoCurrenciesList = useMemo(() => [...new Set(cryptoCurrencies.map(c => c.name))], [cryptoCurrencies]);
-  const fiatCurrenciesList = useMemo(() => [...new Set(fiatCurrencies.map(c => c.name))], [fiatCurrencies]);
+  const cryptoCurrenciesList = useMemo(() => [...new Set(cryptoCurrencies.map(c => c.currency))], [cryptoCurrencies]);
+  const fiatCurrenciesList = useMemo(() => [...new Set(fiatCurrencies.map(c => c.currency))], [fiatCurrencies]);
 
   return (
     <>
