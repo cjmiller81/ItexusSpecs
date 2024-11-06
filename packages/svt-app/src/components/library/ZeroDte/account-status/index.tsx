@@ -1,7 +1,7 @@
 import { Divider, Stack } from "@chakra-ui/react";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { Box, Grid, IconButton, MenuItem, Select, TextField, Typography, styled } from "@mui/material";
+import { Box, Grid, IconButton, MenuItem, Select, TextField, Typography, styled, useMediaQuery } from "@mui/material";
 import { ReactNode, useCallback, useEffect } from "react";
 import { UseMutationResult } from "react-query";
 import { ExchangeAccount } from "../../../../services/tradingPlatformService";
@@ -18,6 +18,9 @@ type Props = {
   qty: number;
 };
 
+const ENTRY_TIME_OPTIONS = ["9:30 AM", "10:00 AM", "10:30 AM"];
+const EXIT_TIME_OPTIONS = ["3:30 PM", "4:00 PM"];
+
 export default function AccountStatus({
   membership,
   state,
@@ -32,12 +35,10 @@ export default function AccountStatus({
     refreshAccount.mutate();
   }, [refreshAccount]);
 
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
+
   useEffect(() => {
-    if (membership && state) {
-      handleStatusUpdate();
-    } else {
-      handleStatusUpdate();
-    }
+    handleStatusUpdate();
   }, [handleStatusUpdate, membership, state]);
 
   return (
@@ -92,7 +93,9 @@ export default function AccountStatus({
                 <span>{state.isMargin ? "Margin" : "Not a Margin Account"}</span>
               </div>
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              item
+              xs={12}>
               <div className="statusBox">
                 <div className="statusName">Suitable Options Level:</div>
                 <span>
@@ -100,7 +103,7 @@ export default function AccountStatus({
                     sx={{ color: state.suitableOptionsLevel === "No Restrictions" ? "green" : "red" }}
                   />
                 </span>
-                <span>{ state.suitableOptionsLevel === "No Restrictions" ? "No Restrictions" : "Restricted" }</span>
+                <span>{state.suitableOptionsLevel === "No Restrictions" ? "No Restrictions" : "Restricted"}</span>
               </div>
             </Grid>
           </Grid>
@@ -130,12 +133,16 @@ export default function AccountStatus({
             0DTE Strategy Instrument Settings
           </Typography>
           <Stack
-            gap={5}
-            width="40%">
-            <LabeledStategyOptionField label="Trade Symbol">
+            sx={{ width: isSmallScreen ? "100%" : "80%" }}
+            direction="row"
+            spacing={2}>
+            <LabeledStategyOptionField
+              label="Trade Symbol"
+              sx={{ width: "50%" }}>
               <Select
                 onChange={event => onTradeSymbolChanged(event.target.value)}
                 value={tradeSymbolOption}
+                sx={{ width: "90% !important" }}
                 size="small">
                 {tradeSymbolOptions.map(option => (
                   <MenuItem
@@ -146,12 +153,104 @@ export default function AccountStatus({
                 ))}
               </Select>
             </LabeledStategyOptionField>
-            <LabeledStategyOptionField label="Trade Qty">
+            <LabeledStategyOptionField
+              label="Trade Qty"
+              sx={{ width: "50%" }}>
               <TextField
+                sx={{ width: "90%" }}
                 disabled
                 size="small"
                 value={qty}
-                className="trade-qty-input"></TextField>
+                className="trade-qty-input"
+              />
+            </LabeledStategyOptionField>
+          </Stack>
+
+          <Typography
+            variant="h6"
+            sx={{ marginTop: "20px", fontWeight: "bold" }}>
+            0DTE PARAMETER SETTINGS
+          </Typography>
+
+          <Stack
+            direction="row"
+            sx={{ mt: 2, width: isSmallScreen ? "100%" : "80%" }}>
+            <LabeledStategyOptionField
+              label="Entry Time"
+              sx={{ width: "50%" }}>
+              <Select
+                size="small"
+                sx={{ width: isSmallScreen ? "90%" : "80%" }}>
+                {ENTRY_TIME_OPTIONS.map(time => (
+                  <MenuItem
+                    value={time}
+                    key={time}>
+                    {time}
+                  </MenuItem>
+                ))}
+              </Select>
+            </LabeledStategyOptionField>
+            <LabeledStategyOptionField
+              label="Exit Time"
+              sx={{ width: "50%" }}>
+              <Select
+                size="small"
+                sx={{ width: isSmallScreen ? "90%" : "80%" }}>
+                {EXIT_TIME_OPTIONS.map(time => (
+                  <MenuItem
+                    value={time}
+                    key={time}>
+                    {time}
+                  </MenuItem>
+                ))}
+              </Select>
+            </LabeledStategyOptionField>
+          </Stack>
+
+          <Stack
+            direction={isSmallScreen ? "column" : "row"}
+            spacing={2}
+            width="100%"
+            sx={{
+              marginTop: "15px",
+              display: "flex",
+              flexDirection: isSmallScreen ? "column" : "row",
+              justifyContent: isSmallScreen ? "center" : "space-between",
+              alignItems: "center",
+              flexWrap: "nowrap",
+              gap: 5,
+            }}>
+            <LabeledStategyOptionField
+              sx={{ width: { xs: "50%", sm: "30%" } }}
+              label={""}>
+              <Typography
+                variant="caption"
+                sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
+                Max Profit % Target
+              </Typography>
+              <TextField size="small" />
+            </LabeledStategyOptionField>
+
+            <LabeledStategyOptionField
+              sx={{ width: { xs: "50%", sm: "30%" } }}
+              label={""}>
+              <Typography
+                variant="caption"
+                sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
+                Strike Width
+              </Typography>
+              <TextField size="small" />
+            </LabeledStategyOptionField>
+
+            <LabeledStategyOptionField
+              sx={{ width: { xs: "50%", sm: "30%" } }}
+              label={""}>
+              <Typography
+                variant="caption"
+                sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
+                Min Credit Required
+              </Typography>
+              <TextField size="small" />
             </LabeledStategyOptionField>
           </Stack>
         </AdaptiveSideBox>
@@ -179,10 +278,16 @@ export const AdaptiveSideBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-function LabeledStategyOptionField({ label, children }: { label: string; children: ReactNode }) {
+function LabeledStategyOptionField({ label, children, sx }: { label: string; children: ReactNode; sx?: object }) {
   return (
-    <Stack gap={0}>
-      <Typography variant="caption">{label}</Typography>
+    <Stack
+      sx={{ ...sx }}
+      gap={0}>
+      <Typography
+        variant="caption"
+        sx={{ fontSize: "0.85rem" }}>
+        {label}
+      </Typography>
       {children}
     </Stack>
   );
