@@ -1,6 +1,6 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { IndexModelingSection } from "@/features/Investing/IndexModelingSection";
-import IndexResultsSection from "@/features/Investing/IndexResultsSection";
+import { IndexResultsSection } from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import {
@@ -91,7 +91,7 @@ export default function MarketCapWeightedPage() {
       refreshIndexModelingData(take);
     }
   }, [currentSorter, currentFilter, take]);
-  
+
   const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
       var requestPromise = dispatch(
@@ -156,7 +156,10 @@ export default function MarketCapWeightedPage() {
         title={t("IndexModeling")}
       />
 
-      <IndexResultsSection title={t("IndexResults")} />
+      <IndexResultsSection
+        title={t("IndexResults")}
+        tableAssets={tableData}
+      />
 
       <AppAccordionSection
         persistKey="WeightedHistoricalWalletsWorth"
