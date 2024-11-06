@@ -16,7 +16,6 @@ export interface IPositionTableRow {
   entryOrderStatus: string;
   targetOrderStatus: string;
   account: string | null;
-  fifoFeed: string;
   tradeSymbol: string;
   tradeQty: number;
   status: StrategyStatus;
@@ -37,7 +36,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
 
   useEffect(() => {
     setForceExitApplied(false);
-  }, [data]); 
+  }, [data]);
 
   const onForceExitClick = (id: IPositionTableRow) => {
     setForceExitApplied(true);
@@ -105,18 +104,18 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onDelete
                         Start
                       </Button>
                     )}
-                    {row.entryOrderStatus === "Filled" 
-                      && row.targetOrderStatus === "Working" 
-                      && !isForceExitApplied 
+                    {row.entryOrderStatus === "Filled"
+                      && row.targetOrderStatus === "Working"
+                      && !isForceExitApplied
                       ? (
                         <Button
                         sx={{ color: "error.dark" }}
                         onClick={() => onForceExitClick(row)}
                         disabled={isMutating}
                         size="small">
-                        FORCE EXIT 
+                        FORCE EXIT
                       </Button>
-                      ) 
+                      )
                       : (
                         <Button
                           sx={{ color: "error.light" }}

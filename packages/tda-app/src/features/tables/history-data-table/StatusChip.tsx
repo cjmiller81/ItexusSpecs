@@ -2,7 +2,7 @@ import { OrderStatus } from "@/features/shared/models/orderStatus";
 import DoneIcon from "@mui/icons-material/Done";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { Chip, ChipPropsColorOverrides } from "@mui/material";
+import { Chip, ChipPropsColorOverrides, useMediaQuery } from "@mui/material";
 import { OverridableStringUnion } from "@mui/types";
 import React, { FC } from "react";
 
@@ -19,6 +19,7 @@ export const StatusChip: FC<{ status: OrderStatus }> = ({ status }) => {
     "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning",
     ChipPropsColorOverrides
   >;
+  const isMobile = useMediaQuery("(max-width: 623px)");
   const label = getStatusLabelText(status);
   let icon: React.ReactElement = <></>;
   switch (status) {
@@ -80,8 +81,8 @@ export const StatusChip: FC<{ status: OrderStatus }> = ({ status }) => {
         fontSize: "inherit",
         height: "auto",
         padding: "5px 0px",
-        width: "115px !important",
-        minWidth: "115px !important",
+        width: isMobile ? "50px !important" : "115px !important",
+        minWidth: isMobile ? "50px !important" : "155px !important",
       }}
     />
   );

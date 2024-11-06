@@ -142,7 +142,14 @@
   },
   "TradeHistory": {
     "TradeHistory": "Trade History",
-    "TradeHistoryCsvFileName": "Trade_History"
+    "TradeHistoryCsvFileName": "Trade_History",
+    "TradeTime": "Trade Time",
+    "ORDERID": "ORDER ID",
+    "Pair": "Pair",
+    "Action": "Action",
+    "Quantity": "Quantity",
+    "Price": "Price",
+    "Status": "Status"
   },
   "SpotRFQPage": {
     "RecentTransactions": "Recent Transactions",
