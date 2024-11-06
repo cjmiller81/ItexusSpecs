@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { ListOnItemsRenderedProps } from "react-window";
 import { usePaginatedVirtualList } from "../../../../hooks";
-import { LookUpOption } from "./CoinsLookup";
+import { CoinsLookUpOption } from "./CoinsLookup";
 import { CoinsLookup, CoinsLookupProps } from "./CoinsLookup";
 
-export interface OnFetchResponse {
+export interface OnFetchCoinsResponse {
   totalCount: number;
-  items: LookUpOption[];
+  items: CoinsLookUpOption[];
 }
 
 interface Props extends Omit<CoinsLookupProps, "options"> {
   pageSize: number;
-  onFetchPage: (pageNumber: number) => Promise<OnFetchResponse>;
+  onFetchPage: (pageNumber: number) => Promise<OnFetchCoinsResponse>;
 }
 
 export function CoinsLookupVirtualized({ inputValue, pageSize, onFetchPage, ...props }: Props) {

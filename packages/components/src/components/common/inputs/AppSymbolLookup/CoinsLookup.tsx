@@ -15,7 +15,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useTranslation } from "react-i18next";
 import { ClearIcon } from "@mui/x-date-pickers";
 
-export interface LookUpOption {
+export interface CoinsLookUpOption {
   label: string;
   iconUrl?: string | null;
   id: string;
@@ -23,9 +23,9 @@ export interface LookUpOption {
 
 export interface CoinsLookupProps
   extends AppInputProps,
-    Omit<AutocompleteProps<LookUpOption, true, false, false, any>, "renderInput"> {
-  options: LookUpOption[];
-  value?: LookUpOption[];
+    Omit<AutocompleteProps<CoinsLookUpOption, true, false, false, any>, "renderInput"> {
+  options: CoinsLookUpOption[];
+  value?: CoinsLookUpOption[];
   onItemsRendered?: (props: ListOnItemsRenderedProps) => any;
 }
 
@@ -114,7 +114,11 @@ export function CoinsLookup({
 
   const [activeTopSelection, setActiveTopSelection] = React.useState("");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: LookUpOption[], reason: AutocompleteChangeReason) => {
+  const handleChange = (
+    event: React.SyntheticEvent,
+    newValue: CoinsLookUpOption[],
+    reason: AutocompleteChangeReason,
+  ) => {
     if (!props.onChange) {
       return;
     }

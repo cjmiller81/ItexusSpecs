@@ -10,7 +10,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { ClearIcon } from "@mui/x-date-pickers";
 import { CustomDateSelector } from "./CustomDateSelector";
 import { CoinsLookupVirtualized, OnFetchResponse } from "components";
-import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
+import { CoinsLookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
 
 const CryptoCalendar = ({
   loading,
@@ -32,7 +32,7 @@ const CryptoCalendar = ({
   sx?: object;
 }) => {
   const { t } = useTranslation(["CryptoCalendar", "Common"]);
-  const [selectedCoins, setSelectedCoins] = useState<LookUpOption[]>([]);
+  const [selectedCoins, setSelectedCoins] = useState<CoinsLookUpOption[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [categoriesData, setCategoriesData] = useState<CategoriesResponse | null>(null);
@@ -51,7 +51,7 @@ const CryptoCalendar = ({
     category.name.toLowerCase().includes(searchCategory.toLowerCase()),
   );
 
-  const handleCoinSelect = (value: LookUpOption[]) => {
+  const handleCoinSelect = (value: CoinsLookUpOption[]) => {
     setSelectedCoins(value);
   };
 
