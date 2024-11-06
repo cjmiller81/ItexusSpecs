@@ -5,7 +5,7 @@ type Metadata = {
     total_count: number
 }
 
-type Coin = {
+export type Coin = {
     id: string;
     name: string;
     rank: number;
@@ -13,7 +13,7 @@ type Coin = {
     fullname: string;
 };
 
-type Category = {
+export type Category = {
     id: number;
     name: string;
 };
@@ -34,4 +34,8 @@ export type CalendarEvent = {
 export type CalendarResponse = {
     _metadata: Metadata,
     body: CalendarEvent[],
+}
+export type CategoriesResponse = {
+    _metadata: Metadata,
+    body: Category[],
 }

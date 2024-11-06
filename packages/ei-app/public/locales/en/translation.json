@@ -7,7 +7,8 @@
     "Sumbit": "Submit",
     "Clear": "Clear",
     "Yes": "Yes",
-    "No": "No"
+    "No": "No",
+    "Selected": "selected"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
@@ -248,6 +249,14 @@
   "SymbolLookup": {
     "Search": "Search"
   },
+  "CoinsLookup": {
+    "Search": "Search",
+    "Coins": "Coins",
+    "Top100Coins": "Top 100 Coins",
+    "Top300Coins": "Top 300 Coins",
+    "Top500Coins": "Top 500 Coins"
+    
+  },
   "MarketCapEqualWeight": {
     "Index": "Index"
   },
@@ -281,7 +290,10 @@
   "CryptoCalendar": {
     "CryptoCalendarTitle": "Crypto Calendar:",
     "NoEventsAvailable": "No events available on this date",
-    "ReadMore": "Read More >"
+    "ReadMore": "Read More >",
+    "Categories": "Categories",
+    "Coins": "Coins"
+
   },
   "Vaults": {
     "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",
