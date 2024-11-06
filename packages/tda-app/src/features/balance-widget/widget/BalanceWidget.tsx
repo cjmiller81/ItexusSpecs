@@ -1,18 +1,17 @@
 import { StackProps } from "@mui/system";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { BalanceModel } from "../BalanceModel";
+import { CustomerBalanceModel } from "../BalanceModel";
 import { cryptoCoinsColumns } from "../cryptoCoinsColumns";
 import DenseTable from "../DenseTable";
 import { TableHeader } from "./TableHeader";
 import { TableSecondary } from "./TableSecondary";
 import { Stack } from "@mui/system";
-import { cryptoBalances } from "../mocks/cryptoBalances";
 import { fiatCoinsColumns } from "features/balance-widget/fiatCoinsColumns";
 
 export type BalanceWidgetProps = {
-  cryptoCurrencies: BalanceModel[];
-  fiatCurrencies: BalanceModel[];
+  cryptoCurrencies: CustomerBalanceModel[];
+  fiatCurrencies: CustomerBalanceModel[];
   fiatOpen?: boolean;
   cryptoOpen?: boolean;
   onCryptoToggle: () => void;
@@ -49,13 +48,13 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
         }
         secondary={
           <TableSecondary
-            data={cryptoBalances}
+            data={cryptoCurrencies}
             fileName="crypto.csv"
             columns={cryptoCoinsColumns}
           />
         }
         columns={cryptoCoinsColumns}
-        data={cryptoBalances}
+        data={cryptoCurrencies}
       />
 
       <DenseTable
