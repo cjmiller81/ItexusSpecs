@@ -276,13 +276,13 @@ export const TileSection: FC<TileSectionProps> = ({
 
   const onSellClick = () => {
     if (isTransactionInProgress) return;
-    const balanceModel = cryptoCurrencies.find(c => c.name.toLowerCase() === symbol1?.toLowerCase());
+    const balanceModel = cryptoCurrencies.find(c => c.currency.toLowerCase() === symbol1?.toLowerCase());
     if (!balanceModel) {
       setPopoverMessage(t("InsufficientFundsToSell", { currency: symbol1 }));
       return;
     }
 
-    if (balanceModel.qty < amount) {
+    if (balanceModel.amount < amount) {
       setPopoverMessage(t("InsufficientFundsToSell", { currency: symbol1 }));
       return;
     }
@@ -292,14 +292,14 @@ export const TileSection: FC<TileSectionProps> = ({
 
   const onBuyClick = () => {
     if (isTransactionInProgress) return;
-    let balanceModel = cryptoCurrencies.find(c => c.name.toLowerCase() === symbol2?.toLowerCase());
-    balanceModel = balanceModel ?? fiatCurrencies.find(c => c.name.toLowerCase() === symbol2?.toLowerCase());
+    let balanceModel = cryptoCurrencies.find(c => c.currency.toLowerCase() === symbol2?.toLowerCase());
+    balanceModel = balanceModel ?? fiatCurrencies.find(c => c.currency.toLowerCase() === symbol2?.toLowerCase());
     if (!balanceModel) {
       setPopoverMessage(t("InsufficientFundsToBuy", { currency1: symbol1, currency2: symbol2 }));
       return;
     }
 
-    if (balanceModel.qty < amount * rfqModel!.OfferPx) {
+    if (balanceModel.amount < amount * rfqModel!.OfferPx) {
       setPopoverMessage(t("InsufficientFundsToBuy", { currency1: symbol1, currency2: symbol2 }));
       return;
     }

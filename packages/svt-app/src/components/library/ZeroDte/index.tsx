@@ -37,9 +37,7 @@ import "./ZeroDte.scss";
 
 const steps = ["Select Account", "Account Status / Settings"];
 
-const tradeSymbolOptions = [
-  "SPX",
-];
+const tradeSymbolOptions = ["SPX"];
 
 interface IState {
   loginSubmitted: boolean;
@@ -271,7 +269,7 @@ export default function ZeroDte() {
         status: listItem.active ? "Running" : "Suspended",
         tradeSymbol: listItem.masterSymbol,
         entryOrderStatus: listItem.entryOrderStatus,
-        targetOrderStatus: listItem.targetOrderStatus
+        targetOrderStatus: listItem.targetOrderStatus,
       }));
       setPositionTableData(newItems);
 
@@ -529,7 +527,7 @@ export default function ZeroDte() {
         account: strategyAccountConnectState.accountNumber,
         id: uuid(),
         entryOrderStatus: "",
-        targetOrderStatus: ""
+        targetOrderStatus: "",
       },
     ]);
   };
@@ -692,7 +690,7 @@ export default function ZeroDte() {
                   />
                 )}
                 {configuring && (
-                  <Box sx={{ display: "flex", flexDirection: "row", mt: "80px" }}>
+                  <Box sx={{ display: "flex", flexDirection: "row", mt: "70px" }}>
                     {((activeStep === 1 && positionTableData.length > 0) || activeStep === 2) && (
                       <Button
                         variant="outlined"

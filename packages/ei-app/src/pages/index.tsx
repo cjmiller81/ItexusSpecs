@@ -1,3 +1,4 @@
+import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { useGetCalendarEventsQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
@@ -59,21 +60,21 @@ export default function HomePage() {
     filteredTokensApi
       .getTopTokens(10)
       .then(response => {
-      const calculatedData = response.data.map<TopTokenData>(data => {
-      return {
-        tokenId: data.id,
-        iconUrl: data.lURI,
-        id: data.id,
-        marketCap: data.mCap,
-        symbol: data.sym,
-        price: data.price,
-        fulDilVal: data.fulDilVal,
-      };
-    });
+        const calculatedData = response.data.map<TopTokenData>(data => {
+          return {
+            tokenId: data.id,
+            iconUrl: data.lURI,
+            id: data.id,
+            marketCap: data.mCap,
+            symbol: data.sym,
+            price: data.price,
+            fulDilVal: data.fulDilVal,
+          };
+        });
 
-      setTopTokens(calculatedData);
-    })
-    .finally(() => setIsFetchingTopTokens(false));
+        setTopTokens(calculatedData);
+      })
+      .finally(() => setIsFetchingTopTokens(false));
   }, []);
 
   return (
@@ -178,6 +179,7 @@ export default function HomePage() {
                 setSelectedDate={setSelectedDate}
                 selectedDate={selectedDate}
                 sx={{ flex: isMediumScreen ? 4 : 1 }}
+                onFetchPage={fetchLookupPage}
               />
             </Box>
           </Grid>
