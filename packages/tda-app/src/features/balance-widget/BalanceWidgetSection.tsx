@@ -1,8 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { StackProps } from "@mui/system";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { toggleCryptoTable, toggleFiatTable } from "../nav-bar/navBarSlice";
 import BalanceWidget from "./widget/BalanceWidget";
+import { fetchCustomerBalance } from "./balancesWidgetSlice";
 
 const BalanceWidgetSection: FC<StackProps> = props => {
   const dispatch = useAppDispatch();
@@ -13,6 +14,10 @@ const BalanceWidgetSection: FC<StackProps> = props => {
   const fiatCurrencies = useAppSelector(store => store.balancesWidget.fiatCurrencies);
 
   const { position, ...restProps } = props;
+
+  useEffect(() => {
+    dispatch(fetchCustomerBalance());
+  }, [dispatch]);
 
   return (
     <BalanceWidget
