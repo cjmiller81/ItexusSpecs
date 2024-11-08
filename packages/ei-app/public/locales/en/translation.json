@@ -114,6 +114,20 @@
     "AndGoogleApp": "and Google Authenticator"
   },
   "IndexModelingSection": {
+   "AddSavedWallet": "+ADD SAVED WALLET",
+   "AddSavedPosition": "+ADD SAVED POSITION",
+   "CurrentPosition": "Current Position",
+   "RebalancedIndexQuantities": "Rebalanced Index Quantities",
+   "PositionAllocationUpdates": "Position Allocation Updates",
+   "Clear": "Clear",
+   "Save": "Save",
+   "AddManualPosition": "+ADD MANUAL POSITION",
+   "TokenName": "Token name",
+   "Qty": "Qty",
+   "Add": "Add",
+   "Cancel": "Cancel"
+  },
+  "IndexResultsSection": {
     "Tokens": "Tokens",
     "TotalCapital": "Total Capital",
     "Export": "Export",
