@@ -308,6 +308,8 @@
   },
   "NavBar": {
     "TradingEnabled": "Trading Enabled",
-    "TradingDisabled": "Trading Disabled"
+    "TradingDisabled": "Trading Disabled",
+    "Online": "Online",
+    "Offline": "Offline"
   }
 }
