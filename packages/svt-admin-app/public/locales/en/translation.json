@@ -166,6 +166,10 @@
     "StopAutomation": "Stop Automation",
     "StartAutomation": "Start Automation",
     "OpenPositions": "Open Positions",
-    "OpenPANDL": "Open P&L"
+    "OpenPANDL": "Open P&L",
+    "AccountBalance": "Account Balance :",
+    "OptionLeg":"Option Leg",
+    "Side":"Side"
+
   }
 }
