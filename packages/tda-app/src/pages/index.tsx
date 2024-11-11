@@ -3,8 +3,8 @@ import BalanceWidgetSection from "features/balance-widget/BalanceWidgetSection";
 
 export default function HomePage() {
   const isRelativeBalances = useMediaQuery("(max-width: 1030px)");
-  const isRelativeBalancesMobile = useMediaQuery("(max-width: 715px)");
   const isStacked = useMediaQuery("(max-width: 950px)");
+  const isMobile = useMediaQuery("(max-width: 850px)");
 
   return (
     <Grid
@@ -20,7 +20,7 @@ export default function HomePage() {
           width={theme => (isRelativeBalances ? "100%" : theme.spacing(24))}
           direction={isRelativeBalances ? "row" : "column"}
           sx={{
-            top: isRelativeBalancesMobile ? 210 : isRelativeBalances ? 90 : 0,
+            top: isMobile ? 40 : 10,
             position: isStacked ? "relative" : "absolute",
             right: isStacked ? 0 : 30,
             ...(isRelativeBalances && {

@@ -33,7 +33,7 @@ export default function SpotRFQPage() {
   const dispatch = useAppDispatch();
   const isRelativeBalances = useMediaQuery("(max-width: 1070px)");
   const isPad = useMediaQuery("(max-width: 1030px)");
-  const isMobile = useMediaQuery("(max-width: 715px)");
+  const isMobile = useMediaQuery("(max-width: 850px)");
   const { t } = useTranslation("SpotRFQPage");
   const [currentOrder, setCurrentOrder] = useState<{
     rfqModel: RfqResponse;
@@ -134,7 +134,7 @@ export default function SpotRFQPage() {
         width={theme => (isRelativeBalances ? "auto" : theme.spacing(24))}
         direction={isRelativeBalances ? "row" : "column"}
         sx={{
-          marginTop: isMobile ? "310px !important" : isPad ? "110px !important" : 0,
+          marginTop: isMobile ? "70px !important" : "auto",
           display: isMobile ? "block" : "flex",
           position: "absolute",
           right: !isRelativeBalances ? 25 : 0,

@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Theme, useTheme } from "@mui/material/styles"; // Import useTheme
+import { Theme, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Localization from "./Localization";
 import Notification from "./Notification";
@@ -24,8 +24,8 @@ import { fetchConnectionStatus } from "Layouts/DashboardLayout/Header/HeaderCont
 export default function HeaderContent() {
   const dispatch = useAppDispatch();
   const { menuOrientation, mode, onChangeMode } = useConfig();
-  const isPad = useMediaQuery("(max-width: 1030px)");
-  const isMobile = useMediaQuery("(max-width: 715px)");
+  const isPad = useMediaQuery("(max-width: 850px)");
+  const isMobile = useMediaQuery("(max-width: 480px)");
 
   const theme = useTheme();
 
@@ -80,30 +80,38 @@ export default function HeaderContent() {
       <Box>
         <DrawerHeader open={true} />
       </Box>
-      <Box sx={{ display: isMobile ? "contents" : "flex", mb: 1.5 }}>
-        <ConnectionStatus isConnected={isConnected} />
-        <DateTimeWidget />
-        <TradingSwitch
-          setIsTradingEnabled={handleToggle}
-          isTradingEnabled={isTradingEnabled}
-        />
-      </Box>
-
       <Box
         display="flex"
-        justifyContent="flex-end"
+        alignItems="center"
         width="100%">
-        <IconButton
-          onClick={handleMenuOpen}
-          aria-label="menu"
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 1,
-            backgroundColor: theme.palette.mode === ThemeMode.DARK ? theme.palette.grey[200] : theme.palette.grey[300],
-          }}>
-          <MoreVertIcon />
-        </IconButton>
+        <Box
+          display="flex"
+          justifyContent="center"
+          flexGrow={1}>
+          <ConnectionStatus isConnected={isConnected} />
+          <DateTimeWidget />
+          <TradingSwitch
+            setIsTradingEnabled={handleToggle}
+            isTradingEnabled={isTradingEnabled}
+          />
+        </Box>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          width="auto">
+          <IconButton
+            onClick={handleMenuOpen}
+            aria-label="menu"
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 1,
+              backgroundColor:
+                theme.palette.mode === ThemeMode.DARK ? theme.palette.grey[200] : theme.palette.grey[300],
+            }}>
+            <MoreVertIcon />
+          </IconButton>
+        </Box>
       </Box>
 
       <Menu
@@ -130,27 +138,27 @@ export default function HeaderContent() {
             width: "100%",
           }}>
           <MenuItem
-            sx={{ padding: 1 }}
+            sx={{ padding: isMobile ? 0.6 : 1 }}
             onClick={handleMenuClose}>
             <SupportButton />
           </MenuItem>
           <MenuItem
-            sx={{ padding: 1 }}
+            sx={{ padding: isMobile ? 0.6 : 1 }}
             onClick={handleMenuClose}>
             {localization}
           </MenuItem>
           <MenuItem
-            sx={{ padding: 1 }}
+            sx={{ padding: isMobile ? 0.6 : 1 }}
             onClick={handleMenuClose}>
             <Notification />
           </MenuItem>
           <MenuItem
-            sx={{ padding: 1 }}
+            sx={{ padding: isMobile ? 0.6 : 1 }}
             onClick={handleThemeToggle}>
             <ThemeSwitcher ml={1} />
           </MenuItem>
           <MenuItem
-            sx={{ padding: 1 }}
+            sx={{ padding: isMobile ? 0.6 : 1 }}
             onClick={handleMenuClose}>
             <Profile />
           </MenuItem>
