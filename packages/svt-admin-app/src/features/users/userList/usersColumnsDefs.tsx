@@ -80,15 +80,15 @@ export function getColumns(
       minWidth: 80,
       editable: true,
       type: "string",
-      flex: 1,
+      flex: 0,
     },
     {
       field: "exchangeUsername",
       headerName: i18next.t("ExchangeUsername", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      minWidth: 80,
       editable: true,
       type: "string",
-      flex: 1,
+      flex: 0,
     },
     {
       field: "connectionStatus",
@@ -96,7 +96,7 @@ export function getColumns(
       minWidth: 85,
       editable: true,
       type: "string",
-      flex: 1,
+      flex: 0,
       cellClassName: (param: GridCellParams<GridValidRowModel>) => {
         if (param.value === "Disconnected") {
           return "red";
@@ -110,7 +110,7 @@ export function getColumns(
       minWidth: 90,
       editable: true,
       type: "string",
-      flex: 1,
+      flex: 0,
       cellClassName: (param: GridCellParams<GridValidRowModel>) => {
         return param.value === "error" ? "dark-yellow" : "";
       },
