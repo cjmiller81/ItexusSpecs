@@ -2,6 +2,7 @@ import { BottomNavigation, BottomNavigationAction, Typography } from "@mui/mater
 import { useState } from "react";
 import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
+import { useTranslation } from "react-i18next";
 
 export default function UserDetailsSection({
   opened,
@@ -16,13 +17,15 @@ export default function UserDetailsSection({
 }) {
   const [navValue, setNavValue] = useState(0);
   const pageLinks = ["5WX30651", "5WX30652", "5WX30653"];
+  const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
+
   const columns = [
-    { field: "fillTime", headerName: "Fill Time", width: 120 },
-    { field: "symbol", headerName: "Symbol", width: 80 },
-    { field: "optionLeg", headerName: "Option Leg", width: 120 },
-    { field: "side", headerName: "Side", width: 80 },
-    { field: "qty", headerName: "QTY", width: 100 },
-    { field: "avgPrice", headerName: "Avg. Price", width: 120 },
+    { field: "fillTime", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120 },
+    { field: "symbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
+    { field: "optionLeg", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120 },
+    { field: "side", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
+    { field: "qty", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
+    { field: "avgPrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
   ];
 
   const rows = [
@@ -105,11 +108,11 @@ export default function UserDetailsSection({
           whiteSpace: "nowrap",
           width: "fit-content",
         }}>
-        Account Balance: $350,000
+        {t("AccountBalance")} $350,000
       </Typography>
 
       <Box sx={{ height: "auto", width: "90%", marginLeft: "15px" }}>
-        <Typography sx={{ marginTop: "20px" }}>Open Positions</Typography>
+        <Typography sx={{ marginTop: "20px" }}>{t("OpenPositions")}</Typography>
         <DataGrid
           slots={{
             footer: () => <></>,
