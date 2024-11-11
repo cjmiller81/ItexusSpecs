@@ -150,11 +150,11 @@ export default function Reports() {
       }}>
       <Grid
         container
-        spacing={2}>
+        spacing={1}>
         <Grid
           item
           xs={12}
-          md={5}>
+          md="auto">
           <DataGrid<IUserList>
             slots={{
               footer: () => <></>,
@@ -177,7 +177,7 @@ export default function Reports() {
         <Grid
           item
           xs={12}
-          md={7}>
+          md="auto">
           {currentUser && (
             <StyledDrawer
               anchor="right"
@@ -185,7 +185,7 @@ export default function Reports() {
               PaperProps={{
                 sx: {
                   "&.MuiDrawer-paper": {
-                    width: rightBarOpen ? (sidebarOpened ? "47vw" : "55vw") : "3vw",
+                    width: rightBarOpen ? (sidebarOpened ? "51vw" : "55vw") : "3vw",
                   },
                 },
               }}
