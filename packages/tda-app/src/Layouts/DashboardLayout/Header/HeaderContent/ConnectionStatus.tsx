@@ -1,12 +1,14 @@
 import React from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
+import { useTranslation } from "react-i18next";
 
 interface ConnectionStatusProps {
   isConnected: boolean | null;
 }
 
 const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
+  const { t } = useTranslation("NavBar");
   const theme = useTheme();
   const { palette } = theme;
 
@@ -15,24 +17,8 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
       display="flex"
       alignItems="center"
       bgcolor={`${palette.grey[100]} !important`}
-      padding="8px"
+      padding="8px 8px 8px 3px"
       borderRadius="4px">
-      <Typography
-        variant="body1"
-        style={{ marginRight: "8px", width: "max-content" }}>
-        Connection Status
-      </Typography>
-
-      <Typography
-        variant="body1"
-        style={{
-          marginRight: "8px",
-          fontWeight: "bold",
-          width: "max-content",
-        }}>
-        |
-      </Typography>
-
       <Box
         display="flex"
         alignItems="center"
@@ -42,15 +28,15 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
         {isConnected ? (
           <Box
             sx={{
-              width: 15,
-              height: 15,
+              width: 13,
+              height: 13,
               backgroundColor: `${palette.grey[100]} !important`,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               borderRadius: "3px",
             }}>
-            <CheckIcon sx={{ color: "#89cb5c", fontSize: 12 }} />
+            <CheckIcon sx={{ color: "#89cb5c", fontSize: 10 }} />
           </Box>
         ) : (
           <Box
@@ -70,7 +56,7 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
                 left: "50%",
                 transform: "translateX(-55%)",
                 color: "#e96e6b",
-                fontSize: "9px",
+                fontSize: "8px",
                 fontWeight: "bold",
               }}>
               !
@@ -84,9 +70,10 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
             fontWeight: 500,
             marginTop: 0.2,
             paddingRight: 0.3,
+            fontSize: 11,
           }}
           variant="body2">
-          {isConnected ? "Connected" : "Disconnected"}
+          {isConnected ? t("Online") : t("Offline")}
         </Typography>
       </Box>
     </Box>
