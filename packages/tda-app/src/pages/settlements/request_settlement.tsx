@@ -62,10 +62,13 @@ const RequestSettlement: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("RequestSettlementTitle")}</Typography>
+      <Typography
+        sx={{ mt: "16px !important" }}
+        variant="h3">
+        {t("RequestSettlementTitle")}
+      </Typography>
       <Grid
         container
-        mt={2}
         spacing={2}>
         <Grid
           item

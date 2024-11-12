@@ -33,7 +33,11 @@ const ManageCryptoAddresses: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("ManageCryptoAddressTitle")}</Typography>
+      <Typography
+        sx={{ mt: "16px" }}
+        variant="h3">
+        {t("ManageCryptoAddressTitle")}
+      </Typography>
       <Grid
         container
         mt={2}

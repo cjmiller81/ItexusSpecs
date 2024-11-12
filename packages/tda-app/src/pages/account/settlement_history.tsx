@@ -10,7 +10,7 @@ const SettlementHistory: React.FC = () => {
   return (
     <>
       <Typography
-        sx={{ mt: isMobile ? "300px" : isPad ? "100px" : 0 }}
+        sx={{ mt: isMobile ? "300px" : isPad ? "100px" : "20px" }}
         variant="h3">
         {t("Title")}
       </Typography>
