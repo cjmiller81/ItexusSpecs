@@ -9,6 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import React, { useEffect, useState } from "react";
 import YesNoDialog from "../modals/Modals/YesNoDialog";
+import { StrategySettings } from "../../../../../services/tradingPlatformService";
 
 export type StrategyStatus = "Running" | "Suspended";
 export interface IPositionTableRow {
@@ -19,6 +20,7 @@ export interface IPositionTableRow {
   tradeSymbol: string;
   tradeQty: number;
   status: StrategyStatus;
+  strategySetting?: StrategySettings | null
 }
 
 interface PositionTableProps {

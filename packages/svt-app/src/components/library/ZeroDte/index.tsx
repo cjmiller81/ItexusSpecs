@@ -15,6 +15,7 @@ import { v4 as uuid } from "uuid";
 import {
   ExchangeAccount,
   IvlRiskTolerance,
+  StrategySettings,
   SvtIvlEsStrategySetStatus,
   TastytradeAccountConnect,
   useCreateZeroDteStrategy,
@@ -101,6 +102,7 @@ export default function ZeroDte() {
   } as SvtIvlEsStrategySetStatus);
 
   const [fifoFeedOption, setFifoFeedOption] = useState("SP 500");
+  const [currentStrategySettings, setCurrentStrategySettings] = useState<StrategySettings>();
   const [tradeSymbolOption, setTradeSymbolOption] = useState("SPX");
   const qty = tradeSymbolOption === "SPX" ? 1 : 100;
   const [positionTableData, setPositionTableData] = useState<IPositionTableRow[]>([]);
@@ -270,6 +272,7 @@ export default function ZeroDte() {
         tradeSymbol: listItem.masterSymbol,
         entryOrderStatus: listItem.entryOrderStatus,
         targetOrderStatus: listItem.targetOrderStatus,
+        strategySetting: listItem.strategySettings,
       }));
       setPositionTableData(newItems);
 
@@ -515,6 +518,7 @@ export default function ZeroDte() {
     createZeroDteStrategy.mutate({
       active: true,
       exchangeAccountNumber: strategyAccountConnectState.accountNumber,
+      strategySettings: currentStrategySettings!
     });
 
     setConfiguring(false);
@@ -531,6 +535,18 @@ export default function ZeroDte() {
       },
     ]);
   };
+
+  const getExistedStrategy = React.useMemo(() => {
+    if (!positionTableData || positionTableData.length === 0) {
+      return null;
+    }
+
+    return positionTableData.find(x => 
+      x.account === strategyAccountConnectState.accountNumber
+      && x.tradeSymbol === tradeSymbolOption
+    )?.strategySetting;
+
+  }, [positionTableData, strategyAccountConnectState.accountNumber, tradeSymbolOption]);
 
   const onDeleteStrategy = (row: IPositionTableRow) => {
     setMutating(true);
@@ -567,6 +583,7 @@ export default function ZeroDte() {
       tradeSymbol: encodeURIComponent(row.tradeSymbol),
     });
   };
+
   return (
     <>
       <div className="stepperStyling">
@@ -671,6 +688,8 @@ export default function ZeroDte() {
                     state={exchangeAccountState}
                     refreshAccount={getAccountList}
                     handleStatusUpdate={enableNext}
+                    onSettingStrategyChanged={setCurrentStrategySettings}
+                    existedStrategy={getExistedStrategy}
                   />
                 )}
                 {!configuring && (

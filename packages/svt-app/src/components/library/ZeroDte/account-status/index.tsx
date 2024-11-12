@@ -2,10 +2,11 @@ import { Divider, Stack } from "@chakra-ui/react";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { Box, Grid, IconButton, MenuItem, Select, TextField, Typography, styled, useMediaQuery } from "@mui/material";
-import { ReactNode, useCallback, useEffect } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { UseMutationResult } from "react-query";
-import { ExchangeAccount } from "../../../../services/tradingPlatformService";
+import { ExchangeAccount, StrategySettings } from "../../../../services/tradingPlatformService";
 import "./AccountStatus.scss";
+import { NumberBox } from "devextreme-react";
 
 type Props = {
   membership: string;
@@ -16,10 +17,53 @@ type Props = {
   tradeSymbolOptions: string[];
   tradeSymbolOption: string;
   qty: number;
+  existedStrategy?: StrategySettings | null;
+  onSettingStrategyChanged : (settings : StrategySettings) => void;
 };
 
-const ENTRY_TIME_OPTIONS = ["9:30 AM", "10:00 AM", "10:30 AM"];
-const EXIT_TIME_OPTIONS = ["3:30 PM", "4:00 PM"];
+const ENTRY_TIME_OPTIONS = [
+{  
+  key: "Market open",
+  value: 0
+},
+{  
+  key: "Market open +30min (default selection)",
+  value: 30
+},
+{  
+  key: "Market open +60min",
+  value: 60
+},
+{  
+  key: "Market open +90min",
+  value: 90
+},
+{  
+  key: "Market open +120min",
+  value: 120
+}];
+
+const EXIT_TIME_OPTIONS  = [
+{  
+  key: "Market close - 1min",
+  value: 1
+},
+{  
+  key: "Market close -30min",
+  value: -30
+},
+{  
+  key: "Market close -60min",
+  value: -60
+},
+{  
+  key: "Market close -90min (default selection)",
+  value: -90
+},
+{  
+  key: "Market close -120min",
+  value: -120
+}];
 
 export default function AccountStatus({
   membership,
@@ -30,16 +74,37 @@ export default function AccountStatus({
   tradeSymbolOption,
   tradeSymbolOptions,
   qty,
+  onSettingStrategyChanged,
+  existedStrategy
 }: Props) {
   const onRefresh = useCallback(() => {
     refreshAccount.mutate();
   }, [refreshAccount]);
+
+  const defaultStrategySettings =  {
+    entryOrderAtOpenOffsetMinutes: 30,
+    exitOrderAtCloseOffsetMinutes: -90,
+    maxProfitPercentTarget: 25,
+    strikeWidth: 20,
+    minCreditRequired: 14.00
+  };
+  const [currentStrategySettings, setCurrentStrategySettings] = useState<StrategySettings>(existedStrategy ?? defaultStrategySettings);
 
   const isSmallScreen = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     handleStatusUpdate();
   }, [handleStatusUpdate, membership, state]);
+
+  useEffect(() => {
+    onSettingStrategyChanged(currentStrategySettings);
+  }, [currentStrategySettings, onSettingStrategyChanged]);
+
+  useEffect(() => {
+    if (existedStrategy) {
+      setCurrentStrategySettings(existedStrategy);
+    }
+  }, [existedStrategy]);
 
   return (
     <>
@@ -174,18 +239,27 @@ export default function AccountStatus({
 
           <Stack
             direction="row"
-            sx={{ mt: 2, width: isSmallScreen ? "100%" : "80%" }}>
+            width="100%"
+            sx={{
+              marginTop: "15px",
+              display: "flex",
+              flexDirection: isSmallScreen ? "column" : "row",
+              justifyContent: isSmallScreen ? "center" : "space-between",
+              alignItems: "center"
+            }}>
             <LabeledStategyOptionField
               label="Entry Time"
               sx={{ width: "50%" }}>
               <Select
                 size="small"
-                sx={{ width: isSmallScreen ? "90%" : "80%" }}>
+                onChange={(e) => {setCurrentStrategySettings({...currentStrategySettings, entryOrderAtOpenOffsetMinutes: e.target.value as number})}}
+                value={currentStrategySettings.entryOrderAtOpenOffsetMinutes}
+                sx={{ width: isSmallScreen ? "90%" : "95%" }}>
                 {ENTRY_TIME_OPTIONS.map(time => (
                   <MenuItem
-                    value={time}
-                    key={time}>
-                    {time}
+                    value={time.value}
+                    key={time.key}>
+                    {time.key}
                   </MenuItem>
                 ))}
               </Select>
@@ -195,12 +269,14 @@ export default function AccountStatus({
               sx={{ width: "50%" }}>
               <Select
                 size="small"
-                sx={{ width: isSmallScreen ? "90%" : "80%" }}>
+                onChange={(e) => {setCurrentStrategySettings({...currentStrategySettings, exitOrderAtCloseOffsetMinutes: e.target.value as number})}}
+                value={currentStrategySettings?.exitOrderAtCloseOffsetMinutes}
+                sx={{ width: isSmallScreen ? "90%" : "95%" }}>
                 {EXIT_TIME_OPTIONS.map(time => (
                   <MenuItem
-                    value={time}
-                    key={time}>
-                    {time}
+                    value={time.value}
+                    key={time.key}>
+                    {time.key}
                   </MenuItem>
                 ))}
               </Select>
@@ -228,7 +304,17 @@ export default function AccountStatus({
                 sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
                 Max Profit % Target
               </Typography>
-              <TextField size="small" />
+              <NumberBox
+                width={"100px"}
+                height={"40px"}
+                stylingMode="outlined"
+                min={0}
+                max={100}
+                step={5}
+                defaultValue={currentStrategySettings.maxProfitPercentTarget}
+                showSpinButtons={true}
+                onValueChange={(value) => setCurrentStrategySettings({...currentStrategySettings, maxProfitPercentTarget: value})}
+              />
             </LabeledStategyOptionField>
 
             <LabeledStategyOptionField
@@ -239,7 +325,17 @@ export default function AccountStatus({
                 sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
                 Strike Width
               </Typography>
-              <TextField size="small" />
+              <NumberBox
+                width={"100px"}
+                height={"40px"}
+                stylingMode="outlined"
+                min={5}
+                max={50}
+                step={1}
+                defaultValue={currentStrategySettings.strikeWidth}
+                showSpinButtons={true}
+                onValueChange={(value) => setCurrentStrategySettings({...currentStrategySettings, strikeWidth: value})}
+              />
             </LabeledStategyOptionField>
 
             <LabeledStategyOptionField
@@ -250,7 +346,17 @@ export default function AccountStatus({
                 sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
                 Min Credit Required
               </Typography>
-              <TextField size="small" />
+              <NumberBox
+                width={"115px"}
+                height={"40px"}
+                stylingMode="outlined"
+                min={2}
+                max={50}
+                step={0.05}
+                defaultValue={currentStrategySettings.minCreditRequired}
+                showSpinButtons={true}
+                onValueChange={(value) => setCurrentStrategySettings({...currentStrategySettings, minCreditRequired: value})}
+              />
             </LabeledStategyOptionField>
           </Stack>
         </AdaptiveSideBox>
