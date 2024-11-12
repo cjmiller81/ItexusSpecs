@@ -44,7 +44,11 @@ const TradeHistory: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("TradeHistory")}</Typography>
+      <Typography
+        sx={{ mt: "16px !important" }}
+        variant="h3">
+        {t("TradeHistory")}
+      </Typography>
       <Grid
         container
         mt={2}

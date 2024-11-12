@@ -42,7 +42,11 @@ const ManageBankAccounts: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("ManageBankAccountsTitle")}</Typography>
+      <Typography
+        sx={{ mt: "16px" }}
+        variant="h3">
+        {t("ManageBankAccountsTitle")}
+      </Typography>
       <Grid
         container
         mt={2}

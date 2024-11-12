@@ -69,7 +69,11 @@ const FundingInstructions: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h3">{t("FundingInstructionsTitle")}</Typography>
+      <Typography
+        sx={{ mt: "16px" }}
+        variant="h3">
+        {t("FundingInstructionsTitle")}
+      </Typography>
       <Grid
         container
         mt={2}
