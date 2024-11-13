@@ -27,7 +27,7 @@ const ENTRY_TIME_OPTIONS = [
   value: 0
 },
 {  
-  key: "Market open +30min (default selection)",
+  key: "Market open +30min (default)",
   value: 30
 },
 {  
@@ -57,7 +57,7 @@ const EXIT_TIME_OPTIONS  = [
   value: -60
 },
 {  
-  key: "Market close -90min (default selection)",
+  key: "Market close -90min (default)",
   value: -90
 },
 {  
