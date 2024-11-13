@@ -167,7 +167,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onEdit, 
                   {
                     row.status === "Running" && row.nextEndOfDayCloseTimestamp && row.nextEndOfDayCloseTimestamp.seconds > 0
                       ? (
-                        <TableCell align="left">
+                        <TableCell colSpan={2} align="left">
                           <span>
                             Close Position Time: {(new Date(row.nextEndOfDayCloseTimestamp.seconds * 1000)).toLocaleString()}
                           </span>
@@ -180,7 +180,7 @@ const PositionTable: React.FC<PositionTableProps> = ({ onStop, onStart, onEdit, 
                             </span>
                           </TableCell>
                         ) : (
-                          <TableCell align="left">
+                          <TableCell colSpan={2} align="left">
                           </TableCell>
                         )
                       )

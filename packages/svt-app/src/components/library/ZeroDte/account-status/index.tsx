@@ -22,109 +22,109 @@ type Props = {
 };
 
 const ENTRY_TIME_OPTIONS = [
-{  
+{
   key: "Market open",
   value: 0
 },
-{  
+{
   key: "Market open +14min",
   value: 14
 },
-{  
+{
   key: "Market open +29min (default)",
   value: 29
 },
-{  
+{
   key: "Market open +44min",
   value: 44
 },
-{  
+{
   key: "Market open +59min",
   value: 59
 },
-{  
+{
   key: "Market open +74min",
   value: 74
 },
-{  
+{
   key: "Market open +89min",
   value: 89
 },
-{  
+{
   key: "Market open +104min",
   value: 104
 },
-{  
+{
   key: "Market open +119min",
   value: 119
 },
-{  
+{
   key: "Market open +134min",
   value: 134
 },
-{  
+{
   key: "Market open +149min",
   value: 149
 },
-{  
+{
   key: "Market open +164min",
   value: 164
 },
-{  
+{
   key: "Market open +179min",
   value: 179
 }];
 
 const EXIT_TIME_OPTIONS  = [
-{  
+{
   key: "Market close - 1min",
   value: -1
 },
-{  
+{
   key: "Market close -16min",
   value: -16
 },
-{  
+{
   key: "Market close -31min",
   value: -31
 },
-{  
+{
   key: "Market close -46min",
   value: -46
 },
-{  
+{
   key: "Market close -61min",
   value: -61
 },
-{  
+{
   key: "Market close -76min",
   value: -76
 },
-{  
+{
   key: "Market close -91min (default)",
   value: -91
 },
-{  
+{
   key: "Market close -106min",
   value: -106
 },
-{  
+{
   key: "Market close -121min",
   value: -121
 },
-{  
+{
   key: "Market close -136min",
   value: -136
 },
-{  
+{
   key: "Market close -151min",
   value: -151
 },
-{  
+{
   key: "Market close -166min",
   value: -166
 },
-{  
+{
   key: "Market close -181min",
   value: -181
 }];
@@ -259,7 +259,7 @@ export default function AccountStatus({
             textAlign="left"
             gutterBottom
             sx={{ marginBottom: "20px", fontWeight: "900" }}>
-            0DTE Strategy Instrument Settings
+            SDTE Strategy Instrument Settings
           </Typography>
           <Stack
             sx={{ width: isSmallScreen ? "100%" : "80%" }}
@@ -296,9 +296,9 @@ export default function AccountStatus({
           </Stack>
 
           <Typography
-            variant="h6"
+            variant="body1"
             sx={{ marginTop: "20px", fontWeight: "bold" }}>
-            0DTE PARAMETER SETTINGS
+            SDTE PARAMETER SETTINGS
           </Typography>
 
           <Stack
@@ -351,6 +351,7 @@ export default function AccountStatus({
             direction={isSmallScreen ? "column" : "row"}
             spacing={2}
             width="100%"
+            className="zero-dte-strategy-settings"
             sx={{
               marginTop: "15px",
               display: "flex",
