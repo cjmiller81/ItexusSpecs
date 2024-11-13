@@ -169,8 +169,14 @@ export interface FifoStrategyListItem {
   callLeg2Symbol: string,
   putLeg1Symbol: string,
   putLeg2Symbol: string,
-  nextEntryTimestamp: any,
-  nextEndOfDayCloseTimestamp: any,
+  nextEntryTimestamp: {
+    seconds: number,
+    nanos: number
+  } | null,
+  nextEndOfDayCloseTimestamp: {
+    seconds: number,
+    nanos: number
+  } | null,
   userMessage: string,
   strategySettings: StrategySettings
 }

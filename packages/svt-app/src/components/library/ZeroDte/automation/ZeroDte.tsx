@@ -19,6 +19,7 @@ interface ZeroDteComponentProps {
   onDeleteStrategy: (id: IPositionTableRow) => void;
   onStopStrategy: (id: IPositionTableRow) => void;
   onStartStrategy: (id: IPositionTableRow) => void;
+  onEditStrategy: (id: IPositionTableRow) => void;
   onForceExitStrategy: (id: IPositionTableRow) => void;
   strategiesRows: IPositionTableRow[];
 }
@@ -29,6 +30,7 @@ const ZeroDteComponent: React.FC<ZeroDteComponentProps> = ({
   strategiesRows,
   onStopStrategy,
   onStartStrategy,
+  onEditStrategy,
   onDeleteStrategy,
   onForceExitStrategy,
   isMutating,
@@ -43,6 +45,7 @@ const ZeroDteComponent: React.FC<ZeroDteComponentProps> = ({
           onDelete={onDeleteStrategy}
           data={strategiesRows}
           onStart={onStartStrategy}
+          onEdit={onEditStrategy}
           onForceExit={onForceExitStrategy}
           isMutating={isMutating}
         />

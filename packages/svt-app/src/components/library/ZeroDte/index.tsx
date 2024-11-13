@@ -239,7 +239,7 @@ export default function ZeroDte() {
 
   const handleSettingsClicked = useCallback(() => {
     setConfiguring(true);
-    setActiveStep(0);
+    setActiveStep(2);
   }, []);
 
   useEffect(() => {
@@ -273,6 +273,9 @@ export default function ZeroDte() {
         entryOrderStatus: listItem.entryOrderStatus,
         targetOrderStatus: listItem.targetOrderStatus,
         strategySetting: listItem.strategySettings,
+        nextEntryTimestamp: listItem.nextEntryTimestamp,
+        nextEndOfDayCloseTimestamp: listItem.nextEndOfDayCloseTimestamp,
+        userMessage: listItem.userMessage,
       }));
       setPositionTableData(newItems);
 
@@ -293,6 +296,10 @@ export default function ZeroDte() {
           ...strategyAccountConnectState,
           accountNumber: newItems[0].account,
         });
+        setAutomationRunning(newItems[0].status === "Running");
+      }
+
+      if (activeStep === 2 && newItems.length) {
         setAutomationRunning(newItems[0].status === "Running");
       }
       setMutating(false);
@@ -541,7 +548,7 @@ export default function ZeroDte() {
       return null;
     }
 
-    return positionTableData.find(x => 
+    return positionTableData.find(x =>
       x.account === strategyAccountConnectState.accountNumber
       && x.tradeSymbol === tradeSymbolOption
     )?.strategySetting;
@@ -584,6 +591,10 @@ export default function ZeroDte() {
     });
   };
 
+  const onEditStrategy = (row: IPositionTableRow) => {
+    handleSettingsClicked();
+  };
+
   return (
     <>
       <div className="stepperStyling">
@@ -595,7 +606,7 @@ export default function ZeroDte() {
                 isAccountNumberValid() &&
                 state.loginSubmitted &&
                 state.accountSelectionSubmitted &&
-                !configuring
+                (!configuring || positionTableData.length > 0)
                   ? "green"
                   : "red",
             }}
@@ -606,7 +617,7 @@ export default function ZeroDte() {
             isAccountNumberValid() &&
             state.loginSubmitted &&
             state.accountSelectionSubmitted &&
-            !configuring
+            (!configuring || positionTableData.length > 0)
               ? "connected"
               : "disconnected"}{" "}
           </span>
@@ -697,6 +708,7 @@ export default function ZeroDte() {
                     onDeleteStrategy={onDeleteStrategy}
                     onStopStrategy={onStopStrategy}
                     onStartStrategy={onStartStrategy}
+                    onEditStrategy={onEditStrategy}
                     onForceExitStrategy={onForceExitStrategy}
                     onAddStrategy={() => {
                       setActiveStep(1);
@@ -735,7 +747,7 @@ export default function ZeroDte() {
                         onClick={onAddStrategy}
                         disabled={!enabled || mutating}
                         sx={{ mr: 1 }}>
-                        Add Strategy
+                        {positionTableData.length > 0 ? "Update Strategy" : "Add Strategy"}
                       </Button>
                     ) : (
                       <Button
