@@ -78,23 +78,55 @@ const ENTRY_TIME_OPTIONS = [
 const EXIT_TIME_OPTIONS  = [
 {  
   key: "Market close - 1min",
-  value: 1
+  value: -1
 },
 {  
-  key: "Market close -30min",
-  value: -30
+  key: "Market close -16min",
+  value: -16
 },
 {  
-  key: "Market close -60min",
-  value: -60
+  key: "Market close -31min",
+  value: -31
 },
 {  
-  key: "Market close -90min (default)",
-  value: -90
+  key: "Market close -46min",
+  value: -46
 },
 {  
-  key: "Market close -120min",
-  value: -120
+  key: "Market close -61min",
+  value: -61
+},
+{  
+  key: "Market close -76min",
+  value: -76
+},
+{  
+  key: "Market close -91min (default)",
+  value: -91
+},
+{  
+  key: "Market close -106min",
+  value: -106
+},
+{  
+  key: "Market close -121min",
+  value: -121
+},
+{  
+  key: "Market close -136min",
+  value: -136
+},
+{  
+  key: "Market close -151min",
+  value: -151
+},
+{  
+  key: "Market close -166min",
+  value: -166
+},
+{  
+  key: "Market close -181min",
+  value: -181
 }];
 
 export default function AccountStatus({
