@@ -82,8 +82,8 @@ export default function AccountStatus({
   }, [refreshAccount]);
 
   const defaultStrategySettings =  {
-    entryOrderAtOpenOffsetMinutes: 30,
-    exitOrderAtCloseOffsetMinutes: -90,
+    entryOrderAtOpenOffsetMinutes: 29,
+    exitOrderAtCloseOffsetMinutes: -91,
     maxProfitPercentTarget: 25,
     strikeWidth: 20,
     minCreditRequired: 14.00
