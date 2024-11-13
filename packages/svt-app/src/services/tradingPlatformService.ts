@@ -135,6 +135,7 @@ export interface CreateFifoStrategyRequest {
 export interface CreateZeroDteStrategyRequest {
   active: boolean,
   exchangeAccountNumber: string | null,
+  strategySettings: StrategySettings
 }
 
 export interface FifoStrategyListItem {
@@ -163,7 +164,23 @@ export interface FifoStrategyListItem {
   },
   tradeSymbol: string,
   tradeSymbolAssetType: string,
-  userId: string
+  userId: string,
+  callLeg1Symbol: string,
+  callLeg2Symbol: string,
+  putLeg1Symbol: string,
+  putLeg2Symbol: string,
+  nextEntryTimestamp: any,
+  nextEndOfDayCloseTimestamp: any,
+  userMessage: string,
+  strategySettings: StrategySettings
+}
+
+export interface StrategySettings {
+  entryOrderAtOpenOffsetMinutes: number,
+  exitOrderAtCloseOffsetMinutes: number,
+  maxProfitPercentTarget: number,
+  strikeWidth: number,
+  minCreditRequired: number
 }
 
 export interface FifoStrategyListResponse
