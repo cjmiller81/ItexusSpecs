@@ -27,20 +27,52 @@ const ENTRY_TIME_OPTIONS = [
   value: 0
 },
 {  
-  key: "Market open +30min (default)",
-  value: 30
+  key: "Market open +14min",
+  value: 14
 },
 {  
-  key: "Market open +60min",
-  value: 60
+  key: "Market open +29min (default)",
+  value: 29
 },
 {  
-  key: "Market open +90min",
-  value: 90
+  key: "Market open +44min",
+  value: 44
 },
 {  
-  key: "Market open +120min",
-  value: 120
+  key: "Market open +59min",
+  value: 59
+},
+{  
+  key: "Market open +74min",
+  value: 74
+},
+{  
+  key: "Market open +89min",
+  value: 89
+},
+{  
+  key: "Market open +104min",
+  value: 104
+},
+{  
+  key: "Market open +119min",
+  value: 119
+},
+{  
+  key: "Market open +134min",
+  value: 134
+},
+{  
+  key: "Market open +149min",
+  value: 149
+},
+{  
+  key: "Market open +164min",
+  value: 164
+},
+{  
+  key: "Market open +179min",
+  value: 179
 }];
 
 const EXIT_TIME_OPTIONS  = [
