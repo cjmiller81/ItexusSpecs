@@ -1,16 +1,20 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
-import { Theme } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Theme, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Localization from "./Localization";
 import Notification from "./Notification";
 import Profile from "./Profile";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import { MenuOrientation, ThemeMode } from "config";
 import useConfig from "hooks/useConfig";
 import DrawerHeader from "Layouts/DashboardLayout/Drawer/DrawerHeader";
 import DateTimeWidget from "Layouts/DashboardLayout/Header/HeaderContent/DateTimeWidget";
-import SupportButton from "Layouts/DashboardLayout/Header/HeaderContent/SupportButton";
 import ConnectionStatus from "Layouts/DashboardLayout/Header/HeaderContent/ConnectionStatus";
 import TradingSwitch from "Layouts/DashboardLayout/Header/HeaderContent/TradingSwitch";
 import { setTradingEnabled } from "features/trading/rfq/slices/rfqSlice";
@@ -20,8 +24,12 @@ import { fetchConnectionStatus } from "Layouts/DashboardLayout/Header/HeaderCont
 export default function HeaderContent() {
   const dispatch = useAppDispatch();
   const { menuOrientation, mode, onChangeMode } = useConfig();
-  const isPad = useMediaQuery("(max-width: 1030px)");
-  const isMobile = useMediaQuery("(max-width: 715px)");
+  const isPad = useMediaQuery("(max-width: 850px)");
+  const isMobile = useMediaQuery("(max-width: 480px)");
+
+  const theme = useTheme();
+
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     dispatch(fetchConnectionStatus());
@@ -41,6 +49,9 @@ export default function HeaderContent() {
   const handleToggle = () => {
     dispatch(setTradingEnabled(!isTradingEnabled));
   };
+
+  const handleMenuOpen = event => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const renderDesktopLayout = () => (
     <>
@@ -69,22 +80,90 @@ export default function HeaderContent() {
       <Box>
         <DrawerHeader open={true} />
       </Box>
-      <Box sx={{ display: isMobile ? "contents" : "flex", mb: 1.5 }}>
-        <ConnectionStatus isConnected={isConnected} />
-        <DateTimeWidget />
-        <TradingSwitch
-          setIsTradingEnabled={handleToggle}
-          isTradingEnabled={isTradingEnabled}
-        />
-        <SupportButton />
+      <Box
+        display="flex"
+        alignItems="center"
+        width="100%">
+        <Box
+          display="flex"
+          justifyContent="center"
+          flexGrow={1}>
+          <ConnectionStatus isConnected={isConnected} />
+          <DateTimeWidget />
+          <TradingSwitch
+            setIsTradingEnabled={handleToggle}
+            isTradingEnabled={isTradingEnabled}
+          />
+        </Box>
+        <Box
+          display="flex"
+          justifyContent="flex-end"
+          width="auto">
+          <IconButton
+            onClick={handleMenuOpen}
+            aria-label="menu"
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 1,
+              backgroundColor:
+                theme.palette.mode === ThemeMode.DARK ? theme.palette.grey[200] : theme.palette.grey[300],
+            }}>
+            <MoreVertIcon />
+          </IconButton>
+        </Box>
       </Box>
 
-      <Box sx={{ display: isMobile ? "contents" : "flex" }}>
-        {localization}
-        <Notification />
-        <ThemeSwitcher />
-        <Profile />
-      </Box>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        sx={{
+          width: "100vw",
+          left: 0,
+          top: "49px",
+          p: 0,
+          "& .MuiPaper-root": {
+            width: "100%",
+            justifyContent: "flex-end !important",
+            display: "flex",
+          },
+        }}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end !important",
+            width: "100%",
+          }}>
+          <MenuItem
+            sx={{ padding: isMobile ? 0.6 : 1 }}
+            onClick={handleMenuClose}>
+            <SupportButton />
+          </MenuItem>
+          <MenuItem
+            sx={{ padding: isMobile ? 0.6 : 1 }}
+            onClick={handleMenuClose}>
+            {localization}
+          </MenuItem>
+          <MenuItem
+            sx={{ padding: isMobile ? 0.6 : 1 }}
+            onClick={handleMenuClose}>
+            <Notification />
+          </MenuItem>
+          <MenuItem
+            sx={{ padding: isMobile ? 0.6 : 1 }}
+            onClick={handleThemeToggle}>
+            <ThemeSwitcher ml={1} />
+          </MenuItem>
+          <MenuItem
+            sx={{ padding: isMobile ? 0.6 : 1 }}
+            onClick={handleMenuClose}>
+            <Profile />
+          </MenuItem>
+        </Box>
+      </Menu>
     </Box>
   );
 

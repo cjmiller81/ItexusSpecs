@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import moment from "moment";
 
 const DateTimeWidget: React.FC = () => {
   const [currentDateTime, setCurrentDateTime] = useState<string>(moment().format("M/D/YYYY HH:mm:ss"));
+  const isMobile = useMediaQuery("(max-width: 850px)");
   const theme = useTheme();
   const { palette } = theme;
 
@@ -41,7 +42,7 @@ const DateTimeWidget: React.FC = () => {
           variant="h6"
           sx={{
             letterSpacing: "0.6px",
-            fontSize: "0.75rem",
+            fontSize: isMobile ? "0.63rem" : "0.75rem",
             fontFamily: theme.typography.fontFamily,
             fontVariantNumeric: "tabular-nums",
           }}>
