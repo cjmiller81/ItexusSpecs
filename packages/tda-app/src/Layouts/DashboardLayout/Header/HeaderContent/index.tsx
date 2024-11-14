@@ -139,24 +139,37 @@ export default function HeaderContent() {
           }}>
           <MenuItem
             sx={{ padding: isMobile ? 0.6 : 1 }}
-            onClick={handleMenuClose}>
+            onClick={e => {
+              e.stopPropagation();
+            }}>
             <SupportButton />
           </MenuItem>
+
           <MenuItem
             sx={{ padding: isMobile ? 0.6 : 1 }}
-            onClick={handleMenuClose}>
+            onClick={e => {
+              e.stopPropagation();
+            }}>
             {localization}
           </MenuItem>
+
           <MenuItem
             sx={{ padding: isMobile ? 0.6 : 1 }}
-            onClick={handleMenuClose}>
+            onClick={e => {
+              e.stopPropagation();
+            }}>
             <Notification />
           </MenuItem>
+
           <MenuItem
             sx={{ padding: isMobile ? 0.6 : 1 }}
-            onClick={handleThemeToggle}>
+            onClick={e => {
+              e.stopPropagation();
+              handleThemeToggle();
+            }}>
             <ThemeSwitcher ml={1} />
           </MenuItem>
+
           <MenuItem
             sx={{ padding: isMobile ? 0.6 : 1 }}
             onClick={handleMenuClose}>
