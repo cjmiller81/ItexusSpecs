@@ -45,22 +45,19 @@ export default function UserDetailsSection({
         const { error } = params.row;
         return (
           <Tooltip
-            title={
-              error ? (
-                <Typography
-                  sx={{
-                    fontSize: "12px",
-                    backgroundColor: "#FFBF00",
-                    color: "black",
-                    width: "auto",
-                  }}>
-                  {error}
-                </Typography>
-              ) : (
-                ""
-              )
-            }
-            placement="left">
+            title={error}
+            placement="left"
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  backgroundColor: "#FFBF00",
+                  maxWidth: "700px",
+                  color: "black",
+                  fontSize: "13px",
+                  borderRadius: "4px",
+                },
+              },
+            }}>
             {params.value}
           </Tooltip>
         );
