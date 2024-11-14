@@ -9,8 +9,9 @@
   }
 }
 
-.trade-qty-input {
-  input[disabled]:not(input[type=submit]) {
-      background-color: #3b3b3b;
+.zero-dte-strategy-settings {
+  input[type=text] {
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
   }
 }

@@ -44,7 +44,7 @@ export default function Login({ handleStatusUpdate, state, onChange }: Props) {
           color={ "white" }
           sx={{ marginBottom: "20px", fontWeight: "900" }}
         >
-          ENTER YOUR TASTYTRADE™ CREDENTIALS TO CONNECT TO THE 0DTE TRADING SYSTEM
+          ENTER YOUR TASTYTRADE™ CREDENTIALS TO CONNECT TO THE SDTE TRADING SYSTEM
         </Typography>
         <Grid container>
           <Grid item xs={12}>
