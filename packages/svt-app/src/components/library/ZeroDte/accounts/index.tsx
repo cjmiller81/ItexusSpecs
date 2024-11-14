@@ -37,7 +37,7 @@ export default function Accounts({ accountNumber, tableData, onAccountSelected, 
           gutterBottom
           sx={{ marginBottom: "20px", fontWeight: "900" }}
         >
-          SELECT WHICH TASTYTRADE ACCOUNT WILL RUN THE 0DTE TRADING SYSTEM
+          SELECT WHICH TASTYTRADE ACCOUNT WILL RUN THE SDTE TRADING SYSTEM
         </Typography>
         <Grid container>
           <Grid item xs={12}>

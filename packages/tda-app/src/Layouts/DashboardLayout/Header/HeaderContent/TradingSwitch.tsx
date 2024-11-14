@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Switch, useTheme } from "@mui/material";
+import { Box, Typography, Switch, useTheme, useMediaQuery } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 interface TradingSwitchProps {
@@ -11,6 +11,7 @@ const TradingSwitch: React.FC<TradingSwitchProps> = ({ setIsTradingEnabled, isTr
   const { t } = useTranslation("NavBar");
   const theme = useTheme();
   const { palette } = theme;
+  const isMobile = useMediaQuery("(max-width: 850px)");
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", marginLeft: "4px" }}>
@@ -33,7 +34,8 @@ const TradingSwitch: React.FC<TradingSwitchProps> = ({ setIsTradingEnabled, isTr
       <Typography
         variant="h6"
         sx={{
-          width: "max-content",
+          whiteSpace: isMobile ? "normal" : "nowrap",
+          fontSize: isMobile ? "0.70rem" : "auto",
           fontStyle: "italic",
           color: isTradingEnabled ? "#00bcd4" : theme.palette.grey[500],
         }}>

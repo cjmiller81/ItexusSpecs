@@ -3,6 +3,7 @@ import { RequestHandler } from 'msw'
 import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
 import {
   CreateFifo2StrategyRequest,
+  CreateZeroDteStrategyRequest,
   Fifo2StrategyListItem,
   Fifo2StrategyListResponse,
   IvlRiskTolerance,
@@ -365,7 +366,7 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
   }),
 
   http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade`, async ({ params, request }) => {
-
+    const data = await request.json() as CreateZeroDteStrategyRequest;
     mockState.zeroDte.push({
       "active": true,
       "entryOrderId": "",
@@ -404,7 +405,18 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       "callLeg1StreamerSymbol": "",
       "callLeg2StreamerSymbol": "",
       "putLeg1StreamerSymbol": "",
-      "putLeg2StreamerSymbol": ""
+      "putLeg2StreamerSymbol": "",
+      "callLeg1Symbol": "",
+      "callLeg2Symbol": "",
+      "putLeg1Symbol": "",
+      "putLeg2Symbol": "",
+      "nextEntryTimestamp": {
+        "seconds": 1731423540,
+        "nanos": 0
+      },
+      "nextEndOfDayCloseTimestamp": null,
+      "userMessage": "Strategy waiting to submit entry order at: 11/12/2024 2:59:00 PM +00:00",
+      "strategySettings": data.strategySettings
     })
 
     return new HttpResponse(JSON.stringify({
@@ -445,7 +457,18 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
       "callLeg1StreamerSymbol": "",
       "callLeg2StreamerSymbol": "",
       "putLeg1StreamerSymbol": "",
-      "putLeg2StreamerSymbol": ""
+      "putLeg2StreamerSymbol": "",
+      "callLeg1Symbol": "",
+      "callLeg2Symbol": "",
+      "putLeg1Symbol": "",
+      "putLeg2Symbol": "",
+      "nextEntryTimestamp": {
+        "seconds": 1731423540,
+        "nanos": 0
+      },
+      "nextEndOfDayCloseTimestamp": null,
+      "userMessage": "Strategy waiting to submit entry order at: 11/12/2024 2:59:00 PM +00:00",
+      "strategySettings": data.strategySettings
     }), {
       status: 200,
       headers: {

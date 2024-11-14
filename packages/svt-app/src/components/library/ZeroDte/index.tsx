@@ -15,6 +15,7 @@ import { v4 as uuid } from "uuid";
 import {
   ExchangeAccount,
   IvlRiskTolerance,
+  StrategySettings,
   SvtIvlEsStrategySetStatus,
   TastytradeAccountConnect,
   useCreateZeroDteStrategy,
@@ -101,6 +102,7 @@ export default function ZeroDte() {
   } as SvtIvlEsStrategySetStatus);
 
   const [fifoFeedOption, setFifoFeedOption] = useState("SP 500");
+  const [currentStrategySettings, setCurrentStrategySettings] = useState<StrategySettings>();
   const [tradeSymbolOption, setTradeSymbolOption] = useState("SPX");
   const qty = tradeSymbolOption === "SPX" ? 1 : 100;
   const [positionTableData, setPositionTableData] = useState<IPositionTableRow[]>([]);
@@ -237,7 +239,7 @@ export default function ZeroDte() {
 
   const handleSettingsClicked = useCallback(() => {
     setConfiguring(true);
-    setActiveStep(0);
+    setActiveStep(2);
   }, []);
 
   useEffect(() => {
@@ -270,6 +272,10 @@ export default function ZeroDte() {
         tradeSymbol: listItem.masterSymbol,
         entryOrderStatus: listItem.entryOrderStatus,
         targetOrderStatus: listItem.targetOrderStatus,
+        strategySetting: listItem.strategySettings,
+        nextEntryTimestamp: listItem.nextEntryTimestamp,
+        nextEndOfDayCloseTimestamp: listItem.nextEndOfDayCloseTimestamp,
+        userMessage: listItem.userMessage,
       }));
       setPositionTableData(newItems);
 
@@ -290,6 +296,10 @@ export default function ZeroDte() {
           ...strategyAccountConnectState,
           accountNumber: newItems[0].account,
         });
+        setAutomationRunning(newItems[0].status === "Running");
+      }
+
+      if (activeStep === 2 && newItems.length) {
         setAutomationRunning(newItems[0].status === "Running");
       }
       setMutating(false);
@@ -515,6 +525,7 @@ export default function ZeroDte() {
     createZeroDteStrategy.mutate({
       active: true,
       exchangeAccountNumber: strategyAccountConnectState.accountNumber,
+      strategySettings: currentStrategySettings!
     });
 
     setConfiguring(false);
@@ -531,6 +542,18 @@ export default function ZeroDte() {
       },
     ]);
   };
+
+  const getExistedStrategy = React.useMemo(() => {
+    if (!positionTableData || positionTableData.length === 0) {
+      return null;
+    }
+
+    return positionTableData.find(x =>
+      x.account === strategyAccountConnectState.accountNumber
+      && x.tradeSymbol === tradeSymbolOption
+    )?.strategySetting;
+
+  }, [positionTableData, strategyAccountConnectState.accountNumber, tradeSymbolOption]);
 
   const onDeleteStrategy = (row: IPositionTableRow) => {
     setMutating(true);
@@ -567,6 +590,11 @@ export default function ZeroDte() {
       tradeSymbol: encodeURIComponent(row.tradeSymbol),
     });
   };
+
+  const onEditStrategy = (row: IPositionTableRow) => {
+    handleSettingsClicked();
+  };
+
   return (
     <>
       <div className="stepperStyling">
@@ -578,7 +606,7 @@ export default function ZeroDte() {
                 isAccountNumberValid() &&
                 state.loginSubmitted &&
                 state.accountSelectionSubmitted &&
-                !configuring
+                (!configuring || positionTableData.length > 0)
                   ? "green"
                   : "red",
             }}
@@ -589,7 +617,7 @@ export default function ZeroDte() {
             isAccountNumberValid() &&
             state.loginSubmitted &&
             state.accountSelectionSubmitted &&
-            !configuring
+            (!configuring || positionTableData.length > 0)
               ? "connected"
               : "disconnected"}{" "}
           </span>
@@ -671,6 +699,8 @@ export default function ZeroDte() {
                     state={exchangeAccountState}
                     refreshAccount={getAccountList}
                     handleStatusUpdate={enableNext}
+                    onSettingStrategyChanged={setCurrentStrategySettings}
+                    existedStrategy={getExistedStrategy}
                   />
                 )}
                 {!configuring && (
@@ -678,6 +708,7 @@ export default function ZeroDte() {
                     onDeleteStrategy={onDeleteStrategy}
                     onStopStrategy={onStopStrategy}
                     onStartStrategy={onStartStrategy}
+                    onEditStrategy={onEditStrategy}
                     onForceExitStrategy={onForceExitStrategy}
                     onAddStrategy={() => {
                       setActiveStep(1);
@@ -716,7 +747,7 @@ export default function ZeroDte() {
                         onClick={onAddStrategy}
                         disabled={!enabled || mutating}
                         sx={{ mr: 1 }}>
-                        Add Strategy
+                        {positionTableData.length > 0 ? "Update Strategy" : "Add Strategy"}
                       </Button>
                     ) : (
                       <Button
