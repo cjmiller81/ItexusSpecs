@@ -28,7 +28,7 @@ export default function UserDetailsSection({
     { field: "avgPrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
   ];
   const orderColumns = [
-    { field: "lastTimeUpdate", headerName: "Last Time Update", width: 110 },
+    { field: "lastTimeUpdate", headerName: t("LastTimeUpdate", { ns: "UserDetailsSection" }), width: 110 },
     { field: "symbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 60 },
     { field: "optionLeg", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 130 },
     { field: "side", headerName: t("Side", { ns: "UserDetailsSection" }), width: 100 },
