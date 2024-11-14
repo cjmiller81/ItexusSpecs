@@ -168,8 +168,13 @@
     "OpenPositions": "Open Positions",
     "OpenPANDL": "Open P&L",
     "AccountBalance": "Account Balance :",
-    "OptionLeg":"Option Leg",
-    "Side":"Side"
+    "OptionLeg": "Option Leg",
+    "Side": "Side",
+    "FilledQTY": "Filled QTY",
+    "SellToClose": "SellToClose",
+    "BuyToClose": "BuyToClose",
+    "BuyingPowerError":  "Your account does not have sufficient buying power available for this order. Please deposit funds or reduce the order size to place this"
+
 
   }
 }

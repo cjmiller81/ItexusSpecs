@@ -1,4 +1,4 @@
-import { BottomNavigation, BottomNavigationAction, Typography } from "@mui/material";
+import { BottomNavigation, BottomNavigationAction, Typography, Tooltip } from "@mui/material";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
@@ -27,6 +27,46 @@ export default function UserDetailsSection({
     { field: "qty", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
     { field: "avgPrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
   ];
+  const orderColumns = [
+    { field: "lastTimeUpdate", headerName: "Last Time Update", width: 110 },
+    { field: "symbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 60 },
+    { field: "optionLeg", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 130 },
+    { field: "side", headerName: t("Side", { ns: "UserDetailsSection" }), width: 100 },
+    { field: "qty", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 50 },
+    { field: "filledQTY", headerName: t("FilledQTY", { ns: "UserDetailsSection" }), width: 68 },
+    { field: "avgPrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 68 },
+    { field: "id", headerName: t("Id", { ns: "ColumnsDefs" }), width: 65 },
+    { field: "status", headerName: t("Status", { ns: "ColumnsDefs" }), width: 73 },
+    {
+      field: "error",
+      headerName: t("Error", { ns: "ColumnsDefs" }),
+      width: 130,
+      renderCell: params => {
+        const { error } = params.row;
+        return (
+          <Tooltip
+            title={
+              error ? (
+                <Typography
+                  sx={{
+                    fontSize: "12px",
+                    backgroundColor: "#FFBF00",
+                    color: "black",
+                    width: "auto",
+                  }}>
+                  {error}
+                </Typography>
+              ) : (
+                ""
+              )
+            }
+            placement="left">
+            {params.value}
+          </Tooltip>
+        );
+      },
+    },
+  ];
 
   const rows = [
     {
@@ -46,6 +86,113 @@ export default function UserDetailsSection({
       side: "Short",
       qty: 2,
       avgPrice: 12.55,
+    },
+  ];
+
+  const orderRows = [
+    {
+      rowId: 10,
+      lastTimeUpdate: "2024-10-22 9:33",
+      symbol: "/ESZ4",
+      optionLeg: "241206P4400",
+      side: t("BuyToClose", { ns: "UserDetailsSection" }),
+      qty: 2,
+      filledQTY: 0,
+      avgPrice: 0,
+      id: 147919,
+      status: "Working",
+      error: "",
+    },
+    {
+      rowId: 20,
+      lastTimeUpdate: "2024-10-22 9:33",
+      symbol: "/ESZ4",
+      optionLeg: "241206C6400",
+      side: t("SellToClose", { ns: "UserDetailsSection" }),
+      qty: 2,
+      filledQTY: 0,
+      avgPrice: 0,
+      id: 147919,
+      status: "Working",
+      error: "",
+    },
+    {
+      rowId: 30,
+      lastTimeUpdate: "2024-10-22 9:32",
+      symbol: "SPX",
+      optionLeg: "241115C05735000",
+      side: t("BuyToClose", { ns: "UserDetailsSection" }),
+      qty: 1,
+      filledQTY: 1,
+      avgPrice: 2.53,
+      id: 152876,
+      status: "Filled",
+      error: "",
+    },
+    {
+      rowId: 40,
+      lastTimeUpdate: "2024-10-22 9:32",
+      symbol: "SPX",
+      optionLeg: "241115P05715000",
+      side: t("SellToClose", { ns: "UserDetailsSection" }),
+      qty: 1,
+      filledQTY: 1,
+      avgPrice: 0.01,
+      id: 152876,
+      status: "Filled",
+      error: "",
+    },
+    {
+      rowId: 50,
+      lastTimeUpdate: "2024-10-22 8:30",
+      symbol: "SPX",
+      optionLeg: "241115C05735000",
+      side: t("BuyToClose", { ns: "UserDetailsSection" }),
+      qty: 1,
+      filledQTY: 0,
+      avgPrice: 0,
+      id: 152874,
+      status: "Canceled",
+      error: "",
+    },
+    {
+      rowId: 60,
+      lastTimeUpdate: "2024-10-22 8:30",
+      symbol: "SPX",
+      optionLeg: "241115P05715000",
+      side: t("SellToClose", { ns: "UserDetailsSection" }),
+      qty: 1,
+      filledQTY: 0,
+      avgPrice: 0,
+      id: 152874,
+      status: "Canceled",
+      error: "",
+    },
+    {
+      rowId: 70,
+      lastTimeUpdate: "2024-10-22 8:10",
+      symbol: "/ESZ4",
+      optionLeg: "241206C6350",
+      side: t("BuyToClose", { ns: "UserDetailsSection" }),
+      qty: 2,
+      filledQTY: 0,
+      avgPrice: 0,
+      id: 150450,
+      status: "Error",
+      error: t("BuyingPowerError", { ns: "UserDetailsSection" }),
+    },
+    {
+      rowId: 80,
+      lastTimeUpdate: "2024-10-22 8:10",
+      symbol: "/ESZ4",
+      optionLeg: "241206P4400",
+      side: t("BuyToClose", { ns: "UserDetailsSection" }),
+      qty: 2,
+      filledQTY: 0,
+      avgPrice: 0,
+      id: 150450,
+      status: "Error",
+      error: t("BuyingPowerError", { ns: "UserDetailsSection" }),
     },
   ];
 
@@ -111,16 +258,31 @@ export default function UserDetailsSection({
         {t("AccountBalance")} $350,000
       </Typography>
 
-      <Box sx={{ height: "auto", width: "90%", marginLeft: "15px" }}>
+      <Box sx={{ height: "auto", width: "95%", marginLeft: "15px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("OpenPositions")}</Typography>
         <DataGrid
           slots={{
             footer: () => <></>,
           }}
-          sx={{ marginTop: "10px", height: "162px" }}
+          sx={{ marginTop: "10px", height: "auto" }}
           rows={rows}
           columns={columns}
           getRowId={row => row.id}
+          rowHeight={45}
+        />
+      </Box>
+
+      <Box sx={{ height: "auto", width: "95%", marginLeft: "15px" }}>
+        <Typography sx={{ marginTop: "20px" }}>{t("Orders", { ns: "UserDetailsSection" })}</Typography>
+        <DataGrid
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={{ marginTop: "10px", height: "440px", width: "100%" }}
+          rows={orderRows}
+          columns={orderColumns}
+          rowHeight={45}
+          getRowId={row => row.rowId}
         />
       </Box>
     </Box>
