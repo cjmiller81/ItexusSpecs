@@ -7,10 +7,11 @@ import CalendarEventTile from "./CalendarEventTile";
 import { CalendarEvent, CategoriesResponse, Coin } from "./eventsResponseModel";
 import { useGetCategoriesQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { ClearIcon } from "@mui/x-date-pickers";
+import { ClearIcon, DateCalendar } from "@mui/x-date-pickers";
 import { CustomDateSelector } from "./CustomDateSelector";
 import { CoinsLookupVirtualized, OnFetchResponse } from "components";
 import { CoinsLookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
+import moment from "moment";
 
 const CryptoCalendar = ({
   loading,
@@ -27,8 +28,8 @@ const CryptoCalendar = ({
   title: string;
   icon: React.ReactNode;
   calendarData: CalendarEvent[];
-  setSelectedDate: (date: Date) => void;
-  selectedDate: Date;
+  setSelectedDate: (dateRange: [Date, Date]) => void;
+  selectedDate: [Date, Date];
   sx?: object;
 }) => {
   const { t } = useTranslation(["CryptoCalendar", "Common"]);
@@ -55,7 +56,7 @@ const CryptoCalendar = ({
     setSelectedCoins(value);
   };
 
-  const getRenderValue = selected => {
+  const getRenderValue = (selected: string[]) => {
     if (selected.length === 0) {
       return t("Category");
     }
@@ -64,12 +65,19 @@ const CryptoCalendar = ({
       return selectedCategory ? selectedCategory.name : "";
     } else return `${selected.length} ${t("Selected", { ns: "Common" })}`;
   };
+
   const handleCategorySelect = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;
     setSelectedCategories(typeof value === "string" ? value.split(",") : value);
   };
-
+  console.log(calendarData);
   const filteredEvents = calendarData.filter(event => {
+    const eventDate = moment(event.date_event).startOf("day");
+
+    const isWithinDateRange =
+      !selectedDate ||
+      (eventDate.isSameOrAfter(selectedDate[0], "day") && eventDate.isSameOrBefore(selectedDate[1], "day"));
+
     const matchesCategory =
       selectedCategories.length === 0 ||
       event.categories.some(category => selectedCategories.includes(category.id.toString()));
@@ -77,7 +85,7 @@ const CryptoCalendar = ({
     const matchesCoin =
       selectedCoins.length === 0 || event.coins.some(coin => selectedCoins.map(c => c.id).includes(coin.id.toString()));
 
-    return matchesCategory && matchesCoin;
+    return isWithinDateRange && matchesCategory && matchesCoin;
   });
 
   const handleResetCategories = () => {
@@ -159,27 +167,43 @@ const CryptoCalendar = ({
         <SimpleBarStyled
           style={{ height: "548px" }}
           onScroll={handleScroll}>
-          <Grid
-            container
-            spacing={0}>
-            {filteredEvents.map((event, index) => (
-              <React.Fragment key={index}>
-                <Grid
-                  item
-                  xs={12}
-                  sm={12}
-                  sx={{ borderRadius: "0px" }}>
-                  <CalendarEventTile event={event} />
-                </Grid>
-                {index !== filteredEvents.length - 1 && (
-                  <Divider
-                    sx={{ width: "100%" }}
-                    variant="fullWidth"
-                  />
-                )}
-              </React.Fragment>
-            ))}
-          </Grid>
+          {filteredEvents.length > 0 ? (
+            <Grid
+              container
+              spacing={0}>
+              {filteredEvents.map((event, index) => (
+                <React.Fragment key={index}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    sx={{ borderRadius: "0px" }}>
+                    <CalendarEventTile event={event} />
+                  </Grid>
+                  {index !== filteredEvents.length - 1 && (
+                    <Divider
+                      sx={{ width: "100%" }}
+                      variant="fullWidth"
+                    />
+                  )}
+                </React.Fragment>
+              ))}
+            </Grid>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "190px",
+                marginLeft: "15px",
+                marginRight: "10px",
+
+                fontSize: "22px",
+              }}>
+              No More Сurrent Events for this Date
+            </Box>
+          )}
         </SimpleBarStyled>
 
         <Divider
