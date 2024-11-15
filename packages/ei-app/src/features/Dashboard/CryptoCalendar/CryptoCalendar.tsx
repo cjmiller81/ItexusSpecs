@@ -70,13 +70,13 @@ const CryptoCalendar = ({
     const value = event.target.value;
     setSelectedCategories(typeof value === "string" ? value.split(",") : value);
   };
-  console.log(calendarData);
   const filteredEvents = calendarData.filter(event => {
     const eventDate = moment(event.date_event).startOf("day");
 
     const isWithinDateRange =
-      !selectedDate ||
-      (eventDate.isSameOrAfter(selectedDate[0], "day") && eventDate.isSameOrBefore(selectedDate[1], "day"));
+      selectedDate &&
+      eventDate.isSameOrAfter(selectedDate[0], "day") &&
+      eventDate.isSameOrBefore(selectedDate[1], "day");
 
     const matchesCategory =
       selectedCategories.length === 0 ||
@@ -201,7 +201,7 @@ const CryptoCalendar = ({
 
                 fontSize: "22px",
               }}>
-              No More Сurrent Events for this Date
+              {t("NoMoreСurrentEventsForThisDate", { ns: "CryptoCalendar" })}
             </Box>
           )}
         </SimpleBarStyled>
