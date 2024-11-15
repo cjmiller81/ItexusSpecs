@@ -104,20 +104,6 @@ export function getColumns(
         return "";
       },
     },
-    {
-      field: "botStatus",
-      headerName: i18next.t("Errors", { ns: "ColumnsDefs" }),
-      minWidth: 90,
-      editable: true,
-      type: "string",
-      flex: 0,
-      cellClassName: (param: GridCellParams<GridValidRowModel>) => {
-        return param.value === "error" ? "dark-yellow" : "";
-      },
-      renderCell: (param: GridCellParams<GridValidRowModel>) => {
-        return param.value === "error" ? <span>{i18next.t("Errors", { ns: "ColumnsDefs" })}</span> : null;
-      },
-    },
   ];
 
   return columns;
