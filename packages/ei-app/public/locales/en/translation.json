@@ -314,7 +314,8 @@
     "NoEventsAvailable": "No events available on this date",
     "ReadMore": "Read More >",
     "Categories": "Categories",
-    "Coins": "Coins"
+    "Coins": "Coins",
+    "NoMoreСurrentEventsForThisDate": "No More Сurrent Events for this Date"
 
   },
   "Vaults": {
