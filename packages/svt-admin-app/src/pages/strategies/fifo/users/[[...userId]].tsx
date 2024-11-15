@@ -131,70 +131,72 @@ export default function Reports() {
   };
 
   return (
-    <StyledRoot
-      sx={{
-        padding: 0,
-        "& .red": {
-          backgroundColor: "red",
-          color: "white",
-          fontWeight: 600,
-        },
-        "& .dark-yellow": {
-          backgroundColor: "#FDDA0D",
-          color: "black",
-          fontWeight: 600,
-        },
-        "& .selected-row": {
-          backgroundColor: theme.palette.mode === "dark" ? "#6f7171" : "#d4d4d4",
-        },
-      }}>
-      <DataGrid<IFifoUser>
-        slots={{
-          footer: () => <></>,
-        }}
-        rowSelection={false}
-        checkboxSelection={false}
-        sx={tableSx}
-        rows={fifoUsers}
-        columns={columns}
-        editMode="row"
-        getRowId={row => row.id}
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={handleRowModesModelChange}
-        onRowEditStop={handleRowEditStop}
-        processRowUpdate={processRowUpdate}
-        getRowClassName={params => (params.id === selectedRow ? "selected-row" : "")}
-      />
-
-      {currentUser && (
-        <StyledDrawer
-          anchor="right"
-          variant="permanent"
-          sx={{
-            "& .MuiDrawer-paper": {
-              overflowY: rightBarOpen ? "auto" : "hidden",
-            },
+    <Box>
+      <StyledRoot
+        sx={{
+          padding: 0,
+          "& .red": {
+            backgroundColor: "red",
+            color: "white",
+            fontWeight: 600,
+          },
+          "& .dark-yellow": {
+            backgroundColor: "#FDDA0D",
+            color: "black",
+            fontWeight: 600,
+          },
+          "& .selected-row": {
+            backgroundColor: theme.palette.mode === "dark" ? "#6f7171" : "#d4d4d4",
+          },
+        }}>
+        <DataGrid<IFifoUser>
+          slots={{
+            footer: () => <></>,
           }}
-          open={rightBarOpen}>
-          <DrawerHeader sx={{ marginTop: 2 }}>
-            <IconButton
-              sx={{ mt: "60px", ml: "-10px" }}
-              onClick={onToggleSideBar}>
-              {rightBarOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
-          </DrawerHeader>
-          {userDetails && currentUser && (
-            <UserDetailsSection
-              theme={theme}
-              opened={rightBarOpen}
-              sx={{ padding: 2, paddingLeft: () => (rightBarOpen ? "auto" : "50px") }}
-              {...userDetails}
-              user={currentUser}
-            />
-          )}
-        </StyledDrawer>
-      )}
-    </StyledRoot>
+          rowSelection={false}
+          checkboxSelection={false}
+          sx={tableSx}
+          rows={fifoUsers}
+          columns={columns}
+          editMode="row"
+          getRowId={row => row.id}
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          getRowClassName={params => (params.id === selectedRow ? "selected-row" : "")}
+        />
+
+        {currentUser && (
+          <StyledDrawer
+            anchor="right"
+            variant="permanent"
+            sx={{
+              "& .MuiDrawer-paper": {
+                overflowY: rightBarOpen ? "auto" : "hidden",
+              },
+            }}
+            open={rightBarOpen}>
+            <DrawerHeader sx={{ marginTop: 2 }}>
+              <IconButton
+                sx={{ mt: "60px", ml: "-10px" }}
+                onClick={onToggleSideBar}>
+                {rightBarOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+              </IconButton>
+            </DrawerHeader>
+            {userDetails && currentUser && (
+              <UserDetailsSection
+                theme={theme}
+                opened={rightBarOpen}
+                sx={{ padding: 2, paddingLeft: () => (rightBarOpen ? "auto" : "50px") }}
+                {...userDetails}
+                user={currentUser}
+              />
+            )}
+          </StyledDrawer>
+        )}
+      </StyledRoot>
+    </Box>
   );
 }
 
