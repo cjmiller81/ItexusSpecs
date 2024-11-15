@@ -1,6 +1,6 @@
-import { CssBaseline } from "@mui/material"
-import Box from "@mui/material/Box"
-import { styled } from "@mui/material/styles"
+import { CssBaseline } from "@mui/material";
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
 import {
   Header,
   Sidebar,
@@ -10,18 +10,19 @@ import {
   useAppDispatch,
   useAppSelector,
   useOry,
-} from "components"
-import { useTranslation } from "react-i18next"
-import "react-toastify/dist/ReactToastify.css"
+} from "components";
+import { useTranslation } from "react-i18next";
+import "react-toastify/dist/ReactToastify.css";
+
 interface Props {
-  children: any
+  children: any;
 }
 
 export default function Layout({ children }: Props) {
-  const { sidebarOpened, mode } = useAppSelector(store => store.ui)
-  const dispatch = useAppDispatch()
-  const { session, logOut } = useOry()
-  const { t } = useTranslation("Header")
+  const { sidebarOpened, mode } = useAppSelector(store => store.ui);
+  const dispatch = useAppDispatch();
+  const { session, logOut } = useOry();
+  const { t } = useTranslation("Header");
 
   return (
     <StyledRoot sx={{ width: "100%" }}>
@@ -33,7 +34,7 @@ export default function Layout({ children }: Props) {
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
-        title={t("ElanInsights")}
+        title={t("DarkPoolDashboard")}
       />
       <Sidebar
         // TODO Add sidebar menu items here.
@@ -49,7 +50,7 @@ export default function Layout({ children }: Props) {
         {children}
       </Box>
     </StyledRoot>
-  )
+  );
 }
 
 const StyledRoot = styled(Box)(({ theme }) => ({
@@ -57,4 +58,4 @@ const StyledRoot = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     display: "inherit",
   },
-}))
+}));
