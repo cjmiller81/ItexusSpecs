@@ -172,7 +172,9 @@ export default function HeaderContent() {
 
           <MenuItem
             sx={{ padding: isMobile ? 0.6 : 1 }}
-            onClick={handleMenuClose}>
+            onClick={e => {
+              e.stopPropagation();
+            }}>
             <Profile />
           </MenuItem>
         </Box>
