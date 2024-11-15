@@ -89,6 +89,7 @@
     "Country": "Country",
     "Currency": "Currency",
     "CustomNameTag": "Custom Name Tag",
+    "CustomName": "Custom Name",
     "BankName": "Bank Name",
     "AccountType": "Account Type",
     "AccountNumber": "Account Number",
@@ -105,7 +106,17 @@
     "ThroughYourMachine": "through your machine",
     "UploadedFiles": "Uploaded Files",
     "Submit": "Submit",
-    "UploadBankStatement": "Upload Bank Statement"
+    "UploadBankStatement": "Upload Bank Statement",
+    "CustomNameIsRequired": "Custom Name is required",
+    "AccountTypeIsRequired": "Account Type is required",
+    "CountryIsRequired": "Country is required",
+    "CurrencyIsRequired": "Currency is required",
+    "AccountHolderNameIsRequired": "Account Holder Name is required",
+    "BankNameIsRequired": "Bank Name is required",
+    "NameOfBankAccount": "Name Of Bank Account",
+    "AccountNumberIsRequired": "Account Number is required",
+    "RoutingNumberIsRequired": "Routing Number is required",
+    "BICSWIFTCodeIsRequired": "BIC/SWIFT Code is required for non-USA countries"
   },
   "ManageCryptoAddresses": {
     "ManageCryptoAddressTitle": "Manage Crypto Addresses",

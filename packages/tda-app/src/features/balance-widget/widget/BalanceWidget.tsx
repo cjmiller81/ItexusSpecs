@@ -5,7 +5,6 @@ import { CustomerBalanceModel } from "../BalanceModel";
 import { cryptoCoinsColumns } from "../cryptoCoinsColumns";
 import DenseTable from "../DenseTable";
 import { TableHeader } from "./TableHeader";
-import { TableSecondary } from "./TableSecondary";
 import { Stack } from "@mui/system";
 import { fiatCoinsColumns } from "features/balance-widget/fiatCoinsColumns";
 
@@ -46,13 +45,6 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
             title={t("CryptoBalances")}
           />
         }
-        secondary={
-          <TableSecondary
-            data={cryptoCurrencies}
-            fileName="crypto.csv"
-            columns={cryptoCoinsColumns}
-          />
-        }
         columns={cryptoCoinsColumns}
         data={cryptoCurrencies}
       />
@@ -62,13 +54,6 @@ const BalanceWidget: FC<BalanceWidgetProps> = ({
         isOpen={fiatOpen}
         columns={fiatCoinsColumns}
         data={fiatCurrencies}
-        secondary={
-          <TableSecondary
-            data={fiatCurrencies}
-            fileName="fiat.csv"
-            columns={fiatCoinsColumns}
-          />
-        }
         title={
           <TableHeader
             open={fiatOpen}
