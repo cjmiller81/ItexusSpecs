@@ -80,14 +80,14 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
 
   return (
     <Stack
-      sx={{ p: 1.5, pt: 0.5, ...sx }}
+      sx={{ p: 1.3, pt: 0.5, ...sx }}
       {...props}>
       <Stack
         direction={"row"}
         alignItems={"center"}
         spacing={1}>
         <ImageSlider
-          style={{ width: "28px", minWidth: "28px", height: "28px" }}
+          style={{ width: "25px", minWidth: "25px", height: "25px" }}
           imageUrls={imagesUrls}
         />
         <HtmlTooltip
@@ -161,7 +161,7 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
           <IconButton onClick={handleOpenCalendarMenuClick}>
             <CalendarMonthIcon
               color={"primary"}
-              sx={{ width: "20px", height: "20px", cursor: "pointer" }}></CalendarMonthIcon>
+              sx={{ width: "19px", height: "19px", cursor: "pointer", marginLeft: "-11px" }}></CalendarMonthIcon>
           </IconButton>
           <Menu
             anchorEl={anchorEl}
@@ -203,7 +203,7 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
           </Menu>
           <ScheduleIcon
             color={"primary"}
-            sx={{ width: "20px", height: "20px", cursor: "pointer" }}></ScheduleIcon>
+            sx={{ width: "19px", height: "19px", cursor: "pointer", marginLeft: "-11px" }}></ScheduleIcon>
         </Stack>
       </Stack>
 
