@@ -14,7 +14,6 @@ export const getIndexResultTableColumns = (): GridColDef<InvestingTableAsset>[] 
       sortable: false,
       editable: false,
       filterable: false,
-      maxWidth: 70,
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<InvestingTableAsset, any, any>) => (
@@ -34,7 +33,6 @@ export const getIndexResultTableColumns = (): GridColDef<InvestingTableAsset>[] 
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      maxWidth: 100,
       valueGetter: params => {
         if (!params.row.price) return "--";
         return params.row.qty.toLocaleString("en-US", {
