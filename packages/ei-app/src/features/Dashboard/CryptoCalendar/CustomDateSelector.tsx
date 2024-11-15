@@ -33,8 +33,8 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
       setIsPopoverOpen(false);
     } else {
       setAnchorPosition({
-        top: rect.top + window.scrollY - 320,
-        left: rect.left + window.scrollX - 64,
+        top: rect.top + window.scrollY - 338,
+        left: rect.left + window.scrollX - 65,
       });
       setIsPopoverOpen(true);
     }
@@ -63,14 +63,6 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
     let newStartDate, newEndDate;
     const currentDate = moment().startOf("day");
     switch (preset) {
-      case "today":
-        newStartDate = moment().startOf("day");
-        newEndDate = currentDate.endOf("day");
-        break;
-      case "tomorrow":
-        newStartDate = moment().startOf("day").add(1, "days").startOf("day");
-        newEndDate = currentDate.add(1, "days").endOf("day");
-        break;
       case "next7":
         newStartDate = moment().startOf("day");
         newEndDate = currentDate.add(7, "days").endOf("day");
@@ -100,11 +92,21 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
         alignItems="center">
         <Typography
           variant="body2"
-          sx={{ cursor: "pointer", height: "20px" }}
+          sx={{
+            cursor: "pointer",
+            height: "20px",
+            padding: "1px 4px",
+            border: "1px solid",
+            borderRadius: "4px",
+            borderColor: "gray",
+            display: "inline-block",
+          }}
           onClick={handleOpenPopover}>
-          {startDate && endDate
+          {startDate && endDate && !startDate.isSame(endDate, "day")
             ? `${moment(startDate).format("MM/DD/YYYY")} - ${moment(endDate).format("MM/DD/YYYY")}`
-            : t("SelectDateRange")}
+            : startDate
+              ? moment(startDate).format("MM/DD/YYYY")
+              : t("SelectDateRange")}
         </Typography>
 
         {anchorPosition && isPopoverOpen && (
@@ -114,9 +116,28 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
               position: "absolute",
               top: anchorPosition.top,
               left: anchorPosition.left,
-              width: "245px",
               bgcolor: "background.paper",
+              border: "1px solid",
+              borderRadius: "30px",
               p: 1,
+              width: "220px",
+              "@media (max-width: 600px)": {
+                width: "88.8%",
+                left: window.scrollX + 23,
+              },
+              "@media (min-width: 601px) and (max-width: 960px)": {
+                width: "94.5%",
+                left: window.scrollX + 23,
+              },
+              "@media (min-width: 961px)": {
+                width: "14.6%",
+                left: "83.7%",
+              },
+              "@media (min-width: 3820px)": {
+                width: "16.1%",
+                left: "91.5%",
+                transform: "translateX(-50%)",
+              },
             }}>
             <Box
               sx={{
@@ -126,25 +147,13 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
               }}>
               <Typography
                 variant="body2"
-                sx={{ cursor: "pointer" }}
-                onClick={() => handlePresetClick("today")}>
-                {t("Today")}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ cursor: "pointer" }}
-                onClick={() => handlePresetClick("tomorrow")}>
-                {t("Tomorrow")}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ cursor: "pointer" }}
+                sx={{ cursor: "pointer", paddingLeft: "20px", color: "#03A9F4" }}
                 onClick={() => handlePresetClick("next7")}>
                 {t("Next7days")}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ cursor: "pointer" }}
+                sx={{ cursor: "pointer", paddingRight: "20px", color: "#03A9F4" }}
                 onClick={() => handlePresetClick("next30")}>
                 {t("Next 30 days")}
               </Typography>
@@ -157,8 +166,8 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
               onChange={handleDateChange}
               shouldDisableDate={disablePastDates}
               sx={{
-                width: "240px",
                 maxHeight: "290px",
+                width: "98%",
                 "& .MuiPickersDay-root.Mui-disabled": {
                   textDecoration: "line-through",
                 },
