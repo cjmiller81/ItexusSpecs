@@ -31,6 +31,8 @@ import { fetchWallets } from "components";
 import { useAppDispatch } from "@/libs/redux/Store";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
+import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
+import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -47,6 +49,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
   const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
   const [filteredWalletData, setFilteredWalletData] = useState<WalletBalance[]>([]);
+  const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
 
   const handleClearTable = () => {
     setSelectedWallet("");
@@ -113,22 +116,9 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
             <Typography
               variant="h6"
               component="div"
-              sx={{ alignSelf: "flex-start", fontSize: "14px" }}>
+              sx={{ alignSelf: "flex-start", fontSize: "14px", paddingTop: "12px" }}>
               {t("CurrentPosition")}
             </Typography>
-            <Select
-              displayEmpty
-              value=""
-              onChange={(event: SelectChangeEvent) => {}}
-              renderValue={() => <Typography sx={{ color: "white" }}>{t("AddSavedPosition")}</Typography>}
-              sx={{
-                backgroundColor: "success.main",
-                color: "white",
-                width: "98%",
-                maxHeight: "40px",
-                "& .MuiSelect-icon": { color: "white" },
-              }}
-            />
             <Select
               displayEmpty
               value={selectedWallet}
@@ -182,9 +172,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
             <WalletsTable
               sx={{
                 ...tableScrollSx,
-                "& .MuiDataGrid-cell": {
-                  padding: "4px 7px",
-                },
+                width: "100%",
               }}
               hideFooter
               rowSelection={false}
@@ -238,35 +226,64 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
           <Typography
             variant="h6"
             component="div"
-            sx={{ alignSelf: "flex-start", fontSize: "14px", marginBottom: "8px" }}>
+            sx={{
+              alignSelf: "flex-start",
+              fontSize: "14px",
+              marginBottom: "13px",
+              paddingLeft: "10px",
+              paddingTop: "4px",
+            }}>
             {t("RebalancedIndexQuantities")}
           </Typography>
-          <StyledWalletsTable
+          <Box
             sx={{
-              ...tableScrollSx,
-              maxWidth: 180,
-              "& .MuiDataGrid-cell": {
-                padding: "4px 7px",
-                alignSelf: "flex-end",
-              },
-            }}
-            hideFooter
-            rowSelection={false}
-            checkboxSelection={false}
-            apiRef={apiRef}
-            getRowId={x => x.id}
-            columns={getIndexResultTableColumns()}
-            rows={tableAssets}
-          />
+              paddingLeft: "15px",
+              paddingRight: "15px",
+              width: "100%",
+            }}>
+            <StyledWalletsTable
+              sx={{
+                ...tableScrollSx,
+              }}
+              hideFooter
+              rowSelection={false}
+              checkboxSelection={false}
+              apiRef={apiRef}
+              getRowId={x => x.id}
+              columns={getIndexResultTableColumns()}
+              rows={tableAssets}
+            />
+          </Box>
         </MiddleContainer>
 
         <RightContainer>
           <Typography
             variant="h6"
             component="div"
-            sx={{ alignSelf: "flex-start", fontSize: "14px" }}>
+            sx={{ alignSelf: "flex-start", fontSize: "14px", paddingLeft: "10px", paddingTop: "4px" }}>
             {t("PositionAllocationUpdates")}
           </Typography>
+
+          <Box
+            sx={{
+              paddingTop: "12px",
+              paddingLeft: "15px",
+              paddingRight: "15px",
+              width: "72%",
+            }}>
+            <StyledWalletsTable
+              sx={{
+                ...tableScrollSx,
+              }}
+              hideFooter
+              rowSelection={false}
+              checkboxSelection={false}
+              apiRef={apiRef}
+              getRowId={x => x.id}
+              columns={getIndexPositionTableColumns()}
+              rows={positionRows}
+            />
+          </Box>
         </RightContainer>
       </MainContainer>
     </AppAccordionSection>
@@ -284,7 +301,7 @@ const LeftContainer = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   alignItems: "center",
   boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  width: "36%",
+  width: "34%",
   borderRadius: "10px",
   padding: theme.spacing(2),
   [theme.breakpoints.down("sm")]: {
@@ -297,18 +314,24 @@ const LeftColumn = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(2),
-  width: "55%",
-  marginTop: "-49px",
+  width: "51%",
+  marginTop: "-128px",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
 }));
 
 const RightColumn = styled(Box)(({ theme }) => ({
-  width: "45%",
+  width: "49%",
   paddingLeft: 1,
-  marginTop: "15px",
+  marginTop: "25px",
+  gap: theme.spacing(2),
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+  },
 }));
 
 const MainContainer = styled(Box)(({ theme }) => ({
-  gap: theme.spacing(2),
   display: "flex",
   width: "100%",
   [theme.breakpoints.down("sm")]: {
@@ -318,21 +341,28 @@ const MainContainer = styled(Box)(({ theme }) => ({
 }));
 
 const MiddleContainer = styled(Box)(({ theme }) => ({
-  width: "16%",
+  width: "18%",
   boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
   borderRadius: "10px",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    width: "100%",
+  },
 }));
 
 const RightContainer = styled(Box)(({ theme }) => ({
-  width: "44%",
+  width: "46%",
   boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
   borderRadius: "10px",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    width: "100%",
+  },
 }));
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
   minHeight: 300,
-  maxWidth: 180,
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
