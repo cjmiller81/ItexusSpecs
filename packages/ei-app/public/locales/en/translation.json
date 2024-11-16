@@ -258,7 +258,9 @@
     "WalletAddress": "Wallet Address",
     "PersonalPublic": "Personal/Public",
     "WalletName": "Wallet Name",
-    "FullyDilutedValuation": "Fully Diluted Valuation"
+    "FullyDilutedValuation": "Fully Diluted Valuation",
+    "Action": "Action",
+    "Connection": "Connection"
   },
   "SymbolLookup": {
     "Search": "Search"

@@ -13,7 +13,6 @@ export const getIndexResultWalletTableColumns = (): GridColDef<WalletBalance>[] 
       sortable: false,
       editable: false,
       filterable: false,
-      maxWidth: 70,
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<WalletBalance, any, any>) => (
@@ -33,7 +32,6 @@ export const getIndexResultWalletTableColumns = (): GridColDef<WalletBalance>[] 
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      maxWidth: 100,
       valueGetter: params => {
         if (!params.row.balance) return "--";
         return params.row.balance.toLocaleString("en-US", {
