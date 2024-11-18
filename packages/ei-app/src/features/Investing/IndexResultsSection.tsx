@@ -94,7 +94,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
         balance: parseFloat(newBalance),
       };
 
-      setFilteredRows([newRow, ...filteredWalletData]);
+      setFilteredRows(prevRows => [newRow, ...prevRows]);
 
       setNewToken("");
       setNewBalance("");

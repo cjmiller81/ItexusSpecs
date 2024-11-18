@@ -303,21 +303,12 @@
     "PublicEye": "Watched Public Wallet",
     "CompareToSymbol": "Leave Blank for Plot Only"
   },
-  "CustomDateSelector": {
-    "SelectDateRange": "Select Date Range",
-    "Today": "Today",
-    "Tomorrow": "Tomorrow",
-    "Next7days": "Next 7 days",
-    "Next30days": "Next 30 days"
-
-  },
   "CryptoCalendar": {
     "CryptoCalendarTitle": "Crypto Calendar:",
     "NoEventsAvailable": "No events available on this date",
     "ReadMore": "Read More >",
     "Categories": "Categories",
-    "Coins": "Coins",
-    "NoMoreСurrentEventsForThisDate": "No More Сurrent Events for this Date"
+    "Coins": "Coins"
 
   },
   "Vaults": {
