@@ -47,6 +47,7 @@ export const rfqApi = {
       User: item.User,
       ValidUntilTime: new Date(item.ValidUntilTime),
       BidPx: parseFloat(item.BidPx),
+      InternalText: item.InternalText,
     }));
 
     return parsedData;
