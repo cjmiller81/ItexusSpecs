@@ -1,8 +1,10 @@
 import { BottomNavigation, BottomNavigationAction, Typography, Tooltip } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { fetchExchangeAccounts, fetchUserDetails } from "../userDetailsSlice";
 
 export default function UserDetailsSection({
   opened,
@@ -15,30 +17,51 @@ export default function UserDetailsSection({
   theme,
   ...props
 }) {
-  const [navValue, setNavValue] = useState(0);
-  const pageLinks = ["5WX30651", "5WX30652", "5WX30653"];
+  const dispatch = useAppDispatch();
+  const { exchangeAccounts, userDetails } = useAppSelector(state => state.adminDetails);
+  const [navValue, setNavValue] = useState<number>(0);
   const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
 
+  useEffect(() => {
+    if (user.id) {
+      dispatch(fetchExchangeAccounts({ userId: user.id }));
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+  if (user.id && navValue >= 0 && exchangeAccounts?.exchangeAccountList_ && exchangeAccounts.exchangeAccountList_.length > 0) {
+      dispatch(fetchUserDetails({ userId: user.id, accountNumber: exchangeAccounts?.exchangeAccountList_[navValue].accountNumber }));
+    }
+  }, [dispatch, navValue, user.id, exchangeAccounts]);
+
+  const pageLinks = useMemo(() => {
+    if (exchangeAccounts) {
+        return exchangeAccounts.exchangeAccountList_?.map(x => x.accountNumber);
+    }
+
+    return [];
+}, [exchangeAccounts]);
+
   const columns = [
-    { field: "fillTime", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120 },
-    { field: "symbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
-    { field: "optionLeg", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120 },
-    { field: "side", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
-    { field: "qty", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
-    { field: "avgPrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
+    { field: "timestamp", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120 },
+    { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
+    { field: "marketSymbol", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120 },
+    { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
+    { field: "amount", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
+    { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
   ];
   const orderColumns = [
-    { field: "lastTimeUpdate", headerName: t("LastTimeUpdate", { ns: "UserDetailsSection" }), width: 110 },
-    { field: "symbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 60 },
+    { field: "timeLastUpdated", headerName: t("LastTimeUpdate", { ns: "UserDetailsSection" }), width: 110 },
+    { field: "marketSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 60 },
     { field: "optionLeg", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 130 },
-    { field: "side", headerName: t("Side", { ns: "UserDetailsSection" }), width: 100 },
-    { field: "qty", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 50 },
-    { field: "filledQTY", headerName: t("FilledQTY", { ns: "UserDetailsSection" }), width: 68 },
-    { field: "avgPrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 68 },
-    { field: "id", headerName: t("Id", { ns: "ColumnsDefs" }), width: 65 },
-    { field: "status", headerName: t("Status", { ns: "ColumnsDefs" }), width: 73 },
+    { field: "marketAssetType", headerName: t("Side", { ns: "UserDetailsSection" }), width: 100 },
+    { field: "qtyPlaced", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 50 },
+    { field: "qtyFilled", headerName: t("FilledQTY", { ns: "UserDetailsSection" }), width: 68 },
+    { field: "priceAverageFill", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 68 },
+    { field: "orderId", headerName: t("Id", { ns: "ColumnsDefs" }), width: 65 },
+    { field: "orderStatus", headerName: t("Status", { ns: "ColumnsDefs" }), width: 73 },
     {
-      field: "error",
+      field: "rejectReason",
       headerName: t("Error", { ns: "ColumnsDefs" }),
       width: 130,
       renderCell: params => {
@@ -62,134 +85,6 @@ export default function UserDetailsSection({
           </Tooltip>
         );
       },
-    },
-  ];
-
-  const rows = [
-    {
-      id: 1,
-      fillTime: "2024-10-22 9:32",
-      symbol: "/ESZ4",
-      optionLeg: "241206P4400",
-      side: "Short",
-      qty: 2,
-      avgPrice: 4.75,
-    },
-    {
-      id: 2,
-      fillTime: "2024-10-22 9:32",
-      symbol: "/ESZ4",
-      optionLeg: "241206C6400",
-      side: "Short",
-      qty: 2,
-      avgPrice: 12.55,
-    },
-  ];
-
-  const orderRows = [
-    {
-      rowId: 10,
-      lastTimeUpdate: "2024-10-22 9:33",
-      symbol: "/ESZ4",
-      optionLeg: "241206P4400",
-      side: t("BuyToClose", { ns: "UserDetailsSection" }),
-      qty: 2,
-      filledQTY: 0,
-      avgPrice: 0,
-      id: 147919,
-      status: "Working",
-      error: "",
-    },
-    {
-      rowId: 20,
-      lastTimeUpdate: "2024-10-22 9:33",
-      symbol: "/ESZ4",
-      optionLeg: "241206C6400",
-      side: t("SellToClose", { ns: "UserDetailsSection" }),
-      qty: 2,
-      filledQTY: 0,
-      avgPrice: 0,
-      id: 147919,
-      status: "Working",
-      error: "",
-    },
-    {
-      rowId: 30,
-      lastTimeUpdate: "2024-10-22 9:32",
-      symbol: "SPX",
-      optionLeg: "241115C05735000",
-      side: t("BuyToClose", { ns: "UserDetailsSection" }),
-      qty: 1,
-      filledQTY: 1,
-      avgPrice: 2.53,
-      id: 152876,
-      status: "Filled",
-      error: "",
-    },
-    {
-      rowId: 40,
-      lastTimeUpdate: "2024-10-22 9:32",
-      symbol: "SPX",
-      optionLeg: "241115P05715000",
-      side: t("SellToClose", { ns: "UserDetailsSection" }),
-      qty: 1,
-      filledQTY: 1,
-      avgPrice: 0.01,
-      id: 152876,
-      status: "Filled",
-      error: "",
-    },
-    {
-      rowId: 50,
-      lastTimeUpdate: "2024-10-22 8:30",
-      symbol: "SPX",
-      optionLeg: "241115C05735000",
-      side: t("BuyToClose", { ns: "UserDetailsSection" }),
-      qty: 1,
-      filledQTY: 0,
-      avgPrice: 0,
-      id: 152874,
-      status: "Canceled",
-      error: "",
-    },
-    {
-      rowId: 60,
-      lastTimeUpdate: "2024-10-22 8:30",
-      symbol: "SPX",
-      optionLeg: "241115P05715000",
-      side: t("SellToClose", { ns: "UserDetailsSection" }),
-      qty: 1,
-      filledQTY: 0,
-      avgPrice: 0,
-      id: 152874,
-      status: "Canceled",
-      error: "",
-    },
-    {
-      rowId: 70,
-      lastTimeUpdate: "2024-10-22 8:10",
-      symbol: "/ESZ4",
-      optionLeg: "241206C6350",
-      side: t("BuyToClose", { ns: "UserDetailsSection" }),
-      qty: 2,
-      filledQTY: 0,
-      avgPrice: 0,
-      id: 150450,
-      status: "Error",
-      error: t("BuyingPowerError", { ns: "UserDetailsSection" }),
-    },
-    {
-      rowId: 80,
-      lastTimeUpdate: "2024-10-22 8:10",
-      symbol: "/ESZ4",
-      optionLeg: "241206P4400",
-      side: t("BuyToClose", { ns: "UserDetailsSection" }),
-      qty: 2,
-      filledQTY: 0,
-      avgPrice: 0,
-      id: 150450,
-      status: "Error",
-      error: t("BuyingPowerError", { ns: "UserDetailsSection" }),
     },
   ];
 
@@ -262,9 +157,9 @@ export default function UserDetailsSection({
             footer: () => <></>,
           }}
           sx={{ marginTop: "10px", height: "auto" }}
-          rows={rows}
+          getRowId={_ => Math.random()}
+          rows={userDetails?.positionList.positionList_ ?? []}
           columns={columns}
-          getRowId={row => row.id}
           rowHeight={45}
         />
       </Box>
@@ -275,11 +170,11 @@ export default function UserDetailsSection({
           slots={{
             footer: () => <></>,
           }}
+          getRowId={row => row.orderId}
           sx={{ marginTop: "10px", height: "440px", width: "100%" }}
-          rows={orderRows}
+          rows={userDetails?.managedOrderList.managedOrderList_ ?? []}
           columns={orderColumns}
           rowHeight={45}
-          getRowId={row => row.rowId}
         />
       </Box>
     </Box>
