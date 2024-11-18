@@ -38,7 +38,7 @@
     "ChangePassword": "Change Password"
   },
   "TileSection": {
-    "QuoteRejected": "Quote Rejected. Please, try again.",
+    "QuoteRejected": "Quote Rejected:",
     "BuyConfirmationText": "Buy {{buyAmount}} {{symbol1}} / Sell {{sellAmount}}\n{{symbol2}} (Notional Value) @ {{buyValue}}",
     "SellConfirmationText": "Sell {{sellAmount}} {{symbol1}} / Buy {{buyAmount}}\n{{symbol2}} (Notional Value) @ {{sellValue}}",
     "BuySnackBarConfirmationText": "You have Bought {{amount}} {{symbol1}} and Sold {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
@@ -46,7 +46,8 @@
     "InsufficientFundsToSell": "Insufficient Funds - Not Enough Funds Available to Sell {{currency}}",
     "InsufficientFundsToBuy": "Insufficient Funds - Not Enough Funds Available to Buy {{currency1}} using {{currency2}}",
     "ErrorText": "ORDER ERROR: TRADE REJECTED OR NOT CONFIRMED, PLEASE TRY AGAIN",
-    "InputQuantityToTradeInInputBoxBelow": "Input quantity to trade in input box below"
+    "InputQuantityToTradeInInputBoxBelow": "Input quantity to trade in input box below",
+    "Quantity": "Quantity"
   },
   "Tile": {
     "MinSizeError": "TRADE QUANTITY IS TOO SMALL",

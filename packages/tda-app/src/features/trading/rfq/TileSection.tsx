@@ -54,6 +54,7 @@ export const TileSection: FC<TileSectionProps> = ({
   const secondsLeft = timeLeft / 1000;
   const [showBuyConfirmationPopup, setShowBuyConfirmationPopup] = useState<boolean>(false);
   const [showSellConfirmationPopup, setShowSellConfirmationPopup] = useState<boolean>(false);
+  const [quotRejectedMessage, setQuotRejectedMessage] = useState<string>("");
   const { cryptoCurrencies, fiatCurrencies } = useAppSelector(state => state.balancesWidget);
   const prevSecondsLeft = usePrevious(secondsLeft);
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
@@ -189,9 +190,10 @@ export const TileSection: FC<TileSectionProps> = ({
     }
   };
 
-  const handleInitiateRFQ: MouseEventHandler<HTMLButtonElement> = () => {
+  const handleInitiateRFQ: MouseEventHandler<HTMLButtonElement> = async () => {
     if (amount <= 0 || !(symbol1 && symbol2)) return;
-    dispatch(
+
+    const rfqResponse = await dispatch(
       fetchRfq({
         currency: symbol1,
         firstSymbol: symbol1,
@@ -199,7 +201,10 @@ export const TileSection: FC<TileSectionProps> = ({
         secondSymbol: symbol2,
         signal: rfqAbortableController.current.signal,
       }),
-    );
+    ).unwrap();
+    if (rfqResponse?.InternalText) {
+      setQuotRejectedMessage(rfqResponse.InternalText);
+    }
   };
 
   //  * BROWSER NOTIFICATIONS. SAVED AND WILL BE USED LATER *
@@ -320,7 +325,10 @@ export const TileSection: FC<TileSectionProps> = ({
     if (!rfqModel) return;
 
     if (rfqModel.QuoteStatus === "Rejected") {
-      ErrorToast({ message: t("QuoteRejected"), style: { progress: { backgroundColor: theme.palette.grey[700] } } });
+      ErrorToast({
+        message: `${t("Quote Rejected")}: ${quotRejectedMessage}`,
+        style: { progress: { backgroundColor: theme.palette.grey[700] } },
+      });
     }
   }, [rfqModel]);
 
@@ -347,7 +355,10 @@ export const TileSection: FC<TileSectionProps> = ({
           height: "100%",
         }}>
         <Box style={{ display: "flex", alignItems: "center" }}>
-          <Typography sx={{ fontSize: "16px", margin: "5px 0 17px 15px" }}>{t("Quantity")}</Typography>
+          <Typography sx={{ fontSize: "16px", margin: "5px 0 17px 15px" }}>
+            {t("Quantity", { defaultValue: "Quantity" })}
+          </Typography>
+
           <Tooltip
             title={t("InputQuantityToTradeInInputBoxBelow")}
             placement="right">
