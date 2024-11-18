@@ -1,148 +1,119 @@
-import { useRef, useState } from 'react';
-
-// material-ui
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Box from '@mui/material/Box';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import Typography from '@mui/material/Typography';
-
-// project import
-import IconButton from 'components/@extended/IconButton';
-import Transitions from 'components/@extended/Transitions';
-
-import { ThemeMode } from 'config';
-import useConfig from 'hooks/useConfig';
-
-// types
-import { I18n } from 'types/config';
-
-// assets
-import TranslationOutlined from '@ant-design/icons/TranslationOutlined';
+import { useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Box, Menu, MenuItem, IconButton, Typography, Grid, ListItemText } from "@mui/material";
+import TranslationOutlined from "@ant-design/icons/TranslationOutlined";
+import useConfig from "hooks/useConfig";
+import { I18n } from "types/config";
+import { ThemeMode } from "config";
 
 // ==============================|| HEADER CONTENT - LOCALIZATION ||============================== //
 
 export default function Localization() {
   const theme = useTheme();
-  const matchesXs = useMediaQuery(theme.breakpoints.down('md'));
-
+  const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const { mode, i18n, onChangeLocalization } = useConfig();
 
-  const anchorRef = useRef<any>(null);
-  const [open, setOpen] = useState(false);
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleToggle = event => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  const handleClose = (event: MouseEvent | TouchEvent) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-    setOpen(false);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleListItemClick = (lang: I18n) => {
     onChangeLocalization(lang);
-    setOpen(false);
+    handleClose();
   };
 
-  const iconBackColorOpen = mode === ThemeMode.DARK ? 'background.default' : 'grey.100';
+  const iconBackColorOpen = mode === ThemeMode.DARK ? "background.default" : "grey.100";
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
       <IconButton
         color="secondary"
-        variant="light"
         aria-label="open localization"
-        ref={anchorRef}
-        aria-controls={open ? 'localization-grow' : undefined}
-        aria-haspopup="true"
         onClick={handleToggle}
-        sx={{ color: 'text.primary', bgcolor: open ? iconBackColorOpen : 'transparent' }}
-      >
+        sx={{ color: "text.primary", bgcolor: anchorEl ? iconBackColorOpen : "transparent" }}>
         <TranslationOutlined />
       </IconButton>
-      <Popper
-        placement={matchesXs ? 'bottom-start' : 'bottom'}
-        open={open}
-        anchorEl={anchorRef.current}
-        role={undefined}
-        transition
-        disablePortal
-        popperOptions={{
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                offset: [matchesXs ? 0 : 0, 9]
-              }
-            }
-          ]
+
+      <Menu
+        id="localization-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        PaperProps={{
+          elevation: 4,
+          sx: {
+            width: matchesXs ? 250 : 290,
+          },
         }}
-      >
-        {({ TransitionProps }) => (
-          <Transitions type="grow" position={matchesXs ? 'top-right' : 'top'} in={open} {...TransitionProps}>
-            <Paper sx={{ boxShadow: theme.customShadows.z1 }}>
-              <ClickAwayListener onClickAway={handleClose}>
-                <List
-                  component="nav"
-                  sx={{
-                    p: 0,
-                    width: '100%',
-                    minWidth: 200,
-                    maxWidth: { xs: 250, md: 290 },
-                    bgcolor: 'background.paper',
-                    borderRadius: 0.5
-                  }}
-                >
-                  <ListItemButton selected={i18n === 'en'} onClick={() => handleListItemClick('en')}>
-                    <ListItemText
-                      primary={
-                        <Grid container>
-                          <Typography color="text.primary">English</Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ ml: '8px' }}>
-                            (UK)
-                          </Typography>
-                        </Grid>
-                      }
-                    />
-                  </ListItemButton>
-                  <ListItemButton selected={i18n === 'sp'} onClick={() => handleListItemClick('sp')}>
-                    <ListItemText
-                      primary={
-                        <Grid container>
-                          <Typography color="text.primary">Spanish</Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ ml: '8px' }}>
-                            (SP)
-                          </Typography>
-                        </Grid>
-                      }
-                    />
-                  </ListItemButton>
-                  <ListItemButton selected={i18n === 'pt'} onClick={() => handleListItemClick('pt')}>
-                    <ListItemText
-                      primary={
-                        <Grid container>
-                          <Typography color="text.primary">Portuguese</Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ ml: '8px' }}>
-                            (PT)
-                          </Typography>
-                        </Grid>
-                      }
-                    />
-                  </ListItemButton>
-                </List>
-              </ClickAwayListener>
-            </Paper>
-          </Transitions>
-        )}
-      </Popper>
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}>
+        <MenuItem
+          selected={i18n === "en"}
+          onClick={() => handleListItemClick("en")}>
+          <ListItemText
+            primary={
+              <Grid container>
+                <Typography color="text.primary">English</Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ ml: "8px" }}>
+                  (UK)
+                </Typography>
+              </Grid>
+            }
+          />
+        </MenuItem>
+
+        <MenuItem
+          selected={i18n === "sp"}
+          onClick={() => handleListItemClick("sp")}>
+          <ListItemText
+            primary={
+              <Grid container>
+                <Typography color="text.primary">Spanish</Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ ml: "8px" }}>
+                  (SP)
+                </Typography>
+              </Grid>
+            }
+          />
+        </MenuItem>
+
+        <MenuItem
+          selected={i18n === "pt"}
+          onClick={() => handleListItemClick("pt")}>
+          <ListItemText
+            primary={
+              <Grid container>
+                <Typography color="text.primary">Portuguese</Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ ml: "8px" }}>
+                  (PT)
+                </Typography>
+              </Grid>
+            }
+          />
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }
