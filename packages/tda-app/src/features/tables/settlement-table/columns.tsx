@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { formatDate, formatFilledQty, formatOrderId } from "../dataFormatters";
-import { SettlementTableRow } from "./SettlementTableRow";
+import { formatDate, formatFilledQty, formatOrderId, formatTime } from "../dataFormatters";
+import { SettlementTableRow } from "./types";
 
 export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, any>[] => {
   return [
@@ -29,7 +29,7 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
         },
       } as any,
       enableResizing: true,
-      cell: value => formatDate(value.getValue()),
+      cell: value => formatTime(value.getValue()),
     },
     {
       accessorKey: "date",
