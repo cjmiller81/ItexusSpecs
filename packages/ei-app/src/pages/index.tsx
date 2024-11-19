@@ -32,11 +32,7 @@ export default function HomePage() {
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
   const dispatch = useAppDispatch();
-  const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
-    moment().startOf("day").toDate(),
-    moment().endOf("day").toDate(),
-  ]);
-
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
   const { news, loadMore, isLoading, setMarket, market } = useNews();
@@ -44,9 +40,9 @@ export default function HomePage() {
   const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);
   const { data: calendarEvents } = useGetCalendarEventsQuery({
     page: 0,
-    max: 100,
-    fromDate: moment(selectedDate[0]).utc().toDate(),
-    toDate: moment(selectedDate[1]).utc().toDate(),
+    max: 30,
+    fromDate: moment(selectedDate).utc().toDate(),
+    toDate: moment(selectedDate).utc().toDate(),
   });
 
   useEffect(() => {
