@@ -1,6 +1,7 @@
 import { Status, createAppSlice } from "components"
 import { SettlementTableRow } from "./types"
 import { settlementService } from "./service"
+import moment from "moment"
 
 export interface SettlementState {
   transactions: SettlementTableRow[]
@@ -18,9 +19,11 @@ export const settlementSlice = createAppSlice({
   reducers: create => ({
     fetchTransactions: create.asyncThunk(
       async ({ fromDate, toDate }: { fromDate: Date, toDate: Date })  => {
+        const fromOnlyDateStr = moment(fromDate).format("YYYY-MM-DD");
+        const toOnlyDateStr = moment(toDate).format("YYYY-MM-DD");
         const [transactions, transactionHistories] = await Promise.all([
-            settlementService.getTransactions(fromDate, toDate),
-            settlementService.getTransactionHistories(fromDate, toDate)
+            settlementService.getTransactions(fromOnlyDateStr, toOnlyDateStr),
+            settlementService.getTransactionHistories(fromOnlyDateStr, toOnlyDateStr)
           ]);
         return { transactions, transactionHistories };
       },

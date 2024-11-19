@@ -18,7 +18,7 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
         },
       } as any,
       enableResizing: true,
-      cell: value => formatOrderId(value.getValue()),
+      cell: value => formatOrderId(value.getValue() ?? ""),
     },
     {
       accessorKey: "time",
