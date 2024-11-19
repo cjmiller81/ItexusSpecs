@@ -11,6 +11,7 @@ import { getPersistConfig } from "redux-deep-persist";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import bankAccountReducer from "../../features/tables/manage-bank-account-table/BankAccountsSlice";
+import { settlementSlice } from "@/features/tables/settlement-table/settlementSlice";
 
 export const rootReducer = combineReducers({
   [uiSlice.name]: uiSlice.reducer,
@@ -18,6 +19,7 @@ export const rootReducer = combineReducers({
   rfq: rfqSlice.reducer,
   currencies: currenciesSlice.reducer,
   adminUsers: adminUsersSlice.reducer,
+  settlements: settlementSlice.reducer,
   [balancesWidgetSlice.name]: balancesWidgetSlice.reducer,
   statusConnection: statusConnectionReducer,
   cryptoAddresses: cryptoAddressesReducer,
