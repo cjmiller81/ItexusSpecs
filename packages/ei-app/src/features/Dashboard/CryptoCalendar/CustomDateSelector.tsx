@@ -155,7 +155,7 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
                 variant="body2"
                 sx={{ cursor: "pointer", paddingRight: "20px", color: "#03A9F4" }}
                 onClick={() => handlePresetClick("next30")}>
-                {t("Next 30 days")}
+                {t("Next30days")}
               </Typography>
             </Box>
 
