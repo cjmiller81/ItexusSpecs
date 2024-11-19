@@ -88,7 +88,7 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Stack
-        direction="row"
+        direction="column-reverse"
         alignItems="center">
         <Typography
           variant="body2"
@@ -109,39 +109,22 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
               : t("SelectDateRange")}
         </Typography>
 
-        {anchorPosition && isPopoverOpen && (
+        {isPopoverOpen && (
           <Box
             ref={calendarRef}
             sx={{
-              position: "absolute",
-              top: anchorPosition.top,
-              left: anchorPosition.left,
               bgcolor: "background.paper",
+              position: "absolute",
+              bottom: "25px",
               border: "1px solid",
               borderRadius: "30px",
               p: 1,
-              width: "220px",
-              "@media (max-width: 600px)": {
-                width: "88.8%",
-                left: window.scrollX + 23,
-              },
-              "@media (min-width: 601px) and (max-width: 960px)": {
-                width: "94.5%",
-                left: window.scrollX + 23,
-              },
-              "@media (min-width: 961px)": {
-                width: "14.6%",
-                left: "83.7%",
-              },
-              "@media (min-width: 3820px)": {
-                width: "16.1%",
-                left: "91.5%",
-                transform: "translateX(-50%)",
-              },
+              width: "100%",
             }}>
             <Box
               sx={{
                 display: "flex",
+
                 justifyContent: "space-between",
                 marginBottom: "5px",
               }}>
