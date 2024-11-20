@@ -6,7 +6,6 @@ import moment, { Moment } from "moment";
 import { useTranslation } from "react-i18next";
 
 export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
-  const [anchorPosition, setAnchorPosition] = useState<{ top: number; left: number } | null>(null);
   const [startDate, setStartDate] = useState<Moment | null>(null);
   const [endDate, setEndDate] = useState<Moment | null>(null);
   const [isSelectingStart, setIsSelectingStart] = useState<boolean>(true);
@@ -29,13 +28,8 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     if (isPopoverOpen) {
-      setAnchorPosition(null);
       setIsPopoverOpen(false);
     } else {
-      setAnchorPosition({
-        top: rect.top + window.scrollY - 338,
-        left: rect.left + window.scrollX - 65,
-      });
       setIsPopoverOpen(true);
     }
   };
@@ -53,7 +47,6 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
       } else {
         setSelectedDate([startDate?.toDate(), date.endOf("day").toDate()]);
       }
-      setAnchorPosition(null);
       setIsPopoverOpen(false);
       setIsSelectingStart(true);
     }
@@ -78,7 +71,6 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
     setStartDate(newStartDate);
     setEndDate(newEndDate);
     setSelectedDate([newStartDate.toDate(), newEndDate.endOf("day").toDate()]);
-    setAnchorPosition(null);
     setIsPopoverOpen(false);
     setIsSelectingStart(true);
   };
