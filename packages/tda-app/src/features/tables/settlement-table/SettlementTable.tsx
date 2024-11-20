@@ -7,7 +7,7 @@ import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
 import moment from "moment";
 import { FC, useMemo, useState } from "react";
-import { formatDate, formatFilledPrice, formatOrderId, formatTime } from "../dataFormatters";
+import { formatDate, formatFilledPrice, formatTime } from "../dataFormatters";
 import { ReactTable } from "../ReactTable";
 import { getSettlementDataTableColumns } from "./columns";
 import { TableHeader } from "./Header";
@@ -58,7 +58,7 @@ export const SettlementTable: FC<RFQTableProps> = ({
     const formattedDate = `${today.getMonth() + 1}_${today.getDate()}_${today.getFullYear()}`;
     let csvContent = "Type, Settlement Id, Time, Date, Amount, Currency, Status, Destination\n";
     rows?.forEach(item => {
-      csvContent += `${item.type},${formatOrderId(item.settlementId ?? "")},${formatTime(item.time)},${formatDate(item.date)},${formatFilledPrice(item.amount)},${item.currency},${item.status},${item.destination}\n`;
+      csvContent += `${item.type},${item.settlementId},${formatTime(item.time)},${formatDate(item.date)},${formatFilledPrice(item.amount)},${item.currency},${item.status},${item.destination}\n`;
     });
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -78,7 +78,6 @@ export const SettlementTable: FC<RFQTableProps> = ({
       body: rows.map(row =>
         tableColumns.map(({ accessorKey }) => {
           let value = row[accessorKey];
-          if (accessorKey === "settlementId") return formatOrderId(value);
           if (accessorKey === "time") return formatTime(value);
           if (accessorKey === "date") return formatDate(value);
           if (accessorKey === "amount") return formatFilledPrice(value);
