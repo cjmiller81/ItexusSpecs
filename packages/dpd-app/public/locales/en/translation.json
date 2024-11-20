@@ -127,7 +127,9 @@
     "MyWallets": "Wallets",
     "Community": "Community",
     "Platform": "Platform",
-    "Tools": "Tools"
+    "Tools": "Tools",
+    "DarkPoolsData": "Dark Pools Data",
+    "SingleStockView": "Single Stock View"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
