@@ -14,6 +14,7 @@ import {
   DialogActions,
   Dialog,
   DialogContent,
+  Grid,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -108,17 +109,36 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
       defaultExpanded={false}
       title={title}
       {...props}>
-      <MainContainer
-        display="flex"
-        justifyContent="space-between">
-        <LeftContainer>
-          <LeftColumn>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ alignSelf: "flex-start", fontSize: "14px", paddingTop: "12px" }}>
-              {t("CurrentPosition")}
-            </Typography>
+      <Grid
+        mt={2}
+        spacing={0}
+        container
+        sx={{ marginTop: 0 }}>
+        <Grid
+          xs={12}
+          md={7.64}
+          lg={4}
+          container
+          direction="row"
+          sx={{
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
+            marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+          }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ alignSelf: "flex-start", fontSize: "14px", marginLeft: "10px", width: "100%" }}>
+            {t("CurrentPosition")}
+          </Typography>
+
+          <Grid
+            item
+            xs={5.5}
+            md={6}
+            lg={6}
+            sx={{ marginTop: "15px", marginLeft: "2%" }}>
             <Select
               displayEmpty
               value={selectedWallet}
@@ -131,6 +151,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 color: "white",
                 width: "98%",
                 maxHeight: "40px",
+                marginBottom: "12px",
                 "& .MuiSelect-icon": { color: "white" },
               }}>
               {wallets?.map(wallet => (
@@ -154,21 +175,30 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               onClick={() => setIsAddingManualPosition(true)}>
               {t("AddManualPosition")}
             </Button>
-            <Button
-              sx={{ mr: 2, width: "90px", height: "35px" }}
-              variant="outlined"
-              disabled>
-              {t("Save")}
-            </Button>
-            <Button
-              sx={{ mr: 2, width: "90px", height: "35px" }}
-              variant="outlined"
-              onClick={handleClearTable}>
-              {t("Clear")}
-            </Button>
-          </LeftColumn>
+            <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <Button
+                sx={{ mr: 2, width: "90px", height: "35px" }}
+                variant="outlined"
+                disabled>
+                {t("Save")}
+              </Button>
+              <Button
+                sx={{ mr: 2, width: "90px", height: "35px" }}
+                variant="outlined"
+                onClick={handleClearTable}>
+                {t("Clear")}
+              </Button>
+            </Box>
+          </Grid>
 
-          <RightColumn>
+          <Grid
+            item
+            xs={5.9}
+            md={5.9}
+            lg={5.3}
+            spacing={1}
+            sx={{ marginTop: "15px", marginLeft: { lg: "0%", md: "2%", xs: "0%" } }}>
+            {" "}
             <WalletsTable
               sx={{
                 ...tableScrollSx,
@@ -219,10 +249,20 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 </Button>
               </DialogActions>
             </Dialog>
-          </RightColumn>
-        </LeftContainer>
+          </Grid>
+        </Grid>
 
-        <MiddleContainer>
+        <Grid
+          container
+          xs={12}
+          md={4.17}
+          lg={2}
+          sx={{
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            marginRight: { lg: "1.5%", md: 0, xs: 0 },
+            marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+          }}>
           <Typography
             variant="h6"
             component="div"
@@ -254,9 +294,19 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               rows={tableAssets}
             />
           </Box>
-        </MiddleContainer>
-
-        <RightContainer>
+        </Grid>
+        <Grid
+          container
+          xs={12}
+          md={12}
+          lg={5.63}
+          direction={"column"}
+          sx={{
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+            display: "flex",
+          }}>
           <Typography
             variant="h6"
             component="div"
@@ -269,7 +319,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               paddingTop: "12px",
               paddingLeft: "15px",
               paddingRight: "15px",
-              width: "72%",
+              width: "70%",
             }}>
             <StyledWalletsTable
               sx={{
@@ -284,8 +334,8 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               rows={positionRows}
             />
           </Box>
-        </RightContainer>
-      </MainContainer>
+        </Grid>
+      </Grid>
     </AppAccordionSection>
   );
 };
@@ -295,70 +345,6 @@ const tableScrollSx = {
     ...nativeBarSx,
   },
 };
-
-const LeftContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  width: "34%",
-  borderRadius: "10px",
-  padding: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    width: "100%",
-  },
-}));
-
-const LeftColumn = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing(2),
-  width: "51%",
-  marginTop: "-128px",
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
-
-const RightColumn = styled(Box)(({ theme }) => ({
-  width: "49%",
-  paddingLeft: 1,
-  marginTop: "25px",
-  gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
-
-const MainContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  width: "100%",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-}));
-
-const MiddleContainer = styled(Box)(({ theme }) => ({
-  width: "18%",
-  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  borderRadius: "10px",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    width: "100%",
-  },
-}));
-
-const RightContainer = styled(Box)(({ theme }) => ({
-  width: "46%",
-  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  borderRadius: "10px",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    width: "100%",
-  },
-}));
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
