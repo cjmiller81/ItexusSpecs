@@ -1,4 +1,4 @@
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import {
@@ -13,6 +13,7 @@ import {
 } from "components";
 import { useTranslation } from "react-i18next";
 import "react-toastify/dist/ReactToastify.css";
+import { getSidebarMenuItems } from "@/constants/sidebar";
 
 interface Props {
   children: any;
@@ -21,6 +22,8 @@ interface Props {
 export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui);
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const sideBarOptions = getSidebarMenuItems(theme);
   const { session, logOut } = useOry();
   const { t } = useTranslation("Header");
 
@@ -37,8 +40,7 @@ export default function Layout({ children }: Props) {
         title={t("DarkPoolDashboard")}
       />
       <Sidebar
-        // TODO Add sidebar menu items here.
-        sidebarItems={[]}
+        sidebarItems={sideBarOptions}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
       />
