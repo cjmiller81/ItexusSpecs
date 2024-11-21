@@ -210,7 +210,7 @@ const CryptoCalendar = ({
           sx={{ width: "100%" }}
           variant="fullWidth"
         />
-        <Box sx={{ display: "flex", justifyContent: "center", margin: "3px 1px", width: "100%" }}>
+        <Box sx={{ display: "flex", position: "relative", justifyContent: "center", margin: "3px 1px", width: "100%" }}>
           <CustomDateSelector
             setSelectedDate={setSelectedDate}
             selectedDate={selectedDate}

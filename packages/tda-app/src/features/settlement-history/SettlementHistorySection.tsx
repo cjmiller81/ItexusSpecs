@@ -1,25 +1,37 @@
 import { MainCardProps } from "@/components/MainCard";
 import moment from "moment";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import mockData from "../tables/settlement-table/mock-data";
 import SettlementTable from "../tables/settlement-table/SettlementTable";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { fetchTransactions } from "../tables/settlement-table/settlementSlice";
 
 type Props = Omit<MainCardProps, "children" | "title"> & {};
 
 export const SettlementHistorySection: FC<Props> = ({ ...props }) => {
   const { t } = useTranslation("SettlementHistory");
+  const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate());
+  const [toDate, setToDate] = useState<Date | null>(moment().toDate());
+  const { transactions } = useAppSelector(state => state.settlements);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (fromDate && toDate) {
+      dispatch(fetchTransactions({fromDate, toDate}))
+    }
+  }, [dispatch, fromDate, toDate])
+
   return (
     <>
       <SettlementTable
         sx={{ width: "100%", borderRadius: "10px" }}
         fileName={t("FileName")}
-        fromDate={moment().add(-1, "M").toDate()}
-        toDate={moment().toDate()}
+        fromDate={fromDate}
+        toDate={toDate}
         handleHistoryRequest={() => {}}
-        onFromDateChange={() => {}}
-        onToDateChange={() => {}}
-        rows={mockData}
+        onFromDateChange={setFromDate}
+        onToDateChange={setToDate}
+        rows={transactions}
         title={t("Title")}
         {...props}
       />
