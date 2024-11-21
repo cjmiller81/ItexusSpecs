@@ -29,18 +29,28 @@ export default function UserDetailsSection({
   }, [dispatch, user]);
 
   useEffect(() => {
-  if (user.id && navValue >= 0 && exchangeAccounts?.exchangeAccountList_ && exchangeAccounts.exchangeAccountList_.length > 0) {
-      dispatch(fetchUserDetails({ userId: user.id, accountNumber: exchangeAccounts?.exchangeAccountList_[navValue].accountNumber }));
+    if (
+      user.id &&
+      navValue >= 0 &&
+      exchangeAccounts?.exchangeAccountList_ &&
+      exchangeAccounts.exchangeAccountList_.length > 0
+    ) {
+      dispatch(
+        fetchUserDetails({
+          userId: user.id,
+          accountNumber: exchangeAccounts?.exchangeAccountList_[navValue].accountNumber,
+        }),
+      );
     }
   }, [dispatch, navValue, user.id, exchangeAccounts]);
 
   const pageLinks = useMemo(() => {
     if (exchangeAccounts) {
-        return exchangeAccounts.exchangeAccountList_?.map(x => x.accountNumber);
+      return exchangeAccounts.exchangeAccountList_?.map(x => x.accountNumber);
     }
 
     return [];
-}, [exchangeAccounts]);
+  }, [exchangeAccounts]);
 
   const columns = [
     { field: "timestamp", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120 },
@@ -92,11 +102,11 @@ export default function UserDetailsSection({
     <Box
       {...props}
       sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, marginLeft: "16px" }}>
         <Typography
           variant="h5"
           align="left"
-          sx={{ mt: 2, ml: 2 }}>
+          sx={{ mt: 2, ml: 1 }}>
           Accounts
         </Typography>
 
@@ -139,7 +149,7 @@ export default function UserDetailsSection({
       </Box>
       <Typography
         sx={{
-          marginLeft: "15px",
+          marginLeft: "25px",
           backgroundColor: "#4cbb17",
           color: "black",
           padding: "8px 16px",
@@ -150,7 +160,7 @@ export default function UserDetailsSection({
         {t("AccountBalance")} $350,000
       </Typography>
 
-      <Box sx={{ height: "auto", width: "95%", marginLeft: "15px" }}>
+      <Box sx={{ height: "auto", width: "95%", marginLeft: "25px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("OpenPositions")}</Typography>
         <DataGrid
           slots={{
@@ -164,7 +174,7 @@ export default function UserDetailsSection({
         />
       </Box>
 
-      <Box sx={{ height: "auto", width: "95%", marginLeft: "15px" }}>
+      <Box sx={{ height: "auto", width: "95%", marginLeft: "25px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("Orders", { ns: "UserDetailsSection" })}</Typography>
         <DataGrid
           slots={{
