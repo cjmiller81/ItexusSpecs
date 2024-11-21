@@ -31,21 +31,31 @@ export const settlementSlice = createAppSlice({
         pending: state => {
           state.statusFetchingTransactions = "loading"
         },
-        fulfilled: (state, action) => {
-          state.statusFetchingTransactions = "idle"
-          state.transactions = action.payload.transactionHistories.map((t) => {
+        fulfilled: (state, action) => {          
+          const allTransactions: SettlementTableRow[] = action.payload.transactionHistories.map((t) => {
            return {
             type: t.TransactionType,
-            settlementId: t.CustomerAddressID,
+            settlementId: t.TransactionID,
             time: t.Timestamp,
             date: t.Timestamp,
             amount: Number(t.Quantity),
             currency: t.Currency,
             status: action.payload.transactions.find(f => f.TransactionID === t.TransactionID)?.Status,
-            reference: t.TransactionID,
+            reference: "",
             destination: ""
-          }
-        })
+          }});
+
+          const latestEntries = new Map<string | undefined, SettlementTableRow>();
+          allTransactions.forEach(entry => {
+            if (!latestEntries.has(entry.settlementId) 
+              || new Date(latestEntries.get(entry.settlementId)!.date) < new Date(entry.date)) {
+              latestEntries.set(entry.settlementId, entry);
+            }
+          });
+
+          const result = Array.from(latestEntries.values());
+          state.statusFetchingTransactions = "idle"
+          state.transactions = result;
         },
         rejected: state => {
           state.statusFetchingTransactions = "failed"
