@@ -171,15 +171,17 @@ export default function Reports() {
           <StyledDrawer
             anchor="right"
             variant="permanent"
-            sx={{
-              "& .MuiDrawer-paper": {
-                overflowY: rightBarOpen ? "auto" : "hidden",
+            PaperProps={{
+              sx: {
+                "&.MuiDrawer-paper": {
+                  width: rightBarOpen ? "auto" : "2.5vw",
+                },
               },
             }}
             open={rightBarOpen}>
             <DrawerHeader sx={{ marginTop: 2 }}>
               <IconButton
-                sx={{ mt: "60px", ml: "-10px" }}
+                sx={{ mt: "60px", ml: "-15px" }}
                 onClick={onToggleSideBar}>
                 {rightBarOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
               </IconButton>
