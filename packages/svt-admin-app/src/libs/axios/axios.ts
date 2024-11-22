@@ -29,7 +29,7 @@ appAxios.interceptors.response.use(
   },
 )
 
-if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API) {
+if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API === "true") {
   configureAxiosMockHandlers(appAxios)
 }
 
