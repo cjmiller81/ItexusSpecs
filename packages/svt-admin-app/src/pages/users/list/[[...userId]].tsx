@@ -181,7 +181,7 @@ export default function Reports() {
               PaperProps={{
                 sx: {
                   "&.MuiDrawer-paper": {
-                    width: rightBarOpen ? (sidebarOpened ? "57vw" : "55vw") : "1.6vw",
+                    width: rightBarOpen ? (sidebarOpened ? "57vw" : "55vw") : "2.5vw",
                   },
                 },
               }}
