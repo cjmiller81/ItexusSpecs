@@ -1,6 +1,19 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingFn } from "@tanstack/react-table";
 import { formatDate, formatFilledQty, formatTime } from "../dataFormatters";
 import { SettlementTableRow } from "./types";
+
+const dateWithTimeSorting: SortingFn<SettlementTableRow> = (rowA, rowB, columnId) => {
+  const dateA = new Date(rowA.getValue(columnId));
+  const dateB = new Date(rowB.getValue(columnId));
+
+  if (dateA > dateB) return -1;
+  if (dateA < dateB) return 1;
+
+  const timeA = new Date(`1970-01-01T${rowA.original.time}`);
+  const timeB = new Date(`1970-01-01T${rowB.original.time}`);
+
+  return timeA > timeB ? -1 : timeA < timeB ? 1 : 0;
+};
 
 export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, any>[] => {
   return [
@@ -41,6 +54,7 @@ export const getSettlementDataTableColumns = (): ColumnDef<SettlementTableRow, a
       } as any,
       enableResizing: true,
       cell: value => formatDate(value.getValue()),
+      sortingFn: dateWithTimeSorting,
     },
     {
       accessorKey: "amount",
