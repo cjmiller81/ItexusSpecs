@@ -2,20 +2,37 @@
 import { Status } from "components";
 
 export interface IAdminUsersSliceState {
+    adminUsers?: IAdminUserConnectionList;
     exchangeAccounts?: IExchangeAccountList;
     userDetails?: IAdminUserDetails;
+    statusFetchingUserConnectionList: Status;
     statusFetchingExchangeAccounts: Status;
     statusFetchingUserDetails: Status;
+}
+
+export interface IAdminUserConnectionList {
+    userAccountConnectionList_: IUserAccountConnection[];
+}
+
+export interface IUserAccountConnection {
+    id: string;
+    userSource: string;
+    userId: string;
+    exchange: string;
+    exchangeUsername: string;
+    stripeCustomerId: string;
+    epdCustomerId: string;
+    isCertUser: boolean;
+    status: string;
 }
   
 export interface IAdminUserDetails {
     positionList: IPositionList;
     managedOrderList: IManagedOrderList;
-  };
-
+}
 
 export interface IExchangeAccountList {
-    exchangeAccountList_: IExchangeAccount[]
+    accounts: IExchangeAccount[]
 }
 
 export interface IExchangeAccount {
@@ -37,7 +54,7 @@ interface IAccountNumber {
 }
 
 export interface IPositionList {
-    positionList_: IPosition[]
+    positions: IPosition[]
 }
 
 export interface IPosition {
@@ -57,7 +74,12 @@ export interface IPosition {
     marketSymbol: string;
     underlyingSymbol: string;
     message: string;
-    timestamp: Date;
+    timestamp: ITimeStamp;
+}
+
+interface ITimeStamp {
+    seconds: number,
+    nanos: number
 }
 
 export interface IManagedOrderList {
