@@ -1,6 +1,6 @@
 import { BottomNavigation, BottomNavigationAction, Typography, Tooltip } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { Box } from "@mui/system";
+import { Box, BoxProps } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -101,7 +101,13 @@ export default function UserDetailsSection({
   return (
     <Box
       {...props}
-      sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        marginLeft: opened ? 0 : "50px",
+        transition: "margin-left 0.3s ease",
+      }}>
       <Box sx={{ mb: 3, marginLeft: "16px" }}>
         <Typography
           variant="h5"
