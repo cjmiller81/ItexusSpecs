@@ -11,6 +11,7 @@ export default function UserDetailsSection({
   id,
   user,
   theme,
+  ...props
 }) {
   const dispatch = useAppDispatch();
   const { exchangeAccounts, userDetails } = useAppSelector(state => state.adminDetails);
@@ -106,6 +107,7 @@ export default function UserDetailsSection({
 
   return (
     <Box
+    {...props}
       sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Box sx={{ mb: 3, marginLeft: "16px" }}>
         <Typography
