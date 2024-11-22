@@ -1,11 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IAdminUserDetails, IAdminUsersSliceState, IExchangeAccountList } from "./types";
+import { IAdminUserConnectionList, IAdminUserDetails, IAdminUsersSliceState, IExchangeAccountList } from "./types";
 import { userDetailsService } from "./userDetailsService";
 
 const initialState: IAdminUsersSliceState = {
   statusFetchingExchangeAccounts: "idle",
-  statusFetchingUserDetails: "idle"
+  statusFetchingUserDetails: "idle",
+  statusFetchingUserConnectionList: "idle"
 };
+
+export const fetchUserAccountConnectionList = createAsyncThunk(
+  "adminUsers/fetchUserAccountConnectionList", 
+  async () => {
+     return await userDetailsService.getUserConnectionList();
+});
 
 export const fetchExchangeAccounts = createAsyncThunk(
     "adminUsers/fetchExchangeAccounts", 
@@ -30,6 +37,16 @@ export const adminUsersSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(fetchUserAccountConnectionList.pending, state => {
+        state.statusFetchingUserConnectionList = "loading";
+      })
+      .addCase(fetchUserAccountConnectionList.fulfilled, (state, action: PayloadAction<IAdminUserConnectionList>) => {
+        state.statusFetchingUserConnectionList = "idle";
+        state.adminUsers = action.payload;
+      })
+      .addCase(fetchUserAccountConnectionList.rejected, state => {
+        state.statusFetchingUserConnectionList = "failed";
+      })
       .addCase(fetchExchangeAccounts.pending, state => {
         state.statusFetchingExchangeAccounts = "loading";
       })
@@ -41,14 +58,14 @@ export const adminUsersSlice = createSlice({
         state.statusFetchingExchangeAccounts = "failed";
       })
       .addCase(fetchUserDetails.pending, state => {
-        state.statusFetchingExchangeAccounts = "loading";
+        state.statusFetchingUserDetails = "loading";
       })
       .addCase(fetchUserDetails.fulfilled, (state, action: PayloadAction<IAdminUserDetails>) => {
-        state.statusFetchingExchangeAccounts = "idle";
+        state.statusFetchingUserDetails = "idle";
         state.userDetails = action.payload;
       })
       .addCase(fetchUserDetails.rejected, state => {
-        state.statusFetchingExchangeAccounts = "failed";
+        state.statusFetchingUserDetails = "failed";
       })
     }
   },

@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { styled, useTheme } from "@mui/material/styles";
-import { IUserList } from "@/features/users/userList/iUserList";
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer";
 import UserDetailsSection from "@/features/strategies/users/details/userDetailsSections";
 import {
   deleteFifoUser,
-  fetchFifoUsers,
-  fetchUserDetails,
-  updateFifoUser,
+  fetchUserDetails
 } from "@/features/strategies/users/fifoUsersSlice";
 import { tableSx } from "@/features/strategies/shared/tableSx";
 import { getColumns } from "@/features/users/userList/usersColumnsDefs";
@@ -26,40 +23,42 @@ import {
   GridRowModesModel,
 } from "@mui/x-data-grid";
 import Grid from "@mui/material/Grid";
+import { fetchUserAccountConnectionList } from "@/features/strategies/users/userDetailsSlice";
+import { IUserAccountConnection } from "@/features/strategies/users/types";
 
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-  const { fifoUsers, userDetails } = useAppSelector(state => state.fifoUsers);
+  const { adminUsers } = useAppSelector(state => state.adminDetails);
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const router = useRouter();
   const userId = router.query.userId ? router.query.userId[0] : undefined;
   const [rightBarOpen, setRightBarOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<IUserList | undefined>();
+  const [currentUser, setCurrentUser] = useState<IUserAccountConnection | undefined>();
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
 
   useEffect(() => {
-    dispatch(fetchFifoUsers());
+    dispatch(fetchUserAccountConnectionList());
   }, [dispatch]);
 
   useEffect(() => {
-    if (fifoUsers.length > 0) {
-      const id = fifoUsers[0].id;
+    if (adminUsers?.userAccountConnectionList_ && adminUsers?.userAccountConnectionList_.length > 0) {
+      const id = adminUsers.userAccountConnectionList_[0].userId;
       router.push(`/users/list/${id}`, undefined, {
         shallow: true,
       });
       handleSetSelection(id);
       handleViewClick(id);
     }
-  }, [fifoUsers]);
+  }, [adminUsers]);
 
   useEffect(() => {
-    if (fifoUsers && !currentUser) {
-      const currentUser = fifoUsers.find(user => user.id === userId);
+    if (adminUsers?.userAccountConnectionList_ && !currentUser) {
+      const currentUser = adminUsers?.userAccountConnectionList_.find(user => user.userId === userId);
       setCurrentUser(currentUser);
       setRightBarOpen(Boolean(currentUser));
     }
-  }, [fifoUsers, dispatch, userId]);
+  }, [adminUsers, dispatch, userId]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -69,11 +68,11 @@ export default function Reports() {
       return;
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.id }));
-    router.push(`/users/list/${currentUser.id}`, undefined, {
+    dispatch(fetchUserDetails({ userId: currentUser.userId }));
+    router.push(`/users/list/${currentUser.userId}`, undefined, {
       shallow: true,
     });
-  }, [currentUser]);
+  }, [currentUser, dispatch]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -101,13 +100,13 @@ export default function Reports() {
   };
 
   const handleViewClick = (id: GridRowId) => {
-    const user = fifoUsers.find(user => user.id === id);
+    const user = adminUsers?.userAccountConnectionList_.find(user => user.userId === id);
     setRightBarOpen(true);
     setCurrentUser(user);
   };
 
-  const processRowUpdate = (newRow: IUserList) => {
-    dispatch(updateFifoUser(newRow));
+  const processRowUpdate = (newRow: IUserAccountConnection) => {
+    //dispatch(updateFifoUser(newRow)); not implemented yet
     return { ...newRow };
   };
 
@@ -122,7 +121,7 @@ export default function Reports() {
     handleSetSelection,
     rowModesModel,
     theme,
-    currentUser?.id,
+    currentUser?.userId,
   );
 
   const onToggleSideBar = () => {
@@ -154,17 +153,17 @@ export default function Reports() {
         <Grid
           item
           sx={{ width: "31%" }}>
-          <DataGrid<IUserList>
+          <DataGrid<IUserAccountConnection>
             slots={{
               footer: () => <></>,
             }}
             rowSelection={false}
             checkboxSelection={false}
             sx={tableSx}
-            rows={fifoUsers}
+            rows={adminUsers?.userAccountConnectionList_ ?? []}
             columns={columns}
             editMode="row"
-            getRowId={row => row.id}
+            getRowId={row => row.userId}
             rowModesModel={rowModesModel}
             onRowModesModelChange={handleRowModesModelChange}
             onRowEditStop={handleRowEditStop}
@@ -199,7 +198,7 @@ export default function Reports() {
                   {rightBarOpen ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                 </IconButton>
               </DrawerHeader>
-              {userDetails && currentUser && (
+              {adminUsers?.userAccountConnectionList_ && currentUser && (
                 <UserDetailsSection
                   theme={theme}
                   opened={rightBarOpen}
@@ -207,8 +206,8 @@ export default function Reports() {
                     padding: 2,
                     paddingLeft: () => (rightBarOpen ? "auto" : "50px"),
                   }}
-                  {...userDetails}
                   user={currentUser}
+                  id={currentUser.userId}
                 />
               )}
             </StyledDrawer>

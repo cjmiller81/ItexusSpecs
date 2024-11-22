@@ -8,14 +8,9 @@ import { fetchExchangeAccounts, fetchUserDetails } from "../userDetailsSlice";
 
 export default function UserDetailsSection({
   opened,
+  id,
   user,
-  orders,
-  currentDayFills,
-  workingOrders,
-  bots,
-  openPositions,
   theme,
-  ...props
 }) {
   const dispatch = useAppDispatch();
   const { exchangeAccounts, userDetails } = useAppSelector(state => state.adminDetails);
@@ -23,41 +18,52 @@ export default function UserDetailsSection({
   const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
 
   useEffect(() => {
-    if (user.id) {
-      dispatch(fetchExchangeAccounts({ userId: user.id }));
+    if (id) {
+      dispatch(fetchExchangeAccounts({ userId: id }));
     }
-  }, [dispatch, user]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (
-      user.id &&
+      id &&
       navValue >= 0 &&
-      exchangeAccounts?.exchangeAccountList_ &&
-      exchangeAccounts.exchangeAccountList_.length > 0
+      exchangeAccounts?.accounts &&
+      exchangeAccounts.accounts.length > 0
     ) {
       dispatch(
         fetchUserDetails({
-          userId: user.id,
-          accountNumber: exchangeAccounts?.exchangeAccountList_[navValue].accountNumber,
+          userId: id,
+          accountNumber: exchangeAccounts?.accounts[navValue].accountNumber,
         }),
       );
     }
-  }, [dispatch, navValue, user.id, exchangeAccounts]);
+  }, [dispatch, navValue, id, exchangeAccounts]);
 
   const pageLinks = useMemo(() => {
     if (exchangeAccounts) {
-      return exchangeAccounts.exchangeAccountList_?.map(x => x.accountNumber);
+      return exchangeAccounts.accounts?.map(x => x.accountNumber);
     }
 
     return [];
   }, [exchangeAccounts]);
 
+  const accountBalance = useMemo(() => {
+    if (exchangeAccounts?.accounts && exchangeAccounts?.accounts?.length > 0) {
+       const account = exchangeAccounts.accounts[navValue];
+
+       return "$" + Number(`${account.accountBalance.units}.${account.accountBalance.nanos}`)
+                       .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    return "";
+  }, [exchangeAccounts, navValue]);
+
   const columns = [
-    { field: "timestamp", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120 },
+    { field: "timestamp", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120, valueGetter: (params) => (new Date(params.row.timestamp.seconds * 1000)).toLocaleString()},
     { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
-    { field: "marketSymbol", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120 },
+    { field: "marketSymbol", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120, valueGetter: (params) =>  params.row.marketSymbol.split(' ').pop()},
     { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
-    { field: "amount", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
+    { field: "amountFilled", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
     { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
   ];
   const orderColumns = [
@@ -100,7 +106,6 @@ export default function UserDetailsSection({
 
   return (
     <Box
-      {...props}
       sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Box sx={{ mb: 3, marginLeft: "16px" }}>
         <Typography
@@ -157,7 +162,7 @@ export default function UserDetailsSection({
           whiteSpace: "nowrap",
           width: "fit-content",
         }}>
-        {t("AccountBalance")} $350,000
+        {t("AccountBalance")} {accountBalance}
       </Typography>
 
       <Box sx={{ height: "auto", width: "95%", marginLeft: "25px" }}>
@@ -168,7 +173,7 @@ export default function UserDetailsSection({
           }}
           sx={{ marginTop: "10px", height: "auto" }}
           getRowId={_ => Math.random()}
-          rows={userDetails?.positionList.positionList_ ?? []}
+          rows={userDetails?.positionList.positions ?? []}
           columns={columns}
           rowHeight={45}
         />

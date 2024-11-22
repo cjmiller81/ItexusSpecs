@@ -191,8 +191,8 @@ export default function Reports() {
                 theme={theme}
                 opened={rightBarOpen}
                 sx={{ padding: 2, paddingLeft: () => (rightBarOpen ? "auto" : "50px") }}
-                {...userDetails}
                 user={currentUser}
+                id={currentUser.id}
               />
             )}
           </StyledDrawer>

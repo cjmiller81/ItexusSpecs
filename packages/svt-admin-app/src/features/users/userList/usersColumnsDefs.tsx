@@ -10,9 +10,9 @@ import {
   GridRowModesModel,
   GridValidRowModel,
 } from "@mui/x-data-grid";
-import { IUserList } from "./iUserList";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Theme, lighten } from "@mui/system";
+import { IUserAccountConnection } from "@/features/strategies/users/types";
 
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
@@ -23,7 +23,7 @@ export function getColumns(
   theme: Theme,
   currentUserId?: string,
 ) {
-  const columns: GridColDef<IUserList>[] = [
+  const columns: GridColDef<IUserAccountConnection>[] = [
     {
       field: "actions",
       type: "actions",
@@ -75,7 +75,7 @@ export function getColumns(
       },
     },
     {
-      field: "id",
+      field: "userId",
       headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
       minWidth: 80,
       editable: true,
@@ -91,7 +91,7 @@ export function getColumns(
       flex: 0,
     },
     {
-      field: "connectionStatus",
+      field: "status",
       headerName: i18next.t("ConnectionStatus", { ns: "ColumnsDefs" }),
       minWidth: 85,
       editable: true,

@@ -1,54 +1,70 @@
-import { IExchangeAccountList, IManagedOrderList, IPositionList } from "@/features/strategies/users/types";
+import { IAdminUserConnectionList, IExchangeAccountList, IManagedOrderList, IPositionList } from "@/features/strategies/users/types";
+
+export const initAdminUsers: IAdminUserConnectionList = {
+  "userAccountConnectionList_": [
+    {
+      "id": "98a8d87b-7fb9-4ae1-98f7-35af5d7ac0dd",
+      "userSource": "WordPress",
+      "userId": "WP4061",
+      "exchange": "Tastytrade",
+      "exchangeUsername": "benec",
+      "stripeCustomerId": "",
+      "epdCustomerId": "",
+      "isCertUser": true,
+      "status": "connected"
+    }
+  ]
+}
 
 export const initExchangeAccounts: IExchangeAccountList = {
-    "exchangeAccountList_": [
-      {
-        "exchangeUsername": "benec",
-        "accountBalance": {
-          "units": 999986,
-          "nanos": 560000000
-        },
-        "accountName": "Individual",
-        "accountNumber": "5WU50943",
-        "authorityLevel": "owner",
-        "isClosed": false,
-        "isFuturesApproved": true,
-        "isMargin": true,
-        "isPrimary": false,
-        "suitableOptionsLevel": "No Restrictions"
+  "accounts": [
+    {
+      "exchangeUsername": "benec",
+      "accountBalance": {
+        "units": 999986,
+        "nanos": 560000000
       },
-      {
-        "exchangeUsername": "benec",
-        "accountBalance": {
-          "units": 1000000,
-          "nanos": 0
-        },
-        "accountName": "Individual",
-        "accountNumber": "5WX30651",
-        "authorityLevel": "owner",
-        "isClosed": false,
-        "isFuturesApproved": true,
-        "isMargin": true,
-        "isPrimary": false,
-        "suitableOptionsLevel": "No Restrictions"
+      "accountName": "Individual",
+      "accountNumber": "5WU50943",
+      "authorityLevel": "owner",
+      "isClosed": false,
+      "isFuturesApproved": true,
+      "isMargin": true,
+      "isPrimary": false,
+      "suitableOptionsLevel": "No Restrictions"
+    },
+    {
+      "exchangeUsername": "benec",
+      "accountBalance": {
+        "units": 1000000,
+        "nanos": 0
       },
-      {
-        "exchangeUsername": "benec",
-        "accountBalance": {
-          "units": 1000000,
-          "nanos": 0
-        },
-        "accountName": "Individual",
-        "accountNumber": "5WZ34717",
-        "authorityLevel": "owner",
-        "isClosed": false,
-        "isFuturesApproved": true,
-        "isMargin": true,
-        "isPrimary": false,
-        "suitableOptionsLevel": "No Restrictions"
-      }
-    ]
-  }
+      "accountName": "Individual",
+      "accountNumber": "5WX30651",
+      "authorityLevel": "owner",
+      "isClosed": false,
+      "isFuturesApproved": true,
+      "isMargin": true,
+      "isPrimary": false,
+      "suitableOptionsLevel": "No Restrictions"
+    },
+    {
+      "exchangeUsername": "benec",
+      "accountBalance": {
+        "units": 1000000,
+        "nanos": 0
+      },
+      "accountName": "Individual",
+      "accountNumber": "5WZ34717",
+      "authorityLevel": "owner",
+      "isClosed": false,
+      "isFuturesApproved": true,
+      "isMargin": true,
+      "isPrimary": false,
+      "suitableOptionsLevel": "No Restrictions"
+    }
+  ]
+}
 
 export const initManagedOrderList: IManagedOrderList = {
     "managedOrderList_": [
@@ -186,7 +202,7 @@ export const initManagedOrderList: IManagedOrderList = {
 }
 
 export const initPositionList: IPositionList = {
-"positionList_": [
+"positions": [
     {
       "username": "WP4061",
       "accountNumber": "5WU50943",
@@ -204,7 +220,10 @@ export const initPositionList: IPositionList = {
       "marketSymbol": "./ESZ4 EW1Z4 241206P4400",
       "underlyingSymbol": "/ESZ4",
       "message": "",
-      "timestamp": new Date("2024-10-22T09:32:36.8900000-06:00")
+      "timestamp": {
+        "seconds": 1730508301,
+        "nanos": 253000000
+      }
     },
     {
       "username": "WP4061",
@@ -223,7 +242,10 @@ export const initPositionList: IPositionList = {
       "marketSymbol": "./ESZ4 EW1Z4 241206C6400",
       "underlyingSymbol": "/ESZ4",
       "message": "",
-      "timestamp": new Date("2024-10-22T09:32:37.2230000-06:00")
+      "timestamp": {
+        "seconds": 1730508301,
+        "nanos": 253000000
+      }
     }
   ]
 }
