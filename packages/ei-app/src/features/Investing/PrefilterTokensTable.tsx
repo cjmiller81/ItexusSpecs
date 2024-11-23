@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ICoin } from "components/src/models/token/ICoin"
+import { ICoin } from "components/src/models/token/ICoin";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -18,17 +18,17 @@ import DataGridDef, {
   Search,
   Sorting,
   Toolbar,
-} from "devextreme-react/data-grid"
-import DataSource from "devextreme/data/data_source"
-import { ExportingEvent } from "devextreme/ui/data_grid"
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
-import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder"
-import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter"
-import SimpleBar from "simplebar-react"
+} from "devextreme-react/data-grid";
+import DataSource from "devextreme/data/data_source";
+import { ExportingEvent } from "devextreme/ui/data_grid";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable";
+import { SymbolCellIdComponent } from "./SymbolCellIdComponent";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import SimpleBar from "simplebar-react";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
@@ -58,7 +58,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
-
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -110,13 +109,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", 
-        () => {
-          if (currentFilter && currentFilter.length > 0) {
-            setFilterBuilderOpen(true)
-          }
+      filterPanelTextDiv.addEventListener("click", () => {
+        if (currentFilter && currentFilter.length > 0) {
+          setFilterBuilderOpen(true);
         }
-      );
+      });
     }
 
     reconfigureFilterPanelStyles(containerRef, currentFilter);
@@ -154,12 +151,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}
-        >
+        onFilterValueChange={onApplyFilter}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
-          customizeText={e => e.text ? e.text : 'No Filter Applied' }
+          customizeText={e => (e.text ? e.text : "No Filter Applied")}
         />
 
         <FilterBuilderPopup
@@ -204,27 +200,27 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         </ColumnChooser>
 
         <Toolbar>
-           <Item location="before">
-           <SimpleBar style={{ maxHeight: "600px" }}>
-             <CustomFilterBuilder
-               filterType="market-cap"
-               filterBuilderFields={filterBuilderFields}
-               filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
-               filterDeletingLoading={deletingFilterStatus === "loading"}
-               open={filterBuildeOpen}
-               onCreateFilter={filter => dispatch(createFilter(filter))}
-               onClose={() => setFilterBuilderOpen(false)}
-               onOpen={() => setFilterBuilderOpen(true)}
-               predefinedFilters={marketCapFilters}
-               onUpdateFilter={filter => dispatch(updateFilter(filter))}
-               onDisableFilter={() => setCurrentFilter(null)}
-               onApply={filter => {
-                setCurrentFilter(filter);
-                setFilterBuilderOpen(false);
-               }}
-               filterToAppply={currentFilter}
-               onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
-             />
+          <Item location="before">
+            <SimpleBar style={{ maxHeight: "600px" }}>
+              <CustomFilterBuilder
+                filterType="market-cap"
+                filterBuilderFields={filterBuilderFields}
+                filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+                filterDeletingLoading={deletingFilterStatus === "loading"}
+                open={filterBuildeOpen}
+                onCreateFilter={filter => dispatch(createFilter(filter))}
+                onClose={() => setFilterBuilderOpen(false)}
+                onOpen={() => setFilterBuilderOpen(true)}
+                predefinedFilters={marketCapFilters}
+                onUpdateFilter={filter => dispatch(updateFilter(filter))}
+                onDisableFilter={() => setCurrentFilter(null)}
+                onApply={filter => {
+                  setCurrentFilter(filter);
+                  setFilterBuilderOpen(false);
+                }}
+                filterToAppply={currentFilter}
+                onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+              />
             </SimpleBar>
           </Item>
           <Item name="exportButton" />
@@ -236,7 +232,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           caption={PrefilterTokensLabel.Symbol}
           alignment="left"
           visible={true}
-          minWidth={150}
+          minWidth={110}
           allowHiding={false}
           cellComponent={SymbolCellIdComponent}
         />
@@ -297,7 +293,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="right"
           visible={true}
           dataType="number"
-          minWidth={130}
+          minWidth={110}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "percent",
@@ -325,15 +321,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           minWidth={150}
           width={200}
-          allowHiding={true}>
-        </Column>
+          allowHiding={true}></Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
           alignment="center"
           visible={true}
           dataType="boolean"
-          minWidth={130}
+          minWidth={110}
         />
         <Column
           dataField={PrefilterTokensField.Categories}
@@ -342,8 +337,15 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           minWidth={150}
-          width={200}>
-        </Column>
+          width={200}></Column>
+        <Column
+          dataField={PrefilterTokensField.Exchanges}
+          caption={PrefilterTokensLabel.Exchanges}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          minWidth={150}
+          width={180}></Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
           caption={PrefilterTokensLabel.CirculatingSupply}
