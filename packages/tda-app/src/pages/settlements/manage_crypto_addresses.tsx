@@ -10,6 +10,7 @@ import { deleteCryptoAddress, fetchCryptoAddress } from "features/tables/crypto-
 import AddNewAddressForm from "features/tables/crypto-addresses-table/addNewAddressForm";
 import Box from "@mui/material/Box";
 import { borderRadius } from "@mui/system";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const ManageCryptoAddresses: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -17,6 +18,7 @@ const ManageCryptoAddresses: React.FC = () => {
   const { t } = useTranslation("ManageCryptoAddresses");
   const theme = useTheme();
   const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
+  const isPad = useMediaQuery("(max-width: 850px)");
 
   useEffect(() => {
     dispatch(fetchCryptoAddress());
@@ -34,7 +36,7 @@ const ManageCryptoAddresses: React.FC = () => {
   return (
     <>
       <Typography
-        sx={{ mt: "16px" }}
+        sx={{ mt: isPad ? "82px" : "16px" }}
         variant="h3">
         {t("ManageCryptoAddressTitle")}
       </Typography>

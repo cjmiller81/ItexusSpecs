@@ -69,11 +69,12 @@ const AddNewAddressForm = () => {
           <Grid
             container
             mt={3}
+            sx={{ padding: "20px", borderRadius: "10px" }}
             spacing={2}>
             <Grid
               item
-              xs={12}
-              sm={4}>
+              sx={{ width: "100%" }}
+              xs={12}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -91,8 +92,8 @@ const AddNewAddressForm = () => {
 
             <Grid
               item
-              xs={12}
-              sm={4}>
+              sx={{ width: "100%" }}
+              xs={12}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -110,8 +111,8 @@ const AddNewAddressForm = () => {
 
             <Grid
               item
-              xs={12}
-              sm={4}>
+              sx={{ width: "100%" }}
+              xs={12}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -129,8 +130,8 @@ const AddNewAddressForm = () => {
 
             <Grid
               item
-              xs={12}
-              sm={4}>
+              sx={{ width: "100%" }}
+              xs={12}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -148,8 +149,8 @@ const AddNewAddressForm = () => {
 
             <Grid
               item
-              xs={12}
-              sm={4}>
+              sx={{ width: "100%" }}
+              xs={12}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -167,8 +168,8 @@ const AddNewAddressForm = () => {
 
             <Grid
               item
-              xs={12}
-              sm={4}>
+              sx={{ width: "100%" }}
+              xs={12}>
               <Stack
                 spacing={0.5}
                 sx={{ mt: 1 }}>
@@ -186,12 +187,7 @@ const AddNewAddressForm = () => {
 
             <Grid
               item
-              xs={12}
-              mt={15}
-            />
-
-            <Grid
-              item
+              sx={{ width: "100%" }}
               xs={12}
               textAlign="right">
               <Button
