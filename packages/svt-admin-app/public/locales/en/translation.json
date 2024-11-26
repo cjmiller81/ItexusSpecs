@@ -174,8 +174,12 @@
     "SellToClose": "SellToClose",
     "BuyToClose": "BuyToClose",
     "BuyingPowerError":  "Your account does not have sufficient buying power available for this order. Please deposit funds or reduce the order size to place this",
-    "LastTimeUpdate": "Last Time Update"
-
-
+    "LastTimeUpdate": "Last Time Update",
+    "Symbol": "Symbol",
+    "QtyPlaced": "Qty Placed",
+    "QtyFilled": "Qty Filled",
+    "LimitPrice": "Limit Price",
+    "AvgFillPrice": "Avg Fill Price",
+    "SpreadPrice": "Spread Price"
   }
 }

@@ -83,32 +83,54 @@ interface ITimeStamp {
 }
 
 export interface IManagedOrderList {
-    managedOrderList_: IManagedOrder[]
+    orders: IManagedOrder[]
 }
 
 export interface IManagedOrder {
     accountNumber: string;
     duration: string;
     exchangeCode: string;
-    orderId: string;
-    hasOrderId: boolean;
     exchangeOrderId: string;
     exchangeReplacesOrderId: string;
+    hasExchangeReplacesOrderId: boolean;
     instruction: string;
-    legs: {
-        managedOrderList_: IManagedOrder[];
-    };
-    qtyPlaced: number;
-    qtyFilled: number;
     marketAssetType: string;
     marketSymbol: string;
+    orderId: string;
     orderStatus: string;
     orderType: string;
-    priceAverageFill: number;
-    priceLimit: number;
+    priceAverageFill?: number | null;
+    hasPriceAverageFill: boolean;
+    priceLimit?: number | null;
+    hasPriceLimit: boolean;
     priceStopLimit: number;
+    hasPriceStopLimit: boolean;
     priceStopTrigger: number;
-    rejectReason: string;
-    timeCreated: Date;
-    timeLastUpdated: Date;
+    hasPriceStopTrigger: boolean;
+    qtyFilled?: number | null;
+    qtyPlaced: number;
+    rejectReason?: string | null;
+    source: string;
+    timeCreated: ITimeStamp;
+    timeFirstFill?: ITimeStamp | null;
+    timeLastUpdated: ITimeStamp;
+    timeSubmitted?: ITimeStamp | null;
+    triggerType: string;
+    legs: ILeg[];
+}
+
+export interface ILeg {
+    instruction: string;
+    marketAssetType: string;
+    marketSymbol: string;
+    priceAverageFill?: number | null;
+    hasPriceAverageFill: boolean;
+    priceLimit?: number | null;
+    hasPriceLimit: boolean;
+    priceStopLimit: number;
+    hasPriceStopLimit: boolean;
+    priceStopTrigger: number;
+    hasPriceStopTrigger: boolean;
+    qtyFilled?: number | null;
+    qtyPlaced: number;
 }
