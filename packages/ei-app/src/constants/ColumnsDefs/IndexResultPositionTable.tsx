@@ -1,7 +1,8 @@
-import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import i18next, { t } from "i18next";
-import { Typography } from "@mui/material";
+import { Typography, Button } from "@mui/material";
+import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
+import { darken } from "@mui/material/styles";
 
 i18next.setDefaultNamespace("ColumnsDefs");
 
@@ -47,6 +48,7 @@ export const getIndexPositionTableColumns = (): GridColDef<PositionAllocation>[]
         </Typography>
       ),
     },
+
     {
       field: "action",
       headerName: t("Action"),
@@ -55,14 +57,34 @@ export const getIndexPositionTableColumns = (): GridColDef<PositionAllocation>[]
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams<PositionAllocation, any, any>) => (
-        <Typography
-          variant="body1"
-          sx={{ textTransform: "uppercase", fontSize: "0.80rem" }}>
-          {params.row.action}
-        </Typography>
-      ),
+      renderCell: (params: GridRenderCellParams<PositionAllocation, any, any>) => {
+        const action = params.row.action;
+
+        const isBuyAction = action === "Buy";
+        const buttonText = action;
+
+        const buttonColor = isBuyAction ? "#53ec53" : "#ff0000";
+        const buttonHoverColor = isBuyAction ? "#66c466" : darken("#f44336", 0.2);
+
+        return (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: buttonColor,
+              color: isBuyAction ? "black" : "white",
+              "&:hover": {
+                backgroundColor: buttonHoverColor,
+              },
+              width: "75px",
+              height: "30px",
+              textTransform: "none",
+            }}>
+            {buttonText}
+          </Button>
+        );
+      },
     },
+
     {
       field: "connection",
       headerName: t("Connection"),
