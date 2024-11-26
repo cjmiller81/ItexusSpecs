@@ -77,7 +77,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
                   <Typography variant="subtitle2" component="div">
                     {row.legs 
                       && row.legs.length > 0 
-                      && (row.legs[0].marketSymbol === "Option" || row.legs[0].marketSymbol === "FutureOption") ? "Option Legs" : row.legs[0].marketSymbol}
+                      && (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption") ? "Option Legs" : row.legs[0].marketSymbol}
                   </Typography>
                  <Table size="small" aria-label="purchases" 
                    sx={{
