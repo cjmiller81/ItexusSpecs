@@ -77,6 +77,56 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
     setFilteredRows(filteredWalletData);
   }, [filteredWalletData]);
 
+  useEffect(() => {
+    if (filteredRows.length > 0 || tableAssets.length > 0) {
+      const rebalancedData = tableAssets.map(asset => ({
+        id: asset.symbol ? asset.symbol.toLowerCase() : "",
+        symbol: asset.symbol ? asset.symbol.toLowerCase() : "",
+        qty: asset.qty,
+        action: "",
+        connection: true,
+      }));
+
+      const walletData = filteredRows.map(({ tokenName, balance }) => ({
+        id: tokenName ? tokenName.toLowerCase() : "",
+        symbol: tokenName ? tokenName.toLowerCase() : "",
+        qty: balance,
+        action: "",
+        connection: true,
+      }));
+
+      const mergedData = [...rebalancedData, ...walletData];
+
+      const updatedRows = mergedData.map(row => {
+        const rebalancedRow = rebalancedData.find(asset => asset.symbol === row.symbol);
+        const walletRow = walletData.find(wallet => wallet.symbol === row.symbol);
+
+        let qty = 0;
+        let action = "";
+
+        if (rebalancedRow && walletRow) {
+          qty = rebalancedRow.qty - walletRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        } else if (!rebalancedRow && walletRow) {
+          qty = -walletRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        } else if (rebalancedRow && !walletRow) {
+          qty = rebalancedRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        }
+
+        return {
+          ...row,
+          qty,
+          action: action.charAt(0).toUpperCase() + action.slice(1).toLowerCase(),
+        };
+      });
+
+      const uniqueRows = Array.from(new Map(updatedRows.map(item => [item.id, item])).values());
+      setPositionRows(uniqueRows);
+    }
+  }, [filteredRows, tableAssets]);
+
   const handleWalletSelect = (event: SelectChangeEvent) => {
     const selectedWalletId = event.target.value as string;
     setSelectedWallet(selectedWalletId);
@@ -90,12 +140,20 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
 
   const handleSaveManualPosition = () => {
     if (newToken && newBalance) {
-      const newRow: WalletBalance = {
-        tokenName: newToken,
-        balance: parseFloat(newBalance),
-      };
+      const tokenNameLower = newToken.toLowerCase();
+      const existingRowIndex = filteredRows.findIndex(row => row.tokenName?.toLowerCase() === tokenNameLower);
 
-      setFilteredRows(prevRows => [newRow, ...prevRows]);
+      if (existingRowIndex >= 0) {
+        const updatedRows = [...filteredRows];
+        updatedRows[existingRowIndex].balance += parseFloat(newBalance);
+        setFilteredRows(updatedRows);
+      } else {
+        const newRow: WalletBalance = {
+          tokenName: newToken,
+          balance: parseFloat(newBalance),
+        };
+        setFilteredRows(prevRows => [newRow, ...prevRows]);
+      }
 
       setNewToken("");
       setNewBalance("");
