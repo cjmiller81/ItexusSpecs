@@ -3,10 +3,7 @@ import { useRouter } from "next/router";
 import { styled, useTheme } from "@mui/material/styles";
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer";
 import UserDetailsSection from "@/features/strategies/users/details/userDetailsSections";
-import {
-  deleteFifoUser,
-  fetchUserDetails
-} from "@/features/strategies/users/fifoUsersSlice";
+import { deleteFifoUser, fetchUserDetails } from "@/features/strategies/users/fifoUsersSlice";
 import { tableSx } from "@/features/strategies/shared/tableSx";
 import { getColumns } from "@/features/users/userList/usersColumnsDefs";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -25,17 +22,19 @@ import {
 import Grid from "@mui/material/Grid";
 import { fetchUserAccountConnectionList } from "@/features/strategies/users/userDetailsSlice";
 import { IUserAccountConnection } from "@/features/strategies/users/types";
+import { useMediaQuery } from "@mui/system";
 
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { adminUsers } = useAppSelector(state => state.adminDetails);
   const dispatch = useAppDispatch();
-  const theme = useTheme();
+  const theme = useTheme(); // Get theme with useTheme
   const router = useRouter();
   const userId = router.query.userId ? router.query.userId[0] : undefined;
   const [rightBarOpen, setRightBarOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<IUserAccountConnection | undefined>();
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     dispatch(fetchUserAccountConnectionList());
@@ -122,6 +121,7 @@ export default function Reports() {
     rowModesModel,
     theme,
     currentUser?.userId,
+    isMobile,
   );
 
   const onToggleSideBar = () => {
@@ -144,7 +144,7 @@ export default function Reports() {
           fontWeight: 600,
         },
         "& .selected-row": {
-          backgroundColor: theme.palette.mode === "dark" ? "#6f7171" : "#d4d4d4",
+          backgroundColor: theme?.palette?.mode === "dark" ? "#6f7171" : "#d4d4d4", // Safe access
         },
       }}>
       <Grid
@@ -152,14 +152,20 @@ export default function Reports() {
         spacing={1}>
         <Grid
           item
-          sx={{ width: "31%" }}>
+          sx={{ height: "80vh" }}>
           <DataGrid<IUserAccountConnection>
             slots={{
               footer: () => <></>,
             }}
             rowSelection={false}
             checkboxSelection={false}
-            sx={tableSx}
+            sx={{
+              ...tableSx,
+              height: "100%",
+              "& .MuiDataGrid-main": {
+                height: "auto !important",
+              },
+            }}
             rows={adminUsers?.userAccountConnectionList_ ?? []}
             columns={columns}
             editMode="row"
@@ -221,14 +227,14 @@ export default function Reports() {
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
+  padding: theme?.spacing(0, 1) || "8px",
+  ...(theme?.mixins?.toolbar || {}),
   justifyContent: "flex-start",
 }));
 
 const StyledRoot = styled(Box)(({ theme }) => ({
   display: "flex",
-  [theme.breakpoints.down("md")]: {
+  [theme?.breakpoints?.down("md")]: {
     display: "inherit",
   },
 }));
