@@ -21,7 +21,7 @@ function getHomeItems(): SidebarListItem[] {
 function getDIShortSaleVolumePageItems(): SidebarListItem[] {
   return [
     {
-      title: t("DarkPoolsData", { ns: "SideBar" }),
+      title: t("DIShortSaleVolume", { ns: "SideBar" }),
       icon: <AutoGraphIcon />,
       children: [
         {
