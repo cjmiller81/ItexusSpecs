@@ -98,9 +98,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
-      cellClassName: (params: GridCellParams<GridValidRowModel>) => {
-        return params.value === "disconnected" ? "disconnected-cell" : "";
-      },
+      cellClassName: (params: GridCellParams<GridValidRowModel>) =>
+        params.value === "disconnected" ? "disconnected-cell" : "",
       renderCell: (params: GridCellParams<GridValidRowModel>) => {
         const value = params.value as string;
         return (
@@ -108,6 +107,7 @@ export function getColumns(
             sx={{
               width: "100%",
               height: "100%",
+              mr: "10px",
               bgcolor: value === "disconnected" ? "red" : "inherit",
               color: value === "disconnected" ? "white" : "inherit",
               display: "flex",
@@ -119,28 +119,6 @@ export function getColumns(
           </Box>
         );
       },
-      renderHeader: params => (
-        <Box
-          sx={{
-            whiteSpace: "normal",
-            textAlign: "center",
-            lineHeight: 1.2,
-            padding: "0",
-            wordBreak: "break-word",
-            display: "block",
-          }}>
-          {params.colDef.headerName ? (
-            params.colDef.headerName.split(" ").map((word, index) => (
-              <span key={index}>
-                {word}
-                <br />
-              </span>
-            ))
-          ) : (
-            <span>No Header</span>
-          )}
-        </Box>
-      ),
     },
   ];
 

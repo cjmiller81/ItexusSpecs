@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { styled, useTheme } from "@mui/material/styles";
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer";
 import UserDetailsSection from "@/features/strategies/users/details/userDetailsSections";
-import { deleteFifoUser, fetchUserDetails } from "@/features/strategies/users/fifoUsersSlice";
+import { fetchUserDetails } from "@/features/strategies/users/fifoUsersSlice";
 import { tableSx } from "@/features/strategies/shared/tableSx";
 import { getColumns } from "@/features/users/userList/usersColumnsDefs";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -11,13 +11,15 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
+
 import {
   DataGrid,
+  GridToolbar,
   GridEventListener,
-  GridRowEditStopReasons,
+  GridRowModesModel,
   GridRowId,
   GridRowModes,
-  GridRowModesModel,
+  GridRowEditStopReasons,
 } from "@mui/x-data-grid";
 import Grid from "@mui/material/Grid";
 import { fetchUserAccountConnectionList } from "@/features/strategies/users/userDetailsSlice";
@@ -28,13 +30,13 @@ export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { adminUsers } = useAppSelector(state => state.adminDetails);
   const dispatch = useAppDispatch();
-  const theme = useTheme(); // Get theme with useTheme
+  const theme = useTheme();
   const router = useRouter();
   const userId = router.query.userId ? router.query.userId[0] : undefined;
   const [rightBarOpen, setRightBarOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<IUserAccountConnection | undefined>();
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery("(max-width: 485px)");
 
   useEffect(() => {
     dispatch(fetchUserAccountConnectionList());
@@ -79,16 +81,8 @@ export default function Reports() {
     }
   };
 
-  const handleEditClick = (id: GridRowId) => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
   const handleSaveClick = (id: GridRowId) => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
-
-  const handleDeleteClick = (id: GridRowId) => {
-    dispatch(deleteFifoUser({ id: encodeURIComponent(id) as string }));
   };
 
   const handleCancelClick = (id: GridRowId) => {
@@ -105,7 +99,6 @@ export default function Reports() {
   };
 
   const processRowUpdate = (newRow: IUserAccountConnection) => {
-    //dispatch(updateFifoUser(newRow)); not implemented yet
     return { ...newRow };
   };
 
@@ -127,6 +120,7 @@ export default function Reports() {
   const onToggleSideBar = () => {
     setRightBarOpen(prev => !prev);
   };
+
   const { sidebarOpened } = useAppSelector(state => state.ui);
 
   return (
@@ -144,7 +138,7 @@ export default function Reports() {
           fontWeight: 600,
         },
         "& .selected-row": {
-          backgroundColor: theme?.palette?.mode === "dark" ? "#6f7171" : "#d4d4d4", // Safe access
+          backgroundColor: theme?.palette?.mode === "dark" ? "#6f7171" : "#d4d4d4",
         },
       }}>
       <Grid
@@ -154,9 +148,26 @@ export default function Reports() {
           item
           sx={{ height: "80vh" }}>
           <DataGrid<IUserAccountConnection>
-            slots={{
-              footer: () => <></>,
+            slots={{ toolbar: GridToolbar }}
+            componentsProps={{
+              toolbar: {
+                sx: {
+                  ml: isMobile ? "3%" : "10%",
+                  display: "flex",
+                  justifyContent: "center !important",
+                  alignItems: "center !important",
+                  width: "100%",
+                  gap: "8px",
+                  padding: "4px 4px 0px",
+                  flexWrap: "wrap",
+                  "& .MuiButton-root": {
+                    color: theme.palette.text.primary,
+                    fontWeight: "bold",
+                  },
+                },
+              },
             }}
+            autoPageSize
             rowSelection={false}
             checkboxSelection={false}
             sx={{

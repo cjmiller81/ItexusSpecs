@@ -19,7 +19,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "98a8d87b-7fb9-4ae1-98f7-35af5d7a435rd",
+      id: "98a8d87b-7fb9-4ae1-98f7-35af5d7a435fd",
       userSource: "WordPress",
       userId: "WP4078",
       exchange: "Tastytertde",
@@ -63,7 +63,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "bd459e83-5634-4abc-9123-ef56789012cd",
+      id: "bd459e83-5634-4abc-9123-ef56789012ce",
       userSource: "WordPress",
       userId: "WP4112",
       exchange: "Tastytrade",
@@ -74,7 +74,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "de123c45-78a9-4f23-9123-abcd5678123f",
+      id: "de123c45-78a9-4f23-9123-abcd5678124f",
       userSource: "WordPress",
       userId: "WP4128",
       exchange: "Tastytrade",
@@ -85,7 +85,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "cd456789-90ef-4a23-9a12-bbcd45678901",
+      id: "cd456789-90ef-4a23-9a12-bbcd45678902",
       userSource: "WordPress",
       userId: "WP4144",
       exchange: "Tastytertde",
@@ -96,7 +96,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "ef789012-34ab-4ef6-9213-cd45678901ab",
+      id: "ef789012-34ab-4ef6-9213-cd45678901ac",
       userSource: "WordPress",
       userId: "WP4159",
       exchange: "Tastytrade",
@@ -107,7 +107,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "disconnected",
     },
     {
-      id: "fe4567ab-123c-4fe9-9123-bbcd5678910f",
+      id: "fe4567ab-123c-4fe9-9123-bbcd5678910g",
       userSource: "WordPress",
       userId: "WP4168",
       exchange: "Tastytrade",
@@ -118,7 +118,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "de567890-45ef-4b32-9213-ef567890ab12",
+      id: "de567890-45ef-4b32-9213-ef567890ab13",
       userSource: "WordPress",
       userId: "WP4181",
       exchange: "Tastytrade",
@@ -129,7 +129,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "34ab5678-90ef-4a23-9123-cd45678901ab",
+      id: "34ab5678-90ef-4a23-9123-cd45678901ae",
       userSource: "WordPress",
       userId: "WP4194",
       exchange: "Tastytrade",
@@ -140,7 +140,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "disconnected",
     },
     {
-      id: "ef789012-1234-4abc-9123-bbcd567890ef",
+      id: "ef789012-1234-4abc-9123-bbcd567890eg",
       userSource: "WordPress",
       userId: "WP4207",
       exchange: "Tastytertde",
@@ -151,7 +151,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "ab123456-78ef-4b23-9213-cdef78901234",
+      id: "ab123456-78ef-4b23-9213-cdef78901235",
       userSource: "WordPress",
       userId: "WP4220",
       exchange: "Tastytrade",
@@ -162,7 +162,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "cd5678ef-34ab-4f67-9213-abcd45678901",
+      id: "cd5678ef-34ab-4f67-9213-abcd45678902",
       userSource: "WordPress",
       userId: "WP4235",
       exchange: "Tastytrade",
@@ -173,7 +173,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "disconnected",
     },
     {
-      id: "ef789012-45ab-4f67-9a12-cd456789012e",
+      id: "ef789012-45ab-4f67-9a12-cd456789012f",
       userSource: "WordPress",
       userId: "WP4250",
       exchange: "Tastytrade",
@@ -184,7 +184,7 @@ export const initAdminUsers: IAdminUserConnectionList = {
       status: "connected",
     },
     {
-      id: "fe4567ab-56ef-4abc-9213-bcde12345678",
+      id: "fe4567ab-56ef-4abc-9213-bcde12345779",
       userSource: "WordPress",
       userId: "WP4263",
       exchange: "Tastytertde",
