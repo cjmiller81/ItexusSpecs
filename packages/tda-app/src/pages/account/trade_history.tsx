@@ -5,6 +5,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Grid, Typography } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const accountNumber = "EC_TEST";
 
@@ -14,6 +15,7 @@ const TradeHistory: React.FC = () => {
   const [toDate, setToDate] = useState<Date | null>(moment().add(1, "d").toDate());
   const [fromDate, setFromDate] = useState<Date | null>(moment().add(-1, "M").toDate());
   const dispatch = useAppDispatch();
+  const isPad = useMediaQuery("(max-width: 850px)");
 
   useEffect(() => {
     if (fromDate && toDate)
@@ -45,7 +47,7 @@ const TradeHistory: React.FC = () => {
   return (
     <>
       <Typography
-        sx={{ mt: "16px !important" }}
+        sx={{ mt: isPad ? "80px !important" : "16px !important" }}
         variant="h3">
         {t("TradeHistory")}
       </Typography>

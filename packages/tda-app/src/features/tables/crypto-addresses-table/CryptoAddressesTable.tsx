@@ -23,6 +23,7 @@ import {
 import { ReactNode } from "react";
 import ScrollX from "components/ScrollX";
 import MainCard from "components/MainCard";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const CryptoAddressesTable = <TData extends object>({
   data,
@@ -47,6 +48,7 @@ const CryptoAddressesTable = <TData extends object>({
     getSortedRowModel: getSortedRowModel(),
     debugTable: false,
   });
+  const isPad = useMediaQuery("(max-width: 850px)");
 
   return (
     <StyledMainCard
@@ -92,13 +94,21 @@ const CryptoAddressesTable = <TData extends object>({
               <TableBody>
                 {table.getRowModel().rows.map(row => (
                   <TableRow key={row.id}>
-                    {row.getVisibleCells().map(cell => (
-                      <StyledTableCell
-                        key={cell.id}
-                        {...cell.column.columnDef.meta}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </StyledTableCell>
-                    ))}
+                    {row.getVisibleCells().map(cell => {
+                      const isWalletAddress = cell.column.id === "walletAddress";
+                      const displayValue =
+                        isWalletAddress && isPad
+                          ? truncateAddress(cell.getValue())
+                          : flexRender(cell.column.columnDef.cell, cell.getContext());
+
+                      return (
+                        <StyledTableCell
+                          key={cell.id}
+                          {...cell.column.columnDef.meta}>
+                          {displayValue}
+                        </StyledTableCell>
+                      );
+                    })}
                   </TableRow>
                 ))}
               </TableBody>
@@ -112,6 +122,20 @@ const CryptoAddressesTable = <TData extends object>({
 };
 
 export default CryptoAddressesTable;
+
+const truncateAddress = (address: any) => {
+  if (typeof address === "string") {
+    return address.length > 9 ? `${address.slice(0, 9)}...` : address;
+  } else if (Array.isArray(address)) {
+    return (
+      address
+        .slice(0, 9)
+        .map((addr: string) => (addr.length > 9 ? `${addr.slice(0, 9)}...` : addr))
+        .join(", ") + (address.length > 9 ? "..." : "")
+    );
+  }
+  return address;
+};
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   "& .MuiChip-root": {

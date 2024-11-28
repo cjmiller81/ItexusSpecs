@@ -21,6 +21,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import FileCopyOutlinedIcon from "@mui/icons-material/FileCopyOutlined";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const FundingInstructions: React.FC = () => {
   const theme = useTheme();
@@ -28,6 +29,7 @@ const FundingInstructions: React.FC = () => {
   const [showAddress, setShowAddress] = useState<{ [key: number]: boolean }>({});
   const [showBankDetails, setShowBankDetails] = useState<{ [key: number]: boolean }>({});
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const isPad = useMediaQuery("(max-width: 850px)");
 
   const handleClickShowAddress = (index: number) => {
     setShowAddress(prevState => ({
@@ -70,13 +72,13 @@ const FundingInstructions: React.FC = () => {
   return (
     <>
       <Typography
-        sx={{ mt: "16px" }}
+        sx={{ mt: isPad ? "80px" : "16px" }}
         variant="h3">
         {t("FundingInstructionsTitle")}
       </Typography>
       <Grid
         container
-        mt={2}
+        mt={isPad ? 0 : 2}
         spacing={2}>
         <Grid
           item
