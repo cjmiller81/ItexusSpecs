@@ -19,6 +19,16 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
       { id: 'avgFillPrice', label: 'AvgFillPrice' },
     ];
 
+    const getSectionName = (detailRow: IManagedOrder) => {
+      if (!detailRow.legs || detailRow.legs.length == 0) {
+        return '';
+      }
+
+      return row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption" 
+        ? "Option Legs" 
+        : row.legs[0]?.marketAssetType;
+    }
+
     const theme = createTheme({
       components: {
         MuiTableCell: {
@@ -75,9 +85,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
                   <Typography variant="subtitle2" component="div">
-                    {row.legs 
-                      && row.legs.length > 0 
-                      && (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption") ? "Option Legs" : row.legs[0].marketSymbol}
+                    {getSectionName(row)}
                   </Typography>
                  <Table size="small" aria-label="purchases" 
                    sx={{
