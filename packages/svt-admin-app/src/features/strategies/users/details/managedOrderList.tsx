@@ -18,11 +18,25 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/system";
 
+enum ThemeMode {
+  DARK = "dark",
+}
+
 export function ManagedOrderRow(props: { row: IManagedOrder }) {
   const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
   const { row } = props;
   const [open, setOpen] = React.useState(true);
-  const themeHook = useTheme();
+  const theme = useTheme();
+
+  const borderColor =
+    theme.palette.mode === ThemeMode.DARK
+      ? "0.1px solid rgba(81, 81, 81, 1) !important"
+      : "0.1px solid rgba(224, 224, 224, 1) !important";
+
+  const tableStyle = {
+    border: borderColor,
+    borderCollapse: "collapse",
+  };
 
   const detailsColumns = [
     { id: "symbol", label: "Symbol" },
@@ -33,7 +47,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
     { id: "avgFillPrice", label: "AvgFillPrice" },
   ];
 
-  const theme = createTheme({
+  const themeConfig = createTheme({
     components: {
       MuiTableCell: {
         styleOverrides: {
@@ -45,13 +59,16 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
             letterSpacing: "0.01071em",
             display: "table-cell",
             verticalAlign: "inherit",
-            borderBottom: "1px solid rgba(224, 224, 224, 1)",
+            borderBottom:
+              theme.palette.mode === ThemeMode.DARK
+                ? "1px solid rgba(81, 81, 81, 1)"
+                : "1px solid rgba(224, 224, 224, 1)",
             textAlign: "left",
             paddingTop: "6px",
             paddingBottom: "6px",
             paddingLeft: "16px",
             paddingRight: "16px",
-            color: themeHook.palette.text.primary,
+            color: theme.palette.text.primary,
           },
         },
       },
@@ -59,9 +76,9 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
   });
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={themeConfig}>
       <React.Fragment>
-        <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableRow sx={{ "& > *": { borderBottom: "unset" }, backgroundColor: "grey" }}>
           <TableCell>
             <IconButton
               aria-label="expand row"
@@ -94,10 +111,11 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
               in={open}
               timeout="auto"
               unmountOnExit>
-              <Box sx={{ margin: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "flex-start", margin: 1 }}>
                 <Typography
-                  variant="subtitle2"
-                  component="div">
+                  variant="subtitle1"
+                  component="div"
+                  sx={{ marginRight: 3, fontSize: "16px", fontWeight: "500" }}>
                   {row.legs &&
                   row.legs.length > 0 &&
                   (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption")
@@ -108,17 +126,16 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
                   size="small"
                   aria-label="purchases"
                   sx={{
-                    marginTop: 1,
-                    border: "1px solid rgba(0, 0, 0, 0.12)",
-                    borderRadius: "5px",
-                    borderCollapse: "separate",
+                    ...tableStyle,
+                    borderRadius: "10px",
+                    flex: 1,
                   }}>
                   <TableHead>
                     <TableRow>
                       {detailsColumns.map(column => (
                         <TableCell
                           key={column.id}
-                          sx={{ fontWeight: "bold" }}>
+                          sx={tableStyle}>
                           {t(column.label)}
                         </TableCell>
                       ))}
@@ -128,15 +145,16 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
                     {row.legs.map(leg => (
                       <TableRow key={leg.marketSymbol}>
                         <TableCell
+                          sx={tableStyle}
                           component="th"
                           scope="row">
                           {leg.marketSymbol.split(" ").pop()}
                         </TableCell>
-                        <TableCell>{leg.instruction}</TableCell>
-                        <TableCell>{leg.qtyPlaced}</TableCell>
-                        <TableCell>{leg.qtyFilled}</TableCell>
-                        <TableCell>{leg.hasPriceLimit ? leg.priceLimit : "-"}</TableCell>
-                        <TableCell>{leg.hasPriceAverageFill ? leg.priceAverageFill : "-"} </TableCell>
+                        <TableCell sx={tableStyle}>{leg.instruction}</TableCell>
+                        <TableCell sx={tableStyle}>{leg.qtyPlaced}</TableCell>
+                        <TableCell sx={tableStyle}>{leg.qtyFilled}</TableCell>
+                        <TableCell sx={tableStyle}>{leg.hasPriceLimit ? leg.priceLimit : "-"}</TableCell>
+                        <TableCell sx={tableStyle}>{leg.hasPriceAverageFill ? leg.priceAverageFill : "-"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
