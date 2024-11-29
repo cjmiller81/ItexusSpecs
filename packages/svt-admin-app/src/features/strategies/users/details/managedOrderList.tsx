@@ -19,8 +19,8 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
       { id: 'avgFillPrice', label: 'AvgFillPrice' },
     ];
 
-    const getSectionName = (detailRow: IManagedOrder) => {
-      if (!detailRow.legs || detailRow.legs.length == 0) {
+    const getSectionName = () => {
+      if (!row.legs || row.legs.length == 0) {
         return '';
       }
 
@@ -85,7 +85,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ margin: 1 }}>
                   <Typography variant="subtitle2" component="div">
-                    {getSectionName(row)}
+                    {getSectionName()}
                   </Typography>
                  <Table size="small" aria-label="purchases" 
                    sx={{
