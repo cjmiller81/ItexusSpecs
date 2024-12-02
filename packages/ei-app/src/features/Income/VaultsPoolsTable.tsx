@@ -82,13 +82,11 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", 
-        () => {
-          if (currentFilter && currentFilter.length > 0) {
-            setFilterBuilderOpen(true)
-          }
+      filterPanelTextDiv.addEventListener("click", () => {
+        if (currentFilter && currentFilter.length > 0) {
+          setFilterBuilderOpen(true);
         }
-      );
+      });
     }
 
     reconfigureFilterPanelStyles(containerRef, currentFilter);
