@@ -156,11 +156,6 @@ export default function MarketCapWeightedPage() {
         title={t("IndexModeling")}
       />
 
-      <IndexResultsSection
-        title={t("IndexResults")}
-        tableAssets={tableData}
-      />
-
       <AppAccordionSection
         persistKey="WeightedHistoricalWalletsWorth"
         defaultExpanded
@@ -189,6 +184,11 @@ export default function MarketCapWeightedPage() {
           title={""}
         />
       </AppAccordionSection>
+
+      <IndexResultsSection
+        title={t("IndexResults")}
+        tableAssets={tableData}
+      />
     </Stack>
   );
 }
