@@ -44,10 +44,10 @@ export default function HomePage() {
   const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);
   const { data: calendarEvents } = useGetCalendarEventsQuery({
     page: 0,
-    max: 100,
+    max: 150,
     fromDate: moment(selectedDate[0]).utc().toDate(),
     toDate: moment(selectedDate[1]).utc().toDate(),
-  });
+  })
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
