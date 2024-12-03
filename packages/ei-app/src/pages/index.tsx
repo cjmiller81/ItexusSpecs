@@ -48,7 +48,6 @@ export default function HomePage() {
     fromDate: moment(selectedDate[0]).utc().toDate(),
     toDate: moment(selectedDate[1]).utc().toDate(),
   })
-  console.log(calendarEvents);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
