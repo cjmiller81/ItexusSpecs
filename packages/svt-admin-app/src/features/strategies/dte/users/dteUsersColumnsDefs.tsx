@@ -117,12 +117,17 @@ export function getColumns(
           return <Chip 
                     variant="outlined" 
                     color="success" 
-                    label="Connected" 
+                    label={i18next.t("Connected", { ns: "ColumnsDefs" })} 
                     size="small" 
                     icon={<CheckIcon />} 
                     sx={{ color: "#85a560", border: "1px solid" }}/>;
         } else {
-          return <Chip variant="outlined" color="error" label="Disconnected" size="small" icon={<ReportProblemIcon />} />;
+          return <Chip 
+                    variant="outlined" 
+                    color="error" 
+                    label={i18next.t("Disconnected", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<ReportProblemIcon />} />;
         }
       },
     },
@@ -135,7 +140,12 @@ export function getColumns(
       flex: 1,
       renderCell: (params: GridRenderCellParams) => {
         if (params.value) {
-          return <Chip variant="outlined" color="error" label="Removed" size="small" icon={<DeleteIcon />}/>;
+          return <Chip 
+                    variant="outlined" 
+                    color="error" 
+                    label={i18next.t("Removed", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<DeleteIcon />}/>;
         } else {
           return <></>
         }
@@ -153,12 +163,17 @@ export function getColumns(
           return <Chip 
                     variant="outlined" 
                     color="success" 
-                    label="Active" 
+                    label={i18next.t("Active", { ns: "ColumnsDefs" })}
                     size="small" 
                     icon={<CheckIcon />} 
                     sx={{ color: "#85a560", border: "1px solid" }}/>;
         } else {
-          return <Chip variant="outlined" color="error" label="Inactive" size="small" icon={<ReportProblemIcon />} />;
+          return <Chip 
+                    variant="outlined" 
+                    color="error" 
+                    label={i18next.t("Inactive", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<ReportProblemIcon />} />;
         }
       },
     },

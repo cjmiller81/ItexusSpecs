@@ -160,7 +160,9 @@
     "NextEntryTime": "Next Entry Time",
     "TargetStatus": "Target Status",
     "CloseStatus": "Close Status",
-    "EndofDayCloseTime": "End of Day Close Time"
+    "EndofDayCloseTime": "End of Day Close Time",
+    "Disconnected": "Disconnected",
+    "Inactive": "Inactive"
   },
   "UserDetailsSection": {
     "CapitalAllocation": "Capital Allocation",
