@@ -185,7 +185,7 @@ export function getColumns(
       type: "string",
       flex: 1,
       cellClassName: (param: GridCellParams<GridValidRowModel>) => {
-        if (param.value === "error" || param.value === "" || param.value === " ") {
+        if (param.value && (param.value as string).toLowerCase().indexOf("error") > -1) {
           return "dark-yellow"
         }
         return "";
