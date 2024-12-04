@@ -3,18 +3,18 @@ import { createApi, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit
 export const vaultsApi = createApi({
   reducerPath: "vaults",
   baseQuery: fetchBaseQuery({ baseUrl: "https://api.beefy.finance/" }),
-
   endpoints: builder => ({
     getAllData: builder.query<any, void>({
       queryFn: async () => {
         try {
-          const vaultsPromise = fetch("https://api.beefy.finance/vaults").then(res => res.json());
-          const apyPromise = fetch("https://api.beefy.finance/apy/breakdown").then(res => res.json());
-          const tvlPromise = fetch("https://api.beefy.finance/tvl").then(res => res.json());
+          const vaultsPromise = fetch(`${process.env.BACKEND_API_URL}/api/beefy/vaults`).then(res => res.json());
+          const vaultsData = await vaultsPromise;
 
-          const [vaultsData, apyData, tvlData] = await Promise.all([vaultsPromise, apyPromise, tvlPromise]);
-
-          return { data: { vaults: vaultsData, apy: apyData, tvl: tvlData } };
+          return {
+            data: {
+              vaults: vaultsData.data,
+            },
+          };
         } catch (error: any) {
           const baseQueryError: FetchBaseQueryError = {
             status: "CUSTOM_ERROR",

@@ -1,14 +1,20 @@
 export type VaultsData = {
-  status: string
+  breakdowns?: {
+    totalApy: number;
+  };
+  status: string;
   id: string;
   name: string;
   chain: string;
-  platformId: string;
-  tvl: number;
-  apy: number;
-  risks: string[];
+  platformId?: string;
+  platform_id?: string;
+  tvl?: number;
+  tvls?: {
+    value: number;
+  };
+  apy?: number;
+  risks?: string[];
   boost?: string;
-  totalApy?: number;
   stablecoin?: boolean;
   rewardTokens?: string[];
   poolMeta?: string | null;
