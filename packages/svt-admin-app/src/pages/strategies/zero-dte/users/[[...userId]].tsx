@@ -1,6 +1,5 @@
 import { useRouter } from "next/router"
 import { styled, useTheme } from "@mui/material/styles"
-import { IDteUser } from "@/features/strategies/dte/users/iDteUser"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
 import { useEffect, useState } from "react"
@@ -12,6 +11,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import { getColumns } from "@/features/strategies/dte/users/dteUsersColumnsDefs"
 import UserDetailsSection from "@/features/strategies/dte/users/details/userDetailsSections"
+import { IDteStrategy } from "@/features/strategies/dte/users/types"
 
 export default function Reports() { 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
@@ -21,7 +21,7 @@ export default function Reports() {
   const router = useRouter()
   const userId = router.query.userId ? router.query.userId[0] : undefined
   const [rightBarOpen, setRightBarOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<IDteUser | undefined>()
+  const [currentUser, setCurrentUser] = useState<IDteStrategy | undefined>()
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
 
   useEffect(() => {
@@ -29,8 +29,8 @@ export default function Reports() {
   }, [dispatch])
 
   useEffect(() => {
-    if (dteUsers.length > 0) {
-      const id = dteUsers[0].id;
+    if (dteUsers.strategies.length > 0) {
+      const id = dteUsers.strategies[0].userId;
       router.push(`/strategies/zero-dte/users/${id}`, undefined, {
         shallow: true,
       })
@@ -40,8 +40,8 @@ export default function Reports() {
   }, [dteUsers])
 
   useEffect(() => {
-    if (dteUsers && !currentUser) {
-      const currentUser = dteUsers.find(user => user.id === userId)
+    if (dteUsers && dteUsers.strategies && !currentUser) {
+      const currentUser = dteUsers.strategies.find(user => user.userId === userId)
       setCurrentUser(currentUser)
       setRightBarOpen(Boolean(currentUser))
     }
@@ -55,8 +55,8 @@ export default function Reports() {
       return
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.id }))
-    router.push(`/strategies/zero-dte/users/${currentUser.id}`, undefined, {
+    dispatch(fetchUserDetails({ userId: currentUser.userId }))
+    router.push(`/strategies/zero-dte/users/${currentUser.userId}`, undefined, {
       shallow: true,
     })
   }, [currentUser])
@@ -87,12 +87,12 @@ export default function Reports() {
   }
 
   const handleViewClick = (id: GridRowId) => {
-    const user = dteUsers.find(user => user.id === id)
+    const user = dteUsers.strategies.find(user => user.userId === id)
     setRightBarOpen(true)
     setCurrentUser(user)
   }
 
-  const processRowUpdate = (newRow: IDteUser) => {
+  const processRowUpdate = (newRow: IDteStrategy) => {
     dispatch(updateDteUser(newRow))
     return { ...newRow }
   }
@@ -110,7 +110,7 @@ export default function Reports() {
     handleSetSelection,
     rowModesModel,
     theme,
-    currentUser?.id,
+    currentUser?.userId,
   )
 
   const onToggleSideBar = () => {
@@ -134,17 +134,17 @@ export default function Reports() {
       backgroundColor: theme.palette.mode === 'dark' ? '#6f7171' : '#d4d4d4'
     }
     }}>
-    <DataGrid<IDteUser>
+    <DataGrid<IDteStrategy>
       slots={{
         footer: () => <></>,
       }}
       rowSelection={false}
       checkboxSelection={false}
       sx={tableSx}
-      rows={dteUsers}
+      rows={dteUsers.strategies}
       columns={columns}
       editMode="row"
-      getRowId={row => row.id}
+      getRowId={row => row.userId}
       rowModesModel={rowModesModel}
       onRowModesModelChange={handleRowModesModelChange}
       onRowEditStop={handleRowEditStop}

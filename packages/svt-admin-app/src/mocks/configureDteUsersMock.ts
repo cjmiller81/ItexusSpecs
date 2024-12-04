@@ -1,5 +1,5 @@
 import MockAdapter from "axios-mock-adapter"
-import { IDteUser } from "@/features/strategies/dte/users/iDteUser"
+import { IDteStrategiesResponse } from "@/features/strategies/dte/users/types"
 import { initBots, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
 import { Bot } from "@/features/strategies/dte/users/details/bot"
 import { OpenPosition } from "@/features/strategies/users/details/openPosition"
@@ -8,7 +8,7 @@ import { ICurrentDayFills } from "@/features/strategies/dte/users/details/curren
 /* eslint-disable no-useless-escape */
 
 const mockState: {
-  dteUsers: IDteUser[],
+  dteUsers: IDteStrategiesResponse,
   bots: Bot[],
   openPositions: OpenPosition[],
   workingOrders: IWorkingOrder[],
@@ -22,7 +22,7 @@ const mockState: {
 }
 
 export function configureDteUsersMock(mock: MockAdapter) {
-  mock.onGet(`${process.env.API_BASE_URL}\/api\/zero-dte\/users`).reply(() => {
+  mock.onGet(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy`).reply(() => {
     return [200, mockState.dteUsers]
   })
 
@@ -50,8 +50,8 @@ export function configureDteUsersMock(mock: MockAdapter) {
     const splited = url.pathname.split("/")
     const id = splited[splited.length - 1]
 
-    const existedSignalIndex = mockState.dteUsers.findIndex(user => id === user.id)
-    if (existedSignalIndex !== -1) mockState.dteUsers.splice(existedSignalIndex, 1, fifoUser)
+    const existedSignalIndex = mockState.dteUsers.strategies.findIndex(user => id === user.userId)
+    if (existedSignalIndex !== -1) mockState.dteUsers.strategies.splice(existedSignalIndex, 1, fifoUser)
     return [200]
   })
 
@@ -67,7 +67,7 @@ export function configureDteUsersMock(mock: MockAdapter) {
     const decodedId = decodeURIComponent(id)
 
     const splitedId: [string, string] = decodedId.split(".") as [string, string]
-    mockState.dteUsers = mockState.dteUsers.filter(signal => signal.id !== splitedId[0])
+    mockState.dteUsers.strategies = mockState.dteUsers.strategies.filter(signal => signal.userId !== splitedId[0])
 
     return [200]
   })

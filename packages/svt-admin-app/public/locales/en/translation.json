@@ -151,7 +151,16 @@
     "PandL": "P&L",
     "Flat": "Flat",
     "OrderID": "Order ID",
-    "EntryID": "Entry ID"
+    "EntryID": "Entry ID",
+    "Connected": "Connected",
+    "Removed": "Removed",
+    "LastUpdated": "Last Updated",
+    "TradeQty": "Trade Qty",
+    "EntryStatus": "Entry Status",
+    "NextEntryTime": "Next Entry Time",
+    "TargetStatus": "Target Status",
+    "CloseStatus": "Close Status",
+    "EndofDayCloseTime": "End of Day Close Time"
   },
   "UserDetailsSection": {
     "CapitalAllocation": "Capital Allocation",

@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import { Box, BoxProps, Stack, SxProps, Theme, styled } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
-import { IDteUser } from "../iDteUser";
 import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
 import { Bot } from "./bot";
 import { getBotColumnsDefs } from "./botsColumnDefs";
@@ -15,9 +14,10 @@ import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
+import { IDteStrategy } from "../types";
 
 type Props = BoxProps & {
-  user: IDteUser;
+  user: IDteStrategy;
   bots: Bot[];
   currentDayFills: ICurrentDayFills[];
   workingOrders: IWorkingOrder[];
