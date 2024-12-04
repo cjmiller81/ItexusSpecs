@@ -28,6 +28,10 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
           title: t("SingleStockView", { ns: "SideBar" }),
           href: "/di_single_stock",
         },
+        {
+          title: t("SectorsView", { ns: "SideBar" }),
+          href: "/di_sectors",
+        },
       ],
     },
   ];
