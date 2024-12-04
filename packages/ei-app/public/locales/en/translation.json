@@ -114,18 +114,18 @@
     "AndGoogleApp": "and Google Authenticator"
   },
   "IndexModelingSection": {
-   "AddSavedWallet": "+ADD SAVED WALLET",
-   "AddSavedPosition": "+ADD SAVED POSITION",
-   "CurrentPosition": "Current Position",
-   "RebalancedIndexQuantities": "Rebalanced Index Quantities",
-   "PositionAllocationUpdates": "Position Allocation Updates",
-   "Clear": "Clear",
-   "Save": "Save",
-   "AddManualPosition": "+ADD MANUAL POSITION",
-   "TokenName": "Token name",
-   "Qty": "Qty",
-   "Add": "Add",
-   "Cancel": "Cancel"
+    "AddSavedWallet": "+ADD SAVED WALLET",
+    "AddSavedPosition": "+ADD SAVED POSITION",
+    "CurrentPosition": "Current Position",
+    "RebalancedIndexQuantities": "Rebalanced Index Quantities",
+    "PositionAllocationUpdates": "Position Allocation Updates",
+    "Clear": "Clear",
+    "Save": "Save",
+    "AddManualPosition": "+ADD MANUAL POSITION",
+    "TokenName": "Token name",
+    "Qty": "Qty",
+    "Add": "Add",
+    "Cancel": "Cancel"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
@@ -231,7 +231,7 @@
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
     "IndexModeling": "Index Modeling",
-    "IndexResults": "Index Results (Compare to Position)",
+    "IndexResults": "Index Results versus Wallet",
     "RunTest": "Run Test",
     "MarketCapWeighted": "Market Cap Weighted Index Investing Strategy Model",
     "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model"
@@ -271,7 +271,6 @@
     "Top100Coins": "Top 100 Coins",
     "Top300Coins": "Top 300 Coins",
     "Top500Coins": "Top 500 Coins"
-    
   },
   "MarketCapEqualWeight": {
     "Index": "Index"
@@ -309,7 +308,6 @@
     "Tomorrow": "Tomorrow",
     "Next7days": "Next 7 days",
     "Next30days": "Next 30 days"
-
   },
   "CryptoCalendar": {
     "CryptoCalendarTitle": "Crypto Calendar:",
@@ -318,7 +316,6 @@
     "Categories": "Categories",
     "Coins": "Coins",
     "NoMoreСurrentEventsForThisDate": "No More Сurrent Events for this Date"
-
   },
   "Vaults": {
     "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",

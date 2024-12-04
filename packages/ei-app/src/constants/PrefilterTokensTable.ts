@@ -15,7 +15,7 @@ export enum PrefilterTokensField {
   Tokenomics = "tNom",
   IsErc20 = "erc20",
   Categories = "categoriesFormatted",
-  Exchanges = "exchanges",
+  Exchanges = "exchangesFormatted",
 }
 export enum PrefilterTokensLabel {
   Id = "Id",
