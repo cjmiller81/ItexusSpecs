@@ -13,7 +13,7 @@ import { getColumns } from "@/features/strategies/dte/users/dteUsersColumnsDefs"
 import UserDetailsSection from "@/features/strategies/dte/users/details/userDetailsSections"
 import { IDteStrategy } from "@/features/strategies/dte/users/types"
 
-export default function Reports() { 
+export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
   const { dteUsers, userDetails } = useAppSelector(state => state.dteUsers)
   const dispatch = useAppDispatch()
@@ -27,17 +27,6 @@ export default function Reports() {
   useEffect(() => {
     dispatch(fetchDteUsers({}))
   }, [dispatch])
-
-  useEffect(() => {
-    if (dteUsers.strategies.length > 0) {
-      const id = dteUsers.strategies[0].userId;
-      router.push(`/strategies/zero-dte/users/${id}`, undefined, {
-        shallow: true,
-      })
-      handleSetSelection(id);
-      handleViewClick(id);
-    }
-  }, [dteUsers])
 
   useEffect(() => {
     if (dteUsers && dteUsers.strategies && !currentUser) {
@@ -118,7 +107,7 @@ export default function Reports() {
   }
 
   return (
-    <StyledRoot sx={{ 
+    <StyledRoot sx={{
       padding: 0 ,
       '& .red': {
       backgroundColor: 'red',
