@@ -1,4 +1,16 @@
-import { BottomNavigation, BottomNavigationAction, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, TableSortLabel } from "@mui/material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TableSortLabel,
+} from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
@@ -7,18 +19,12 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { fetchExchangeAccounts, fetchUserDetails } from "../userDetailsSlice";
 import { ManagedOrderRow } from "./managedOrderList";
 
-export default function UserDetailsSection({
-  opened,
-  id,
-  user,
-  theme,
-  ...props
-}) {
+export default function UserDetailsSection({ opened, id, user, theme, ...props }) {
   const dispatch = useAppDispatch();
   const { exchangeAccounts, userDetails } = useAppSelector(state => state.adminDetails);
   const [navValue, setNavValue] = useState<number>(0);
-  const [order, setOrder] = useState<"asc" | "desc" | undefined>('asc');
-  const [orderBy, setOrderBy] = useState('');
+  const [order, setOrder] = useState<"asc" | "desc" | undefined>("asc");
+  const [orderBy, setOrderBy] = useState("");
   const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
 
   useEffect(() => {
@@ -28,12 +34,7 @@ export default function UserDetailsSection({
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (
-      id &&
-      navValue >= 0 &&
-      exchangeAccounts?.accounts &&
-      exchangeAccounts.accounts.length > 0
-    ) {
+    if (id && navValue >= 0 && exchangeAccounts?.accounts && exchangeAccounts.accounts.length > 0) {
       dispatch(
         fetchUserDetails({
           userId: id,
@@ -53,53 +54,68 @@ export default function UserDetailsSection({
 
   const accountBalance = useMemo(() => {
     if (exchangeAccounts?.accounts && exchangeAccounts?.accounts?.length > 0) {
-       const account = exchangeAccounts.accounts[navValue];
+      const account = exchangeAccounts.accounts[navValue];
 
-       return "$" + Number(`${account.accountBalance.units}.${account.accountBalance.nanos}`)
-                       .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return (
+        "$" +
+        Number(`${account.accountBalance.units}.${account.accountBalance.nanos}`).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
     }
 
     return "";
   }, [exchangeAccounts, navValue]);
 
   const columns = [
-    { field: "timestamp", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120, valueGetter: (params) => (new Date(params.row.timestamp.seconds * 1000)).toLocaleString()},
+    {
+      field: "timestamp",
+      headerName: t("FillTime", { ns: "ColumnsDefs" }),
+      width: 120,
+      valueGetter: params => new Date(params.row.timestamp.seconds * 1000).toLocaleString(),
+    },
     { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
-    { field: "marketSymbol", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120, valueGetter: (params) =>  params.row.marketSymbol.split(' ').pop()},
+    {
+      field: "marketSymbol",
+      headerName: t("OptionLeg", { ns: "UserDetailsSection" }),
+      width: 120,
+      valueGetter: params => params.row.marketSymbol.split(" ").pop(),
+    },
     { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
     { field: "amountFilled", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
     { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
   ];
   const orderColumns = [
-    { id: 'timeLastUpdated.seconds', label: t("LastTimeUpdate") },
-    { id: 'marketSymbol', label: t("Symbol") },
-    { id: 'orderType', label: t("SpreadType") },
-    { id: 'qtyPlaced', label: t("QtyPlaced") },
-    { id: 'qtyFilled', label: t("QtyFilled") },
-    { id: 'priceLimit', label: t("SpreadPrice") },
-    { id: 'priceAverageFill', label: t("AvgFillPrice") },
-    { id: 'exchangeOrderId', label: t("OrderId") },
-    { id: 'orderStatus', label: t("Status") },
-    { id: 'source', label: t("Source") },
-    { id: 'rejectReason', label: t("Error") },
+    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate") },
+    { id: "marketSymbol", label: t("Symbol") },
+    { id: "orderType", label: t("SpreadType") },
+    { id: "qtyPlaced", label: t("QtyPlaced") },
+    { id: "qtyFilled", label: t("QtyFilled") },
+    { id: "priceLimit", label: t("SpreadPrice") },
+    { id: "priceAverageFill", label: t("AvgFillPrice") },
+    { id: "exchangeOrderId", label: t("OrderId") },
+    { id: "orderStatus", label: t("Status") },
+    { id: "source", label: t("Source") },
+    { id: "rejectReason", label: t("Error") },
   ];
 
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+  const handleRequestSort = property => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
-  const createSortHandler = (property) => () => {
+  const createSortHandler = property => () => {
     handleRequestSort(property);
   };
 
   const sortedRows = [...(userDetails?.managedOrderList.orders || [])].sort((a, b) => {
     if (orderBy) {
-      const firstValue = orderBy.includes('.') ? orderBy.split('.').reduce((o, i) => o[i], a) : a[orderBy];
-      const secondValue = orderBy.includes('.') ? orderBy.split('.').reduce((o, i) => o[i], b) : b[orderBy];
-  
-      if (order === 'asc') {
+      const firstValue = orderBy.includes(".") ? orderBy.split(".").reduce((o, i) => o[i], a) : a[orderBy];
+      const secondValue = orderBy.includes(".") ? orderBy.split(".").reduce((o, i) => o[i], b) : b[orderBy];
+
+      if (order === "asc") {
         return firstValue < secondValue ? -1 : 1;
       } else {
         return firstValue > secondValue ? -1 : 1;
@@ -192,37 +208,51 @@ export default function UserDetailsSection({
 
       <Box sx={{ height: "auto", width: "95%", marginLeft: "25px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("Orders", { ns: "UserDetailsSection" })}</Typography>
-        <TableContainer sx={{ 
-           marginTop: "10px", 
-           maxHeight: "440px", 
-           width: "100%", 
-           height: "auto", 
-           border: "1px solid rgba(0, 0, 0, 0.12)", 
-           borderRadius: "5px", 
-           borderCollapse: "separate" 
-           }}>
+        <TableContainer
+          sx={{
+            marginTop: "10px",
+            maxHeight: "440px",
+            width: "100%",
+            height: "auto",
+            border: "1px solid rgba(0, 0, 0, 0.12)",
+            borderRadius: "5px",
+            borderCollapse: "separate",
+          }}>
           <Table stickyHeader>
-           <TableHead>
+            <TableHead>
               <TableRow>
-                <TableCell />
-                {orderColumns.map((column) => (
-                  <TableCell key={column.id}>
+                <TableCell
+                  sx={{
+                    backgroundColor: "#009acf",
+                    color: "white",
+                  }}
+                />
+                {orderColumns.map(column => (
+                  <TableCell
+                    key={column.id}
+                    sx={{
+                      backgroundColor: "#009acf",
+                      color: "white",
+                    }}>
                     <TableSortLabel
                       active={orderBy === column.id}
-                      direction={orderBy === column.id ? order : 'asc'}
+                      direction={orderBy === column.id ? order : "asc"}
                       onClick={createSortHandler(column.id)}>
-                        {column.label}
+                      {column.label}
                     </TableSortLabel>
                   </TableCell>
                 ))}
               </TableRow>
-           </TableHead>
-           <TableBody>
-             {sortedRows.map((row) => (
-               <ManagedOrderRow key={row.exchangeOrderId} row={row} />
-             ))}
+            </TableHead>
+            <TableBody>
+              {sortedRows.map(row => (
+                <ManagedOrderRow
+                  key={row.exchangeOrderId}
+                  row={row}
+                />
+              ))}
             </TableBody>
-         </Table>
+          </Table>
         </TableContainer>
       </Box>
     </Box>
