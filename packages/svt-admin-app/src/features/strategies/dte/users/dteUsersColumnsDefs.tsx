@@ -84,10 +84,12 @@ export function getColumns(
     {
       field: "userId",
       headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
-      minWidth: 140,
+      minWidth: 100,
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "exchangeUsername",
@@ -96,6 +98,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "accountNumber",
@@ -104,6 +108,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "connectionStatus",
@@ -112,6 +118,8 @@ export function getColumns(
       editable: true,
       type: "boolean",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       renderCell: (params: GridRenderCellParams) => {
         if (params.value) {
           return <Chip 
@@ -138,6 +146,8 @@ export function getColumns(
       editable: true,
       type: "boolean",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       renderCell: (params: GridRenderCellParams) => {
         if (params.value) {
           return <Chip 
@@ -158,6 +168,8 @@ export function getColumns(
       editable: true,
       type: "boolean",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       renderCell: (params: GridRenderCellParams) => {
         if (params.value) {
           return <Chip 
@@ -184,6 +196,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       cellClassName: (param: GridCellParams<GridValidRowModel>) => {
         if (param.value && (param.value as string).toLowerCase().indexOf("error") > -1) {
           return "dark-yellow"
@@ -198,6 +212,8 @@ export function getColumns(
       editable: true,
       type: "date",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       valueFormatter: (param: GridValueFormatterParams<ITimestamp>) => {
         if (param.value) {
           return new Date(param.value.seconds * 1000).toLocaleString()
@@ -208,14 +224,15 @@ export function getColumns(
     {
       field: "tradeQty",
       headerName: i18next.t("TradeQty", { ns: "ColumnsDefs" }),
-      minWidth: 140,
+      minWidth: 100,
       editable: true,
       type: "number",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       valueFormatter: (param: GridValueFormatterParams<ITradeQuantity>) => {
         if(param.value) {
-          return Number(`${param.value.units}.${param.value.nanos}`)
-                      .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          return param.value.units;
         }
         return null;
       },
@@ -227,6 +244,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "nextEntryTimestamp",
@@ -235,6 +254,8 @@ export function getColumns(
       editable: true,
       type: "date",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       valueFormatter: (param: GridValueFormatterParams<ITimestamp>) => {
         if (param.value) {
           return new Date(param.value.seconds * 1000).toLocaleString()
@@ -249,6 +270,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "stopOrderStatus",
@@ -257,6 +280,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "nextEndOfDayCloseTimestamp",
@@ -265,6 +290,8 @@ export function getColumns(
       editable: true,
       type: "date",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       valueFormatter: (param: GridValueFormatterParams<ITimestamp>) => {
         if (param.value) {
           return new Date(param.value.seconds * 1000).toLocaleString()
@@ -279,6 +306,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     }
   ]
 
