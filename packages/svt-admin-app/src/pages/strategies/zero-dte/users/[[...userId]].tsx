@@ -5,7 +5,7 @@ import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
 import { useEffect, useState } from "react"
 import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowParams } from "@mui/x-data-grid"
 import { deleteDteUser, fetchDteUsers, fetchUserDetails, updateDteUser } from "@/features/strategies/dte/users/dteUsersSlice"
-import { tableSx } from "@/features/strategies/shared/tableSx"
+import { autoSizeTableSx } from "@/features/strategies/shared/tableSx"
 import { Box, IconButton } from "@mui/material"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
@@ -129,7 +129,7 @@ export default function Reports() {
       }}
       rowSelection={false}
       checkboxSelection={false}
-      sx={tableSx}
+      sx={autoSizeTableSx}
       rows={dteUsers.strategies}
       columns={columns}
       editMode="row"
