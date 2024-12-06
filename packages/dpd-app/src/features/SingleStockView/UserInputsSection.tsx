@@ -66,6 +66,15 @@ const UserInputsSection = () => {
     const [ticker, setTicker] = useState('');
     const [filteredData, setFilteredData] = useState<Market[]>([]);
     const { t } = useTranslation("UserInputsSection");
+    const [statisticsData, setStatisticsData] = useState({
+      totalVolume: 0,
+      totalBought: 0,
+      totalSold: 0,
+      avgTotalVolume: 0,
+      avgBuySellRatio: 0,
+      avgBuyVolume: 0,
+      avgSellVolume: 0,
+    });
     
     const handleDateChange = (e, type) => {
         const newDate = e.target.value ? new Date(e.target.value) : null;
@@ -95,6 +104,15 @@ const UserInputsSection = () => {
       const handleRunModel = () => {
         if (!startDate || !endDate) {
           setFilteredData([]);
+          setStatisticsData({
+            totalVolume: 0,
+            totalBought: 0,
+            totalSold: 0,
+            avgTotalVolume: 0,
+            avgBuySellRatio: 0,
+            avgBuyVolume: 0,
+            avgSellVolume: 0,
+          });
         } else {
           const filtered = filterDataByDateRange(startDate, endDate);
           const updatedData = filtered.map(item => ({
@@ -102,12 +120,44 @@ const UserInputsSection = () => {
             symbol: ticker || item.symbol,
           }));
           setFilteredData(updatedData);
+      
+          const newStats = calculateStatistics(updatedData);
+          setStatisticsData(newStats);
         }
       };
+      
+
+      const formatNumber = (value: number) => {
+        return new Intl.NumberFormat('en-US', {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        }).format(value);
+      };
+
+      const calculateStatistics = (data: Market[]) => {
+        const totalVolume = data.reduce((acc, item) => acc + item.total, 0);
+        const totalBought = data.reduce((acc, item) => acc + item.bought, 0);
+        const totalSold = data.reduce((acc, item) => acc + item.sold, 0);
+        const avgTotalVolume = data.length > 0 ? totalVolume / data.length : 0;
+        const avgBuySellRatio = data.length > 0 ? data.reduce((acc, item) => acc + item.buyRatio, 0) / data.length : 0;
+        const avgBuyVolume = data.length > 0 ? totalBought / data.length : 0;
+        const avgSellVolume = data.length > 0 ? totalSold / data.length : 0;
+      
+        return {
+          totalVolume,
+          totalBought,
+          totalSold,
+          avgTotalVolume,
+          avgBuySellRatio,
+          avgBuyVolume,
+          avgSellVolume,
+        };
+      };
+      
 
   return (
-    <Grid container spacing={3} alignItems="flex-start">
-      <Grid item xs={12} md={3.8}>
+    <Grid container spacing={1} alignItems="flex-start">
+      <Grid item xs={12} md={4.1}>
 
         <Grid container spacing={2} alignItems="center" mb={2}>
           <Grid item>
@@ -185,19 +235,19 @@ const UserInputsSection = () => {
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("TotalVolume")}:</Typography>
-            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{statisticsData.totalVolume}</Typography>
+            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{formatNumber(statisticsData.totalVolume)}</Typography>
           </Box>
         </Grid>
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("TotalBought")}:</Typography>
-            <Typography variant="body1" sx={{color: "green", fontWeight: 'bold'}}>{statisticsData.totalBought}</Typography>
+            <Typography variant="body1" sx={{color: "green", fontWeight: 'bold'}}>{formatNumber(statisticsData.totalBought)}</Typography>
           </Box>
         </Grid>
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("TotalSold")}:</Typography>
-            <Typography variant="body1" sx={{color: "#DC143C", fontWeight: 'bold'}}>{statisticsData.totalSold}</Typography>
+            <Typography variant="body1" sx={{color: "#DC143C", fontWeight: 'bold'}}>{formatNumber(statisticsData.totalSold)}</Typography>
           </Box>
         </Grid>
       </Grid>
@@ -208,13 +258,13 @@ const UserInputsSection = () => {
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("AvgTotalVolume")}:</Typography>
-            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{statisticsData.avgTotalVolume}</Typography>
+            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{formatNumber(statisticsData.avgTotalVolume)}</Typography>
           </Box>
         </Grid>
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("AvgBuy-SellRatio")}:</Typography>
-            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{statisticsData.avgBuySellRatio}</Typography>
+            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{formatNumber(statisticsData.avgBuySellRatio)}</Typography>
           </Box>
         </Grid>
       </Grid>
@@ -225,13 +275,13 @@ const UserInputsSection = () => {
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("AvgBuyVolume")}:</Typography>
-            <Typography variant="body1" sx={{color: "green", fontWeight: 'bold'}}>{statisticsData.avgBuyVolume}</Typography>
+            <Typography variant="body1" sx={{color: "green", fontWeight: 'bold'}}>{formatNumber(statisticsData.avgBuyVolume)}</Typography>
           </Box>
         </Grid>
         <Grid item>
           <Box display="flex" justifyContent="space-between">
             <Typography variant="h7">{t("AvgSellVolume")}:</Typography>
-            <Typography variant="body1" sx={{color: "#DC143C", fontWeight: 'bold'}}>{statisticsData.avgSellVolume}</Typography>
+            <Typography variant="body1" sx={{color: "#DC143C", fontWeight: 'bold'}}>{formatNumber(statisticsData.avgSellVolume)}</Typography>
           </Box>
         </Grid>
       </Grid>
@@ -239,7 +289,7 @@ const UserInputsSection = () => {
   </Grid>
 </Grid>
 
-      <Grid item xs={12} md={9}>
+      <Grid item xs={12} md={9.2}>
         <MarketTable
           sx={{
             ...tableScrollSx,
