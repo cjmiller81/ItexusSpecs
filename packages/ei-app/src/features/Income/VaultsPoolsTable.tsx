@@ -135,7 +135,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             e.cancel = true;
           }}
         />
-        <HeaderFilter visible={false}>
+        <HeaderFilter visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
