@@ -179,5 +179,34 @@
     "Required": "Required",
     "PublicEye": "Watched Public Wallet",
     "CompareToSymbol": "Leave Blank for Plot Only"
+  },
+  "UserInputsSection": {
+    "AvgSellVolume": "Avg Sell Volume",
+    "AvgBuyVolume": "Avg Buy Volume",
+    "AvgBuy-SellRatio": "Avg Buy-Sell Ratio",
+    "AvgTotalVolume": "Avg Total Volume",
+    "TotalSold": "Total Sold",
+    "TotalBought": "Total Bought",
+    "TotalVolume": "Total Volume",
+    "TotalStatistics": "Total Statistics",
+    "RunModel": "Run Model",
+    "EndDate": "End Date",
+    "StartDate": "Start Date",
+    "Ticker": "Ticker",
+    "EnterTicker": "Enter Ticker"
+  },
+  "MarketTableColumns": {
+    "Date": "Date",
+    "Symbol": "Symbol",
+    "Bought": "Bought",
+    "Sold": "Sold",
+    "%Avg": "% Avg",
+    "BuyRatio": "Buy Ratio",
+    "DPIndex": "DP Index",
+    "Total": "Total"
+  },
+  "DISingleStock": {
+    "UserInputs": "User Inputs",
+    "SingleStockPage": "Single Stock View Page"
   }
 }
