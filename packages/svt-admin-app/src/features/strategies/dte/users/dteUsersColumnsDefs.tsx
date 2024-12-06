@@ -29,7 +29,7 @@ export function getColumns(
   handleSetSelection: (id: GridRowId) => void,
   rowModesModel: GridRowModesModel,
   theme: Theme,
-  currentUserId?: string
+  currentRowId?: string
 ) {
   const columns: GridColDef<IDteStrategy>[] = [
     {
@@ -67,7 +67,7 @@ export function getColumns(
         return [
           <GridActionsCellItem
             key="3"
-            icon={<VisibilityIcon sx={{fill: currentUserId !== id ? selectedIconColor : theme.palette.text.primary}} />}
+            icon={<VisibilityIcon sx={{fill: currentRowId !== id ? selectedIconColor : theme.palette.text.primary}} />}
             label={i18next.t("View", { ns: "Common" })}
             className="textPrimary"
             onClick={() => 
@@ -229,7 +229,7 @@ export function getColumns(
       type: "number",
       flex: 1,
       headerAlign: 'left',
-      align: 'left',
+      align: 'right',
       valueFormatter: (param: GridValueFormatterParams<ITradeQuantity>) => {
         if(param.value) {
           return param.value.units;
