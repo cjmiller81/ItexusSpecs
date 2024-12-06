@@ -4,6 +4,7 @@ import { Box } from "@mui/system";
 import i18next, { t } from "i18next";
 
 i18next.setDefaultNamespace("DISingleStock");
+import { PageTitle } from "components";
 
 export default function SingleStockView() {
   return (

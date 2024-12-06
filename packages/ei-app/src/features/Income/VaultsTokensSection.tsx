@@ -1,4 +1,6 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
+import { useTranslation } from "react-i18next";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, AccordionProps, Box, Typography } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
@@ -6,8 +8,6 @@ import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
 import { Workbook } from "exceljs";
 import { saveAs } from "file-saver-es";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
@@ -16,75 +16,27 @@ type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
 };
 
-interface PoolApy {
-  totalApy: number;
-}
-
-interface ApyData {
-  [pool: string]: PoolApy;
-}
-
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const [vaults, setVaults] = useState<VaultsData[]>([]);
-  const [totalApy, setTotalApy] = useState<ApyData | null>(null);
-  const [tvlData, setTvlData] = useState<{ [key: string]: number }>({});
   const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
   const { t } = useTranslation("Vaults");
   const { sidebarOpened } = useAppSelector(store => store.ui);
 
   useEffect(() => {
-    if (!isVaultsLoading) {
+    if (!isVaultsLoading && vaultsData) {
       setVaults(vaultsData.vaults);
-      setTotalApy(vaultsData.apy);
-      setTvlData(vaultsData.tvl);
     }
   }, [vaultsData, isVaultsLoading]);
 
-  const combinedVaults = useMemo(() => {
-    if (!vaults || !totalApy || !tvlData) return [];
-
-    return vaults.map((pool, index) => {
-      let tvl: number | null = null;
-      let apy: string | null = null;
-
-      const poolKey = pool.id;
-
-      if (typeof poolKey !== "string") {
-        return { ...pool, tvl, apy };
-      }
-
-      const tvlFound = Object.entries(tvlData).find(([key]) => tvlData[key][poolKey] !== undefined);
-      if (tvlFound) {
-        tvl = tvlFound[1][poolKey];
-      } else {
-        const fallbackKey = Object.keys(tvlData)[index];
-        if (fallbackKey && tvlData[fallbackKey]) {
-          tvl = Object.values(tvlData[fallbackKey])[0];
-        }
-      }
-
-      const apyFound = Object.entries(totalApy).find(([key]) => totalApy[key]?.[poolKey] !== undefined);
-      if (apyFound) {
-        const apyValue = apyFound[1][poolKey]?.totalApy?.toString();
-        apy = apyValue?.length > 8 ? apyValue.slice(0, 8) : apyValue;
-      } else {
-        const fallbackApyKey = Object.keys(totalApy)[index];
-        if (fallbackApyKey && totalApy[fallbackApyKey]) {
-          const fallbackApyValue = totalApy[fallbackApyKey].totalApy?.toString();
-          apy = fallbackApyValue?.length > 8 ? fallbackApyValue.slice(0, 8) : fallbackApyValue;
-        }
-      }
-
-      const isRetired = pool.status === "eol";
-
-      return {
-        ...pool,
-        tvl,
-        apy,
-        isRetired,
-      };
-    });
-  }, [vaults, totalApy, tvlData]);
+  const processedVaults = useMemo(() => {
+    return vaults.map(pool => ({
+      ...pool,
+      apy: pool.breakdowns ? pool.breakdowns.totalApy.toFixed(2) : null,
+      tvl: pool.tvls ? pool.tvls?.value : null,
+      platformId: pool.platform_id || null,
+      isRetired: pool.status === "eol",
+    }));
+  }, [vaults]);
 
   const filteredTokensSource = useMemo(
     () =>
@@ -92,16 +44,15 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         store: {
           type: "array",
           key: "id",
-          data: combinedVaults,
+          data: processedVaults,
         },
       }),
-    [combinedVaults],
+    [processedVaults],
   );
 
-  const onExporting = useCallback(async (e: any): Promise<void> => {
+  const onExporting = useCallback(async (e: any) => {
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Main sheet");
-
+    const worksheet = workbook.addWorksheet("Vaults");
     const currentDate = new Date();
 
     await exportDataGrid({
@@ -110,12 +61,11 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       autoFilterEnabled: true,
     });
 
-    await workbook.xlsx.writeBuffer().then(buffer => {
-      saveAs(
-        new Blob([buffer], { type: "application/octet-stream" }),
-        `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split("T")[0]}.xlsx`,
-      );
-    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(
+      new Blob([buffer], { type: "application/octet-stream" }),
+      `Vaults-Data-${currentDate.toISOString().split("T")[0]}.xlsx`,
+    );
     e.cancel = true;
   }, []);
 

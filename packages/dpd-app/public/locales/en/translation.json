@@ -130,7 +130,8 @@
     "Tools": "Tools",
     "DarkPoolsData": "Dark Pools Data",
     "DIShortSaleVolume": "DI Short Sale Volume",
-    "SingleStockView": "Single Stock View"
+    "SingleStockView": "Single Stock View",
+    "SectorsView": "Sectors View"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",

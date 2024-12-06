@@ -1,11 +1,11 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice, Status } from "components";
-import { IDteUser } from "./iDteUser";
 import { dteUsersService } from "./dteUsersService";
 import { Bot } from "./details/bot";
 import { OpenPosition } from "./details/openPosition";
 import { IWorkingOrder } from "./details/workingOrderInterface";
 import { ICurrentDayFills } from "./details/currentDayFillsInterface";
+import { IDteStrategiesResponse, IDteStrategy } from "./types";
 
 type UserDetails = {
   bots: Bot[]
@@ -15,7 +15,7 @@ type UserDetails = {
 }
 
 export interface IDteUsersSliceState {
-  dteUsers: IDteUser[];
+  dteUsers: IDteStrategiesResponse;
   userDetails?: UserDetails;
   statusFetchingDteUsers: Status;
   statusCreatingDteUsers: Status;
@@ -24,7 +24,7 @@ export interface IDteUsersSliceState {
 }
 
 const initialState: IDteUsersSliceState = {
-  dteUsers: [],
+  dteUsers: { strategies: [] },
   statusFetchingDteUsers: "idle",
   statusCreatingDteUsers: "idle",
   statusUpdatingDteUsers: "idle",
@@ -36,7 +36,7 @@ export const dteUsersSlice = createAppSlice({
     initialState,
     reducers: create => ({
       updateDteUser: create.asyncThunk(
-        async (dteUser: IDteUser, thunkApi) => {
+        async (dteUser: IDteStrategy, thunkApi) => {
           await dteUsersService.update(dteUser)
           thunkApi.dispatch(fetchDteUsers(null))
         },
@@ -77,7 +77,7 @@ export const dteUsersSlice = createAppSlice({
           pending: state => {
             state.statusFetchingDteUsers = "loading"
           },
-          fulfilled: (state, action: PayloadAction<IDteUser[]>) => {
+          fulfilled: (state, action: PayloadAction<IDteStrategiesResponse>) => {
             state.statusFetchingDteUsers = "idle"
             state.dteUsers = action.payload
           },

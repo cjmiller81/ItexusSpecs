@@ -26,6 +26,11 @@ import { fetchUserAccountConnectionList } from "@/features/strategies/users/user
 import { IUserAccountConnection } from "@/features/strategies/users/types";
 import { useMediaQuery } from "@mui/system";
 
+const calculateGridHeight = (baseMultiplier: number, additionalMultiplier: number) => {
+  const displayHeight = window.innerHeight;
+  return displayHeight * baseMultiplier + displayHeight * additionalMultiplier;
+};
+
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { adminUsers } = useAppSelector(state => state.adminDetails);
@@ -37,6 +42,9 @@ export default function Reports() {
   const [currentUser, setCurrentUser] = useState<IUserAccountConnection | undefined>();
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
   const isMobile = useMediaQuery("(max-width: 485px)");
+  const [tableHeight, setTableHeight] = useState("70vh");
+  const [gridHeight, setGridHeight] = useState(() => calculateGridHeight(0.58, 0.1554));
+  const { sidebarOpened } = useAppSelector(state => state.ui);
 
   useEffect(() => {
     dispatch(fetchUserAccountConnectionList());
@@ -74,6 +82,44 @@ export default function Reports() {
       shallow: true,
     });
   }, [currentUser, dispatch]);
+
+  useEffect(() => {
+    const calculateHeight = () => {
+      const availableHeight = window.innerHeight - 100;
+      setTableHeight(`${availableHeight}px`);
+    };
+    document.body.style.overflow = "hidden";
+    calculateHeight();
+    window.addEventListener("resize", calculateHeight);
+    return () => {
+      window.removeEventListener("resize", calculateHeight);
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newHeight = calculateGridHeight(0.58, 0.15);
+      setGridHeight(newHeight);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const footerContainer = document.querySelector(".MuiDataGrid-footerContainer");
+      if (footerContainer && footerContainer instanceof HTMLDivElement) {
+        footerContainer.style.borderTop = "none";
+        clearInterval(intervalId);
+      }
+    }, 100);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -121,8 +167,6 @@ export default function Reports() {
     setRightBarOpen(prev => !prev);
   };
 
-  const { sidebarOpened } = useAppSelector(state => state.ui);
-
   return (
     <StyledRoot
       sx={{
@@ -142,11 +186,10 @@ export default function Reports() {
         },
       }}>
       <Grid
+        sx={{ height: tableHeight }}
         container
         spacing={1}>
-        <Grid
-          item
-          sx={{ height: "80vh" }}>
+        <Grid item>
           <DataGrid<IUserAccountConnection>
             slots={{ toolbar: GridToolbar }}
             componentsProps={{
@@ -172,9 +215,13 @@ export default function Reports() {
             checkboxSelection={false}
             sx={{
               ...tableSx,
-              height: "100%",
+              height: "98%",
+              "& .MuiDataGrid-footerContainer": {
+                height: "auto",
+                paddingBottom: 0,
+              },
               "& .MuiDataGrid-main": {
-                height: "auto !important",
+                height: `${gridHeight}px`,
               },
             }}
             rows={adminUsers?.userAccountConnectionList_ ?? []}

@@ -40,6 +40,42 @@ export const tableSx: SxProps<Theme> = {
   },
 }
 
+export const autoSizeTableSx: SxProps<Theme> = {
+  width: "100%",
+  height: "calc(100vh - 130px)",
+  mt: 2,
+  display: "grid",
+  "& .MuiDataGrid-virtualScroller": {},
+  "& .MuiDataGrid-footerContainer": {
+    height: "60px",
+    paddingBottom: "15px",
+  },
+  "& .MuiDataGrid-virtualScrollerContent": {},
+  "& .MuiDataGrid-row": {
+    maxHeight: "1000px !important",
+  },
+  ".MuiDataGrid-cell--withRenderer ": {
+    maxHeight: "1000px !important",
+  },
+  "& .MuiDataGrid-row--editing": {
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: theme => theme.palette.primary.main,
+  },
+  "& .MuiDataGrid-cell--editing": {
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: theme => theme.palette.primary.main,
+    backgroundColor: theme =>
+      theme.palette.mode === "dark"
+        ? darken(theme.palette.primary.main, 0.6)
+        : lighten(theme.palette.primary.main, 0.7),
+  },
+  ".MuiDataGrid-withBorderColor": {
+    bgColor: "transparent",
+  },
+}
+
 export const smallTableSx: SxProps<Theme>= {
   ...tableSx,
   minHeight: "200px",
