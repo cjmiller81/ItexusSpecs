@@ -164,7 +164,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           }}
         />
         <Sorting mode="single" />
-        <HeaderFilter visible={false}>
+        <HeaderFilter visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel enabled />

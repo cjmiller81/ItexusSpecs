@@ -122,7 +122,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
             e.cancel = true;
           }}
         />
-        <HeaderFilter visible={false}>
+        <HeaderFilter visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
