@@ -42,9 +42,13 @@ export const tableSx: SxProps<Theme> = {
 
 export const autoSizeTableSx: SxProps<Theme> = {
   width: "100%",
-  height: "calc(100vh - 130px)",
+  maxHeight: "calc(100vh - 130px)",
+  minHeight: "calc(100vh - 130px)",
   mt: 2,
   display: "grid",
+  "& .MuiDataGrid-main": {
+    height: "calc(100vh - 220px)",
+  },
   "& .MuiDataGrid-virtualScroller": {},
   "& .MuiDataGrid-footerContainer": {
     height: "60px",
