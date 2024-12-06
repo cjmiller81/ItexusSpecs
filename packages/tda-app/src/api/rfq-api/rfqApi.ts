@@ -69,15 +69,17 @@ export const rfqApi = {
 
   getCurrenciesPairs: async (): Promise<CurrencyPair[]> => {
     const response = await appAxios.get<CurrencyPairRaw[]>(`/api/customers/pairs`);
-    return response.data.map<CurrencyPair>(pair => {
-      const splitedPair = pair.Symbol.split("-");
-      return {
-        symbol1: splitedPair[0],
-        symbol2: splitedPair[1],
-        minSize: pair.MinimumSize ? parseFloat(pair.MinimumSize) : undefined,
-        maxSize: pair.MaximumSize ? parseFloat(pair.MaximumSize) : undefined,
-      };
-    });
+    return response.data
+      .filter(pair => pair.Symbol && pair.Symbol.length > 0)
+      .map<CurrencyPair>(pair => {
+        const splitedPair = pair.Symbol.split("-");
+        return {
+          symbol1: splitedPair[0],
+          symbol2: splitedPair[1],
+          minSize: pair.MinimumSize ? parseFloat(pair.MinimumSize) : undefined,
+          maxSize: pair.MaximumSize ? parseFloat(pair.MaximumSize) : undefined,
+        };
+      });
   },
 
   getHistoryData: async ({ accountNumber, fromDate, toDate }: GetHistoryDataRequest): Promise<HistoryDataParsed[]> => {
