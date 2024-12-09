@@ -193,7 +193,8 @@
     "EndDate": "End Date",
     "StartDate": "Start Date",
     "Ticker": "Ticker",
-    "EnterTicker": "Enter Ticker"
+    "EnterTicker": "Enter Ticker",
+    "Date": "Date"
   },
   "MarketTableColumns": {
     "Date": "Date",
@@ -207,6 +208,7 @@
   },
   "DISingleStock": {
     "UserInputs": "User Inputs",
-    "SingleStockPage": "Single Stock View Page"
+    "SingleStockPage": "Single Stock View Page",
+    "SectorsView": "SectorsView"
   }
 }
