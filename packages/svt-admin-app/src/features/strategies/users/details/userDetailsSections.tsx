@@ -71,6 +71,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
     {
       field: "timestamp",
       headerName: t("FillTime", { ns: "ColumnsDefs" }),
+      width: 150,
       valueGetter: params => new Date(params.row.timestamp.seconds * 1000).toLocaleString(),
     },
     { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }) },

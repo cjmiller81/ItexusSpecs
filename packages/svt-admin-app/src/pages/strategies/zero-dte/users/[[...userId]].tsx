@@ -3,10 +3,10 @@ import { styled, useTheme } from "@mui/material/styles"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
 import { useEffect, useState } from "react"
-import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowParams } from "@mui/x-data-grid"
+import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowParams, GridToolbar } from "@mui/x-data-grid"
 import { deleteDteUser, fetchDteUsers, fetchUserDetails, updateDteUser } from "@/features/strategies/dte/users/dteUsersSlice"
 import { autoSizeTableSx } from "@/features/strategies/shared/tableSx"
-import { Box, IconButton } from "@mui/material"
+import { Box, IconButton, useMediaQuery } from "@mui/material"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import { getColumns } from "@/features/strategies/dte/users/dteUsersColumnsDefs"
@@ -23,6 +23,7 @@ export default function Reports() {
   const [rightBarOpen, setRightBarOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<IDteStrategy | undefined>()
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
+  const isMobile = useMediaQuery("(max-width: 485px)");
 
   useEffect(() => {
     dispatch(fetchDteUsers({}))
@@ -76,7 +77,7 @@ export default function Reports() {
   }
 
   const handleViewClick = (id: GridRowId) => {
-    const user = dteUsers.strategies.find(user => user.userId === id)
+    const user = dteUsers.strategies.find(user => getRowId(user) === id)
     setRightBarOpen(true)
     setCurrentUser(user)
   }
@@ -90,6 +91,10 @@ export default function Reports() {
     setRowModesModel(newRowModesModel)
   }
 
+  const getRowId = (strategy: IDteStrategy) => {
+    return strategy.userId + strategy.accountNumber;
+  }
+
   const columns = getColumns(
     handleSaveClick,
     handleEditClick,
@@ -99,7 +104,7 @@ export default function Reports() {
     handleSetSelection,
     rowModesModel,
     theme,
-    currentUser?.userId,
+    currentUser ? getRowId(currentUser) : undefined,
   )
 
   const onToggleSideBar = () => {
@@ -124,16 +129,33 @@ export default function Reports() {
     }
     }}>
     <DataGrid<IDteStrategy>
-      slots={{
-        footer: () => <></>,
+      slots={{ toolbar: GridToolbar }}
+      slotProps={{
+        toolbar: {
+          sx: {
+            "& .MuiButton-root": {
+              color: theme.palette.text.primary,
+              fontWeight: "bold",
+            },
+          },
+        },
       }}
+      autoPageSize
       rowSelection={false}
       checkboxSelection={false}
-      sx={autoSizeTableSx}
+      sx={{...autoSizeTableSx, 
+        "& .MuiDataGrid-footerContainer": {
+          height: "auto",
+          paddingBottom: 0,
+        },
+        "& .MuiDataGrid-main": {
+          height: `calc(100vh - ${isMobile ? '250px' : '220px'})`,
+        },
+      }}
       rows={dteUsers.strategies}
       columns={columns}
       editMode="row"
-      getRowId={row => row.userId}
+      getRowId={getRowId}
       rowModesModel={rowModesModel}
       onRowModesModelChange={handleRowModesModelChange}
       onRowEditStop={handleRowEditStop}
