@@ -272,7 +272,8 @@ export const initManagedOrderList: IManagedOrderList = {
       hasPriceStopTrigger: false,
       qtyFilled: 1,
       qtyPlaced: 1,
-      rejectReason: "",
+      rejectReason:
+        "Your account does not have sufficient buying power available for this order. Please deposit funds or reduce the order size to place this.",
       source: "TradingPlatform.Tastytrade_3c4400ee-c6d6-4bf9-888c-2175a201c8b0",
       timeCreated: {
         seconds: 1730486700,
@@ -701,7 +702,7 @@ export const initManagedOrderList: IManagedOrderList = {
       marketAssetType: "Future",
       marketSymbol: "/ESZ4",
       orderId: "d54ed6ff-c510-4014-9625-91f35e1ac2db",
-      orderStatus: "FilledPartiallyAndCancelled",
+      orderStatus: "Filled",
       orderType: "Straddle",
       priceAverageFill: 0.0002,
       hasPriceAverageFill: true,

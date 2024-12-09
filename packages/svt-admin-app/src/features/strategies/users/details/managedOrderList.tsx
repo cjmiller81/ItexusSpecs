@@ -12,11 +12,15 @@ import {
   TableRow,
   ThemeProvider,
   Typography,
+  Tooltip,
+  TooltipProps,
 } from "@mui/material";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/system";
+import { styled } from "@mui/material/styles";
+import { tooltipClasses } from "@mui/material/Tooltip";
 
 enum ThemeMode {
   DARK = "dark",
@@ -29,7 +33,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
   const theme = useTheme();
 
   const borderColor =
-    theme.palette.mode === ThemeMode.DARK
+    theme.palette.mode !== ThemeMode.DARK
       ? "0.1px solid rgba(81, 81, 81, 1) !important"
       : "0.1px solid rgba(224, 224, 224, 1) !important";
 
@@ -37,6 +41,26 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
     border: borderColor,
     borderCollapse: "collapse",
   };
+
+  const NoMaxWidthTooltip = styled(
+    ({
+      className,
+      children,
+      ...props
+    }: TooltipProps & {
+      children: React.ReactNode;
+    }) => (
+      <Tooltip
+        {...props}
+        classes={{ popper: className }}>
+        {children}
+      </Tooltip>
+    ),
+  )({
+    [`& .${tooltipClasses.tooltip}`]: {
+      maxWidth: "none",
+    },
+  });
 
   const detailsColumns = [
     { id: "symbol", label: "Symbol" },
@@ -79,29 +103,127 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
     <ThemeProvider theme={themeConfig}>
       <React.Fragment>
         <TableRow sx={{ "& > *": { borderBottom: "unset" }, backgroundColor: "grey" }}>
-          <TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
             <IconButton
               aria-label="expand row"
               size="small"
               onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+              {open ? (
+                <KeyboardArrowUpIcon
+                  sx={{
+                    color: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+                  }}
+                />
+              ) : (
+                <KeyboardArrowDownIcon
+                  sx={{
+                    color: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+                  }}
+                />
+              )}
             </IconButton>
           </TableCell>
+
           <TableCell
             component="th"
-            scope="row">
+            scope="row"
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
             {new Date(row.timeLastUpdated.seconds * 1000).toLocaleString()}
           </TableCell>
-          <TableCell>{row.marketSymbol}</TableCell>
-          <TableCell>{row.orderType}</TableCell>
-          <TableCell>{row.qtyPlaced}</TableCell>
-          <TableCell>{row.qtyFilled}</TableCell>
-          <TableCell>{row.hasPriceLimit ? row.priceLimit : "-"}</TableCell>
-          <TableCell>{row.hasPriceAverageFill ? row.priceAverageFill : "-"}</TableCell>
-          <TableCell>{row.exchangeOrderId}</TableCell>
-          <TableCell>{row.orderStatus}</TableCell>
-          <TableCell>{row.source.includes("TradingPlatform.Tastytrade") ? "Bot" : "Manual"}</TableCell>
-          <TableCell>{row.rejectReason}</TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.marketSymbol}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.orderType}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.qtyPlaced}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.qtyFilled}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.hasPriceLimit ? row.priceLimit : "-"}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.hasPriceAverageFill ? row.priceAverageFill : "-"}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.exchangeOrderId}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.orderStatus}
+          </TableCell>
+          <TableCell
+            sx={{
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            {row.source.includes("TradingPlatform.Tastytrade") ? "Bot" : "Manual"}
+          </TableCell>
+          <TableCell
+            sx={{
+              maxWidth: "170px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              cursor: "pointer",
+              borderRight: "1px solid",
+              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+            }}>
+            <NoMaxWidthTooltip
+              title={row.rejectReason || ""}
+              arrow
+              sx={{
+                "& .MuiTooltip-tooltip": {
+                  backgroundColor: "#f0dc9d !important",
+                  color: "black",
+                  whiteSpace: "nowrap",
+                  maxWidth: "none",
+                },
+              }}>
+              <span>{row.rejectReason}</span>
+            </NoMaxWidthTooltip>
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell
@@ -122,43 +244,45 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
                     ? "Option Legs"
                     : row.legs[0].marketSymbol}
                 </Typography>
-                <Table
-                  size="small"
-                  aria-label="purchases"
-                  sx={{
-                    ...tableStyle,
-                    borderRadius: "10px",
-                    flex: 1,
-                  }}>
-                  <TableHead>
-                    <TableRow>
-                      {detailsColumns.map(column => (
-                        <TableCell
-                          key={column.id}
-                          sx={tableStyle}>
-                          {t(column.label)}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {row.legs.map(leg => (
-                      <TableRow key={leg.marketSymbol}>
-                        <TableCell
-                          sx={tableStyle}
-                          component="th"
-                          scope="row">
-                          {leg.marketSymbol.split(" ").pop()}
-                        </TableCell>
-                        <TableCell sx={tableStyle}>{leg.instruction}</TableCell>
-                        <TableCell sx={tableStyle}>{leg.qtyPlaced}</TableCell>
-                        <TableCell sx={tableStyle}>{leg.qtyFilled}</TableCell>
-                        <TableCell sx={tableStyle}>{leg.hasPriceLimit ? leg.priceLimit : "-"}</TableCell>
-                        <TableCell sx={tableStyle}>{leg.hasPriceAverageFill ? leg.priceAverageFill : "-"}</TableCell>
+                <Box sx={{ maxWidth: "500px" }}>
+                  <Table
+                    size="small"
+                    aria-label="purchases"
+                    sx={{
+                      ...tableStyle,
+                      borderRadius: "10px",
+                      flex: 1,
+                    }}>
+                    <TableHead>
+                      <TableRow>
+                        {detailsColumns.map(column => (
+                          <TableCell
+                            key={column.id}
+                            sx={tableStyle}>
+                            {t(column.label)}
+                          </TableCell>
+                        ))}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHead>
+                    <TableBody>
+                      {row.legs.map(leg => (
+                        <TableRow key={leg.marketSymbol}>
+                          <TableCell
+                            sx={tableStyle}
+                            component="th"
+                            scope="row">
+                            {leg.marketSymbol.split(" ").pop()}
+                          </TableCell>
+                          <TableCell sx={tableStyle}>{leg.instruction}</TableCell>
+                          <TableCell sx={tableStyle}>{leg.qtyPlaced}</TableCell>
+                          <TableCell sx={tableStyle}>{leg.qtyFilled}</TableCell>
+                          <TableCell sx={tableStyle}>{leg.hasPriceLimit ? leg.priceLimit : "-"}</TableCell>
+                          <TableCell sx={tableStyle}>{leg.hasPriceAverageFill ? leg.priceAverageFill : "-"}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
               </Box>
             </Collapse>
           </TableCell>
