@@ -8,7 +8,6 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Paper,
   TableSortLabel,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
@@ -75,29 +74,29 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
       width: 150,
       valueGetter: params => new Date(params.row.timestamp.seconds * 1000).toLocaleString(),
     },
-    { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
+    { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }) },
     {
       field: "marketSymbol",
       headerName: t("OptionLeg", { ns: "UserDetailsSection" }),
-      width: 120,
+
       valueGetter: params => params.row.marketSymbol.split(" ").pop(),
     },
-    { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
-    { field: "amountFilled", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
-    { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
+    { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }) },
+    { field: "amountFilled", headerName: t("QTY", { ns: "ColumnsDefs" }) },
+    { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }) },
   ];
   const orderColumns = [
-    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate") },
-    { id: "marketSymbol", label: t("Symbol") },
-    { id: "orderType", label: t("SpreadType") },
-    { id: "qtyPlaced", label: t("QtyPlaced") },
-    { id: "qtyFilled", label: t("QtyFilled") },
-    { id: "priceLimit", label: t("SpreadPrice") },
-    { id: "priceAverageFill", label: t("AvgFillPrice") },
-    { id: "exchangeOrderId", label: t("OrderId") },
-    { id: "orderStatus", label: t("Status") },
-    { id: "source", label: t("Source") },
-    { id: "rejectReason", label: t("Error") },
+    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), width: 100 },
+    { id: "marketSymbol", label: t("Symbol"), width: 2 },
+    { id: "orderType", label: t("SpreadType"), width: 100 },
+    { id: "qtyPlaced", label: t("QtyPlaced"), width: 80 },
+    { id: "qtyFilled", label: t("QtyFilled"), width: 80 },
+    { id: "priceLimit", label: t("SpreadPrice"), width: 100 },
+    { id: "priceAverageFill", label: t("AvgFillPrice"), width: 100 },
+    { id: "exchangeOrderId", label: t("OrderId"), width: 60 },
+    { id: "orderStatus", label: t("Status"), width: 60 },
+    { id: "source", label: t("Source"), width: 80 },
+    { id: "rejectReason", label: t("Error"), width: 30, maxWidth: 170 },
   ];
 
   const handleRequestSort = property => {
@@ -211,20 +210,36 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
         <TableContainer
           sx={{
             marginTop: "10px",
-            maxHeight: "440px",
+            maxHeight: "auto",
             width: "100%",
             height: "auto",
-            border: "1px solid rgba(0, 0, 0, 0.12)",
+            border:
+              theme.palette.mode !== "dark"
+                ? "1px solid rgba(81, 81, 81, 0.27) !important"
+                : "1px solid rgba(81, 81, 81, 1) !important",
+
             borderRadius: "5px",
-            borderCollapse: "separate",
+            borderCollapse: "collapse",
           }}>
-          <Table stickyHeader>
+          <Table
+            stickyHeader
+            sx={{
+              borderCollapse: "collapse",
+            }}>
             <TableHead>
               <TableRow>
                 <TableCell
                   sx={{
                     backgroundColor: "#009acf",
                     color: "white",
+                    borderRight:
+                      theme.palette.mode !== "dark"
+                        ? "1px solid rgba(81, 81, 81, 1) !important"
+                        : "1px solid rgba(224, 224, 224, 1) !important",
+                    borderLeft:
+                      theme.palette.mode !== "dark"
+                        ? "1px solid rgba(81, 81, 81, 1) !important"
+                        : "1px solid rgba(224, 224, 224, 1) !important",
                   }}
                 />
                 {orderColumns.map(column => (
@@ -233,6 +248,16 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
                     sx={{
                       backgroundColor: "#009acf",
                       color: "white",
+                      width: column.width,
+                      maxWidth: column.maxWidth,
+                      borderRight:
+                        theme.palette.mode !== "dark"
+                          ? "1px solid rgba(81, 81, 81, 1) !important"
+                          : "1px solid rgba(224, 224, 224, 1) !important",
+                      borderLeft:
+                        theme.palette.mode !== "dark"
+                          ? "1px solid rgba(81, 81, 81, 1) !important"
+                          : "1px solid rgba(224, 224, 224, 1) !important",
                     }}>
                     <TableSortLabel
                       active={orderBy === column.id}
