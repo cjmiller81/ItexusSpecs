@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
 import DataGridDef, {
   Column,
@@ -29,18 +28,25 @@ import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuild
 import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import SimpleBar from "simplebar-react";
+import { ICategory, IExchange, IPlatform } from "components";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
   dataSource: DataSource;
   onSorterChanged: (sorter: any) => void;
   onExport: (e: ExportingEvent<ICoin, any>) => void;
+  chains: IPlatform[];
+  categories: ICategory[];
+  exchanges: IExchange[];
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   onCurrentFilterChange,
   dataSource,
   onSorterChanged,
+  chains,
+  categories,
+  exchanges,
   onExport,
 }) => {
   const [currentSorter, setCurrentSorter] = useState<any>();
@@ -97,6 +103,64 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     updatePrefilteredTokens();
   }, [currentFilter, datagrid, updatePrefilteredTokens]);
 
+  const categoryToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.id,
+    }
+  }
+
+  const exchangeToFilterItem = (item): { text: string } => {
+    return {
+      text: item.name,
+    }
+  }
+
+  const categoriesFilterOperations = ["contains", "anyof", "endswith", "=", "startswith"]
+
+  const chainsToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.id,
+    }
+  }
+
+  const calculateFilterExpression = useCallback(function (
+    this: any,
+    filterValues: any,
+    selectedFilterOperation: string | null,
+    _target: string,
+  ): any {
+    try {
+      let column = this
+      if (filterValues) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let selector = (data: any): boolean => {
+          let applyOperation = (arg1: string, arg2: string, op: string): boolean => {
+            if (op === "=") return arg1.toUpperCase() === arg2.toUpperCase()
+            if (op === "anyof") return arg1.toUpperCase().includes(arg2.toUpperCase())
+            if (op === "contains") return arg1.toUpperCase().includes(arg2.toUpperCase())
+            if (op === "startswith") return arg1.toUpperCase().startsWith(arg2.toUpperCase())
+            if (op === "endswith") return arg1.toUpperCase().endsWith(arg2.toUpperCase())
+
+            return false
+          }
+
+          let values = column.calculateCellValue(data)
+          return (
+            values &&
+            !!values.find((v: any) => applyOperation(v, filterValues, selectedFilterOperation ?? ""))
+          )
+        }
+
+        return [selector, "=", true]
+      }
+
+      return column.defaultCalculateFilterExpression.apply(this, arguments)
+    } catch (err) {
+      console.error("Error on calculateFilterExpression:", err)
+    }
+  }, [])
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       onCurrentFilterChange(filter as object[]);
@@ -319,9 +383,23 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          filterOperations={["="]}
           minWidth={150}
           width={200}
-          allowHiding={true}></Column>
+          allowHiding={true}>
+            <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: chainsToFilterItem,
+            }}>
+            <Search enabled={false} />
+          </HeaderFilter>
+          </Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
@@ -336,16 +414,44 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          filterOperations={categoriesFilterOperations}
           minWidth={150}
-          width={200}></Column>
+          width={200}>
+            <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: categories,
+              },
+              map: exchangeToFilterItem,
+            }}>
+            <Search enabled={false} />
+          </HeaderFilter>
+          </Column>
         <Column
           dataField={PrefilterTokensField.Exchanges}
           caption={PrefilterTokensLabel.Exchanges}
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          filterOperations={categoriesFilterOperations}
           minWidth={150}
-          width={180}></Column>
+          width={180}>
+            <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: exchanges,
+              },
+              map: categoryToFilterItem,
+            }}>
+            <Search enabled={false} />
+          </HeaderFilter>
+          </Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
           caption={PrefilterTokensLabel.CirculatingSupply}
