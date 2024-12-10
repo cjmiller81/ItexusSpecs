@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Box, Typography, Select, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@mui/material/styles";
 
 export const ConnectionCard = () => {
   const { t } = useTranslation("IndexModelingSection");
+  const theme = useTheme();
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [newConnection, setNewConnection] = useState<string>("");
 
@@ -21,7 +23,10 @@ export const ConnectionCard = () => {
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         borderRadius: "10px",
         padding: "16px",
-        backgroundColor: "#fff",
+        border: "solid",
+        borderWidth: "1px",
+        borderColor: theme.palette.primary.grey,
+        // backgroundColor: "#fff",
       }}>
       <Typography
         variant="h6"
@@ -42,7 +47,7 @@ export const ConnectionCard = () => {
         displayEmpty
         sx={{
           marginBottom: "16px",
-          backgroundColor: "#f7f7f7",
+          // backgroundColor: "#f7f7f7",
           borderRadius: "8px",
           "& .MuiSelect-icon": { color: "black" },
         }}>
@@ -67,7 +72,7 @@ export const ConnectionCard = () => {
         onChange={handleNewConnectionChange}
         displayEmpty
         sx={{
-          backgroundColor: "#f7f7f7",
+          // backgroundColor: "#f7f7f7",
           borderRadius: "8px",
           "& .MuiSelect-icon": { color: "black" },
         }}>
