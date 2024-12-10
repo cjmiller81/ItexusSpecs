@@ -186,7 +186,7 @@ const UserInputsSection = () => {
               onChange={handleTickerChange} 
               sx={{ width: 175, fontSize: "12px", paddingLeft: "25px"}}
               error={formErrors.ticker}
-              helperText={formErrors.ticker ? t("Ticker field is required") : ""}
+              helperText={formErrors.ticker ? t("TickerIsRequired") : ""}
             />
           </Grid>
         </Grid>
@@ -206,8 +206,8 @@ const UserInputsSection = () => {
               }}
               value={startDate ? startDate.utc().format("YYYY-MM-DD") : ""}
               onChange={(e) => handleDateChange(e, "start")}
-              error={formErrors.startDate} // Ошибка показывается, если дата не выбрана
-              helperText={formErrors.startDate ? t("Start date is required") : ""}
+              error={formErrors.startDate}
+              helperText={formErrors.startDate ? t("StartIsRequired") : ""}
             />
           </Grid>
           

@@ -194,7 +194,10 @@
     "StartDate": "Start Date",
     "Ticker": "Ticker",
     "EnterTicker": "Enter Ticker",
-    "Date": "Date"
+    "Date": "Date",
+    "TickerIsRequired": "Ticker field is required",
+    "StartIsRequired": "Start date is required",
+    "EndIsRequired": "End date is required"
   },
   "MarketTableColumns": {
     "Date": "Date",
