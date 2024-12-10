@@ -34,6 +34,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
+import { ConnectionCard } from "@/features/Investing/ConnectionCard";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -392,6 +393,12 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               rows={positionRows}
             />
           </Box>
+          {/*<Grid*/}
+          {/*  item*/}
+          {/*  xs={12}*/}
+          {/*  md={5}>*/}
+          <ConnectionCard />
+          {/*</Grid>*/}
         </Grid>
       </Grid>
     </AppAccordionSection>
