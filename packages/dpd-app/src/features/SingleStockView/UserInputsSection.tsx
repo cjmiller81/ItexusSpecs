@@ -226,7 +226,7 @@ const UserInputsSection = () => {
               value={endDate ? endDate.utc().format("YYYY-MM-DD") : ""}
               onChange={(e) => handleDateChange(e, "end")}
               error={formErrors.endDate}
-              helperText={formErrors.endDate ? t("End date is required") : ""}
+              helperText={formErrors.endDate ? t("EndIsRequired") : ""}
             />
           </Grid>
         </Grid>
