@@ -1,0 +1,5786 @@
+[
+	{
+		"id": "20weth-80bal",
+		"addr": null,
+		"cats": [
+			"Polygon Ecosystem",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"polygon-pos"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/28005/thumb/0x3d468ab2329f296e1b9d8476bb54dd77d8c2320f.png?1696527022",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "20WETH-80BAL",
+		"price": 0,
+		"sym": "20weth-80bal",
+		"tNom": 0,
+		"tSup": 161805.575737,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-bptbalweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 934.69,
+		"lURI": "https://assets.coingecko.com/coins/images/17261/thumb/aAmmBptBALWETH.png?1696516816",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM BptBALWETH",
+		"price": 249.73,
+		"sym": "aammbptbalweth",
+		"tNom": 0,
+		"tSup": 3.74326688690533,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-bptwbtcweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 12449.59,
+		"lURI": "https://assets.coingecko.com/coins/images/17260/thumb/aAmmBptWBTCWETH.png?1696516815",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM BptWBTCWETH",
+		"price": 245594,
+		"sym": "aammbptwbtcweth",
+		"tNom": 0,
+		"tSup": 0.0506916746673185,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-uniaaveweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 262.6,
+		"lURI": "https://assets.coingecko.com/coins/images/17232/thumb/aAmmUniAAVEWETH.png?1696516786",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniAAVEWETH",
+		"price": 1950.15,
+		"sym": "aammuniaaveweth",
+		"tNom": 0,
+		"tSup": 0.134655819210127,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unibatweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1713.89,
+		"lURI": "https://assets.coingecko.com/coins/images/17217/thumb/aAmmUniBATWETH.png?1696516773",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniBATWETH",
+		"price": 98.77,
+		"sym": "aammunibatweth",
+		"tNom": 0,
+		"tSup": 17.3539849494405,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unicrvweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0.04409069,
+		"lURI": "https://assets.coingecko.com/coins/images/17220/thumb/aAmmUniCRVWETH.png?1696516775",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniCRVWETH",
+		"price": 1065.95,
+		"sym": "aammunicrvweth",
+		"tNom": 0,
+		"tSup": 0.000041362733031869,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unidaiweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 83.49,
+		"lURI": "https://assets.coingecko.com/coins/images/17230/thumb/aAmmUniDAIWETH.png?1696516784",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniDAIWETH",
+		"price": 227.49,
+		"sym": "aammunidaiweth",
+		"tNom": 0,
+		"tSup": 0.366993587009219,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unilinkweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 73541,
+		"lURI": "https://assets.coingecko.com/coins/images/17221/thumb/aAmmUniLINKWETH.png?1696516776",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniLINKWETH",
+		"price": 909.39,
+		"sym": "aammunilinkweth",
+		"tNom": 0,
+		"tSup": 80.8693094662447,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unimkrweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 5791.03,
+		"lURI": "https://assets.coingecko.com/coins/images/17222/thumb/aAmmUniMKRWETH.png?1696516777",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniMKRWETH",
+		"price": 9945.94,
+		"sym": "aammunimkrweth",
+		"tNom": 0,
+		"tSup": 0.582314809013805,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unirenweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 476.11,
+		"lURI": "https://assets.coingecko.com/coins/images/17223/thumb/aAmmUniRENWETH.png?1696516778",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniRENWETH",
+		"price": 79.36,
+		"sym": "aammunirenweth",
+		"tNom": 0,
+		"tSup": 6.0,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-unisnxweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 146831,
+		"lURI": "https://assets.coingecko.com/coins/images/17224/thumb/aAmmUniSNXWETH.png?1696516779",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniSNXWETH",
+		"price": 552.65,
+		"sym": "aammunisnxweth",
+		"tNom": 0,
+		"tSup": 265.712677805313,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-uniuniweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2175.02,
+		"lURI": "https://assets.coingecko.com/coins/images/17225/thumb/aAmmUniUNIWETH.png?1696516780",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniUNIWETH",
+		"price": 1012.08,
+		"sym": "aammuniuniweth",
+		"tNom": 0,
+		"tSup": 2.14930490664746,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-uniusdcweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 86.13,
+		"lURI": "https://assets.coingecko.com/coins/images/17219/thumb/aAmmUniUSDCWETH.png?1696516774",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniUSDCWETH",
+		"price": 277845764,
+		"sym": "aammuniusdcweth",
+		"tNom": 0,
+		"tSup": 0.000000309979423356,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-uniwbtcweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 750.59,
+		"lURI": "https://assets.coingecko.com/coins/images/17231/thumb/aAmmUniWBTCWETH.png?1696516785",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniWBTCWETH",
+		"price": 3976486335,
+		"sym": "aammuniwbtcweth",
+		"tNom": 0,
+		"tSup": 0.000000188777658802,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-uniyfiweth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 105450,
+		"lURI": "https://assets.coingecko.com/coins/images/17258/thumb/aAmmUniYFIWETH.png?1696516814",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM UniYFIWETH",
+		"price": 30555,
+		"sym": "aammuniyfiweth",
+		"tNom": 0,
+		"tSup": 3.4511102083325,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-amm-weth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 943112,
+		"lURI": "https://assets.coingecko.com/coins/images/17259/thumb/aAMMWETH_2x.png?1696516814",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave AMM WETH",
+		"price": 3643.15,
+		"sym": "aammweth",
+		"tNom": 0,
+		"tSup": 258.901268126507,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-v3-cbeth",
+		"addr": null,
+		"cats": [
+			"Base Ecosystem",
+			"Ethereum Ecosystem",
+			"Asset-backed Tokens",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"base",
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32892/thumb/cbETH.png?1699789253",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave v3 cbETH",
+		"price": 3848.49,
+		"sym": "acbeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-eth-v1",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Decentralized Finance (DeFi)",
+			"Aave Tokens",
+			"Finance / Banking",
+			"Asset-backed Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 6414885,
+		"lURI": "https://assets.coingecko.com/coins/images/11619/thumb/aETH_2x.png?1696511513",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave ETH v1",
+		"price": 0,
+		"sym": "aeth",
+		"tNom": 0,
+		"tSup": 3066.06886210552,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-ethereum-aave",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32606/thumb/aave.png?1698732270",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum AAVE",
+		"price": 0,
+		"sym": "aethaave",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-coinbase-wrapped-staked-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32629/thumb/cbeth.png?1698823313",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Coinbase Wrapped Staked ETH",
+		"price": 0,
+		"sym": "aethcbeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-dai-stablecoin",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32605/thumb/dai.png?1698732194",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Dai Stablecoin",
+		"price": 0,
+		"sym": "aethdai",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-chainlink",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32607/thumb/link.png?1698732328",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Chainlink",
+		"price": 0,
+		"sym": "aethlink",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-maker",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32608/thumb/mkr.png?1698732378",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Maker",
+		"price": 0,
+		"sym": "aethmkr",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-rocket-pool-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32604/thumb/reth.png?1698732115",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Rocket Pool ETH",
+		"price": 0,
+		"sym": "aethreth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-savings-dai-stablecoin",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32603/thumb/sdai.png?1698732017",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Savings Dai Stablecoin",
+		"price": 0,
+		"sym": "aethsdai",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-usdc",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32601/thumb/usdc.png?1698729685",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum USD Coin",
+		"price": 0,
+		"sym": "aethusdc",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-tether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32602/thumb/usdt.png?1698729858",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Tether",
+		"price": 0,
+		"sym": "aethusdt",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-wbtc",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32600/thumb/awbtc.png?1698729045",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Wrapped Bitcoin",
+		"price": 0,
+		"sym": "aethwbtc",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-weth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32582/thumb/eth.png?1698560073",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "AAVE Ethereum WETH",
+		"price": 0,
+		"sym": "aethweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "aave-ethereum-wrapped-steth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "missing_thumb.png",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Aave Ethereum Wrapped stETH",
+		"price": 0,
+		"sym": "aethwsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "alchemix-eth",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"optimistic-ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 149173095,
+		"lURI": "https://assets.coingecko.com/coins/images/16271/thumb/aleth.png?1696515869",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Alchemix ETH",
+		"price": 3289.16,
+		"sym": "aleth",
+		"tNom": 0,
+		"tSup": 45340.3525205834,
+		"tVol": 410185
+	},
+	{
+		"id": "aave-polygon-weth",
+		"addr": null,
+		"cats": [
+			"Polygon Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"polygon-pos"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/17266/thumb/amWETH_2x.png?1696516821",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave Polygon WETH",
+		"price": 3642.75,
+		"sym": "amweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "ankreth",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem",
+			"BNB Chain Ecosystem",
+			"Arbitrum Ecosystem",
+			"Avalanche Ecosystem",
+			"Fantom Ecosystem",
+			"Ethereum Ecosystem",
+			"Liquid Staking Tokens",
+			"Eth 2.0 Staking"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"fantom",
+			"optimistic-ethereum",
+			"mode",
+			"avalanche",
+			"polygon-zkevm",
+			"arbitrum-one",
+			"binance-smart-chain"
+		],
+		"cirSup": 19055.7882699802,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 79824602,
+		"lURI": "https://assets.coingecko.com/coins/images/13403/thumb/aETHc.png?1696513165",
+		"mCap": 79824602,
+		"mSup": 0,
+		"name": "Ankr Staked ETH",
+		"price": 4175.41,
+		"sym": "ankreth",
+		"tNom": 1,
+		"tSup": 19055.7882699802,
+		"tVol": 24746
+	},
+	{
+		"id": "dinero-apxeth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33609/thumb/apxETH-icon-transbg_72dpi.png?1702512027",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Dinero apxETH",
+		"price": 0,
+		"sym": "apxeth",
+		"tNom": 0,
+		"tSup": 2295.78981873473,
+		"tVol": 0
+	},
+	{
+		"id": "aave-v3-reth",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem",
+			"Ethereum Ecosystem",
+			"Arbitrum Ecosystem",
+			"Asset-backed Tokens",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"optimistic-ethereum",
+			"arbitrum-one"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32885/thumb/reth.png?1699768947",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave v3 rETH",
+		"price": 4008.71,
+		"sym": "areth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-interest-bearing-steth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1032573853,
+		"lURI": "https://assets.coingecko.com/coins/images/24163/thumb/steth.jpg?1696523352",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave Interest Bearing STETH",
+		"price": 3643.15,
+		"sym": "asteth",
+		"tNom": 0,
+		"tSup": 283460.2676649,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-v3-weth",
+		"addr": null,
+		"cats": [
+			"Gnosis Chain Ecosystem",
+			"Metis Ecosystem",
+			"Polygon Ecosystem",
+			"Avalanche Ecosystem",
+			"Base Ecosystem",
+			"Optimism Ecosystem",
+			"Arbitrum Ecosystem",
+			"Ethereum Ecosystem",
+			"Asset-backed Tokens",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"metis-andromeda",
+			"optimistic-ethereum",
+			"arbitrum-one",
+			"avalanche",
+			"xdai",
+			"polygon-pos",
+			"base"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32882/thumb/WETH_%281%29.png?1699716492",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave v3 WETH",
+		"price": 3649.54,
+		"sym": "aweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "aave-weth",
+		"addr": null,
+		"cats": [
+			"Harmony Ecosystem",
+			"Ethereum Ecosystem",
+			"Fantom Ecosystem",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"fantom",
+			"harmony-shard-0"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/17238/thumb/aWETH_2x.png?1696516795",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave WETH",
+		"price": 3643.15,
+		"sym": "aweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 92.89
+	},
+	{
+		"id": "aave-v3-wsteth",
+		"addr": null,
+		"cats": [
+			"Polygon Ecosystem",
+			"Optimism Ecosystem",
+			"Arbitrum Ecosystem",
+			"Ethereum Ecosystem",
+			"Asset-backed Tokens",
+			"Aave Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"arbitrum-one",
+			"optimistic-ethereum",
+			"ethereum",
+			"polygon-pos"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32890/thumb/WSTETH.png?1699776336",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Aave v3 wstETH",
+		"price": 4225.72,
+		"sym": "awsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "bridged-wrapped-steth-axelar",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem",
+			"Arbitrum Ecosystem",
+			"Polygon Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"polygon-pos",
+			"optimistic-ethereum",
+			"osmosis",
+			"arbitrum-one",
+			"secret"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32223/thumb/steth-wei_D_3x.png?1696926841",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped stETH (Axelar)",
+		"price": 4231.97,
+		"sym": "axl-wsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 60756
+	},
+	{
+		"id": "axlweth",
+		"addr": null,
+		"cats": [
+			"Polygon Ecosystem",
+			"Optimism Ecosystem",
+			"Arbitrum Ecosystem",
+			"Fantom Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"evmos",
+			"kava",
+			"fantom",
+			"optimistic-ethereum",
+			"arbitrum-one",
+			"polygon-pos",
+			"secret"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/28171/thumb/weth-wei_D_3x.png?1696527174",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Axelar Wrapped Ether",
+		"price": 3609.1,
+		"sym": "axleth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 61017
+	},
+	{
+		"id": "balancer-80-bal-20-weth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/26452/thumb/0x5c6ee304399dbdb9c8ef030ab642b10820db8f56.png?1696525525",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Balancer 80 BAL 20 WETH",
+		"price": 17.27,
+		"sym": "b-80bal-20weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 15308.75
+	},
+	{
+		"id": "baoeth-eth-stablepool",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "missing_thumb.png",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "baoETH-ETH StablePool",
+		"price": 3652.96,
+		"sym": "b-baoeth-eth-bpt",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 1621.97
+	},
+	{
+		"id": "balancer-boosted-aave-weth-2",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31285/thumb/eth-diamond-black-gray.png?1696530108",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Balancer Boosted Aave WETH",
+		"price": 1674.91,
+		"sym": "bb-a-weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 168077
+	},
+	{
+		"id": "balancer-boosted-aave-weth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/30386/thumb/bb-a-weth.png?1696529275",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Balancer Aave v3 Boosted Pool (WETH)",
+		"price": 1673.88,
+		"sym": "bb-a-weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 49280
+	},
+	{
+		"id": "okx-beth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33474/thumb/OKX_logo.png?1702012988",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "OKX BETH",
+		"price": 3576.61,
+		"sym": "beth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 13526083
+	},
+	{
+		"id": "binance-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"BNB Chain Ecosystem",
+			"Eth 2.0 Staking"
+		],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 367216316,
+		"lURI": "https://assets.coingecko.com/coins/images/13804/thumb/Binnace.png?1696513551",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Binance ETH staking",
+		"price": 3617.75,
+		"sym": "beth",
+		"tNom": 0,
+		"tSup": 100973.0,
+		"tVol": 3588007
+	},
+	{
+		"id": "cat-in-a-box-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29927/thumb/boxETH.png?1696528855",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Cat-in-a-Box Ether",
+		"price": 3455.55,
+		"sym": "boxeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 1091.26
+	},
+	{
+		"id": "based-eth",
+		"addr": null,
+		"cats": [
+			"Base Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"base"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35774/thumb/Icon_White_on_Blue.png?1709793654",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Based ETH",
+		"price": 0,
+		"sym": "bsdeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "coinbase-wrapped-staked-eth",
+		"addr": null,
+		"cats": [
+			"Base Ecosystem",
+			"Eth 2.0 Staking",
+			"Arbitrum Ecosystem",
+			"Polygon Ecosystem",
+			"Ethereum Ecosystem",
+			"Liquid Staking Tokens",
+			"Optimism Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"base",
+			"arbitrum-one",
+			"polygon-pos",
+			"optimistic-ethereum"
+		],
+		"cirSup": 193034.738236907,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 3159537180,
+		"lURI": "https://assets.coingecko.com/coins/images/27008/thumb/cbeth.png?1696526061",
+		"mCap": 444819927,
+		"mSup": 0,
+		"name": "Coinbase Wrapped Staked ETH",
+		"price": 2304.99,
+		"sym": "cbeth",
+		"tNom": 0.1407864194103732852978358514,
+		"tSup": 1371117.60527297,
+		"tVol": 2283188
+	},
+	{
+		"id": "crypto-com-staked-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Cronos Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"cronos"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33537/thumb/CDCETH-1.png?1702366745",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Crypto.com Staked ETH",
+		"price": 3663.13,
+		"sym": "cdceth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 254396
+	},
+	{
+		"id": "compound-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"cToken",
+			"Decentralized Finance (DeFi)",
+			"Compound Tokens",
+			"Finance / Banking",
+			"Asset-backed Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 5382851.22563679,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 391780885,
+		"lURI": "https://assets.coingecko.com/coins/images/10643/thumb/ceth.png?1696510617",
+		"mCap": 391780885,
+		"mSup": 0,
+		"name": "cETH",
+		"price": 72.64,
+		"sym": "ceth",
+		"tNom": 1,
+		"tSup": 5382851.22563679,
+		"tVol": 437.22
+	},
+	{
+		"id": "wrapped-ether-celer",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"",
+			"evmos",
+			"flow",
+			"aptos",
+			"milkomeda-cardano"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/24827/thumb/weth.png?1696523984",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped Ether - Celer",
+		"price": 3581.57,
+		"sym": "ceweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 10723.82
+	},
+	{
+		"id": "chain-key-ethereum",
+		"addr": null,
+		"cats": [
+			"Internet Computer Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"internet-computer"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33819/thumb/01_ckETH_Token_HEX__4x.png?1703046389",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Chain-key Ethereum",
+		"price": 3653.33,
+		"sym": "cketh",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 13427.32
+	},
+	{
+		"id": "cream-eth2",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Eth 2.0 Staking"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 1053.87272839039,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2300566,
+		"lURI": "https://assets.coingecko.com/coins/images/13568/thumb/creth2.png?1696513322",
+		"mCap": 2368444,
+		"mSup": 0,
+		"name": "Cream ETH 2",
+		"price": 2182.96,
+		"sym": "creth2",
+		"tNom": 1,
+		"tSup": 1053.87272839039,
+		"tVol": 1218.81
+	},
+	{
+		"id": "claystack-staked-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33205/thumb/csETH-coingecko.png?1701080702",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "ClayStack Staked ETH",
+		"price": 0,
+		"sym": "cseth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "celsiusx-wrapped-eth",
+		"addr": null,
+		"cats": [
+			"Polygon Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"polygon-pos"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 80185,
+		"lURI": "https://assets.coingecko.com/coins/images/23682/thumb/k6iYoed.png?1696522884",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "CelsiusX Wrapped ETH",
+		"price": 126.4,
+		"sym": "cxeth",
+		"tNom": 0,
+		"tSup": 634.3558,
+		"tVol": 1.35
+	},
+	{
+		"id": "stakehouse-deth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2081614,
+		"lURI": "https://assets.coingecko.com/coins/images/33657/thumb/dETH.png?1702598011",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Stakehouse dETH",
+		"price": 3642.97,
+		"sym": "deth",
+		"tNom": 0,
+		"tSup": 571.405944135748,
+		"tVol": 2284.96
+	},
+	{
+		"id": "dogether",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 20399456000.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33861/thumb/logo-200x200.png?1703377360",
+		"mCap": 120485,
+		"mSup": 0,
+		"name": "Dogether",
+		"price": 0.00000594,
+		"sym": "dogether",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 6944.68
+	},
+	{
+		"id": "diversified-staked-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 749.494831345239,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2707187,
+		"lURI": "https://assets.coingecko.com/coins/images/28751/thumb/dsETH-logo.png?1696527731",
+		"mCap": 2707187,
+		"mSup": 0,
+		"name": "Diversified Staked ETH",
+		"price": 3612.02,
+		"sym": "dseth",
+		"tNom": 1,
+		"tSup": 749.494831345239,
+		"tVol": 8393.25
+	},
+	{
+		"id": "ether-fi-staked-eth",
+		"addr": null,
+		"cats": [
+			"Ether.fi Ecosystem",
+			"Liquid Restaking Tokens",
+			"Restaking",
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 400976.491960075,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2874882196,
+		"lURI": "https://assets.coingecko.com/coins/images/33049/thumb/ether.fi_eETH.png?1700473063",
+		"mCap": 1446365149,
+		"mSup": 0,
+		"name": "ether.fi Staked ETH",
+		"price": 3624.58,
+		"sym": "eeth",
+		"tNom": 0.5031041448967252300658087545,
+		"tSup": 797004.946247035,
+		"tVol": 567563
+	},
+	{
+		"id": "evereth-2",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1132040,
+		"lURI": "https://assets.coingecko.com/coins/images/34525/thumb/EETH_LOGO.png?1705303995",
+		"mCap": 0.0,
+		"mSup": 1000000000.0,
+		"name": "EverETH",
+		"price": 0.00113204,
+		"sym": "eeth",
+		"tNom": 0,
+		"tSup": 1000000000.0,
+		"tVol": 508.67
+	},
+	{
+		"id": "ethereum",
+		"addr": null,
+		"cats": [
+			"Proof of Stake (PoS)",
+			"Multicoin Capital Portfolio",
+			"FTX Holdings",
+			"Layer 1 (L1)",
+			"Ethereum Ecosystem",
+			"Smart Contract Platform"
+		],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 120079481.714212,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 434164511275,
+		"lURI": "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1696501628",
+		"mCap": 434164511275,
+		"mSup": 0,
+		"name": "Ethereum",
+		"price": 3610.87,
+		"sym": "eth",
+		"tNom": 1,
+		"tSup": 120079481.714212,
+		"tVol": 21709371501
+	},
+	{
+		"id": "ethereum-wormhole",
+		"addr": null,
+		"cats": [
+			"Sui Ecosystem",
+			"Solana Ecosystem",
+			"Avalanche Ecosystem",
+			"Polygon Ecosystem",
+			"BNB Chain Ecosystem",
+			"Wormhole Assets"
+		],
+		"chainId": null,
+		"chains": [
+			"solana",
+			"sui",
+			"aptos",
+			"binance-smart-chain",
+			"avalanche",
+			"oasis",
+			"polygon-pos",
+			"terra"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 294198216,
+		"lURI": "https://assets.coingecko.com/coins/images/22990/thumb/ETH_wh_small.png?1696522286",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Ethereum (Wormhole)",
+		"price": 3597.71,
+		"sym": "eth",
+		"tNom": 0,
+		"tSup": 81447.52,
+		"tVol": 8453407
+	},
+	{
+		"id": "the-infinite-garden",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1194114,
+		"lURI": "https://assets.coingecko.com/coins/images/34540/thumb/film.jpg?1705338132",
+		"mCap": 0.0,
+		"mSup": 10000000.0,
+		"name": "The Infinite Garden",
+		"price": 0.119998,
+		"sym": "eth",
+		"tNom": 0,
+		"tSup": 10000000.0,
+		"tVol": 18905.98
+	},
+	{
+		"id": "bridged-wrapped-ether-starkgate",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"starknet"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32208/thumb/ethereum.png?1696752015",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Ether (StarkGate)",
+		"price": 3635.0,
+		"sym": "eth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 15635783
+	},
+	{
+		"id": "bridged-binance-peg-ethereum-opbnb",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"opbnb"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "missing_thumb.png",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Binance-Peg Ethereum (opBNB)",
+		"price": 3602.95,
+		"sym": "eth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 60826
+	},
+	{
+		"id": "eth-2-0",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 544021,
+		"lURI": "https://assets.coingecko.com/coins/images/32079/thumb/BSk76OA8_400x400.jpg?1696530878",
+		"mCap": 0.0,
+		"mSup": 420000000000000000,
+		"name": "ETH 2.0",
+		"price": 0.000000000001293,
+		"sym": "eth 2.0",
+		"tNom": 0.0,
+		"tSup": 420000000000000000,
+		"tVol": 6563.64
+	},
+	{
+		"id": "ethereum-overnight",
+		"addr": null,
+		"cats": [
+			"Arbitrum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"arbitrum-one"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32326/thumb/ETH__200x200.png?1700298095",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Ethereum+ (Overnight)",
+		"price": 0,
+		"sym": "eth+",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "zetachain-eth-eth",
+		"addr": null,
+		"cats": [
+			"ZetaChain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"zetachain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35396/thumb/eth.png?1708484711",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ZetaChain Bridged ETH.ETH (ZetaChain)",
+		"price": 3646.34,
+		"sym": "eth.eth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 164431
+	},
+	{
+		"id": "eth2-staking-by-poolx",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Number"
+		],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/13853/thumb/5fc5b05df7b4c20006fb9fcb_eth_2.0-01.png?1696513600",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Eth 2.0 Staking by Pool-X",
+		"price": 3607.33,
+		"sym": "eth2",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 217675
+	},
+	{
+		"id": "index-coop-ethereum-2x-index",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/36018/thumb/ETH2x-token-logo.png?1710327494",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Index Coop Ethereum 2x Index",
+		"price": 0,
+		"sym": "eth2x",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "eth-2x-flexible-leverage-index",
+		"addr": null,
+		"cats": [
+			"TokenSets",
+			"Ethereum Ecosystem",
+			"Leveraged Token",
+			"DeFi Index",
+			"Index",
+			"Decentralized Finance (DeFi)"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 1115034.02045668,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 39211754,
+		"lURI": "https://assets.coingecko.com/coins/images/14392/thumb/ETH2x-FLI_%281%29.png?1696514083",
+		"mCap": 39211754,
+		"mSup": 0,
+		"name": "Index Coop - ETH 2x Flexible Leverage Index",
+		"price": 35.1,
+		"sym": "eth2x-fli",
+		"tNom": 1,
+		"tSup": 1115034.02045668,
+		"tVol": 627309
+	},
+	{
+		"id": "index-coop-eth-2x-flexible-leverage-index",
+		"addr": null,
+		"cats": [
+			"TokenSets",
+			"Index",
+			"DeFi Index",
+			"Decentralized Finance (DeFi)",
+			"Polygon Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"polygon-pos"
+		],
+		"cirSup": 65742.3418582368,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 564881,
+		"lURI": "https://assets.coingecko.com/coins/images/21183/thumb/ETH2x-FLO_token_logo.jpg?1696520559",
+		"mCap": 564881,
+		"mSup": 0,
+		"name": "Index Coop - ETH 2x Flexible Leverage Index (Polygon)",
+		"price": 8.57,
+		"sym": "eth2x-fli-p",
+		"tNom": 1,
+		"tSup": 65742.3418582368,
+		"tVol": 3768.08
+	},
+	{
+		"id": "eth3s",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/10128/thumb/eth3s.PNG?1696510152",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ETH3S",
+		"price": 0.00013046,
+		"sym": "eth3s",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "etha-lend",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Polygon Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 7908034.300443784,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 426282,
+		"lURI": "https://assets.coingecko.com/coins/images/14141/thumb/etha_logo200x200.png?1696513861",
+		"mCap": 112368,
+		"mSup": 30000000.0,
+		"name": "ETHA Lend",
+		"price": 0.01431396,
+		"sym": "etha",
+		"tNom": 0.2636011433481261333333333333,
+		"tSup": 30000000.0,
+		"tVol": 86969
+	},
+	{
+		"id": "ethax",
+		"addr": null,
+		"cats": [
+			"BNB Chain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 33730645,
+		"lURI": "https://assets.coingecko.com/coins/images/25571/thumb/ethax.png?1696524704",
+		"mCap": 0.0,
+		"mSup": 800000008.0,
+		"name": "ETHAX",
+		"price": 0.04228237,
+		"sym": "ethax",
+		"tNom": 0,
+		"tSup": 800000008.0,
+		"tVol": 11415.56
+	},
+	{
+		"id": "eth-coin-mori-finance",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31465/thumb/ETHC.jpeg?1696530278",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "ETH Coin",
+		"price": 0,
+		"sym": "ethc",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "ethdown",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/17029/thumb/binance-coin-bnb-logo.png?1696516592",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ETHDOWN",
+		"price": 0.338529,
+		"sym": "ethdown",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 9470.09
+	},
+	{
+		"id": "dydx",
+		"addr": null,
+		"cats": [
+			"Paradigm Portfolio",
+			"Ethereum Ecosystem",
+			"Decentralized Exchange (DEX)",
+			"Derivatives",
+			"Exchange-based Tokens",
+			"Perpetuals",
+			"Decentralized Finance (DeFi)"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 300862338.49913836,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1853771783,
+		"lURI": "https://assets.coingecko.com/coins/images/17500/thumb/hjnIm9bV.jpg?1696517040",
+		"mCap": 1067516419,
+		"mSup": 1000000000.0,
+		"name": "dYdX",
+		"price": 3.55,
+		"sym": "ethdydx",
+		"tNom": 0.575861834052051001270306573,
+		"tSup": 522455771.0,
+		"tVol": 77497770
+	},
+	{
+		"id": "ketaicoin",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 98432,
+		"lURI": "https://assets.coingecko.com/coins/images/31326/thumb/photo_2023-08-15_21-35-43.jpg?1696530145",
+		"mCap": 0.0,
+		"mSup": 406747406510715.0,
+		"name": "Ketaicoin",
+		"price": 0.000000000242683,
+		"sym": "ethereum",
+		"tNom": 0,
+		"tSup": 406747406510715.0,
+		"tVol": 1050.13
+	},
+	{
+		"id": "voldemorttrumprobotnik-10neko",
+		"addr": null,
+		"cats": [
+			"Solana Ecosystem",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"solana"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 571531,
+		"lURI": "https://assets.coingecko.com/coins/images/31061/thumb/icon_medium.jpg?1696529895",
+		"mCap": 0.0,
+		"mSup": 1000000000.0,
+		"name": "VoldemortTrumpRobotnik-10Neko",
+		"price": 0.00056779,
+		"sym": "ethereum",
+		"tNom": 0,
+		"tSup": 1000000000.0,
+		"tVol": 8754.61
+	},
+	{
+		"id": "harrypottertrumphomersimpson777inu",
+		"addr": null,
+		"cats": [
+			"Meme",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 989484749.44,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2814184,
+		"lURI": "https://assets.coingecko.com/coins/images/31320/thumb/hp777_%281%29.jpg?1696530139",
+		"mCap": 2814184,
+		"mSup": 1000000000.0,
+		"name": "HarryPotterTrumpHomerSimpson777Inu",
+		"price": 0.00283926,
+		"sym": "ethereum",
+		"tNom": 1,
+		"tSup": 989484749.44,
+		"tVol": 13274.16
+	},
+	{
+		"id": "ethetf",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32998/thumb/ETHETF_Logo_200x200.png?1700114369",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ETHETF",
+		"price": 0.01739671,
+		"sym": "ethetf",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 962.03
+	},
+	{
+		"id": "ether-futures",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 30827,
+		"lURI": "https://assets.coingecko.com/coins/images/31578/thumb/lo.png?1696530395",
+		"mCap": 0.0,
+		"mSup": 420690000000000.0,
+		"name": "Ether Futures",
+		"price": 0.000000000073276,
+		"sym": "ethf",
+		"tNom": 0,
+		"tSup": 420690000000000.0,
+		"tVol": 560.89
+	},
+	{
+		"id": "ethforestai",
+		"addr": null,
+		"cats": [
+			"Artificial Intelligence (AI)",
+			"Arbitrum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"arbitrum-one"
+		],
+		"cirSup": 22574600949.5264,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 141962,
+		"lURI": "https://assets.coingecko.com/coins/images/29515/thumb/ethfai_logo.png?1696528459",
+		"mCap": 32177,
+		"mSup": 100000000000.0,
+		"name": "ETHforestAI",
+		"price": 0.00000143,
+		"sym": "ethfai",
+		"tNom": 0.2266619549886120811923398693,
+		"tSup": 99595898000.0,
+		"tVol": 487.56
+	},
+	{
+		"id": "ether-fi",
+		"addr": null,
+		"cats": [
+			"Binance Launchpool",
+			"Restaking",
+			"Ether.fi Ecosystem",
+			"Liquid Restaking Governance Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35958/thumb/etherfi.jpeg?1710254562",
+		"mCap": 0,
+		"mSup": 1000000000.0,
+		"name": "Ether.fi",
+		"price": 0,
+		"sym": "ethfi",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "ethernal-finance",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 85950,
+		"lURI": "https://assets.coingecko.com/coins/images/20190/thumb/CMC_%282%29.png?1696519602",
+		"mCap": 0.0,
+		"mSup": 100000000000.0,
+		"name": "Ethernal Finance",
+		"price": 0.000000870695,
+		"sym": "ethfin",
+		"tNom": 0,
+		"tSup": 98713674603.0,
+		"tVol": 0.472246
+	},
+	{
+		"id": "ethereum-gold-2",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32280/thumb/ETHG.jpg?1697181285",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Ethereum Gold",
+		"price": 0.206035,
+		"sym": "ethg",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 336472
+	},
+	{
+		"id": "ethereum-inu",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 77262,
+		"lURI": "https://assets.coingecko.com/coins/images/34875/thumb/1000024435.jpg?1706496056",
+		"mCap": 0.0,
+		"mSup": 1000000000.0,
+		"name": "Ethereum Inu",
+		"price": 0.00007712,
+		"sym": "ethinu",
+		"tNom": 0,
+		"tSup": 1000000000.0,
+		"tVol": 77.32
+	},
+	{
+		"id": "ethichub",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Gnosis Chain Ecosystem",
+			"Finance / Banking"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"xdai",
+			"celo"
+		],
+		"cirSup": 70497132.564731,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 20811001,
+		"lURI": "https://assets.coingecko.com/coins/images/3031/thumb/ETHIX_icon_256x256-256.png?1696503766",
+		"mCap": 14671159,
+		"mSup": 100000000.0,
+		"name": "Ethix",
+		"price": 0.208405,
+		"sym": "ethix",
+		"tNom": 0.70497132564731,
+		"tSup": 100000000.0,
+		"tVol": 3455.22
+	},
+	{
+		"id": "oec-eth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"okex-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/18537/thumb/0xef71ca2ee68f45b9ad6f72fbdb33d707b872315c.png?1696518017",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "OEC ETH",
+		"price": 3480.39,
+		"sym": "ethk",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 14.18
+	},
+	{
+		"id": "ethlinq-tech",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1864.74,
+		"lURI": "https://assets.coingecko.com/coins/images/31477/thumb/200_200.png?1696530289",
+		"mCap": 0.0,
+		"mSup": 222222222.0,
+		"name": "Ethlinq Tech",
+		"price": 0.00000919,
+		"sym": "ethlinq",
+		"tNom": 0,
+		"tSup": 202907411.0,
+		"tVol": 18.17
+	},
+	{
+		"id": "ethereum-meta",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Polygon Ecosystem",
+			"BNB Chain Ecosystem",
+			"Technology & Science"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"binance-smart-chain",
+			"polygon-pos"
+		],
+		"cirSup": 1000991099000000000,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 17941376,
+		"lURI": "https://assets.coingecko.com/coins/images/6586/thumb/ethereum-meta.png?1696506937",
+		"mCap": 17941376,
+		"mSup": 0,
+		"name": "Ethereum Meta",
+		"price": 0.000000000017924,
+		"sym": "ethm",
+		"tNom": 1,
+		"tSup": 1000991099000000000,
+		"tVol": 120.07
+	},
+	{
+		"id": "ether-1",
+		"addr": null,
+		"cats": [
+			"Proof of Work (PoW)",
+			"Gnosis Chain Ecosystem",
+			"BNB Chain Ecosystem",
+			"Infrastructure",
+			"Masternodes"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"xdai",
+			"binance-smart-chain"
+		],
+		"cirSup": 57640086.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/5194/thumb/ether1new-transparent.png?1696505708",
+		"mCap": 316259,
+		"mSup": 0,
+		"name": "Etho Protocol",
+		"price": 0.00574527,
+		"sym": "etho",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 54522
+	},
+	{
+		"id": "ethpad",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"binance-smart-chain"
+		],
+		"cirSup": 137000000.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 8471161,
+		"lURI": "https://assets.coingecko.com/coins/images/17520/thumb/tHAbIBQK_400x400.jpg?1696517058",
+		"mCap": 1160549,
+		"mSup": 0,
+		"name": "ETHPad",
+		"price": 0.00846652,
+		"sym": "ethpad",
+		"tNom": 0.137,
+		"tSup": 1000000000.0,
+		"tVol": 1869.78
+	},
+	{
+		"id": "eth-stable-mori-finance",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31464/thumb/ETHS.jpeg?1696530277",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "ETH Stable",
+		"price": 0,
+		"sym": "eths",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "ethscriptions",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33436/thumb/ETHS.jpg?1701823389",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Ethscriptions",
+		"price": 5.27,
+		"sym": "eths",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 823063
+	},
+	{
+		"id": "ethtez",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"tezos"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/19466/thumb/ethtz.png?1696518902",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ETHtez",
+		"price": 0.000000000000003788,
+		"sym": "ethtz",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "ethup",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/17030/thumb/binance-coin-bnb-logo.png?1696516593",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ETHUP",
+		"price": 37.04,
+		"sym": "ethup",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 33880
+	},
+	{
+		"id": "ethereum-volatility-index-token",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Decentralized Finance (DeFi)",
+			"Index",
+			"DeFi Index"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 205399,
+		"lURI": "https://assets.coingecko.com/coins/images/16716/thumb/logo_-_2021-06-28T092549.772.png?1696516290",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Ethereum Volatility Index Token",
+		"price": 81.24,
+		"sym": "ethv",
+		"tNom": 0,
+		"tSup": 2527.0,
+		"tVol": 87.98
+	},
+	{
+		"id": "ethereum-pow-iou",
+		"addr": null,
+		"cats": [
+			"Proof of Work (PoW)",
+			"EthereumPoW Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 107818943.04993,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 418150429,
+		"lURI": "https://assets.coingecko.com/coins/images/26997/thumb/logo-clear.png?1696526049",
+		"mCap": 418151305,
+		"mSup": 0,
+		"name": "EthereumPoW",
+		"price": 3.88,
+		"sym": "ethw",
+		"tNom": 1.000002096111010997665435222,
+		"tSup": 107818717.04993,
+		"tVol": 20540935
+	},
+	{
+		"id": "lsdx-pool",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29780/thumb/ethx.png?1696528710",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "LSDx Pool",
+		"price": 0,
+		"sym": "ethx",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "stader-ethx",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 124281.344134465,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 452507633,
+		"lURI": "https://assets.coingecko.com/coins/images/30870/thumb/staderx.png?1696529717",
+		"mCap": 452507633,
+		"mSup": 0,
+		"name": "Stader ETHx",
+		"price": 3655.77,
+		"sym": "ethx",
+		"tNom": 1,
+		"tSup": 124281.344134465,
+		"tVol": 535479
+	},
+	{
+		"id": "evereth",
+		"addr": null,
+		"cats": [
+			"BNB Chain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 378155807202982.44,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 651628,
+		"lURI": "https://assets.coingecko.com/coins/images/18221/thumb/200x200.png?1696517718",
+		"mCap": 499591,
+		"mSup": 1000000000000000,
+		"name": "EverETH Reflect",
+		"price": 0.000000001319,
+		"sym": "evereth",
+		"tNom": 0.7666820781576845311227535819,
+		"tSup": 493236790028639.0,
+		"tVol": 270.0
+	},
+	{
+		"id": "exactly-weth",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"optimistic-ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31174/thumb/ExaETH_1.png?1696530002",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Exactly Wrapped Ether",
+		"price": 3620.67,
+		"sym": "exaweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "exactly-wsteth",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"optimistic-ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31172/thumb/ExawstETH_1.png?1696530000",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Exactly Wrapped stETH",
+		"price": 4202.8,
+		"sym": "exawsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "renzo-restaked-eth",
+		"addr": null,
+		"cats": [
+			"Blast Ecosystem",
+			"BNB Chain Ecosystem",
+			"Arbitrum Ecosystem",
+			"Linea Ecosystem",
+			"Liquid Restaking Tokens",
+			"Liquid Staking Tokens",
+			"Restaking",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"linea",
+			"arbitrum-one",
+			"mode",
+			"binance-smart-chain",
+			"blast"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34753/thumb/eth_renzo_logo_%281%29.png?1705956747",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Renzo Restaked ETH",
+		"price": 3585.17,
+		"sym": "ezeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 41272348
+	},
+	{
+		"id": "f-x-protocol-fractional-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32166/thumb/0x53805a76e1f5ebbfe7115f16f9c87c2f7e633726.png?1696724197",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "f(x) Protocol Fractional ETH",
+		"price": 1.13,
+		"sym": "feth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 241.19
+	},
+	{
+		"id": "freth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/28734/thumb/freth.png?1696527714",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "frETH",
+		"price": 0,
+		"sym": "freth",
+		"tNom": 0,
+		"tSup": 38.6759108884656,
+		"tVol": 0
+	},
+	{
+		"id": "frax-ether",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem",
+			"Moonbeam Ecosystem",
+			"Fantom Ecosystem",
+			"Arbitrum Ecosystem",
+			"BNB Chain Ecosystem",
+			"Polygon Ecosystem",
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"moonbeam",
+			"fantom",
+			"polygon-zkevm",
+			"optimistic-ethereum",
+			"arbitrum-one",
+			"polygon-pos",
+			"binance-smart-chain"
+		],
+		"cirSup": 294992.270753437,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1065854684,
+		"lURI": "https://assets.coingecko.com/coins/images/28284/thumb/frxETH_icon.png?1696527284",
+		"mCap": 1065854684,
+		"mSup": 0,
+		"name": "Frax Ether",
+		"price": 3614.12,
+		"sym": "frxeth",
+		"tNom": 1,
+		"tSup": 294992.270753437,
+		"tVol": 10215339
+	},
+	{
+		"id": "genesislrt-restaked-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Restaking Tokens",
+			"Restaking",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34127/thumb/image.png?1704174967",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "GenesisLRT Restaked ETH",
+		"price": 0,
+		"sym": "geneth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "goerli-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29217/thumb/goerli-eth.png?1696528175",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Goerli ETH",
+		"price": 0.04759726,
+		"sym": "geth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 7830.64
+	},
+	{
+		"id": "guarded-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Near Protocol Ecosystem",
+			"Eth 2.0 Staking"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 15593799,
+		"lURI": "https://assets.coingecko.com/coins/images/14001/thumb/guarda-shield-logo.png?1696513730",
+		"mCap": 0.0,
+		"mSup": 4771.0,
+		"name": "Guarded Ether",
+		"price": 3268.45,
+		"sym": "geth",
+		"tNom": 0,
+		"tSup": 4771.0,
+		"tVol": 4569.52
+	},
+	{
+		"id": "geist-eth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"fantom"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/18998/thumb/preview-gallery-gETHgecko_%281%29.png?1696518451",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Geist ETH",
+		"price": 3613.72,
+		"sym": "geth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "goeth",
+		"addr": null,
+		"cats": [
+			"Algorand Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"algorand"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/26826/thumb/goeth.png?1696525885",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "goETH",
+		"price": 3628.85,
+		"sym": "goeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 2638.85
+	},
+	{
+		"id": "groktether",
+		"addr": null,
+		"cats": [
+			"BNB Chain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 172199,
+		"lURI": "https://assets.coingecko.com/coins/images/34360/thumb/Logo-cmc_%282%29.jpg?1704708251",
+		"mCap": 0.0,
+		"mSup": 1000000000.0,
+		"name": "GrokTether",
+		"price": 0.00017229,
+		"sym": "groktether",
+		"tNom": 0,
+		"tSup": 1000000000.0,
+		"tVol": 141.18
+	},
+	{
+		"id": "green-satoshi-token-on-eth",
+		"addr": null,
+		"cats": [
+			"Gaming Utility Token",
+			"Move To Earn",
+			"BNB Chain Ecosystem",
+			"Gaming (GameFi)",
+			"NFT",
+			"Play To Earn",
+			"Solana Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 61957783.43,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1446637,
+		"lURI": "https://assets.coingecko.com/coins/images/26528/thumb/gst_eth.png?1696525600",
+		"mCap": 2987680,
+		"mSup": 0,
+		"name": "STEPN Green Satoshi Token on ETH",
+		"price": 0.04817371,
+		"sym": "gst-eth",
+		"tNom": 2.0652594476666666666666666667,
+		"tSup": 30000000.0,
+		"tVol": 21205
+	},
+	{
+		"id": "gitcoin-staked-eth-index",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 59.5959917799156,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 211959,
+		"lURI": "https://assets.coingecko.com/coins/images/29171/thumb/gtcETH-token-logo.png?1696528129",
+		"mCap": 211959,
+		"mSup": 0,
+		"name": "Gitcoin Staked ETH Index",
+		"price": 3556.59,
+		"sym": "gtceth",
+		"tNom": 1,
+		"tSup": 59.5959917799156,
+		"tVol": 43.58
+	},
+	{
+		"id": "huobi-ethereum",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"huobi-token"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/14104/thumb/ETH.a13273b3.png?1696513825",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Huobi Ethereum",
+		"price": 3889.51,
+		"sym": "heth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 371526
+	},
+	{
+		"id": "hord-heth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29624/thumb/hETH_TOKEN.png?1698343953",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Hord hETH",
+		"price": 7894.42,
+		"sym": "heth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 313.15
+	},
+	{
+		"id": "interest-bearing-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 295880,
+		"lURI": "https://assets.coingecko.com/coins/images/13131/thumb/7675.png?1696512918",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Interest Bearing ETH",
+		"price": 4019.63,
+		"sym": "ibeth",
+		"tNom": 0,
+		"tSup": 73.6087409182914,
+		"tVol": 1735.19
+	},
+	{
+		"id": "interest-compounding-eth-index",
+		"addr": null,
+		"cats": [
+			"TokenSets",
+			"DeFi Index",
+			"Decentralized Finance (DeFi)",
+			"Index",
+			"Structured Products",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 4378.41309813664,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 17235377,
+		"lURI": "https://assets.coingecko.com/coins/images/24483/thumb/icETH-token-logo.png?1696523661",
+		"mCap": 17235377,
+		"mSup": 0,
+		"name": "Interest Compounding ETH Index",
+		"price": 3896.16,
+		"sym": "iceth",
+		"tNom": 1,
+		"tSup": 4378.41309813664,
+		"tVol": 572.79
+	},
+	{
+		"id": "leveraged-reth-staking-yield",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31554/thumb/icRETH-token-logo.png?1696530366",
+		"mCap": 0.0,
+		"mSup": 2500.0,
+		"name": "Leveraged rETH Staking Yield",
+		"price": 2203.35,
+		"sym": "icreth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 887.59
+	},
+	{
+		"id": "indigo-protocol-ieth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"cardano"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29285/thumb/iETHsmall.png?1696528237",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Indigo Protocol iETH",
+		"price": 2899.0,
+		"sym": "ieth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 6116.21
+	},
+	{
+		"id": "instadapp-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 392.269802535016,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1600137,
+		"lURI": "https://assets.coingecko.com/coins/images/25822/thumb/iETH_100x100.png?1696524907",
+		"mCap": 1600137,
+		"mSup": 0,
+		"name": "iETH v1",
+		"price": 4056.91,
+		"sym": "ieth",
+		"tNom": 1,
+		"tSup": 392.269802535016,
+		"tVol": 0.0
+	},
+	{
+		"id": "iethereum",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 271485,
+		"lURI": "https://assets.coingecko.com/coins/images/1065/thumb/ieth.png?1696502169",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "iEthereum",
+		"price": 0.01508249,
+		"sym": "ieth",
+		"tNom": 0,
+		"tSup": 18000000.0,
+		"tVol": 0.367745
+	},
+	{
+		"id": "instadapp-eth-v2",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29704/thumb/iETH.png?1696528636",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Instadapp ETH v2",
+		"price": 3875.27,
+		"sym": "ieth v2",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "inverse-ethereum-volatility-index-token",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Decentralized Finance (DeFi)",
+			"Index",
+			"DeFi Index"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 421717,
+		"lURI": "https://assets.coingecko.com/coins/images/16715/thumb/logo_-_2021-06-28T085526.083.png?1696516289",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Inverse Ethereum Volatility Index Token",
+		"price": 167.03,
+		"sym": "iethv",
+		"tNom": 0,
+		"tSup": 2527.0,
+		"tVol": 246.46
+	},
+	{
+		"id": "inception-restaked-ankreth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34952/thumb/ankrETH.png?1706772250",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception ankrETH",
+		"price": 0,
+		"sym": "inankreth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-cbeth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34948/thumb/cbETH.png?1706770383",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception cbETH",
+		"price": 0,
+		"sym": "incbeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-ethx",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34950/thumb/EthX.png?1706771369",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception ETHx",
+		"price": 0,
+		"sym": "inethx",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-lseth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34951/thumb/LSETH.png?1706771493",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception lsETH",
+		"price": 0,
+		"sym": "inlseth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-meth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34958/thumb/mETH.png?1706773620",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception mETH",
+		"price": 0,
+		"sym": "inmeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-oeth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34957/thumb/origin-ether-oeth-logo_1.png?1706773605",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception oETH",
+		"price": 0,
+		"sym": "inoeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-oseth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34955/thumb/osETH.png?1706773564",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception osETH",
+		"price": 0,
+		"sym": "inoseth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-reth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34956/thumb/rETH.png?1706773577",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception rETH",
+		"price": 0,
+		"sym": "inreth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inceptionlrt-sfrxet",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34949/thumb/sfrxETH.png?1706770412",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception sfrxETH",
+		"price": 0,
+		"sym": "insfrxeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-steth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34954/thumb/Group_14.png?1706773546",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception stETH",
+		"price": 0,
+		"sym": "insteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-sweth",
+		"addr": null,
+		"cats": [
+			"Liquid Restaking Tokens",
+			"Restaking",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34943/thumb/swETH.png?1706757072",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception swETH",
+		"price": 0,
+		"sym": "insweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "inception-restaked-wbeth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34944/thumb/WBETH.png?1706757148",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Inception wbETH",
+		"price": 0,
+		"sym": "inwbeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "ioeth",
+		"addr": null,
+		"cats": [
+			"IoTeX Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"iotex"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 1734873,
+		"lURI": "https://assets.coingecko.com/coins/images/19342/thumb/io1qfvgvmk6lpxkpqwlzanqx4atyzs86ryqjnfuad.png?1696518783",
+		"mCap": 0.0,
+		"mSup": 9496266827.0,
+		"name": "ioETH",
+		"price": 3614.32,
+		"sym": "ioeth",
+		"tNom": 0,
+		"tSup": 480.0,
+		"tVol": 49574
+	},
+	{
+		"id": "stakehouse-keth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33656/thumb/kETH.png?1702597766",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Stakehouse kETH",
+		"price": 0,
+		"sym": "keth",
+		"tNom": 0,
+		"tSup": 241.69374783829,
+		"tVol": 0
+	},
+	{
+		"id": "veno-finance-staked-eth",
+		"addr": null,
+		"cats": [
+			"ZkSync Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"zksync"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 290630,
+		"lURI": "https://assets.coingecko.com/coins/images/34945/thumb/LETH_%281%29.png?1708020787",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Veno Finance Staked ETH",
+		"price": 3585.19,
+		"sym": "leth",
+		"tNom": 0,
+		"tSup": 81.0640434006702,
+		"tVol": 5615.42
+	},
+	{
+		"id": "liquid-driver-livethe",
+		"addr": null,
+		"cats": [
+			"BNB Chain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 18750517,
+		"lURI": "https://assets.coingecko.com/coins/images/33137/thumb/liveTHE_new.png?1700808192",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Liquid Driver liveTHE",
+		"price": 0.550163,
+		"sym": "livethe",
+		"tNom": 0,
+		"tSup": 34081768.1319877,
+		"tVol": 50.69
+	},
+	{
+		"id": "liquid-staked-ethereum",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 244117261,
+		"lURI": "https://assets.coingecko.com/coins/images/28848/thumb/LsETH-receipt-token-circle.png?1696527824",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Liquid Staked ETH",
+		"price": 3827.61,
+		"sym": "lseth",
+		"tNom": 0,
+		"tSup": 63632.9799537901,
+		"tVol": 10558.09
+	},
+	{
+		"id": "morpho-aave-wrapped-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Lending/Borrowing"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29873/thumb/maWETH.jpg?1696528798",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Morpho-Aave Wrapped Ether",
+		"price": 0,
+		"sym": "maweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "mantle-staked-ether",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 528109.809737381,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1940050244,
+		"lURI": "https://assets.coingecko.com/coins/images/33345/thumb/symbol_transparent_bg.png?1701697066",
+		"mCap": 1940050244,
+		"mSup": 0,
+		"name": "Mantle Staked Ether",
+		"price": 3679.11,
+		"sym": "meth",
+		"tNom": 1,
+		"tSup": 528109.809737381,
+		"tVol": 812026
+	},
+	{
+		"id": "mirrored-ether",
+		"addr": null,
+		"cats": [
+			"Mirrored Assets"
+		],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 228965.6618,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 821634,
+		"lURI": "https://assets.coingecko.com/coins/images/14059/thumb/mirror_logo_transparent.png?1696513784",
+		"mCap": 821634,
+		"mSup": 228965.643343,
+		"name": "Mirrored Ether",
+		"price": 3.59,
+		"sym": "meth",
+		"tNom": 1.0000000806103471705169797921,
+		"tSup": 228965.643343,
+		"tVol": 805011
+	},
+	{
+		"id": "meveth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 9151.27989356706,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 33754812,
+		"lURI": "https://assets.coingecko.com/coins/images/32153/thumb/MEV_logo_2.png?1696598728",
+		"mCap": 33754812,
+		"mSup": 0,
+		"name": "mevETH",
+		"price": 3688.53,
+		"sym": "meveth",
+		"tNom": 1,
+		"tSup": 9151.27989356706,
+		"tVol": 351.74
+	},
+	{
+		"id": "mpeth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35401/thumb/mpETH-jpeg.jpg?1708541939",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "mpETH",
+		"price": 0,
+		"sym": "mpeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "origin-ether",
+		"addr": null,
+		"cats": [
+			"LSDFi",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 44509.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 159502445,
+		"lURI": "https://assets.coingecko.com/coins/images/29733/thumb/OETH.png?1696528663",
+		"mCap": 159502445,
+		"mSup": 44509.0,
+		"name": "Origin Ether",
+		"price": 3579.13,
+		"sym": "oeth",
+		"tNom": 1,
+		"tSup": 44509.0,
+		"tVol": 170807
+	},
+	{
+		"id": "orbit-bridge-klaytn-ethereum",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"klay-token"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/26274/thumb/-p1Br7oh_400x400.png?1696525358",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Orbit Bridge Klaytn Ethereum",
+		"price": 1147.94,
+		"sym": "oeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 218506
+	},
+	{
+		"id": "stakewise-v3-oseth",
+		"addr": null,
+		"cats": [
+			"Eth 2.0 Staking",
+			"Liquid Staking Tokens",
+			"Decentralized Finance (DeFi)",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 29025.4921932133,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 62576049,
+		"lURI": "https://assets.coingecko.com/coins/images/33117/thumb/Frame_27513839.png?1700732599",
+		"mCap": 62576049,
+		"mSup": 0,
+		"name": "StakeWise Staked ETH",
+		"price": 3632.61,
+		"sym": "oseth",
+		"tNom": 882977562340553870.8591475032,
+		"tSup": 0.0000000000000328722873957,
+		"tVol": 421317
+	},
+	{
+		"id": "peth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 13538450,
+		"lURI": "https://assets.coingecko.com/coins/images/28376/thumb/peth.png?1696527377",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "pETH",
+		"price": 3608.41,
+		"sym": "peth",
+		"tNom": 0,
+		"tSup": 3751.91609947382,
+		"tVol": 7203.86
+	},
+	{
+		"id": "ripae-peth",
+		"addr": null,
+		"cats": [
+			"Arbitrum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"arbitrum-one"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 7992.36,
+		"lURI": "https://assets.coingecko.com/coins/images/29121/thumb/pETH.png?1696528083",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Ripae pETH",
+		"price": 99.04,
+		"sym": "peth",
+		"tNom": 0,
+		"tSup": 80.700361,
+		"tVol": 96.67
+	},
+	{
+		"id": "prime-staked-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 10141.5919012487,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 36133947,
+		"lURI": "https://assets.coingecko.com/coins/images/34994/thumb/PrimeETH_Token_Logo.png?1706951612",
+		"mCap": 36133947,
+		"mSup": 0,
+		"name": "Prime Staked ETH",
+		"price": 3558.1,
+		"sym": "primeeth",
+		"tNom": 1,
+		"tSup": 10141.5919012487,
+		"tVol": 136402
+	},
+	{
+		"id": "pufeth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35176/thumb/pufETH-200-200-resolution.png?1707753174",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "pufETH",
+		"price": 3430.86,
+		"sym": "pufeth",
+		"tNom": 0,
+		"tSup": 227548.0,
+		"tVol": 1398546
+	},
+	{
+		"id": "pooltogether-prize-weth-aave",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"optimistic-ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32454/thumb/PrizeWETHIcon_200.png?1698241047",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "PoolTogether Prize WETH - Aave",
+		"price": 0,
+		"sym": "pweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "dinero-staked-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33608/thumb/pxETH-icon-transbg_72dpi.png?1702512024",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Dinero Staked ETH",
+		"price": 0,
+		"sym": "pxeth",
+		"tNom": 0,
+		"tSup": 7352.69362802173,
+		"tVol": 0
+	},
+	{
+		"id": "queeneth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/30027/thumb/queeneth.png?1696528950",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "queenETH",
+		"price": 3089.78,
+		"sym": "qeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 281.38
+	},
+	{
+		"id": "astrid-restaked-cbeth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32268/thumb/astridlogo_copy.png?1697166282",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Astrid Restaked cbETH",
+		"price": 0,
+		"sym": "rcbeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "rocket-pool-eth",
+		"addr": null,
+		"cats": [
+			"Base Ecosystem",
+			"Polygon Ecosystem",
+			"Optimism Ecosystem",
+			"Arbitrum Ecosystem",
+			"Ethereum Ecosystem",
+			"Liquid Staking Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"optimistic-ethereum",
+			"arbitrum-one",
+			"polygon-pos",
+			"base"
+		],
+		"cirSup": 544761.780493823,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 2147620744,
+		"lURI": "https://assets.coingecko.com/coins/images/20764/thumb/reth.png?1696520159",
+		"mCap": 2147620744,
+		"mSup": 0,
+		"name": "Rocket Pool ETH",
+		"price": 3933.49,
+		"sym": "reth",
+		"tNom": 1,
+		"tSup": 544761.780493823,
+		"tVol": 9272025
+	},
+	{
+		"id": "reth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Liquid Staking Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 11073750,
+		"lURI": "https://assets.coingecko.com/coins/images/14452/thumb/rETH.png?1696514140",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "StaFi Staked ETH",
+		"price": 3850.09,
+		"sym": "reth",
+		"tNom": 0,
+		"tSup": 2876.22875002725,
+		"tVol": 5155.62
+	},
+	{
+		"id": "bridged-rocket-pool-eth-manta-pacific",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"manta-pacific"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32219/thumb/reth.png?1696833235",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Rocket Pool ETH (Manta Pacific)",
+		"price": 2647.48,
+		"sym": "reth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 874.57
+	},
+	{
+		"id": "reth2",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Liquid Staking Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 872.656403371932,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 3160883,
+		"lURI": "https://assets.coingecko.com/coins/images/16570/thumb/red256.png?1696516131",
+		"mCap": 3160883,
+		"mSup": 0,
+		"name": "rETH2",
+		"price": 3622.14,
+		"sym": "reth2",
+		"tNom": 1,
+		"tSup": 872.656403371932,
+		"tVol": 278.15
+	},
+	{
+		"id": "retherswap",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35113/thumb/rether.png?1707391894",
+		"mCap": 0.0,
+		"mSup": 200000000.0,
+		"name": "Retherswap",
+		"price": 0.00069897,
+		"sym": "rether",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 258.56
+	},
+	{
+		"id": "astrid-restaked-reth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32267/thumb/astridlogo_copy.png?1697166279",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Astrid Restaked rETH",
+		"price": 0,
+		"sym": "rreth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "kelp-dao-restaked-eth",
+		"addr": null,
+		"cats": [
+			"Liquid Restaking Tokens",
+			"Restaking",
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 188699.233048052,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 670228032,
+		"lURI": "https://assets.coingecko.com/coins/images/33800/thumb/Icon___Dark.png?1702991855",
+		"mCap": 670228032,
+		"mSup": 0,
+		"name": "Kelp DAO Restaked ETH",
+		"price": 3562.0,
+		"sym": "rseth",
+		"tNom": 1,
+		"tSup": 188699.233048052,
+		"tVol": 2428152
+	},
+	{
+		"id": "astrid-restaked-steth",
+		"addr": null,
+		"cats": [
+			"Restaking",
+			"Liquid Restaking Tokens",
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32266/thumb/astridlogo_copy.png?1697166275",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Astrid Restaked stETH",
+		"price": 51.85,
+		"sym": "rsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 340.74
+	},
+	{
+		"id": "restaked-swell-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Liquid Restaking Tokens",
+			"Restaking"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34489/thumb/rswETH_Icon.png?1706865484",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Restaked Swell ETH",
+		"price": 3570.88,
+		"sym": "rsweth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 2667745
+	},
+	{
+		"id": "dopex-receipt-token-eth",
+		"addr": null,
+		"cats": [
+			"Arbitrum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"arbitrum-one"
+		],
+		"cirSup": 44.4724119552579,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 160414,
+		"lURI": "https://assets.coingecko.com/coins/images/34513/thumb/rteth.png?1705288675",
+		"mCap": 403741,
+		"mSup": 0,
+		"name": "Dopex Receipt Token ETH",
+		"price": 3607.03,
+		"sym": "rteth",
+		"tNom": 1,
+		"tSup": 44.4724119552579,
+		"tVol": 1142.61
+	},
+	{
+		"id": "simple-asymmetry-eth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/30426/thumb/safETH_Logo_200_200.png?1699479265",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Simple Asymmetry ETH",
+		"price": 0,
+		"sym": "safeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "bridged-wrapped-ether-im-bridge",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"shimmer_evm"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32431/thumb/wETH_32.png?1698136551",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (IM Bridge)",
+		"price": 2190.34,
+		"sym": "seth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 2688.65
+	},
+	{
+		"id": "seth",
+		"addr": null,
+		"cats": [
+			"Optimism Ecosystem",
+			"Ethereum Ecosystem",
+			"Synths",
+			"Decentralized Finance (DeFi)",
+			"Asset-backed Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"optimistic-ethereum"
+		],
+		"cirSup": 12586.5004112565,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 44988936,
+		"lURI": "https://assets.coingecko.com/coins/images/8843/thumb/sETH.png?1696508995",
+		"mCap": 44988936,
+		"mSup": 12586.5004112565,
+		"name": "sETH",
+		"price": 3574.38,
+		"sym": "seth",
+		"tNom": 1,
+		"tSup": 12586.5004112565,
+		"tVol": 228230
+	},
+	{
+		"id": "seth2",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 23550.8438580023,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 83725563,
+		"lURI": "https://assets.coingecko.com/coins/images/16569/thumb/emerald256.png?1696516130",
+		"mCap": 83725563,
+		"mSup": 0,
+		"name": "sETH2",
+		"price": 3555.1,
+		"sym": "seth2",
+		"tNom": 1,
+		"tSup": 23550.8438580023,
+		"tVol": 8652.7
+	},
+	{
+		"id": "staked-frax-ether",
+		"addr": null,
+		"cats": [
+			"Eth 2.0 Staking",
+			"Polygon Ecosystem",
+			"Optimism Ecosystem",
+			"Moonbeam Ecosystem",
+			"Fantom Ecosystem",
+			"Arbitrum Ecosystem",
+			"BNB Chain Ecosystem",
+			"Liquid Staking Tokens",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"moonbeam",
+			"fantom",
+			"optimistic-ethereum",
+			"arbitrum-one",
+			"polygon-pos",
+			"binance-smart-chain"
+		],
+		"cirSup": 190424.539137597,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 732276427,
+		"lURI": "https://assets.coingecko.com/coins/images/28285/thumb/sfrxETH_icon.png?1696527285",
+		"mCap": 732276427,
+		"mSup": 0,
+		"name": "Staked Frax Ether",
+		"price": 3862.59,
+		"sym": "sfrxeth",
+		"tNom": 1,
+		"tSup": 190424.539137597,
+		"tVol": 407347
+	},
+	{
+		"id": "wrapped-ethereum-sollet",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"solana"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 206030867,
+		"lURI": "https://assets.coingecko.com/coins/images/24918/thumb/6250754.png?1696524074",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped Ethereum (Sollet)",
+		"price": 427.38,
+		"sym": "soeth",
+		"tNom": 0,
+		"tSup": 483499.0,
+		"tVol": 72711
+	},
+	{
+		"id": "staked-yearn-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32222/thumb/st-yETH-128px.png?1696914941",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Staked Yearn Ether",
+		"price": 3674.96,
+		"sym": "st-yeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "staked-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Liquid Staking Tokens",
+			"Decentralized Finance (DeFi)",
+			"Eth 2.0 Staking"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 9788562.84193289,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 34961312066,
+		"lURI": "https://assets.coingecko.com/coins/images/13442/thumb/steth_logo.png?1696513206",
+		"mCap": 34961312066,
+		"mSup": 0,
+		"name": "Lido Staked Ether",
+		"price": 3590.43,
+		"sym": "steth",
+		"tNom": 1,
+		"tSup": 9788562.84193289,
+		"tVol": 78655835
+	},
+	{
+		"id": "stake-together",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34709/thumb/stake-together.png?1705894276",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Stake Together",
+		"price": 0,
+		"sym": "stpeth",
+		"tNom": 0,
+		"tSup": 172.0,
+		"tVol": 0
+	},
+	{
+		"id": "streeth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 288944,
+		"lURI": "https://assets.coingecko.com/coins/images/24954/thumb/streeth.png?1696524108",
+		"mCap": 0.0,
+		"mSup": 300000000.0,
+		"name": "STREETH",
+		"price": 0.00096304,
+		"sym": "streeth",
+		"tNom": 0,
+		"tSup": 300000000.0,
+		"tVol": 5864.25
+	},
+	{
+		"id": "sumer-money-sueth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"meter",
+			"arbitrum-one",
+			"base"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33265/thumb/Sumer_Money_Logo.jpg?1701321407",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Sumer.Money suETH",
+		"price": 0,
+		"sym": "sueth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "staked-veth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 1837.73981454029,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 7520789,
+		"lURI": "https://assets.coingecko.com/coins/images/35289/thumb/svETH200.png?1709593889",
+		"mCap": 7520789,
+		"mSup": 0,
+		"name": "Vector Reserve Staked vETH",
+		"price": 4082.0,
+		"sym": "sveth",
+		"tNom": 1,
+		"tSup": 1837.73981454029,
+		"tVol": 5080.21
+	},
+	{
+		"id": "savvy-eth",
+		"addr": null,
+		"cats": [
+			"Arbitrum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"arbitrum-one"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31005/thumb/logo_%288%29.png?1696529842",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Savvy ETH",
+		"price": 3462.85,
+		"sym": "sveth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 290.07
+	},
+	{
+		"id": "sweth",
+		"addr": null,
+		"cats": [
+			"Liquid Staking Tokens",
+			"Arbitrum Ecosystem",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"arbitrum-one"
+		],
+		"cirSup": 222845.157792624,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 832959368,
+		"lURI": "https://assets.coingecko.com/coins/images/30326/thumb/_lB7zEtS_400x400.jpg?1696529227",
+		"mCap": 832959368,
+		"mSup": 0,
+		"name": "Swell Ethereum",
+		"price": 3768.26,
+		"sym": "sweth",
+		"tNom": 1,
+		"tSup": 222845.157792624,
+		"tVol": 2499167
+	},
+	{
+		"id": "hpohs888inu",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 927123571.7156,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 27117,
+		"lURI": "https://assets.coingecko.com/coins/images/31355/thumb/200xlogo.png?1696530172",
+		"mCap": 27117,
+		"mSup": 1000000000.0,
+		"name": "Hpohs888inu",
+		"price": 0.00002925,
+		"sym": "tether",
+		"tNom": 1,
+		"tSup": 927123571.7156,
+		"tVol": 103.45
+	},
+	{
+		"id": "hermionegrangerclintonamberamyrose9inu",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 31442,
+		"lURI": "missing_thumb.png",
+		"mCap": 0.0,
+		"mSup": 999999999999.0,
+		"name": "HermioneGrangerClintonAmberAmyRose9Inu",
+		"price": 0.000000031442,
+		"sym": "tether",
+		"tNom": 0,
+		"tSup": 999999999999.0,
+		"tVol": 26.22
+	},
+	{
+		"id": "tethys-finance",
+		"addr": null,
+		"cats": [
+			"Metis Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"metis-andromeda"
+		],
+		"cirSup": 10643093.2631974,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 3937395,
+		"lURI": "https://assets.coingecko.com/coins/images/22141/thumb/wjoZJvzA_400x400.jpg?1696521487",
+		"mCap": 3937395,
+		"mSup": 0,
+		"name": "Tethys Finance",
+		"price": 0.369948,
+		"sym": "tethys",
+		"tNom": 1,
+		"tSup": 10643093.2631974,
+		"tVol": 16247.5
+	},
+	{
+		"id": "unagii-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 41812,
+		"lURI": "https://assets.coingecko.com/coins/images/14624/thumb/uETH.png?1696514302",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Unagii ETH",
+		"price": 3976.46,
+		"sym": "ueth",
+		"tNom": 0,
+		"tSup": 10.5614404335596,
+		"tVol": 0.0
+	},
+	{
+		"id": "universal-eth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 249621,
+		"lURI": "https://assets.coingecko.com/coins/images/28477/thumb/uniETH_200.png?1696527471",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Universal ETH",
+		"price": 3900.34,
+		"sym": "unieth",
+		"tNom": 0,
+		"tSup": 64.0,
+		"tVol": 108168
+	},
+	{
+		"id": "unsheth-unsheth",
+		"addr": null,
+		"cats": [
+			"Arbitrum Ecosystem",
+			"Ethereum Ecosystem",
+			"BNB Chain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain",
+			"ethereum",
+			"arbitrum-one"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/30365/thumb/ush.png?1696529262",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "unshETH Ether",
+		"price": 3733.37,
+		"sym": "unsheth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 38013
+	},
+	{
+		"id": "zetachain-bridged-usdc-eth-zetachain",
+		"addr": null,
+		"cats": [
+			"Bridged USDC",
+			"ZetaChain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"zetachain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35422/thumb/USDC.jpg?1708525929",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ZetaChain Bridged USDC.ETH (ZetaChain)",
+		"price": 1.003,
+		"sym": "usdc.eth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 16476.08
+	},
+	{
+		"id": "zetachain-bridged-usdt-eth-zetachain",
+		"addr": null,
+		"cats": [
+			"Bridged USDT",
+			"ZetaChain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"zetachain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/35418/thumb/logo.png?1708524544",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "ZetaChain Bridged USDT.ETH (ZetaChain)",
+		"price": 1.001,
+		"sym": "usdt.eth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 35163
+	},
+	{
+		"id": "venus-beth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 1246342,
+		"lURI": "https://assets.coingecko.com/coins/images/13924/thumb/vbeth.png?1696513664",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Venus BETH",
+		"price": 73.79,
+		"sym": "vbeth",
+		"tNom": 0,
+		"tSup": 16868.37532728,
+		"tVol": 0.0
+	},
+	{
+		"id": "voucher-ethereum-2-0",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29683/thumb/vETH_200.png?1696528617",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Voucher Ethereum 2.0",
+		"price": 0,
+		"sym": "veth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "vector-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 4910.86804374469,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 17603453,
+		"lURI": "https://assets.coingecko.com/coins/images/35085/thumb/vETH200.png?1709644096",
+		"mCap": 17603453,
+		"mSup": 0,
+		"name": "Vector ETH",
+		"price": 3584.59,
+		"sym": "veth",
+		"tNom": 1,
+		"tSup": 4910.86804374469,
+		"tVol": 8116.65
+	},
+	{
+		"id": "venus-eth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"binance-smart-chain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 204880631,
+		"lURI": "https://assets.coingecko.com/coins/images/13900/thumb/venus_eth.png?1696513643",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Venus ETH",
+		"price": 74.25,
+		"sym": "veth",
+		"tNom": 0,
+		"tSup": 2759618.14098712,
+		"tVol": 0.0
+	},
+	{
+		"id": "waneth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"wanchain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/23614/thumb/download-3.png?1696522820",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "wanETH",
+		"price": 3566.39,
+		"sym": "waneth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 17381.23
+	},
+	{
+		"id": "wrapped-beacon-eth",
+		"addr": null,
+		"cats": [
+			"BNB Chain Ecosystem",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"binance-smart-chain"
+		],
+		"cirSup": 70938.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 158374371,
+		"lURI": "https://assets.coingecko.com/coins/images/30061/thumb/wbeth-icon.png?1696528983",
+		"mCap": 158374371,
+		"mSup": 0,
+		"name": "Wrapped Beacon ETH",
+		"price": 2233.94,
+		"sym": "wbeth",
+		"tNom": 1,
+		"tSup": 70938.0,
+		"tVol": 13406528
+	},
+	{
+		"id": "wrapped-eeth",
+		"addr": null,
+		"cats": [
+			"Ether.fi Ecosystem",
+			"Arbitrum Ecosystem",
+			"Liquid Restaking Tokens",
+			"Restaking",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"arbitrum-one"
+		],
+		"cirSup": 382617.91689771,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 1415927325,
+		"lURI": "https://assets.coingecko.com/coins/images/33033/thumb/weETH.png?1701438396",
+		"mCap": 1415927325,
+		"mSup": 0,
+		"name": "Wrapped eETH",
+		"price": 3683.99,
+		"sym": "weeth",
+		"tNom": 1,
+		"tSup": 382617.91689771,
+		"tVol": 27947604
+	},
+	{
+		"id": "zora-bridged-weth-zora-network",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"zora-network"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "missing_thumb.png",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Zora Bridged WETH (Zora Network)",
+		"price": 3590.13,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 56952
+	},
+	{
+		"id": "bridged-wrapped-ether-voltage-finance",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"fuse"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "missing_thumb.png",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Voltage Finance)",
+		"price": 3699.63,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 9877.17
+	},
+	{
+		"id": "bridged-wrapped-ether-stargate",
+		"addr": null,
+		"cats": [
+			"Fantom Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"fantom",
+			"kava"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31184/thumb/wETH_32.png?1696530012",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Stargate)",
+		"price": 3639.73,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 657077
+	},
+	{
+		"id": "bridged-wrapped-ether-scroll",
+		"addr": null,
+		"cats": [
+			"Scroll Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"scroll"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32315/thumb/weth_%281%29.png?1697365181",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Scroll)",
+		"price": 3621.68,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 8426026
+	},
+	{
+		"id": "bridged-wrapped-ether-manta-pacific",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"manta-pacific"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32212/thumb/wETH_32.png?1696817415",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Manta Pacific)",
+		"price": 3629.25,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 2417826
+	},
+	{
+		"id": "bridged-wrapped-ether-fuse",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"fuse"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32759/thumb/logo_%286%29.png?1699324862",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Fuse)",
+		"price": 3675.61,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 6444.29
+	},
+	{
+		"id": "wrapped-eth-trustless-bridge",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"trustless-computer"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/30507/thumb/weth.png?1696529393",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped ETH (Trustless Bridge)",
+		"price": 2070.02,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 351.0
+	},
+	{
+		"id": "wrapped-ether-linea",
+		"addr": null,
+		"cats": [
+			"Linea Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"linea"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31019/thumb/download_%2817%29.png?1696529855",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Linea)",
+		"price": 3587.74,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 7206724
+	},
+	{
+		"id": "wrapped-ether-mantle-bridge",
+		"addr": null,
+		"cats": [
+			"Layer 2 (L2)",
+			"Ethereum Ecosystem",
+			"Mantle Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"mantle"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31013/thumb/wrapped-eth-mantle-bridge.png?1696529850",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped Ether (Mantle Bridge)",
+		"price": 3543.54,
+		"sym": "weth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 179209
+	},
+	{
+		"id": "weth-plenty-bridge-65aa5342-507c-4f67-8634-1f4376ffdf9a",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29102/thumb/wrapped-ether-xdai.png?1696528065",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "WETH (Plenty Bridge)",
+		"price": 3625.79,
+		"sym": "weth.e",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 676.44
+	},
+	{
+		"id": "bridged-wrapped-ether-hashport",
+		"addr": null,
+		"cats": [
+			"Hedera Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"hedera-hashgraph"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32316/thumb/weth_%281%29.png?1697366343",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Ether (Hashport)",
+		"price": 3608.62,
+		"sym": "weth[hts]",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 19144.55
+	},
+	{
+		"id": "dydx-wethdydx",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem",
+			"Decentralized Exchange (DEX)"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32595/thumb/dydx.png?1698673699",
+		"mCap": 0,
+		"mSup": 1000000000.0,
+		"name": "dYdX",
+		"price": 0,
+		"sym": "wethdydx",
+		"tNom": 0,
+		"tSup": 463956003.0,
+		"tVol": 0
+	},
+	{
+		"id": "wrapped-ethw",
+		"addr": null,
+		"cats": [
+			"EthereumPoW Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereumpow"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": false,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/27470/thumb/wethw.png?1696526509",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped ETHW",
+		"price": 3.84,
+		"sym": "wethw",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 183.51
+	},
+	{
+		"id": "where-did-the-eth-go-pulsechain",
+		"addr": null,
+		"cats": [
+			"PulseChain Ecosystem",
+			"Meme"
+		],
+		"chainId": null,
+		"chains": [
+			"pulsechain"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 205012,
+		"lURI": "https://assets.coingecko.com/coins/images/31748/thumb/FECcG807_400x400.jpg?1696530567",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Where Did The ETH Go? (Pulsechain)",
+		"price": 0.205012,
+		"sym": "wheth",
+		"tNom": 0,
+		"tSup": 1000000.0,
+		"tVol": 10987.49
+	},
+	{
+		"id": "where-did-the-eth-go",
+		"addr": null,
+		"cats": [
+			"Meme",
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 89148,
+		"lURI": "https://assets.coingecko.com/coins/images/31486/thumb/WHETH_logo_transparent_200px.png?1696530297",
+		"mCap": 0.0,
+		"mSup": 1000000.0,
+		"name": "Where Did The ETH Go?",
+		"price": 0.089148,
+		"sym": "wheth",
+		"tNom": 0,
+		"tSup": 1000000.0,
+		"tVol": 11.14
+	},
+	{
+		"id": "wrapped-oeth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/29734/thumb/wOETH.png?1696528664",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped OETH",
+		"price": 3877.94,
+		"sym": "woeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0.0
+	},
+	{
+		"id": "bridged-wrapped-lido-staked-ether-scroll",
+		"addr": null,
+		"cats": [
+			"Scroll Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"scroll"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32615/thumb/wsteth.png?1698735772",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped Lido Staked Ether (Scroll)",
+		"price": 4225.12,
+		"sym": "wsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 521489
+	},
+	{
+		"id": "wrapped-steth",
+		"addr": null,
+		"cats": [
+			"Arbitrum Ecosystem",
+			"Polygon Ecosystem",
+			"Ethereum Ecosystem",
+			"Optimism Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum",
+			"polygon-pos",
+			"arbitrum-one",
+			"optimistic-ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 8267223033,
+		"lURI": "https://assets.coingecko.com/coins/images/18834/thumb/wstETH.png?1696518295",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Wrapped stETH",
+		"price": 2510.9,
+		"sym": "wsteth",
+		"tNom": 0,
+		"tSup": 3288559.62075075,
+		"tVol": 114654842
+	},
+	{
+		"id": "bridged-wrapped-steth-gnosis",
+		"addr": null,
+		"cats": [
+			"Gnosis Chain Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"xdai"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33017/thumb/wStETH.png?1700190250",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped stETH (Gnosis)",
+		"price": 4204.77,
+		"sym": "wsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 1024366
+	},
+	{
+		"id": "bridged-wrapped-steth-manta-pacific",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			"manta-pacific"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32218/thumb/wstETH.png?1696832978",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Bridged Wrapped stETH (Manta Pacific)",
+		"price": 4202.24,
+		"sym": "wsteth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 8541.91
+	},
+	{
+		"id": "f-x-protocol-leveraged-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/32165/thumb/0xe063f04f280c60aeca68b38341c2eecbec703ae2.png?1696724194",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "f(x) Protocol Leveraged ETH",
+		"price": 2.82,
+		"sym": "xeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 9863.55
+	},
+	{
+		"id": "instabridge-wrapped-eth",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/34680/thumb/xETH.png?1705736121",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Instabridge Wrapped ETH (Radix)",
+		"price": 3589.19,
+		"sym": "xeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 302716
+	},
+	{
+		"id": "particles-money-xeth",
+		"addr": null,
+		"cats": [
+			"Base Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"base"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/33163/thumb/xETH.png?1700831188",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Particles Money xETH",
+		"price": 0,
+		"sym": "xeth",
+		"tNom": 0,
+		"tSup": 4.373536498781671,
+		"tVol": 0
+	},
+	{
+		"id": "yearn-ether",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 25750548,
+		"lURI": "https://assets.coingecko.com/coins/images/32220/thumb/yETH-128px.png?1696914909",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "Yearn Ether",
+		"price": 3554.37,
+		"sym": "yeth",
+		"tNom": 0,
+		"tSup": 7244.75585724883,
+		"tVol": 16948.3
+	},
+	{
+		"id": "yieldeth-sommelier",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"kujira",
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "missing_thumb.png",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "YieldETH (Sommelier)",
+		"price": 3789.49,
+		"sym": "yieldeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 9328.16
+	},
+	{
+		"id": "weth-yvault",
+		"addr": null,
+		"cats": [
+			"Yearn Vault Tokens",
+			"Ethereum Ecosystem",
+			"Asset-backed Tokens"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0.0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 123943392,
+		"lURI": "https://assets.coingecko.com/coins/images/28793/thumb/yvWETH-128-0xa258C4606Ca8206D8aA700cE2143D7db854D168c.png?1696527771",
+		"mCap": 0.0,
+		"mSup": 0,
+		"name": "WETH yVault",
+		"price": 3803.84,
+		"sym": "yvweth",
+		"tNom": 0,
+		"tSup": 32580.9994564593,
+		"tVol": 0.0
+	},
+	{
+		"id": "zeroliquid-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31533/thumb/IMG_20230828_212341_351.png?1696530342",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "ZeroLiquid ETH",
+		"price": 0,
+		"sym": "zeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "zunami-eth",
+		"addr": null,
+		"cats": [
+			"Ethereum Ecosystem"
+		],
+		"chainId": null,
+		"chains": [
+			"ethereum"
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/31176/thumb/Brand_symbol_Color.png?1696530004",
+		"mCap": 0,
+		"mSup": 0,
+		"name": "Zunami Ether",
+		"price": 0,
+		"sym": "zeth",
+		"tNom": 0,
+		"tSup": 0,
+		"tVol": 0
+	},
+	{
+		"id": "zethan",
+		"addr": null,
+		"cats": [],
+		"chainId": null,
+		"chains": [
+			""
+		],
+		"cirSup": 0,
+		"decs": 0,
+		"erc20": true,
+		"fulDilVal": 0,
+		"lURI": "https://assets.coingecko.com/coins/images/30657/thumb/ZETH_Logo.png?1696529527",
+		"mCap": 0,
+		"mSup": 100000000.0,
+		"name": "Zethan",
+		"price": 0,
+		"sym": "zeth",
+		"tNom": 0,
+		"tSup": 100000000.0,
+		"tVol": 0
+	}
+]

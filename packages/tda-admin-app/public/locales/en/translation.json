@@ -1,0 +1,320 @@
+{
+  "Common": {
+    "Edit": "Edit",
+    "Save": "Save",
+    "Delete": "Delete",
+    "Cancel": "Cancel",
+    "Sumbit": "Submit",
+    "Clear": "Clear",
+    "Yes": "Yes",
+    "Confirm": "Confirm",
+    "No": "No",
+    "ADD": "Add"
+  },
+  "PrefilterTokensSection": {
+    "PrefilterTokens": "Prefilter Tokens"
+  },
+  "CustomFilterBuilder": {
+    "DeleteDialogTitle": "Delete filter",
+    "ApplyFilter": "Apply filter",
+    "SelectFilter": "Select pre-built filter:",
+    "SaveFilterAs": "Save filter as:",
+    "FilterTokens": "Filter Tokens",
+    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
+  },
+  "ChangePasswordSection": {
+    "ChangePasswordWarning": "Please, set a new password",
+    "EnterConfirmPassword": "Enter confirm password",
+    "EnterNewPassword": "Enter new password",
+    "ConfirmPassword": "Confirm password",
+    "NewPassword": "New password",
+    "ChangePassword": "Change Password"
+  },
+  "TileSection": {
+    "QuoteRejected": "Quote Rejected:",
+    "BuyConfirmationText": "Buy {{buyAmount}} {{symbol1}} / Sell {{sellAmount}}\n{{symbol2}} (Notional Value) @ {{buyValue}}",
+    "SellConfirmationText": "Sell {{sellAmount}} {{symbol1}} / Buy {{buyAmount}}\n{{symbol2}} (Notional Value) @ {{sellValue}}",
+    "BuySnackBarConfirmationText": "You have Bought {{amount}} {{symbol1}} and Sold {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
+    "SellSnackBarConfirmationText": "You have Sold {{amount}} {{symbol1}} and Bought {{totalAmount}} {{symbol2}} (Notional Value) at a Rate of {{bidPx}}",
+    "InsufficientFundsToSell": "Insufficient Funds - Not Enough Funds Available to Sell {{currency}}",
+    "InsufficientFundsToBuy": "Insufficient Funds - Not Enough Funds Available to Buy {{currency1}} using {{currency2}}",
+    "ErrorText": "ORDER ERROR: TRADE REJECTED OR NOT CONFIRMED, PLEASE TRY AGAIN",
+    "InputQuantityToTradeInInputBoxBelow": "Input quantity to trade in input box below",
+    "Quantity": "Quantity"
+  },
+  "Tile": {
+    "MinSizeError": "TRADE QUANTITY IS TOO SMALL",
+    "MaxSizeError": "TRADE QUANTITY IS TOO LARGE",
+    "ClickInitiateRFQ": "Click Initiate RFQ to receive a quote to buy/sell the selected crypto pair"
+  },
+  "ProfileCardMenu": {
+    "PersonalInformation": "Personal Information",
+    "ChangePassword": "Change Password"
+  },
+  "RequestSettlement": {
+    "RequestSettlementTitle": "Request settlement",
+    "WithdrawalRequestSubmitted": "Withdrawal Request Submitted",
+    "CryptoWithdrawalRequest": "Cryptocurrency Withdrawal Request",
+    "FiatWithdrawalRequest": "Fiat Currency Withdrawal Request",
+    "RequestWithdrawal": "Request Withdrawal",
+    "SelectDestination": "Select Destination",
+    "Destination": "Destination",
+    "SelectCurrency": "Select Currency",
+    "Currency": "Currency",
+    "CryptoCurrency": "Cryptocurrency",
+    "FiatCurrency": "Fiat Currency",
+    "Amount": "Amount",
+    "EnterAmount": "Enter Amount"
+  },
+  "WithdrawalRequestConfirmationModal": {
+    "ModalTitle": "Withdrawal Request Received",
+    "ModalText1": "Please allow 24 hours for our response",
+    "ModalText2": "We will contact you with any further required"
+  },
+  "SettlementHistory": {
+    "FileName": "Settlement",
+    "Title": "Settlement History"
+  },
+  "ManageBankAccounts": {
+    "ManageBankAccountsTitle": "Manage Bank Accounts",
+    "AddANewBankAccount": "Add a New Bank Account",
+    "FillInTheDetails": "Fill in the details below to submit a new bank account.",
+    "SubmitNewAccount": "Submit New Account",
+    "Country": "Country",
+    "Currency": "Currency",
+    "CustomNameTag": "Custom Name Tag",
+    "CustomName": "Custom Name",
+    "BankName": "Bank Name",
+    "AccountType": "Account Type",
+    "AccountNumber": "Account Number",
+    "Status": "Status",
+    "RemoveAccount": "Remove Account",
+    "AccountHolderName": "Name on Bank Account",
+    "RoutingNumber": "Routing Number",
+    "BICSwiftCode": "BIC / SWIFT Code (If International)",
+    "DomesticBank": "Domestic Bank",
+    "InternationalBank": "International Bank",
+    "DragDropOrSelectFile": "Drag & Drop or Select file",
+    "DropFilesHereOrClick": "Drop files here or click",
+    "Browse": "browse",
+    "ThroughYourMachine": "through your machine",
+    "UploadedFiles": "Uploaded Files",
+    "Submit": "Submit",
+    "UploadBankStatement": "Upload Bank Statement",
+    "CustomNameIsRequired": "Custom Name is required",
+    "AccountTypeIsRequired": "Account Type is required",
+    "CountryIsRequired": "Country is required",
+    "CurrencyIsRequired": "Currency is required",
+    "AccountHolderNameIsRequired": "Account Holder Name is required",
+    "BankNameIsRequired": "Bank Name is required",
+    "NameOfBankAccount": "Name Of Bank Account",
+    "AccountNumberIsRequired": "Account Number is required",
+    "RoutingNumberIsRequired": "Routing Number is required",
+    "BICSWIFTCodeIsRequired": "BIC/SWIFT Code is required for non-USA countries"
+  },
+  "ManageCryptoAddresses": {
+    "ManageCryptoAddressTitle": "Manage Crypto Addresses",
+    "Address": "Address",
+    "Status": "Status",
+    "AddressTagMemo": "Address Tag/Memo",
+    "Blockchain": "Blockchain",
+    "RemoveAddress": "Remove Address",
+    "Delete": "Delete",
+    "AddANewAddress": "Add a New Address",
+    "AddressWhitelist": "Address Whitelist",
+    "WalletAddress": "Wallet Address",
+    "FirstName": "First Name",
+    "MiddleName": "Middle Name",
+    "LastName": "Last Name",
+    "WalletAddressIsRequired": "Wallet Address is required",
+    "BlockchainIsRequired": "Blockchain is required",
+    "FirstNameIsRequired": "First Name is required",
+    "LastNameIsRequired": "Last Name is required"
+  },
+  "Notification": {
+    "FillBuySell": "Fill: {{side}} {{qty}} {{pair}}",
+    "TradeConfirmation": "TRADE NOTIFICATION",
+    "Price": "Price: {{price}}",
+    "TradeDetails": "Trade Details",
+    "ViewAll": "View All"
+  },
+  "ShortcutsItems": {
+    "ThisWeek": "This Week",
+    "LastWeek": "Last Week",
+    "Last7Days": "Last 7 Days",
+    "CurrentMonth": "Current Month",
+    "Reset": "Reset"
+  },
+  "TradeHistory": {
+    "TradeHistory": "Trade History",
+    "TradeHistoryCsvFileName": "Trade_History",
+    "TradeTime": "Trade Time",
+    "ORDERID": "ORDER ID",
+    "Pair": "Pair",
+    "Action": "Action",
+    "Quantity": "Quantity",
+    "Price": "Price",
+    "Status": "Status"
+  },
+  "SpotRFQPage": {
+    "RecentTransactions": "Recent Transactions",
+    "RecentTransactionsCsvFileName": "Recent_Transactions",
+    "Export": "Export",
+    "ExportAsPDF": "Export as PDF",
+    "ExportAsCSV": "Export as CSV",
+    "ChooseTradingPairs": "Choose Trading Pairs",
+    "SelectCurrencies": "Select currencies from the two dropdowns to trade the crypto pair",
+    "Quantity": "Quantity"
+  },
+  "ProfileEditSection": {
+    "PersonalInformation": "Personal Information",
+    "FirstName": "First Name",
+    "LastName": "Last Name",
+    "EmailAddress": "Email Address"
+  },
+  "ConfirmationCellContent": {
+    "TradeConfirmation": "Trade Confirmation"
+  },
+  "FooterSection": {
+    "MinSize": "Min Size",
+    "MaxSize": "Max Size"
+  },
+  "ErrorMessages": {
+    "invalidPasswordFormat": "The password is not secure enough. Use a combination of numbers and symbols with different case. Avoid repetitive or sequential characters, dictionary words, context-specific words.",
+    "invalidCode": "Invalid code.",
+    "incorectPassword": "Password must contain at least 8 characters",
+    "MaxFieldLengthError": "Thes field must be less than {{symbols}} characters",
+    "mandatoryField": "Mandatory field",
+    "passwordDoNotMatch": "Password do not match",
+    "maxSymbols": "Max number of symbols - {{value}}",
+    "minSymbols": "Min number of symbols - {{value}}",
+    "incorrectCredentials": "Your credentials are incorrect. Please try again",
+    "invalidPhoneNumber": "Phone number is not valid",
+    "somethingWentWrong": "Something went wrong...",
+    "invalidFormat": "Invalid format",
+    "NewPasswordRequired": "New Password is required",
+    "PasswordRequirementsError": "Password must contain at least 8 characters, one uppercase, one number and one special case character",
+    "ConfirmPasswordRequired": "Confirm Password is required",
+    "PasswordsDoNotMatch": "Passwords do not match",
+    "AccountTypeIsRequired": "Account type is required",
+    "CountryIsRequired": "Country is required",
+    "CurrencyIsRequired": "Currency is required",
+    "AccountHolderNameIsRequired": "Account holder name is required",
+    "BankNameIsRequired": "Bank name is required",
+    "AccountNumberIsRequired": "Account number is required",
+    "RoutingNumberIsRequired": "Routing number is required",
+    "BICSWIFTCodeIsRequired": "BIC / SWIFT code is required",
+    "WalletAddressIsRequired": "Wallet Address is required",
+    "BlockchainIsRequired": "Blockchain is required",
+    "FirstNameIsRequired": "First Name is required",
+    "LastNameIsRequired": "Last Name is required"
+  },
+  "ory": {
+    "login.title": "Login",
+    "identities.messages.1070004": "Email"
+  },
+  "WalletInputModal": {
+    "AddNewWallet": "Add new wallet",
+    "WalletName": "Wallet name",
+    "Personal": "Personal",
+    "ChooseAsset": "Choose Asset"
+  },
+  "MyWalletsSection": {
+    "AddWallet": "+Add Wallet",
+    "Wallets": "Wallets"
+  },
+  "MyWalletsPage": {
+    "HistoricalWalletsWorth": "Historical Wallets Worth",
+    "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
+  },
+  "UserMenu": {
+    "Profile": "Profile",
+    "Settings": "Settings",
+    "Logout": "Logout"
+  },
+  "Header": {
+    "ElanInsights": "Elan Insights"
+  },
+  "HistoricalWalletsWorth": {
+    "Daily": "Daily",
+    "Monthly": "Monthly",
+    "Weekly": "Weekly",
+    "CompareToSymbol": "Compare to Symbol",
+    "Period": "Period",
+    "FromDate": "From Date",
+    "ToDate": "To Date"
+  },
+  "TotpSection": {
+    "UnlinkTotp": "Unlink authentication app",
+    "TOTP": "TOTP Authentication Apps",
+    "VerificationCode": "Verification code",
+    "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
+    "AndGoogleApp": "and Google Authenticator"
+  },
+  "IndexModelingSection": {
+    "Tokens": "Tokens",
+    "TotalCapital": "Total Capital",
+    "Export": "Export",
+    "EqualWeight": "Equal Weight"
+  },
+  "ProfilePage": {
+    "NewPassword": "New password",
+    "EnableSMSMFA": "Enable SMS MFA",
+    "EnterPassword": "Enter password",
+    "PhoneNumber": "Phone number",
+    "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
+    "VerificationCode": "Verification code",
+    "NewPasswordMessage": "New password has been set.",
+    "ApplicationUnlinked": "Application unlinked.",
+    "ApplicationLinked": "Application linked.",
+    "Export": "EXPORT"
+  },
+  "ColumnsDefs": {
+    "AvatarUrl": "Avatar Url",
+    "FirstName": "First Name",
+    "LastName": "Last Name",
+    "Email": "Email",
+    "Newsletter": "Newsletter",
+    "Roles": "Roles",
+    "AddNewPermission": "Add Permission",
+    "SelectAPermission": "Select a Permission to add for user and set the Value:",
+    "ConfirmDeletion": "Confirm Deletion",
+    "DeleteThisPermission": "Are you sure you want to delete this Permission?",
+    "Permission": "Permission",
+    "Permissions": "Permissions",
+    "Value": "Value"
+  },
+  "Dashboard": {
+    "CryptoBalance": "Crypto Balance",
+    "Coin": "Coin",
+    "Quantity": "Quantity",
+    "FiatBalance": "Fiat Balance",
+    "Currency": "Currency"
+  },
+  "FundingInstructions": {
+    "FundingInstructionsTitle": "Funding Instructions",
+    "TDADepositInstructions": "Deposit Instructions",
+    "InstructionsIntro": "The below funding instructions belong to TDA. In order to fund your account, send crypto to your designated funding wallets, or fiat to the bank funding instructions.",
+    "TDAFundingWallets": "Designated Funding Wallets",
+    "WalletsInfoAlert": "Please note we need a minimum of one confirmation before the funds can be credited. This can take more time if the amount sent is large.",
+    "InstructionTitle": "Funding Instructions",
+    "BankWireInstructions": "Bank Wire Instructions:",
+    "BankName": "Bank Name:",
+    "AccountName": "Account Name:",
+    "AccountNumber": "Account Number:",
+    "RoutingNumber": "Routing Number (ABA):",
+    "SWIFTCode": "SWIFT Code:",
+    "BankAddress": "Bank Address:",
+    "Currency": "Currency",
+    "Protocol": "Protocol",
+    "SettlementAddress": "Settlement Address",
+    "ImportantNote": "Important: Please include your TDA account number in the wire transfer memo/reference field.",
+    "ThirdPartyWarning": "TDA does not accept payments from third parties (including omnibus exchange accounts). Third-party funds will be returned after a deduction of a 250 USD processing fee to cover the compliance and accounting costs of handling such transfers. A 48-hour minimum holding period is required to allow us to perform the requisite checks."
+  },
+  "NavBar": {
+    "TradingEnabled": "Trading Enabled",
+    "TradingDisabled": "Trading Disabled",
+    "Online": "Online",
+    "Offline": "Offline"
+  }
+}
