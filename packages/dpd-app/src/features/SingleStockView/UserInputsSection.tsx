@@ -1,4 +1,4 @@
-import { Grid, Typography, TextField, Box, Button, Divider } from "@mui/material";
+import { Grid, Typography, TextField, Box, Button, Divider, useTheme } from "@mui/material";
 import { darken, lighten, styled } from "@mui/material/styles";
 import { BasicTable, nativeBarSx } from "components";
 import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Market } from "@/models/Market";
 import { useTranslation } from "react-i18next";
 import {tableData} from "@/mocks/tableData";
-import { statisticsData } from "@/mocks/statisticsData";
+import moment from "moment";
 
 const tableScrollSx = {
   "& .MuiDataGrid-virtualScroller": {
@@ -15,15 +15,18 @@ const tableScrollSx = {
 };
 
 export const MarketTable = styled(BasicTable)(({ theme }) => ({
-    minHeight: 300,
+  height: "calc(100vh - 120px)",
+  maxHeight:"530px",
+  display: "flex",
     mt: 2,
-    display: "grid",
+    
     "& .MuiDataGrid-virtualScroller": {
       overflowY: "auto !important",
     },
     "& .MuiDataGrid-main": {
       height: "auto",
-      maxHeight: "400px",
+      maxHeight: "100%",
+      flex: 1,
     },
     "& .MuiDataGrid-footerContainer": {
       height: "40px",
@@ -61,8 +64,9 @@ export const MarketTable = styled(BasicTable)(({ theme }) => ({
   }));
 
 const UserInputsSection = () => {
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<moment.Moment | null>(null);
+  const [endDate, setEndDate] = useState<moment.Moment | null>(null);
+  
     const [ticker, setTicker] = useState('');
     const [filteredData, setFilteredData] = useState<Market[]>([]);
     const { t } = useTranslation("UserInputsSection");
@@ -75,34 +79,45 @@ const UserInputsSection = () => {
       avgBuyVolume: 0,
       avgSellVolume: 0,
     });
-    
+    const theme = useTheme();
+
+    const [formErrors, setFormErrors] = useState({
+      ticker: false,
+      startDate: false,
+      endDate: false,
+    });
     const handleDateChange = (e, type) => {
-        const newDate = e.target.value ? new Date(e.target.value) : null;
-        if (type === "start") setStartDate(newDate);
-        if (type === "end") setEndDate(newDate);
-      };
+      const newDate = e.target.value ? moment.utc(e.target.value) : null; 
+      if (type === "start") setStartDate(newDate);
+      if (type === "end") setEndDate(newDate);
+    };
     
       const handleTickerChange = (e) => {
         setTicker(e.target.value);
       };
     
-      const filterDataByDateRange = (start: Date | null, end: Date | null): Market[] => {
+      const filterDataByDateRange = (start: moment.Moment | null, end: moment.Moment | null): Market[] => {
         if (!start || !end) return tableData;
       
-        const startDate = new Date(start);
-        startDate.setHours(0, 0, 0, 0);
-      
-        const endDate = new Date(end);
-        endDate.setHours(23, 59, 59, 999);
+        const startDate = moment.utc(start.startOf('day')).valueOf();
+        const endDate = moment.utc(end.endOf('day')).valueOf();
       
         return tableData.filter((data: Market) => {
-          const dataDate = new Date(data.date);
+          const dataDate = moment.utc(data.date).valueOf();
           return dataDate >= startDate && dataDate <= endDate;
         });
-      };
+      };   
     
       const handleRunModel = () => {
-        if (!startDate || !endDate) {
+        const newFormErrors = {
+          ticker: !ticker,
+          startDate: !startDate,
+          endDate: !endDate,
+        };
+    
+        setFormErrors(newFormErrors);
+    
+        if (newFormErrors.ticker || newFormErrors.startDate || newFormErrors.endDate) {
           setFilteredData([]);
           setStatisticsData({
             totalVolume: 0,
@@ -113,20 +128,20 @@ const UserInputsSection = () => {
             avgBuyVolume: 0,
             avgSellVolume: 0,
           });
-        } else {
-          const filtered = filterDataByDateRange(startDate, endDate);
-          const updatedData = filtered.map(item => ({
-            ...item,
-            symbol: ticker || item.symbol,
-          }));
-          setFilteredData(updatedData);
-      
-          const newStats = calculateStatistics(updatedData);
-          setStatisticsData(newStats);
+          return;
         }
+    
+        const filtered = filterDataByDateRange(startDate, endDate);
+        const updatedData = filtered.map((item) => ({
+          ...item,
+          symbol: ticker || item.symbol,
+        }));
+        setFilteredData(updatedData);
+    
+        const newStats = calculateStatistics(updatedData);
+        setStatisticsData(newStats);
       };
       
-
       const formatNumber = (value: number) => {
         return new Intl.NumberFormat('en-US', {
           maximumFractionDigits: 2,
@@ -157,7 +172,7 @@ const UserInputsSection = () => {
 
   return (
     <Grid container spacing={1} alignItems="flex-start">
-      <Grid item xs={12} md={4.1}>
+      <Grid item xs={12} md={3.7}>
 
         <Grid container spacing={2} alignItems="center" mb={2}>
           <Grid item>
@@ -169,7 +184,9 @@ const UserInputsSection = () => {
               placeholder={t("EnterTicker")}
               size="small"
               onChange={handleTickerChange} 
-              sx={{ width: 175, fontSize: "12px", paddingLeft: "25px" }}
+              sx={{ width: 175, fontSize: "12px", paddingLeft: "25px"}}
+              error={formErrors.ticker}
+              helperText={formErrors.ticker ? t("TickerIsRequired") : ""}
             />
           </Grid>
         </Grid>
@@ -187,10 +204,13 @@ const UserInputsSection = () => {
               InputLabelProps={{
                 shrink: true,
               }}
-              value={startDate ? startDate.toISOString().split("T")[0] : ""}
+              value={startDate ? startDate.utc().format("YYYY-MM-DD") : ""}
               onChange={(e) => handleDateChange(e, "start")}
+              error={formErrors.startDate}
+              helperText={formErrors.startDate ? t("StartIsRequired") : ""}
             />
           </Grid>
+          
           <Grid item>
             <Typography variant="h7">{t("EndDate")}</Typography>
           </Grid>
@@ -203,8 +223,10 @@ const UserInputsSection = () => {
               InputLabelProps={{
                 shrink: true,
               }}
-              value={endDate ? endDate.toISOString().split("T")[0] : ""}
+              value={endDate ? endDate.utc().format("YYYY-MM-DD") : ""}
               onChange={(e) => handleDateChange(e, "end")}
+              error={formErrors.endDate}
+              helperText={formErrors.endDate ? t("EndIsRequired") : ""}
             />
           </Grid>
         </Grid>
