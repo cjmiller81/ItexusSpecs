@@ -50,7 +50,7 @@ export default function PrefilterTokensSection({
         setCategories(categoriesData);
         setExchanges(exchangesData);
       } catch (error) {
-        console.error("Ошибка при загрузке данных", error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -59,9 +59,6 @@ export default function PrefilterTokensSection({
     fetchData();
   }, []);
 
-console.log(chains);
-console.log(exchanges);
-console.log(categories);
 
   const onExporting = useCallback(async (e: any): Promise<void> => {
     const workbook = new Workbook();
@@ -85,32 +82,36 @@ console.log(categories);
   }, []);
 
   return (
-    <StatePersistedAccordion
-      persistKey={persisKey}
-      defaultExpanded
-      {...props}>
-      <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{t("PrefilterTokens")}</PageTitle>
-        </Box>
-      </StyledAccordionSummary>
-      <AccordionDetails sx={{ 
-          bgcolor: "background.paper",
-          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
-          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms"
-        }}>
-         <MemoizedPrefilterTokensTable
-         categories={categories|| []}
-         chains={chains || []}
-         exchanges={exchanges|| [] }
+  <StatePersistedAccordion
+    persistKey={persisKey}
+    defaultExpanded
+    {...props}>
+    <StyledAccordionSummary expandIcon={<ExpandMoreIcon />} >
+      <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+        <PageTitle sx={{ width: "100%" }}>{t("PrefilterTokens")}</PageTitle>
+      </Box>
+    </StyledAccordionSummary>
+    <AccordionDetails sx={{ 
+        bgcolor: "background.paper",
+        width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+        transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms"
+      }}>
+      {loading ? (
+        <div></div>
+      ) : (
+        <MemoizedPrefilterTokensTable
+          categories={categories}
+          chains={chains}
+          exchanges={exchanges}
           onCurrentFilterChange={onFilterChanged}
           dataSource={dataSource}
           onExport={onExporting}
           onSorterChanged={onSorterChanged}
         />
-      </AccordionDetails>
-    </StatePersistedAccordion>
-  );
+      )}
+    </AccordionDetails>
+  </StatePersistedAccordion>
+);
 }
 
 const MemoizedPrefilterTokensTable = React.memo(PrefilterTokensTable, (prevProps, nextProps) => {

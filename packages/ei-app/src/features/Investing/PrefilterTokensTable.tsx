@@ -64,6 +64,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
+  
 
   const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
     const grid = datagrid?.current?.instance;
@@ -73,7 +74,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     datagrid?.current?.instance?.filter(currentFilter);
     await grid.refresh();
     const gridFilter = grid.getCombinedFilter(true);
-
     handleOnUpdate();
   }, [currentFilter, datagrid]);
 
@@ -106,24 +106,25 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const categoryToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id,
-    }
-  }
+      value: item.id, 
+    };
+  };
 
-  const exchangeToFilterItem = (item): { text: string } => {
+  const exchangeToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-    }
-  }
+      value: item.id, 
+    };
+  };
 
   const categoriesFilterOperations = ["contains", "anyof", "endswith", "=", "startswith"]
 
   const chainsToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id,
-    }
-  }
+      value: item.id, 
+    };
+  };
 
   const calculateFilterExpression = useCallback(function (
     this: any,
@@ -132,35 +133,30 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     _target: string,
   ): any {
     try {
-      let column = this
+      let column = this;
+  
       if (filterValues) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let selector = (data: any): boolean => {
-          let applyOperation = (arg1: string, arg2: string, op: string): boolean => {
-            if (op === "=") return arg1.toUpperCase() === arg2.toUpperCase()
-            if (op === "anyof") return arg1.toUpperCase().includes(arg2.toUpperCase())
-            if (op === "contains") return arg1.toUpperCase().includes(arg2.toUpperCase())
-            if (op === "startswith") return arg1.toUpperCase().startsWith(arg2.toUpperCase())
-            if (op === "endswith") return arg1.toUpperCase().endsWith(arg2.toUpperCase())
-
-            return false
-          }
-
-          let values = column.calculateCellValue(data)
-          return (
-            values &&
-            !!values.find((v: any) => applyOperation(v, filterValues, selectedFilterOperation ?? ""))
-          )
+        let selectedValue = filterValues;
+  
+        if (selectedValue && selectedFilterOperation === "=") {
+          return [column.dataField, "anyof", [selectedValue]];
         }
-
-        return [selector, "=", true]
+  
+        if (selectedFilterOperation === "contains") {
+          return [column.dataField, "contains", selectedValue];
+        }
+  
+        return column.defaultCalculateFilterExpression.apply(this, arguments);
       }
-
-      return column.defaultCalculateFilterExpression.apply(this, arguments)
+      console.log(dataSource)
+      return column.defaultCalculateFilterExpression.apply(this, arguments);
     } catch (err) {
-      console.error("Error on calculateFilterExpression:", err)
+      console.error("Error on calculateFilterExpression:", err);
+      return null;
     }
-  }, [])
+  }, []);
+  console.log(dataSource)
+  
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       onCurrentFilterChange(filter as object[]);
@@ -215,7 +211,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}>
+        onFilterValueChange={onApplyFilter}
+        >
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -307,7 +304,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={175}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -384,21 +380,23 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
-          filterOperations={["="]}
+         
+          filterOperations={["anyof"]}
           minWidth={150}
           width={200}
           allowHiding={true}>
             <HeaderFilter
-            visible={true}
-            dataSource={{
-              store: {
-                type: "array",
-                data: chains,
-              },
-              map: chainsToFilterItem,
-            }}>
-            <Search enabled={false} />
-          </HeaderFilter>
+              visible={true}
+              dataSource={{
+                store: {
+                  type: "array",
+                  data: chains,
+                },
+                map: chainsToFilterItem,
+              }}
+            >
+              <Search enabled={false} />
+            </HeaderFilter>
           </Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
