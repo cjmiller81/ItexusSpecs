@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Select, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -25,6 +25,20 @@ export const ConnectionCard = () => {
   const [openMetaMaskDialog, setOpenMetaMaskDialog] = useState(false);
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
+  const [dialogState, setDialogState] = useState({
+    title: "",
+    selectedService: [],
+  });
+
+  useEffect(() => {
+    // console.log(selectedService, "selectedService");
+    if (selectedService === "kraken") {
+      setOpenKrakenDialog(true);
+    } else if (selectedService === "metamask") {
+      setOpenMetaMaskDialog(true);
+    }
+    setOpenExchangeDialog(false);
+  }, [selectedService]);
 
   const handleActiveConnectionChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const value = event.target.value as string;
@@ -38,8 +52,14 @@ export const ConnectionCard = () => {
 
   const handleNewConnectionChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const value = event.target.value as string;
-    setNewConnection(event.target.value as string);
+    setNewConnection(value);
+
+    // Update dialog title and selected service based on the new connection
     if (value === "addExchange") {
+      setDialogState({ title: "Connect Exchange", selectedService: ["kraken"] });
+      setOpenExchangeDialog(true);
+    } else if (value === "addWallet") {
+      setDialogState({ title: "Connect Wallet", selectedService: ["metamask"] });
       setOpenExchangeDialog(true);
     }
   };
@@ -60,7 +80,7 @@ export const ConnectionCard = () => {
   };
 
   const handleConnectKraken = () => {
-    console.log("Connecting Kraken with credentials:", krakenCredentials);
+    // console.log("Connecting Kraken with credentials:", krakenCredentials);
     setOpenKrakenDialog(false);
   };
 
@@ -70,7 +90,7 @@ export const ConnectionCard = () => {
   };
 
   const handleConnectMetaMask = () => {
-    console.log("Connecting MetaMask with data:", metaMaskData);
+    // console.log("Connecting MetaMask with data:", metaMaskData);
     setOpenMetaMaskDialog(false);
   };
 
@@ -84,7 +104,6 @@ export const ConnectionCard = () => {
   };
 
   const handleConnectExchange = () => {
-    console.log("Connecting Exchange with service:", selectedService);
     setOpenExchangeDialog(false);
   };
 
@@ -158,26 +177,28 @@ export const ConnectionCard = () => {
       <KrakenDialog
         open={openKrakenDialog}
         krakenCredentials={krakenCredentials}
-        onClose={handleCancelKraken}
+        onClose={() => setOpenKrakenDialog(false)} // State-driven close
         onConnect={handleConnectKraken}
-        onCredentialChange={handleKrakenCredentialChange}
+        onCredentialChange={handleKrakenCredentialChange} // Use state setter
       />
 
       {/* MetaMask Dialog */}
       <MetaMaskDialog
         open={openMetaMaskDialog}
         metaMaskData={metaMaskData}
-        onClose={handleCancelMetaMask}
+        onClose={() => setOpenMetaMaskDialog(false)} // State-driven close
         onConnect={handleConnectMetaMask}
-        onDataChange={handleMetaMaskDataChange}
+        onDataChange={handleMetaMaskDataChange} // Use state setter
       />
 
+      {/* Exchange Dialog */}
       <ExchangeDialog
         open={openExchangeDialog}
-        selectedService={selectedService}
-        onClose={handleCancelExchange}
+        title={dialogState.title} // Dynamic title based on dialogState
+        selectedService={dialogState.selectedService} // Pre-selected service
+        onClose={() => setOpenExchangeDialog(false)} // State-driven close
         onConnect={handleConnectExchange}
-        onServiceChange={handleServiceChange}
+        onServiceChange={handleServiceChange} // Use state setter
       />
     </Box>
   );

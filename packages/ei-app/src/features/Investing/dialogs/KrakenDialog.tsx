@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import debounce from "lodash.debounce";
 
 interface KrakenDialogProps {
   open: boolean;
@@ -25,6 +26,27 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   onCredentialChange,
 }) => {
   const { t } = useTranslation("IndexModelingSection");
+
+  // Debounced version of onConnect to reduce the frequency of updates
+  const debouncedConnect = useCallback(debounce(onConnect, 500), [onConnect]);
+
+  // // Wrap `onCredentialChange` to call `onConnect` automatically
+  // const handleCredentialChange =
+  //   (field: keyof KrakenDialogProps["krakenCredentials"]) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     const value = event.target.value;
+  //     onCredentialChange(field)(event); // Update the state with new credential value
+  //
+  //     // Trigger the debounced connect and return the value
+  //     debouncedConnect();
+  //     console.log("handleCredentialChange");
+  //     return value; // Return the selected string (value from input)
+  //   };
+
+  const handleCredentialChange = event => {
+    const value = event.target?.value;
+    // console.log("handleCredentialChange");
+    return value;
+  };
 
   return (
     <Dialog
@@ -85,7 +107,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           fullWidth
           variant="outlined"
           value={krakenCredentials.apiKey}
-          onChange={onCredentialChange("apiKey")}
+          onChange={handleCredentialChange("apiKey")}
           sx={{ marginBottom: "12px" }}
         />
 
@@ -99,7 +121,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           variant="outlined"
           type="password"
           value={krakenCredentials.apiSecret}
-          onChange={onCredentialChange("apiSecret")}
+          onChange={handleCredentialChange("apiSecret")}
           sx={{ marginBottom: "12px" }}
         />
 
@@ -113,7 +135,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           variant="outlined"
           type="password"
           value={krakenCredentials.apiPassphrase}
-          onChange={onCredentialChange("apiPassphrase")}
+          onChange={handleCredentialChange("apiPassphrase")}
           sx={{ marginBottom: "12px" }}
         />
       </DialogContent>

@@ -12,12 +12,18 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
+interface ServiceOption {
+  value: string;
+  label: string;
+}
+
 interface ExchangeDialogProps {
   open: boolean;
-  selectedService: string;
+  selectedService: ServiceOption | null;
   onClose: () => void;
   onConnect: () => void;
   onServiceChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  title: string;
 }
 
 export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
@@ -26,8 +32,15 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
   onClose,
   onConnect,
   onServiceChange,
+  title,
 }) => {
   const { t } = useTranslation("IndexModelingSection");
+  console.log(selectedService, "selectedService@#!");
+  // Define services options in an array
+  const services: ServiceOption[] = [
+    { value: "kraken", label: "Kraken" },
+    { value: "metamask", label: "MetaMask" },
+  ];
 
   return (
     <Dialog
@@ -35,7 +48,7 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="sm">
-      <DialogTitle>{t("Connect Exchange")}</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Typography
           variant="subtitle1"
@@ -44,8 +57,8 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
         </Typography>
         <Select
           fullWidth
-          value={selectedService}
-          onChange={onServiceChange}
+          value={selectedService?.value || ""} // Use the value of selected service or empty string
+          onChange={onServiceChange} // Handle the change
           displayEmpty
           sx={{
             marginBottom: "16px",
@@ -55,24 +68,17 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
           <MenuItem
             value=""
             disabled>
-            {t("Select Service")}
+            {t("Select Service")} {/* Placeholder option */}
           </MenuItem>
-          <MenuItem value="kraken">Kraken</MenuItem>
+          {selectedService?.map(service => (
+            <MenuItem
+              key={service}
+              value={service}>
+              {t(service)} {/* Option for the service */}
+            </MenuItem>
+          ))}
         </Select>
       </DialogContent>
-      <DialogActions>
-        <Button
-          variant="outlined"
-          onClick={onClose}>
-          {t("Cancel")}
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onConnect}>
-          {t("Connect")}
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
