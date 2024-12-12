@@ -1,11 +1,11 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 import { Market } from "@/models/Market";
-import { useTranslation } from "react-i18next";
+import i18next, { t } from "i18next";
 
+i18next.setDefaultNamespace("MarketTableColumns");
 
 export const  getMarketTableColumns = (): GridColDef<Market>[] => {
-  const {t} = useTranslation("MarketTableColumns");
   return [
     {
       field: "date",
