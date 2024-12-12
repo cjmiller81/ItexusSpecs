@@ -1,12 +1,12 @@
 import UserInputsSection from "@/features/SingleStockView/UserInputsSection";
 import { Divider, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import i18next, { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
-i18next.setDefaultNamespace("DISingleStock");
-import { PageTitle } from "components";
+
 
 export default function SingleStockView() {
+  const {t} = useTranslation("DISingleStock");
   return (
     <>
     <Box>

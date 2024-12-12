@@ -3,7 +3,7 @@ export interface Market {
     symbol: string;
     bought: number;
     sold: number;
-    avg: number;
+    percentAvg: number;
     buyRatio: number;
     dpIndex: number;
     total: number;
