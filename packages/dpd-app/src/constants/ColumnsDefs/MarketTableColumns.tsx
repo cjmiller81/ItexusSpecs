@@ -1,12 +1,11 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import i18next, { t } from "i18next";
 import { Typography } from "@mui/material";
 import { Market } from "@/models/Market";
-
+import i18next, { t } from "i18next";
 
 i18next.setDefaultNamespace("MarketTableColumns");
 
-export const getMarketTableColumns = (): GridColDef<Market>[] => {
+export const  getMarketTableColumns = (): GridColDef<Market>[] => {
   return [
     {
       field: "date",
@@ -25,7 +24,7 @@ export const getMarketTableColumns = (): GridColDef<Market>[] => {
             fontWeight: 'bold'
           }}
         >
-          {new Date(params.row.date).toLocaleDateString("en-US")}
+          {new Date(params.row.date).toISOString().split('T')[0]}
         </Typography>
       ),
     },
@@ -95,7 +94,7 @@ export const getMarketTableColumns = (): GridColDef<Market>[] => {
       },
 
       {
-        field: "avg",
+        field: "percentAvg",
         headerName: t("%Avg"),
         sortable: false,
         editable: false,
@@ -103,8 +102,8 @@ export const getMarketTableColumns = (): GridColDef<Market>[] => {
         flex: 1,
         disableColumnMenu: true,
         valueGetter: params => {
-          if (!params.row.avg) return "--";
-          return params.row.avg.toLocaleString("en-US", {
+          if (!params.row.percentAvg) return "--";
+          return params.row.percentAvg.toLocaleString("en-US", {
             maximumFractionDigits: 0,
             minimumFractionDigits: 0,
           });

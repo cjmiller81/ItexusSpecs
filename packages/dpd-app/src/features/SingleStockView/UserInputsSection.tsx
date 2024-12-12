@@ -1,11 +1,12 @@
-import { Grid, Typography, TextField, Box, Button, Divider, useTheme } from "@mui/material";
+import { Grid, Typography, TextField, Box, Button, Divider } from "@mui/material";
 import { darken, lighten, styled } from "@mui/material/styles";
 import { BasicTable, nativeBarSx } from "components";
 import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
 import { useState } from "react";
 import { Market } from "@/models/Market";
 import { useTranslation } from "react-i18next";
-import {tableData} from "@/mocks/tableData";
+import { fetchStock } from "../strategies/stockSlice";
+import { useAppDispatch } from "@/libs/redux/Store";
 import moment from "moment";
 
 const tableScrollSx = {
@@ -14,62 +15,15 @@ const tableScrollSx = {
   },
 };
 
-export const MarketTable = styled(BasicTable)(({ theme }) => ({
-  height: "calc(100vh - 120px)",
-  maxHeight:"530px",
-  display: "flex",
-    mt: 2,
-    
-    "& .MuiDataGrid-virtualScroller": {
-      overflowY: "auto !important",
-    },
-    "& .MuiDataGrid-main": {
-      height: "auto",
-      maxHeight: "100%",
-      flex: 1,
-    },
-    "& .MuiDataGrid-footerContainer": {
-      height: "40px",
-    },
-    "& .MuiDataGrid-row": {
-      maxHeight: "1000px !important",
-    },
-    ".MuiDataGrid-cell--withRenderer": {
-      maxHeight: "1000px !important",
-    },
-    "& .MuiDataGrid-row--editing": {
-      border: "solid",
-      borderWidth: "1px",
-      borderColor: theme.palette.primary.main,
-    },
-    "& .MuiDataGrid-cell--editing[data-field=walletName]": {
-      border: "solid",
-      borderWidth: "1px",
-      borderColor: theme.palette.primary.main,
-      backgroundColor:
-        theme.palette.mode === "dark"
-          ? darken(theme.palette.primary.main, 0.6)
-          : lighten(theme.palette.primary.main, 0.7),
-    },
-    ".MuiDataGrid-withBorderColor": {
-      bgColor: "transparent",
-    },
-    "& .MuiDataGrid-columnHeaders": {
-      backgroundColor: "black",
-    },
-    "& .MuiDataGrid-columnHeaderTitle": {
-      color: "#9E9E9E",
-      fontWeight: "bold",
-    },
-  }));
-
-const UserInputsSection = () => {
-  const [startDate, setStartDate] = useState<moment.Moment | null>(null);
-  const [endDate, setEndDate] = useState<moment.Moment | null>(null);
-  
-    const [ticker, setTicker] = useState('');
+  const UserInputsSection = () => {
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [ticker, setTicker] = useState("");
     const [filteredData, setFilteredData] = useState<Market[]>([]);
-    const { t } = useTranslation("UserInputsSection");
+    const [startDateError, setStartDateError] = useState(false);
+    const [endDateError, setEndDateError] = useState(false);
+    const [tickerError, setTickerError] = useState(false);
+    const {t} = useTranslation("UserInputsSection")
     const [statisticsData, setStatisticsData] = useState({
       totalVolume: 0,
       totalBought: 0,
@@ -79,69 +33,93 @@ const UserInputsSection = () => {
       avgBuyVolume: 0,
       avgSellVolume: 0,
     });
-    const theme = useTheme();
 
-    const [formErrors, setFormErrors] = useState({
-      ticker: false,
-      startDate: false,
-      endDate: false,
-    });
-    const handleDateChange = (e, type) => {
-      const newDate = e.target.value ? moment.utc(e.target.value) : null; 
-      if (type === "start") setStartDate(newDate);
-      if (type === "end") setEndDate(newDate);
+    const dispatch = useAppDispatch();
+
+    const validateFields = () => {
+      let valid = true;
+      if (!startDate) {
+        setStartDateError(true);
+        valid = false;
+      }
+    
+      if (!endDate) {
+        setEndDateError(true);
+        valid = false;
+      }
+    
+      if (!ticker.trim()) {
+        setTickerError(true);
+        valid = false;
+      }
+    
+      return valid;
     };
     
+    const handleDateChange = (e, type) => {
+      const newDate = e.target.value ? moment.utc(e.target.value).startOf("day").toDate() : null;
+      
+      if (type === "start") {
+        setStartDate(newDate);
+      }
+      if (type === "end") {
+        setEndDate(newDate);
+      }
+    };
+      
       const handleTickerChange = (e) => {
         setTicker(e.target.value);
-      };
-    
-      const filterDataByDateRange = (start: moment.Moment | null, end: moment.Moment | null): Market[] => {
-        if (!start || !end) return tableData;
-      
-        const startDate = moment.utc(start.startOf('day')).valueOf();
-        const endDate = moment.utc(end.endOf('day')).valueOf();
-      
-        return tableData.filter((data: Market) => {
-          const dataDate = moment.utc(data.date).valueOf();
-          return dataDate >= startDate && dataDate <= endDate;
-        });
-      };   
+        setTickerError(false);
+      };    
     
       const handleRunModel = () => {
-        const newFormErrors = {
-          ticker: !ticker,
-          startDate: !startDate,
-          endDate: !endDate,
-        };
-    
-        setFormErrors(newFormErrors);
-    
-        if (newFormErrors.ticker || newFormErrors.startDate || newFormErrors.endDate) {
+      const isValid = validateFields();
+      if (!isValid) {
           setFilteredData([]);
           setStatisticsData({
-            totalVolume: 0,
-            totalBought: 0,
-            totalSold: 0,
-            avgTotalVolume: 0,
-            avgBuySellRatio: 0,
-            avgBuyVolume: 0,
-            avgSellVolume: 0,
+              totalVolume: 0,
+              totalBought: 0,
+              totalSold: 0,
+              avgTotalVolume: 0,
+              avgBuySellRatio: 0,
+              avgBuyVolume: 0,
+              avgSellVolume: 0,
           });
           return;
-        }
-    
-        const filtered = filterDataByDateRange(startDate, endDate);
-        const updatedData = filtered.map((item) => ({
-          ...item,
-          symbol: ticker || item.symbol,
-        }));
-        setFilteredData(updatedData);
-    
-        const newStats = calculateStatistics(updatedData);
-        setStatisticsData(newStats);
-      };
-      
+    }
+
+    const startDateObject = startDate ? moment.utc(startDate).startOf("day").toDate() : new Date();
+    const endDateObject = endDate ? moment.utc(endDate).startOf("day").toDate() : new Date();
+
+    dispatch(
+        fetchStock({
+            startDate: startDateObject,
+            endDate: endDateObject, 
+            ticker,
+        })
+        
+    )
+        .unwrap()
+        .then((data: Market[]) => {
+            setFilteredData(data);
+            const newStats = calculateStatistics(data);
+            setStatisticsData(newStats);
+        })
+        .catch((error) => {
+            console.error(t("ErrorFetching"), error);
+            setFilteredData([]);
+            setStatisticsData({
+                totalVolume: 0,
+                totalBought: 0,
+                totalSold: 0,
+                avgTotalVolume: 0,
+                avgBuySellRatio: 0,
+                avgBuyVolume: 0,
+                avgSellVolume: 0,
+            });
+        });
+};
+
       const formatNumber = (value: number) => {
         return new Intl.NumberFormat('en-US', {
           maximumFractionDigits: 2,
@@ -168,11 +146,10 @@ const UserInputsSection = () => {
           avgSellVolume,
         };
       };
-      
 
   return (
     <Grid container spacing={1} alignItems="flex-start">
-      <Grid item xs={12} md={3.7}>
+      <Grid item xs={12} md={4.1}>
 
         <Grid container spacing={2} alignItems="center" mb={2}>
           <Grid item>
@@ -184,9 +161,16 @@ const UserInputsSection = () => {
               placeholder={t("EnterTicker")}
               size="small"
               onChange={handleTickerChange} 
-              sx={{ width: 175, fontSize: "12px", paddingLeft: "25px"}}
-              error={formErrors.ticker}
-              helperText={formErrors.ticker ? t("TickerIsRequired") : ""}
+              sx={{ 
+                width: 175, 
+                fontSize: "12px", 
+                paddingLeft: "25px", 
+                "& .MuiOutlinedInput-root": {
+                  borderColor: tickerError ? "red" : undefined,
+                },
+              }}
+              error={tickerError}
+              helperText={tickerError ? t("TickerIsRequired") : ""}
             />
           </Grid>
         </Grid>
@@ -200,17 +184,19 @@ const UserInputsSection = () => {
               variant="outlined"
               type="date"
               size="small"
-              sx={{ width: 150, fontSize: "12px" }}
-              InputLabelProps={{
-                shrink: true,
+              sx={{ 
+                width: 150, 
+                fontSize: "12px",
+                "& .MuiOutlinedInput-root": {
+                  borderColor: startDateError ? "red" : undefined,
+                }, 
               }}
-              value={startDate ? startDate.utc().format("YYYY-MM-DD") : ""}
+              value={startDate ? startDate.toISOString().split("T")[0] : ""}
               onChange={(e) => handleDateChange(e, "start")}
-              error={formErrors.startDate}
-              helperText={formErrors.startDate ? t("StartIsRequired") : ""}
+              error={startDateError}
+              helperText={startDateError ? t("StartIsRequired") : ""}
             />
           </Grid>
-          
           <Grid item>
             <Typography variant="h7">{t("EndDate")}</Typography>
           </Grid>
@@ -219,14 +205,17 @@ const UserInputsSection = () => {
               variant="outlined"
               type="date"
               size="small"
-              sx={{ width: 150, fontSize: "12px" }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={endDate ? endDate.utc().format("YYYY-MM-DD") : ""}
+              sx={{ 
+                width: 150, 
+                fontSize: "12px",
+                "& .MuiOutlinedInput-root": {
+                  borderColor: endDateError ? "red" : undefined,
+                },
+               }}
+              value={endDate ? endDate.toISOString().split("T")[0] : ""}
               onChange={(e) => handleDateChange(e, "end")}
-              error={formErrors.endDate}
-              helperText={formErrors.endDate ? t("EndIsRequired") : ""}
+              error={endDateError}
+              helperText={endDateError ? t("EndIsRequired") : ""}
             />
           </Grid>
         </Grid>
@@ -320,7 +309,7 @@ const UserInputsSection = () => {
           hideFooter
           rowSelection={false}
           checkboxSelection={false}
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.total}
           columns={getMarketTableColumns()}
           rows={filteredData} 
         />
@@ -330,3 +319,49 @@ const UserInputsSection = () => {
 };
 
 export default UserInputsSection;
+
+export const MarketTable = styled(BasicTable)(({ theme }) => ({
+  minHeight:"500px",
+  mt: 2,
+  display: "grid",
+  "& .MuiDataGrid-virtualScroller": {
+    overflowY: "auto !important",
+  },
+  "& .MuiDataGrid-main": {
+    height: "auto",
+    maxHeight: "505px",
+  },
+  "& .MuiDataGrid-footerContainer": {
+    height: "40px",
+  },
+  "& .MuiDataGrid-row": {
+    maxHeight: "1000px !important",
+  },
+  ".MuiDataGrid-cell--withRenderer": {
+    maxHeight: "1000px !important",
+  },
+  "& .MuiDataGrid-row--editing": {
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: theme.palette.primary.main,
+  },
+  "& .MuiDataGrid-cell--editing[data-field=walletName]": {
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: theme.palette.primary.main,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? darken(theme.palette.primary.main, 0.6)
+        : lighten(theme.palette.primary.main, 0.7),
+  },
+  ".MuiDataGrid-withBorderColor": {
+    bgColor: "transparent",
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "black",
+  },
+  "& .MuiDataGrid-columnHeaderTitle": {
+    color: "#9E9E9E",
+    fontWeight: "bold",
+  },
+}));

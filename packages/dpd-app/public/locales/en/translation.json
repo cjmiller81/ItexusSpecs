@@ -195,9 +195,10 @@
     "Ticker": "Ticker",
     "EnterTicker": "Enter Ticker",
     "Date": "Date",
-    "TickerIsRequired": "Ticker field is required",
+    "EndIsRequired": "End date is required",
     "StartIsRequired": "Start date is required",
-    "EndIsRequired": "End date is required"
+    "TickerIsRequired": "Ticker is required",
+    "ErrorFetching": "Error fetching stock data::"
   },
   "MarketTableColumns": {
     "Date": "Date",
