@@ -198,7 +198,7 @@
     "EndIsRequired": "End date is required",
     "StartIsRequired": "Start date is required",
     "TickerIsRequired": "Ticker is required",
-    "Error fetching stock data:": "ErrorFetching:"
+    "ErrorFetching": "Error fetching stock data::"
   },
   "MarketTableColumns": {
     "Date": "Date",

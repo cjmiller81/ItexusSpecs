@@ -1,4 +1,4 @@
-import { Grid, Typography, TextField, Box, Button, Divider } from "@mui/material";
+import { Grid, Typography, TextField, Box, Button, Divider, useTheme } from "@mui/material";
 import { darken, lighten, styled } from "@mui/material/styles";
 import { BasicTable, nativeBarSx } from "components";
 import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
@@ -149,7 +149,7 @@ const tableScrollSx = {
 
   return (
     <Grid container spacing={1} alignItems="flex-start">
-      <Grid item xs={12} md={4.1}>
+      <Grid item xs={12} md={3.7}>
 
         <Grid container spacing={2} alignItems="center" mb={2}>
           <Grid item>
@@ -191,12 +191,13 @@ const tableScrollSx = {
                   borderColor: startDateError ? "red" : undefined,
                 }, 
               }}
-              value={startDate ? startDate.toISOString().split("T")[0] : ""}
+              value={startDate ? startDate.utc().format("YYYY-MM-DD") : ""}
               onChange={(e) => handleDateChange(e, "start")}
               error={startDateError}
               helperText={startDateError ? t("StartIsRequired") : ""}
             />
           </Grid>
+          
           <Grid item>
             <Typography variant="h7">{t("EndDate")}</Typography>
           </Grid>

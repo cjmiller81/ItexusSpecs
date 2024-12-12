@@ -1,0 +1,11 @@
+@import "@ory/elements/assets/fa-brands.min.css";
+@import "@ory/elements/assets/fa-solid.min.css";
+@import "@ory/elements/assets/fontawesome.min.css";
+@import "@ory/elements/assets/inter-font.css";
+@import "@ory/elements/assets/jetbrains-mono-font.css";
+@import "@ory/elements/assets/normalize.css";
+@import "@ory/elements/style.css";
+
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
+@import 'simplebar-react/dist/simplebar.min.css';
