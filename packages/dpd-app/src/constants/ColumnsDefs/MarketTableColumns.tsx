@@ -101,17 +101,15 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         filterable: false,
         flex: 1,
         disableColumnMenu: true,
-        valueGetter: params => {
+        valueGetter: (params) => {
           if (!params.row.percentAvg) return "--";
-          return params.row.percentAvg.toLocaleString("en-US", {
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-          });
+          return (params.row.percentAvg * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
             variant="body1"
-            sx={{ fontSize: "0.85rem", color:"#9E9E9E", fontWeight: 'bold' }}>
+            sx={{ fontSize: "0.85rem", color: "#9E9E9E", fontWeight: 'bold' }}
+          >
             {params.formattedValue}%
           </Typography>
         ),
@@ -149,22 +147,19 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         filterable: false,
         flex: 1,
         disableColumnMenu: true,
-        valueGetter: params => {
+        valueGetter: (params) => {
           if (!params.row.dpIndex) return "--";
-          return params.row.dpIndex.toLocaleString("en-US", {
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-          });
+          return (params.row.dpIndex * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
             variant="body1"
-            sx={{ fontSize: "0.85rem", color:"#9E9E9E", fontWeight: 'bold' }}>
-            {params.formattedValue} %
+            sx={{ fontSize: "0.85rem", color: "#9E9E9E", fontWeight: 'bold' }}
+          >
+            {params.formattedValue}%
           </Typography>
         ),
       },
-
       {
         field: "total",
         headerName: t("Total"),

@@ -1,4 +1,6 @@
+import { stockApi } from "@/features/stockApi"
 import { stockSlice } from "@/features/strategies/stockSlice"
+
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
@@ -9,6 +11,7 @@ import storage from "redux-persist/lib/storage"
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   stocks: stockSlice.reducer,
+  [stockApi.reducerPath]: stockApi.reducer,
 })
 
 const config = getPersistConfig<RootState>({

@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { fetchStock } from "../strategies/stockSlice";
 import { useAppDispatch } from "@/libs/redux/Store";
 import moment from "moment";
+import { useGetStockDataQuery } from "../stockApi";
 
 const tableScrollSx = {
   "& .MuiDataGrid-virtualScroller": {
@@ -74,19 +75,23 @@ const tableScrollSx = {
     
       const handleRunModel = () => {
       const isValid = validateFields();
-      if (!isValid) {
-          setFilteredData([]);
-          setStatisticsData({
-              totalVolume: 0,
-              totalBought: 0,
-              totalSold: 0,
-              avgTotalVolume: 0,
-              avgBuySellRatio: 0,
-              avgBuyVolume: 0,
-              avgSellVolume: 0,
-          });
-          return;
-    }
+      if (isValid) {
+        setStartDateError(false);
+        setEndDateError(false);
+        setTickerError(false);
+      } else {
+        setFilteredData([]);
+        setStatisticsData({
+          totalVolume: 0,
+          totalBought: 0,
+          totalSold: 0,
+          avgTotalVolume: 0,
+          avgBuySellRatio: 0,
+          avgBuyVolume: 0,
+          avgSellVolume: 0,
+        });
+        return;
+      }
 
     const startDateObject = startDate ? moment.utc(startDate).startOf("day").toDate() : new Date();
     const endDateObject = endDate ? moment.utc(endDate).startOf("day").toDate() : new Date();
@@ -312,6 +317,11 @@ const tableScrollSx = {
           getRowId={(row) => row.total}
           columns={getMarketTableColumns()}
           rows={filteredData} 
+          initialState={{
+            sorting: {
+              sortModel: [{ field: 'date', sort: 'desc' }]
+            },
+          }}
         />
       </Grid>
     </Grid>
