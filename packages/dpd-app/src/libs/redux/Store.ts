@@ -2,10 +2,18 @@ import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 import { persistStore } from "redux-persist"
 import { RootState, persistedReducer } from "./RootReducer"
+import { stockApi } from "@/features/stockApi"
+
 
 const makeStore = () => {
   return configureStore({
     reducer: persistedReducer,
+    middleware: getDefaultMiddleware =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }).concat(
+        stockApi.middleware,
+      )
   })
 }
 
