@@ -5,116 +5,110 @@ import { useTheme } from "@mui/material/styles";
 import { KrakenDialog } from "./dialogs/KrakenDialog";
 import { MetaMaskDialog } from "./dialogs/MetaMaskDialog";
 import { ExchangeDialog } from "./dialogs/ExchangeDialog";
+import { SelectChangeEvent } from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export const ConnectionCard = () => {
   const { t } = useTranslation("IndexModelingSection");
   const theme = useTheme();
+
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [newConnection, setNewConnection] = useState<string>("");
-  const [krakenCredentials, setKrakenCredentials] = useState({
-    apiLabel: "",
-    apiKey: "",
-    apiSecret: "",
-    apiPassphrase: "",
-  });
-  const [metaMaskData, setMetaMaskData] = useState({
-    network: "",
-    customRpcUrl: "",
-  });
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
   const [openMetaMaskDialog, setOpenMetaMaskDialog] = useState(false);
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
-  const [selectedService, setSelectedService] = useState<string>("");
+  const [selectedService, setSelectedService] = useState<"Kraken" | "MetaMask" | "defiprotocol" | "">("");
   const [dialogState, setDialogState] = useState({
     title: "",
-    selectedService: [],
+    selectedService: [] as string[],
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      apiKey: "",
+      apiSecret: "",
+      apiPassphrase: "",
+      network: "",
+      customRpcUrl: "",
+    },
+    validationSchema: Yup.object({
+      apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
+      apiSecret: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
+      apiPassphrase: activeConnection === "api" ? Yup.string().optional() : Yup.string().optional(),
+      network: activeConnection === "rpc" ? Yup.string().required(t("NetworkRequired")) : Yup.string().optional(),
+      customRpcUrl:
+        activeConnection === "rpc"
+          ? Yup.string().url(t("InvalidURL")).required(t("CustomRPCRequired"))
+          : Yup.string().optional(),
+    }),
+    onSubmit: (values, { resetForm }) => {
+      resetForm();
+      setOpenKrakenDialog(false);
+      setOpenMetaMaskDialog(false);
+    },
   });
 
   useEffect(() => {
-    // console.log(selectedService, "selectedService");
-    if (selectedService === "kraken") {
+    if (selectedService === "Kraken") {
       setOpenKrakenDialog(true);
-    } else if (selectedService === "metamask") {
+    } else if (selectedService === "MetaMask") {
       setOpenMetaMaskDialog(true);
     }
     setOpenExchangeDialog(false);
   }, [selectedService]);
 
-  const handleActiveConnectionChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const value = event.target.value as string;
+  const handleActiveConnectionChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
     setActiveConnection(value);
-    if (value === "kraken") {
-      setOpenKrakenDialog(true);
-    } else if (value === "metamask") {
-      setOpenMetaMaskDialog(true);
-    }
   };
 
-  const handleNewConnectionChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const value = event.target.value as string;
+  const handleNewConnectionChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
     setNewConnection(value);
 
-    // Update dialog title and selected service based on the new connection
-    if (value === "addExchange") {
-      setDialogState({ title: "Connect Exchange", selectedService: ["kraken"] });
+    if (value === t("AddExchange")) {
+      setDialogState({ title: "Connect Exchange", selectedService: ["Kraken"] });
       setOpenExchangeDialog(true);
-    } else if (value === "addWallet") {
-      setDialogState({ title: "Connect Wallet", selectedService: ["metamask"] });
+    } else if (value === t("AddWallet")) {
+      setDialogState({ title: "Connect Wallet", selectedService: ["MetaMask"] });
+      setOpenExchangeDialog(true);
+    } else if (value === "defiprotocol") {
+      setDialogState({ title: "Defi Protocol", selectedService: ["defiprotocol"] });
       setOpenExchangeDialog(true);
     }
   };
 
-  const handleKrakenCredentialChange =
-    (field: keyof typeof krakenCredentials) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setKrakenCredentials({ ...krakenCredentials, [field]: event.target.value });
-    };
-
-  const handleMetaMaskDataChange =
-    (field: keyof typeof metaMaskData) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setMetaMaskData({ ...metaMaskData, [field]: event.target.value });
-    };
-
-  const handleCancelKraken = () => {
-    setKrakenCredentials({ apiLabel: "", apiKey: "", apiSecret: "", apiPassphrase: "" });
-    setOpenKrakenDialog(false);
-  };
-
-  const handleConnectKraken = () => {
-    // console.log("Connecting Kraken with credentials:", krakenCredentials);
-    setOpenKrakenDialog(false);
-  };
-
-  const handleCancelMetaMask = () => {
-    setMetaMaskData({ network: "", customRpcUrl: "" });
-    setOpenMetaMaskDialog(false);
-  };
-
-  const handleConnectMetaMask = () => {
-    // console.log("Connecting MetaMask with data:", metaMaskData);
-    setOpenMetaMaskDialog(false);
-  };
-
-  const handleServiceChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedService(event.target.value as string);
+  const handleServiceChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    if (value === "" || value === "Kraken" || value === "MetaMask" || value === "defiprotocol") {
+      setSelectedService(value);
+    }
   };
 
   const handleCancelExchange = () => {
+    setNewConnection("");
+    setDialogState({
+      title: "",
+      selectedService: [] as string[],
+    });
+    setActiveConnection("");
     setSelectedService("");
     setOpenExchangeDialog(false);
-  };
-
-  const handleConnectExchange = () => {
-    setOpenExchangeDialog(false);
+    setOpenKrakenDialog(false);
+    setOpenMetaMaskDialog(false);
   };
 
   return (
     <Box
       sx={{
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-        borderRadius: "10px",
-        padding: "16px",
+        borderRadius: "5px",
+        padding: "9px",
         border: "solid",
         borderWidth: "1px",
+        height: "300px",
+        marginTop: "38px",
         borderColor: theme.palette.mode === "dark" ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
       }}>
       <Typography
@@ -123,82 +117,111 @@ export const ConnectionCard = () => {
         {t("Connections")}
       </Typography>
 
-      {/* Active Connections */}
       <Typography
         variant="subtitle1"
         sx={{ fontSize: "12px", marginBottom: "8px" }}>
-        {t("Active Connections")}
+        {t("ActiveConnections")}
       </Typography>
       <Select
         fullWidth
         value={activeConnection}
         onChange={handleActiveConnectionChange}
         displayEmpty
+        renderValue={selected => {
+          if (!selected) {
+            return (
+              <Typography
+                sx={{
+                  "@media (min-width: 1300px) and (max-width: 1442px)": {
+                    mt: "2px",
+                    fontSize: "11px",
+                  },
+                  "@media (min-width: 1200px) and (max-width: 1300px)": {
+                    fontSize: "9px",
+                  },
+                }}>
+                {t("SelectConnection")}
+              </Typography>
+            );
+          }
+          return t(selected as string);
+        }}
         sx={{
           marginBottom: "16px",
           borderRadius: "8px",
           "& .MuiSelect-icon": { color: "black" },
         }}>
-        <MenuItem
-          value=""
-          disabled>
-          {t("Select Connection")}
-        </MenuItem>
-        <MenuItem value="kraken">Exchange: Kraken</MenuItem>
-        <MenuItem value="metamask">Wallet: MetaMask</MenuItem>
+        <MenuItem value="Kraken">Exchange: Kraken</MenuItem>
+        <MenuItem value="MetaMask">Wallet: MetaMask</MenuItem>
       </Select>
 
-      {/* Add New Connection */}
       <Typography
         variant="subtitle1"
         sx={{ fontSize: "12px", marginBottom: "8px" }}>
-        {t("Add New Connection")}
+        {t("AddNewConnection")}
       </Typography>
+
       <Select
         fullWidth
         value={newConnection}
         onChange={handleNewConnectionChange}
         displayEmpty
+        renderValue={selected => {
+          if (!selected) {
+            return (
+              <Typography
+                sx={{
+                  "@media (min-width: 1300px) and (max-width: 1442px)": {
+                    mt: "2px",
+                    fontSize: "11px",
+                  },
+                  "@media (min-width: 1200px) and (max-width: 1300px)": {
+                    fontSize: "9px",
+                  },
+                }}>
+                {t("AddConnection")}
+              </Typography>
+            );
+          }
+          return t(selected as string);
+        }}
         sx={{
           borderRadius: "8px",
           "& .MuiSelect-icon": { color: "black" },
         }}>
         <MenuItem
-          value=""
-          disabled>
-          {t("Add Connection")}
+          disabled
+          sx={{ display: "none" }}
+          value="">
+          {t("AddConnection")}
         </MenuItem>
-        <MenuItem value="addExchange">{t("Add Exchange")}</MenuItem>
-        <MenuItem value="addWallet">{t("Add Wallet")}</MenuItem>
-        <MenuItem value="addDefi">{t("Add Defi Protocol")}</MenuItem>
+        <MenuItem value={t("AddExchange")}>{t("AddExchange")}</MenuItem>
+        <MenuItem value={t("AddWallet")}>{t("AddWallet")}</MenuItem>
+        <MenuItem
+          disabled
+          value="addDefi">
+          {t("AddDefiProtocol")}
+        </MenuItem>
       </Select>
 
-      {/* Kraken Dialog */}
       <KrakenDialog
         open={openKrakenDialog}
-        krakenCredentials={krakenCredentials}
-        onClose={() => setOpenKrakenDialog(false)} // State-driven close
-        onConnect={handleConnectKraken}
-        onCredentialChange={handleKrakenCredentialChange} // Use state setter
+        formik={formik}
+        onClose={handleCancelExchange}
       />
 
-      {/* MetaMask Dialog */}
       <MetaMaskDialog
         open={openMetaMaskDialog}
-        metaMaskData={metaMaskData}
-        onClose={() => setOpenMetaMaskDialog(false)} // State-driven close
-        onConnect={handleConnectMetaMask}
-        onDataChange={handleMetaMaskDataChange} // Use state setter
+        formik={formik}
+        onClose={handleCancelExchange}
       />
 
-      {/* Exchange Dialog */}
       <ExchangeDialog
         open={openExchangeDialog}
-        title={dialogState.title} // Dynamic title based on dialogState
-        selectedService={dialogState.selectedService} // Pre-selected service
-        onClose={() => setOpenExchangeDialog(false)} // State-driven close
-        onConnect={handleConnectExchange}
-        onServiceChange={handleServiceChange} // Use state setter
+        title={dialogState.title}
+        selectedService={dialogState.selectedService}
+        onClose={handleCancelExchange}
+        onServiceChange={handleServiceChange}
       />
     </Box>
   );

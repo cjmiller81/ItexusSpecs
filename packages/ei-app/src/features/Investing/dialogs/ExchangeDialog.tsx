@@ -1,28 +1,12 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  Select,
-  MenuItem,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
+import { Typography, Select, MenuItem, Dialog, DialogContent, DialogTitle, SelectChangeEvent } from "@mui/material";
 import { useTranslation } from "react-i18next";
-
-interface ServiceOption {
-  value: string;
-  label: string;
-}
 
 interface ExchangeDialogProps {
   open: boolean;
-  selectedService: ServiceOption | null;
+  selectedService: any;
   onClose: () => void;
-  onConnect: () => void;
-  onServiceChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  onServiceChange: (event: SelectChangeEvent<string>) => void;
   title: string;
 }
 
@@ -30,35 +14,32 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
   open,
   selectedService,
   onClose,
-  onConnect,
   onServiceChange,
   title,
 }) => {
   const { t } = useTranslation("IndexModelingSection");
-  console.log(selectedService, "selectedService@#!");
-  // Define services options in an array
-  const services: ServiceOption[] = [
-    { value: "kraken", label: "Kraken" },
-    { value: "metamask", label: "MetaMask" },
-  ];
-
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullWidth
+      sx={{
+        "& .MuiPaper-root": {
+          height: "500px",
+        },
+      }}
       maxWidth="sm">
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Typography
           variant="subtitle1"
           sx={{ marginBottom: "8px" }}>
-          {t("Select Service *")}
+          {t("SelectService")}
         </Typography>
         <Select
           fullWidth
-          value={selectedService?.value || ""} // Use the value of selected service or empty string
-          onChange={onServiceChange} // Handle the change
+          value={selectedService?.value || ""}
+          onChange={onServiceChange}
           displayEmpty
           sx={{
             marginBottom: "16px",
@@ -68,13 +49,13 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
           <MenuItem
             value=""
             disabled>
-            {t("Select Service")} {/* Placeholder option */}
+            {t("SelectService")}
           </MenuItem>
           {selectedService?.map(service => (
             <MenuItem
               key={service}
               value={service}>
-              {t(service)} {/* Option for the service */}
+              {t(service)}
             </MenuItem>
           ))}
         </Select>

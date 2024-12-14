@@ -1,28 +1,34 @@
 import React from "react";
-import { Box, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  useTheme,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { FormikProps } from "formik";
 
 interface MetaMaskDialogProps {
   open: boolean;
-  metaMaskData: {
-    network: string;
-    customRpcUrl: string;
-  };
+  formik: FormikProps<any>;
   onClose: () => void;
-  onConnect: () => void;
-  onDataChange: (
-    field: keyof MetaMaskDialogProps["metaMaskData"],
-  ) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const MetaMaskDialog: React.FC<MetaMaskDialogProps> = ({
-  open,
-  metaMaskData,
-  onClose,
-  onConnect,
-  onDataChange,
-}) => {
+export const MetaMaskDialog: React.FC<MetaMaskDialogProps> = ({ open, formik, onClose }) => {
   const { t } = useTranslation("IndexModelingSection");
+  const theme = useTheme();
+
+  const handleFieldChange = (field: keyof typeof formik.values) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (typeof field === "string") {
+      formik.setFieldValue(field, event.target.value);
+    }
+  };
 
   return (
     <Dialog
@@ -30,47 +36,38 @@ export const MetaMaskDialog: React.FC<MetaMaskDialogProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="sm">
-      <DialogTitle>{t("Connect Wallet")}</DialogTitle>
-      <Typography
-        variant="subtitle2"
-        sx={{ marginBottom: "8px" }}>
-        {t("Custom RPC URL")}
-      </Typography>
-      <TextField
-        fullWidth
-        variant="outlined"
-        value={metaMaskData.customRpcUrl}
-        onChange={onDataChange("customRpcUrl")}
-        sx={{ marginBottom: "12px" }}
-      />
+      <DialogTitle>{t("ConnectWallet")}</DialogTitle>
       <DialogContent>
+        <Typography
+          variant="subtitle2"
+          sx={{ marginBottom: "8px" }}>
+          {t("SelectService*")}
+        </Typography>
+        <TextField
+          fullWidth
+          variant="outlined"
+          value="Metamask"
+          disabled
+          sx={{ marginBottom: "12px" }}
+        />
         <Box
           sx={{
-            backgroundColor: "#002984",
-            color: "white",
-            padding: "15px 0",
+            backgroundColor: theme.palette.mode === "dark" ? "#162652" : theme.palette.grey[400],
+            color: "black !important",
+            padding: "20px 20px",
             marginBottom: "16px",
+            mt: "10px",
             borderRadius: "8px",
             display: "flex",
-            alignItems: "center",
           }}>
-          <Box
-            sx={{
-              backgroundColor: "white",
-              color: "#002984",
-              borderRadius: "50%",
-              width: "24px",
-              height: "24px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: "12px",
-            }}>
-            i
-          </Box>
-
-          <Typography variant="body2">
-            {t("Please ensure you have the necessary permissions enabled for your MetaMask connection")}
+          <ErrorOutlineIcon
+            fontSize="small"
+            sx={{ height: "17px", width: "17px", margin: "2px 5px 0 0 " }}
+          />
+          <Typography
+            variant="body2"
+            sx={{ color: "black" }}>
+            {t("PleaseEnsureYouHaveTheNecessary")}
           </Typography>
         </Box>
 
@@ -82,22 +79,29 @@ export const MetaMaskDialog: React.FC<MetaMaskDialogProps> = ({
         <TextField
           fullWidth
           variant="outlined"
-          value={metaMaskData.network}
-          onChange={onDataChange("network")}
+          value={formik.values.network}
+          onChange={handleFieldChange("network")}
           sx={{ marginBottom: "12px" }}
+          error={Boolean(formik.errors.network)}
+          helperText={formik.errors.network && typeof formik.errors.network === "string" ? formik.errors.network : ""}
         />
-
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("Custom RPC URL")}
+          {t("CustomRPCURL")}
         </Typography>
         <TextField
           fullWidth
           variant="outlined"
-          value={metaMaskData.customRpcUrl}
-          onChange={onDataChange("customRpcUrl")}
+          value={formik.values.customRpcUrl}
+          onChange={handleFieldChange("customRpcUrl")}
           sx={{ marginBottom: "12px" }}
+          error={Boolean(formik.errors.customRpcUrl)}
+          helperText={
+            formik.errors.customRpcUrl && typeof formik.errors.customRpcUrl === "string"
+              ? formik.errors.customRpcUrl
+              : ""
+          }
         />
       </DialogContent>
       <DialogActions>
@@ -106,12 +110,15 @@ export const MetaMaskDialog: React.FC<MetaMaskDialogProps> = ({
           onClick={onClose}>
           {t("Cancel")}
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onConnect}>
-          {t("Connect")}
-        </Button>
+        <form onSubmit={formik.handleSubmit}>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={formik.isSubmitting}>
+            {t("Connect")}
+          </Button>
+        </form>
       </DialogActions>
     </Dialog>
   );

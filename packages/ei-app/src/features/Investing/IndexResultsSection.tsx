@@ -357,8 +357,8 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
         <Grid
           container
           direction="row"
-          alignItems="flex-start"
-          justifyContent="space-between"
+          alignItems="center"
+          justifyContent="center"
           xs={12}
           md={12}
           lg={5.63}
@@ -368,13 +368,19 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
             borderRadius: "10px",
             marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
             padding: "10px",
+            height: "100%",
+            "@media (max-width: 700px)": {
+              display: "block",
+            },
           }}>
           <Box
             sx={{
               flexGrow: 1,
               width: "70%",
               paddingRight: "15px",
-              // marginRight: "10px",
+              "@media (max-width: 700px)": {
+                width: "100%",
+              },
             }}>
             <Typography
               variant="h6"
@@ -414,6 +420,10 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               justifyContent: "center",
               alignItems: "center",
               width: "30%",
+              "@media (max-width: 700px)": {
+                margin: "0 auto",
+                width: "80%",
+              },
             }}>
             <ConnectionCard />
           </Box>
