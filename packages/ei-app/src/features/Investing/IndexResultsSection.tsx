@@ -34,6 +34,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
+import { ConnectionCard } from "@/features/Investing/ConnectionCard";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -355,42 +356,76 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
         </Grid>
         <Grid
           container
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
           xs={12}
           md={12}
           lg={5.63}
-          direction={"column"}
           sx={{
+            display: "flex",
             boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
             borderRadius: "10px",
             marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
-            display: "flex",
+            padding: "10px",
+            height: "100%",
+            "@media (max-width: 700px)": {
+              display: "block",
+            },
           }}>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ alignSelf: "flex-start", fontSize: "14px", paddingLeft: "10px", paddingTop: "4px" }}>
-            {t("PositionAllocationUpdates")}
-          </Typography>
+          <Box
+            sx={{
+              flexGrow: 1,
+              width: "70%",
+              paddingRight: "15px",
+              "@media (max-width: 700px)": {
+                width: "100%",
+              },
+            }}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                alignSelf: "flex-start",
+                fontSize: "14px",
+                paddingLeft: "10px",
+                paddingTop: "4px",
+              }}>
+              {t("PositionAllocationUpdates")}
+            </Typography>
+
+            <Box
+              sx={{
+                paddingTop: "12px",
+                width: "100%",
+                marginRight: "10px",
+              }}>
+              <StyledWalletsTable
+                sx={{ ...tableScrollSx }}
+                hideFooter
+                rowSelection={false}
+                checkboxSelection={false}
+                apiRef={apiRef}
+                getRowId={x => x.id}
+                columns={getIndexPositionTableColumns()}
+                rows={positionRows}
+              />
+            </Box>
+          </Box>
 
           <Box
             sx={{
-              paddingTop: "12px",
-              paddingLeft: "15px",
-              paddingRight: "15px",
-              width: "70%",
+              flexShrink: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "30%",
+              "@media (max-width: 700px)": {
+                margin: "0 auto",
+                width: "80%",
+              },
             }}>
-            <StyledWalletsTable
-              sx={{
-                ...tableScrollSx,
-              }}
-              hideFooter
-              rowSelection={false}
-              checkboxSelection={false}
-              apiRef={apiRef}
-              getRowId={x => x.id}
-              columns={getIndexPositionTableColumns()}
-              rows={positionRows}
-            />
+            <ConnectionCard />
           </Box>
         </Grid>
       </Grid>
