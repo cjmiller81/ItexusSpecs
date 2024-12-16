@@ -174,7 +174,7 @@ export const ConnectionCard = () => {
         }}
         inputComponent={({ inputRef, ...props }) => (
           <Select
-            {...props}
+            {...(props as any)}
             inputRef={inputRef}
             displayEmpty
             value={activeConnection}
