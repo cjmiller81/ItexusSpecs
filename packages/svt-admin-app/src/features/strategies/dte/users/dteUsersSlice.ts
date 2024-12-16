@@ -33,169 +33,169 @@ const initialState: IDteUsersSliceState = {
 };
 
 export const dteUsersSlice = createAppSlice({
-    name: "dteUsers",
-    initialState,
-    reducers: create => ({
-      updateDteUser: create.asyncThunk(
-        async (dteUser: IDteStrategy, thunkApi) => {
-          await dteUsersService.update(dteUser)
-          thunkApi.dispatch(fetchDteUsers(null))
+  name: "dteUsers",
+  initialState,
+  reducers: create => ({
+    updateDteUser: create.asyncThunk(
+      async (dteUser: IDteStrategy, thunkApi) => {
+        await dteUsersService.update(dteUser)
+        thunkApi.dispatch(fetchDteUsers(null))
+      },
+      {
+        pending: state => {
+          state.statusUpdatingDteUsers = "loading"
         },
-        {
-          pending: state => {
-            state.statusUpdatingDteUsers = "loading"
-          },
-          fulfilled: state => {
-            state.statusUpdatingDteUsers = "idle"
-          },
-          rejected: state => {
-            state.statusUpdatingDteUsers = "failed"
-          },
+        fulfilled: state => {
+          state.statusUpdatingDteUsers = "idle"
         },
-      ),
-      deleteDteUser: create.asyncThunk(
-        async ({ id }: { id: string }, thunkApi) => {
-          await dteUsersService.delete(id)
-          thunkApi.dispatch(fetchDteUsers(null))
+        rejected: state => {
+          state.statusUpdatingDteUsers = "failed"
         },
-        {
-          pending: state => {
-            state.statusDeletingDteUsers = "loading"
-          },
-          fulfilled: state => {
-            state.statusDeletingDteUsers = "idle"
-          },
-          rejected: state => {
-            state.statusDeletingDteUsers = "failed"
-          },
+      },
+    ),
+    deleteDteUser: create.asyncThunk(
+      async ({ id }: { id: string }, thunkApi) => {
+        await dteUsersService.delete(id)
+        thunkApi.dispatch(fetchDteUsers(null))
+      },
+      {
+        pending: state => {
+          state.statusDeletingDteUsers = "loading"
         },
-      ),
-      fetchDteUsers: create.asyncThunk(
-        async () => {
-          return await dteUsersService.getAll()
+        fulfilled: state => {
+          state.statusDeletingDteUsers = "idle"
         },
-        {
-          pending: state => {
-            state.statusFetchingDteUsers = "loading"
-          },
-          fulfilled: (state, action: PayloadAction<IDteStrategiesResponse>) => {
-            state.statusFetchingDteUsers = "idle"
-            state.dteUsers = action.payload
-          },
-          rejected: state => {
-            state.statusFetchingDteUsers = "failed"
-          },
+        rejected: state => {
+          state.statusDeletingDteUsers = "failed"
         },
-      ),
-      fetchUserDetails: create.asyncThunk(
-        async ({ userId }: { userId: string }): Promise<UserDetails> => {
-          const [bots, openPositions, currentDayFills, workingOrders] = await Promise.all([
-            dteUsersService.getBots(userId),
-            dteUsersService.getOpenPositions(userId),
-            dteUsersService.getCurrentDayFills(userId),
-            dteUsersService.getUserWorkingOrders(userId)
-          ])
-          return {bots, openPositions, currentDayFills, workingOrders} 
+      },
+    ),
+    fetchDteUsers: create.asyncThunk(
+      async () => {
+        return await dteUsersService.getAll()
+      },
+      {
+        pending: state => {
+          state.statusFetchingDteUsers = "loading"
         },
-        {
-          pending: state => {
-            state.statusFetchingDteUsers = "loading"
-          },
-          fulfilled: (state, action: PayloadAction<UserDetails>) => {
-            state.statusFetchingDteUsers = "idle"
-            state.userDetails = action.payload
-          },
-          rejected: state => {
-            state.statusFetchingDteUsers = "failed"
-          },
+        fulfilled: (state, action: PayloadAction<IDteStrategiesResponse>) => {
+          state.statusFetchingDteUsers = "idle"
+          state.dteUsers = action.payload
         },
-      ),
-      startBot: create.asyncThunk(
-        async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
-          return await dteUsersService.startBot(userId, accountNumber, masterSymbol);
+        rejected: state => {
+          state.statusFetchingDteUsers = "failed"
         },
-        {
-          pending: state => {
-            state.statusUpdatingBot = "loading"
-          },
-          fulfilled: (state, action: PayloadAction<StrategyBot>) => {
-            state.statusUpdatingBot = "idle"
-            updateBotStrategyInfo(state, action);
-          },
-          rejected: state => {
-            state.statusUpdatingBot = "failed"
-          },
+      },
+    ),
+    fetchUserDetails: create.asyncThunk(
+      async ({ userId, accountNumber, symbol, orderId }: { userId: string, accountNumber: string, symbol: string, orderId: string }): Promise<UserDetails> => {
+        const [bots, openPositions, currentDayFills, workingOrders] = await Promise.all([
+          dteUsersService.getBots(userId),
+          dteUsersService.getOpenPositions(userId, accountNumber, symbol),
+          dteUsersService.getCurrentDayFills(userId, accountNumber, orderId),
+          dteUsersService.getUserWorkingOrders(userId, accountNumber, orderId)
+        ])
+        return { bots, openPositions, currentDayFills, workingOrders }
+      },
+      {
+        pending: state => {
+          state.statusFetchingDteUsers = "loading"
         },
-      ),
-      stopBot: create.asyncThunk(
-        async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
-          return await dteUsersService.stopBot(userId, accountNumber, masterSymbol);
+        fulfilled: (state, action: PayloadAction<UserDetails>) => {
+          state.statusFetchingDteUsers = "idle"
+          state.userDetails = action.payload
         },
-        {
-          pending: state => {
-            state.statusUpdatingBot = "loading"
-          },
-          fulfilled: (state, action: PayloadAction<StrategyBot>) => {
-            state.statusUpdatingBot = "idle"
-            updateBotStrategyInfo(state, action);
-          },
-          rejected: state => {
-            state.statusUpdatingBot = "failed"
-          },
+        rejected: state => {
+          state.statusFetchingDteUsers = "failed"
         },
-      ),
-      forceStopExitBot: create.asyncThunk(
-        async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
-          return await dteUsersService.forceStopExitBot(userId, accountNumber, masterSymbol);
+      },
+    ),
+    startBot: create.asyncThunk(
+      async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
+        return await dteUsersService.startBot(userId, accountNumber, masterSymbol);
+      },
+      {
+        pending: state => {
+          state.statusUpdatingBot = "loading"
         },
-        {
-          pending: state => {
-            state.statusUpdatingBot = "loading"
-          },
-          fulfilled: (state, action: PayloadAction<StrategyBot>) => {
-            state.statusUpdatingBot = "idle"
-            updateBotStrategyInfo(state, action);
-          },
-          rejected: state => {
-            state.statusUpdatingBot = "failed"
-          },
+        fulfilled: (state, action: PayloadAction<StrategyBot>) => {
+          state.statusUpdatingBot = "idle"
+          updateBotStrategyInfo(state, action);
         },
-      ),
-      resetBot: create.asyncThunk(
-        async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
-          return await dteUsersService.resetBot(userId, accountNumber, masterSymbol);
+        rejected: state => {
+          state.statusUpdatingBot = "failed"
         },
-        {
-          pending: state => {
-            state.statusUpdatingBot = "loading"
-          },
-          fulfilled: (state, action: PayloadAction<StrategyBot>) => {
-            state.statusUpdatingBot = "idle"
-            updateBotStrategyInfo(state, action);
-          },
-          rejected: state => {
-            state.statusUpdatingBot = "failed"
-          },
+      },
+    ),
+    stopBot: create.asyncThunk(
+      async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
+        return await dteUsersService.stopBot(userId, accountNumber, masterSymbol);
+      },
+      {
+        pending: state => {
+          state.statusUpdatingBot = "loading"
         },
-      ),
-    }),
+        fulfilled: (state, action: PayloadAction<StrategyBot>) => {
+          state.statusUpdatingBot = "idle"
+          updateBotStrategyInfo(state, action);
+        },
+        rejected: state => {
+          state.statusUpdatingBot = "failed"
+        },
+      },
+    ),
+    forceStopExitBot: create.asyncThunk(
+      async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
+        return await dteUsersService.forceStopExitBot(userId, accountNumber, masterSymbol);
+      },
+      {
+        pending: state => {
+          state.statusUpdatingBot = "loading"
+        },
+        fulfilled: (state, action: PayloadAction<StrategyBot>) => {
+          state.statusUpdatingBot = "idle"
+          updateBotStrategyInfo(state, action);
+        },
+        rejected: state => {
+          state.statusUpdatingBot = "failed"
+        },
+      },
+    ),
+    resetBot: create.asyncThunk(
+      async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
+        return await dteUsersService.resetBot(userId, accountNumber, masterSymbol);
+      },
+      {
+        pending: state => {
+          state.statusUpdatingBot = "loading"
+        },
+        fulfilled: (state, action: PayloadAction<StrategyBot>) => {
+          state.statusUpdatingBot = "idle"
+          updateBotStrategyInfo(state, action);
+        },
+        rejected: state => {
+          state.statusUpdatingBot = "failed"
+        },
+      },
+    ),
+  }),
 });
 
-const updateBotStrategyInfo = (state : IDteUsersSliceState, action: PayloadAction<StrategyBot>) => {
+const updateBotStrategyInfo = (state: IDteUsersSliceState, action: PayloadAction<StrategyBot>) => {
   const existedBotIndex = state.userDetails?.bots.zeroDteFlyStrategyList
-    .findIndex(x => x.userId == action.payload.userId 
+    .findIndex(x => x.userId == action.payload.userId
       && x.exchangeAccountNumber == action.payload.exchangeAccountNumber
       && x.masterSymbol == action.payload.masterSymbol);
 
-   if (state.userDetails && existedBotIndex) { 
+  if (state.userDetails && existedBotIndex) {
     state.userDetails.bots.zeroDteFlyStrategyList[existedBotIndex] = action.payload;
   }
 }
-  
-export const { 
-  deleteDteUser, 
-  fetchDteUsers, 
-  updateDteUser, 
+
+export const {
+  deleteDteUser,
+  fetchDteUsers,
+  updateDteUser,
   fetchUserDetails,
   startBot,
   stopBot,
