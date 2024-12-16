@@ -45,19 +45,6 @@ export function getBotColumnsDefs(
       },
     },
     {
-      field: "closingOnly",
-      headerAlign: "center",
-      disableColumnMenu: true,
-      sortable: false,
-      headerName: i18next.t("ClosingOnly", { ns: "ColumnsDefs" }),
-      minWidth: 80,
-      editable: true,
-      renderCell: params => {
-        return <Checkbox sx={{ marginLeft: "auto", marginRight: "auto" }}></Checkbox>;
-      },
-      flex: 1,
-    },
-    {
       field: "stopBot",
       headerName: i18next.t("StopBot", { ns: "ColumnsDefs" }),
       width: 120,
@@ -119,15 +106,41 @@ export function getBotColumnsDefs(
         );
       },
     },
+
     {
-      field: "capitalAllocation",
-      headerName: i18next.t("CapitalAllocation", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      field: "flattenBot",
+      headerName: i18next.t("FlattenBot", { ns: "ColumnsDefs" }),
+      width: 120,
       disableColumnMenu: true,
+      headerAlign: "center",
       sortable: false,
-      editable: true,
-      type: "number",
-      flex: 1,
+      renderCell: params => {
+        return (
+          <StyledCellButton
+            onClick={e => {
+              handleResetClick(params.row.userId);
+            }}
+            variant="contained"
+            sx={{
+              ":hover": {
+                backgroundColor: theme =>
+                  theme.palette.mode === "dark"
+                    ? darken(theme.palette.warning.light, 0.5)
+                    : lighten(theme.palette.warning.light, 0.6),
+              },
+              color: theme =>
+                theme.palette.mode === "dark"
+                  ? darken(theme.palette.warning.main, 0.1)
+                  : lighten(theme.palette.warning.main, 0.1),
+              backgroundColor: theme =>
+                theme.palette.mode === "dark"
+                  ? darken(theme.palette.warning.light, 0.6)
+                  : lighten(theme.palette.warning.light, 0.7),
+            }}>
+            {i18next.t("ForceExit", { ns: "ColumnsDefs" })}
+          </StyledCellButton>
+        );
+      },
     },
     {
       field: "tradeSymbol",

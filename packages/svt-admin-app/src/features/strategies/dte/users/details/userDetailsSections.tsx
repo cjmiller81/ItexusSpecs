@@ -69,20 +69,20 @@ export default function UserDetailsSection({
   return (
     <Box {...props}>
       <Typography
+        variant="h5"
+        align="left"
+        sx={{fontSize: "14px"}}
+      >
+   {t("0DTEHeader", { accountNumber: user.accountNumber })}
+      </Typography>
+
+      <Typography
         mt={2}
         align="center"
         variant="h6">
         {t("OpenPositions")}
       </Typography>
       <StyledMetricsBox>
-        <UserMetricCard
-          sx={{ backgroundColor: getOpenPositionStyleAndValue.color }}
-          title={undefined}
-          subtitle={getOpenPositionStyleAndValue.text}></UserMetricCard>
-        <UserMetricCard
-          sx={{ backgroundColor: getPandLStyleAndValue.color }}
-          title={t("OpenPANDL")}
-          subtitle={getPandLStyleAndValue.text}></UserMetricCard>
         <DataGrid<OpenPosition>
           slots={{
             footer: () => <></>,

@@ -63,8 +63,16 @@ export function getWorkingOrdersColumns() {
         type: "string",
       },
       {
-        field: "entryId",
-        headerName: i18next.t("EntryId", { ns: "ColumnsDefs" }),
+        field: "orderQty",
+        headerName: i18next.t("OrderQty", { ns: "ColumnsDefs" }),
+        minWidth: 100,
+        editable: true,
+        flex: 1,
+        type: "string",
+      },
+      {
+        field: "fillQty",
+        headerName: i18next.t("FillQty", { ns: "ColumnsDefs" }),
         minWidth: 100,
         editable: true,
         flex: 1,
