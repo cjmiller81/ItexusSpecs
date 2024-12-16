@@ -52,7 +52,7 @@ export const MetaMaskDialog: React.FC<MetaMaskDialogProps> = ({ open, formik, on
         />
         <Box
           sx={{
-            backgroundColor: theme.palette.mode === "dark" ? "#162652" : theme.palette.grey[400],
+            backgroundColor: theme.palette.grey[400],
             color: "black !important",
             padding: "20px 20px",
             marginBottom: "16px",

@@ -37,7 +37,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onClos
         />
         <Box
           sx={{
-            backgroundColor: theme.palette.mode === "dark" ? "#162652" : theme.palette.grey[400],
+            backgroundColor: theme.palette.grey[400],
             color: "black !important",
             padding: "20px 20px",
             marginBottom: "16px",
