@@ -69,13 +69,13 @@ export const ConnectionCard = () => {
     setNewConnection(value);
 
     if (value === t("AddExchange")) {
-      setDialogState({ title: "ConnectExchange", selectedService: ["Kraken"] });
+      setDialogState({ title: t("ConnectExchange"), selectedService: ["Kraken"] });
       setOpenExchangeDialog(true);
     } else if (value === t("AddWallet")) {
-      setDialogState({ title: "ConnectWallet", selectedService: ["MetaMask"] });
+      setDialogState({ title: t("ConnectWallet"), selectedService: ["MetaMask"] });
       setOpenExchangeDialog(true);
     } else if (value === "defiprotocol") {
-      setDialogState({ title: "DefiProtocol", selectedService: ["defiprotocol"] });
+      setDialogState({ title: t("DefiProtocol"), selectedService: ["defiprotocol"] });
       setOpenExchangeDialog(true);
     }
   };
