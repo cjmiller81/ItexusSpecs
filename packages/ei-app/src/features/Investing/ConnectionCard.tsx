@@ -100,8 +100,7 @@ export const ConnectionCard = () => {
     setOpenMetaMaskDialog(false);
   };
 
-  const TruncatedText = ({ children, maxLength }: { children: string; maxLength: number }) => {
-    const truncatedText = children.length > maxLength ? `${children.slice(0, maxLength)}...` : children;
+  const TruncatedText = ({ children }: { children: string }) => {
     return (
       <Typography
         noWrap
@@ -118,7 +117,7 @@ export const ConnectionCard = () => {
             fontSize: "9px",
           },
         }}>
-        {truncatedText}
+        {children}
       </Typography>
     );
   };
@@ -135,6 +134,10 @@ export const ConnectionCard = () => {
         height: "300px",
         marginTop: "38px",
         borderColor: theme.palette.mode === "dark" ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+        "@media (max-width: 700px)": {
+          minWidth: 0,
+          width: "100vw",
+        },
       }}>
       <Typography
         variant="h6"
@@ -190,15 +193,15 @@ export const ConnectionCard = () => {
             renderValue={selected => {
               const value = selected as string;
               if (!value) {
-                return <TruncatedText maxLength={14}>{t("SelectConnection")}</TruncatedText>;
+                return <TruncatedText>{t("SelectConnection")}</TruncatedText>;
               }
-              return <TruncatedText maxLength={14}>{value}</TruncatedText>;
+              return <TruncatedText>{value}</TruncatedText>;
             }}>
             <MenuItem value="Kraken">
-              <TruncatedText maxLength={9}>Exchange: Kraken</TruncatedText>
+              <TruncatedText>Exchange: Kraken</TruncatedText>
             </MenuItem>
             <MenuItem value="MetaMask">
-              <TruncatedText maxLength={9}>Wallet: MetaMask</TruncatedText>
+              <TruncatedText>Wallet: MetaMask</TruncatedText>
             </MenuItem>
           </Select>
         )}
