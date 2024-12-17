@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Select, MenuItem } from "@mui/material";
+import { Box, Typography, Select, MenuItem, InputAdornment, IconButton, OutlinedInput } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { KrakenDialog } from "./dialogs/KrakenDialog";
@@ -8,6 +8,7 @@ import { ExchangeDialog } from "./dialogs/ExchangeDialog";
 import { SelectChangeEvent } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 
 export const ConnectionCard = () => {
   const { t } = useTranslation("IndexModelingSection");
@@ -58,7 +59,7 @@ export const ConnectionCard = () => {
     setOpenExchangeDialog(false);
   }, [selectedService]);
 
-  const handleActiveConnectionChange = (event: SelectChangeEvent<string>) => {
+  const handleActiveConnectionChange = (event: any) => {
     const value = event.target.value;
     setActiveConnection(value);
   };
@@ -68,13 +69,13 @@ export const ConnectionCard = () => {
     setNewConnection(value);
 
     if (value === t("AddExchange")) {
-      setDialogState({ title: "Connect Exchange", selectedService: ["Kraken"] });
+      setDialogState({ title: t("ConnectExchange"), selectedService: ["Kraken"] });
       setOpenExchangeDialog(true);
     } else if (value === t("AddWallet")) {
-      setDialogState({ title: "Connect Wallet", selectedService: ["MetaMask"] });
+      setDialogState({ title: t("ConnectWallet"), selectedService: ["MetaMask"] });
       setOpenExchangeDialog(true);
     } else if (value === "defiprotocol") {
-      setDialogState({ title: "Defi Protocol", selectedService: ["defiprotocol"] });
+      setDialogState({ title: t("DefiProtocol"), selectedService: ["defiprotocol"] });
       setOpenExchangeDialog(true);
     }
   };
@@ -99,17 +100,44 @@ export const ConnectionCard = () => {
     setOpenMetaMaskDialog(false);
   };
 
+  const TruncatedText = ({ children }: { children: string }) => {
+    return (
+      <Typography
+        noWrap
+        sx={{
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+
+          "@media (min-width: 1300px) and (max-width: 1442px)": {
+            mt: "2px",
+            fontSize: "11px",
+          },
+          "@media (min-width: 1200px) and (max-width: 1300px)": {
+            fontSize: "9px",
+          },
+        }}>
+        {children}
+      </Typography>
+    );
+  };
+
   return (
     <Box
       sx={{
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         borderRadius: "5px",
+        minWidth: "156px",
         padding: "9px",
         border: "solid",
         borderWidth: "1px",
         height: "300px",
         marginTop: "38px",
         borderColor: theme.palette.mode === "dark" ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+        "@media (max-width: 700px)": {
+          minWidth: 0,
+          width: "100vw",
+        },
       }}>
       <Typography
         variant="h6"
@@ -122,42 +150,66 @@ export const ConnectionCard = () => {
         sx={{ fontSize: "12px", marginBottom: "8px" }}>
         {t("ActiveConnections")}
       </Typography>
-      <Select
-        fullWidth
+      <OutlinedInput
         value={activeConnection}
-        onChange={handleActiveConnectionChange}
-        displayEmpty
-        renderValue={selected => {
-          if (!selected) {
-            return (
-              <Typography
-                sx={{
-                  "@media (min-width: 1300px) and (max-width: 1442px)": {
-                    mt: "2px",
-                    fontSize: "11px",
-                  },
-                  "@media (min-width: 1200px) and (max-width: 1300px)": {
-                    fontSize: "9px",
-                  },
-                }}>
-                {t("SelectConnection")}
-              </Typography>
-            );
-          }
-          return t(selected as string);
-        }}
+        onChange={event => handleActiveConnectionChange(event)}
+        endAdornment={
+          activeConnection && (
+            <InputAdornment position="end">
+              <IconButton
+                sx={{ padding: "0 5px 0 0  !important", color: theme.palette.grey[200] }}
+                onClick={() => setActiveConnection("")}
+                size="small">
+                <CancelOutlinedIcon />
+              </IconButton>
+            </InputAdornment>
+          )
+        }
         sx={{
-          marginBottom: "16px",
-          borderRadius: "8px",
-          "& .MuiSelect-icon": { color: "black" },
-        }}>
-        <MenuItem value="Kraken">Exchange: Kraken</MenuItem>
-        <MenuItem value="MetaMask">Wallet: MetaMask</MenuItem>
-      </Select>
+          width: "100%",
+          paddingRight: "0 !important",
+          border: theme =>
+            `1px solid ${theme.palette.mode === "dark" ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)"} !important`,
+          borderRadius: "7px",
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "transparent !important",
+          },
+        }}
+        inputComponent={({ inputRef, ...props }) => (
+          <Select
+            {...(props as any)}
+            inputRef={inputRef}
+            displayEmpty
+            value={activeConnection}
+            color="primary"
+            onChange={handleActiveConnectionChange}
+            sx={{
+              width: "100%",
+              display: "flex !important",
+              paddingLeft: "0 !important",
+              padding: 0,
+              "& .MuiSelect-icon": { color: theme.palette.grey[500] },
+            }}
+            renderValue={selected => {
+              const value = selected as string;
+              if (!value) {
+                return <TruncatedText>{t("SelectConnection")}</TruncatedText>;
+              }
+              return <TruncatedText>{value}</TruncatedText>;
+            }}>
+            <MenuItem value="Kraken">
+              <TruncatedText>Exchange: Kraken</TruncatedText>
+            </MenuItem>
+            <MenuItem value="MetaMask">
+              <TruncatedText>Wallet: MetaMask</TruncatedText>
+            </MenuItem>
+          </Select>
+        )}
+      />
 
       <Typography
         variant="subtitle1"
-        sx={{ fontSize: "12px", marginBottom: "8px" }}>
+        sx={{ fontSize: "12px", marginBottom: "8px", mt: "18px" }}>
         {t("AddNewConnection")}
       </Typography>
 
@@ -187,7 +239,7 @@ export const ConnectionCard = () => {
         }}
         sx={{
           borderRadius: "8px",
-          "& .MuiSelect-icon": { color: "black" },
+          "& .MuiSelect-icon": { color: theme.palette.grey[500] },
         }}>
         <MenuItem
           disabled

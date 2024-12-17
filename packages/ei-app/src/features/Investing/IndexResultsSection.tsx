@@ -422,7 +422,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               width: "30%",
               "@media (max-width: 700px)": {
                 margin: "0 auto",
-                width: "80%",
+                width: "100% !important",
               },
             }}>
             <ConnectionCard />
