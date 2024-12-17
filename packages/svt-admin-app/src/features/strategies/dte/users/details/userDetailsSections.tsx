@@ -3,22 +3,20 @@ import { Box, BoxProps, Stack, SxProps, Theme, styled } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
-import { Bot } from "./bot";
 import { getBotColumnsDefs } from "./botsColumnDefs";
 import { OpenPosition } from "./openPosition";
 import { useMemo } from "react";
 import { formatCurrencyToString } from "@/utils/common";
-import UserMetricCard from "./UserMetricCard";
 import { getOpenPositionColumns } from "./openPositionColumnsDefs";
 import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
-import { IDteStrategy } from "../types";
+import { IDteStrategy, StrategyBot } from "../types";
 
 type Props = BoxProps & {
   user: IDteStrategy;
-  bots: Bot[];
+  bots: StrategyBot[];
   currentDayFills: ICurrentDayFills[];
   workingOrders: IWorkingOrder[];
   openPositions: OpenPosition[];
@@ -104,7 +102,7 @@ export default function UserDetailsSection({
         variant="h6">
         {t("Bots")}
       </Typography>
-      <DataGrid<Bot>
+      <DataGrid<StrategyBot>
         slots={{
           footer: () => <></>,
         }}
