@@ -45,7 +45,8 @@ export default function Reports() {
       return
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }))
+    const symbol = "SPX"
+    dispatch(fetchUserDetails({ userId: currentUser.userId, symbol}))
     router.push(`/strategies/zero-dte/users/${currentUser.userId}`, undefined, {
       shallow: true,
     })

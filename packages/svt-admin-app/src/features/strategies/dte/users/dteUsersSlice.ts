@@ -88,13 +88,22 @@ export const dteUsersSlice = createAppSlice({
       },
     ),
     fetchUserDetails: create.asyncThunk(
-      async ({ userId, accountNumber, symbol, orderId }: { userId: string, accountNumber: string, symbol: string, orderId: string }): Promise<UserDetails> => {
-        const [bots, openPositions, currentDayFills, workingOrders] = await Promise.all([
-          dteUsersService.getBots(userId),
-          dteUsersService.getOpenPositions(userId, accountNumber, symbol),
-          dteUsersService.getCurrentDayFills(userId, accountNumber, orderId),
-          dteUsersService.getUserWorkingOrders(userId, accountNumber, orderId)
-        ])
+      async ({ userId, symbol }: { userId: string, symbol: string }): Promise<UserDetails> => {
+        const bots = await dteUsersService.getBots(userId);
+        let currentDayFills: ICurrentDayFills[] = [];
+        let workingOrders: IWorkingOrder[] = [];
+        let openPositions: OpenPosition[] = [];
+
+        bots.zeroDteFlyStrategyList.forEach(async element => {
+          const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId);
+          const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId);
+          const openPosition = await dteUsersService.getOpenPositions(userId, element.exchangeAccountNumber, symbol);
+
+          currentDayFills = [...currentDayFills, ...currentDayFill];
+          workingOrders = [...workingOrders, ...workingOrder];
+          openPositions = [...openPositions, ...openPosition];
+        });
+
         return { bots, openPositions, currentDayFills, workingOrders }
       },
       {

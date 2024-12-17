@@ -26,10 +26,11 @@ export function configureDteUsersMock(mock: MockAdapter) {
     return [200, mockState.dteUsers]
   })
 
-  const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/open-positions`) 
+  const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/positions\/([^/]+)`)
   mock.onGet(getOpenPositionsRegExp).reply((config) => {
     const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
-    return [200, mockState.openPositions.filter(position => position.userId === userId)]
+    const symbol = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[3]
+    return [200, mockState.openPositions.filter(position => position.userId === userId && position.currencySymbol === symbol)]
   })
 
   const currentDayFillsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/current-day-fills`);
