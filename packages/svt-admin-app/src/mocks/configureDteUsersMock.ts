@@ -33,14 +33,20 @@ export function configureDteUsersMock(mock: MockAdapter) {
     return [200, mockState.openPositions.filter(position => position.userId === userId && position.currencySymbol === symbol)]
   })
 
-  const currentDayFillsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/current-day-fills`);
-  mock.onGet(currentDayFillsRegExp).reply(() => {
-    return [200, mockState.currentDayFills];
+  const currentDayFillsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/orders\/([^/]+)`);
+  mock.onGet(currentDayFillsRegExp).reply((config) => {
+    const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
+    const accountNumber = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[2]
+    const orderId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[3]
+    return [200, mockState.currentDayFills.filter(current => current.userId === userId && current.accountNumber === accountNumber && current.orderId === orderId)];
   });
 
-  const getWorkingOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/working-orders`);
-  mock.onGet(getWorkingOrdersRegExp).reply(() => {
-    return [200, mockState.workingOrders];
+  const getWorkingOrdersRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/orders\/([^/]+)`);
+  mock.onGet(getWorkingOrdersRegExp).reply((config) => {
+    const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
+    const accountNumber = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[2]
+    const orderId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[3]
+    return [200, mockState.workingOrders.filter(order => order.userId === userId && order.accountNumber === accountNumber && order.orderId === orderId)];
   });
 
   // eslint-disable-next-line
