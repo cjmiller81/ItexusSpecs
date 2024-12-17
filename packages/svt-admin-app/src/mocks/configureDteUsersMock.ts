@@ -1,7 +1,6 @@
 import MockAdapter from "axios-mock-adapter"
-import { IDteStrategiesResponse } from "@/features/strategies/dte/users/types"
-import { initBots, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
-import { Bot } from "@/features/strategies/dte/users/details/bot"
+import { IDteStrategiesResponse, StrategyBotList } from "@/features/strategies/dte/users/types"
+import { initBotStrategiesList, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
 import { OpenPosition } from "@/features/strategies/users/details/openPosition"
 import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface"
 import { ICurrentDayFills } from "@/features/strategies/dte/users/details/currentDayFillsInterface"
@@ -9,21 +8,25 @@ import { ICurrentDayFills } from "@/features/strategies/dte/users/details/curren
 
 const mockState: {
   dteUsers: IDteStrategiesResponse,
-  bots: Bot[],
+  bots: StrategyBotList,
   openPositions: OpenPosition[],
   workingOrders: IWorkingOrder[],
   currentDayFills: ICurrentDayFills[]
 } = {
   dteUsers: initDteUsers,
-  bots: initBots,
+  bots: initBotStrategiesList,
   openPositions: initOpenPosition,
   workingOrders: initWorkingOrders,
   currentDayFills: initCurrentDayFills
 }
 
 export function configureDteUsersMock(mock: MockAdapter) {
-  mock.onGet(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy`).reply(() => {
+  mock.onGet(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy$`)).reply(() => {
     return [200, mockState.dteUsers]
+  })
+
+  mock.onGet(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)$`)).reply(() => {
+    return [200, mockState.bots]
   })
 
   const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/positions\/([^/]+)`)
@@ -61,12 +64,6 @@ export function configureDteUsersMock(mock: MockAdapter) {
     if (existedSignalIndex !== -1) mockState.dteUsers.strategies.splice(existedSignalIndex, 1, fifoUser)
     return [200]
   })
-
-  const getBotRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/bots`)
-  mock.onGet(getBotRegExp).reply(() => {
-    return [200, mockState.bots]
-  })
-
   mock.onDelete(putUserRegExp).reply(config => {
     const url = new URL(config.url!, config.baseURL!)
     const splited = url.pathname.split("/")

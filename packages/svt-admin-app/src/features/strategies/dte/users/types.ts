@@ -106,7 +106,7 @@ export interface StrategyBot {
   putLeg1Symbol: string;
   putLeg2Symbol: string;
   nextEntryTimestamp: ITimestamp;
-  nextEndOfDayCloseTimestamp?: ITimestamp;
+  nextEndOfDayCloseTimestamp?: ITimestamp | null;
   userMessage: string;
   strategySettings: StrategySettings;
 }

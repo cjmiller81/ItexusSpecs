@@ -1,14 +1,14 @@
 import i18next from "@/libs/i18n/i18n";
-import { Button, Checkbox, darken, lighten, styled } from "@mui/material";
+import { Button, darken, lighten, styled } from "@mui/material";
 import { GridColDef, GridRowId } from "@mui/x-data-grid";
-import { Bot } from "./bot";
+import { StrategyBot } from "../types";
 
 export function getBotColumnsDefs(
   handleStartClick: (id: GridRowId) => void,
   handleStopClick: (id: GridRowId) => void,
   handleResetClick: (id: GridRowId) => void,
 ) {
-  const columns: GridColDef<Bot>[] = [
+  const columns: GridColDef<StrategyBot>[] = [
     {
       field: "active",
       headerName: i18next.t("Active", { ns: "ColumnsDefs" }),
@@ -143,7 +143,7 @@ export function getBotColumnsDefs(
       },
     },
     {
-      field: "tradeSymbol",
+      field: "masterSymbol",
       headerName: i18next.t("TradeSymbol", { ns: "ColumnsDefs" }),
       minWidth: 80,
       disableColumnMenu: true,
@@ -153,7 +153,7 @@ export function getBotColumnsDefs(
       flex: 1,
     },
     {
-      field: "qty",
+      field: "tradeQty",
       headerName: i18next.t("TradeQty", { ns: "ColumnsDefs" }),
       minWidth: 100,
       disableColumnMenu: true,
