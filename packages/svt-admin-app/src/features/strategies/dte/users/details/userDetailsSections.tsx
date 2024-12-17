@@ -11,7 +11,7 @@ import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
 import { IDteStrategy, StrategyBot, StrategyBotList } from "../types";
-import { stopBot } from "../dteUsersSlice";
+import { startBot, stopBot } from "../dteUsersSlice";
 import { useAppDispatch } from "@/libs/redux/Store";
 
 type Props = BoxProps & {
@@ -40,7 +40,9 @@ export default function UserDetailsSection({
   const handleStopClick = (row: StrategyBot) => {
     dispatch(stopBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
   };
-  const handleStartClick = () => {};
+  const handleStartClick = (row: StrategyBot) => {
+    dispatch(startBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
   const handleResetClick = () => {};
 
   return (

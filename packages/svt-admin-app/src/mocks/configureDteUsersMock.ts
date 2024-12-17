@@ -29,15 +29,24 @@ export function configureDteUsersMock(mock: MockAdapter) {
     return [200, mockState.bots]
   })
 
-  mock.onPost(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)\/([^/]+)\/([^/]+)$\/stop$`)).reply(config => {
-    
-    alert("stop")
-    const bot: StrategyBot = JSON.parse(config.data)
+  mock.onPost(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)\/([^/]+)\/([^/]+)\/start$`)).reply(config => {
     const url = new URL(config.url!, config.baseURL!)
     const splited = url.pathname.split("/")
-    const id = splited[splited.length - 1]
+    const bot = mockState.bots.zeroDteFlyStrategyList.find(x => x.userId === splited[5] && x.exchangeAccountNumber == splited[6] && x.masterSymbol == splited[7]);
+    if (bot) {
+      bot.active = true;
+    }
+    return [200, bot]
+  })
 
-    return [200]
+  mock.onPost(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)\/([^/]+)\/([^/]+)\/stop$`)).reply(config => {
+    const url = new URL(config.url!, config.baseURL!)
+    const splited = url.pathname.split("/")
+    const bot = mockState.bots.zeroDteFlyStrategyList.find(x => x.userId === splited[5] && x.exchangeAccountNumber == splited[6] && x.masterSymbol == splited[7]);
+    if (bot) {
+      bot.active = false;
+    }
+    return [200, bot]
   })
 
   const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/positions\/([^/]+)`)

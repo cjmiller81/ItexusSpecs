@@ -100,14 +100,19 @@ export const dteUsersSlice = createAppSlice({
               dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId),
               dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId)
             ]);
-                
+
             currentDayFills = currentDayFills.concat(currentDayFill);
             workingOrders = workingOrders.concat(workingOrder);
           }
-    
-          const openPosition = await dteUsersService.getOpenPositions(userId, element.exchangeAccountNumber, symbol);
-          openPositions = openPositions.concat(openPosition);
         }));
+
+        const accountNumbers = bots.zeroDteFlyStrategyList.map(x => x.exchangeAccountNumber);
+        const distinctAccountNumbers = accountNumbers.filter((value, index, self) => self.indexOf(value) === index);
+        
+        await Promise.all(distinctAccountNumbers.map(async (element) => {
+          const openPosition = await dteUsersService.getOpenPositions(userId, element, symbol);
+          openPositions = openPositions.concat(openPosition);
+        }))
     
         return { bots, openPositions, currentDayFills, workingOrders };
       },
@@ -197,14 +202,18 @@ export const dteUsersSlice = createAppSlice({
 
 const updateBotStrategyInfo = (state: IDteUsersSliceState, action: PayloadAction<StrategyBot>) => {
   const existedBotIndex = state.userDetails?.bots.zeroDteFlyStrategyList
-    .findIndex(x => x.userId == action.payload.userId
-      && x.exchangeAccountNumber == action.payload.exchangeAccountNumber
-      && x.masterSymbol == action.payload.masterSymbol);
+    .findIndex(x => x.userId === action.payload.userId
+      && x.exchangeAccountNumber === action.payload.exchangeAccountNumber
+      && x.masterSymbol === action.payload.masterSymbol);
 
-  if (state.userDetails && existedBotIndex) {
-    state.userDetails.bots.zeroDteFlyStrategyList[existedBotIndex] = action.payload;
+  if (existedBotIndex != undefined && existedBotIndex > -1) {
+    state.userDetails!.bots.zeroDteFlyStrategyList = [
+      ...state.userDetails!.bots.zeroDteFlyStrategyList.slice(0, existedBotIndex),
+      action.payload,
+      ...state.userDetails!.bots.zeroDteFlyStrategyList.slice(existedBotIndex + 1)
+    ];
   }
-}
+};
 
 export const {
   deleteDteUser,
