@@ -93,19 +93,23 @@ export const dteUsersSlice = createAppSlice({
         let currentDayFills: ICurrentDayFills[] = [];
         let workingOrders: IWorkingOrder[] = [];
         let openPositions: OpenPosition[] = [];
-
-        bots.zeroDteFlyStrategyList.forEach(async element => {
+    
+        await Promise.all(bots.zeroDteFlyStrategyList.map(async (element) => {
           if (element.entryOrderId) {
-            const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId);
-            const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId);
-            currentDayFills = [...currentDayFills, ...currentDayFill];
-            workingOrders = [...workingOrders, ...workingOrder];
+            const [currentDayFill, workingOrder] = await Promise.all([
+              dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId),
+              dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId)
+            ]);
+                
+            currentDayFills = currentDayFills.concat(currentDayFill);
+            workingOrders = workingOrders.concat(workingOrder);
           }
+    
           const openPosition = await dteUsersService.getOpenPositions(userId, element.exchangeAccountNumber, symbol);
-          openPositions = [...openPositions, ...openPosition];
-        });
-
-        return { bots, openPositions, currentDayFills, workingOrders }
+          openPositions = openPositions.concat(openPosition);
+        }));
+    
+        return { bots, openPositions, currentDayFills, workingOrders };
       },
       {
         pending: state => {
