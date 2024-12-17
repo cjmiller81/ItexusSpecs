@@ -21,11 +21,11 @@ const mockState: {
 }
 
 export function configureDteUsersMock(mock: MockAdapter) {
-  mock.onGet(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy`).reply(() => {
+  mock.onGet(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy$`)).reply(() => {
     return [200, mockState.dteUsers]
   })
 
-  mock.onGet(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/*`).reply(() => {
+  mock.onGet(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)$`)).reply(() => {
     return [200, mockState.bots]
   })
 
@@ -58,12 +58,6 @@ export function configureDteUsersMock(mock: MockAdapter) {
     if (existedSignalIndex !== -1) mockState.dteUsers.strategies.splice(existedSignalIndex, 1, fifoUser)
     return [200]
   })
-
-  const getBotRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/zero-dte\/users\/([^/]+)\/bots`)
-  mock.onGet(getBotRegExp).reply(() => {
-    return [200, mockState.bots]
-  })
-
   mock.onDelete(putUserRegExp).reply(config => {
     const url = new URL(config.url!, config.baseURL!)
     const splited = url.pathname.split("/")

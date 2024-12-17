@@ -12,11 +12,11 @@ import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
-import { IDteStrategy, StrategyBot } from "../types";
+import { IDteStrategy, StrategyBot, StrategyBotList } from "../types";
 
 type Props = BoxProps & {
   user: IDteStrategy;
-  bots: StrategyBot[];
+  bots: StrategyBotList;
   currentDayFills: ICurrentDayFills[];
   workingOrders: IWorkingOrder[];
   openPositions: OpenPosition[];
@@ -113,7 +113,7 @@ export default function UserDetailsSection({
             paddingBottom: "0px",
           },
         }}
-        rows={bots}
+        rows={bots.zeroDteFlyStrategyList}
         rowHeight={25}
         isCellEditable={() => false}
         columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
