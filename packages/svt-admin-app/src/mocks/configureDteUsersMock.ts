@@ -49,6 +49,26 @@ export function configureDteUsersMock(mock: MockAdapter) {
     return [200, bot]
   })
 
+  mock.onPost(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)\/([^/]+)\/([^/]+)\/reset$`)).reply(config => {
+    const url = new URL(config.url!, config.baseURL!)
+    const splited = url.pathname.split("/")
+    const bot = mockState.bots.zeroDteFlyStrategyList.find(x => x.userId === splited[5] && x.exchangeAccountNumber == splited[6] && x.masterSymbol == splited[7]);
+    if (bot) {
+      bot.active = false;
+    }
+    return [200, bot]
+  })
+
+  mock.onPost(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)\/([^/]+)\/([^/]+)\/forceStopExitOrder$`)).reply(config => {
+    const url = new URL(config.url!, config.baseURL!)
+    const splited = url.pathname.split("/")
+    const bot = mockState.bots.zeroDteFlyStrategyList.find(x => x.userId === splited[5] && x.exchangeAccountNumber == splited[6] && x.masterSymbol == splited[7]);
+    if (bot) {
+      bot.active = false;
+    }
+    return [200, bot]
+  })
+
   const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/positions\/([^/]+)`)
   mock.onGet(getOpenPositionsRegExp).reply((config) => {
     const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
@@ -65,9 +85,9 @@ export function configureDteUsersMock(mock: MockAdapter) {
     const orderId = urlValues[8]
 
     return [200, mockState.currentDayFills
-      .filter(current => current.userId === userId 
-      && current.accountNumber === accountNumber 
-      && current.orderId === orderId)];
+      .filter(current => current.userId === userId
+        && current.accountNumber === accountNumber
+        && current.orderId === orderId)];
   });
 
   // eslint-disable-next-line

@@ -7,6 +7,7 @@ export function getBotColumnsDefs(
   handleStartClick: (row: StrategyBot) => void,
   handleStopClick: (row: StrategyBot) => void,
   handleResetClick: (row: StrategyBot) => void,
+  handleForceExitClick: (row: StrategyBot) => void,
 ) {
   const columns: GridColDef<StrategyBot>[] = [
     {
@@ -81,6 +82,7 @@ export function getBotColumnsDefs(
       renderCell: params => {
         return (
           <StyledCellButton
+          disabled={!params.row.active}
             onClick={e => {
               handleResetClick(params.row);
             }}
@@ -117,8 +119,9 @@ export function getBotColumnsDefs(
       renderCell: params => {
         return (
           <StyledCellButton
+          disabled={!params.row.active}
             onClick={e => {
-              handleResetClick(params.row);
+              handleForceExitClick(params.row);
             }}
             variant="contained"
             sx={{

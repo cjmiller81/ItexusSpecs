@@ -93,7 +93,7 @@ export const dteUsersSlice = createAppSlice({
         let currentDayFills: ICurrentDayFills[] = [];
         let workingOrders: IWorkingOrder[] = [];
         let openPositions: OpenPosition[] = [];
-    
+
         await Promise.all(bots.zeroDteFlyStrategyList.map(async (element) => {
           if (element.entryOrderId) {
             const [currentDayFill, workingOrder] = await Promise.all([
@@ -104,16 +104,26 @@ export const dteUsersSlice = createAppSlice({
             currentDayFills = currentDayFills.concat(currentDayFill);
             workingOrders = workingOrders.concat(workingOrder);
           }
+
+          if (element.targetOrderId) {
+            const [currentDayFill, workingOrder] = await Promise.all([
+              dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.targetOrderId),
+              dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.targetOrderId)
+            ]);
+
+            currentDayFills = currentDayFills.concat(currentDayFill);
+            workingOrders = workingOrders.concat(workingOrder);
+          }
         }));
 
         const accountNumbers = bots.zeroDteFlyStrategyList.map(x => x.exchangeAccountNumber);
         const distinctAccountNumbers = accountNumbers.filter((value, index, self) => self.indexOf(value) === index);
-        
+
         await Promise.all(distinctAccountNumbers.map(async (element) => {
           const openPosition = await dteUsersService.getOpenPositions(userId, element, symbol);
           openPositions = openPositions.concat(openPosition);
         }))
-    
+
         return { bots, openPositions, currentDayFills, workingOrders };
       },
       {

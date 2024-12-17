@@ -11,7 +11,7 @@ import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
 import { IDteStrategy, StrategyBot, StrategyBotList } from "../types";
-import { startBot, stopBot } from "../dteUsersSlice";
+import { resetBot, startBot, stopBot } from "../dteUsersSlice";
 import { useAppDispatch } from "@/libs/redux/Store";
 
 type Props = BoxProps & {
@@ -43,7 +43,12 @@ export default function UserDetailsSection({
   const handleStartClick = (row: StrategyBot) => {
     dispatch(startBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
   };
-  const handleResetClick = () => {};
+  const handleResetClick  = (row: StrategyBot) => {
+    dispatch(resetBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
+  const handleForceExitClick  = (row: StrategyBot) => {
+    dispatch(resetBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
 
   return (
     <Box {...props}>
@@ -97,7 +102,7 @@ export default function UserDetailsSection({
         rows={bots.zeroDteFlyStrategyList}
         rowHeight={25}
         isCellEditable={() => false}
-        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
+        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick,handleForceExitClick)}
         editMode="row"
         getRowId={row => row.userId}
       />
