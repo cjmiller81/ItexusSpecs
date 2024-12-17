@@ -95,12 +95,13 @@ export const dteUsersSlice = createAppSlice({
         let openPositions: OpenPosition[] = [];
 
         bots.zeroDteFlyStrategyList.forEach(async element => {
-          const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId);
-          const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId);
+          if (element.entryOrderId) {
+            const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId);
+            const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId);
+            currentDayFills = [...currentDayFills, ...currentDayFill];
+            workingOrders = [...workingOrders, ...workingOrder];
+          }
           const openPosition = await dteUsersService.getOpenPositions(userId, element.exchangeAccountNumber, symbol);
-
-          currentDayFills = [...currentDayFills, ...currentDayFill];
-          workingOrders = [...workingOrders, ...workingOrder];
           openPositions = [...openPositions, ...openPosition];
         });
 
