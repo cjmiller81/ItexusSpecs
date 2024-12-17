@@ -137,7 +137,7 @@ export const dteUsersSlice = createAppSlice({
       },
     ),
     stopBot: create.asyncThunk(
-      async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol }, thunkApi) => {
+      async ({ userId, accountNumber, masterSymbol }: { userId: string, accountNumber: string, masterSymbol: string }, thunkApi) => {
         return await dteUsersService.stopBot(userId, accountNumber, masterSymbol);
       },
       {

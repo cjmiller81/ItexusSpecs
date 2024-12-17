@@ -1,12 +1,12 @@
 import i18next from "@/libs/i18n/i18n";
 import { Button, darken, lighten, styled } from "@mui/material";
-import { GridColDef, GridRowId } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { StrategyBot } from "../types";
 
 export function getBotColumnsDefs(
-  handleStartClick: (id: GridRowId) => void,
-  handleStopClick: (id: GridRowId) => void,
-  handleResetClick: (id: GridRowId) => void,
+  handleStartClick: (row: StrategyBot) => void,
+  handleStopClick: (row: StrategyBot) => void,
+  handleResetClick: (row: StrategyBot) => void,
 ) {
   const columns: GridColDef<StrategyBot>[] = [
     {
@@ -29,7 +29,7 @@ export function getBotColumnsDefs(
           <StyledCellButton
             disabled={params.row.active}
             onClick={e => {
-              handleStartClick(params.row.userId);
+              handleStartClick(params.row);
             }}
             variant="contained"
             sx={{
@@ -55,7 +55,7 @@ export function getBotColumnsDefs(
         return (
           <StyledCellButton
             onClick={e => {
-              handleStopClick(params.row.userId);
+              handleStopClick(params.row);
             }}
             disabled={!params.row.active}
             variant="contained"
@@ -82,7 +82,7 @@ export function getBotColumnsDefs(
         return (
           <StyledCellButton
             onClick={e => {
-              handleResetClick(params.row.userId);
+              handleResetClick(params.row);
             }}
             variant="contained"
             sx={{
@@ -118,7 +118,7 @@ export function getBotColumnsDefs(
         return (
           <StyledCellButton
             onClick={e => {
-              handleResetClick(params.row.userId);
+              handleResetClick(params.row);
             }}
             variant="contained"
             sx={{
@@ -161,6 +161,7 @@ export function getBotColumnsDefs(
       editable: true,
       type: "number",
       flex: 1,
+      valueGetter: (params) => params.value.units
     },
     {
       field: "entryOrderStatus",

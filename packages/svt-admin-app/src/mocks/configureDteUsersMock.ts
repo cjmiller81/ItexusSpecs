@@ -1,5 +1,5 @@
 import MockAdapter from "axios-mock-adapter"
-import { IDteStrategiesResponse, StrategyBotList } from "@/features/strategies/dte/users/types"
+import { IDteStrategiesResponse, StrategyBot, StrategyBotList } from "@/features/strategies/dte/users/types"
 import { initBotStrategiesList, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
 import { OpenPosition } from "@/features/strategies/users/details/openPosition"
 import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface"
@@ -27,6 +27,17 @@ export function configureDteUsersMock(mock: MockAdapter) {
 
   mock.onGet(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)$`)).reply(() => {
     return [200, mockState.bots]
+  })
+
+  mock.onPost(new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/zeroDteFlyStrategy\/([^/]+)\/([^/]+)\/([^/]+)$\/stop$`)).reply(config => {
+    
+    alert("stop")
+    const bot: StrategyBot = JSON.parse(config.data)
+    const url = new URL(config.url!, config.baseURL!)
+    const splited = url.pathname.split("/")
+    const id = splited[splited.length - 1]
+
+    return [200]
   })
 
   const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/positions\/([^/]+)`)
@@ -64,6 +75,7 @@ export function configureDteUsersMock(mock: MockAdapter) {
     if (existedSignalIndex !== -1) mockState.dteUsers.strategies.splice(existedSignalIndex, 1, fifoUser)
     return [200]
   })
+
   mock.onDelete(putUserRegExp).reply(config => {
     const url = new URL(config.url!, config.baseURL!)
     const splited = url.pathname.split("/")

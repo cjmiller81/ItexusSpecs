@@ -5,14 +5,14 @@ import { useTranslation } from "react-i18next";
 import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
 import { getBotColumnsDefs } from "./botsColumnDefs";
 import { OpenPosition } from "./openPosition";
-import { useMemo } from "react";
-import { formatCurrencyToString } from "@/utils/common";
 import { getOpenPositionColumns } from "./openPositionColumnsDefs";
 import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
 import { IDteStrategy, StrategyBot, StrategyBotList } from "../types";
+import { stopBot } from "../dteUsersSlice";
+import { useAppDispatch } from "@/libs/redux/Store";
 
 type Props = BoxProps & {
   user: IDteStrategy;
@@ -34,35 +34,14 @@ export default function UserDetailsSection({
   workingOrders,
   ...props
 }: Props) {
+  const dispatch = useAppDispatch()
   const { t } = useTranslation("UserDetailsSection");
 
-  const handleStopClick = () => {};
+  const handleStopClick = (row: StrategyBot) => {
+    dispatch(stopBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
   const handleStartClick = () => {};
   const handleResetClick = () => {};
-
-  const getPandLStyleAndValue = useMemo(() => {
-    if (!openPositions || openPositions.length === 0) {
-      return { text: "-", color: "#84b067" };
-    }
-
-    let sumPanAndL = 0;
-    openPositions.forEach(x => {
-      if (x.pAndL) {
-        sumPanAndL += x.pAndL;
-      }
-    });
-
-    return {
-      text: formatCurrencyToString(sumPanAndL, openPositions[0].currencySymbol),
-      color: sumPanAndL >= 0 ? "#84b067" : "#ff7782",
-    };
-  }, [openPositions]);
-
-  const getOpenPositionStyleAndValue = useMemo(() => {
-    return openPositions && openPositions.length > 0
-      ? { color: "#89d08d", text: t("OpenPositions") }
-      : { color: "#bfbfbf", text: t("Flat") };
-  }, [openPositions]);
 
   return (
     <Box {...props}>
