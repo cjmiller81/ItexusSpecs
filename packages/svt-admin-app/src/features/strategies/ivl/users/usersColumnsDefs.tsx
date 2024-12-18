@@ -8,6 +8,7 @@ import { IvlUser } from "./IvlUser"
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Theme, lighten, useTheme } from "@mui/system"
 import moment from "moment"
+import { ITradeQuantity } from "../../dte/users/types"
 
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
@@ -51,7 +52,7 @@ export function getColumns(
             />
           ]
         }
-        
+
         const selectedIconColor = lighten(theme.palette.text.primary, 0.4)
         return [
           <GridActionsCellItem
@@ -59,8 +60,8 @@ export function getColumns(
             icon={<VisibilityIcon sx={{fill: currentUserId !== id ? selectedIconColor : theme.palette.text.primary}} />}
             label={i18next.t("View", { ns: "Common" })}
             className="textPrimary"
-            onClick={() => 
-              { 
+            onClick={() =>
+              {
                 handleViewClick(id);
                 handleSetSelection(id);
               }
@@ -71,7 +72,7 @@ export function getColumns(
       },
     },
     {
-      field: "id",
+      field: "userId",
       headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
@@ -81,14 +82,6 @@ export function getColumns(
     {
       field: "exchangeUsername",
       headerName: i18next.t("ExchangeUsername", { ns: "ColumnsDefs" }),
-      minWidth: 100,
-      editable: true,
-      type: "string",
-      flex: 1,
-    },
-    {
-      field: "email",
-      headerName: i18next.t("Email", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "string",
@@ -131,42 +124,33 @@ export function getColumns(
       }
     },
     {
-      field: "lastFill",
-      headerName: i18next.t("LastFill", { ns: "ColumnsDefs" }),
+      field: "lastUpdatedAt",
+      headerName: i18next.t("Last Updated", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
       flex: 1,
       valueGetter: (param) => {
-        if (param.row.openQty === 0) {
+        if (param.row.lastUpdatedAt?.seconds === 0) {
           return null;
         }
 
-        return Number(param.value.toFixed(2));
+        return (param.value && param.value?.seconds) ? moment.unix(param.value.seconds).toDate() : "";
       }
     },
     {
-      field: "fillTime",
-      headerName: i18next.t("FillTime", { ns: "ColumnsDefs" }),
-      minWidth: 100,
-      editable: true,
-      type: "date",
-      flex: 1,
-      valueFormatter: (param: GridValueFormatterParams<Date>) => {
-        if (param.value) {
-          return moment(param.value).format("HH:mm:ss");
-        }
-
-        return param.value;
-      }
-    },
-    {
-      field: "openQty",
+      field: "tradeQty",
       headerName: i18next.t("OpenQty", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
       flex: 1,
+      valueFormatter: (param: GridValueFormatterParams<ITradeQuantity>) => {
+        if(param.value) {
+          return param.value.units;
+        }
+        return null;
+      },
     },
   ]
 

@@ -24,7 +24,7 @@ import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
 type Props = BoxProps & {
   user: IvlUser;
   orders: Order[];
-  bots: Bot[];
+  bot: Bot;
   allocations: CapitalAllocation[];
   billings: Billing[];
   openPositions: OpenPosition[];
@@ -40,7 +40,7 @@ export default function UserDetailsSection({
   allocations,
   billings,
   openPositions,
-  bots,
+  bot,
   currentDayFills,
   workingOrders,
   theme,
@@ -126,12 +126,12 @@ export default function UserDetailsSection({
             paddingBottom: "0px",
           },
         }}
-        rows={bots}
+        rows={[bot]}
         rowHeight={25}
         isCellEditable={() => false}
         columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
         editMode="row"
-        getRowId={row => row.userId}
+        getRowId={row => row.accountNumber}
       />
       <Stack>
         <Typography

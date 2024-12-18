@@ -1,11 +1,16 @@
+import { ITradeQuantity, ITimestamp } from "../../dte/users/types";
+
+export interface IIvlStrategiesResponse
+{
+  strategies: IvlUser[];
+}
+
 export interface IvlUser {
-  id: string
+  userId: string
   exchangeUsername: string
-  email: string,
   connectionStatus: string
   accountNumber: string
   botStatus: string
-  lastFill: number
-  fillTime: Date
-  openQty: number
+  lastUpdatedAt: ITimestamp | null
+  tradeQty: ITradeQuantity | null
 }

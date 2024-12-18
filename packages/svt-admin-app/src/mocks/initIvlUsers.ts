@@ -9,26 +9,34 @@ import { IWorkingOrder } from "@/features/strategies/ivl/users/details/workingOr
 
 export const initIvlUsers: IvlUser[] = [
   {
-    id: "WP1234",
+    userId: "WP1234",
     exchangeUsername: "tasty1234",
     connectionStatus: "Connected",
-    email: "tasty1234@gmail.com",
     accountNumber: "ABC1234",
     botStatus: "Active",
-    lastFill: 3234.32,
-    fillTime: new Date(),
-    openQty: 0,
+    lastUpdatedAt: {
+      seconds: 1734361140,
+      nanos: 0
+    },
+    tradeQty: {
+      units: 0,
+      nanos: 0
+    },
   },
   {
-    id: "WP5678",
+    userId: "WP5678",
     exchangeUsername: "tasty5678",
-    email: "tasty5678@gmail.com",
     connectionStatus: "Connected",
     accountNumber: "ABC5678",
     botStatus: "error",
-    lastFill: 3234.32,
-    fillTime: new Date(),
-    openQty: 3,
+    lastUpdatedAt: {
+      seconds: 1734361140,
+      nanos: 0
+    },
+    tradeQty: {
+      units: 3,
+      nanos: 0
+    },
   },
 ]
 export const initOrders: Order[] = [
@@ -58,36 +66,38 @@ export const initOrders: Order[] = [
   },
 ]
 
-export const initBots: Bot[] = [
-  {
-    active: true,
-    atrPeriod: 14,
-    capitalAllocation: 150000,
-    entryOrderId: "EO123456789",
-    hasEntryOrderId: true,
-    entryOrderStatus: "Filled",
-    hasEntryOrderStatus: true,
-    exchange: "NYSE",
-    exchangeAccountNumber: "ACC0987654321",
-    masterSymbolAssetType: "Equity",
-    stopOrderId: "SO123456789",
-    hasStopOrderId: true,
-    stopOrderStatus: "Working",
-    hasStopOrderStatus: true,
-    targetOrderId: "TO123456789",
-    hasTargetOrderId: true,
-    targetOrderStatus: "Working",
-    hasTargetOrderStatus: true,
-    qty: 1,
-    tradeQty: {
-      units: 10,
-      nanos: 500000000
-    },
-    tradeSymbol: "/ES",
-    tradeSymbolAssetType: "Equity",
-    userId: "WP1234"
-  }
-];
+export const initBot: Bot = {
+  isStarted: true,
+  capitalAllocation: {
+    units: 30000,
+    nanos: 0
+  },
+  capitalAllocationStart: {
+      units: 30000,
+      nanos: 0
+  },
+  capitalAllocationNext: {
+      units: 30000,
+      nanos: 0
+  },
+  entryOrderId: "EO123456789",
+  entryExchangeOrderId: "162027",
+  entryOrderStatus: 2,
+  exchangeUsername: "asdfliku923",
+  accountNumber: "ACC0987654321",
+  exitOrderId: "",
+  exitExchangeOrderId: "",
+  exitOrderStatus: -1,
+  exitOrderSymbol: "",
+  riskTolerance: 0,
+  contractQty: {
+    units: 2,
+    nanos: 0
+  },
+  closingOnly: false,
+  entryOrderSymbol: "/ES",
+  userMessage: "System error attempting to submit new entry for the 4 time: Request validation failed  Stopping automation!"
+};
 
 export const initAllocations: CapitalAllocation[] = [
   {

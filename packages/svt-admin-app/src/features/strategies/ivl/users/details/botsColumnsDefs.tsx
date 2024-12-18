@@ -1,7 +1,8 @@
 import i18next from "@/libs/i18n/i18n";
 import { Button, Checkbox, darken, lighten, styled } from "@mui/material";
-import { GridColDef, GridRowId } from "@mui/x-data-grid";
+import { GridColDef, GridRowId, GridValueFormatterParams } from "@mui/x-data-grid";
 import { Bot } from "./bot";
+import { ITradeQuantity } from "@/features/strategies/dte/users/types";
 
 export function getBotColumnsDefs(
   handleStartClick: (id: GridRowId) => void,
@@ -27,9 +28,9 @@ export function getBotColumnsDefs(
       renderCell: params => {
         return (
           <StyledCellButton
-            disabled={params.row.active}
+            disabled={params.row.isStarted}
             onClick={e => {
-              handleStartClick(params.row.userId);
+              handleStartClick(params.row.accountNumber);
             }}
             variant="contained"
             sx={{
@@ -68,9 +69,9 @@ export function getBotColumnsDefs(
         return (
           <StyledCellButton
             onClick={e => {
-              handleStopClick(params.row.userId);
+              handleStopClick(params.row.accountNumber);
             }}
-            disabled={!params.row.active}
+            disabled={!params.row.isStarted}
             variant="contained"
             sx={{
               ":hover": {
@@ -95,7 +96,7 @@ export function getBotColumnsDefs(
         return (
           <StyledCellButton
             onClick={e => {
-              handleResetClick(params.row.userId);
+              handleResetClick(params.row.accountNumber);
             }}
             variant="contained"
             sx={{
@@ -128,6 +129,12 @@ export function getBotColumnsDefs(
       editable: true,
       type: "number",
       flex: 1,
+      valueFormatter: (param: GridValueFormatterParams<ITradeQuantity>) => {
+        if(param.value) {
+          return param.value.units + param.value.nanos;
+        }
+        return null;
+      },
     },
     {
       field: "tradeSymbol",
