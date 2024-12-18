@@ -298,7 +298,7 @@ export default function AccountStatus({
 
           <Typography
             variant="body1"
-            sx={{ marginTop: "20px", fontWeight: "bold" }}>
+            sx={{ paddingTop: "20px", fontWeight: "bold" }}>
             SDTE PARAMETER SETTINGS
           </Typography>
 
