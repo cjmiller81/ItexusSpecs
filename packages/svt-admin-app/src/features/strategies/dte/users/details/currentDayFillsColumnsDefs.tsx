@@ -6,7 +6,7 @@ import { ICurrentDayFills } from "../types";
 export function getCurrentDayFillsColumns() {
   const columns: GridColDef<ICurrentDayFills>[] = [
     {
-      field: "tradeSymbol",
+      field: "marketSymbol",
       headerName: i18next.t("TradeSymbol", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
@@ -38,7 +38,7 @@ export function getCurrentDayFillsColumns() {
       type: "boolean",
     },
     {
-      field: "status",
+      field: "orderStatus",
       headerName: i18next.t("Status", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
@@ -46,16 +46,16 @@ export function getCurrentDayFillsColumns() {
       type: "string",
     },
     {
-      field: "transactionTime",
+      field: "timeCreated",
       headerName: i18next.t("TransactionTime", { ns: "ColumnsDefs" }),
       minWidth: 120,
       editable: true,
       flex: 1,
       type: "dateTime",
-      valueGetter: params => moment(params.value, 'YYYY-MM-DD hh:mm').toDate(),
+      valueGetter: params => moment.unix(params.value.seconds).toDate(),
     },
     {
-      field: "orderId",
+      field: "exchangeOrderId",
       headerName: i18next.t("OrderId", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
@@ -63,20 +63,20 @@ export function getCurrentDayFillsColumns() {
       type: "string",
     },
     {
-      field: "orderQty",
+      field: "qtyPlaced",
       headerName: i18next.t("OrderQty", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
-      type: "string",
+      type: "number",
     },
     {
-      field: "fillQty",
+      field: "qtyFilled",
       headerName: i18next.t("FillQty", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       flex: 1,
-      type: "string",
+      type: "number",
     },
   ];
 

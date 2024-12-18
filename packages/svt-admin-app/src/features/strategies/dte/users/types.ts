@@ -1,5 +1,5 @@
-export interface IDteStrategiesResponse 
-{ 
+export interface IDteStrategiesResponse
+{
   strategies: IDteStrategy[];
 }
 
@@ -112,43 +112,41 @@ export interface StrategyBot {
 }
 
 export interface OpenPosition {
-  id: string
-  userId: string
-  instrument: string,
-  qty: number,
-  avgPrice: number,
-  pAndL: number | undefined,
-  currencySymbol: string
+  username: string,
+  accountNumber: string,
+  amount: number,
+  marketSymbol: string,
+  underlyingSymbol: string,
+  averagePrice: number | undefined,
+  direction: string,
 }
 
 export interface IWorkingOrder {
-  id: string;
-  userId: string;
   accountNumber: string;
-  tradeSymbol: string;
+  marketSymbol: string;
   exchangeOrderId: string;
   instruction: string;
   isEntryOrder: boolean;
   isExitOrder: boolean;
-  status: string;
+  orderStatus: string;
   orderId: string;
-  entryId: string;
+  qtyPlaced: number,
+  qtyFilled: number | undefined,
   exchangeEntryOrderId: string;
-  transactionTime: string | Date;
+  timeCreated: ITimestamp | null;
 }
 
 export interface ICurrentDayFills {
-  id: string;
-  userId: string;
   accountNumber: string;
-  tradeSymbol: string;
+  marketSymbol: string;
   exchangeOrderId: string;
-  exchangeEntryOrderId: string;
   instruction: string;
   isEntryOrder: boolean;
   isExitOrder: boolean;
-  status: string;
-  transactionTime: string | Date;
+  orderStatus: string;
   orderId: string;
-  entryId: string;
+  qtyPlaced: number,
+  qtyFilled: number | undefined,
+  exchangeEntryOrderId: string;
+  timeCreated: ITimestamp | null;
 }

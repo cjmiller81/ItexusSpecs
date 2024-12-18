@@ -76,7 +76,7 @@ export default function UserDetailsSection({
           columnHeaderHeight={25}
           isCellEditable={() => false}
           columns={getOpenPositionColumns()}
-          getRowId={row => row.id}
+          getRowId={row => row.marketSymbol}
         />
       </StyledMetricsBox>
       <Typography
@@ -121,7 +121,7 @@ export default function UserDetailsSection({
           rowHeight={25}
           isCellEditable={() => false}
           columns={getCurrentDayFillsColumns()}
-          getRowId={row => row.id}
+          getRowId={row => row.orderId}
         />
       </Stack>
       <Typography
@@ -142,7 +142,7 @@ export default function UserDetailsSection({
           rowHeight={25}
           isCellEditable={() => false}
           columns={getWorkingOrdersColumns()}
-          getRowId={row => row.id}
+          getRowId={row => row.orderId}
         />
       </Stack>
     </Box>

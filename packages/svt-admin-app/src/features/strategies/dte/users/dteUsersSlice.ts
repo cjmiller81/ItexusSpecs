@@ -92,24 +92,52 @@ export const dteUsersSlice = createAppSlice({
         let openPositions: OpenPosition[] = [];
 
         await Promise.all(bots.zeroDteFlyStrategyList.map(async (element) => {
-          if (element.entryOrderId) {
-            const [currentDayFill, workingOrder] = await Promise.all([
-              dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryOrderId),
-              dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryOrderId)
-            ]);
-
-            currentDayFills = currentDayFills.concat(currentDayFill);
-            workingOrders = workingOrders.concat(workingOrder);
+          if (element.entryExchangeOrderId) {
+            if (element.entryOrderStatus.length > 0) {
+              if (["Filled"].indexOf(element.entryOrderStatus) > -1) {
+                const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.entryExchangeOrderId);
+                if (currentDayFill) {
+                  currentDayFills = currentDayFills.concat(currentDayFill);
+                }
+              } else if (["PartialFill", "Working", "Submitted"].indexOf(element.entryOrderStatus) > -1) {
+                const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.entryExchangeOrderId);
+                if (workingOrder) {
+                  workingOrders = workingOrders.concat(workingOrder);
+                }
+              }
+            }
           }
 
-          if (element.targetOrderId) {
-            const [currentDayFill, workingOrder] = await Promise.all([
-              dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.targetOrderId),
-              dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.targetOrderId)
-            ]);
+          if (element.targetExchangeOrderId) {
+            if (element.targetOrderStatus.length > 0) {
+              if (["Filled"].indexOf(element.targetOrderStatus) > -1) {
+                const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.targetExchangeOrderId);
+                if (currentDayFill) {
+                  currentDayFills = currentDayFills.concat(currentDayFill);
+                }
+              } else if (["PartialFill", "Working", "Submitted"].indexOf(element.targetOrderStatus) > -1) {
+                const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.targetExchangeOrderId);
+                if (workingOrder) {
+                  workingOrders = workingOrders.concat(workingOrder);
+                }
+              }
+            }
+          }
 
-            currentDayFills = currentDayFills.concat(currentDayFill);
-            workingOrders = workingOrders.concat(workingOrder);
+          if (element.stopExchangeOrderId) {
+            if (element.stopOrderStatus.length > 0) {
+              if (["Filled"].indexOf(element.stopOrderStatus) > -1) {
+                const currentDayFill = await dteUsersService.getCurrentDayFills(userId, element.exchangeAccountNumber, element.stopExchangeOrderId);
+                if (currentDayFill) {
+                  currentDayFills = currentDayFills.concat(currentDayFill);
+                }
+              } else if (["PartialFill", "Working", "Submitted"].indexOf(element.stopOrderStatus) > -1) {
+                const workingOrder = await dteUsersService.getUserWorkingOrders(userId, element.exchangeAccountNumber, element.stopExchangeOrderId);
+                if (workingOrder) {
+                  workingOrders = workingOrders.concat(workingOrder);
+                }
+              }
+            }
           }
         }));
 
@@ -117,11 +145,29 @@ export const dteUsersSlice = createAppSlice({
         const distinctAccountNumbers = accountNumbers.filter((value, index, self) => self.indexOf(value) === index);
 
         await Promise.all(distinctAccountNumbers.map(async (element) => {
-          const openPosition = await dteUsersService.getOpenPositions(userId, element, symbol);
-          if (openPosition && openPosition.length > 0) {
-            openPositions = openPositions.concat(openPosition);
+          const distinctbot = bots.zeroDteFlyStrategyList.find((value) => value.exchangeAccountNumber === element);
+          const distinctPositionSymbols: string[] = [];
+
+          if (distinctbot?.callLeg1Symbol) {
+            distinctPositionSymbols.push(distinctbot?.callLeg1Symbol)
           }
-        }))
+          if (distinctbot?.callLeg2Symbol) {
+            distinctPositionSymbols.push(distinctbot?.callLeg2Symbol)
+          }
+          if (distinctbot?.putLeg1Symbol) {
+            distinctPositionSymbols.push(distinctbot?.putLeg1Symbol)
+          }
+          if (distinctbot?.putLeg2Symbol) {
+            distinctPositionSymbols.push(distinctbot?.putLeg2Symbol)
+          }
+
+          await Promise.all(distinctPositionSymbols.map(async (legSymbol) => {
+            const openPosition = await dteUsersService.getOpenPositions(userId, element, legSymbol);
+            if (openPosition && openPosition?.marketSymbol?.length > 0) {
+              openPositions = openPositions.concat(openPosition);
+            }
+          }))
+        }));
 
         return { bots, openPositions, currentDayFills, workingOrders };
       },

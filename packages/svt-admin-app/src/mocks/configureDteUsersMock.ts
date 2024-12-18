@@ -1,19 +1,17 @@
 import MockAdapter from "axios-mock-adapter"
 import { ICurrentDayFills, IDteStrategiesResponse, IWorkingOrder, OpenPosition, StrategyBot, StrategyBotList } from "@/features/strategies/dte/users/types"
-import { initBotStrategiesList, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
+import { initBotStrategiesList, initCurrentDayFills, initDteUsers, initOpenPosition } from "./initDteUsers"
 /* eslint-disable no-useless-escape */
 
 const mockState: {
   dteUsers: IDteStrategiesResponse,
   bots: StrategyBotList,
   openPositions: OpenPosition[],
-  workingOrders: IWorkingOrder[],
   currentDayFills: ICurrentDayFills[]
 } = {
   dteUsers: initDteUsers,
   bots: initBotStrategiesList,
   openPositions: initOpenPosition,
-  workingOrders: initWorkingOrders,
   currentDayFills: initCurrentDayFills
 }
 
@@ -68,23 +66,25 @@ export function configureDteUsersMock(mock: MockAdapter) {
 
   const getOpenPositionsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/positions\/([^/]+)`)
   mock.onGet(getOpenPositionsRegExp).reply((config) => {
-    const userId = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
+    const accountNumber = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[2]
     const symbol = getOpenPositionsRegExp.exec(`${config.baseURL}${config.url}`)?.[3]
-    return [200, mockState.openPositions.filter(position => position.userId === userId && position.currencySymbol === symbol)]
+
+    return [200, mockState.openPositions.find(position => position.accountNumber === accountNumber && position.marketSymbol === symbol)]
   })
 
   const currentDayFillsRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/users\/([^/]+)\/accounts\/([^/]+)\/orders\/([^/]+)`);
   mock.onGet(currentDayFillsRegExp).reply((config) => {
     const url = new URL(config.url!, config.baseURL!)
-    const urlValues = url.pathname.split("/");
-    const userId = urlValues[4]
+    const urlValues = url.pathname.split("/")
     const accountNumber = urlValues[6]
     const orderId = urlValues[8]
 
+
+    console.log("orderId:", orderId)
+
     return [200, mockState.currentDayFills
-      .filter(current => current.userId === userId
-        && current.accountNumber === accountNumber
-        && current.orderId === orderId)];
+      .find(current => current.accountNumber === accountNumber
+        && current.exchangeOrderId === orderId)];
   });
 
   // eslint-disable-next-line
