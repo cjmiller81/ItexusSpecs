@@ -1,7 +1,7 @@
 import i18next from "@/libs/i18n/i18n";
 import { GridColDef } from "@mui/x-data-grid";
-import { OpenPosition } from "./openPosition";
 import { formatCurrencyToString } from "@/utils/common";
+import { OpenPosition } from "../types";
 
 export function getOpenPositionColumns() {
   const columns: GridColDef<OpenPosition>[] = [

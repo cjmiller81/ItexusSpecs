@@ -1,7 +1,7 @@
 import i18next from "@/libs/i18n/i18n";
 import { GridColDef } from "@mui/x-data-grid";
 import moment from "moment";
-import { IWorkingOrder } from "./workingOrderInterface";
+import { IWorkingOrder } from "../types";
 
 export function getWorkingOrdersColumns() {
     const columns: GridColDef<IWorkingOrder>[] = [
@@ -63,8 +63,16 @@ export function getWorkingOrdersColumns() {
         type: "string",
       },
       {
-        field: "entryId",
-        headerName: i18next.t("EntryId", { ns: "ColumnsDefs" }),
+        field: "orderQty",
+        headerName: i18next.t("OrderQty", { ns: "ColumnsDefs" }),
+        minWidth: 100,
+        editable: true,
+        flex: 1,
+        type: "string",
+      },
+      {
+        field: "fillQty",
+        headerName: i18next.t("FillQty", { ns: "ColumnsDefs" }),
         minWidth: 100,
         editable: true,
         flex: 1,

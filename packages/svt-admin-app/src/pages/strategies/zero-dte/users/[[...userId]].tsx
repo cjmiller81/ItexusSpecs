@@ -3,7 +3,7 @@ import { styled, useTheme } from "@mui/material/styles"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
 import { useEffect, useState } from "react"
-import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridRowParams, GridToolbar } from "@mui/x-data-grid"
+import { DataGrid, GridEventListener, GridRowEditStopReasons, GridRowId, GridRowModes, GridRowModesModel, GridToolbar } from "@mui/x-data-grid"
 import { deleteDteUser, fetchDteUsers, fetchUserDetails, updateDteUser } from "@/features/strategies/dte/users/dteUsersSlice"
 import { autoSizeTableSx } from "@/features/strategies/shared/tableSx"
 import { Box, IconButton, useMediaQuery } from "@mui/material"
@@ -45,7 +45,8 @@ export default function Reports() {
       return
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }))
+    const symbol = "SPX"
+    dispatch(fetchUserDetails({ userId: currentUser.userId, symbol}))
     router.push(`/strategies/zero-dte/users/${currentUser.userId}`, undefined, {
       shallow: true,
     })
