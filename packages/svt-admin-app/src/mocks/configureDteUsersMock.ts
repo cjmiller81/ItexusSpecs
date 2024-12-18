@@ -1,9 +1,6 @@
 import MockAdapter from "axios-mock-adapter"
-import { IDteStrategiesResponse, StrategyBot, StrategyBotList } from "@/features/strategies/dte/users/types"
+import { ICurrentDayFills, IDteStrategiesResponse, IWorkingOrder, OpenPosition, StrategyBot, StrategyBotList } from "@/features/strategies/dte/users/types"
 import { initBotStrategiesList, initCurrentDayFills, initDteUsers, initOpenPosition, initWorkingOrders } from "./initDteUsers"
-import { OpenPosition } from "@/features/strategies/users/details/openPosition"
-import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface"
-import { ICurrentDayFills } from "@/features/strategies/dte/users/details/currentDayFillsInterface"
 /* eslint-disable no-useless-escape */
 
 const mockState: {

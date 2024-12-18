@@ -9,6 +9,12 @@ export function getBotColumnsDefs(
   handleResetClick: (row: StrategyBot) => void,
   handleForceExitClick: (row: StrategyBot) => void,
 ) {
+
+  const isForceExitActive = (row: StrategyBot) => {
+    return row.active 
+    || (row.hasEntryOrderStatus && (!row.hasTargetOrderStatus || row.targetOrderStatus === 'working'))
+  }
+
   const columns: GridColDef<StrategyBot>[] = [
     {
       field: "active",
@@ -119,7 +125,7 @@ export function getBotColumnsDefs(
       renderCell: params => {
         return (
           <StyledCellButton
-          disabled={!params.row.active}
+            disabled={!isForceExitActive(params.row)}
             onClick={e => {
               handleForceExitClick(params.row);
             }}

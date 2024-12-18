@@ -1,10 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice, Status } from "components";
 import { dteUsersService } from "./dteUsersService";
-import { OpenPosition } from "./details/openPosition";
-import { IWorkingOrder } from "./details/workingOrderInterface";
-import { ICurrentDayFills } from "./details/currentDayFillsInterface";
-import { IDteStrategiesResponse, IDteStrategy, StrategyBot, StrategyBotList } from "./types";
+import { ICurrentDayFills, IDteStrategiesResponse, IDteStrategy, IWorkingOrder, OpenPosition, StrategyBot, StrategyBotList } from "./types";
 
 type UserDetails = {
   bots: StrategyBotList

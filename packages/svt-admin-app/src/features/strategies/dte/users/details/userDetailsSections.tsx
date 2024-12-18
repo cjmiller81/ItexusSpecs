@@ -4,13 +4,10 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
 import { getBotColumnsDefs } from "./botsColumnDefs";
-import { OpenPosition } from "./openPosition";
 import { getOpenPositionColumns } from "./openPositionColumnsDefs";
-import { ICurrentDayFills } from "./currentDayFillsInterface";
-import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
-import { IDteStrategy, StrategyBot, StrategyBotList } from "../types";
+import { ICurrentDayFills, IDteStrategy, IWorkingOrder, OpenPosition, StrategyBot, StrategyBotList } from "../types";
 import { resetBot, startBot, stopBot } from "../dteUsersSlice";
 import { useAppDispatch } from "@/libs/redux/Store";
 

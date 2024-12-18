@@ -1,8 +1,7 @@
 import i18next from "@/libs/i18n/i18n";
 import { GridColDef } from "@mui/x-data-grid";
 import moment from "moment";
-import { ICurrentDayFills } from "./currentDayFillsInterface";
-
+import { ICurrentDayFills } from "../types";
 
 export function getCurrentDayFillsColumns() {
   const columns: GridColDef<ICurrentDayFills>[] = [

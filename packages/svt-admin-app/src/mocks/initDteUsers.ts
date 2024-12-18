@@ -1,7 +1,4 @@
-import { ICurrentDayFills } from "@/features/strategies/dte/users/details/currentDayFillsInterface";
-import { OpenPosition } from "@/features/strategies/dte/users/details/openPosition";
-import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface";
-import { IDteStrategiesResponse, StrategyBotList } from "@/features/strategies/dte/users/types";
+import { IDteStrategiesResponse, StrategyBotList, ICurrentDayFills, OpenPosition, IWorkingOrder } from "@/features/strategies/dte/users/types";
 
 export const initDteUsers: IDteStrategiesResponse = {
   "strategies": [
