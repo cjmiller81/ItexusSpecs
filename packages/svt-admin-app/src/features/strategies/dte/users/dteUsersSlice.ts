@@ -118,7 +118,9 @@ export const dteUsersSlice = createAppSlice({
 
         await Promise.all(distinctAccountNumbers.map(async (element) => {
           const openPosition = await dteUsersService.getOpenPositions(userId, element, symbol);
-          openPositions = openPositions.concat(openPosition);
+          if (openPosition && openPosition.length > 0) {
+            openPositions = openPositions.concat(openPosition);
+          }
         }))
 
         return { bots, openPositions, currentDayFills, workingOrders };
