@@ -67,14 +67,14 @@ export interface ExchangeAccount {
 
 export interface TastytradeAccountConnect {
   login: string
-  password:	string | null
+  password: string | null
   rememberToken: string | null
   epdCustomerId: string | null
   stripeCustomerId: string | null
 }
 
 export interface SvtIvlStrategyAccountConnect {
-  accountNumber:	string
+  accountNumber: string
   riskTolerance: IvlRiskTolerance
   capitalAllocation: {
     units: number,
@@ -89,18 +89,18 @@ export interface SvtIvlStrategyAccountConnect {
 
 export interface SvtIvlEsStrategySetStatus {
   isStarted: boolean
-  entryOrderId:	string | null
+  entryOrderId: string | null
   entryExchangeOrderId: string | null
-  entryOrderStatus:	OrderStatus | null
-  entryOrderSymbol:	string | null
+  entryOrderStatus: OrderStatus | null
+  entryOrderSymbol: string | null
   exitOrderId: string | null
   exitExchangeOrderId: string | null
-  exitOrderStatus:	OrderStatus | null
-  exitOrderSymbol:	string | null
+  exitOrderStatus: OrderStatus | null
+  exitOrderSymbol: string | null
   exchangeUsername: string
-  accountNumber:	string | null
-  riskTolerance:	IvlRiskTolerance
-  capitalAllocation:	{
+  accountNumber: string | null
+  riskTolerance: IvlRiskTolerance
+  capitalAllocation: {
     units: number,
     nanos: number
   } | null
@@ -112,7 +112,7 @@ export interface SvtIvlEsStrategySetStatus {
     units: number,
     nanos: number
   } | null
-  contractQty:	{
+  contractQty: {
     units: number,
     nanos: number
   } | null
@@ -186,11 +186,11 @@ export interface StrategySettings {
   exitOrderAtCloseOffsetMinutes: number,
   maxProfitPercentTarget: number,
   strikeWidth: number,
-  minCreditRequired: number
+  minCreditRequired: number,
+  maxCreditRequired: number
 }
 
-export interface FifoStrategyListResponse
-{
+export interface FifoStrategyListResponse {
   fifoStrategyList_: FifoStrategyListItem[]
 }
 
@@ -237,13 +237,11 @@ export interface Fifo2StrategyListItem {
   removed: boolean
 }
 
-export interface Fifo2StrategyListResponse
-{
+export interface Fifo2StrategyListResponse {
   fifoStrategyList: Fifo2StrategyListItem[]
 }
 
-export interface ZeroDteFlyStrategyListResponse
-{
+export interface ZeroDteFlyStrategyListResponse {
   zeroDteFlyStrategyList: FifoStrategyListItem[]
 }
 
@@ -370,7 +368,7 @@ export function useUpsertIvlAutomation(callbacks?: Callbacks) {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-          accountNumber:	accountConnect.accountNumber,
+          accountNumber: accountConnect.accountNumber,
           riskTolerance: accountConnect.riskTolerance,
           capitalAllocation: accountConnect.capitalAllocation,
           capitalAllocationNext: accountConnect.capitalAllocationNext,
@@ -498,7 +496,7 @@ export function useCreateFifoStrategy(callbacks?: Callbacks) {
 export function useStartStrategy(callbacks?: Callbacks) {
   return useMutation(
     "startStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/start`)
 
       const headers = new Headers();
@@ -531,7 +529,7 @@ export function useStartStrategy(callbacks?: Callbacks) {
 export function useStopStrategy(callbacks?: Callbacks) {
   return useMutation(
     "stopStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}/stop`)
 
       const headers = new Headers();
@@ -564,7 +562,7 @@ export function useStopStrategy(callbacks?: Callbacks) {
 export function useDeleteStrategy(callbacks?: Callbacks) {
   return useMutation(
     "deleteStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/fifo2Strategy/tastytrade/${accountNumber}/${masterSymbol}/${tradeSymbol}`)
 
       const headers = new Headers();
@@ -635,7 +633,7 @@ export function useGetFifoStrategy(callbacks?: Callbacks) {
 export function useZeroDteStartStrategy(callbacks?: Callbacks) {
   return useMutation(
     "startZeroDteStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}/start`)
 
       const headers = new Headers();
@@ -668,7 +666,7 @@ export function useZeroDteStartStrategy(callbacks?: Callbacks) {
 export function useZeroDteStopStrategy(callbacks?: Callbacks) {
   return useMutation(
     "stopStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}/stop`)
 
       const headers = new Headers();
@@ -701,7 +699,7 @@ export function useZeroDteStopStrategy(callbacks?: Callbacks) {
 export function useZeroDteForceExitStrategy(callbacks?: Callbacks) {
   return useMutation(
     "forceStopExitOrderStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}/forceStopExitOrder`)
 
       const headers = new Headers();
@@ -734,7 +732,7 @@ export function useZeroDteForceExitStrategy(callbacks?: Callbacks) {
 export function useDeleteZeroDteStrategy(callbacks?: Callbacks) {
   return useMutation(
     "deleteZeroDteStrategy",
-    async ({accountNumber, masterSymbol, tradeSymbol}: {accountNumber: string, masterSymbol: string, tradeSymbol: string}) => {
+    async ({ accountNumber, masterSymbol, tradeSymbol }: { accountNumber: string, masterSymbol: string, tradeSymbol: string }) => {
       let url = new URL(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/zeroDteFlyStrategy/tastytrade/${accountNumber}/${masterSymbol}`)
 
       const headers = new Headers();
