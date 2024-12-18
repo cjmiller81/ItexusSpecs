@@ -1,4 +1,4 @@
-import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
+import { IIvlStrategiesResponse, IvlUser } from "@/features/strategies/ivl/users/IvlUser"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
 import { Bot } from "@/features/strategies/ivl/users/details/bot"
 import { CapitalAllocation } from "@/features/strategies/ivl/users/details/capitalAllocation"
@@ -7,38 +7,41 @@ import { OpenPosition } from "@/features/strategies/ivl/users/details/openPositi
 import { Order } from "@/features/strategies/ivl/users/details/order"
 import { IWorkingOrder } from "@/features/strategies/ivl/users/details/workingOrderInterface"
 
-export const initIvlUsers: IvlUser[] = [
-  {
-    userId: "WP1234",
-    exchangeUsername: "tasty1234",
-    connectionStatus: "Connected",
-    accountNumber: "ABC1234",
-    botStatus: "Active",
-    lastUpdatedAt: {
-      seconds: 1734361140,
-      nanos: 0
+export const initIvlUsers: IIvlStrategiesResponse = {
+  strategies: [
+    {
+      userId: "WP1234",
+      exchangeUsername: "tasty1234",
+      connectionStatus: "Connected",
+      accountNumber: "ABC1234",
+      botStatus: "Active",
+      lastUpdatedAt: {
+        seconds: 1734361140,
+        nanos: 0
+      },
+      tradeQty: {
+        units: 0,
+        nanos: 0
+      },
     },
-    tradeQty: {
-      units: 0,
-      nanos: 0
+    {
+      userId: "WP5678",
+      exchangeUsername: "tasty5678",
+      connectionStatus: "Connected",
+      accountNumber: "ABC5678",
+      botStatus: "error",
+      lastUpdatedAt: {
+        seconds: 1734361140,
+        nanos: 0
+      },
+      tradeQty: {
+        units: 3,
+        nanos: 0
+      },
     },
-  },
-  {
-    userId: "WP5678",
-    exchangeUsername: "tasty5678",
-    connectionStatus: "Connected",
-    accountNumber: "ABC5678",
-    botStatus: "error",
-    lastUpdatedAt: {
-      seconds: 1734361140,
-      nanos: 0
-    },
-    tradeQty: {
-      units: 3,
-      nanos: 0
-    },
-  },
-]
+  ]
+}
+
 export const initOrders: Order[] = [
   {
     id: "005a7378-e6e9-47fd-b6f4-8893136f5d14",

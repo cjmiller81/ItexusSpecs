@@ -1,4 +1,4 @@
-import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
+import { IIvlStrategiesResponse } from "@/features/strategies/ivl/users/IvlUser"
 import MockAdapter from "axios-mock-adapter"
 import { initAllocations, initBillings, initBot, initCurrentDayFills, initIvlUsers, initOpenPosition, initOrders, initWorkingOrders } from "./initIvlUsers"
 import { Billing } from "@/features/strategies/ivl/users/details/billing"
@@ -11,7 +11,7 @@ import { ICurrentDayFills } from "@/features/strategies/ivl/users/details/curren
 /* eslint-disable no-useless-escape */
 
 const mockState: {
-  ivlUsers: IvlUser[],
+  ivlUsers: IIvlStrategiesResponse,
   orders: Order[],
   billings: Billing[],
   allocations: CapitalAllocation[],
@@ -45,7 +45,7 @@ export function configureIvlUsersMock(mock: MockAdapter) {
     const userId = getCapitalAllocationRegExp.exec(`${config.baseURL}${config.url}`)?.[1]
     return [200, mockState.allocations.filter(allocation => allocation.userId === userId)]
   })
-  const getBotRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/ivl\/([^/]+)\/bots`)
+  const getBotRegExp = new RegExp(`${process.env.API_BASE_URL}\/api\/admin\/strategies\/ivl\/([^/]+)`)
   mock.onGet(getBotRegExp).reply(() => {
     return [200, mockState.bot]
   })
@@ -75,9 +75,9 @@ export function configureIvlUsersMock(mock: MockAdapter) {
     const splited = url.pathname.split("/")
     const id = splited[splited.length - 1]
 
-    const existedSignalIndex = mockState.ivlUsers.findIndex(user => id === user.userId)
+    const existedSignalIndex = mockState.ivlUsers.strategies.findIndex(user => id === user.userId)
 
-    if (existedSignalIndex !== -1) mockState.ivlUsers.splice(existedSignalIndex, 1, ivlUser)
+    if (existedSignalIndex !== -1) mockState.ivlUsers.strategies.splice(existedSignalIndex, 1, ivlUser)
     return [200]
   })
 
@@ -88,7 +88,7 @@ export function configureIvlUsersMock(mock: MockAdapter) {
     const decodedId = decodeURIComponent(id)
 
     const splitedId: [string, string] = decodedId.split(".") as [string, string]
-    mockState.ivlUsers = mockState.ivlUsers.filter(signal => signal.userId !== splitedId[0])
+    mockState.ivlUsers.strategies = mockState.ivlUsers.strategies.filter(signal => signal.userId !== splitedId[0])
 
     return [200]
   })
