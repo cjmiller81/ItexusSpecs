@@ -9,6 +9,7 @@ import { SelectChangeEvent } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
 
 export const ConnectionCard = () => {
   const { t } = useTranslation("IndexModelingSection");
@@ -17,9 +18,10 @@ export const ConnectionCard = () => {
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [newConnection, setNewConnection] = useState<string>("");
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
+  const [openCoinbaseDialog, setOpenCoinbaseDialog] = useState(false);
   const [openMetaMaskDialog, setOpenMetaMaskDialog] = useState(false);
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
-  const [selectedService, setSelectedService] = useState<"Kraken" | "MetaMask" | "defiprotocol" | "">("");
+  const [selectedService, setSelectedService] = useState<"Kraken" | "MetaMask" | "defiprotocol" | "Coinbase" | "">("");
   const [dialogState, setDialogState] = useState({
     title: "",
     selectedService: [] as string[],
@@ -47,6 +49,7 @@ export const ConnectionCard = () => {
       resetForm();
       setOpenKrakenDialog(false);
       setOpenMetaMaskDialog(false);
+      setOpenCoinbaseDialog(false);
     },
   });
 
@@ -55,6 +58,8 @@ export const ConnectionCard = () => {
       setOpenKrakenDialog(true);
     } else if (selectedService === "MetaMask") {
       setOpenMetaMaskDialog(true);
+    } else if (selectedService === "Coinbase") {
+      setOpenCoinbaseDialog(true);
     }
     setOpenExchangeDialog(false);
   }, [selectedService]);
@@ -69,7 +74,7 @@ export const ConnectionCard = () => {
     setNewConnection(value);
 
     if (value === t("AddExchange")) {
-      setDialogState({ title: t("ConnectExchange"), selectedService: ["Kraken"] });
+      setDialogState({ title: t("ConnectExchange"), selectedService: ["Kraken", "Coinbase"], });
       setOpenExchangeDialog(true);
     } else if (value === t("AddWallet")) {
       setDialogState({ title: t("ConnectWallet"), selectedService: ["MetaMask"] });
@@ -82,7 +87,7 @@ export const ConnectionCard = () => {
 
   const handleServiceChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    if (value === "" || value === "Kraken" || value === "MetaMask" || value === "defiprotocol") {
+    if (value === "" || value === "Kraken" || value === "MetaMask" || value === "defiprotocol"|| value === "Coinbase") {
       setSelectedService(value);
     }
   };
@@ -98,6 +103,7 @@ export const ConnectionCard = () => {
     setOpenExchangeDialog(false);
     setOpenKrakenDialog(false);
     setOpenMetaMaskDialog(false);
+    setOpenCoinbaseDialog(false);
   };
 
   const TruncatedText = ({ children }: { children: string }) => {
@@ -258,6 +264,12 @@ export const ConnectionCard = () => {
 
       <KrakenDialog
         open={openKrakenDialog}
+        formik={formik}
+        onClose={handleCancelExchange}
+      />
+
+      <CoinbaseDialog
+        open={openCoinbaseDialog}
         formik={formik}
         onClose={handleCancelExchange}
       />
