@@ -87,8 +87,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
   useEffect(() => {
     const grid = datagrid?.current?.instance;
     if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
+  }, [currentFilter, datagrid]);
 
   return (
     <div ref={containerRef}>
@@ -105,7 +104,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         showBorders={true}
         onExporting={onExport}
         filterBuilder={{
-          customOperations: [],
+          customOperations: [{ name: 'contains', caption: 'Contains' }],
           allowHierarchicalFields: true,
         }}
         filterValue={currentFilter || []}

@@ -49,7 +49,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   exchanges,
   onExport,
 }) => {
-  const [currentSorter, setCurrentSorter] = useState<any>();
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
@@ -66,47 +65,15 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   }, [currentFilter]);
   
 
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
+  useEffect(() => {
     const grid = datagrid?.current?.instance;
-
     if (!grid) return;
-
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const gridFilter = grid.getCombinedFilter(true);
-    handleOnUpdate();
   }, [currentFilter, datagrid]);
-
-  const onSortingChanged = e => {
-    const sortedColumns = e.component.getDataSource().sort();
-    setCurrentSorter(sortedColumns);
-  };
-
-  useEffect(() => {
-    handleOnUpdate();
-  }, [currentSorter]);
-
-  const handleOnUpdate = () => {
-    const dataGrid = datagrid?.current?.instance;
-    if (!dataGrid) {
-      return;
-    }
-
-    const gridDataSource = dataGrid.getDataSource();
-    const sort = gridDataSource.sort();
-    onSorterChanged(sort);
-  };
-
-  useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
 
   const categoryToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id, 
+      value: item.category_id, 
     };
   };
 
@@ -116,8 +83,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       value: item.id, 
     };
   };
-
-  const categoriesFilterOperations = ["contains", "anyof", "endswith", "=", "startswith"]
 
   const chainsToFilterItem = (item): { text: string; value: string } => {
     return {
@@ -134,28 +99,30 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   ): any {
     try {
       let column = this;
-  
       if (filterValues) {
         let selectedValue = filterValues;
   
         if (selectedValue && selectedFilterOperation === "=") {
-          return [column.dataField, "anyof", [selectedValue]];
+          return [column.dataField, "contains", selectedValue];
         }
   
         if (selectedFilterOperation === "contains") {
           return [column.dataField, "contains", selectedValue];
         }
   
+        if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+          return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+        }
+  
         return column.defaultCalculateFilterExpression.apply(this, arguments);
       }
-      console.log(dataSource)
       return column.defaultCalculateFilterExpression.apply(this, arguments);
     } catch (err) {
       console.error("Error on calculateFilterExpression:", err);
       return null;
     }
   }, []);
-  console.log(dataSource)
+  
   
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
@@ -182,13 +149,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   return (
     <div ref={containerRef}>
       <DataGridDef<ICoin>
-        onOptionChanged={e => {
-          if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
-            setTimeout(() => {
-              onSortingChanged(e);
-            });
-          }
-        }}
         remoteOperations={{
           filtering: true,
           sorting: true,
@@ -380,8 +340,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
-         
-          filterOperations={["anyof"]}
           minWidth={150}
           width={200}
           allowHiding={true}>
@@ -395,7 +353,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 map: chainsToFilterItem,
               }}
             >
-              <Search enabled={false} />
             </HeaderFilter>
           </Column>
         <Column
@@ -413,7 +370,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
-          filterOperations={categoriesFilterOperations}
           minWidth={150}
           width={200}>
             <HeaderFilter
@@ -423,9 +379,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 type: "array",
                 data: categories,
               },
-              map: exchangeToFilterItem,
+              map: categoryToFilterItem,
             }}>
-            <Search enabled={false} />
           </HeaderFilter>
           </Column>
         <Column
@@ -435,7 +390,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
-          filterOperations={categoriesFilterOperations}
           minWidth={150}
           width={180}>
             <HeaderFilter
@@ -445,9 +399,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 type: "array",
                 data: exchanges,
               },
-              map: categoryToFilterItem,
+              map: exchangeToFilterItem,
             }}>
-            <Search enabled={false} />
           </HeaderFilter>
           </Column>
         <Column
