@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/system";
-import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { fetchExchangeAccounts, fetchUserDetails } from "../userDetailsSlice";
@@ -233,7 +232,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
                       color: "white",
                       minWidth: column.minWidth || "auto",
                       maxWidth: column.maxWidth,
-                      borderLeft: `1px solid ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]} !important`,
+                      boxShadow: `0px -0.6px 0px 0.6px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
                     }}>
                     <TableSortLabel
                       active={orderBy === column.id}

@@ -85,8 +85,8 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
             verticalAlign: "inherit",
             borderBottom:
               theme.palette.mode === ThemeMode.DARK
-                ? "1px solid rgba(81, 81, 81, 1)"
-                : "1px solid rgba(224, 224, 224, 1)",
+                ? "0.1px solid rgba(81, 81, 81, 1)"
+                : "0.1px solid rgba(224, 224, 224, 1)",
             textAlign: "left",
             paddingTop: "6px",
             paddingBottom: "6px",
@@ -103,10 +103,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
     <ThemeProvider theme={themeConfig}>
       <React.Fragment>
         <TableRow sx={{ "& > *": { borderBottom: "unset" }, backgroundColor: "grey" }}>
-          <TableCell
-            sx={{
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
-            }}>
+          <TableCell>
             <IconButton
               aria-label="expand row"
               size="small"
@@ -131,71 +128,61 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
             component="th"
             scope="row"
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {new Date(row.timeLastUpdated.seconds * 1000).toLocaleString()}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.marketSymbol}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.orderType}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.qtyPlaced}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.qtyFilled}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.hasPriceLimit ? row.priceLimit : "-"}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.hasPriceAverageFill ? row.priceAverageFill : "-"}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.exchangeOrderId}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.orderStatus}
           </TableCell>
           <TableCell
             sx={{
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             {row.source.includes("TradingPlatform.Tastytrade") ? "Bot" : "Manual"}
           </TableCell>
@@ -206,8 +193,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
               overflow: "hidden",
               textOverflow: "ellipsis",
               cursor: "pointer",
-              borderLeft: "1px solid",
-              borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
             }}>
             <NoMaxWidthTooltip
               title={row.rejectReason || ""}
