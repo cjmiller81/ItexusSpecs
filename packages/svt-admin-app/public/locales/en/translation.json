@@ -166,7 +166,8 @@
     "FillQty": "Fill Qty",
     "OrderQty": "Order Qty",
     "FlattenBot": "Flatten Bot",
-    "ForceExit": "Force Exit"
+    "ForceExit": "Force Exit",
+    "CapAlloNext": "Cap Allo Next"
   },
   "UserDetailsSection": {
     "CapitalAllocation": "Capital Allocation",
