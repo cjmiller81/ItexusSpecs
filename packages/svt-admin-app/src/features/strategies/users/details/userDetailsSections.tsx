@@ -83,17 +83,17 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
     { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }) },
   ];
   const orderColumns = [
-    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), flex: 1, minWidth: 100, maxWidth: 200 },
-    { id: "marketSymbol", label: t("Symbol"), flex: 0.5, minWidth: 80, maxWidth: 150 },
-    { id: "orderType", label: t("SpreadType"), flex: 0.5, minWidth: 90, maxWidth: 150 },
-    { id: "qtyPlaced", label: t("QtyPlaced"), flex: 0.4, minWidth: 70, maxWidth: 120 },
-    { id: "qtyFilled", label: t("QtyFilled"), flex: 0.4, minWidth: 70, maxWidth: 120 },
-    { id: "priceLimit", label: t("SpreadPrice"), flex: 0.6, minWidth: 90, maxWidth: 150 },
-    { id: "priceAverageFill", label: t("AvgFillPrice"), flex: 0.6, minWidth: 90, maxWidth: 150 },
-    { id: "exchangeOrderId", label: t("OrderId"), flex: 0.3, minWidth: 50, maxWidth: 100 },
-    { id: "orderStatus", label: t("Status"), flex: 0.3, minWidth: 50, maxWidth: 100 },
-    { id: "source", label: t("Source"), flex: 0.4, minWidth: 70, maxWidth: 120 },
-    { id: "rejectReason", label: t("Error"), flex: 1, minWidth: 90, maxWidth: 200 },
+    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), minWidth: 100, maxWidth: 200 },
+    { id: "marketSymbol", label: t("Symbol"), minWidth: 80, maxWidth: 150 },
+    { id: "orderType", label: t("SpreadType"), minWidth: 100, maxWidth: 150 },
+    { id: "qtyPlaced", label: t("QtyPlaced"), minWidth: 70, maxWidth: 120 },
+    { id: "qtyFilled", label: t("QtyFilled"), minWidth: 70, maxWidth: 120 },
+    { id: "priceLimit", label: t("SpreadPrice"), minWidth: 90, maxWidth: 150 },
+    { id: "priceAverageFill", label: t("AvgFillPrice"), minWidth: 90, maxWidth: 150 },
+    { id: "exchangeOrderId", label: t("OrderId"), minWidth: 50, maxWidth: 100 },
+    { id: "orderStatus", label: t("Status"), minWidth: 50, maxWidth: 100 },
+    { id: "source", label: t("Source"), minWidth: 70, maxWidth: 120 },
+    { id: "rejectReason", label: t("Error"), minWidth: 90, maxWidth: 200 },
   ];
 
   const handleRequestSort = property => {
@@ -209,7 +209,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
           }}>
           <Table
             stickyHeader
-            sx={{ width: "100%" }}>
+            sx={{ width: "100%", borderCollapse: "unset" }}>
             <TableHead>
               <TableRow
                 sx={{
@@ -231,7 +231,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
                     sx={{
                       backgroundColor: "#009acf",
                       color: "white",
-                      width: column.minWidth || "auto",
+                      minWidth: column.minWidth || "auto",
                       maxWidth: column.maxWidth,
                       borderLeft: `1px solid ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]} !important`,
                     }}>
