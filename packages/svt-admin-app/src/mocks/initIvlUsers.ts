@@ -8,37 +8,8861 @@ import { Order } from "@/features/strategies/ivl/users/details/order"
 import { IWorkingOrder } from "@/features/strategies/ivl/users/details/workingOrderInterface"
 
 export const initIvlUsers: IIvlStrategiesResponse = {
-  strategies: [
+  "strategies": [
     {
-      userId: "WP1234",
-      exchangeUsername: "tasty1234",
-      connectionStatus: "Connected",
-      accountNumber: "ABC1234",
-      botStatus: "Active",
-      lastUpdatedAt: {
-        seconds: 1734361140,
-        nanos: 0
+      "accountNumber": "5WY5662",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 358917,
+        "nanos": 500000000
       },
-      tradeQty: {
-        units: 0,
-        nanos: 0
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "3ace3d93f7",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
       },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 27,
+        "nanos": 0
+      },
+      "userId": "WP1367",
+      "userMessage": "",
+      "hasUserMessage": true
     },
     {
-      userId: "WP5678",
-      exchangeUsername: "tasty5678",
-      connectionStatus: "Connected",
-      accountNumber: "ABC5678",
-      botStatus: "error",
-      lastUpdatedAt: {
-        seconds: 1734361140,
-        nanos: 0
+      "accountNumber": "5WY2384",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27700,
+        "nanos": 0
       },
-      tradeQty: {
-        units: 3,
-        nanos: 0
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c027d95f52",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
       },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP4997",
+      "userMessage": "",
+      "hasUserMessage": true
     },
+    {
+      "accountNumber": "5WY9890",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "96ca4d160f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP3072",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7697",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 54716,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "21947dc299",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP4442",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2809",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 18052,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f786a647d8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP3532",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4084",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16214,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "4bc265fd69",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1421",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2792",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30960,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0de5f388ab",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1453",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7384",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 58440,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d5d0623f18",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP2753",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3027",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 22527,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "bc1d1468ff",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6443",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9881",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 17804,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "080b099a43",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP394",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9842",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "48293a31c4",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6453",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4902",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14167,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "3bde874186",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP541",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6422",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 31625,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "31e01d11e8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1049",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2815",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 246150,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "b25cf9882a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 18,
+        "nanos": 0
+      },
+      "userId": "WP6368",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2198",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f42a2dc53b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP909",
+      "userMessage": "System error attempting to submit new entry: System error attempting to submit new entry: System error attempting to submit new entry: System error attempting to submit new entry: Market Closed! Strategy will submit orders at the open...",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8665",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 340000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "553b990488",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 24,
+        "nanos": 0
+      },
+      "userId": "WP1689",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7208",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 56390,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "04451d6144",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP6053",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5111",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 19462,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "b8ce35f333",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP5986",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8040",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30565,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2afaf38e07",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP509",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3054",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 108640,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7285b1c669",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 8,
+        "nanos": 0
+      },
+      "userId": "WP5784",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2975",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "49aef7d83a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1702",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2028",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 130000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fb26d78295",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 13,
+        "nanos": 0
+      },
+      "userId": "WP6347",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8118",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9ed1813555",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6068",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4683",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f3d33280a6",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP3602",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9049",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 22000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fcbd813114",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP834",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3278",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16467,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "66cb6e1a46",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5147",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1348",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 19100,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f0f6848ff5",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6240",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8879",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 255000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d8a2e8b5fa",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 19,
+        "nanos": 0
+      },
+      "userId": "WP6431",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6532",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "dc75c07166",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP2439",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6741",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15472,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c95f97b0db",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6210",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2340",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "00051a1e9f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1012",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2351",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 68537,
+        "nanos": 500000000
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d64a5de943",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP408",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4990",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15342,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "36d9d35cf9",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP268",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8481",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 20700,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "1ebbbdc758",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1146",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8420",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 315000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "98b11aaeea",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 12,
+        "nanos": 0
+      },
+      "userId": "WP448",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9496",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 40800,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "6e7d191267",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6391",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5944",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 130000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d2d575b902",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1609",
+      "userMessage": "System error attempting to submit new entry for the 1 time: Account is set to closing only and this order has an opening leg.",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5213",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 182000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "134913c0b0",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1688",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7089",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 230000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7253f5cfaf",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6320",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6028",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13902,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "31d1832fae",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1046",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5315",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 80000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9c7be32c3f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6425",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7235",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 52055,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "a16889ed6b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1600",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6734",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25462,
+        "nanos": 500000000
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "dfef0c1303",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6433",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6164",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16375,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c81ac4f6d4",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP565",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5498",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "dda15187ba",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1917",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8166",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30980,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d9f6170400",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP6454",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7808",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 43732,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9d4066d8cc",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP2089",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2332",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 57987,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "608b8cf10e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP6399",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8121",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 19172,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "3649b6a21c",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP629",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5551",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 20470,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "22a46e250e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6253",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8449",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15449,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2f4e200f54",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1462",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7431",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14745,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "8897576cab",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP868",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7571",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 39660,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "71e8bd6dc0",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP5852",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7314",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15082,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "807ba6c8fc",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6450",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8183",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 39000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0c96c53c16",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP1436",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5910",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 20110,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "876cc0a923",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6448",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4885",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 35097,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "b29c202134",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP6298",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2114",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25890,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "657596686e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP6460",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4866",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 76975,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9cf3ff5eb4",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 5,
+        "nanos": 0
+      },
+      "userId": "WP51",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5951",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 162600,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5e9ea62161",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 12,
+        "nanos": 0
+      },
+      "userId": "WP1296",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9196",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15160,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f5715f6e88",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1337",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1177",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13650,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "8b377a4695",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6341",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9941",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15665,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "34935d6ebb",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1835",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4184",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 58096,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "8a061733e3",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP674",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3623",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 17105,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e404f75bc9",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6249",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4321",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 102106,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f6139eb315",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 7,
+        "nanos": 0
+      },
+      "userId": "WP6482",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3541",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 28910,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "631fe6a34c",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP170",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1536",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f2a60436d1",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP4247",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8580",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 45382,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fd541fb35f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP3465",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1042",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13555,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "af22be3281",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6444",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2251",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "395ae5792b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1585",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9443",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "1622a186d8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP3963",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4868",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15195,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "38a4304005",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5441",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6960",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 20000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ad0e6e3379",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6208",
+      "userMessage": "System error attempting to submit new entry: Market Closed! Strategy will submit orders at the open...",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7537",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16252,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "acc6932c25",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1248",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8392",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 68149,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "a192da36b2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 5,
+        "nanos": 0
+      },
+      "userId": "WP61",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6876",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "72b5bc9551",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP449",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9620",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13077,
+        "nanos": 500000000
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ced0cc759a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1696",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5528",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 141348,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "82fb8bd2aa",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 10,
+        "nanos": 0
+      },
+      "userId": "WP169",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4679",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13545,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e767f0e318",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP4696",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2686",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 57740,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "03379275dd",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP2124",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8894",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27405,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "028fbcddac",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Submitted",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1494",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8383",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e3069cc89e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6033",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7274",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 81525,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5cecb80d1c",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 6,
+        "nanos": 0
+      },
+      "userId": "WP2",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7618",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 40000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9e68f24fa8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP18",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5542",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 130000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "28a167475e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1533",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4803",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14175,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "073a9ffdb1",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP466",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1927",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 56491,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0cb8961ff3",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP451",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2699",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 150000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "698c34fac2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP3189",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9869",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 60390,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e4fe8bb3da",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP4069",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3239",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 41442,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "884c2b6d9b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP5943",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3130",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2016938f6e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6264",
+      "userMessage": "System error attempting to submit new entry for the 4 time: System error attempting to submit new entry for the 3 time: System error attempting to submit new entry for the 2 time: System error attempting to submit new entry for the 1 time: Market Closed! Strategy will submit orders at the open... Stopping automation!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2583",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 80845,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "58117f6943",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Partial",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 6,
+        "nanos": 0
+      },
+      "userId": "WP6353",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4271",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26965,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "72af2422a5",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1538",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4922",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 53862,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "55ff55b7c2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 5,
+        "nanos": 0
+      },
+      "userId": "WP414",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2209",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 28215,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ebec012c7f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1156",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8119",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 48000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2721ec3ad7",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1822",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4064",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 42637,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c039a148cb",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP6386",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1607",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 18922,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "b57d0f5b1a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6442",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6199",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 624517,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "162cf15729",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 48,
+        "nanos": 0
+      },
+      "userId": "WP1450",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5434",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0f90042ee1",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP299",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7342",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16355,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fbfff28d33",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP630",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2946",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 39500,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2442c617b6",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP2257",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5810",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27180,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "bd49a749e0",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5136",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8206",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15262,
+        "nanos": 50000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c5d0389a78",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6328",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4305",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 81240,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "418426a1f9",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 6,
+        "nanos": 0
+      },
+      "userId": "WP6446",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9028",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c8d9cb3a4a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP5071",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1890",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13600,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "562deef751",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6436",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1620",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7abe0349ab",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1584",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5428",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 180000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "198fa22519",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5666",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1894",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 79000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "be34e81a83",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 6,
+        "nanos": 0
+      },
+      "userId": "WP131",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6217",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16295,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "8b4d8a9af1",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP5758",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6040",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 104431,
+        "nanos": 56
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "bc483af78c",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP16",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3951",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13627,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5302829236",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP432",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2845",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 90000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "25ab52b1ae",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 7,
+        "nanos": 0
+      },
+      "userId": "WP6461",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7773",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 78650,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e9d5554c0e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 6,
+        "nanos": 0
+      },
+      "userId": "WP99",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3648",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13682,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "441eb40cd0",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP4623",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9156",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 45000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fa21a21acb",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1295",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5927",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "1ea6a82e15",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6514",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4559",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 31345,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "badfd3431a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP4359",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6728",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 114440,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "93da42f3b8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 8,
+        "nanos": 0
+      },
+      "userId": "WP1838",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2000",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "13c9d1b1c7",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP893",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1152",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13806,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f3d7388476",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP428",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9721",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 333022,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9c6576a3e8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 25,
+        "nanos": 0
+      },
+      "userId": "WP1370",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1673",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14155,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "404c161d03",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP842",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1524",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "55d50c72dd",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1634",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7732",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "590ab20779",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP5922",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4970",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 247000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0b74e58900",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 19,
+        "nanos": 0
+      },
+      "userId": "WP4859",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6092",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13585,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "eedc6a6b2f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP197",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2882",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13555,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f86171f391",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP5034",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3585",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14685,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d0edca1020",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1768",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5391",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 28432,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c2ac504fc9",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP6435",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3572",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 66025,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0e818eef7e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 5,
+        "nanos": 0
+      },
+      "userId": "WP1017",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5535",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "4e5c2bbb69",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6404",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9732",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13407,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "00e2e05bda",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6459",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8504",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 28260,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "987eb6a561",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP6279",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7439",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 491745,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c26757f869",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 37,
+        "nanos": 0
+      },
+      "userId": "WP832",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4176",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 50555,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9010c698ae",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP4722",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4097",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "3c529083b0",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6219",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2078",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 34030,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2945816c82",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6350",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6411",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 39322,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "764de9d369",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP48",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2928",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15117,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "90fe5d74ac",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6451",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2524",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0839c576db",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5184",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2683",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15130,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "98a1d1919a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1079",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3635",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27260,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c3d545b91d",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6254",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6371",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 28252,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f046dba622",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1747",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1468",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15177,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5f7ff367be",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP424",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7951",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 45022,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "4918af74ba",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP5554",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4258",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 526500,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e870eee323",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6359",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9293",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 38960,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "38c322cc5c",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP4588",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5524",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30185,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "8aa75b423e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6384",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8341",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 20000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "bd5d01a8d8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1400",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6354",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "4a3d5db16d",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP4562",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7525",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13255,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ede4ce0084",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6198",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7930",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 21210,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "a495e3254f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP83",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2264",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 153932,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7528c77ea5",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP3065",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3863",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 38180,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "128feea00f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP3175",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5579",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27644,
+        "nanos": 78
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5e2216a127",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6437",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6086",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 249334,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "6af00fd0ae",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 19,
+        "nanos": 0
+      },
+      "userId": "WP3736",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8752",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 107900,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "150e354827",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5626",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9532",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13152,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c2d9d306d2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1780",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8127",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 21700,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9bfd2df3ac",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1783",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1317",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 80642,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7fbe2ec1a2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 6,
+        "nanos": 0
+      },
+      "userId": "WP3879",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6480",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27970,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "a5975d400a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1102",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5243",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26000,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "701b935bb3",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP2137",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1536",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26381,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "06acf2ca87",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP5452",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2880",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15030,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fb0b96637e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP2670",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9788",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26416,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2c12b8f6f5",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1456",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4778",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15917,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "63ee2cf5e5",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP960",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4698",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "37156445d7",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6322",
+      "userMessage": "System error attempting to submit new entry: /ES Future Option position is not flat!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2332",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25845,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "777c57b792",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP348",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7001",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fea41c1c86",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP5520",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7268",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13395,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e2bda5d15e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6221",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7395",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 56216,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9a175d3dbb",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP4820",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1101",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "6612671a1f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP923",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6432",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 94577,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "14c13db3bb",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 7,
+        "nanos": 0
+      },
+      "userId": "WP224",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3447",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 17722,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "743a96cac4",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1647",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8822",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25572,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9f970ef4f3",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1403",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1239",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 169200,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fda47d7949",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 13,
+        "nanos": 0
+      },
+      "userId": "WP6227",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2668",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c2d07593d0",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 7,
+        "nanos": 0
+      },
+      "userId": "WP3569",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4132",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "4b6bf91c1a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP875",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9062",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14250,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f9570ad22a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6474",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4618",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14622,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "8d718b39b9",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6381",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4968",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 124995,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2f4b6a696d",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 9,
+        "nanos": 0
+      },
+      "userId": "WP929",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5569",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 66000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "45af739714",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 5,
+        "nanos": 0
+      },
+      "userId": "WP370",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9490",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14902,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7ca28bb7eb",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP366",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5603",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 41676,
+        "nanos": 500000000
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ad3b5b92da",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP2776",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1478",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 32000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f5b9d22296",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1026",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5827",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 92450,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "1a45c34fb6",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 7,
+        "nanos": 0
+      },
+      "userId": "WP6097",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4257",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5a0862f4f6",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP529",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9248",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13100,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "3648baede8",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6267",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4893",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 52000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "261c3918d3",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP550",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2551",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16140,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "6ea358af36",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP458",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1932",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 20000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "66b0c90560",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1754",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2509",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2aac557134",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP259",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3555",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 53640,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "410c594f9e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP2796",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9007",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15127,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "7812999c2e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP5804",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9924",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 14132,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "38f45807e1",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP4258",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8330",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 38840,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ec8b0a8ba4",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP889",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9296",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 31205,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fde822657b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP596",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2046",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13130,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "0c861e608d",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP4932",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5863",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 26215,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "701592dd19",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP1928",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2510",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 28000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2eb422b9b7",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP2155",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5451",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 37885,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2c1ec60568",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP5407",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9304",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 91000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "9f34872152",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 7,
+        "nanos": 0
+      },
+      "userId": "WP2431",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4474",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "58cec86e3f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP860",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4446",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 25315,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "e7a029f76a",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP872",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3068",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 42647,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "d59c0b1115",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP6",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9190",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 526062,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "28d2ba3cd3",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 40,
+        "nanos": 0
+      },
+      "userId": "WP1112",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6980",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 15240,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "fa95966eff",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1645",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4507",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 27140,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "26d74f79db",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP6258",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8117",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 145572,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "b386a6b028",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 11,
+        "nanos": 0
+      },
+      "userId": "WP6292",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2554",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13015,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "f7ae8a6105",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1170",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7518",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 17126,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "881efbe95e",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP5993",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2798",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 175000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "58c271eb0d",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP5616",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8985",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 53686,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5668ea76de",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP4469",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3836",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 100000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2836d63024",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP1692",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5895",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16683,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "cd1e2818bd",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP465",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1591",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13175,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "dd5e233d95",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6203",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY4511",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 257000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "1853795636",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP6272",
+      "userMessage": "Position not established yet!",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY3037",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 40290,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "eacea79e5d",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 3,
+        "nanos": 0
+      },
+      "userId": "WP5540",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9547",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 18000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Undefined",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "bcdccac138",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Undefined",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 0,
+        "nanos": 0
+      },
+      "userId": "WP198",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1662",
+      "active": false,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13140,
+        "nanos": 0
+      },
+      "closingOnly": true,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2b3689d455",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Filled",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1667",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY7322",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 37862,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "5ce4edc6a2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP788",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY2858",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 16647,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "bdd7f16cde",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP104",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY6452",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30510,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "47b24d2473",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP3463",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY5130",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 75868,
+        "nanos": 500000000
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "ed0c97458f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 5,
+        "nanos": 0
+      },
+      "userId": "WP6229",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1484",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "354439eb7b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP6500",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9205",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 54940,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "c21cbbc9a2",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 4,
+        "nanos": 0
+      },
+      "userId": "WP1104",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9639",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 13110,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "eb5c3136b1",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP1203",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY9585",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 19552,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2d893c5b4b",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 1,
+        "nanos": 0
+      },
+      "userId": "WP2075",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY8114",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 134405,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "2d0c1d4ad9",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 10,
+        "nanos": 0
+      },
+      "userId": "WP1549",
+      "userMessage": "",
+      "hasUserMessage": true
+    },
+    {
+      "accountNumber": "5WY1129",
+      "active": true,
+      "botStatus": "",
+      "capitalAllocationNext": {
+        "units": 30000,
+        "nanos": 0
+      },
+      "closingOnly": false,
+      "connectionStatus": true,
+      "entryOrderStatus": "Filled",
+      "hasEntryOrderStatus": true,
+      "exchange": "Tastytrade",
+      "exchangeUsername": "43c80a468f",
+      "lastUpdatedAt": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "masterSymbol": "/ES",
+      "nextEntryTimestamp": {
+        "seconds": 1734673378,
+        "nanos": 0
+      },
+      "priceAverageFill": {
+        "units": 2,
+        "nanos": 0
+      },
+      "removed": false,
+      "targetOrderStatus": "Working",
+      "hasTargetOrderStatus": true,
+      "tradeQty": {
+        "units": 2,
+        "nanos": 0
+      },
+      "userId": "WP974",
+      "userMessage": "",
+      "hasUserMessage": true
+    }
   ]
 }
 
@@ -83,22 +8907,22 @@ export const initBot: Bot = {
       units: 30000,
       nanos: 0
   },
-  entryOrderId: "EO123456789",
-  entryExchangeOrderId: "162027",
-  entryOrderStatus: 2,
-  exchangeUsername: "asdfliku923",
-  accountNumber: "ACC0987654321",
-  exitOrderId: "",
-  exitExchangeOrderId: "",
-  exitOrderStatus: -1,
-  exitOrderSymbol: "",
+  entryOrderId: "1f41d395-2771-4e27-ba78-a1f75f7170f3",
+  entryExchangeOrderId: "355980489",
+  entryOrderStatus: 4,
+  exchangeUsername: "3ace3d93f7",
+  accountNumber: "5WY5662",
+  exitOrderId: "8194c78f-79fb-4142-8fdb-705f0babfbad",
+  exitExchangeOrderId: "357398966",
+  exitOrderStatus: 2,
+  exitOrderSymbol: "./ESH5 E5CF5 250129C6550 | ./ESH5 E5CF5 250129P5000",
   riskTolerance: 0,
   contractQty: {
     units: 2,
     nanos: 0
   },
   closingOnly: false,
-  entryOrderSymbol: "/ES",
+  entryOrderSymbol: "./ESH5 E5CF5 250129C6550 | ./ESH5 E5CF5 250129P5000",
   userMessage: "System error attempting to submit new entry for the 4 time: Request validation failed  Stopping automation!"
 };
 

@@ -42,17 +42,6 @@ export default function Reports() {
   }, [dispatch])
 
   useEffect(() => {
-    if (ivlUsers.length > 0) {
-      const id = ivlUsers[0].userId;
-      router.push(`/strategies/ivl/users/${id}`, undefined, {
-        shallow: true,
-      })
-      handleSetSelection(id);
-      handleViewClick(id);
-    }
-  }, [ivlUsers])
-
-  useEffect(() => {
     if (ivlUsers && !currentUser) {
       const currentUser = ivlUsers.find(user => user.userId === userId)
       setCurrentUser(currentUser)
