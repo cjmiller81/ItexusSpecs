@@ -67,7 +67,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
           value={formik.values.apiKey}
           onChange={formik.handleChange}
           name="apiKey"
-          placeholder={t("APIKey*")}
+          placeholder={`${t("APIKey")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiKey && Boolean(formik.errors.apiKey)}
           helperText={formik.touched.apiKey && (typeof formik.errors.apiKey === "string" ? formik.errors.apiKey : "")}
@@ -85,7 +85,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
           value={formik.values.apiSecret}
           onChange={formik.handleChange}
           name="apiSecret"
-          placeholder={t("APISecret*")}
+          placeholder={`${t("APISecret")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiSecret && Boolean(formik.errors.apiSecret)}
           helperText={
