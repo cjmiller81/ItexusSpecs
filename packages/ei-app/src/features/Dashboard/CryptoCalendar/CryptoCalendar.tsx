@@ -168,7 +168,12 @@ const CryptoCalendar = ({
         </Box>
 
         <SimpleBarStyled
-          style={{ height: "519px" }}
+          sx={{
+            height: "519px",
+            "@media (min-width: 1200px) and (max-width: 1800px)": {
+              height: "483px",
+            },
+          }}
           onScroll={handleScroll}>
           {filteredEvents.length > 0 ? (
             <Grid
