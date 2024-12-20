@@ -3,22 +3,17 @@ import { Box, BoxProps, Stack, SxProps, Theme, styled } from "@mui/system";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { adaptiveHeightTableSx } from "@/features/strategies/shared/tableSx";
-import { Bot } from "./bot";
 import { getBotColumnsDefs } from "./botsColumnDefs";
-import { OpenPosition } from "./openPosition";
-import { useMemo } from "react";
-import { formatCurrencyToString } from "@/utils/common";
-import UserMetricCard from "./UserMetricCard";
 import { getOpenPositionColumns } from "./openPositionColumnsDefs";
-import { ICurrentDayFills } from "./currentDayFillsInterface";
-import { IWorkingOrder } from "./workingOrderInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
-import { IDteStrategy } from "../types";
+import { ICurrentDayFills, IDteStrategy, IWorkingOrder, OpenPosition, StrategyBot, StrategyBotList } from "../types";
+import { resetBot, startBot, stopBot } from "../dteUsersSlice";
+import { useAppDispatch } from "@/libs/redux/Store";
 
 type Props = BoxProps & {
   user: IDteStrategy;
-  bots: Bot[];
+  bots: StrategyBotList;
   currentDayFills: ICurrentDayFills[];
   workingOrders: IWorkingOrder[];
   openPositions: OpenPosition[];
@@ -36,38 +31,32 @@ export default function UserDetailsSection({
   workingOrders,
   ...props
 }: Props) {
+  const dispatch = useAppDispatch()
   const { t } = useTranslation("UserDetailsSection");
 
-  const handleStopClick = () => {};
-  const handleStartClick = () => {};
-  const handleResetClick = () => {};
-
-  const getPandLStyleAndValue = useMemo(() => {
-    if (!openPositions || openPositions.length === 0) {
-      return { text: "-", color: "#84b067" };
-    }
-
-    let sumPanAndL = 0;
-    openPositions.forEach(x => {
-      if (x.pAndL) {
-        sumPanAndL += x.pAndL;
-      }
-    });
-
-    return {
-      text: formatCurrencyToString(sumPanAndL, openPositions[0].currencySymbol),
-      color: sumPanAndL >= 0 ? "#84b067" : "#ff7782",
-    };
-  }, [openPositions]);
-
-  const getOpenPositionStyleAndValue = useMemo(() => {
-    return openPositions && openPositions.length > 0
-      ? { color: "#89d08d", text: t("OpenPositions") }
-      : { color: "#bfbfbf", text: t("Flat") };
-  }, [openPositions]);
+  const handleStopClick = (row: StrategyBot) => {
+    dispatch(stopBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
+  const handleStartClick = (row: StrategyBot) => {
+    dispatch(startBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
+  const handleResetClick  = (row: StrategyBot) => {
+    dispatch(resetBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
+  const handleForceExitClick  = (row: StrategyBot) => {
+    dispatch(resetBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  };
 
   return (
     <Box {...props}>
+      <Typography
+        variant="h5"
+        align="left"
+        sx={{fontSize: "14px"}}
+      >
+   {t("0DTEHeader", { accountNumber: user.accountNumber })}
+      </Typography>
+
       <Typography
         mt={2}
         align="center"
@@ -75,14 +64,6 @@ export default function UserDetailsSection({
         {t("OpenPositions")}
       </Typography>
       <StyledMetricsBox>
-        <UserMetricCard
-          sx={{ backgroundColor: getOpenPositionStyleAndValue.color }}
-          title={undefined}
-          subtitle={getOpenPositionStyleAndValue.text}></UserMetricCard>
-        <UserMetricCard
-          sx={{ backgroundColor: getPandLStyleAndValue.color }}
-          title={t("OpenPANDL")}
-          subtitle={getPandLStyleAndValue.text}></UserMetricCard>
         <DataGrid<OpenPosition>
           slots={{
             footer: () => <></>,
@@ -95,7 +76,7 @@ export default function UserDetailsSection({
           columnHeaderHeight={25}
           isCellEditable={() => false}
           columns={getOpenPositionColumns()}
-          getRowId={row => row.id}
+          getRowId={row => row.marketSymbol}
         />
       </StyledMetricsBox>
       <Typography
@@ -104,7 +85,7 @@ export default function UserDetailsSection({
         variant="h6">
         {t("Bots")}
       </Typography>
-      <DataGrid<Bot>
+      <DataGrid<StrategyBot>
         slots={{
           footer: () => <></>,
         }}
@@ -115,10 +96,10 @@ export default function UserDetailsSection({
             paddingBottom: "0px",
           },
         }}
-        rows={bots}
+        rows={bots.zeroDteFlyStrategyList}
         rowHeight={25}
         isCellEditable={() => false}
-        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
+        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick,handleForceExitClick)}
         editMode="row"
         getRowId={row => row.userId}
       />
@@ -140,7 +121,7 @@ export default function UserDetailsSection({
           rowHeight={25}
           isCellEditable={() => false}
           columns={getCurrentDayFillsColumns()}
-          getRowId={row => row.id}
+          getRowId={row => row.orderId}
         />
       </Stack>
       <Typography
@@ -161,7 +142,7 @@ export default function UserDetailsSection({
           rowHeight={25}
           isCellEditable={() => false}
           columns={getWorkingOrdersColumns()}
-          getRowId={row => row.id}
+          getRowId={row => row.orderId}
         />
       </Stack>
     </Box>

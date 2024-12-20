@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
 import DataGridDef, {
   Column,
@@ -29,21 +28,27 @@ import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuild
 import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import SimpleBar from "simplebar-react";
+import { ICategory, IExchange, IPlatform } from "components";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
   dataSource: DataSource;
   onSorterChanged: (sorter: any) => void;
   onExport: (e: ExportingEvent<ICoin, any>) => void;
+  chains: IPlatform[];
+  categories: ICategory[];
+  exchanges: IExchange[];
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   onCurrentFilterChange,
   dataSource,
   onSorterChanged,
+  chains,
+  categories,
+  exchanges,
   onExport,
 }) => {
-  const [currentSorter, setCurrentSorter] = useState<any>();
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
@@ -58,45 +63,67 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
+  
 
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
+  useEffect(() => {
     const grid = datagrid?.current?.instance;
-
     if (!grid) return;
-
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const gridFilter = grid.getCombinedFilter(true);
-
-    handleOnUpdate();
   }, [currentFilter, datagrid]);
 
-  const onSortingChanged = e => {
-    const sortedColumns = e.component.getDataSource().sort();
-    setCurrentSorter(sortedColumns);
+  const categoryToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.category_id, 
+    };
   };
 
-  useEffect(() => {
-    handleOnUpdate();
-  }, [currentSorter]);
+  const exchangeToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.id, 
+    };
+  };
 
-  const handleOnUpdate = () => {
-    const dataGrid = datagrid?.current?.instance;
-    if (!dataGrid) {
-      return;
+  const chainsToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.id, 
+    };
+  };
+
+  const calculateFilterExpression = useCallback(function (
+    this: any,
+    filterValues: any,
+    selectedFilterOperation: string | null,
+    _target: string,
+  ): any {
+    try {
+      let column = this;
+      if (filterValues) {
+        let selectedValue = filterValues;
+  
+        if (selectedValue && selectedFilterOperation === "=") {
+          return [column.dataField, "contains", selectedValue];
+        }
+  
+        if (selectedFilterOperation === "contains") {
+          return [column.dataField, "contains", selectedValue];
+        }
+  
+        if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+          return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+        }
+  
+        return column.defaultCalculateFilterExpression.apply(this, arguments);
+      }
+      return column.defaultCalculateFilterExpression.apply(this, arguments);
+    } catch (err) {
+      console.error("Error on calculateFilterExpression:", err);
+      return null;
     }
-
-    const gridDataSource = dataGrid.getDataSource();
-    const sort = gridDataSource.sort();
-    onSorterChanged(sort);
-  };
-
-  useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
-
+  }, []);
+  
+  
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       onCurrentFilterChange(filter as object[]);
@@ -122,13 +149,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   return (
     <div ref={containerRef}>
       <DataGridDef<ICoin>
-        onOptionChanged={e => {
-          if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
-            setTimeout(() => {
-              onSortingChanged(e);
-            });
-          }
-        }}
         remoteOperations={{
           filtering: true,
           sorting: true,
@@ -151,7 +171,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}>
+        onFilterValueChange={onApplyFilter}
+        >
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -243,7 +264,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={175}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -319,9 +339,22 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
           width={200}
-          allowHiding={true}></Column>
+          allowHiding={true}>
+            <HeaderFilter
+              visible={true}
+              dataSource={{
+                store: {
+                  type: "array",
+                  data: chains,
+                },
+                map: chainsToFilterItem,
+              }}
+            >
+            </HeaderFilter>
+          </Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
@@ -336,16 +369,40 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={200}></Column>
+          width={200}>
+            <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: categories,
+              },
+              map: categoryToFilterItem,
+            }}>
+          </HeaderFilter>
+          </Column>
         <Column
           dataField={PrefilterTokensField.Exchanges}
           caption={PrefilterTokensLabel.Exchanges}
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={180}></Column>
+          width={180}>
+            <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: exchanges,
+              },
+              map: exchangeToFilterItem,
+            }}>
+          </HeaderFilter>
+          </Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
           caption={PrefilterTokensLabel.CirculatingSupply}

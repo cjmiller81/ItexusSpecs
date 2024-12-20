@@ -1,29 +1,22 @@
+import { ITradeQuantity } from "@/features/strategies/dte/users/types";
+
 export interface Bot {
-    active: boolean,
-    atrPeriod: number,
-    capitalAllocation: number,
-    entryOrderId: string,
-    hasEntryOrderId: boolean,
-    entryOrderStatus: string,
-    hasEntryOrderStatus: boolean,
-    exchange: string,
-    exchangeAccountNumber: string,
-    masterSymbolAssetType: string,
-    stopOrderId: string,
-    hasStopOrderId: boolean,
-    stopOrderStatus: string,
-    hasStopOrderStatus: boolean,
-    targetOrderId: string,
-    hasTargetOrderId: boolean,
-    targetOrderStatus: string,
-    hasTargetOrderStatus: boolean,
-    qty: number,
-    tradeQty: {
-      units: number,
-      nanos: number
-    },
-    tradeSymbol: string,
-    tradeSymbolAssetType: string,
-    userId: string,
-  }
-  
+  isStarted: boolean;
+  entryOrderId: string;
+  entryExchangeOrderId: string;
+  entryOrderStatus: number;
+  entryOrderSymbol: string;
+  exitOrderId: string;
+  exitExchangeOrderId: string;
+  exitOrderStatus: number;
+  exitOrderSymbol: string;
+  exchangeUsername: string;
+  accountNumber: string;
+  riskTolerance: number;
+  capitalAllocation: ITradeQuantity | null;
+  capitalAllocationStart: ITradeQuantity | null;
+  capitalAllocationNext: ITradeQuantity | null;
+  closingOnly: boolean;
+  contractQty: ITradeQuantity | null;
+  userMessage: string;
+}

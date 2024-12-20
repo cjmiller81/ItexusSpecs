@@ -1,6 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit"
 import { Status, createAppSlice } from "components"
-import { IvlUser } from "./IvlUser"
+import { IvlUser, IIvlStrategiesResponse } from "./IvlUser"
 import { ivlUsersService } from "./ivlUsersService"
 import { Billing } from "./details/billing"
 import { CapitalAllocation } from "./details/capitalAllocation"
@@ -14,7 +14,7 @@ type UserDetails = {
   orders: Order[],
   billings: Billing[],
   allocations: CapitalAllocation[],
-  bots: Bot[],
+  bot: Bot,
   openPositions: OpenPosition[],
   workingOrders: IWorkingOrder[],
   currentDayFills: ICurrentDayFills[]
@@ -85,9 +85,9 @@ export const ivlUsersSlice = createAppSlice({
         pending: state => {
           state.statusFetchingIvlUsers = "loading"
         },
-        fulfilled: (state, action: PayloadAction<IvlUser[]>) => {
+        fulfilled: (state, action: PayloadAction<IIvlStrategiesResponse>) => {
           state.statusFetchingIvlUsers = "idle"
-          state.ivlUsers = action.payload
+          state.ivlUsers = action.payload.strategies
         },
         rejected: state => {
           state.statusFetchingIvlUsers = "failed"
@@ -96,7 +96,7 @@ export const ivlUsersSlice = createAppSlice({
     ),
     fetchUserDetails: create.asyncThunk(
       async ({ userId }: { userId: string }): Promise<UserDetails> => {
-        const [billings, allocations, orders, bots, openPositions, currentDayFills, workingOrders] = await Promise.all([
+        const [billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders] = await Promise.all([
           ivlUsersService.getUserBillings(userId),
           ivlUsersService.getUserCapitalAllocations(userId),
           ivlUsersService.getUserOrders(userId),
@@ -105,7 +105,7 @@ export const ivlUsersSlice = createAppSlice({
           ivlUsersService.getCurrentDayFills(userId),
           ivlUsersService.getUserWorkingOrders(userId)
         ])
-        return {billings, allocations, orders, bots, openPositions, currentDayFills, workingOrders} 
+        return {billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders}
       },
       {
         pending: state => {

@@ -162,7 +162,11 @@
     "CloseStatus": "Close Status",
     "EndofDayCloseTime": "End of Day Close Time",
     "Disconnected": "Disconnected",
-    "Inactive": "Inactive"
+    "Inactive": "Inactive",
+    "FillQty": "Fill Qty",
+    "OrderQty": "Order Qty",
+    "FlattenBot": "Flatten Bot",
+    "ForceExit": "Force Exit"
   },
   "UserDetailsSection": {
     "CapitalAllocation": "Capital Allocation",
@@ -192,6 +196,7 @@
     "LimitPrice": "Limit Price",
     "AvgFillPrice": "Avg Fill Price",
     "SpreadPrice": "Spread Price",
-    "SpreadType": "Spread Type"
+    "SpreadType": "Spread Type",
+    "0DTEHeader": "0 DTE Strategies for Account #: {{accountNumber}}"
   }
 }

@@ -28,21 +28,21 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
   const handleOpenPopover = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, isStartDate: boolean) => {
     if (isPopoverOpen) {
       setIsPopoverOpen(false);
-      setShowPresetButtons(false); 
+      setShowPresetButtons(false);
     } else {
       setIsSelectingStart(isStartDate);
       setIsPopoverOpen(true);
       if (isStartDate) {
-        setShowPresetButtons(true); 
+        setShowPresetButtons(true);
       }
     }
   };
 
   const handlePresetClick = (preset: string) => {
     const currentDate = moment().startOf("day");
-  
+
     let newStartDate, newEndDate;
-  
+
     switch (preset) {
       case "next7":
         newStartDate = currentDate;
@@ -55,15 +55,14 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
       default:
         return;
     }
-  
+
     setStartDate(newStartDate);
     setEndDate(newEndDate);
-  
+
     setSelectedDate([newStartDate.toDate(), newEndDate.toDate()]);
-  
+
     setIsPopoverOpen(false);
   };
-  
 
   const handleDateChange = (date: Moment) => {
     if (isSelectingStart) {
@@ -79,18 +78,31 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
   const disablePastDates = (date: Moment) => date.isBefore(moment(), "day");
 
   const disableToDates = (date: Moment) => {
-    if (startDate && date.isBefore(startDate, 'day')) {
+    if (startDate && date.isBefore(startDate, "day")) {
       return true;
     }
-    return false; 
+    return false;
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
-      <Stack direction="column-reverse" alignItems="center">
-        <Box display={"flex"} alignItems="center" gap={2.5}>
+      <Stack
+        direction="column-reverse"
+        alignItems="center">
+        <Box
+          display={"flex"}
+          alignItems="center"
+          gap={2.5}
+          sx={{
+            "@media (min-width: 1200px) and (max-width: 1800px)": {
+              display: "block",
+              pt: "5px",
+            },
+          }}>
           <Box display="flex">
-            <Typography variant="body2" sx={{ fontSize: "14px" }}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "14px" }}>
               {t("From")}
             </Typography>
             <Typography
@@ -105,14 +117,21 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
                 borderColor: "gray",
                 display: "inline-block",
               }}
-              onClick={(e) => handleOpenPopover(e, true)}  
-            >
+              onClick={e => handleOpenPopover(e, true)}>
               {startDate ? moment(startDate).format("MM/DD/YYYY") : t("SelectDateRange")}
             </Typography>
           </Box>
 
-          <Box display="flex">
-            <Typography variant="body2" sx={{ fontSize: "14px" }}>
+          <Box
+            display="flex"
+            sx={{
+              "@media (min-width: 1200px) and (max-width: 1800px)": {
+                pt: "10px",
+              },
+            }}>
+            <Typography
+              variant="body2"
+              sx={{ fontSize: "14px" }}>
               {t("To")}
             </Typography>
             <Typography
@@ -127,101 +146,95 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
                 borderColor: "gray",
                 display: "inline-block",
               }}
-              onClick={(e) => handleOpenPopover(e, false)} 
-            >
+              onClick={e => handleOpenPopover(e, false)}>
               {endDate ? moment(endDate).format("MM/DD/YYYY") : t("SelectDateRange")}
             </Typography>
           </Box>
         </Box>
 
         {isPopoverOpen && isSelectingStart && (
-  <Box
-    ref={calendarRef}
-    sx={{
-      bgcolor: "background.paper",
-      position: "absolute",
-      bottom: "25px",
-      border: "1px solid",
-      borderRadius: "30px",
-      p: 1,
-      width: "100%",
-    }}
-  >
-    {showPresetButtons && (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "5px",
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{
-            cursor: "pointer",
-            paddingLeft: "20px",
-            color: "#03A9F4",
-          }}
-          onClick={() => handlePresetClick("next7")}
-        >
-          {t("Next7days")}
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            cursor: "pointer",
-            paddingRight: "20px",
-            color: "#03A9F4",
-          }}
-          onClick={() => handlePresetClick("next30")}
-        >
-          {t("Next30days")}
-        </Typography>
-      </Box>
-    )}
-
-    <DateCalendar
-      value={startDate}
-      onChange={handleDateChange}
-      shouldDisableDate={disablePastDates}
-      sx={{
-        maxHeight: "290px",
-        width: "98%",
-        "& .MuiPickersDay-root.Mui-disabled": {
-          textDecoration: "line-through",
-        },
-      }}
-    />
-  </Box>
-)}
-
-      {isPopoverOpen && !isSelectingStart && (
-        <Box
-          ref={calendarRef}
-          sx={{
-            bgcolor: "background.paper",
-            position: "absolute",
-            bottom: "25px",
-            border: "1px solid",
-            borderRadius: "30px",
-            p: 1,
-            width: "100%",
-          }}
-        >
-          <DateCalendar
-            value={endDate}
-            onChange={handleDateChange}
-            shouldDisableDate={(date) => disablePastDates(date) || disableToDates(date)} 
+          <Box
+            ref={calendarRef}
             sx={{
-              maxHeight: "290px",
-              width: "98%",
-              "& .MuiPickersDay-root.Mui-disabled": {
-                textDecoration: "line-through",
-              },
-            }}
-          />
-        </Box>
-      )}
+              bgcolor: "background.paper",
+              position: "absolute",
+              bottom: "25px",
+              border: "1px solid",
+              borderRadius: "30px",
+              p: 1,
+              width: "100%",
+            }}>
+            {showPresetButtons && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "5px",
+                }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    cursor: "pointer",
+                    paddingLeft: "20px",
+                    color: "#03A9F4",
+                  }}
+                  onClick={() => handlePresetClick("next7")}>
+                  {t("Next7days")}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    cursor: "pointer",
+                    paddingRight: "20px",
+                    color: "#03A9F4",
+                  }}
+                  onClick={() => handlePresetClick("next30")}>
+                  {t("Next30days")}
+                </Typography>
+              </Box>
+            )}
+
+            <DateCalendar
+              value={startDate}
+              onChange={handleDateChange}
+              shouldDisableDate={disablePastDates}
+              sx={{
+                maxHeight: "290px",
+                width: "98%",
+                "& .MuiPickersDay-root.Mui-disabled": {
+                  textDecoration: "line-through",
+                },
+              }}
+            />
+          </Box>
+        )}
+
+        {isPopoverOpen && !isSelectingStart && (
+          <Box
+            ref={calendarRef}
+            sx={{
+              bgcolor: "background.paper",
+              position: "absolute",
+              bottom: "25px",
+              border: "1px solid",
+              borderRadius: "30px",
+              p: 1,
+              width: "100%",
+            }}>
+            <DateCalendar
+              value={endDate}
+              onChange={handleDateChange}
+              shouldDisableDate={date => disablePastDates(date) || disableToDates(date)}
+              sx={{
+                maxHeight: "290px",
+                width: "98%",
+                "& .MuiPickersDay-root.Mui-disabled": {
+                  textDecoration: "line-through",
+                },
+              }}
+            />
+          </Box>
+        )}
       </Stack>
     </LocalizationProvider>
   );

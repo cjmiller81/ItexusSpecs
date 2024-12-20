@@ -42,19 +42,8 @@ export default function Reports() {
   }, [dispatch])
 
   useEffect(() => {
-    if (ivlUsers.length > 0) {
-      const id = ivlUsers[0].id;
-      router.push(`/strategies/ivl/users/${id}`, undefined, {
-        shallow: true,
-      })
-      handleSetSelection(id);
-      handleViewClick(id);
-    }
-  }, [ivlUsers])
-
-  useEffect(() => {
     if (ivlUsers && !currentUser) {
-      const currentUser = ivlUsers.find(user => user.id === userId)
+      const currentUser = ivlUsers.find(user => user.userId === userId)
       setCurrentUser(currentUser)
       setRightBarOpen(Boolean(currentUser))
     }
@@ -69,8 +58,8 @@ export default function Reports() {
       return
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.id }))
-    router.push(`/strategies/ivl/users/${currentUser.id}`, undefined, {
+    dispatch(fetchUserDetails({ userId: currentUser.userId }))
+    router.push(`/strategies/ivl/users/${currentUser.userId}`, undefined, {
       shallow: true,
     })
   }, [currentUser])
@@ -101,7 +90,7 @@ export default function Reports() {
   }
 
   const handleViewClick = (id: GridRowId) => {
-    const user = ivlUsers.find(user => user.id === id)
+    const user = ivlUsers.find(user => user.userId === id)
     setRightBarOpen(true)
     setCurrentUser(user)
   }
@@ -124,7 +113,7 @@ export default function Reports() {
     handleSetSelection,
     rowModesModel,
     theme,
-    currentUser?.id,
+    currentUser?.userId,
   )
 
   const onToggleSideBar = () => {
@@ -132,7 +121,7 @@ export default function Reports() {
   }
 
   return (
-    <StyledRoot sx={{ 
+    <StyledRoot sx={{
       padding: 0,
       '& .red': {
         backgroundColor: 'red',
@@ -158,7 +147,7 @@ export default function Reports() {
         rows={ivlUsers}
         columns={columns}
         editMode="row"
-        getRowId={row => row.id}
+        getRowId={row => row.userId}
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}

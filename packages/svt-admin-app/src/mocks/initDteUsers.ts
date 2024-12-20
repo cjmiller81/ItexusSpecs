@@ -1,8 +1,4 @@
-import { Bot } from "@/features/strategies/dte/users/details/bot";
-import { ICurrentDayFills } from "@/features/strategies/dte/users/details/currentDayFillsInterface";
-import { OpenPosition } from "@/features/strategies/dte/users/details/openPosition";
-import { IWorkingOrder } from "@/features/strategies/dte/users/details/workingOrderInterface";
-import { IDteStrategiesResponse } from "@/features/strategies/dte/users/types";
+import { IDteStrategiesResponse, StrategyBotList, ICurrentDayFills, OpenPosition, IWorkingOrder } from "@/features/strategies/dte/users/types";
 
 export const initDteUsers: IDteStrategiesResponse = {
   "strategies": [
@@ -6324,107 +6320,148 @@ export const initDteUsers: IDteStrategiesResponse = {
   ]
 }
 
-export const initBots: Bot[] = [
-{
-    active: true,
-    atrPeriod: 14,
-    capitalAllocation: 150000,
-    entryOrderId: "EO123456789",
-    hasEntryOrderId: true,
-    entryOrderStatus: "Filled",
-    hasEntryOrderStatus: true,
-    exchange: "NYSE",
-    exchangeAccountNumber: "ACC0987654321",
-    masterSymbolAssetType: "Equity",
-    stopOrderId: "SO123456789",
-    hasStopOrderId: true,
-    hasStopOrderStatus: true,
-    targetOrderId: "TO123456789",
-    hasTargetOrderId: true,
-    targetOrderStatus: "Working",
-    hasTargetOrderStatus: true,
-    qty: 1,
-    tradeQty: {
-      units: 10,
-      nanos: 500000000
-    },
-    tradeSymbol: "SPX",
-    tradeSymbolAssetType: "Equity",
-    userId: "1e25b50d-5af4-4d5f-a2c8-31912e0e756d"
-  }
-];
+export const initBotStrategiesList: StrategyBotList = {
+  zeroDteFlyStrategyList: [
+    {
+      active: true,
+      entryOrderId: "58a39624-f395-4ac4-ab6e-6845668c9c3a",
+      hasEntryOrderId: true,
+      entryExchangeOrderId: "55555654",
+      hasEntryExchangeOrderId: true,
+      entryOrderStatus: "Filled",
+      hasEntryOrderStatus: true,
+      exchange: "Tastytrade",
+      exchangeAccountNumber: "ABC5678",
+      stopOrderId: "",
+      hasStopOrderId: true,
+      stopExchangeOrderId: "",
+      hasStopExchangeOrderId: true,
+      stopOrderStatus: "",
+      hasStopOrderStatus: true,
+      targetOrderId: "3c52cd8f-5640-4e46-a184-05fa5f717355",
+      hasTargetOrderId: true,
+      targetExchangeOrderId: "55555643",
+      hasTargetExchangeOrderId: true,
+      targetOrderStatus: "Working",
+      hasTargetOrderStatus: true,
+      tradeQty: {
+        units: 1,
+        nanos: 0
+      },
+      userId: "WP5291",
+      status: "Flat",
+      removed: false,
+      masterSymbol: "SPX",
+      masterSymbolAssetType: "Equity",
+      pidAddress: {
+        address: "0.0.0.0:62531",
+        id: "$8/ZeroDteFlyStrategyActor.WP4061.5WU50943.SPX"
+      },
+      callLeg1StreamerSymbol: "",
+      callLeg2StreamerSymbol: "",
+      putLeg1StreamerSymbol: "",
+      putLeg2StreamerSymbol: "",
+      entryReplaceOrderId: "",
+      hasEntryReplaceOrderId: true,
+      entryReplaceExchangeOrderId: "",
+      hasEntryReplaceExchangeOrderId: true,
+      stopReplaceOrderId: "",
+      hasStopReplaceOrderId: true,
+      stopReplaceExchangeOrderId: "",
+      hasStopReplaceExchangeOrderId: true,
+      callLeg1Symbol: "26 SEP 24 5725 Call",
+      callLeg2Symbol: "26 SEP 24 5750 Call",
+      putLeg1Symbol: "26 SEP 24 5725 Put",
+      putLeg2Symbol: "26 SEP 24 5700 Put",
+      nextEntryTimestamp: {
+        seconds: 1734361140,
+        nanos: 0
+      },
+      nextEndOfDayCloseTimestamp: null,
+      userMessage: "Strategy waiting to submit entry order.",
+      strategySettings: {
+        entryOrderAtOpenOffsetMinutes: 29,
+        exitOrderAtCloseOffsetMinutes: -91,
+        maxProfitPercentTarget: 25,
+        strikeWidth: 20,
+        minCreditRequired: 14
+      }
+    }
+  ]
+}
 
 export const initOpenPosition: OpenPosition[] = [
   {
-    "id": "53423kfddf",
-    "userId": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
-    "avgPrice": 24.5,
-    "currencySymbol": "$",
-    "instrument": "26 SEP 24 5725 Call",
-    "qty": -1,
-    "pAndL": 300
+    "username": "WP5291",
+    "accountNumber": "ABC5678",
+    "averagePrice": 24.5,
+    "underlyingSymbol": "SPX",
+    "marketSymbol": "26 SEP 24 5725 Call",
+    "direction": "Short",
+    "amount": -1
   },
   {
-    "id": "tkrtr4434",
-    "userId": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
-    "avgPrice": 5.1,
-    "currencySymbol": "$",
-    "instrument": "26 SEP 24 5725 Put",
-    "qty": -1,
-    "pAndL": 100
+    "username": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
+    "accountNumber": "ABC5678",
+    "averagePrice": 5.1,
+    "underlyingSymbol": "SPX",
+    "marketSymbol": "26 SEP 24 5725 Put",
+    "direction": "Short",
+    "amount": -1
   },
   {
-    "id": "tkrtr4435",
-    "userId": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
-    "avgPrice": 11.2,
-    "currencySymbol": "$",
-    "instrument": "26 SEP 24 5750 Call",
-    "qty": 1,
-    "pAndL": -50
+    "username": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
+    "accountNumber": "ABC5678",
+    "averagePrice": 11.2,
+    "underlyingSymbol": "SPX",
+    "marketSymbol": "26 SEP 24 5750 Call",
+    "direction": "Long",
+    "amount": 1
   },
   {
-    "id": "tkrtr4436",
-    "userId": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
-    "avgPrice": 1.95,
-    "currencySymbol": "$",
-    "instrument": "26 SEP 24 5700 Put",
-    "qty": 1,
-    "pAndL": -50
+    "username": "1e25b50d-5af4-4d5f-a2c8-31912e0e756d",
+    "accountNumber": "ABC5678",
+    "averagePrice": 1.95,
+    "underlyingSymbol": "SPX",
+    "marketSymbol": "26 SEP 24 5700 Put",
+    "direction": "Long",
+    "amount": 1
   }
 ]
 
 export const initCurrentDayFills: ICurrentDayFills[] = [
   {
-    id: "005a7378-e6e9-47345d-b6f4-88931365435435",
-    userId: "8e53b50d-5af4-4d5f-a2c8-31912e0e123d",
     accountNumber: "ABC5678",
-    tradeSymbol: "5750 | 5725 | 5700",
+    marketSymbol: "SPX",
+    exchangeOrderId: "55555643",
+    instruction: "Buy to Close",
+    isEntryOrder: false,
+    isExitOrder: true,
+    orderStatus: "Working",
+    qtyPlaced: 1,
+    qtyFilled: 0,
+    exchangeEntryOrderId: "55555643",
+    orderId: "3c52cd8f-5640-4e46-a184-05fa5f717355",
+    timeCreated: {
+      seconds: 1734361140,
+      nanos: 0
+    },
+  },
+  {
+    accountNumber: "ABC5678",
+    marketSymbol: "SPX",
     exchangeOrderId: "55555654",
     instruction: "Sell to Open",
     isEntryOrder: true,
     isExitOrder: false,
-    status: "Filled",
-    exchangeEntryOrderId: "",
-    entryId: "",
-    orderId: "55555654",
-    transactionTime: new Date("2024-09-20 9:00"),
-  },
-];
-
-export const initWorkingOrders: IWorkingOrder[] = [
-  {
-    id: "005a7378-e459-47fd-b6f4-889313rtyty543",
-    userId: "8e53b50d-5af4-4d5f-a2c8-31912e0e123d",
-    accountNumber: "ABC5678",
-    tradeSymbol: "5750 | 5725 | 5700",
-    exchangeOrderId: "12345678",
-    instruction: "Buy to Close",
-    isEntryOrder: false,
-    isExitOrder: true,
-    status: "Working",
-    exchangeEntryOrderId: "",
-    entryId: "55555654",
-    orderId: "77653731",
-    transactionTime: new Date("2024-09-20 9:00:00"),
+    orderStatus: "Filled",
+    qtyPlaced: 1,
+    qtyFilled: 1,
+    exchangeEntryOrderId: "55555654",
+    orderId: "58a39624-f395-4ac4-ab6e-6845668c9c3a",
+    timeCreated: {
+      seconds: 1734361140,
+      nanos: 0
+    },
   },
 ];
