@@ -131,6 +131,7 @@
     "ConnectWallet": "Connect Wallet",
     "PleaseEnsureYouHaveTheNecessaryKraken": "Please ensure you have the necessary permissions enabled for your Kraken connection",
     "PleaseEnsureYouHaveTheNecessary": "Please ensure you have the necessary permissions enabled for your MetaMask connection",
+    "PleaseEnsureYouHaveTheNecessaryCoinbase": "Please ensure you have the necessary permissions enabled for your Coinbase connection",
     "Network": "Network",
     "CustomRPCURL": "Custom RPC URL",
     "Connect": "Connect",
