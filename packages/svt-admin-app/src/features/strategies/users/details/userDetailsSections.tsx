@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/system";
-import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { fetchExchangeAccounts, fetchUserDetails } from "../userDetailsSlice";
@@ -47,7 +46,6 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
     if (exchangeAccounts) {
       return exchangeAccounts.accounts?.map(x => x.accountNumber);
     }
-
     return [];
   }, [exchangeAccounts]);
 
@@ -63,7 +61,6 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
         })
       );
     }
-
     return "";
   }, [exchangeAccounts, navValue]);
 
@@ -78,7 +75,6 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
     {
       field: "marketSymbol",
       headerName: t("OptionLeg", { ns: "UserDetailsSection" }),
-
       valueGetter: params => params.row.marketSymbol.split(" ").pop(),
     },
     { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }) },
@@ -86,17 +82,17 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
     { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }) },
   ];
   const orderColumns = [
-    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), width: 100 },
-    { id: "marketSymbol", label: t("Symbol"), width: 2 },
-    { id: "orderType", label: t("SpreadType"), width: 100 },
-    { id: "qtyPlaced", label: t("QtyPlaced"), width: 80 },
-    { id: "qtyFilled", label: t("QtyFilled"), width: 80 },
-    { id: "priceLimit", label: t("SpreadPrice"), width: 100 },
-    { id: "priceAverageFill", label: t("AvgFillPrice"), width: 100 },
-    { id: "exchangeOrderId", label: t("OrderId"), width: 60 },
-    { id: "orderStatus", label: t("Status"), width: 60 },
-    { id: "source", label: t("Source"), width: 80 },
-    { id: "rejectReason", label: t("Error"), width: 30, maxWidth: 170 },
+    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), minWidth: 100, maxWidth: 200 },
+    { id: "marketSymbol", label: t("Symbol"), minWidth: 80, maxWidth: 150 },
+    { id: "orderType", label: t("SpreadType"), minWidth: 100, maxWidth: 150 },
+    { id: "qtyPlaced", label: t("QtyPlaced"), minWidth: 70, maxWidth: 120 },
+    { id: "qtyFilled", label: t("QtyFilled"), minWidth: 70, maxWidth: 120 },
+    { id: "priceLimit", label: t("SpreadPrice"), minWidth: 90, maxWidth: 150 },
+    { id: "priceAverageFill", label: t("AvgFillPrice"), minWidth: 90, maxWidth: 150 },
+    { id: "exchangeOrderId", label: t("OrderId"), minWidth: 50, maxWidth: 100 },
+    { id: "orderStatus", label: t("Status"), minWidth: 50, maxWidth: 100 },
+    { id: "source", label: t("Source"), minWidth: 70, maxWidth: 120 },
+    { id: "rejectReason", label: t("Error"), minWidth: 90, maxWidth: 200 },
   ];
 
   const handleRequestSort = property => {
@@ -129,9 +125,10 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
       sx={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh",
+        height: "100vh",
         marginLeft: opened ? 0 : "50px",
         transition: "margin-left 0.3s ease",
+        overflow: "hidden",
       }}>
       <Box sx={{ mb: 3, marginLeft: "16px" }}>
         <Typography
@@ -140,7 +137,6 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
           sx={{ mt: 2, ml: 1 }}>
           Accounts
         </Typography>
-
         <BottomNavigation
           value={navValue}
           onChange={(_, newValue) => setNavValue(newValue)}
@@ -171,12 +167,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
             />
           ))}
         </BottomNavigation>
-        <Box
-          sx={{
-            borderTop: `0.5px solid grey`,
-            width: "1000px !important",
-          }}
-        />
+        <Box sx={{ borderTop: `0.5px solid grey`, width: "1000px !important" }} />
       </Box>
       <Typography
         sx={{
@@ -190,56 +181,47 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
         }}>
         {t("AccountBalance")} {accountBalance}
       </Typography>
-
-      <Box sx={{ height: "auto", width: "95%", marginLeft: "25px" }}>
-        <Typography sx={{ marginTop: "20px" }}>{t("OpenPositions")}</Typography>
-        <DataGrid
-          slots={{
-            footer: () => <></>,
-          }}
-          sx={{ marginTop: "10px", height: "auto" }}
-          getRowId={_ => Math.random()}
-          rows={userDetails?.positionList.positions ?? []}
-          columns={columns}
-          rowHeight={45}
-        />
-      </Box>
-
-      <Box sx={{ height: "auto", width: "95%", marginLeft: "25px" }}>
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", overflow: "hidden", marginLeft: "25px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("Orders", { ns: "UserDetailsSection" })}</Typography>
         <TableContainer
           sx={{
+            flexGrow: 1,
+            overflow: "auto",
             marginTop: "10px",
-            maxHeight: "auto",
-            width: "100%",
-            height: "auto",
             border:
               theme.palette.mode !== "dark"
                 ? "1px solid rgba(81, 81, 81, 0.27) !important"
                 : "1px solid rgba(81, 81, 81, 1) !important",
-
             borderRadius: "5px",
-            borderCollapse: "collapse",
+            "&::-webkit-scrollbar": {
+              width: "6px",
+              height: "6px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[400] : theme.palette.grey[500],
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: theme.palette.mode === "dark" ? "#333" : "#f1f1f1",
+              borderRadius: "4px",
+            },
           }}>
           <Table
             stickyHeader
-            sx={{
-              borderCollapse: "collapse",
-            }}>
+            sx={{ width: "100%", borderCollapse: "unset" }}>
             <TableHead>
-              <TableRow>
+              <TableRow
+                sx={{
+                  padding: 0,
+                  margin: 0,
+                  borderSpacing: 0,
+                  backgroundColor: theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50],
+                }}>
                 <TableCell
                   sx={{
                     backgroundColor: "#009acf",
                     color: "white",
-                    borderRight:
-                      theme.palette.mode !== "dark"
-                        ? "1px solid rgba(81, 81, 81, 1) !important"
-                        : "1px solid rgba(224, 224, 224, 1) !important",
-                    borderLeft:
-                      theme.palette.mode !== "dark"
-                        ? "1px solid rgba(81, 81, 81, 1) !important"
-                        : "1px solid rgba(224, 224, 224, 1) !important",
+                    maxWidth: "300px",
                   }}
                 />
                 {orderColumns.map(column => (
@@ -248,16 +230,9 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
                     sx={{
                       backgroundColor: "#009acf",
                       color: "white",
-                      width: column.width,
+                      minWidth: column.minWidth || "auto",
                       maxWidth: column.maxWidth,
-                      borderRight:
-                        theme.palette.mode !== "dark"
-                          ? "1px solid rgba(81, 81, 81, 1) !important"
-                          : "1px solid rgba(224, 224, 224, 1) !important",
-                      borderLeft:
-                        theme.palette.mode !== "dark"
-                          ? "1px solid rgba(81, 81, 81, 1) !important"
-                          : "1px solid rgba(224, 224, 224, 1) !important",
+                      boxShadow: `0px -0.6px 0px 0.6px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
                     }}>
                     <TableSortLabel
                       active={orderBy === column.id}
