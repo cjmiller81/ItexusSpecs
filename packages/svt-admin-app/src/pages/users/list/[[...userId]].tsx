@@ -26,9 +26,17 @@ import { fetchUserAccountConnectionList } from "@/features/strategies/users/user
 import { IUserAccountConnection } from "@/features/strategies/users/types";
 import { useMediaQuery } from "@mui/system";
 
-const calculateGridHeight = (baseMultiplier: number, additionalMultiplier: number) => {
+const calculateGridHeight = () => {
   const displayHeight = window.innerHeight;
-  return displayHeight * baseMultiplier + displayHeight * additionalMultiplier;
+  const displayWidth = window.innerWidth;
+
+  if (displayWidth <= 480) {
+    return displayHeight * 0.6 + displayHeight * 0.1;
+  } else if (displayWidth <= 768) {
+    return displayHeight * 0.65 + displayHeight * 0.15;
+  } else {
+    return displayHeight * 0.58 + displayHeight * 0.1554;
+  }
 };
 
 export default function Reports() {
@@ -43,7 +51,7 @@ export default function Reports() {
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
   const isMobile = useMediaQuery("(max-width: 485px)");
   const [tableHeight, setTableHeight] = useState("70vh");
-  const [gridHeight, setGridHeight] = useState(() => calculateGridHeight(0.58, 0.1554));
+  const [gridHeight, setGridHeight] = useState(() => calculateGridHeight());
   const { sidebarOpened } = useAppSelector(state => state.ui);
 
   useEffect(() => {
@@ -99,7 +107,7 @@ export default function Reports() {
 
   useEffect(() => {
     const handleResize = () => {
-      const newHeight = calculateGridHeight(0.58, 0.15);
+      const newHeight = calculateGridHeight();
       setGridHeight(newHeight);
     };
     handleResize();
@@ -114,6 +122,8 @@ export default function Reports() {
       const footerContainer = document.querySelector(".MuiDataGrid-footerContainer");
       if (footerContainer && footerContainer instanceof HTMLDivElement) {
         footerContainer.style.borderTop = "none";
+        footerContainer.style.height = "36px";
+        footerContainer.style.marginTop = "-6%";
         clearInterval(intervalId);
       }
     }, 100);
@@ -201,7 +211,7 @@ export default function Reports() {
                   alignItems: "center !important",
                   width: "100%",
                   gap: "8px",
-                  padding: "4px 4px 0px",
+                  padding: "20px 4px 0px",
                   flexWrap: "wrap",
                   "& .MuiButton-root": {
                     color: theme.palette.text.primary,
@@ -215,7 +225,7 @@ export default function Reports() {
             checkboxSelection={false}
             sx={{
               ...tableSx,
-              height: "98%",
+              height: "100%",
               "& .MuiDataGrid-footerContainer": {
                 height: "auto",
                 paddingBottom: 0,
@@ -244,7 +254,7 @@ export default function Reports() {
               PaperProps={{
                 sx: {
                   "&.MuiDrawer-paper": {
-                    width: rightBarOpen ? (sidebarOpened ? "57vw" : "55vw") : "2.5vw",
+                    width: rightBarOpen ? (sidebarOpened ? "61vw" : "55vw") : "2.5vw",
                   },
                 },
               }}

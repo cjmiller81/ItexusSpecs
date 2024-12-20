@@ -105,7 +105,6 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
         <TableRow sx={{ "& > *": { borderBottom: "unset" }, backgroundColor: "grey" }}>
           <TableCell
             sx={{
-              borderRight: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             <IconButton
@@ -132,70 +131,70 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
             component="th"
             scope="row"
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {new Date(row.timeLastUpdated.seconds * 1000).toLocaleString()}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.marketSymbol}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.orderType}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.qtyPlaced}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.qtyFilled}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.hasPriceLimit ? row.priceLimit : "-"}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.hasPriceAverageFill ? row.priceAverageFill : "-"}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.exchangeOrderId}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.orderStatus}
           </TableCell>
           <TableCell
             sx={{
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             {row.source.includes("TradingPlatform.Tastytrade") ? "Bot" : "Manual"}
@@ -207,7 +206,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
               overflow: "hidden",
               textOverflow: "ellipsis",
               cursor: "pointer",
-              borderRight: "1px solid",
+              borderLeft: "1px solid",
               borderColor: theme.palette.mode !== ThemeMode.DARK ? "rgba(81, 81, 81, 1)" : "rgba(224, 224, 224, 1)",
             }}>
             <NoMaxWidthTooltip
