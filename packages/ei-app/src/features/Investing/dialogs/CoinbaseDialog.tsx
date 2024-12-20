@@ -26,7 +26,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("SelectService*")}
+          {t("SelectService")}*
         </Typography>
         <TextField
           fullWidth
@@ -59,7 +59,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("APIKey*")}
+          {t("APIKey")}*
         </Typography>
         <TextField
           fullWidth
@@ -76,7 +76,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("APISecret*")}
+          {t("APISecret")}*
         </Typography>
         <TextField
           fullWidth

@@ -144,7 +144,9 @@
     "ActiveConnections": "Active Connections",
     "SelectConnection": "Select Connection",
     "APIKey*": "API Key *",
+    "APIKey": "API Key ",
     "APISecret*": "API Secret *",
+    "APISecret": "API Secret ",
     "APIPassphrase": "API Passphrase",
     "Connect*": "Connect"
   },
