@@ -64,8 +64,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   useEffect(() => {
     const grid = datagrid?.current?.instance;
     if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
+  }, [currentFilter, datagrid]);
 
   useEffect(() => {
     dispatch(fetchFilters({}));
