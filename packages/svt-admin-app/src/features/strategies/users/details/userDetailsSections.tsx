@@ -24,6 +24,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
   const [order, setOrder] = useState<"asc" | "desc" | undefined>("asc");
   const [orderBy, setOrderBy] = useState("");
   const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
+  const borderColor = theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50];
 
   useEffect(() => {
     if (id) {
@@ -188,11 +189,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
             flexGrow: 1,
             overflow: "auto",
             marginTop: "10px",
-            border:
-              theme.palette.mode !== "dark"
-                ? "1px solid rgba(81, 81, 81, 0.27) !important"
-                : "1px solid rgba(81, 81, 81, 1) !important",
-            borderRadius: "5px",
+            borderRadius: "1px",
             "&::-webkit-scrollbar": {
               width: "6px",
               height: "6px",
@@ -215,13 +212,16 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
                   padding: 0,
                   margin: 0,
                   borderSpacing: 0,
-                  backgroundColor: theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50],
+                  backgroundColor: `${borderColor}`,
                 }}>
                 <TableCell
                   sx={{
                     backgroundColor: "#009acf",
                     color: "white",
                     maxWidth: "300px",
+                    borderTop: `0.3px solid ${borderColor}`,
+                    borderBottom: `0.5px solid ${borderColor}`,
+                    borderLeft: `0.9px solid ${borderColor}`,
                   }}
                 />
                 {orderColumns.map(column => (
@@ -229,9 +229,12 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
                     key={column.id}
                     sx={{
                       backgroundColor: "#009acf",
-                      color: "white",
+                      color: theme.palette.text.primary,
                       minWidth: column.minWidth || "auto",
                       maxWidth: column.maxWidth,
+                      borderBottom: `0.3px solid ${borderColor}`,
+                      borderTop: `0.3px solid ${borderColor}`,
+                      borderRight: `0.3px solid ${borderColor}`,
                       boxShadow: `0px -0.6px 0px 0.6px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
                     }}>
                     <TableSortLabel

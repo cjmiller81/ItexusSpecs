@@ -37,6 +37,10 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
       ? "0.1px solid rgba(81, 81, 81, 1) !important"
       : "0.1px solid rgba(224, 224, 224, 1) !important";
 
+  const boxShadow = `-0.3px 0px 0px 0.3px ${
+    theme.palette.mode === "light" ? "rgba(81, 81, 81, 1)" : theme.palette.grey[50]
+  }`;
+
   const tableStyle = {
     border: borderColor,
     borderCollapse: "collapse",
@@ -83,10 +87,12 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
             letterSpacing: "0.01071em",
             display: "table-cell",
             verticalAlign: "inherit",
+            borderTop: theme.palette.mode === ThemeMode.DARK ? "none" : "0.4px solid rgba(110, 100, 100, 1)",
             borderBottom:
               theme.palette.mode === ThemeMode.DARK
-                ? "0.1px solid rgba(81, 81, 81, 1)"
-                : "0.1px solid rgba(224, 224, 224, 1)",
+                ? "-4px solid rgba(81, 81, 81, 1)"
+                : "0.9px solid rgba(81, 81, 81, 1)",
+
             textAlign: "left",
             paddingTop: "6px",
             paddingBottom: "6px",
@@ -103,7 +109,14 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
     <ThemeProvider theme={themeConfig}>
       <React.Fragment>
         <TableRow sx={{ "& > *": { borderBottom: "unset" }, backgroundColor: "grey" }}>
-          <TableCell>
+          <TableCell
+            sx={{
+              borderLeft: `${theme.palette.mode === "light" ? "1.4px" : "0.3px"} solid ${
+                theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]
+              }`,
+
+              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[800] : theme.palette.grey[50]}`,
+            }}>
             <IconButton
               aria-label="expand row"
               size="small"
@@ -128,61 +141,61 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
             component="th"
             scope="row"
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: `-0.3px 0px 0px 0.1px ${theme.palette.mode === "light" ? "rgba(81, 81, 81, 1)" : theme.palette.grey[50]}`,
             }}>
             {new Date(row.timeLastUpdated.seconds * 1000).toLocaleString()}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.marketSymbol}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.orderType}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.qtyPlaced}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.qtyFilled}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.hasPriceLimit ? row.priceLimit : "-"}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.hasPriceAverageFill ? row.priceAverageFill : "-"}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.exchangeOrderId}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.orderStatus}
           </TableCell>
           <TableCell
             sx={{
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              boxShadow: boxShadow,
             }}>
             {row.source.includes("TradingPlatform.Tastytrade") ? "Bot" : "Manual"}
           </TableCell>
@@ -193,7 +206,10 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
               overflow: "hidden",
               textOverflow: "ellipsis",
               cursor: "pointer",
-              boxShadow: `-0.3px 0px 0px 0.3px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+              borderRight: `0.3px solid ${
+                theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]
+              }`,
+              boxShadow: boxShadow,
             }}>
             <NoMaxWidthTooltip
               title={row.rejectReason || ""}
@@ -212,7 +228,11 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
         </TableRow>
         <TableRow>
           <TableCell
-            style={{ paddingBottom: 0, paddingTop: 0 }}
+            style={{
+              paddingBottom: 0,
+              paddingTop: 0,
+              borderLeft: `0.3px solid ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+            }}
             colSpan={12}>
             <Collapse
               in={open}
