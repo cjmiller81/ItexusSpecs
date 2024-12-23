@@ -24,7 +24,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
   useEffect(() => {
     if (!isVaultsLoading && vaultsData) {
-      setVaults(vaultsData.vaults);
+      setVaults(vaultsData.data);
     }
   }, [vaultsData, isVaultsLoading]);
 
