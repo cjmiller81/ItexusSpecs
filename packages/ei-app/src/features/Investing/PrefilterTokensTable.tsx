@@ -185,8 +185,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           }}
         />
         <Sorting mode="single" />
-        <HeaderFilter visible={true}>
-          <Search enabled={true} />
+        <HeaderFilter visible={true} height={650}>
+          <Search enabled={false} />
         </HeaderFilter>
         <LoadPanel enabled />
         <Paging defaultPageSize={10} />
@@ -264,6 +264,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={175}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -281,6 +282,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={160}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -297,7 +299,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={190}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -314,6 +316,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={110}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "percent",
@@ -329,6 +332,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="number"
           minWidth={140}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
@@ -352,7 +356,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 },
                 map: chainsToFilterItem,
               }}
+              search={{ 
+                enabled: true,
+                mode: "contains",
+                searchExpr: ["name"],
+              }}
+              height={650}
             >
+              <Search enabled={true} />
             </HeaderFilter>
           </Column>
         <Column
@@ -374,13 +385,20 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           width={200}>
             <HeaderFilter
             visible={true}
+            height={650}
             dataSource={{
               store: {
                 type: "array",
                 data: categories,
               },
               map: categoryToFilterItem,
+            }}
+            search={{ 
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
             }}>
+              <Search enabled={true} />
           </HeaderFilter>
           </Column>
         <Column
@@ -393,6 +411,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           minWidth={150}
           width={180}>
             <HeaderFilter
+            height={650}
             visible={true}
             dataSource={{
               store: {
@@ -400,7 +419,13 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 data: exchanges,
               },
               map: exchangeToFilterItem,
+            }}
+            search={{ 
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
             }}>
+              <Search enabled={true} />
           </HeaderFilter>
           </Column>
         <Column
@@ -409,6 +434,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="right"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           minWidth={200}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
@@ -421,6 +447,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={false}
           dataType="number"
           minWidth={200}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
@@ -431,6 +458,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="right"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           minWidth={250}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
