@@ -7,7 +7,7 @@ import {
   fetchUserDetails,
   updateIvlUser,
 } from "@/features/strategies/ivl/users/ivlUsersSlice"
-import { tableSx } from "@/features/strategies/shared/tableSx"
+import { autoSizeTableSx } from "@/features/strategies/shared/tableSx"
 import { getColumns } from "@/features/strategies/ivl/users/usersColumnsDefs"
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
@@ -22,9 +22,11 @@ import {
   GridRowId,
   GridRowModes,
   GridRowModesModel,
+  GridToolbar,
 } from "@mui/x-data-grid"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+import { useMediaQuery } from "@mui/material"
 
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
@@ -36,6 +38,7 @@ export default function Reports() {
   const [rightBarOpen, setRightBarOpen] = useState(false)
   const [currentUser, setCurrentUser] = useState<IvlUser | undefined>()
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>()
+  const isMobile = useMediaQuery("(max-width: 485px)");
 
   useEffect(() => {
     dispatch(fetchIvlUsers({}))
@@ -90,7 +93,7 @@ export default function Reports() {
   }
 
   const handleViewClick = (id: GridRowId) => {
-    const user = ivlUsers.find(user => user.userId === id)
+    const user = ivlUsers.find(user => getRowId(user) === id)
     setRightBarOpen(true)
     setCurrentUser(user)
   }
@@ -104,6 +107,10 @@ export default function Reports() {
     setRowModesModel(newRowModesModel)
   }
 
+  const getRowId = (strategy: IvlUser) => {
+    return strategy.userId + strategy.accountNumber;
+  }
+
   const columns = getColumns(
     handleSaveClick,
     handleEditClick,
@@ -113,7 +120,7 @@ export default function Reports() {
     handleSetSelection,
     rowModesModel,
     theme,
-    currentUser?.userId,
+    currentUser ? getRowId(currentUser) : undefined,
   )
 
   const onToggleSideBar = () => {
@@ -138,16 +145,33 @@ export default function Reports() {
       }
       }}>
       <DataGrid<IvlUser>
-        slots={{
-          footer: () => <></>,
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            sx: {
+              "& .MuiButton-root": {
+                color: theme.palette.text.primary,
+                fontWeight: "bold",
+            },
+          },
+        },
         }}
+        autoPageSize
         rowSelection={false}
         checkboxSelection={false}
-        sx={tableSx}
+        sx={{...autoSizeTableSx, 
+          "& .MuiDataGrid-footerContainer": {
+            height: "auto",
+            paddingBottom: 0,
+          },
+          "& .MuiDataGrid-main": {
+            height: `calc(100vh - ${isMobile ? '250px' : '220px'})`,
+          },
+        }}
         rows={ivlUsers}
         columns={columns}
         editMode="row"
-        getRowId={row => row.userId}
+        getRowId={getRowId}
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}

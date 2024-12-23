@@ -60,6 +60,11 @@
     "Users": "Users",
     "UserList": "User List",
     "Strategies": "Strategies",
+    "FifoStrategy": "FIFO Strategy",
+    "FifoSignals": "FIFO Signals",
+    "FifoTradeInstruments": "FIFO Trade Instruments",
+    "FifoReports": "FIFO Reports",
+    "FifoUsers": "FIFO Users",
     "IvlStrategy": "IVL Strategy",
     "IvlUsers": "IVL Users",
     "IvlReports": "IVL Reports",
@@ -161,7 +166,8 @@
     "FillQty": "Fill Qty",
     "OrderQty": "Order Qty",
     "FlattenBot": "Flatten Bot",
-    "ForceExit": "Force Exit"
+    "ForceExit": "Force Exit",
+    "CapAlloNext": "Cap Allo Next"
   },
   "UserDetailsSection": {
     "CapitalAllocation": "Capital Allocation",
