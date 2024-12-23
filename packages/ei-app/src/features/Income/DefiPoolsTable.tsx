@@ -121,7 +121,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
             e.cancel = true;
           }}
         />
-        <HeaderFilter visible={true}>
+        <HeaderFilter height={650} visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -216,6 +216,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={true}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toDollarAmountField}
           sortOrder="desc"
@@ -227,6 +228,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}
           dataType="number"
           allowHiding={true}
+          allowHeaderFiltering={false}
           customizeText={toPercentageField}
         />
         <Column
@@ -235,6 +237,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -244,6 +247,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -254,6 +258,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -263,6 +268,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -273,6 +279,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}
           dataType="number"
           allowHiding={true}
+          allowHeaderFiltering={false}
           customizeText={toPercentageField}
         />
         <Column
@@ -281,6 +288,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toDollarAmountField}
         />
@@ -291,6 +299,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toDollarAmountField}
         />
@@ -300,6 +309,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -309,6 +319,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -318,6 +329,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -335,6 +347,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -344,6 +357,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -352,6 +366,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           caption={DefiLabel.Count}
           alignment="left"
           visible={false}
+          allowHeaderFiltering={false}
           dataType="number"
           allowHiding={true}
         />

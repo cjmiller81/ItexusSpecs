@@ -134,7 +134,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             e.cancel = true;
           }}
         />
-        <HeaderFilter visible={true}>
+        <HeaderFilter height={650} visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -236,6 +236,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="number"
           allowHiding={false}
+          allowHeaderFiltering={false}
           customizeText={toDollarAmountField}
           sortOrder="desc"
           sortIndex={0}
@@ -246,6 +247,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="number"
           allowHiding={false}
+          allowHeaderFiltering={false}
           calculateCellValue={data => {
             const apyValue = data.totalApy !== undefined ? data.totalApy : data.apy || 0;
             const apyStr = apyValue.toString();
