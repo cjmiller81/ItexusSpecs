@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box } from "@mui/material";
+import { AccordionDetails, AccordionProps, Box, IconButton, styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material";
 import { ICategory, IExchange, IPlatform, PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService"
+import { useTheme } from "@mui/material/styles";
 
 
 
@@ -29,9 +30,10 @@ export default function PrefilterTokensSection({
   persisKey,
   ...props
 }: Props) { 
-  const { t } = useTranslation("PrefilterTokensSection");
-  const { sidebarOpened } = useAppSelector(store => store.ui);
+  const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
 
+  const { sidebarOpened } = useAppSelector(store => store.ui);
+  const theme = useTheme();
   const [chains, setChains] = useState<IPlatform[]>([]);
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [exchanges, setExchanges] = useState<IExchange[]>([]);
@@ -81,14 +83,32 @@ export default function PrefilterTokensSection({
     e.cancel = true;
   }, []);
 
+  const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} arrow classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.primary.main,
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+      color: "white",
+    },
+  }));
+  
   return (
   <StatePersistedAccordion
     persistKey={persisKey}
     defaultExpanded
     {...props}>
-    <StyledAccordionSummary expandIcon={<ExpandMoreIcon />} >
+    <StyledAccordionSummary expandIcon={
+      <CustomTooltip title={t("ToogleView", { ns: "Common" })}>
+      <IconButton>
+        <ExpandMoreIcon />
+      </IconButton>
+    </CustomTooltip>
+    }>
       <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-        <PageTitle sx={{ width: "100%" }}>{t("PrefilterTokens")}</PageTitle>
+        <PageTitle sx={{ width: "100%" }} onClick={(e) => e.stopPropagation()}>{t("PrefilterTokens")}</PageTitle>
       </Box>
     </StyledAccordionSummary>
     <AccordionDetails sx={{ 

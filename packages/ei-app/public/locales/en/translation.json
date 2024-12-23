@@ -8,7 +8,8 @@
     "Clear": "Clear",
     "Yes": "Yes",
     "No": "No",
-    "Selected": "selected"
+    "Selected": "selected",
+    "ToogleView": "Toogle View"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
