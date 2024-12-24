@@ -26,19 +26,6 @@ import { fetchUserAccountConnectionList } from "@/features/strategies/users/user
 import { IUserAccountConnection } from "@/features/strategies/users/types";
 import { useMediaQuery } from "@mui/system";
 
-const calculateGridHeight = () => {
-  const displayHeight = window.innerHeight;
-  const displayWidth = window.innerWidth;
-
-  if (displayWidth <= 480) {
-    return displayHeight * 0.6 + displayHeight * 0.1;
-  } else if (displayWidth <= 768) {
-    return displayHeight * 0.65 + displayHeight * 0.15;
-  } else {
-    return displayHeight * 0.58 + displayHeight * 0.1554;
-  }
-};
-
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const { adminUsers } = useAppSelector(state => state.adminDetails);
@@ -51,7 +38,6 @@ export default function Reports() {
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
   const isMobile = useMediaQuery("(max-width: 485px)");
   const [tableHeight, setTableHeight] = useState("70vh");
-  const [gridHeight, setGridHeight] = useState(() => calculateGridHeight());
   const { sidebarOpened } = useAppSelector(state => state.ui);
 
   useEffect(() => {
@@ -102,18 +88,6 @@ export default function Reports() {
     return () => {
       window.removeEventListener("resize", calculateHeight);
       document.body.style.overflow = "auto";
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newHeight = calculateGridHeight();
-      setGridHeight(newHeight);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -227,11 +201,11 @@ export default function Reports() {
               ...tableSx,
               height: "100%",
               "& .MuiDataGrid-footerContainer": {
-                height: "auto",
+                height: "60px !important",
                 paddingBottom: 0,
               },
               "& .MuiDataGrid-main": {
-                height: `${gridHeight}px`,
+                height: "calc(100vh - 185px)",
               },
             }}
             rows={adminUsers?.userAccountConnectionList_ ?? []}
@@ -239,6 +213,7 @@ export default function Reports() {
             editMode="row"
             getRowId={row => row.userId}
             rowModesModel={rowModesModel}
+            rowHeight={45}
             onRowModesModelChange={handleRowModesModelChange}
             onRowEditStop={handleRowEditStop}
             processRowUpdate={processRowUpdate}
