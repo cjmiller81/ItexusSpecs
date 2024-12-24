@@ -42,7 +42,7 @@ interface Props extends Omit<AccordionProps, "children"> {
 }
 
 export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => {
-  const { t } = useTranslation("IndexModelingSection");
+  const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
   const [selectedWallet, setSelectedWallet] = useState<string>("");
@@ -167,6 +167,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
       persistKey="IndexResultsSection"
       defaultExpanded={false}
       title={title}
+      tooltip={t("ToogleView", { ns: "Common" })}
       {...props}>
       <Grid
         mt={2}

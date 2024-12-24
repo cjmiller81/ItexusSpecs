@@ -7,6 +7,7 @@ import { StatePersistedAccordion, StatePersistedAccordionProps } from "./StatePe
 interface Props extends StatePersistedAccordionProps {
   headerChildren?: React.ReactNode
   title?: string
+  tooltip: string
 }
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -20,12 +21,12 @@ const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-export const AppAccordionSection = ({ children, headerChildren, title, ...props }: Props) => {
+export const AppAccordionSection = ({ children, headerChildren, title, tooltip, ...props }: Props) => {
   return (
     <StatePersistedAccordion
       defaultExpanded
       {...props}>
-      <StyledAccordionSummary expandIcon={<CustomTooltip title={"Toogle View"}>
+      <StyledAccordionSummary expandIcon={<CustomTooltip title={tooltip}>
       <IconButton>
         <ExpandMoreIcon />
       </IconButton>

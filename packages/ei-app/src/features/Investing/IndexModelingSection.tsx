@@ -32,7 +32,7 @@ export const IndexModelingSection = ({
   persistKey,
   ...props
 }: Props) => {
-  const { t } = useTranslation("IndexModelingSection");
+  const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const onExport = () => {
     const worksheet = XLSX.utils.json_to_sheet(
@@ -70,6 +70,7 @@ export const IndexModelingSection = ({
       persistKey={persistKey}
       defaultExpanded
       title={title}
+      tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={
         <Button
           sx={{ mr: 2 }}

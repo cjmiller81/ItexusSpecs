@@ -47,7 +47,7 @@ export default function MarketCapWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
 
-  const { t } = useTranslation("MarketCapPage");
+  const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   const dataSource = useMemo(
     () =>
@@ -159,7 +159,8 @@ export default function MarketCapWeightedPage() {
       <AppAccordionSection
         persistKey="WeightedHistoricalWalletsWorth"
         defaultExpanded
-        title={t("WeightedChartTitle")}>
+        title={t("WeightedChartTitle")}
+        tooltip={t("ToogleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
           onFetchPage={fetchLookupPage}
           toDate={endDate}
