@@ -43,7 +43,7 @@ export default function MarketCapEqualWeightedPage() {
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
 
-  const { t } = useTranslation("MarketCapPage");
+  const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   useEffect(() => {
     dispatch(resetState());
@@ -156,7 +156,8 @@ export default function MarketCapEqualWeightedPage() {
       <AppAccordionSection
         persistKey="EqualWeightedHistoricalWalletsWorth"
         defaultExpanded
-        title={t("EqualWeightedChartTitle")}>
+        title={t("EqualWeightedChartTitle")}
+        tooltip={t("ToogleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
           sx={{ mt: 4, width: "100%" }}
           onFetchPage={fetchLookupPage}
