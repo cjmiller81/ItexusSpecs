@@ -1,7 +1,18 @@
 import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box, IconButton, styled, Tooltip, tooltipClasses, TooltipProps, Typography, useTheme } from "@mui/material";
+import {
+  AccordionDetails,
+  AccordionProps,
+  Box,
+  IconButton,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -62,14 +73,18 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
   }, []);
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
+    <Tooltip
+      {...props}
+      arrow
+      classes={{ popper: className }}
+    />
   ))(({ theme }) => ({
     [`& .${tooltipClasses.arrow}`]: {
       color: theme.palette.primary.main,
     },
     [`& .${tooltipClasses.tooltip}`]: {
       backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
-      color: "white", 
+      color: "white",
     },
   }));
 
@@ -86,15 +101,22 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         persistKey={persisKey}
         defaultExpanded
         {...props}>
-        <StyledAccordionSummary expandIcon={
-            <CustomTooltip title={t("ToogleView", { ns: "Common" })} arrow>
+        <StyledAccordionSummary
+          expandIcon={
+            <CustomTooltip
+              title={t("ToggleView", { ns: "Common" })}
+              arrow>
               <IconButton>
                 <ExpandMoreIcon />
               </IconButton>
             </CustomTooltip>
           }>
           <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-            <PageTitle sx={{ width: "100%" }} onClick={(e) => e.stopPropagation()}>{t("PrefilterLiquidityPools")}</PageTitle>
+            <PageTitle
+              sx={{ width: "100%" }}
+              onClick={e => e.stopPropagation()}>
+              {t("PrefilterLiquidityPools")}
+            </PageTitle>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails

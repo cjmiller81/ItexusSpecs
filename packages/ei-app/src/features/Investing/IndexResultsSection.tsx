@@ -167,7 +167,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
       persistKey="IndexResultsSection"
       defaultExpanded={false}
       title={title}
-      tooltip={t("ToogleView", { ns: "Common" })}
+      tooltip={t("ToggleView", { ns: "Common" })}
       {...props}>
       <Grid
         mt={2}

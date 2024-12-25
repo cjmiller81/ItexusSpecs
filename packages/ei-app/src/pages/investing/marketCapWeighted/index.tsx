@@ -160,7 +160,7 @@ export default function MarketCapWeightedPage() {
         persistKey="WeightedHistoricalWalletsWorth"
         defaultExpanded
         title={t("WeightedChartTitle")}
-        tooltip={t("ToogleView", { ns: "Common" })}>
+        tooltip={t("ToggleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
           onFetchPage={fetchLookupPage}
           toDate={endDate}

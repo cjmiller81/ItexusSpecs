@@ -2,7 +2,18 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box, IconButton, styled, Tooltip, tooltipClasses, TooltipProps, Typography, useTheme } from "@mui/material";
+import {
+  AccordionDetails,
+  AccordionProps,
+  Box,
+  IconButton,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -19,7 +30,7 @@ type Props = Omit<AccordionProps, "children"> & {
 export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const [vaults, setVaults] = useState<VaultsData[]>([]);
   const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
-  const { t } = useTranslation(["Vaults","Common"]);
+  const { t } = useTranslation(["Vaults", "Common"]);
   const { sidebarOpened } = useAppSelector(store => store.ui);
   const theme = useTheme();
 
@@ -71,14 +82,18 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   }, []);
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
+    <Tooltip
+      {...props}
+      arrow
+      classes={{ popper: className }}
+    />
   ))(({ theme }) => ({
     [`& .${tooltipClasses.arrow}`]: {
       color: theme.palette.primary.main,
     },
     [`& .${tooltipClasses.tooltip}`]: {
       backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
-      color: "white", 
+      color: "white",
     },
   }));
 
@@ -95,15 +110,22 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         persistKey={persisKey}
         defaultExpanded
         {...props}>
-        <StyledAccordionSummary expandIcon={
-            <CustomTooltip title={t("ToogleView", { ns: "Common" })} arrow>
+        <StyledAccordionSummary
+          expandIcon={
+            <CustomTooltip
+              title={t("ToggleView", { ns: "Common" })}
+              arrow>
               <IconButton>
                 <ExpandMoreIcon />
               </IconButton>
             </CustomTooltip>
           }>
           <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-            <PageTitle sx={{ width: "100%" }} onClick={(e) => e.stopPropagation()}>{t("VaultsTitle")}</PageTitle>
+            <PageTitle
+              sx={{ width: "100%" }}
+              onClick={e => e.stopPropagation()}>
+              {t("VaultsTitle")}
+            </PageTitle>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails
