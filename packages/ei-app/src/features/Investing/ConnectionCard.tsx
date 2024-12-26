@@ -74,7 +74,7 @@ export const ConnectionCard = () => {
     setNewConnection(value);
 
     if (value === t("AddExchange")) {
-      setDialogState({ title: t("ConnectExchange"), selectedService: ["Kraken", "Coinbase"], });
+      setDialogState({ title: t("ConnectExchange"), selectedService: ["Kraken", "Coinbase"] });
       setOpenExchangeDialog(true);
     } else if (value === t("AddWallet")) {
       setDialogState({ title: t("ConnectWallet"), selectedService: ["MetaMask"] });
@@ -87,7 +87,13 @@ export const ConnectionCard = () => {
 
   const handleServiceChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    if (value === "" || value === "Kraken" || value === "MetaMask" || value === "defiprotocol"|| value === "Coinbase") {
+    if (
+      value === "" ||
+      value === "Kraken" ||
+      value === "MetaMask" ||
+      value === "defiprotocol" ||
+      value === "Coinbase"
+    ) {
       setSelectedService(value);
     }
   };
@@ -114,7 +120,6 @@ export const ConnectionCard = () => {
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
-
           "@media (min-width: 1300px) and (max-width: 1442px)": {
             mt: "2px",
             fontSize: "11px",
@@ -208,6 +213,9 @@ export const ConnectionCard = () => {
             </MenuItem>
             <MenuItem value="MetaMask">
               <TruncatedText>Wallet: MetaMask</TruncatedText>
+            </MenuItem>
+            <MenuItem value="Coinbase">
+              <TruncatedText>Exchange: Coinbase</TruncatedText>
             </MenuItem>
           </Select>
         )}
