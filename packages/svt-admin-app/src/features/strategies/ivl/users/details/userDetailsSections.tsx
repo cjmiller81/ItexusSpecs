@@ -20,6 +20,7 @@ import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
+import { StrategyBot } from "@/features/strategies/dte/users/types";
 
 type Props = BoxProps & {
   user: IvlUser;
@@ -47,7 +48,8 @@ export default function UserDetailsSection({
   ...props
 }: Props) {
   const { t } = useTranslation("UserDetailsSection");
-
+  console.log(bot, "bot");
+  console.log(openPositions, "openPositions");
   const handleStopClick = () => {};
   const handleStartClick = () => {};
   const handleResetClick = () => {};
@@ -85,30 +87,24 @@ export default function UserDetailsSection({
         variant="h6">
         {t("OpenPositions")}
       </Typography>
-      <StyledMetricsBox>
-        <UserMetricCard
-          sx={{ backgroundColor: getOpenPositionStyleAndValue.color }}
-          title={undefined}
-          subtitle={getOpenPositionStyleAndValue.text}></UserMetricCard>
-        <UserMetricCard
-          sx={{ backgroundColor: getPandLStyleAndValue.color }}
-          title={t("OpenPANDL")}
-          subtitle={getPandLStyleAndValue.text}></UserMetricCard>
-        <DataGrid<OpenPosition>
-          slots={{
-            footer: () => <></>,
-          }}
-          sx={OpenPositionTableSx}
-          rowSelection={false}
-          checkboxSelection={false}
-          rows={openPositions}
-          rowHeight={20}
-          columnHeaderHeight={25}
-          isCellEditable={() => false}
-          columns={getOpenPositionColumns()}
-          getRowId={row => row.id}
-        />
-      </StyledMetricsBox>
+
+      {/*<StyledMetricsBox>*/}
+      {/*  <DataGrid<OpenPosition>*/}
+      {/*    slots={{*/}
+      {/*      footer: () => <></>,*/}
+      {/*    }}*/}
+      {/*    sx={OpenPositionTableSx}*/}
+      {/*    rowSelection={false}*/}
+      {/*    checkboxSelection={false}*/}
+      {/*    rows={openPositions}*/}
+      {/*    rowHeight={20}*/}
+      {/*    columnHeaderHeight={25}*/}
+      {/*    isCellEditable={() => false}*/}
+      {/*    columns={getOpenPositionColumns()}*/}
+      {/*    getRowId={row => row.entryOrderId}*/}
+      {/*  />*/}
+      {/*</StyledMetricsBox>*/}
+
       <Typography
         mt={2}
         align="center"
@@ -129,53 +125,57 @@ export default function UserDetailsSection({
         rows={[bot]}
         rowHeight={25}
         isCellEditable={() => false}
+        // columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick, handleForceExitClick)}
         columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
         editMode="row"
-        getRowId={row => row.accountNumber}
+        getRowId={row => row.entryOrderId}
       />
+
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("CurrentDayFills")}
+      </Typography>
       <Stack>
-        <Typography
-          mt={2}
-          align="center"
-          variant="h6">
-          {t("CurrentDayFills")}
-        </Typography>
-        <Stack>
-          <DataGrid<ICurrentDayFills>
-            slots={{
-              footer: () => <></>,
-            }}
-            sx={adaptiveHeightTableSx}
-            rowSelection={false}
-            checkboxSelection={false}
-            rows={currentDayFills}
-            rowHeight={25}
-            isCellEditable={() => false}
-            columns={getCurrentDayFillsColumns()}
-            getRowId={row => row.id}
-          />
-        </Stack>
-        <Typography
-          mt={2}
-          align="center"
-          variant="h6">
-          {t("WorkingOrders")}
-        </Typography>
-        <Stack>
-          <DataGrid<IWorkingOrder>
-            slots={{
-              footer: () => <></>,
-            }}
-            sx={adaptiveHeightTableSx}
-            rowSelection={false}
-            checkboxSelection={false}
-            rows={workingOrders}
-            rowHeight={25}
-            isCellEditable={() => false}
-            columns={getWorkingOrdersColumns()}
-            getRowId={row => row.id}
-          />
-        </Stack>
+        <DataGrid<ICurrentDayFills>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={adaptiveHeightTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={currentDayFills}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getCurrentDayFillsColumns()}
+          getRowId={row => row.orderId}
+        />
+      </Stack>
+
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("WorkingOrders")}
+      </Typography>
+      <Stack>
+        <DataGrid<IWorkingOrder>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={adaptiveHeightTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={workingOrders}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getWorkingOrdersColumns()}
+          getRowId={row => row.orderId}
+        />
+      </Stack>
+
+      <Stack>
         <Typography
           mt={2}
           align="center"

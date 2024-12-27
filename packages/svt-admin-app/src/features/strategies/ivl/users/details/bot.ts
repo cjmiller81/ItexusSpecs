@@ -19,4 +19,6 @@ export interface Bot {
   closingOnly: boolean;
   contractQty: ITradeQuantity | null;
   userMessage: string;
+
+  map(param: (bot) => Promise<void>): Iterable<PromiseLike<unknown> | unknown>;
 }
