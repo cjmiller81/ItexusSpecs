@@ -9,7 +9,7 @@
     "Yes": "Yes",
     "No": "No",
     "Selected": "selected",
-    "ToogleView": "Toogle View"
+    "ToggleView": "Toggle View"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"

@@ -157,7 +157,7 @@ export default function MarketCapEqualWeightedPage() {
         persistKey="EqualWeightedHistoricalWalletsWorth"
         defaultExpanded
         title={t("EqualWeightedChartTitle")}
-        tooltip={t("ToogleView", { ns: "Common" })}>
+        tooltip={t("ToggleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
           sx={{ mt: 4, width: "100%" }}
           onFetchPage={fetchLookupPage}
