@@ -43,11 +43,16 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={tooltip}>
-            <IconButton>
+            <IconButton sx={{ cursor: "pointer" }}>
               <ExpandMoreIcon />
             </IconButton>
           </CustomTooltip>
-        }>
+        }
+        sx={{
+          "&.MuiAccordionSummary-root:hover": {
+            cursor: "default",
+          },
+        }}>
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
           <PageTitle
             sx={{ width: "100%" }}
