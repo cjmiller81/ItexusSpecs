@@ -24,13 +24,6 @@ const admin: NavItemType = {
       ],
     },
     {
-      id: "customers",
-      title: <FormattedMessage id="customers" />,
-      type: "item",
-      icon: PersonIcon,
-      breadcrumbs: false,
-    },
-    {
       id: "users",
       title: <FormattedMessage id="users" />,
       type: "item",

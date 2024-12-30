@@ -1,6 +1,15 @@
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box, IconButton, styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material";
+import {
+  AccordionDetails,
+  AccordionProps,
+  Box,
+  IconButton,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+} from "@mui/material";
 import { ICategory, IExchange, IPlatform, PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -10,11 +19,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
-import { filtersApi } from "../../../../components/src/services/filterService"
+import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
-
-
-
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -29,7 +35,7 @@ export default function PrefilterTokensSection({
   dataSource,
   persisKey,
   ...props
-}: Props) { 
+}: Props) {
   const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
 
   const { sidebarOpened } = useAppSelector(store => store.ui);
@@ -61,7 +67,6 @@ export default function PrefilterTokensSection({
     fetchData();
   }, []);
 
-
   const onExporting = useCallback(async (e: any): Promise<void> => {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet("Main sheet");
@@ -84,58 +89,72 @@ export default function PrefilterTokensSection({
   }, []);
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
+    <Tooltip
+      {...props}
+      arrow
+      classes={{ popper: className }}
+    />
   ))(({ theme }) => ({
     [`& .${tooltipClasses.arrow}`]: {
-      color: theme.palette.primary.main,
+      color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
     },
     [`& .${tooltipClasses.tooltip}`]: {
       backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
       color: "white",
     },
   }));
-  
+
   return (
-  <StatePersistedAccordion
-    persistKey={persisKey}
-    defaultExpanded
-    {...props}>
-    <StyledAccordionSummary expandIcon={
-      <CustomTooltip title={t("ToogleView", { ns: "Common" })}>
-      <IconButton>
-        <ExpandMoreIcon />
-      </IconButton>
-    </CustomTooltip>
-    }>
-      <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-        <PageTitle sx={{ width: "100%" }} onClick={(e) => e.stopPropagation()}>{t("PrefilterTokens")}</PageTitle>
-      </Box>
-    </StyledAccordionSummary>
-    <AccordionDetails sx={{ 
-        bgcolor: "background.paper",
-        width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
-        transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms"
-      }}>
-      {loading ? (
-        <div></div>
-      ) : (
-        <MemoizedPrefilterTokensTable
-          categories={categories}
-          chains={chains}
-          exchanges={exchanges}
-          onCurrentFilterChange={onFilterChanged}
-          dataSource={dataSource}
-          onExport={onExporting}
-          onSorterChanged={onSorterChanged}
-        />
-      )}
-    </AccordionDetails>
-  </StatePersistedAccordion>
-);
+    <StatePersistedAccordion
+      persistKey={persisKey}
+      defaultExpanded
+      sx={{ cursor: "default !important" }}
+      {...props}>
+      <StyledAccordionSummary
+        expandIcon={
+          <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
+            <IconButton sx={{ cursor: "pointer" }}>
+              <ExpandMoreIcon />
+            </IconButton>
+          </CustomTooltip>
+        }
+        sx={{
+          "&.MuiAccordionSummary-root:hover": {
+            cursor: "default",
+          },
+        }}>
+        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+          <PageTitle
+            sx={{ width: "100%" }}
+            onClick={e => e.stopPropagation()}>
+            {t("PrefilterTokens")}
+          </PageTitle>
+        </Box>
+      </StyledAccordionSummary>
+      <AccordionDetails
+        sx={{
+          bgcolor: "background.paper",
+          width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+          transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+        }}>
+        {loading ? (
+          <div></div>
+        ) : (
+          <MemoizedPrefilterTokensTable
+            categories={categories}
+            chains={chains}
+            exchanges={exchanges}
+            onCurrentFilterChange={onFilterChanged}
+            dataSource={dataSource}
+            onExport={onExporting}
+            onSorterChanged={onSorterChanged}
+          />
+        )}
+      </AccordionDetails>
+    </StatePersistedAccordion>
+  );
 }
 
 const MemoizedPrefilterTokensTable = React.memo(PrefilterTokensTable, (prevProps, nextProps) => {
-  return (
-    prevProps.dataSource === nextProps.dataSource
-  );
+  return prevProps.dataSource === nextProps.dataSource;
 });

@@ -150,11 +150,12 @@ export default function AccountStatus({
     exitOrderAtCloseOffsetMinutes: -91,
     maxProfitPercentTarget: 25,
     strikeWidth: 20,
-    minCreditRequired: 14.00
+    minCreditRequired: 14.00,
+    maxCreditRequired: 500
   };
   const [currentStrategySettings, setCurrentStrategySettings] = useState<StrategySettings>(existedStrategy ?? defaultStrategySettings);
 
-  const isSmallScreen = useMediaQuery("(max-width:600px)");
+  const isSmallScreen = useMediaQuery("(max-width:450px)");
 
   useEffect(() => {
     handleStatusUpdate();
@@ -297,28 +298,28 @@ export default function AccountStatus({
 
           <Typography
             variant="body1"
-            sx={{ marginTop: "20px", fontWeight: "bold" }}>
+            sx={{ paddingTop: "20px", fontWeight: "bold" }}>
             SDTE PARAMETER SETTINGS
           </Typography>
 
           <Stack
-            direction="row"
+            direction={isSmallScreen ? "column" : "row"}
             width="100%"
             sx={{
               marginTop: "15px",
               display: "flex",
               flexDirection: isSmallScreen ? "column" : "row",
-              justifyContent: isSmallScreen ? "center" : "space-between",
-              alignItems: "center"
+              alignItems: "center",
+              marginLeft: "-10px"
             }}>
             <LabeledStategyOptionField
               label="Entry Time"
-              sx={{ width: "50%" }}>
+              sx={{ width: isSmallScreen? "150px" : "50%" }}>
               <Select
                 size="small"
                 onChange={(e) => {setCurrentStrategySettings({...currentStrategySettings, entryOrderAtOpenOffsetMinutes: e.target.value as number})}}
                 value={currentStrategySettings.entryOrderAtOpenOffsetMinutes}
-                sx={{ width: isSmallScreen ? "90%" : "95%" }}>
+                sx={{ width: isSmallScreen ? "150px" : "95%" }}>
                 {ENTRY_TIME_OPTIONS.map(time => (
                   <MenuItem
                     value={time.value}
@@ -335,7 +336,7 @@ export default function AccountStatus({
                 size="small"
                 onChange={(e) => {setCurrentStrategySettings({...currentStrategySettings, exitOrderAtCloseOffsetMinutes: e.target.value as number})}}
                 value={currentStrategySettings?.exitOrderAtCloseOffsetMinutes}
-                sx={{ width: isSmallScreen ? "90%" : "95%" }}>
+                sx={{ width: isSmallScreen ? "150px" : "95%" }}>
                 {EXIT_TIME_OPTIONS.map(time => (
                   <MenuItem
                     value={time.value}
@@ -349,80 +350,124 @@ export default function AccountStatus({
 
           <Stack
             direction={isSmallScreen ? "column" : "row"}
-            spacing={2}
             width="100%"
             className="zero-dte-strategy-settings"
             sx={{
               marginTop: "15px",
               display: "flex",
               flexDirection: isSmallScreen ? "column" : "row",
-              justifyContent: isSmallScreen ? "center" : "space-between",
-              alignItems: "center",
-              flexWrap: "nowrap",
+              flexWrap: "wrap",
               gap: 5,
             }}>
-            <LabeledStategyOptionField
-              sx={{ width: { xs: "50%", sm: "30%" } }}
-              label={""}>
-              <Typography
-                variant="caption"
-                sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
-                Max Profit % Target
-              </Typography>
-              <NumberBox
-                width={"100px"}
-                height={"40px"}
-                stylingMode="outlined"
-                min={0}
-                max={100}
-                step={5}
-                defaultValue={currentStrategySettings.maxProfitPercentTarget}
-                showSpinButtons={true}
-                onValueChange={(value) => setCurrentStrategySettings({...currentStrategySettings, maxProfitPercentTarget: value})}
-              />
-            </LabeledStategyOptionField>
+            
+            <Stack 
+              direction={isSmallScreen ? "column" : "row"} 
+              spacing={isSmallScreen ? 3 : 12} 
+              width="100%"
+              sx={{
+                flexWrap: "wrap",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                marginLeft: isSmallScreen ? "-2px" : "-5px"
+              }}>
+              <LabeledStategyOptionField
+                sx={{ width: { xs: "100%", sm: "50%" } }}
+                label={""}>
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: "0.85rem", textAlign: "left" }}>
+                  Max Profit % Target
+                </Typography>
+                <NumberBox
+                  width={isSmallScreen ? "150px" : "115px"}
+                  height={"40px"}
+                  stylingMode="outlined"
+                  min={0}
+                  max={100}
+                  step={5}
+                  defaultValue={currentStrategySettings.maxProfitPercentTarget}
+                  showSpinButtons={true}
+                  onValueChange={(value) => setCurrentStrategySettings({ ...currentStrategySettings, maxProfitPercentTarget: value })}
+                />
+              </LabeledStategyOptionField>
 
-            <LabeledStategyOptionField
-              sx={{ width: { xs: "50%", sm: "30%" } }}
-              label={""}>
-              <Typography
-                variant="caption"
-                sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
-                Strike Width
-              </Typography>
-              <NumberBox
-                width={"100px"}
-                height={"40px"}
-                stylingMode="outlined"
-                min={5}
-                max={50}
-                step={1}
-                defaultValue={currentStrategySettings.strikeWidth}
-                showSpinButtons={true}
-                onValueChange={(value) => setCurrentStrategySettings({...currentStrategySettings, strikeWidth: value})}
-              />
-            </LabeledStategyOptionField>
+              <LabeledStategyOptionField
+                sx={{ width: { xs: "100%", sm: "50%" } }}
+                label={""}>
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: "0.85rem", textAlign: "left" }}>
+                  Strike Width
+                </Typography>
+                <NumberBox
+                  width={isSmallScreen ? "150px" : "115px"}
+                  height={"40px"}
+                  stylingMode="outlined"
+                  min={5}
+                  max={50}
+                  step={1}
+                  defaultValue={currentStrategySettings.strikeWidth}
+                  showSpinButtons={true}
+                  onValueChange={(value) => setCurrentStrategySettings({ ...currentStrategySettings, strikeWidth: value })}
+                />
+              </LabeledStategyOptionField>
+            </Stack>
 
-            <LabeledStategyOptionField
-              sx={{ width: { xs: "50%", sm: "30%" } }}
-              label={""}>
-              <Typography
-                variant="caption"
-                sx={{ fontSize: "0.85rem", textAlign: isSmallScreen ? "center" : "left" }}>
-                Min Credit Required
-              </Typography>
-              <NumberBox
-                width={"115px"}
-                height={"40px"}
-                stylingMode="outlined"
-                min={2}
-                max={50}
-                step={0.05}
-                defaultValue={currentStrategySettings.minCreditRequired}
-                showSpinButtons={true}
-                onValueChange={(value) => setCurrentStrategySettings({...currentStrategySettings, minCreditRequired: value})}
-              />
-            </LabeledStategyOptionField>
+            <Stack 
+              direction={isSmallScreen ? "column" : "row"} 
+              spacing={isSmallScreen ? 3 : 12} 
+              width="100%" 
+              sx={{
+                flexWrap: "wrap",
+                display: "flex",
+                justifyContent: "center", 
+                alignItems: "center",
+                width: "100%",
+              }}>
+              <LabeledStategyOptionField
+                sx={{ width: { xs: "100%", sm: "50%" },  }}
+                label={""}>
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: "0.85rem", textAlign: "left" }}>
+                  Min Credit Required
+                </Typography>
+                <NumberBox
+                  width={isSmallScreen ? "150px" : "115px"}
+                  height={"40px"}
+                  stylingMode="outlined"
+                  min={2}
+                  max={50}
+                  step={0.05}
+                  defaultValue={currentStrategySettings.minCreditRequired}
+                  showSpinButtons={true}
+                  onValueChange={(value) => setCurrentStrategySettings({ ...currentStrategySettings, minCreditRequired: value })}
+                />
+              </LabeledStategyOptionField>
+
+              <LabeledStategyOptionField
+                sx={{ width: { xs: "100%", sm: "50%" } }}
+                label={""}>
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: "0.85rem", textAlign: "left" }}>
+                  Max Credit Required
+                </Typography>
+                <NumberBox
+                  width={isSmallScreen ? "150px" : "115px"}
+                  height={"40px"}
+                  stylingMode="outlined"
+                  min={0}
+                  max={1000}
+                  step={5}
+                  defaultValue={currentStrategySettings.maxCreditRequired}
+                  showSpinButtons={true}
+                  onValueChange={(value) => setCurrentStrategySettings({ ...currentStrategySettings, maxCreditRequired: value })}
+                />
+              </LabeledStategyOptionField>
+            </Stack>
           </Stack>
         </AdaptiveSideBox>
       </AdaptiveContainer>
