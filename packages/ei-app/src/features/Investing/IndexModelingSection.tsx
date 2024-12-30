@@ -69,6 +69,7 @@ export const IndexModelingSection = ({
     <AppAccordionSection
       persistKey={persistKey}
       defaultExpanded
+      sx={{ cursor: "default !important" }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={

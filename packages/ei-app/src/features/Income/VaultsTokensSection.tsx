@@ -89,7 +89,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     />
   ))(({ theme }) => ({
     [`& .${tooltipClasses.arrow}`]: {
-      color: theme.palette.primary.main,
+      color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
     },
     [`& .${tooltipClasses.tooltip}`]: {
       backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
@@ -108,6 +108,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       </Typography>
       <StatePersistedAccordion
         persistKey={persisKey}
+        sx={{ cursor: "default !important", mt: 2 }}
         defaultExpanded
         {...props}>
         <StyledAccordionSummary
@@ -115,11 +116,16 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton>
+              <IconButton sx={{ cursor: "pointer" }}>
                 <ExpandMoreIcon />
               </IconButton>
             </CustomTooltip>
-          }>
+          }
+          sx={{
+            "&.MuiAccordionSummary-root:hover": {
+              cursor: "default",
+            },
+          }}>
           <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
             <PageTitle
               sx={{ width: "100%" }}
