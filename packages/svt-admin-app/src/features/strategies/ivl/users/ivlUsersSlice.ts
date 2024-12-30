@@ -9,13 +9,12 @@ import { Bot } from "./details/bot";
 import { OpenPosition } from "./details/openPosition";
 import { IWorkingOrder } from "./details/workingOrderInterface";
 import { ICurrentDayFills } from "./details/currentDayFillsInterface";
-import { dteUsersService } from "@/features/strategies/dte/users/dteUsersService";
 
 type UserDetails = {
   orders: Order[];
   billings: Billing[];
   allocations: CapitalAllocation[];
-  bots: Bot;
+  bot: Bot;
   openPositions: OpenPosition[];
   workingOrders: IWorkingOrder[];
   currentDayFills: ICurrentDayFills[];
@@ -97,64 +96,48 @@ export const ivlUsersSlice = createAppSlice({
     ),
     fetchUserDetails: create.asyncThunk(
       async ({ userId }: { userId: string }): Promise<UserDetails> => {
-        // Fetch bots and other details
-        const bots = await ivlUsersService.getUserBots(userId);
-
-        // Fetch other details in parallel
-        const [billings, allocations, orders, openPositions, currentDayFills, workingOrders] = await Promise.all([
+        let currentDayFills: ICurrentDayFills[] = [];
+        let workingOrders: IWorkingOrder[] = [];
+        let openPositions: any[];
+        const [billings, allocations, orders, bot] = await Promise.all([
           ivlUsersService.getUserBillings(userId),
           ivlUsersService.getUserCapitalAllocations(userId),
           ivlUsersService.getUserOrders(userId),
-          ivlUsersService.getOpenPositions(userId), // This will be overwritten by custom logic below
-          ivlUsersService.getCurrentDayFills(userId),
-          ivlUsersService.getUserWorkingOrders(userId),
+          ivlUsersService.getUserBots(userId),
         ]);
 
-        // Initialize openPositions array to store results for each bot symbol
-        let openPositionsForBots: OpenPosition[] = [];
-
-        // Helper function to fetch open positions for both symbols in entryOrderSymbol
-        const fetchOpenPositionsForBot = async (
-          userId: string,
-          bot: Bot, // Ensure you use the correct type for the bot
-        ): Promise<OpenPosition[]> => {
-          let openPositionsForBot: OpenPosition[] = [];
-
-          if (bot.entryOrderSymbol) {
-            // Split the entryOrderSymbol into two symbols
-            const symbols = bot.entryOrderSymbol.split("|").map(symbol => symbol.trim());
-
-            // Fetch open positions for both symbols
-            const [symbol1Positions, symbol2Positions] = await Promise.all([
-              ivlUsersService.getOpenPositions(userId, bot.accountNumber, symbols[0]), // First symbol
-              ivlUsersService.getOpenPositions(userId, bot.accountNumber, symbols[1]), // Second symbol
-            ]);
-
-            // Combine the positions for both symbols and return them
-            openPositionsForBot = openPositionsForBot.concat(symbol1Positions, symbol2Positions);
+        const openPosition = async (userId: string, accountNumber: string, entryOrderSymbol: string | null) => {
+          if (!entryOrderSymbol) {
+            return [];
           }
 
-          return openPositionsForBot;
+          const symbols = entryOrderSymbol.split("|").map(symbol => {
+            symbol = symbol.trim();
+            symbol = symbol.replace("/", "%2F");
+            return symbol;
+          });
+
+          const positionPromises = symbols.map(symbol => {
+            return ivlUsersService.getOpenPositions(userId, accountNumber, symbol);
+          });
+          return await Promise.all(positionPromises);
         };
 
-        // Iterate through each bot and fetch open positions for each symbol using the helper function
-        await Promise.all(
-          bots.map(async bot => {
-            const botPositions = await fetchOpenPositionsForBot(userId, bot);
-            openPositionsForBots = openPositionsForBots.concat(botPositions);
-          }),
-        );
-
-        // Return all the data, including the updated openPositions
-        return {
-          billings,
-          allocations,
-          orders,
-          bots,
-          openPositions: openPositionsForBots, // Replace the original openPositions with the custom one
-          currentDayFills,
-          workingOrders,
+        const fetchCurrentDayFillsAndWorkingOrders = async (userId, element) => {
+          if (element.entryExchangeOrderId && element.exitExchangeOrderId) {
+            const currentDayFills = await ivlUsersService.getCurrentDayFills(userId);
+            const workingOrders = await ivlUsersService.getUserWorkingOrders(userId);
+            return { currentDayFills, workingOrders };
+          }
+          return { currentDayFills: [], workingOrders: [] };
         };
+
+        const result = await fetchCurrentDayFillsAndWorkingOrders(userId, bot);
+        currentDayFills = result.currentDayFills;
+        workingOrders = result.workingOrders;
+        openPositions = await openPosition(userId, bot.accountNumber, bot.entryOrderSymbol);
+
+        return { billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders };
       },
       {
         pending: state => {

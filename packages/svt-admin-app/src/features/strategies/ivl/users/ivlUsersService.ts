@@ -37,7 +37,6 @@ export const ivlUsersService = {
     return response.data;
   },
   getOpenPositions: async (userId: string, accountNumber: string, symbol: string): Promise<OpenPosition[]> => {
-    // const response = await appAxios.get<OpenPosition[]>(`/api/ivl/users/${userId}/open-positions`)
     const response = await appAxios.get<OpenPosition[]>(
       `/api/admin/users/${userId}/accounts/${accountNumber}/positions/${symbol}`,
     );

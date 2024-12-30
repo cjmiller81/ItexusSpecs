@@ -6,15 +6,23 @@ import { formatCurrencyToString } from "@/utils/common";
 export function getOpenPositionColumns() {
   const columns: GridColDef<OpenPosition>[] = [
     {
-      field: "instrument",
-      headerName: i18next.t("Instrument", { ns: "ColumnsDefs" }),
+      field: "underlyingSymbol",
+      headerName: i18next.t("Underlying", { ns: "ColumnsDefs" }),
       minWidth: 110,
       editable: true,
       flex: 1,
       type: "string",
     },
     {
-      field: "qty",
+      field: "marketSymbol",
+      headerName: i18next.t("Symbol", { ns: "ColumnsDefs" }),
+      minWidth: 110,
+      editable: true,
+      flex: 1,
+      type: "string",
+    },
+    {
+      field: "amount",
       headerName: i18next.t("Qty", { ns: "ColumnsDefs" }),
       minWidth: 40,
       editable: true,
@@ -22,22 +30,22 @@ export function getOpenPositionColumns() {
       type: "number",
     },
     {
-      field: "avgPrice",
+      field: "averagePrice",
       headerName: i18next.t("AvgPrice", { ns: "ColumnsDefs" }),
       minWidth: 50,
       editable: true,
       flex: 1,
       type: "number",
+      valueGetter: params => formatCurrencyToString(params.row.averagePrice, "$"),
     },
     {
-      field: "PandL",
-      headerName: i18next.t("PandL", { ns: "ColumnsDefs" }),
+      field: "direction",
+      headerName: i18next.t("Direction", { ns: "ColumnsDefs" }),
       minWidth: 60,
       editable: true,
       flex: 1,
       type: "string",
-      valueGetter: (params) => formatCurrencyToString(params.row.pAndL, params.row.currencySymbol)
-    }
+    },
   ];
 
   return columns;

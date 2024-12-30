@@ -48,36 +48,9 @@ export default function UserDetailsSection({
   ...props
 }: Props) {
   const { t } = useTranslation("UserDetailsSection");
-  console.log(bot, "bot");
-  console.log(openPositions, "openPositions");
   const handleStopClick = () => {};
   const handleStartClick = () => {};
   const handleResetClick = () => {};
-
-  const getPandLStyleAndValue = useMemo(() => {
-    if (!openPositions || openPositions.length === 0) {
-      return { text: "-", color: "#84b067" };
-    }
-
-    let sumPanAndL = 0;
-    openPositions.forEach(x => {
-      if (x.pAndL) {
-        sumPanAndL += x.pAndL;
-      }
-    });
-
-    return {
-      text: formatCurrencyToString(sumPanAndL, openPositions[0].currencySymbol),
-      color: sumPanAndL >= 0 ? "#84b067" : "#ff7782",
-    };
-  }, [openPositions]);
-
-  const getOpenPositionStyleAndValue = useMemo(() => {
-    console.info(openPositions);
-    return openPositions && openPositions.length > 0
-      ? { color: "#89d08d", text: t("OpenPositions") }
-      : { color: "#bfbfbf", text: t("Flat") };
-  }, [openPositions]);
 
   return (
     <Box {...props}>
@@ -88,22 +61,27 @@ export default function UserDetailsSection({
         {t("OpenPositions")}
       </Typography>
 
-      {/*<StyledMetricsBox>*/}
-      {/*  <DataGrid<OpenPosition>*/}
-      {/*    slots={{*/}
-      {/*      footer: () => <></>,*/}
-      {/*    }}*/}
-      {/*    sx={OpenPositionTableSx}*/}
-      {/*    rowSelection={false}*/}
-      {/*    checkboxSelection={false}*/}
-      {/*    rows={openPositions}*/}
-      {/*    rowHeight={20}*/}
-      {/*    columnHeaderHeight={25}*/}
-      {/*    isCellEditable={() => false}*/}
-      {/*    columns={getOpenPositionColumns()}*/}
-      {/*    getRowId={row => row.entryOrderId}*/}
-      {/*  />*/}
-      {/*</StyledMetricsBox>*/}
+      <StyledMetricsBox>
+        <DataGrid<OpenPosition>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={OpenPositionTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={openPositions}
+          rowHeight={20}
+          columnHeaderHeight={25}
+          isCellEditable={() => false}
+          columns={getOpenPositionColumns()}
+          getRowId={row => {
+            if (!row.username) {
+              throw new Error("Row does not have a valid username");
+            }
+            return row.username;
+          }}
+        />
+      </StyledMetricsBox>
 
       <Typography
         mt={2}
@@ -125,7 +103,6 @@ export default function UserDetailsSection({
         rows={[bot]}
         rowHeight={25}
         isCellEditable={() => false}
-        // columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick, handleForceExitClick)}
         columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
         editMode="row"
         getRowId={row => row.entryOrderId}
