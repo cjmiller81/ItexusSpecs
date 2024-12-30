@@ -59,16 +59,37 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const dispatch = useAppDispatch();
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const filterPanelText = useRef<Element | null>(null);
+  const [currentSorter, setCurrentSorter] = useState<any>();
 
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
   
+  useEffect(() => {
+    handleOnUpdate();
+  }, [currentSorter]);
+
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
     if (!grid) return;
   }, [currentFilter, datagrid]);
+
+  const onSortingChanged = e => {
+    const sortedColumns = e.component.getDataSource().sort();
+    setCurrentSorter(sortedColumns);
+  }
+
+  const handleOnUpdate = () => {
+    const dataGrid = datagrid?.current?.instance;
+    if (!dataGrid) {
+      return;
+    }
+
+    const gridDataSource = dataGrid.getDataSource();
+    const sort = gridDataSource.sort();
+    onSorterChanged(sort);
+  }
 
   const categoryToFilterItem = (item): { text: string; value: string } => {
     return {
@@ -149,6 +170,13 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   return (
     <div ref={containerRef}>
       <DataGridDef<ICoin>
+          onOptionChanged={e => {
+            if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
+              setTimeout(() => {
+                onSortingChanged(e);
+              });
+            }
+          }}
         remoteOperations={{
           filtering: true,
           sorting: true,
@@ -172,6 +200,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}
+        
         >
         <FilterRow visible={true} />
         <FilterPanel
@@ -255,6 +284,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           minWidth={110}
           allowHiding={false}
+          allowHeaderFiltering={false}
           cellComponent={SymbolCellIdComponent}
         />
         <Column
