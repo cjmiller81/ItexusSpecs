@@ -41,7 +41,7 @@ export default function Reports() {
   useEffect(() => {
     dispatch(fetchDteUsers({}));
   }, [dispatch]);
-  console.log(dteUsers, userDetails, "dteUsers, userDetails");
+
   useEffect(() => {
     if (dteUsers && dteUsers.strategies && !currentUser) {
       const currentUser = dteUsers.strategies.find(user => user.userId === userId);
