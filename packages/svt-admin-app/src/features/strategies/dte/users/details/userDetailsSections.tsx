@@ -31,20 +31,26 @@ export default function UserDetailsSection({
   workingOrders,
   ...props
 }: Props) {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const { t } = useTranslation("UserDetailsSection");
 
   const handleStopClick = (row: StrategyBot) => {
-    dispatch(stopBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+    dispatch(stopBot({ userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol }));
   };
   const handleStartClick = (row: StrategyBot) => {
-    dispatch(startBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+    dispatch(
+      startBot({ userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol }),
+    );
   };
-  const handleResetClick  = (row: StrategyBot) => {
-    dispatch(resetBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  const handleResetClick = (row: StrategyBot) => {
+    dispatch(
+      resetBot({ userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol }),
+    );
   };
-  const handleForceExitClick  = (row: StrategyBot) => {
-    dispatch(resetBot({userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol}))
+  const handleForceExitClick = (row: StrategyBot) => {
+    dispatch(
+      resetBot({ userId: row.userId, accountNumber: row.exchangeAccountNumber, masterSymbol: row.masterSymbol }),
+    );
   };
 
   return (
@@ -52,9 +58,8 @@ export default function UserDetailsSection({
       <Typography
         variant="h5"
         align="left"
-        sx={{fontSize: "14px"}}
-      >
-   {t("0DTEHeader", { accountNumber: user.accountNumber })}
+        sx={{ fontSize: "14px" }}>
+        {t("0DTEHeader", { accountNumber: user.accountNumber })}
       </Typography>
 
       <Typography
@@ -99,7 +104,7 @@ export default function UserDetailsSection({
         rows={bots.zeroDteFlyStrategyList}
         rowHeight={25}
         isCellEditable={() => false}
-        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick,handleForceExitClick)}
+        columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick, handleForceExitClick)}
         editMode="row"
         getRowId={row => row.userId}
       />

@@ -1,33 +1,33 @@
-import { PayloadAction } from "@reduxjs/toolkit"
-import { Status, createAppSlice } from "components"
-import { IvlUser, IIvlStrategiesResponse } from "./IvlUser"
-import { ivlUsersService } from "./ivlUsersService"
-import { Billing } from "./details/billing"
-import { CapitalAllocation } from "./details/capitalAllocation"
-import { Order } from "./details/order"
-import { Bot } from "./details/bot"
-import { OpenPosition } from "./details/openPosition"
-import { IWorkingOrder } from "./details/workingOrderInterface"
-import { ICurrentDayFills } from "./details/currentDayFillsInterface"
+import { PayloadAction } from "@reduxjs/toolkit";
+import { Status, createAppSlice } from "components";
+import { IvlUser, IIvlStrategiesResponse } from "./IvlUser";
+import { ivlUsersService } from "./ivlUsersService";
+import { Billing } from "./details/billing";
+import { CapitalAllocation } from "./details/capitalAllocation";
+import { Order } from "./details/order";
+import { Bot } from "./details/bot";
+import { OpenPosition } from "./details/openPosition";
+import { IWorkingOrder } from "./details/workingOrderInterface";
+import { ICurrentDayFills } from "./details/currentDayFillsInterface";
 
 type UserDetails = {
-  orders: Order[],
-  billings: Billing[],
-  allocations: CapitalAllocation[],
-  bot: Bot,
-  openPositions: OpenPosition[],
-  workingOrders: IWorkingOrder[],
-  currentDayFills: ICurrentDayFills[]
-}
+  orders: Order[];
+  billings: Billing[];
+  allocations: CapitalAllocation[];
+  bot: Bot;
+  openPositions: OpenPosition[];
+  workingOrders: IWorkingOrder[];
+  currentDayFills: ICurrentDayFills[];
+};
 
 export interface IvlUsersSliceState {
-  ivlUsers: IvlUser[]
-  userDetails?: UserDetails
-  statusFetchingIvlUsers: Status
-  statusFetchingUserDetails: Status
-  statusCreatingIvlUsers: Status
-  statusUpdatingIvlUsers: Status
-  statusDeletingIvlUsers: Status
+  ivlUsers: IvlUser[];
+  userDetails?: UserDetails;
+  statusFetchingIvlUsers: Status;
+  statusFetchingUserDetails: Status;
+  statusCreatingIvlUsers: Status;
+  statusUpdatingIvlUsers: Status;
+  statusDeletingIvlUsers: Status;
 }
 
 const initialState: IvlUsersSliceState = {
@@ -37,7 +37,7 @@ const initialState: IvlUsersSliceState = {
   statusCreatingIvlUsers: "idle",
   statusUpdatingIvlUsers: "idle",
   statusDeletingIvlUsers: "idle",
-}
+};
 
 export const ivlUsersSlice = createAppSlice({
   name: "ivlUsers",
@@ -45,82 +45,114 @@ export const ivlUsersSlice = createAppSlice({
   reducers: create => ({
     updateIvlUser: create.asyncThunk(
       async (ivlUser: IvlUser, thunkApi) => {
-        await ivlUsersService.update(ivlUser)
-        thunkApi.dispatch(fetchIvlUsers(null))
+        await ivlUsersService.update(ivlUser);
+        thunkApi.dispatch(fetchIvlUsers(null));
       },
       {
         pending: state => {
-          state.statusUpdatingIvlUsers = "loading"
+          state.statusUpdatingIvlUsers = "loading";
         },
         fulfilled: state => {
-          state.statusUpdatingIvlUsers = "idle"
+          state.statusUpdatingIvlUsers = "idle";
         },
         rejected: state => {
-          state.statusUpdatingIvlUsers = "failed"
+          state.statusUpdatingIvlUsers = "failed";
         },
       },
     ),
     deleteIvlUser: create.asyncThunk(
       async ({ id }: { id: string }, thunkApi) => {
-        await ivlUsersService.delete(id)
-        thunkApi.dispatch(fetchIvlUsers(null))
+        await ivlUsersService.delete(id);
+        thunkApi.dispatch(fetchIvlUsers(null));
       },
       {
         pending: state => {
-          state.statusDeletingIvlUsers = "loading"
+          state.statusDeletingIvlUsers = "loading";
         },
         fulfilled: state => {
-          state.statusDeletingIvlUsers = "idle"
+          state.statusDeletingIvlUsers = "idle";
         },
         rejected: state => {
-          state.statusDeletingIvlUsers = "failed"
+          state.statusDeletingIvlUsers = "failed";
         },
       },
     ),
     fetchIvlUsers: create.asyncThunk(
       async () => {
-        return await ivlUsersService.getAll()
+        return await ivlUsersService.getAll();
       },
       {
         pending: state => {
-          state.statusFetchingIvlUsers = "loading"
+          state.statusFetchingIvlUsers = "loading";
         },
         fulfilled: (state, action: PayloadAction<IIvlStrategiesResponse>) => {
-          state.statusFetchingIvlUsers = "idle"
-          state.ivlUsers = action.payload.strategies
+          state.statusFetchingIvlUsers = "idle";
+          state.ivlUsers = action.payload.strategies;
         },
         rejected: state => {
-          state.statusFetchingIvlUsers = "failed"
+          state.statusFetchingIvlUsers = "failed";
         },
       },
     ),
     fetchUserDetails: create.asyncThunk(
       async ({ userId }: { userId: string }): Promise<UserDetails> => {
-        const [billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders] = await Promise.all([
+        let currentDayFills: ICurrentDayFills[] = [];
+        let workingOrders: IWorkingOrder[] = [];
+        let openPositions: any[];
+        const [billings, allocations, orders, bot] = await Promise.all([
           ivlUsersService.getUserBillings(userId),
           ivlUsersService.getUserCapitalAllocations(userId),
           ivlUsersService.getUserOrders(userId),
           ivlUsersService.getUserBots(userId),
-          ivlUsersService.getOpenPositions(userId),
-          ivlUsersService.getCurrentDayFills(userId),
-          ivlUsersService.getUserWorkingOrders(userId)
-        ])
-        return {billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders}
+        ]);
+
+        const openPosition = async (userId: string, accountNumber: string, entryOrderSymbol: string | null) => {
+          if (!entryOrderSymbol) {
+            return [];
+          }
+
+          const symbols = entryOrderSymbol.split("|").map(symbol => {
+            symbol = symbol.trim();
+            symbol = symbol.replace("/", "%2F");
+            return symbol;
+          });
+
+          const positionPromises = symbols.map(symbol => {
+            return ivlUsersService.getOpenPositions(userId, accountNumber, symbol);
+          });
+          return await Promise.all(positionPromises);
+        };
+
+        const fetchCurrentDayFillsAndWorkingOrders = async (userId, element) => {
+          if (element.entryExchangeOrderId && element.exitExchangeOrderId) {
+            const currentDayFills = await ivlUsersService.getCurrentDayFills(userId);
+            const workingOrders = await ivlUsersService.getUserWorkingOrders(userId);
+            return { currentDayFills, workingOrders };
+          }
+          return { currentDayFills: [], workingOrders: [] };
+        };
+
+        const result = await fetchCurrentDayFillsAndWorkingOrders(userId, bot);
+        currentDayFills = result.currentDayFills;
+        workingOrders = result.workingOrders;
+        openPositions = await openPosition(userId, bot.accountNumber, bot.entryOrderSymbol);
+
+        return { billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders };
       },
       {
         pending: state => {
-          state.statusFetchingIvlUsers = "loading"
+          state.statusFetchingIvlUsers = "loading";
         },
         fulfilled: (state, action: PayloadAction<UserDetails>) => {
-          state.statusFetchingIvlUsers = "idle"
-          state.userDetails = action.payload
+          state.statusFetchingIvlUsers = "idle";
+          state.userDetails = action.payload;
         },
         rejected: state => {
-          state.statusFetchingIvlUsers = "failed"
+          state.statusFetchingIvlUsers = "failed";
         },
       },
     ),
   }),
-})
+});
 
-export const { deleteIvlUser, fetchIvlUsers, updateIvlUser, fetchUserDetails } = ivlUsersSlice.actions
+export const { deleteIvlUser, fetchIvlUsers, updateIvlUser, fetchUserDetails } = ivlUsersSlice.actions;

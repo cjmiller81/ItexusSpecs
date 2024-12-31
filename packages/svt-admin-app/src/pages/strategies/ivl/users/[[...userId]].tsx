@@ -1,20 +1,20 @@
-import { IvlUser } from "@/features/strategies/ivl/users/IvlUser"
-import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer"
-import UserDetailsSection from "@/features/strategies/ivl/users/details/userDetailsSections"
+import { IvlUser } from "@/features/strategies/ivl/users/IvlUser";
+import { StyledDrawer } from "@/features/strategies/shared/userDetailsDrawer";
+import UserDetailsSection from "@/features/strategies/ivl/users/details/userDetailsSections";
 import {
   deleteIvlUser,
   fetchIvlUsers,
   fetchUserDetails,
   updateIvlUser,
-} from "@/features/strategies/ivl/users/ivlUsersSlice"
-import { autoSizeTableSx } from "@/features/strategies/shared/tableSx"
-import { getColumns } from "@/features/strategies/ivl/users/usersColumnsDefs"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import Box from "@mui/material/Box"
-import IconButton from "@mui/material/IconButton"
-import { styled, useTheme } from "@mui/material/styles"
+} from "@/features/strategies/ivl/users/ivlUsersSlice";
+import { autoSizeTableSx } from "@/features/strategies/shared/tableSx";
+import { getColumns } from "@/features/strategies/ivl/users/usersColumnsDefs";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import { styled, useTheme } from "@mui/material/styles";
 import {
   DataGrid,
   GridEventListener,
@@ -23,93 +23,93 @@ import {
   GridRowModes,
   GridRowModesModel,
   GridToolbar,
-} from "@mui/x-data-grid"
-import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
-import { useMediaQuery } from "@mui/material"
+} from "@mui/x-data-grid";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "@mui/material";
 
 export default function Reports() {
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
-  const { ivlUsers, userDetails } = useAppSelector(state => state.ivlUsers)
-  const dispatch = useAppDispatch()
-  const theme = useTheme()
-  const router = useRouter()
-  const userId = router.query.userId ? router.query.userId[0] : undefined
-  const [rightBarOpen, setRightBarOpen] = useState(false)
-  const [currentUser, setCurrentUser] = useState<IvlUser | undefined>()
-  const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>()
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const { ivlUsers, userDetails } = useAppSelector(state => state.ivlUsers);
+  const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const router = useRouter();
+  const userId = router.query.userId ? router.query.userId[0] : undefined;
+  const [rightBarOpen, setRightBarOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<IvlUser | undefined>();
+  const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
   const isMobile = useMediaQuery("(max-width: 485px)");
 
   useEffect(() => {
-    dispatch(fetchIvlUsers({}))
-  }, [dispatch])
+    dispatch(fetchIvlUsers({}));
+  }, [dispatch]);
 
   useEffect(() => {
     if (ivlUsers && !currentUser) {
-      const currentUser = ivlUsers.find(user => user.userId === userId)
-      setCurrentUser(currentUser)
-      setRightBarOpen(Boolean(currentUser))
+      const currentUser = ivlUsers.find(user => user.userId === userId);
+      setCurrentUser(currentUser);
+      setRightBarOpen(Boolean(currentUser));
     }
-  }, [ivlUsers, dispatch, userId])
+  }, [ivlUsers, dispatch, userId]);
 
   useEffect(() => {
     if (!currentUser) {
       router.push(`/strategies/ivl/users`, undefined, {
         shallow: true,
-      })
+      });
 
-      return
+      return;
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }))
+    dispatch(fetchUserDetails({ userId: currentUser.userId }));
     router.push(`/strategies/ivl/users/${currentUser.userId}`, undefined, {
       shallow: true,
-    })
-  }, [currentUser])
+    });
+  }, [currentUser]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true
+      event.defaultMuiPrevented = true;
     }
-  }
+  };
 
   const handleEditClick = (id: GridRowId) => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } })
-  }
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
 
   const handleSaveClick = (id: GridRowId) => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } })
-  }
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
 
   const handleDeleteClick = (id: GridRowId) => {
-    dispatch(deleteIvlUser({ id: encodeURIComponent(id) as string }))
-  }
+    dispatch(deleteIvlUser({ id: encodeURIComponent(id) as string }));
+  };
 
   const handleCancelClick = (id: GridRowId) => {
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
-    })
-  }
+    });
+  };
 
   const handleViewClick = (id: GridRowId) => {
-    const user = ivlUsers.find(user => getRowId(user) === id)
-    setRightBarOpen(true)
-    setCurrentUser(user)
-  }
+    const user = ivlUsers.find(user => getRowId(user) === id);
+    setRightBarOpen(true);
+    setCurrentUser(user);
+  };
 
   const processRowUpdate = (newRow: IvlUser) => {
-    dispatch(updateIvlUser(newRow))
-    return { ...newRow }
-  }
+    dispatch(updateIvlUser(newRow));
+    return { ...newRow };
+  };
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-    setRowModesModel(newRowModesModel)
-  }
+    setRowModesModel(newRowModesModel);
+  };
 
   const getRowId = (strategy: IvlUser) => {
     return strategy.userId + strategy.accountNumber;
-  }
+  };
 
   const columns = getColumns(
     handleSaveClick,
@@ -121,28 +121,29 @@ export default function Reports() {
     rowModesModel,
     theme,
     currentUser ? getRowId(currentUser) : undefined,
-  )
+  );
 
   const onToggleSideBar = () => {
-    setRightBarOpen(prev => !prev)
-  }
+    setRightBarOpen(prev => !prev);
+  };
 
   return (
-    <StyledRoot sx={{
-      padding: 0,
-      '& .red': {
-        backgroundColor: 'red',
-        color: 'white',
-        fontWeight: 600
-      },
-      '& .dark-yellow': {
-        backgroundColor: '#FDDA0D',
-        color: 'black',
-        fontWeight: 600
-      },
-      '& .selected-row': {
-        backgroundColor: theme.palette.mode === 'dark' ? '#6f7171' : '#d4d4d4'
-      }
+    <StyledRoot
+      sx={{
+        padding: 0,
+        "& .red": {
+          backgroundColor: "red",
+          color: "white",
+          fontWeight: 600,
+        },
+        "& .dark-yellow": {
+          backgroundColor: "#FDDA0D",
+          color: "black",
+          fontWeight: 600,
+        },
+        "& .selected-row": {
+          backgroundColor: theme.palette.mode === "dark" ? "#6f7171" : "#d4d4d4",
+        },
       }}>
       <DataGrid<IvlUser>
         slots={{ toolbar: GridToolbar }}
@@ -152,20 +153,21 @@ export default function Reports() {
               "& .MuiButton-root": {
                 color: theme.palette.text.primary,
                 fontWeight: "bold",
+              },
             },
           },
-        },
         }}
         autoPageSize
         rowSelection={false}
         checkboxSelection={false}
-        sx={{...autoSizeTableSx, 
+        sx={{
+          ...autoSizeTableSx,
           "& .MuiDataGrid-footerContainer": {
             height: "auto",
             paddingBottom: 0,
           },
           "& .MuiDataGrid-main": {
-            height: `calc(100vh - ${isMobile ? '250px' : '220px'})`,
+            height: `calc(100vh - ${isMobile ? "250px" : "220px"})`,
           },
         }}
         rows={ivlUsers}
@@ -176,7 +178,7 @@ export default function Reports() {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
-        getRowClassName={(params) => params.id === selectedRow ? 'selected-row': ''}
+        getRowClassName={params => (params.id === selectedRow ? "selected-row" : "")}
       />
 
       {currentUser && (
@@ -208,7 +210,7 @@ export default function Reports() {
         </StyledDrawer>
       )}
     </StyledRoot>
-  )
+  );
 }
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -217,11 +219,11 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
   justifyContent: "flex-start",
-}))
+}));
 
 const StyledRoot = styled(Box)(({ theme }) => ({
   display: "flex",
   [theme.breakpoints.down("md")]: {
     display: "inherit",
   },
-}))
+}));
