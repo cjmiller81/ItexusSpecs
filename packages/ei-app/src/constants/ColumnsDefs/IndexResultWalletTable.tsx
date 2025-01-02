@@ -25,6 +25,23 @@ export const getIndexResultWalletTableColumns = (): GridColDef<WalletBalance>[] 
     },
 
     {
+      field: "chain",
+      headerName: t("Chain"),
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<WalletBalance, any, any>) => (
+        <Typography
+          variant="body1"
+          sx={{ textTransform: "uppercase", fontSize: "0.80rem" }}>
+          {params.row.chain}
+        </Typography>
+      ),
+    },
+
+    {
       field: "qty",
       headerName: t("Qty"),
       sortable: false,
