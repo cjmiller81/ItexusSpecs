@@ -23,8 +23,8 @@ type Props = {
 
 const ENTRY_TIME_OPTIONS = [
 {
-  key: "Market open",
-  value: 0
+  key: "Market open +2min",
+  value: 2
 },
 {
   key: "Market open +14min",
@@ -359,10 +359,10 @@ export default function AccountStatus({
               flexWrap: "wrap",
               gap: 5,
             }}>
-            
-            <Stack 
-              direction={isSmallScreen ? "column" : "row"} 
-              spacing={isSmallScreen ? 3 : 12} 
+
+            <Stack
+              direction={isSmallScreen ? "column" : "row"}
+              spacing={isSmallScreen ? 3 : 12}
               width="100%"
               sx={{
                 flexWrap: "wrap",
@@ -415,14 +415,14 @@ export default function AccountStatus({
               </LabeledStategyOptionField>
             </Stack>
 
-            <Stack 
-              direction={isSmallScreen ? "column" : "row"} 
-              spacing={isSmallScreen ? 3 : 12} 
-              width="100%" 
+            <Stack
+              direction={isSmallScreen ? "column" : "row"}
+              spacing={isSmallScreen ? 3 : 12}
+              width="100%"
               sx={{
                 flexWrap: "wrap",
                 display: "flex",
-                justifyContent: "center", 
+                justifyContent: "center",
                 alignItems: "center",
                 width: "100%",
               }}>

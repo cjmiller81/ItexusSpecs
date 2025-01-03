@@ -35,8 +35,16 @@ export const IndexModelingSection = ({
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const onExport = () => {
+    const updatedAssets = tableAssets.map(asset => ({
+      symbol: asset.symbol,
+      price: asset.price,
+      marketCap: asset.marketCap,
+      weight: asset.weight,
+      qty: asset.qty * (tokens / 100),
+    }));
+
     const worksheet = XLSX.utils.json_to_sheet(
-      tableAssets.map(asset => ({
+      updatedAssets.map(asset => ({
         symbol: asset.symbol,
         price: asset.price,
         marketCap: asset.marketCap,
@@ -69,6 +77,7 @@ export const IndexModelingSection = ({
     <AppAccordionSection
       persistKey={persistKey}
       defaultExpanded
+      sx={{ cursor: "default !important" }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={

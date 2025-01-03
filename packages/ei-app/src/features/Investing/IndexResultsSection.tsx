@@ -66,8 +66,9 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
       selectedWallet
         ? toTableTokensModels(
             wallets?.find(wallet => wallet.walletId.toString() === selectedWallet)?.chainAssets ?? [],
-          ).map(({ tokenName, balance }) => ({
+          ).map(({ tokenName, chainName ,balance }) => ({
             tokenName,
+            chain : chainName,
             balance: balance,
           }))
         : [],
@@ -195,9 +196,9 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
 
           <Grid
             item
-            xs={5.5}
-            md={6}
-            lg={6}
+            xs={4.5}
+            md={4.5}
+            lg={4.8}
             sx={{ marginTop: "15px", marginLeft: "2%" }}>
             <Select
               displayEmpty
@@ -208,6 +209,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               }
               sx={{
                 backgroundColor: "#109EEF",
+                fontSize: "11px",
                 color: "white",
                 width: "98%",
                 maxHeight: "40px",
@@ -230,6 +232,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 color: "black",
                 justifyContent: "flex-start",
                 paddingLeft: "15px",
+                fontSize: "11px",
               }}
               variant="outlined"
               onClick={() => setIsAddingManualPosition(true)}>
@@ -237,13 +240,13 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
             </Button>
             <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
               <Button
-                sx={{ mr: 2, width: "90px", height: "35px" }}
+                sx={{ mr: 2, width: "70px", height: "35px", fontSize: "11px" }}
                 variant="outlined"
                 disabled>
                 {t("Save")}
               </Button>
               <Button
-                sx={{ mr: 2, width: "90px", height: "35px" }}
+                sx={{ mr: 2, width: "70px", height: "35px", fontSize: "11px" }}
                 variant="outlined"
                 onClick={handleClearTable}>
                 {t("Clear")}
@@ -253,9 +256,9 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
 
           <Grid
             item
-            xs={5.9}
-            md={5.9}
-            lg={5.3}
+            xs={6.8}
+            md={6.9}
+            lg={6.6}
             spacing={1}
             sx={{ marginTop: "15px", marginLeft: { lg: "0%", md: "2%", xs: "0%" } }}>
             {" "}
