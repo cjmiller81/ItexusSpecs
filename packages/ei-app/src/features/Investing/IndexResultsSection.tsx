@@ -78,7 +78,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
   }, [filteredWalletData]);
-console.log(filteredWalletData)
+
   useEffect(() => {
     if (filteredRows.length > 0 || tableAssets.length > 0) {
       const rebalancedData = tableAssets.map(asset => ({
