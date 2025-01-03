@@ -3,7 +3,7 @@ import { FilterBuilderItems } from "@/constants/PrefilterTokensTable";
 import { CreateFilterModel } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { isDeepEqual } from "@/utils/utils";
 import CloseIcon from "@mui/icons-material/Close";
-import TuneIcon from '@mui/icons-material/Tune';
+import TuneIcon from "@mui/icons-material/Tune";
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -28,7 +28,7 @@ import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@mui/material/styles"
+import { useTheme } from "@mui/material/styles";
 
 interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
@@ -69,7 +69,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>();
   const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
   const { t } = useTranslation("CustomFilterBuilder");
-  const theme = useTheme()
+  const theme = useTheme();
 
   useEffect(() => {
     if (filterToAppply && !Array.isArray(filterToAppply)) {
@@ -156,7 +156,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const handleApplyFilterChange = (event: SelectChangeEvent<string>) => {
     const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
-      onApply([predefinedFilter.filter])
+      onApply([predefinedFilter.filter]);
       setSelectedSavedFilter(predefinedFilter);
       setFilterValue(predefinedFilter.filter);
       setFilterName(predefinedFilter.name);
@@ -188,62 +188,91 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
 
   const mapFilterName = (filter: string | null | undefined) => `Personal - ${filter}`;
   const mapButtonFilterName = (filter: string | null | undefined) => {
-    return filter ? `Personal - ${filter}` : 'SELECT PRE-BUILT FILTER';
-  }
+    return filter ? `Personal - ${filter}` : "SELECT PRE-BUILT FILTER";
+  };
 
   return (
     <>
-      <StyledAdaptivePageBox>
-      <Select
-        fullWidth
-        size="small"
-        displayEmpty
-        onChange={handleApplyFilterChange}
-        sx={{
-          minWidth: 250, 
-          maxWidth: 250, 
-          maxHeight: 32, 
-          marginRight: 1, 
-          backgroundColor: '#03A9F4', 
-          color: theme.palette.mode === 'dark' ? '#363640' : 'white', 
-          fontWeight: 600,
-          textAlign: "center",
-          borderColor: '#03A9F4',
-          '& .MuiSelect-icon': {
-            fill: theme.palette.mode === 'dark' ? '#363640' : 'white',
-          }}}
-          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name) }>
+      <StyledAdaptivePageBox sx={{ width: "100%" }}>
+        <Select
+          fullWidth
+          size="small"
+          displayEmpty
+          onChange={handleApplyFilterChange}
+          sx={{
+            minWidth: 250,
+            maxWidth: 250,
+            maxHeight: 32,
+            marginRight: 1,
+            backgroundColor: "#03A9F4",
+            color: theme.palette.mode === "dark" ? "#363640" : "white",
+            fontWeight: 600,
+            textAlign: "center",
+            borderColor: "#03A9F4",
+            "@media (max-width: 1030px) and (min-width: 900px)": {
+              width: "210px",
+              minWidth: 200,
+            },
+            "@media (max-width: 900px)": {
+              mt: 1,
+            },
+            "& .MuiSelect-icon": {
+              fill: theme.palette.mode === "dark" ? "#363640" : "white",
+            },
+          }}
+          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name)}>
           {predefinedFilters.map(filter => (
             <MenuItem
-                selected={false}
-                key={filter.id}
-                value={[filter.id, filter.name]}>
-                <ListItemText primary={mapFilterName(filter?.name)} />
-                <LoadingButton
-                  loading={filter.id === filterToDelete?.id && filterDeletingLoading}
-                  onClick={event => handleDeleteFilter(filter, event)}
-                  variant="contained"
-                  color="error">
-                    {t("Delete", { ns: "Common" })}
-                </LoadingButton>
-              </MenuItem>
-            ))}
+              selected={false}
+              key={filter.id}
+              value={[filter.id, filter.name]}>
+              <ListItemText primary={mapFilterName(filter?.name)} />
+              <LoadingButton
+                loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                onClick={event => handleDeleteFilter(filter, event)}
+                variant="contained"
+                color="error">
+                {t("Delete", { ns: "Common" })}
+              </LoadingButton>
+            </MenuItem>
+          ))}
         </Select>
-        <StyledFilterButton 
-          variant="contained" 
-          sx={{minWidth: 250}}
+        <StyledFilterButton
+          variant="contained"
+          sx={{
+            minWidth: 250,
+            maxHeight: 32,
+            "@media (min-width: 900px) and (max-width: 1030px)": {
+              width: "210px",
+              minWidth: 200,
+            },
+            "@media (max-width: 900px)": {
+              mt: 1,
+            },
+          }}
           color={"success"}
           onClick={() => onOpen()}
           startIcon={<TuneIcon />}>
-            {t("BuildStrategyFilter")}
+          {t("BuildStrategyFilter")}
         </StyledFilterButton>
-        <StyledFilterButton 
-          sx={{minWidth: 150}}
+        <StyledFilterButton
+          sx={{
+            width: "150px",
+            minWidth: 80,
+            "@media (max-width: 1030px) and (min-width: 900px)": {
+              width: "113px",
+              minWidth: 80,
+              fontSize: "12px",
+            },
+            "@media (max-width: 900px)": {
+              mt: 1,
+            },
+          }}
           variant="contained"
           color={"error"}
           disabled={!filterValue}
           onClick={() => handleClearFilters()}>
-            {t("ClearFilter")}
+          {t("ClearFilter")}
         </StyledFilterButton>
       </StyledAdaptivePageBox>
       <YesNoDialog

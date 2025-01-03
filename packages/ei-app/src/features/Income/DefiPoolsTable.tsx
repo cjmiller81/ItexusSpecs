@@ -31,6 +31,7 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -91,7 +92,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
 
   return (
     <div ref={containerRef}>
-      <DataGridDef<PoolData>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
@@ -104,7 +106,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         showBorders={true}
         onExporting={onExport}
         filterBuilder={{
-          customOperations: [{ name: 'contains', caption: 'Contains' }],
+          customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
         filterValue={currentFilter || []}
@@ -121,7 +123,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
             e.cancel = true;
           }}
         />
-        <HeaderFilter height={650} visible={true}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -158,7 +162,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         </ColumnChooser>
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflowY: "hidden" }}>
               <CustomFilterBuilder
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
@@ -391,7 +395,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };

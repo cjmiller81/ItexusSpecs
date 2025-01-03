@@ -29,6 +29,7 @@ import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/Al
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import SimpleBar from "simplebar-react";
 import { ICategory, IExchange, IPlatform } from "components";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
@@ -63,7 +64,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
-  
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
@@ -73,21 +73,21 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const categoryToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.category_id, 
+      value: item.category_id,
     };
   };
 
   const exchangeToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id, 
+      value: item.id,
     };
   };
 
   const chainsToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id, 
+      value: item.id,
     };
   };
 
@@ -101,19 +101,19 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       let column = this;
       if (filterValues) {
         let selectedValue = filterValues;
-  
+
         if (selectedValue && selectedFilterOperation === "=") {
           return [column.dataField, "contains", selectedValue];
         }
-  
+
         if (selectedFilterOperation === "contains") {
           return [column.dataField, "contains", selectedValue];
         }
-  
+
         if (Array.isArray(selectedValue) && selectedValue.length > 0) {
           return selectedValue.map((value: string) => [column.dataField, "contains", value]);
         }
-  
+
         return column.defaultCalculateFilterExpression.apply(this, arguments);
       }
       return column.defaultCalculateFilterExpression.apply(this, arguments);
@@ -122,8 +122,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       return null;
     }
   }, []);
-  
-  
+
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       onCurrentFilterChange(filter as object[]);
@@ -148,7 +147,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
 
   return (
     <div ref={containerRef}>
-      <DataGridDef<ICoin>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<ICoin>
         remoteOperations={{
           filtering: true,
           sorting: true,
@@ -171,8 +171,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}
-        >
+        onFilterValueChange={onApplyFilter}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -185,7 +184,9 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           }}
         />
         <Sorting mode="single" />
-        <HeaderFilter visible={true} height={650}>
+        <HeaderFilter
+          visible={true}
+          height={650}>
           <Search enabled={false} />
         </HeaderFilter>
         <LoadPanel enabled />
@@ -222,7 +223,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
 
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflowY: "hidden" }}>
               <CustomFilterBuilder
                 filterType="market-cap"
                 filterBuilderFields={filterBuilderFields}
@@ -347,25 +348,24 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           minWidth={150}
           width={200}
           allowHiding={true}>
-            <HeaderFilter
-              visible={true}
-              dataSource={{
-                store: {
-                  type: "array",
-                  data: chains,
-                },
-                map: chainsToFilterItem,
-              }}
-              search={{ 
-                enabled: true,
-                mode: "contains",
-                searchExpr: ["name"],
-              }}
-              height={650}
-            >
-              <Search enabled={true} />
-            </HeaderFilter>
-          </Column>
+          <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: chainsToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}
+            height={650}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
@@ -383,7 +383,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
           width={200}>
-            <HeaderFilter
+          <HeaderFilter
             visible={true}
             height={650}
             dataSource={{
@@ -393,14 +393,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               },
               map: categoryToFilterItem,
             }}
-            search={{ 
+            search={{
               enabled: true,
               mode: "contains",
               searchExpr: ["name"],
             }}>
-              <Search enabled={true} />
+            <Search enabled={true} />
           </HeaderFilter>
-          </Column>
+        </Column>
         <Column
           dataField={PrefilterTokensField.Exchanges}
           caption={PrefilterTokensLabel.Exchanges}
@@ -410,7 +410,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
           width={180}>
-            <HeaderFilter
+          <HeaderFilter
             height={650}
             visible={true}
             dataSource={{
@@ -420,14 +420,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               },
               map: exchangeToFilterItem,
             }}
-            search={{ 
+            search={{
               enabled: true,
               mode: "contains",
               searchExpr: ["name"],
             }}>
-              <Search enabled={true} />
+            <Search enabled={true} />
           </HeaderFilter>
-          </Column>
+        </Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
           caption={PrefilterTokensLabel.CirculatingSupply}
@@ -475,7 +475,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };
