@@ -53,6 +53,36 @@ const mockState :{
       userId: ""
     }
   ],
+  status: {
+    exchangeUsername: "benec",
+    accountNumber: "5WU50943",
+    riskTolerance: IvlRiskTolerance.High,
+    isStarted: true,
+    entryOrderId: "93b03dee-6734-4d3f-81fc-d3c6097d8f9c",
+    entryOrderStatus: 4,
+    entryOrderSymbol: "./ESH5 EW2G5 250214C6425 | ./ESH5 EW2G5 250214P4800",
+    exitOrderId: "",
+    exitOrderStatus: -1,
+    exitOrderSymbol: "",
+    closingOnly: false,
+    capitalAllocation: {
+      units: 12500,
+      nanos: 0
+    },
+    capitalAllocationStart: {
+      units: 12500,
+      nanos: 0
+    },
+    capitalAllocationNext: {
+      units: 12500,
+      nanos: 0
+    },
+    contractQty: {
+      units: 1,
+      nanos: 0
+    },
+    userMessage: "Market Closed! Strategy will submit exit order at the open..."
+  } as SvtIvlEsStrategySetStatus
 */
   status: {
     exchangeUsername: "benec",
@@ -157,9 +187,11 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es`, async ({ request }) => {
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/ivl/es`, async ({ request }) => {
     if (request.body) {
       const data = await request.json() as SvtIvlStrategyAccountConnect;
+
+      console.log("IVL POST data: ", data)
 
       if (data) {
         if (data.closingOnly !== mockState.status.closingOnly && !mockState.status.isStarted) {
@@ -184,25 +216,9 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es`, () => {
+  http.get(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/ivl/es`, () => {
     if (mockState.connected) {
-      return HttpResponse.json({
-        "isStarted": mockState.status.isStarted,
-        "entryOrderId": mockState.status.entryOrderId,
-        "entryOrderStatus": mockState.status.entryOrderStatus,
-        "entryOrderSymbol": mockState.status.entryOrderSymbol,
-        "exitOrderId": mockState.status.exitOrderId,
-        "exitOrderStatus": mockState.status.exitOrderStatus,
-        "exitOrderSymbol": mockState.status.exitOrderSymbol,
-        "exchangeUsername": "benec",
-        "accountNumber": "5WU50943",
-        "riskTolerance": "High",
-        "capitalAllocation": mockState.status.capitalAllocation,
-        "capitalAllocationStart": mockState.status.capitalAllocationStart,
-        "capitalAllocationNext": mockState.status.capitalAllocationNext,
-        "closingOnly": mockState.status.closingOnly,
-        "contractQty": mockState.status.contractQty,
-      })
+      return HttpResponse.json(mockState.status)
     }
 
     return new HttpResponse(null, {
@@ -210,7 +226,8 @@ export const tradingPlatformServiceHandlers: RequestHandler<RequestHandlerDefaul
     })
   }),
 
-  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/svt/ivl/es/stop`, () => {
+  http.post(`${process.env.REACT_APP_SVT_BACKEND_API_URL as string}/api/ivl/es/stop`, () => {
+    console.log("IVL POST stop called")
     mockState.status.isStarted = false
 
     return new HttpResponse(null, {

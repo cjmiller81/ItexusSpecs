@@ -195,7 +195,7 @@ const AutomationComponent: React.FC<AutomationComponentProps> = ({
                 variant="outlined"
                 onClick={handleAutomationRunningChange}
                 disabled={
-                  !(parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any) >= 13000)
+                  (!(parseFloat((strategyAccountConnectState?.capitalAllocationNext?.units ?? 0) as any) >= 13000) && !automationRunning)
                   || pendingAutomationResponse
                   || pendingCapitalAllocationResponse
                   || pendingClosingOnlyResponse
