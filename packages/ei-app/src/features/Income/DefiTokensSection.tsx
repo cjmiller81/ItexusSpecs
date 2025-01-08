@@ -100,14 +100,14 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
       <StatePersistedAccordion
         persistKey={persisKey}
         defaultExpanded
-        sx={{ cursor: "default !important", mt: 2, pointerEvents: "none" }}
+        sx={{ cursor: "default !important", mt: 2 }}
         {...props}>
         <StyledAccordionSummary
           expandIcon={
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
+              <IconButton sx={{ cursor: "pointer" }}>
                 <ExpandMoreIcon />
               </IconButton>
             </CustomTooltip>

@@ -108,14 +108,15 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       </Typography>
       <StatePersistedAccordion
         persistKey={persisKey}
-        sx={{ cursor: "default !important", mt: 2, pointerEvents: "none" }}
+        sx={{ cursor: "default !important", mt: 2 }}
+        defaultExpanded
         {...props}>
         <StyledAccordionSummary
           expandIcon={
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
+              <IconButton sx={{ cursor: "pointer" }}>
                 <ExpandMoreIcon />
               </IconButton>
             </CustomTooltip>
