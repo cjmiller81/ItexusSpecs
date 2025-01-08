@@ -52,8 +52,10 @@
     "Personal": "Personal"
   },
   "MyWalletsSection": {
-    "AddWallet": "+Add Wallet",
-    "Wallets": "Wallets"
+    "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
+    "Wallets": "Wallets",
+    "AddCentarlizedWallet": "+ADD CENTRALIZED EXCHANGE/CUSTODIAL WALLET",
+    "SelectService": "Select Service"
   },
   "MyWalletsPage": {
     "HistoricalWalletsWorth": "Historical Wallets Worth",
@@ -121,6 +123,7 @@
     "RebalancedIndexQuantities": "Rebalanced Index Quantities",
     "PositionAllocationUpdates": "Position Allocation Updates",
     "Clear": "Clear",
+    "ExchangeAccountName": "Exchange Account Name",
     "Save": "Save",
     "AddManualPosition": "+ADD MANUAL POSITION",
     "TokenName": "Token name",
@@ -292,7 +295,8 @@
     "WalletName": "Wallet Name",
     "FullyDilutedValuation": "Fully Diluted Valuation",
     "Action": "Action",
-    "Connection": "Connection"
+    "Connection": "Connection",
+    "ExchangeAccountName": "Centralized Exchange Account Name"
   },
   "SymbolLookup": {
     "Search": "Search"
