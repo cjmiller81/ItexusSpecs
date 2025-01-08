@@ -29,7 +29,6 @@ import { vaultsFilterBuilderFields } from "./vaultsTableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
-import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -105,8 +104,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
 
   return (
     <div ref={containerRef}>
-      {/*@ts-ignore*/}
-      <StyledDataGridDef<VaultsData>
+      <DataGridDef<VaultsData>
         id="vaults-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
@@ -136,9 +134,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             e.cancel = true;
           }}
         />
-        <HeaderFilter
-          height={650}
-          visible={true}>
+        <HeaderFilter height={650} visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -156,7 +152,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         />
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflowY: "hidden" }}>
+            <SimpleBar style={{ maxHeight: "600px" }}>
               <CustomFilterBuilder
                 filterType="vaults"
                 filterBuilderFields={vaultsFilterBuilderFields}
@@ -302,7 +298,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           enabled={true}
           allowExportSelectedData={true}
         />
-      </StyledDataGridDef>
+      </DataGridDef>
     </div>
   );
 };
