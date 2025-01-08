@@ -27,7 +27,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("SelectService*")}
+          {`${t("SelectService")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -65,7 +65,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("APIKey*")}
+          {`${t("APIKey")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -73,7 +73,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           value={formik.values.apiKey}
           onChange={formik.handleChange}
           name="apiKey"
-          placeholder={t("APIKey*")}
+          placeholder={`${t("APIKey")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiKey && Boolean(formik.errors.apiKey)}
           helperText={formik.touched.apiKey && (typeof formik.errors.apiKey === "string" ? formik.errors.apiKey : "")}
@@ -82,7 +82,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("APISecret*")}
+          {`${t("APISecret")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -91,7 +91,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           value={formik.values.apiSecret}
           onChange={formik.handleChange}
           name="apiSecret"
-          placeholder={t("APISecret*")}
+          placeholder={`${t("APISecret")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiSecret && Boolean(formik.errors.apiSecret)}
           helperText={
