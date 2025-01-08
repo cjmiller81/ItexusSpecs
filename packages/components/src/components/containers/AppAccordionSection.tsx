@@ -43,7 +43,7 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={tooltip}>
-            <IconButton sx={{ cursor: "pointer" }}>
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
               <ExpandMoreIcon />
             </IconButton>
           </CustomTooltip>
@@ -69,4 +69,6 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
 
 export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
   transition: "none",
+  cursor: "default",
+  pointerEvents: "none",
 })) as typeof AccordionSummary;

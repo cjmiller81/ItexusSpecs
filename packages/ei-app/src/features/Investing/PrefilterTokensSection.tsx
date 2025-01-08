@@ -108,12 +108,12 @@ export default function PrefilterTokensSection({
     <StatePersistedAccordion
       persistKey={persisKey}
       defaultExpanded
-      sx={{ cursor: "default !important" }}
+      sx={{ cursor: "default !important", pointerEvents: "none" }}
       {...props}>
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
-            <IconButton sx={{ cursor: "pointer" }}>
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
               <ExpandMoreIcon />
             </IconButton>
           </CustomTooltip>
