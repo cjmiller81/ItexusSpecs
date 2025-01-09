@@ -96,7 +96,7 @@ export const IndexModelingSection = ({
       }
       {...props}>
       <MainContainer
-        sx={{ width: "100%" }}
+        sx={{ width: "100%", pointerEvents: "auto" }}
         gap={2}>
         <LeftContainer>
           <AppNumberInput
