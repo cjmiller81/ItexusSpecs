@@ -64,11 +64,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
-  
+
   useEffect(() => {
     handleOnUpdate();
   }, [currentSorter]);
-
 
   useEffect(() => {
     const grid = datagrid?.current?.instance;
@@ -78,7 +77,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const onSortingChanged = e => {
     const sortedColumns = e.component.getDataSource().sort();
     setCurrentSorter(sortedColumns);
-  }
+  };
 
   const handleOnUpdate = () => {
     const dataGrid = datagrid?.current?.instance;
@@ -89,26 +88,26 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     const gridDataSource = dataGrid.getDataSource();
     const sort = gridDataSource.sort();
     onSorterChanged(sort);
-  }
+  };
 
   const categoryToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.category_id, 
+      value: item.category_id,
     };
   };
 
   const exchangeToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id, 
+      value: item.id,
     };
   };
 
   const chainsToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.id, 
+      value: item.id,
     };
   };
 
@@ -122,19 +121,19 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       let column = this;
       if (filterValues) {
         let selectedValue = filterValues;
-  
+
         if (selectedValue && selectedFilterOperation === "=") {
           return [column.dataField, "contains", selectedValue];
         }
-  
+
         if (selectedFilterOperation === "contains") {
           return [column.dataField, "contains", selectedValue];
         }
-  
+
         if (Array.isArray(selectedValue) && selectedValue.length > 0) {
           return selectedValue.map((value: string) => [column.dataField, "contains", value]);
         }
-  
+
         return column.defaultCalculateFilterExpression.apply(this, arguments);
       }
       return column.defaultCalculateFilterExpression.apply(this, arguments);
@@ -143,8 +142,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       return null;
     }
   }, []);
-  
-  
+
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       onCurrentFilterChange(filter as object[]);
@@ -170,13 +168,13 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   return (
     <div ref={containerRef}>
       <DataGridDef<ICoin>
-          onOptionChanged={e => {
-            if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
-              setTimeout(() => {
-                onSortingChanged(e);
-              });
-            }
-          }}
+        onOptionChanged={e => {
+          if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
+            setTimeout(() => {
+              onSortingChanged(e);
+            });
+          }
+        }}
         remoteOperations={{
           filtering: true,
           sorting: true,
@@ -199,9 +197,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}
-        
-        >
+        onFilterValueChange={onApplyFilter}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -214,7 +210,9 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           }}
         />
         <Sorting mode="single" />
-        <HeaderFilter visible={true} height={650}>
+        <HeaderFilter
+          visible={true}
+          height={650}>
           <Search enabled={false} />
         </HeaderFilter>
         <LoadPanel enabled />
@@ -282,7 +280,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           caption={PrefilterTokensLabel.Symbol}
           alignment="left"
           visible={true}
-          minWidth={110}
+          minWidth={95}
           allowHiding={false}
           allowHeaderFiltering={false}
           cellComponent={SymbolCellIdComponent}
@@ -290,7 +288,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Price}
           caption={PrefilterTokensLabel.Price}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
           minWidth={175}
@@ -307,7 +305,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.MarketCap}
           caption={PrefilterTokensLabel.MarketCap}
-          alignment="right"
+          alignment="left"
           defaultSortOrder="desc"
           visible={true}
           dataType="number"
@@ -325,10 +323,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.FullyDilutedValuation}
           caption={PrefilterTokensLabel.FullyDilutedValuation}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={190}
+          minWidth={160}
+          width={170}
           allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
@@ -342,10 +341,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Tokenomics}
           caption={PrefilterTokensLabel.Tokenomics}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={110}
+          minWidth={87}
           allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
@@ -358,10 +357,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Volume}
           caption={PrefilterTokensLabel.Volume}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={140}
+          minWidth={130}
           allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
@@ -375,32 +374,31 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={200}
+          width={210}
           allowHiding={true}>
-            <HeaderFilter
-              visible={true}
-              dataSource={{
-                store: {
-                  type: "array",
-                  data: chains,
-                },
-                map: chainsToFilterItem,
-              }}
-              search={{ 
-                enabled: true,
-                mode: "contains",
-                searchExpr: ["name"],
-              }}
-              height={650}
-            >
-              <Search enabled={true} />
-            </HeaderFilter>
-          </Column>
+          <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: chainsToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}
+            height={650}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
           alignment="center"
-          visible={true}
+          visible={false}
           dataType="boolean"
           minWidth={110}
         />
@@ -412,8 +410,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={200}>
-            <HeaderFilter
+          width={210}>
+          <HeaderFilter
             visible={true}
             height={650}
             dataSource={{
@@ -423,14 +421,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               },
               map: categoryToFilterItem,
             }}
-            search={{ 
+            search={{
               enabled: true,
               mode: "contains",
               searchExpr: ["name"],
             }}>
-              <Search enabled={true} />
+            <Search enabled={true} />
           </HeaderFilter>
-          </Column>
+        </Column>
         <Column
           dataField={PrefilterTokensField.Exchanges}
           caption={PrefilterTokensLabel.Exchanges}
@@ -439,8 +437,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={180}>
-            <HeaderFilter
+          width={190}>
+          <HeaderFilter
             height={650}
             visible={true}
             dataSource={{
@@ -450,14 +448,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               },
               map: exchangeToFilterItem,
             }}
-            search={{ 
+            search={{
               enabled: true,
               mode: "contains",
               searchExpr: ["name"],
             }}>
-              <Search enabled={true} />
+            <Search enabled={true} />
           </HeaderFilter>
-          </Column>
+        </Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
           caption={PrefilterTokensLabel.CirculatingSupply}
