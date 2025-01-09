@@ -27,6 +27,7 @@ export type PoolData = {
   count: number;
   outlier: boolean;
   underlyingTokens: string[];
+  dex: string[];
   il7d: number | null;
   apyBase7d: number | null;
   apyMean30d: number;
