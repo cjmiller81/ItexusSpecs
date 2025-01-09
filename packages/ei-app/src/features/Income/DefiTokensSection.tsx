@@ -30,7 +30,6 @@ type Props = Omit<AccordionProps, "children"> & {
 
 export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
-  console.log(poolsData)
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
   const theme = useTheme();
