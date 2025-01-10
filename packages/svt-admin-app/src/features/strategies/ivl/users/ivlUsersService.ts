@@ -20,8 +20,8 @@ export const ivlUsersService = {
   delete: async (id: string): Promise<void> => {
     return appAxios.delete(`/api/admin/strategies/ivl/${id}`);
   },
-  getUserOrders: async (userId: string): Promise<Order[]> => {
-    const response = await appAxios.get<Order[]>(`/api/ivl/users/${userId}/orders`);
+  getUserOrders: async (userId: string, accountNumber: string): Promise<Order[]> => {
+    const response = await appAxios.get<Order[]>(`/api/admin/users/${userId}/accounts/${accountNumber}/orders`);
     return response.data;
   },
   getUserBots: async (userId: string): Promise<Bot> => {
@@ -29,17 +29,27 @@ export const ivlUsersService = {
     return response.data;
   },
   getUserCapitalAllocations: async (userId: string): Promise<CapitalAllocation[]> => {
-    const response = await appAxios.get<CapitalAllocation[]>(`/api/ivl/users/${userId}/capital-allocations`);
-    return response.data;
+    return [];
+
+    // Not ready yet
+    //const response = await appAxios.get<CapitalAllocation[]>(`/api/ivl/users/${userId}/capital-allocations`);
+    //return response.data;
   },
   getUserBillings: async (userId: string): Promise<Billing[]> => {
-    const response = await appAxios.get<Billing[]>(`/api/ivl/users/${userId}/billing`);
-    return response.data;
+    return [];
+    
+    // Not ready yet
+    //const response = await appAxios.get<Billing[]>(`/api/ivl/users/${userId}/billing`);
+    //return response.data;
   },
   getOpenPositions: async (userId: string, accountNumber: string, symbol: string): Promise<OpenPosition[]> => {
     const response = await appAxios.get<OpenPosition[]>(
       `/api/admin/users/${userId}/accounts/${accountNumber}/positions/${symbol}`,
     );
+    
+    if (response.status == 404) {
+      return Promise.reject(response.statusText);
+    }
     return response.data;
   },
   getCurrentDayFills: async (userId: string): Promise<ICurrentDayFills[]> => {

@@ -61,7 +61,7 @@ export default function Reports() {
       return;
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }));
+    dispatch(fetchUserDetails({ userId: currentUser.userId, accountNumber: currentUser.accountNumber }));
     router.push(`/strategies/ivl/users/${currentUser.userId}`, undefined, {
       shallow: true,
     });

@@ -41,7 +41,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
         }),
       );
     }
-  }, [dispatch, navValue, id, exchangeAccounts]);
+  }, [dispatch, navValue, exchangeAccounts]);
 
   const pageLinks = useMemo(() => {
     if (exchangeAccounts) {
