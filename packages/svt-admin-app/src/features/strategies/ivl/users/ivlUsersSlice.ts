@@ -95,14 +95,14 @@ export const ivlUsersSlice = createAppSlice({
       },
     ),
     fetchUserDetails: create.asyncThunk(
-      async ({ userId }: { userId: string }): Promise<UserDetails> => {
+      async ({ userId, accountNumber }: { userId: string, accountNumber: string }): Promise<UserDetails> => {
         let currentDayFills: ICurrentDayFills[] = [];
         let workingOrders: IWorkingOrder[] = [];
         let openPositions: any[];
         const [billings, allocations, orders, bot] = await Promise.all([
           ivlUsersService.getUserBillings(userId),
           ivlUsersService.getUserCapitalAllocations(userId),
-          ivlUsersService.getUserOrders(userId),
+          ivlUsersService.getUserOrders(userId, accountNumber),
           ivlUsersService.getUserBots(userId),
         ]);
 

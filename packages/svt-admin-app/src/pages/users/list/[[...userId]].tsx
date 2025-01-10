@@ -45,17 +45,6 @@ export default function Reports() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (adminUsers?.userAccountConnectionList_ && adminUsers?.userAccountConnectionList_.length > 0) {
-      const id = adminUsers.userAccountConnectionList_[0].userId;
-      router.push(`/users/list/${id}`, undefined, {
-        shallow: true,
-      });
-      handleSetSelection(id);
-      handleViewClick(id);
-    }
-  }, [adminUsers]);
-
-  useEffect(() => {
     if (adminUsers?.userAccountConnectionList_ && !currentUser) {
       const currentUser = adminUsers?.userAccountConnectionList_.find(user => user.userId === userId);
       setCurrentUser(currentUser);
@@ -65,16 +54,15 @@ export default function Reports() {
 
   useEffect(() => {
     if (!currentUser) {
-      router.push(`/users/list`, undefined, {
-        shallow: true,
-      });
       return;
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }));
     router.push(`/users/list/${currentUser.userId}`, undefined, {
       shallow: true,
     });
+
+    handleSetSelection(currentUser.userId);
+    dispatch(fetchUserDetails({ userId: currentUser.userId }));
   }, [currentUser, dispatch]);
 
   useEffect(() => {

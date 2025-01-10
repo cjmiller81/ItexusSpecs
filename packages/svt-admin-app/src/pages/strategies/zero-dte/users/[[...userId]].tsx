@@ -52,17 +52,17 @@ export default function Reports() {
 
   useEffect(() => {
     if (!currentUser) {
-      router.push(`/strategies/zero-dte/users`, undefined, {
-        shallow: true,
-      });
       return;
     }
 
     const symbol = "SPX";
-    dispatch(fetchUserDetails({ userId: currentUser.userId, symbol }));
+
     router.push(`/strategies/zero-dte/users/${currentUser.userId}`, undefined, {
       shallow: true,
     });
+    
+    handleSetSelection(getRowId(currentUser));
+    dispatch(fetchUserDetails({ userId: currentUser.userId, symbol }));
   }, [currentUser]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {

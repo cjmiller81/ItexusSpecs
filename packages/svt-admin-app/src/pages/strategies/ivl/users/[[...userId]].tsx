@@ -54,17 +54,15 @@ export default function Reports() {
 
   useEffect(() => {
     if (!currentUser) {
-      router.push(`/strategies/ivl/users`, undefined, {
-        shallow: true,
-      });
-
       return;
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }));
     router.push(`/strategies/ivl/users/${currentUser.userId}`, undefined, {
       shallow: true,
     });
+
+    handleSetSelection(getRowId(currentUser));
+    dispatch(fetchUserDetails({ userId: currentUser.userId, accountNumber: currentUser.accountNumber }));
   }, [currentUser]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
