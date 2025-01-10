@@ -111,7 +111,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}>
-        <FilterRow visible={true} />
+        <FilterRow visible={true} 
+        />
         <FilterPanel
           visible={true}
           customizeText={e => (e.text ? e.text : "No Filter Applied")}
@@ -211,6 +212,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           dataType="string"
           allowHiding={true}
           cellComponent={ChainCell}
+        />
+        <Column
+          dataField={DefiField.Dex}
+          caption={DefiLabel.Dex}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          allowHiding={true}
         />
         <Column
           dataField={DefiField.TVL}

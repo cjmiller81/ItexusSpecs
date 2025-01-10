@@ -27,10 +27,12 @@ export enum DefiField {
   VolumeUsd1d = "volumeUsd1d",
   VolumeUsd7d = "volumeUsd7d",
   ApyBaseInception = "apyBaseInception",
+  Dex = "dex"
 }
 
 export enum DefiLabel {
   Chain = "Chain",
+  Dex = "Dex",
   Project = "Project",
   Symbol = "Pool",
   TVL = "TVL",

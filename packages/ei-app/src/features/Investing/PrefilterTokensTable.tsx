@@ -282,7 +282,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           caption={PrefilterTokensLabel.Symbol}
           alignment="left"
           visible={true}
-          minWidth={110}
+          minWidth={95}
           allowHiding={false}
           allowHeaderFiltering={false}
           cellComponent={SymbolCellIdComponent}
@@ -290,7 +290,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Price}
           caption={PrefilterTokensLabel.Price}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
           minWidth={175}
@@ -307,7 +307,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.MarketCap}
           caption={PrefilterTokensLabel.MarketCap}
-          alignment="right"
+          alignment="left"
           defaultSortOrder="desc"
           visible={true}
           dataType="number"
@@ -325,10 +325,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.FullyDilutedValuation}
           caption={PrefilterTokensLabel.FullyDilutedValuation}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={190}
+          minWidth={160}
+          width={170}
           allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
@@ -342,10 +343,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Tokenomics}
           caption={PrefilterTokensLabel.Tokenomics}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={110}
+          minWidth={87}
           allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
@@ -358,10 +359,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Volume}
           caption={PrefilterTokensLabel.Volume}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={140}
+          minWidth={130}
           allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
@@ -375,7 +376,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={200}
+          width={210}
           allowHiding={true}>
           <HeaderFilter
             visible={true}
@@ -399,7 +400,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
           alignment="center"
-          visible={true}
+          visible={false}
           dataType="boolean"
           minWidth={110}
         />
@@ -411,7 +412,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={200}>
+          width={210}>
           <HeaderFilter
             visible={true}
             height={650}
@@ -438,7 +439,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={180}>
+          width={190}>
           <HeaderFilter
             height={650}
             visible={true}
