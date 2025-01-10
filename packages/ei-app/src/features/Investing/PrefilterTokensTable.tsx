@@ -251,7 +251,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
 
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="market-cap"
                 filterBuilderFields={filterBuilderFields}

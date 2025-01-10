@@ -155,7 +155,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         />
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="vaults"
                 filterBuilderFields={vaultsFilterBuilderFields}

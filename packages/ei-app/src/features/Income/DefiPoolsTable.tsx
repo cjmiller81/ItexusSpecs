@@ -111,8 +111,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}>
-        <FilterRow visible={true} 
-        />
+        <FilterRow visible={true} />
         <FilterPanel
           visible={true}
           customizeText={e => (e.text ? e.text : "No Filter Applied")}
@@ -161,7 +160,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         </ColumnChooser>
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
