@@ -65,23 +65,6 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
     return "";
   }, [exchangeAccounts, navValue]);
 
-  const columns = [
-    {
-      field: "timestamp",
-      headerName: t("FillTime", { ns: "ColumnsDefs" }),
-      width: 150,
-      valueGetter: params => new Date(params.row.timestamp.seconds * 1000).toLocaleString(),
-    },
-    { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }) },
-    {
-      field: "marketSymbol",
-      headerName: t("OptionLeg", { ns: "UserDetailsSection" }),
-      valueGetter: params => params.row.marketSymbol.split(" ").pop(),
-    },
-    { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }) },
-    { field: "amountFilled", headerName: t("QTY", { ns: "ColumnsDefs" }) },
-    { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }) },
-  ];
   const orderColumns = [
     { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), minWidth: 100, maxWidth: 200 },
     { id: "marketSymbol", label: t("Symbol"), minWidth: 80, maxWidth: 150 },
@@ -105,6 +88,10 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
   const createSortHandler = property => () => {
     handleRequestSort(property);
   };
+
+  const isExchangeAccountsExists = () => {
+    return exchangeAccounts && exchangeAccounts?.accounts.length > 0;
+  }
 
   const sortedRows = [...(userDetails?.managedOrderList.orders || [])].sort((a, b) => {
     if (orderBy) {
@@ -182,7 +169,8 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
         }}>
         {t("AccountBalance")} {accountBalance}
       </Typography>
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", overflow: "hidden", marginLeft: "25px" }}>
+      {isExchangeAccountsExists() && 
+      (<Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", overflow: "hidden", marginLeft: "25px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("Orders", { ns: "UserDetailsSection" })}</Typography>
         <TableContainer
           sx={{
@@ -257,7 +245,7 @@ export default function UserDetailsSection({ opened, id, user, theme, ...props }
             </TableBody>
           </Table>
         </TableContainer>
-      </Box>
+      </Box>)}
     </Box>
   );
 }

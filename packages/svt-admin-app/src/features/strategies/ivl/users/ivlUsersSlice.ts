@@ -120,7 +120,9 @@ export const ivlUsersSlice = createAppSlice({
           const positionPromises = symbols.map(symbol => {
             return ivlUsersService.getOpenPositions(userId, accountNumber, symbol);
           });
-          return await Promise.all(positionPromises);
+          
+          const result = await Promise.all(positionPromises);
+          return result.filter(x => x != null)
         };
 
         const fetchCurrentDayFillsAndWorkingOrders = async (userId, element) => {
@@ -136,7 +138,7 @@ export const ivlUsersSlice = createAppSlice({
         currentDayFills = result.currentDayFills;
         workingOrders = result.workingOrders;
         openPositions = await openPosition(userId, bot.accountNumber, bot.entryOrderSymbol);
-
+ 
         return { billings, allocations, orders, bot, openPositions, currentDayFills, workingOrders };
       },
       {
