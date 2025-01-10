@@ -66,9 +66,9 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
       selectedWallet
         ? toTableTokensModels(
             wallets?.find(wallet => wallet.walletId.toString() === selectedWallet)?.chainAssets ?? [],
-          ).map(({ tokenName, chainName ,balance }) => ({
+          ).map(({ tokenName, chainName, balance }) => ({
             tokenName,
-            chain : chainName,
+            chain: chainName,
             balance: balance,
           }))
         : [],
@@ -190,7 +190,14 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
           <Typography
             variant="h6"
             component="div"
-            sx={{ alignSelf: "flex-start", fontSize: "14px", marginLeft: "10px", width: "100%" }}>
+            sx={{
+              alignSelf: "flex-start",
+              fontSize: "14px",
+              marginTop: "11px",
+              marginBottom: "-7px",
+              marginLeft: "10px",
+              width: "100%",
+            }}>
             {t("CurrentPosition")}
           </Typography>
 
@@ -332,9 +339,9 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
             sx={{
               alignSelf: "flex-start",
               fontSize: "14px",
-              marginBottom: "13px",
+              marginBottom: "5px",
               paddingLeft: "10px",
-              paddingTop: "4px",
+              paddingTop: "15px",
             }}>
             {t("RebalancedIndexQuantities")}
           </Typography>

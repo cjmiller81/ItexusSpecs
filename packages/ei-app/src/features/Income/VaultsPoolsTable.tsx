@@ -134,7 +134,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             e.cancel = true;
           }}
         />
-        <HeaderFilter height={650} visible={true}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -152,7 +154,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         />
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="vaults"
                 filterBuilderFields={vaultsFilterBuilderFields}

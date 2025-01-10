@@ -104,15 +104,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         showBorders={true}
         onExporting={onExport}
         filterBuilder={{
-          customOperations: [{ name: 'contains', caption: 'Contains' }],
+          customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}>
-        <FilterRow visible={true} 
-        />
+        <FilterRow visible={true} />
         <FilterPanel
           visible={true}
           customizeText={e => (e.text ? e.text : "No Filter Applied")}
@@ -122,7 +121,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
             e.cancel = true;
           }}
         />
-        <HeaderFilter height={650} visible={true}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -159,7 +160,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         </ColumnChooser>
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}

@@ -14,10 +14,10 @@ interface Props {
   icon?: React.ReactNode;
 }
 
-export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide, icon }: Props) => {
+export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide }: Props) => {
   return (
     <List
-      sx={{ width: "100%", bgcolor: "background.paper", pb: 0 }}
+      sx={{ width: "100%", bgcolor: "background.paper", pb: 0, overflowX: "hidden" }}
       component="nav"
       onClick={() => toggleSide(true)}
       aria-labelledby="tools-subheader"
