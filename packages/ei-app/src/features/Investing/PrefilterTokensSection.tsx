@@ -123,7 +123,14 @@ export default function PrefilterTokensSection({
             cursor: "default",
           },
         }}>
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            pointerEvents: "auto !important",
+            cursor: "default",
+          }}>
           <PageTitle
             sx={{ width: "100%" }}
             onClick={e => e.stopPropagation()}>

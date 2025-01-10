@@ -166,7 +166,9 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   };
 
   return (
-    <div ref={containerRef}>
+    <div
+      ref={containerRef}
+      style={{ pointerEvents: "auto" }}>
       <DataGridDef<ICoin>
         onOptionChanged={e => {
           if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {

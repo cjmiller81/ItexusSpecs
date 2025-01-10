@@ -105,6 +105,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   return (
     <div ref={containerRef}>
       <DataGridDef<VaultsData>
+        style={{ pointerEvents: "auto" }}
         id="vaults-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
@@ -134,7 +135,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             e.cancel = true;
           }}
         />
-        <HeaderFilter height={650} visible={true}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel

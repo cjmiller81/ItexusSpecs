@@ -104,7 +104,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         showBorders={true}
         onExporting={onExport}
         filterBuilder={{
-          customOperations: [{ name: 'contains', caption: 'Contains' }],
+          customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
         filterValue={currentFilter || []}
@@ -122,7 +122,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
             e.cancel = true;
           }}
         />
-        <HeaderFilter height={650} visible={true}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
