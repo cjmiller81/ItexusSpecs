@@ -42,13 +42,13 @@ export const ivlUsersService = {
     //const response = await appAxios.get<Billing[]>(`/api/ivl/users/${userId}/billing`);
     //return response.data;
   },
-  getOpenPositions: async (userId: string, accountNumber: string, symbol: string): Promise<OpenPosition[]> => {
+  getOpenPositions: async (userId: string, accountNumber: string, symbol: string): Promise<OpenPosition[] | null> => {
     const response = await appAxios.get<OpenPosition[]>(
       `/api/admin/users/${userId}/accounts/${accountNumber}/positions/${symbol}`,
     );
     
     if (response.status == 404) {
-      return Promise.reject(response.statusText);
+      return null;
     }
     return response.data;
   },
