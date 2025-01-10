@@ -54,16 +54,15 @@ export default function Reports() {
 
   useEffect(() => {
     if (!currentUser) {
-      router.push(`/users/list`, undefined, {
-        shallow: true,
-      });
       return;
     }
 
-    dispatch(fetchUserDetails({ userId: currentUser.userId }));
     router.push(`/users/list/${currentUser.userId}`, undefined, {
       shallow: true,
     });
+
+    handleSetSelection(currentUser.userId);
+    dispatch(fetchUserDetails({ userId: currentUser.userId }));
   }, [currentUser, dispatch]);
 
   useEffect(() => {
