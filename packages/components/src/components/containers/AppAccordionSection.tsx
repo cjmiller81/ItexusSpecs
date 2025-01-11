@@ -43,14 +43,15 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={tooltip}>
-            <IconButton sx={{ cursor: "pointer" }}>
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
               <ExpandMoreIcon />
             </IconButton>
           </CustomTooltip>
         }
         sx={{
+          pointerEvents: "none",
           "&.MuiAccordionSummary-root:hover": {
-            cursor: "default",
+            cursor: "default !important",
           },
         }}>
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
