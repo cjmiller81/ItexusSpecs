@@ -116,12 +116,13 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton sx={{ cursor: "pointer" }}>
+              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
                 <ExpandMoreIcon />
               </IconButton>
             </CustomTooltip>
           }
           sx={{
+            pointerEvents: "none",
             "&.MuiAccordionSummary-root:hover": {
               cursor: "default",
             },

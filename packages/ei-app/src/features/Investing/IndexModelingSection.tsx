@@ -77,12 +77,12 @@ export const IndexModelingSection = ({
     <AppAccordionSection
       persistKey={persistKey}
       defaultExpanded
-      sx={{ cursor: "default !important" }}
+      sx={{ cursor: "default !important", pointerEvents: "none" }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={
         <Button
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, pointerEvents: "auto" }}
           onClick={event => {
             event.stopPropagation();
             onExport();
