@@ -369,34 +369,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           }
         />
         <Column
-          dataField={PrefilterTokensField.Chains}
-          caption={PrefilterTokensLabel.Chains}
-          alignment="left"
-          visible={true}
-          dataType="string"
-          calculateFilterExpression={calculateFilterExpression}
-          minWidth={150}
-          width={210}
-          allowHiding={true}>
-          <HeaderFilter
-            visible={true}
-            dataSource={{
-              store: {
-                type: "array",
-                data: chains,
-              },
-              map: chainsToFilterItem,
-            }}
-            search={{
-              enabled: true,
-              mode: "contains",
-              searchExpr: ["name"],
-            }}
-            height={650}>
-            <Search enabled={true} />
-          </HeaderFilter>
-        </Column>
-        <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
           alignment="center"
@@ -428,6 +400,34 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               mode: "contains",
               searchExpr: ["name"],
             }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
+        <Column
+          dataField={PrefilterTokensField.Chains}
+          caption={PrefilterTokensLabel.Chains}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          minWidth={150}
+          width={210}
+          allowHiding={true}>
+          <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: chainsToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}
+            height={650}>
             <Search enabled={true} />
           </HeaderFilter>
         </Column>
