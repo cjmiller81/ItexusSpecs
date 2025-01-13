@@ -32,7 +32,7 @@ export enum DefiField {
 
 export enum DefiLabel {
   Chain = "Chain",
-  Dex = "Dex",
+  Dex = "DEX",
   Project = "Project",
   Symbol = "Pool",
   TVL = "TVL",

@@ -86,8 +86,24 @@ export const getIndexPositionTableColumns = (): GridColDef<PositionAllocation>[]
     },
 
     {
-      field: "connection",
-      headerName: t("Connection"),
+      field: "exchanges",
+      headerName: t("Exchanges"),
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionAllocation, any, any>) => (
+        <Typography
+          variant="body1"
+          sx={{ textTransform: "uppercase", fontSize: "0.80rem" }}>
+          {params.row.connection}
+        </Typography>
+      ),
+    },
+    {
+      field: "chain",
+      headerName: t("Chain"),
       sortable: false,
       editable: false,
       filterable: false,

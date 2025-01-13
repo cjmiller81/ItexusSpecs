@@ -219,6 +219,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}
           dataType="string"
           allowHiding={true}
+          width="320px"
         />
         <Column
           dataField={DefiField.TVL}
@@ -230,6 +231,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           allowHiding={true}
           customizeText={toDollarAmountField}
           sortOrder="desc"
+          width="auto"
         />
         <Column
           dataField={DefiField.APY}
@@ -240,6 +242,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          width="auto"
         />
         <Column
           dataField={DefiField.ApyBase}
@@ -291,6 +294,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          width="auto"
         />
         <Column
           dataField={DefiField.VolumeUsd1d}
