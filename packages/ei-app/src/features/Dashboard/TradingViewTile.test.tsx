@@ -1,4 +1,6 @@
 import { render, screen } from "@testing-library/react";
+// @ts-ignore
+import { act } from "react";
 import { TradingViewTile } from "./TradingViewTile";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -29,42 +31,48 @@ describe("TradingViewTile", () => {
   const title = "Trading View";
   const icon = "chart-icon";
 
-  it("should render the DashboardTile with the correct title and icon", () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <TradingViewTile
-          title={title}
-          icon={icon}
-        />
-      </ThemeProvider>,
-    );
+  it("should render the DashboardTile with the correct title and icon", async () => {
+    await act(async () => {
+      render(
+        <ThemeProvider theme={theme}>
+          <TradingViewTile
+            title={title}
+            icon={icon}
+          />
+        </ThemeProvider>,
+      );
+    });
 
     expect(screen.getByText(title)).toBeInTheDocument();
   });
 
-  it("should render the dynamic components", () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <TradingViewTile
-          title={title}
-          icon={icon}
-        />
-      </ThemeProvider>,
-    );
+  it("should render the dynamic components", async () => {
+    await act(async () => {
+      render(
+        <ThemeProvider theme={theme}>
+          <TradingViewTile
+            title={title}
+            icon={icon}
+          />
+        </ThemeProvider>,
+      );
+    });
 
     expect(screen.getByTestId("ticker-tape")).toBeInTheDocument();
     expect(screen.getByTestId("advanced-chart")).toBeInTheDocument();
   });
 
-  it("should pass the correct theme to dynamic components", () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <TradingViewTile
-          title={title}
-          icon={icon}
-        />
-      </ThemeProvider>,
-    );
+  it("should pass the correct theme to dynamic components", async () => {
+    await act(async () => {
+      render(
+        <ThemeProvider theme={theme}>
+          <TradingViewTile
+            title={title}
+            icon={icon}
+          />
+        </ThemeProvider>,
+      );
+    });
 
     expect(screen.getByTestId("ticker-tape")).toHaveAttribute("data-theme", "light");
     expect(screen.getByTestId("advanced-chart")).toHaveAttribute("data-theme", "light");
