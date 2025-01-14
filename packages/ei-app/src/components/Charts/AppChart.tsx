@@ -1,29 +1,31 @@
-import { Box, BoxProps } from "@mui/material"
-import { SxProps, styled, useTheme } from "@mui/material/styles"
-import { ApexOptions } from "apexcharts"
-import { merge } from "ts-deepmerge"
-import dynamic from "next/dynamic"
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false })
+import { Box, BoxProps } from "@mui/material";
+import { SxProps, styled, useTheme } from "@mui/material/styles";
+import { ApexOptions } from "apexcharts";
+import { merge } from "ts-deepmerge";
+import dynamic from "next/dynamic";
+
+const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export interface Props extends BoxProps {
-  optionsOverrides?: ApexOptions
-  series: ApexAxisChartSeries | ApexNonAxisChartSeries | undefined // eslint-disable-line no-undef
-  height: number
-  sx?: SxProps
+  optionsOverrides?: ApexOptions;
+  series: ApexAxisChartSeries | ApexNonAxisChartSeries | undefined; // eslint-disable-line no-undef
+  height: number;
+  sx?: SxProps;
 }
+
 export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) => {
-  const theme = useTheme()
+  const theme = useTheme();
   const defaultOptions: ApexOptions = {
     chart: {
       foreColor: theme.palette.text.primary,
       toolbar: {
         tools: {
           pan: false,
-          download:false,
+          download: false,
           zoom: '<img src="/reset.svg" style="visibility:hidden;" alt="zoom"/>',
           zoomin: false,
           zoomout: false,
-          reset: '<img src="/reset.svg" width="20" style="padding: 6px 0 10px 0 " alt="reset"/>'
+          reset: '<img src="/reset.svg" width="20" style="padding: 6px 0 10px 0 " alt="reset"/>',
         },
         show: true,
       },
@@ -44,10 +46,10 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
     tooltip: {
       enabled: true,
     },
-  }
+  };
 
-  const options = optionsOverrides ? merge(defaultOptions, optionsOverrides) : defaultOptions
-  //console.log(options)
+  const options = optionsOverrides ? merge(defaultOptions, optionsOverrides) : defaultOptions;
+
   return (
     <Box {...props}>
       {typeof window !== "undefined" && (
@@ -60,8 +62,8 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
         />
       )}
     </Box>
-  )
-}
+  );
+};
 
 const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
   color: theme.palette.text.disabled,
@@ -81,5 +83,4 @@ const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
   "& .apexcharts-xaxistooltip": {
     display: "none",
   },
-}))
-
+}));

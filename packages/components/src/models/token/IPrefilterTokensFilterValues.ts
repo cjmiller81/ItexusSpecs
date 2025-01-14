@@ -1,14 +1,14 @@
-export type FilterType = null | "market-cap" | "liquidity-pool" | "vaults";
+export type FilterType = null | "market-cap" | "liquidity-pool" | "vaults | null";
 
 export interface IPrefilterTokensFilterValues {
   id: string;
   name: string;
   description?: string | null;
   filterType?: FilterType;
-  icon: string | null;
-  isPublic: boolean;
+  icon?: string | null;
+  isPublic?: boolean;
   OwnerUserId?: string | null;
-  isPublished: boolean;
+  isPublished?: boolean;
   accessPlanName?: string | null;
   filter: object[];
 }
