@@ -32,7 +32,7 @@ export enum DefiField {
 
 export enum DefiLabel {
   Chain = "Chain",
-  Dex = "Dex",
+  Dex = "DEX",
   Project = "Project",
   Symbol = "Pool",
   TVL = "TVL",
@@ -74,6 +74,11 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
+    dataType: "string",
+  },
+  {
+    caption: DefiLabel.Dex,
+    dataField: DefiField.Dex,
     dataType: "string",
   },
   {

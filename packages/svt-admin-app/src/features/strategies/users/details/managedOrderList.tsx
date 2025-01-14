@@ -105,6 +105,14 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
     },
   });
 
+  const legsCheckout = () => {
+    return row.legs &&
+      row.legs.length > 0 &&
+      (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption")
+      ? "Option Legs"
+      : row.legs[0].marketSymbol;
+  };
+
   return (
     <ThemeProvider theme={themeConfig}>
       <React.Fragment>
@@ -243,11 +251,7 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
                   variant="subtitle1"
                   component="div"
                   sx={{ marginRight: 3, fontSize: "16px", fontWeight: "500" }}>
-                  {row.legs &&
-                  row.legs.length > 0 &&
-                  (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption")
-                    ? "Option Legs"
-                    : row.legs[0].marketSymbol}
+                  {legsCheckout()}
                 </Typography>
                 <Box sx={{ maxWidth: "500px" }}>
                   <Table

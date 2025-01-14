@@ -296,6 +296,7 @@
     "FullyDilutedValuation": "Fully Diluted Valuation",
     "Action": "Action",
     "Connection": "Connection",
+    "Exchanges": "Exchanges",
     "ExchangeAccountName": "Centralized Exchange Account Name"
   },
   "SymbolLookup": {

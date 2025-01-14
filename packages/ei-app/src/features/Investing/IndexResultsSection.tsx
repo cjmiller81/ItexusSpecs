@@ -422,22 +422,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 rows={positionRows}
               />
             </Box>
-          </Box>
-
-          <Box
-            sx={{
-              flexShrink: 0,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "30%",
-              "@media (max-width: 700px)": {
-                margin: "0 auto",
-                width: "100% !important",
-              },
-            }}>
-            <ConnectionCard />
-          </Box>
+          </Box>      
         </Grid>
       </Grid>
     </AppAccordionSection>

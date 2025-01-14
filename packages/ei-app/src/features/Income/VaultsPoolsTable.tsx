@@ -29,6 +29,7 @@ import { vaultsFilterBuilderFields } from "./vaultsTableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -104,7 +105,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
 
   return (
     <div ref={containerRef}>
-      <DataGridDef<VaultsData>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<VaultsData>
         style={{ pointerEvents: "auto" }}
         id="vaults-tokens-table"
         dataSource={dataSource}
@@ -155,7 +157,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         />
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="vaults"
                 filterBuilderFields={vaultsFilterBuilderFields}
@@ -301,7 +303,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };
