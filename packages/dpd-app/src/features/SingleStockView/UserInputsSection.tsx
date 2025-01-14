@@ -96,10 +96,19 @@ const tableScrollSx = {
     const startDateObject = startDate ? moment.utc(startDate).startOf("day").toDate() : new Date();
     const endDateObject = endDate ? moment.utc(endDate).startOf("day").toDate() : new Date();
 
+    const toISODate = (date) => date.toISOString();
+
+const formattedStartDate = toISODate(startDateObject);
+const formattedEndDate = toISODate(endDateObject);
+
+console.log("Formatted Start Date (ISO):", formattedStartDate);
+console.log("Formatted End Date (ISO):", formattedEndDate);
+
+
     dispatch(
         fetchStock({
-            startDate: startDateObject,
-            endDate: endDateObject, 
+            startDate: formattedStartDate,
+            endDate: formattedEndDate, 
             ticker,
         })
         
@@ -133,7 +142,7 @@ const tableScrollSx = {
       };
 
       const calculateStatistics = (data: Market[]) => {
-        const totalVolume = data.reduce((acc, item) => acc + item.total, 0);
+        const totalVolume = data.reduce((acc, item) => acc + item.totalVolume, 0);
         const totalBought = data.reduce((acc, item) => acc + item.bought, 0);
         const totalSold = data.reduce((acc, item) => acc + item.sold, 0);
         const avgTotalVolume = data.length > 0 ? totalVolume / data.length : 0;

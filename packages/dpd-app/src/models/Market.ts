@@ -1,10 +1,10 @@
 export interface Market {
-    date: Date;
-    symbol: string;
+    tradeReportDate: Date;
+    SecuritiesInformationProcessorSymbolIdentifier: string;
     bought: number;
     sold: number;
     percentAvg: number;
     buyRatio: number;
     dpIndex: number;
-    total: number;
+    totalVolume: number;
 }

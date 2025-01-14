@@ -10,7 +10,7 @@ export const stockApi = createApi({
     endpoints: builder => ({
         getStockData: builder.query<Market[], { ticker: string; fromDate: string; toDate: string }>({
             query: ({ ticker, fromDate, toDate }) => ({
-                url: `/api/dpd/${ticker}/range/${fromDate}/${toDate}`,
+                url: `/api/finra/regSohDaily/${ticker}/${fromDate}/${toDate}`,
                 method: "GET",
             }),
         }),
