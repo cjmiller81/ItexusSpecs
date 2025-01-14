@@ -193,7 +193,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
 
   return (
     <>
-      <StyledAdaptivePageBox>
+      <StyledAdaptivePageBox sx={{ width: "100%" }}>
         <Select
           fullWidth
           size="small"
@@ -209,6 +209,13 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
             fontWeight: 600,
             textAlign: "center",
             borderColor: "#03A9F4",
+            "@media (max-width: 1030px) and (min-width: 900px)": {
+              width: "210px",
+              minWidth: 200,
+            },
+            "@media (max-width: 900px)": {
+              mt: 1,
+            },
             "& .MuiSelect-icon": {
               fill: theme.palette.mode === "dark" ? "#363640" : "white",
             },
@@ -232,14 +239,35 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
         </Select>
         <StyledFilterButton
           variant="contained"
-          sx={{ minWidth: 250 }}
+          sx={{
+            minWidth: 250,
+            maxHeight: 32,
+            "@media (min-width: 900px) and (max-width: 1030px)": {
+              width: "210px",
+              minWidth: 200,
+            },
+            "@media (max-width: 900px)": {
+              mt: 1,
+            },
+          }}
           color={"success"}
           onClick={() => onOpen()}
           startIcon={<TuneIcon />}>
           {t("BuildStrategyFilter")}
         </StyledFilterButton>
         <StyledFilterButton
-          sx={{ minWidth: 150 }}
+          sx={{
+            width: "150px",
+            minWidth: 80,
+            "@media (max-width: 1030px) and (min-width: 900px)": {
+              width: "113px",
+              minWidth: 80,
+              fontSize: "12px",
+            },
+            "@media (max-width: 900px)": {
+              mt: 1,
+            },
+          }}
           variant="contained"
           color={"error"}
           disabled={!filterValue}

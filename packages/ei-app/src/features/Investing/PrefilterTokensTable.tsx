@@ -29,6 +29,7 @@ import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/Al
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import SimpleBar from "simplebar-react";
 import { ICategory, IExchange, IPlatform } from "components";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
@@ -169,7 +170,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     <div
       ref={containerRef}
       style={{ pointerEvents: "auto" }}>
-      <DataGridDef<ICoin>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<ICoin>
         onOptionChanged={e => {
           if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
             setTimeout(() => {
@@ -251,7 +253,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
 
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px", overflow: "hidden" }}>
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="market-cap"
                 filterBuilderFields={filterBuilderFields}
@@ -505,7 +507,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };
