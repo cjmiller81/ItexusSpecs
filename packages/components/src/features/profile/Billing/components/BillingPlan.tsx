@@ -99,29 +99,31 @@ export const BillingPlan: FC<Props> = ({
                 </Typography>
               </Stack>
             )}
-            {isCustomPricing && (
-              <Button
-                sx={{
-                  mb: "auto",
-                  height: "50px",
-                  fontSize: "11.5px",
-                }}
-                fullWidth
-                variant="contained">
-                {t("ContactUs")}
-              </Button>
-            )}
           </Stack>
 
-          <Button
-            onClick={onSelectPlan}
-            sx={{
-              height: "40px",
-            }}
-            variant={isSelected ? "contained" : "outlined"}
-            fullWidth>
-            {isSelected ? t("CurrentPlan") : t("SwitchToPlan")}
-          </Button>
+          {isCustomPricing && planName === "Enterprise" && (
+            <Button
+              sx={{
+                height: "40px",
+                fontSize: "11.5px",
+              }}
+              fullWidth
+              variant="contained">
+              {t("ContactUs")}
+            </Button>
+          )}
+
+          {planName !== "Enterprise" && (
+            <Button
+              onClick={onSelectPlan}
+              sx={{
+                height: "40px",
+              }}
+              variant={isSelected ? "contained" : "outlined"}
+              fullWidth>
+              {isSelected ? t("CurrentPlan") : t("SwitchToPlan")}
+            </Button>
+          )}
 
           <List
             sx={{
