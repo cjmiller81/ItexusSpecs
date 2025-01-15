@@ -11,7 +11,7 @@ const getDefaultPlans = (wallets: string, chains: string, priceUpdates: string, 
     },
     {
       permission: T("WalletChainsSupported"),
-      permissionValue: chains.toString(),
+      permissionValue: chains?.toString(),
       isEnabled: true,
     },
     {
@@ -31,17 +31,22 @@ export const billingPlans: BillingPlan[] = [
   {
     planName: T("Basic"),
     price: 19,
-    plans: getDefaultPlans("1", "2", T("PerDay"), T("TotalApiCalls", {calls: "100,000"})),
+    plans: getDefaultPlans("1", "2", T("PerDay"), T("TotalApiCalls", { calls: "100,000" })),
   },
   {
     planName: T("Standard"),
     price: 49,
-    plans: getDefaultPlans(T("UpTo", { times: 5 }), "4", T("PerHour"), T("TotalApiCalls", {calls: "200,000"})),
+    plans: getDefaultPlans(T("UpTo", { times: 5 }), "4", T("PerHour"), T("TotalApiCalls", { calls: "200,000" })),
   },
   {
     planName: T("Premium"),
     price: 99,
-    plans: getDefaultPlans(T("UpTo", { times: 10 }), "10", T("EveryMinutes", { minutes: 10 }), T("TotalApiCalls", {calls: "500,000"})),
+    plans: getDefaultPlans(
+      T("UpTo", { times: 10 }),
+      "10",
+      T("EveryMinutes", { minutes: 10 }),
+      T("TotalApiCalls", { calls: "500,000" }),
+    ),
   },
   {
     planName: T("Enterprise"),
