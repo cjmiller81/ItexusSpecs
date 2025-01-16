@@ -152,7 +152,13 @@
     "APISecret*": "API Secret *",
     "APISecret": "API Secret",
     "APIPassphrase": "API Passphrase",
-    "Connect*": "Connect"
+    "Connect*": "Connect",
+    "PublicAPIKey": "Public API Key",
+    "PrivateAPIKey": "Private API Key",
+    "AddCustomExchangeAccountName": "Add Custom Exchange Account Name",
+    "AddCentralizedExchangeConnection": "Add Centralized Exchange Connection",
+    "ConnectKrakenExchange": "Connect Kraken Exchange",
+    "ConnectCoinbaseExchange": "Connect Coinbase Exchange"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
