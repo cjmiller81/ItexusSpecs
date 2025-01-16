@@ -38,9 +38,10 @@ export interface IPrefilterTokensTable {
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
   onExport: (e: ExportingEvent<PoolData, any>) => void;
+  dexs: string[];
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport }) => {
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport, dexs }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
@@ -63,6 +64,38 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
   }, [datagrid, currentFilter, onUpdate]);
+
+  const calculateFilterExpression = useCallback(function (
+      this: any,
+      filterValues: any,
+      selectedFilterOperation: string | null,
+      _target: string,
+    ): any {
+      try {
+        let column = this;
+        if (filterValues) {
+          let selectedValue = filterValues;
+  
+          if (selectedValue && selectedFilterOperation === "=") {
+            return [column.dataField, "contains", selectedValue];
+          }
+  
+          if (selectedFilterOperation === "contains") {
+            return [column.dataField, "contains", selectedValue];
+          }
+  
+          if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+            return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+          }
+  
+          return column.defaultCalculateFilterExpression.apply(this, arguments);
+        }
+        return column.defaultCalculateFilterExpression.apply(this, arguments);
+      } catch (err) {
+        console.error("Error on calculateFilterExpression:", err);
+        return null;
+      }
+    }, []);
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
@@ -221,8 +254,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}
           dataType="string"
           allowHiding={true}
+          calculateFilterExpression={calculateFilterExpression}
           width="320px"
-        />
+        >
+           <HeaderFilter
+            height={650}
+            visible={true}
+            dataSource={{
+            store: {
+              type: "array",
+              data: dexs.map(dex => ({ value: dex, text: dex })),
+              },
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+          </Column>
         <Column
           dataField={DefiField.TVL}
           caption={DefiLabel.TVL}
