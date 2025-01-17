@@ -29,7 +29,7 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
         },
       }}
       maxWidth="sm">
-      <DialogTitle>{title}</DialogTitle>
+      <DialogTitle>{t("AddCentralizedExchangeConnection")}</DialogTitle>
       <DialogContent>
         <Typography
           variant="subtitle1"
