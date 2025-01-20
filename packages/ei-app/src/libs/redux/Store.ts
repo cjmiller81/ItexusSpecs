@@ -9,6 +9,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore } from "redux-persist";
 import { RootState, persistedReducer } from "./RootReducer";
 import { categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
+import { dexsApi } from "@/features/Income/DexApi";
 
 const makeStore = () => {
   return configureStore({
@@ -21,6 +22,7 @@ const makeStore = () => {
         calendarEventsApi.middleware,
         categoriesEventsApi.middleware,
         defisApi.middleware,
+        dexsApi.middleware,
         chainsApi.middleware,
         exchangesApi.middleware,
         categoriesApi.middleware,

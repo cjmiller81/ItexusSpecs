@@ -22,12 +22,12 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
       onClose={onClose}
       fullWidth
       maxWidth="sm">
-      <DialogTitle>{t("ConnectExchange")}</DialogTitle>
+      <DialogTitle>{t("ConnectKrakenExchange")}</DialogTitle>
       <DialogContent>
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {`${t("SelectService")}*`}
+          {`${t("AddCustomExchangeAccountName")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -65,7 +65,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {`${t("APIKey")}*`}
+          {`${t("PublicAPIKey")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -73,7 +73,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           value={formik.values.apiKey}
           onChange={formik.handleChange}
           name="apiKey"
-          placeholder={`${t("APIKey")}*`}
+          placeholder={`${t("PublicAPIKey")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiKey && Boolean(formik.errors.apiKey)}
           helperText={formik.touched.apiKey && (typeof formik.errors.apiKey === "string" ? formik.errors.apiKey : "")}
@@ -82,7 +82,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {`${t("APISecret")}*`}
+          {`${t("PrivateAPIKey")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -91,32 +91,11 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           value={formik.values.apiSecret}
           onChange={formik.handleChange}
           name="apiSecret"
-          placeholder={`${t("APISecret")}*`}
+          placeholder={`${t("PrivateAPIKey")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiSecret && Boolean(formik.errors.apiSecret)}
           helperText={
             formik.touched.apiSecret && (typeof formik.errors.apiSecret === "string" ? formik.errors.apiSecret : "")
-          }
-        />
-
-        <Typography
-          variant="subtitle2"
-          sx={{ marginBottom: "8px" }}>
-          {t("APIPassphrase")}
-        </Typography>
-        <TextField
-          fullWidth
-          variant="outlined"
-          type="password"
-          value={formik.values.apiPassphrase}
-          onChange={formik.handleChange}
-          name="apiPassphrase"
-          placeholder={t("APIPassphrase")}
-          sx={{ marginBottom: "12px" }}
-          error={formik.touched.apiPassphrase && Boolean(formik.errors.apiPassphrase)}
-          helperText={
-            formik.touched.apiPassphrase &&
-            (typeof formik.errors.apiPassphrase === "string" ? formik.errors.apiPassphrase : "")
           }
         />
       </DialogContent>

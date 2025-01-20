@@ -27,7 +27,7 @@ export enum DefiField {
   VolumeUsd1d = "volumeUsd1d",
   VolumeUsd7d = "volumeUsd7d",
   ApyBaseInception = "apyBaseInception",
-  Dex = "dex"
+  Dex = "dexFormatted"
 }
 
 export enum DefiLabel {

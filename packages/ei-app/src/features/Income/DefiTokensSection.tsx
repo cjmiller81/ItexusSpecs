@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
+import { useGetDexsQuery } from "./DexApi";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -30,11 +31,11 @@ type Props = Omit<AccordionProps, "children"> & {
 
 export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
+  const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
   const theme = useTheme();
   const { sidebarOpened } = useAppSelector(store => store.ui);
-
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
@@ -149,7 +150,8 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
             pointerEvents: "auto",
           }}>
           <MemoizedDefiPoolsTable
-            loading={isPoolsLoading}
+            loading={isPoolsLoading && isDexsLoading}
+            dexs={dexsData || []} 
             onUpdate={() => {}}
             onExport={onExporting}
             dataSource={allTokensSource}
