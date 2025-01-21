@@ -29,8 +29,24 @@ export default function MyWalletsPage() {
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
+  const [selectedWalletsIds, setSelectedWalletsIds] = useState<string[]>([]);
 
   const { t } = useTranslation("MyWalletsPage");
+
+  const onSelectedRowsChanged = (rows: Wallet[]) => {
+    if (rows.length > 0) {
+      const selectedAddresses = rows.map(row => row.address);
+      dispatch(selectWallets(rows));
+      setSelectedWalletsIds(selectedAddresses); 
+    } else {
+      setSelectedWalletsIds([]);
+      dispatch(selectWallets([]));
+    }
+  };
+
+  const onUpdateWallet = (wallet: Wallet) => {
+    dispatch(updateWallet(wallet));
+  };
 
   const fetchHistoricalData = () => {
     if (isDatesValid && fromDate && toDate) {
@@ -63,23 +79,23 @@ export default function MyWalletsPage() {
     dispatch(fetchTotalWalletsWorthData({}));
   }, [dispatch, selectedWallets]);
 
-  const onRowsChanged = (rows: Wallet[]) => {
-    dispatch(selectWallets(rows));
-  };
+  // const onRowsChanged = (rows: Wallet[]) => {
+  //   dispatch(selectWallets(rows));
+  // };
 
-  const onUpdateWallet = (wallet: Wallet) => {
-    dispatch(updateWallet(wallet));
-  };
+  // const onUpdateWallet = (wallet: Wallet) => {
+  //   dispatch(updateWallet(wallet));
+  // };
 
   return (
     <Stack>
       <MyWalletsSection
         onUpdateWallet={onUpdateWallet}
-        selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
+        selectedWalletsIds={selectedWalletsIds}
         totalWalletsWorthData={totalWalletsWorthData}
         loading={statusFetchingWallets === "loading"}
         wallets={wallets}
-        onSelectedRowsChanged={rows => onRowsChanged(rows)}
+        onSelectedRowsChanged={onSelectedRowsChanged}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
       />
