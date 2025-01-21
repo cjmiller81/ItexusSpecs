@@ -81,7 +81,7 @@ export const MyWalletsSection = ({
       apiPassphrase: "",
       network: "",
       customRpcUrl: "",
-      chainName: "",
+      chainName: selectedService === "Kraken" ? "Kraken" : "Coinbase",
     },
     validationSchema: Yup.object({
       apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
@@ -115,6 +115,7 @@ setExchange([...exchange, newExchanges]);
       value === "Coinbase"
     ) {
       setSelectedService(value);
+      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
     }
   };
 
