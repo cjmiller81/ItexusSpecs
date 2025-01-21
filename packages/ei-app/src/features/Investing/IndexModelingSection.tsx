@@ -2,7 +2,7 @@ import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModel
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, styled, useTheme } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
 import { useTranslation } from "react-i18next";
@@ -34,6 +34,8 @@ export const IndexModelingSection = ({
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
+  const theme = useTheme();
+
   const onExport = () => {
     const updatedAssets = tableAssets.map(asset => ({
       symbol: asset.symbol,
@@ -73,11 +75,25 @@ export const IndexModelingSection = ({
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
   };
 
+  const darkThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none",
+    position: "inherit",
+    borderRadius: "2px",
+    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#363640",
+    border: "1.6px solid #25252AFF",
+    outline: "1.9px solid #363640",
+    "& .MuiAccordionSummary-root": {
+      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
+    },
+  };
+
   return (
     <AppAccordionSection
       persistKey={persistKey}
       defaultExpanded
-      sx={{ cursor: "default !important", pointerEvents: "none" }}
+      sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", pointerEvents: "none" }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={
@@ -89,7 +105,7 @@ export const IndexModelingSection = ({
           }}
           variant="outlined">
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <DownloadIcon></DownloadIcon>
+            <DownloadIcon />
             {t("Export")}
           </Box>
         </Button>
