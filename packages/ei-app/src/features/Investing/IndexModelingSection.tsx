@@ -2,9 +2,10 @@ import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModel
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, styled, TextField, Typography } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
+import AppTextField from "components/src/components/common/inputs/AppTextField";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 
@@ -116,13 +117,17 @@ export const IndexModelingSection = ({
               maxDecimals={2}
             />
           )}
+          <Typography sx={{height:"0px", color:"lightgray", minWidth: 120, width: "100%"}}>{t("WalletCapital", { ns: "IndexModelingSection" })}</Typography>
+          <TextField sx={{minWidth: 120, width: "100%"}}></TextField>
+
           <AppNumberInput
-            label={t("TotalCapital")}
+            label={t("DeploymentCapital", { ns: "IndexModelingSection" })}
             min={0}
             step={10}
             value={capital}
             onChange={(_, value) => onCapitalChange(value || 0)}
           />
+
         </LeftContainer>
         <RightContainer>
           <StyledWalletsTable
