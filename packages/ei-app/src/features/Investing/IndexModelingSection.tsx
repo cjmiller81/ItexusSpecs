@@ -2,10 +2,10 @@ import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModel
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, styled, TextField, Typography } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Typography } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
-import AppTextField from "components/src/components/common/inputs/AppTextField";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 
@@ -35,6 +35,11 @@ export const IndexModelingSection = ({
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
+  const [useWalletCapital, setUseWalletCapital] = useState(true)
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUseWalletCapital(event.target.checked);
+  };
+  
   const onExport = () => {
     const updatedAssets = tableAssets.map(asset => ({
       symbol: asset.symbol,
@@ -117,16 +122,43 @@ export const IndexModelingSection = ({
               maxDecimals={2}
             />
           )}
-          <Typography sx={{height:"0px", color:"lightgray", minWidth: 120, width: "100%"}}>{t("WalletCapital", { ns: "IndexModelingSection" })}</Typography>
-          <TextField sx={{minWidth: 120, width: "100%"}}></TextField>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <Typography variant="body1" sx={{ textAlign: "center", flex: 1 }}>
+              {t("WalletCapital", { ns: "IndexModelingSection" })}
+            </Typography>
+            
+            <FormControlLabel
+              control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
+              label=""
+              labelPlacement="top"
+              sx={{ flex: 0 }}
+            />
+            
+            <Typography variant="body1" sx={{ paddingRight: "10px", textAlign: "center", flex: 1 }}>
+              {t("DeploymentCapital", { ns: "IndexModelingSection" })}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <TextField
+              variant="outlined"
+              fullWidth
+              sx={{ width: "70%", height: "10px",marginTop:"5.4px" }}
+              value={capital}
+              disabled={useWalletCapital}
+              inputProps={{ style: { padding: "13px" } }}
+            />
 
           <AppNumberInput
-            label={t("DeploymentCapital", { ns: "IndexModelingSection" })}
+          style={{width:"70%", marginLeft: "auto" }}
             min={0}
             step={10}
             value={capital}
             onChange={(_, value) => onCapitalChange(value || 0)}
           />
+
+
+          </Box>
 
         </LeftContainer>
         <RightContainer>
