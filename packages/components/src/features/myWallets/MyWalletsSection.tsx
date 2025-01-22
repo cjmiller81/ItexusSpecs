@@ -273,6 +273,7 @@ setExchange([...exchange, newExchanges]);
           })}
           rows={wallets || []}
           rowSelectionModel={selectedWalletsIds}
+          checkboxSelection={true}
         />
       </Box>
 
