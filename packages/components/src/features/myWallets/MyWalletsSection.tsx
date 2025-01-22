@@ -256,7 +256,6 @@ setExchange([...exchange, newExchanges]);
             row: ExpandableRow,
           }}
           onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
-            // Обновляем состояние с выбранными строками
             onSelectedChanged(
               wallets!.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
             );
