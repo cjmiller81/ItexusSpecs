@@ -75,7 +75,7 @@ export default function MyWalletsPage() {
     <Stack>
       <MyWalletsSection
         onUpdateWallet={onUpdateWallet}
-        selectedWalletsIds={selectedWallets.length > 0 ? [selectedWallets[0].address] : []}
+        selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
         loading={statusFetchingWallets === "loading"}
         wallets={wallets}
