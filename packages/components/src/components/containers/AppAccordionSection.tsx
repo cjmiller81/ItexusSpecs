@@ -55,7 +55,10 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
 
   return (
     <StatePersistedAccordion
-      sx={theme.palette.mode === "dark" ? darkThemeStyles : {}}
+      sx={{
+        ...(theme.palette.mode === "dark" ? darkThemeStyles : {}),
+        pointerEvents: "auto",
+      }}
       defaultExpanded
       {...props}>
       <StyledAccordionSummary
