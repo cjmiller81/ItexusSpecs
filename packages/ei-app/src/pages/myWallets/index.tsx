@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Stack } from "@mui/material";
 import {
   LookUpOption,
-  MyWalletsSection,
   Wallet,
   createWallet,
   deleteWallet,
@@ -17,6 +16,7 @@ import {
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MyWalletsSectionForPage } from "../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
@@ -25,7 +25,7 @@ export default function MyWalletsPage() {
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
     useAppSelector(state => state.walletWorthChart);
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
-  const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, 'day').toDate());
+  const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, "day").toDate());
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
@@ -73,7 +73,7 @@ export default function MyWalletsPage() {
 
   return (
     <Stack>
-      <MyWalletsSection
+      <MyWalletsSectionForPage
         onUpdateWallet={onUpdateWallet}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
