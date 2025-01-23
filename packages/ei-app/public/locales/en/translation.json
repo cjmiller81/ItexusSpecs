@@ -160,7 +160,8 @@
     "ConnectKrakenExchange": "Connect Kraken Exchange",
     "ConnectCoinbaseExchange": "Connect Coinbase Exchange",
     "WalletCapital": "Wallet Capital",
-    "DeploymentCapital": "Deployment Capital"
+    "DeploymentCapital": "Deployment Capital",
+    "SelectSavedWallet": "Please select a saved wallet from Index Results versus Wallet below"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",

@@ -2,7 +2,7 @@ import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModel
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Typography } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
 import React, { useState } from "react";
@@ -19,6 +19,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
+  selectedWallet: string;
 }
 
 export const IndexModelingSection = ({
@@ -31,13 +32,23 @@ export const IndexModelingSection = ({
   tableAssets,
   isEqualWeight,
   persistKey,
+  selectedWallet,
   ...props
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const [useWalletCapital, setUseWalletCapital] = useState(true)
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUseWalletCapital(event.target.checked);
+    if (!selectedWallet) {
+      // Если кошелек не выбран, показываем подсказку
+      setIsTooltipOpen(true);
+      event.preventDefault(); // Блокируем изменение состояния переключателя
+    } else {
+      setUseWalletCapital(event.target.checked); // Если кошелек выбран, меняем состояние переключателя
+      setIsTooltipOpen(false); // Скрываем подсказку, если переключили
+    }
   };
   
   const onExport = () => {
@@ -78,6 +89,7 @@ export const IndexModelingSection = ({
     XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
   };
+  console.log('Selected wallet:', selectedWallet);
 
   return (
     <AppAccordionSection
@@ -127,12 +139,21 @@ export const IndexModelingSection = ({
               {t("WalletCapital", { ns: "IndexModelingSection" })}
             </Typography>
             
-            <FormControlLabel
-              control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
-              label=""
-              labelPlacement="top"
-              sx={{ flex: 0 }}
-            />
+            <Tooltip
+              open={isTooltipOpen}
+              title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
+              placement="top"
+              arrow
+            >
+              <span>
+                <FormControlLabel
+                  control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
+                  label=""
+                  labelPlacement="top"
+                  sx={{ flex: 0 }}
+                />
+              </span>
+            </Tooltip>
             
             <Typography variant="body1" sx={{ paddingRight: "10px", textAlign: "center", flex: 1 }}>
               {t("DeploymentCapital", { ns: "IndexModelingSection" })}

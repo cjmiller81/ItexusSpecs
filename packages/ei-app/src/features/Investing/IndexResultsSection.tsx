@@ -39,9 +39,10 @@ import { ConnectionCard } from "@/features/Investing/ConnectionCard";
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
   tableAssets: InvestingTableAsset[];
+  onWalletChange?: (walletId: string) => void;
 }
 
-export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => {
+export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...props }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
@@ -132,6 +133,10 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
   const handleWalletSelect = (event: SelectChangeEvent) => {
     const selectedWalletId = event.target.value as string;
     setSelectedWallet(selectedWalletId);
+    
+    if (onWalletChange) {
+      onWalletChange(selectedWalletId);
+    }
   };
 
   const handleCancelManualPosition = () => {

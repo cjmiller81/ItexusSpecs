@@ -42,6 +42,7 @@ export default function MarketCapEqualWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
+  const [selectedWallet, setSelectedWallet] = useState<string>("");
 
   const { t } = useTranslation(["MarketCapPage", "Common"]);
 
@@ -69,6 +70,10 @@ export default function MarketCapEqualWeightedPage() {
       refreshIndexModelingData(take);
     }
   }, [currentSorter, currentFilter, take]);
+
+  const handleWalletChange = (walletId) => {
+    setSelectedWallet(walletId)
+  };
 
   const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
@@ -151,6 +156,7 @@ export default function MarketCapEqualWeightedPage() {
         isEqualWeight
         tableAssets={tableData}
         title={t("IndexModeling")}
+        selectedWallet={selectedWallet}
       />
 
       <AppAccordionSection
@@ -186,6 +192,7 @@ export default function MarketCapEqualWeightedPage() {
       <IndexResultsSection
         title={t("IndexResults")}
         tableAssets={tableData}
+        onWalletChange={handleWalletChange}
       />
     </Stack>
   );
