@@ -70,9 +70,8 @@ export const walletsSlice = createAppSlice({
       state.selectedWallets = action.payload;
     }),
     updateWallet: create.asyncThunk(
-      async (wallet: Wallet, thunkApi) => {
+      async (wallet: Wallet) => {
         await walletsApi.updateWallets(wallet);
-        thunkApi.dispatch(fetchWallets(null));
         return wallet;
       },
       {
@@ -83,10 +82,10 @@ export const walletsSlice = createAppSlice({
           state.wallets = state.wallets!.map(wallet =>
             wallet.address === action.payload.address
               ? {
-                  ...wallet,
-                  walletName: action.payload.walletName,
-                  isPersonal: action.payload.isPersonal,
-                }
+                ...wallet,
+                walletName: action.payload.walletName,
+                isPersonal: action.payload.isPersonal,
+              }
               : wallet,
           );
           state.statusUpdatingWallets = "idle";
@@ -115,7 +114,7 @@ export const walletsSlice = createAppSlice({
         return {
           growPercentage: historicalWalletsData[0].walletValue
             ? (historicalWalletsData[1].walletValue - historicalWalletsData[0].walletValue) /
-              historicalWalletsData[0].walletValue
+            historicalWalletsData[0].walletValue
             : 0,
           totalWorth: historicalWalletsData[1].walletValue,
         };
@@ -134,9 +133,8 @@ export const walletsSlice = createAppSlice({
       },
     ),
     deleteWallet: create.asyncThunk(
-      async (wallet: string, thunkApi) => {
+      async (wallet: string) => {
         await walletsApi.deleteWallet(wallet);
-        thunkApi.dispatch(fetchWallets(null));
         return { removedWallet: wallet };
       },
       {
