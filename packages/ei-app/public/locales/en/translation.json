@@ -158,7 +158,10 @@
     "AddCustomExchangeAccountName": "Exchange Account Name",
     "AddCentralizedExchangeConnection": "Add Centralized Exchange Connection",
     "ConnectKrakenExchange": "Connect Kraken Exchange",
-    "ConnectCoinbaseExchange": "Connect Coinbase Exchange"
+    "ConnectCoinbaseExchange": "Connect Coinbase Exchange",
+    "EqualWeight": "Equal Weight",
+    "TotalCapital": "Total Capital",
+    "MarketCap": "Market Cap"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
