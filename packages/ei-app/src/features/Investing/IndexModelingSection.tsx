@@ -1,6 +1,7 @@
 import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable";
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
+import { Wallet } from "@/models/Wallet/Wallet";
 import DownloadIcon from "@mui/icons-material/Download";
 import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
@@ -9,7 +10,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 
-interface Props extends Omit<AccordionProps, "children"> {
+interface Props extends Omit<AccordionProps, "children"> { 
   title: string;
   tableAssets: InvestingTableAsset[];
   isEqualWeight?: boolean;
@@ -19,7 +20,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
-  selectedWallet: string;
+  selectedWallet: Wallet | null;
 }
 
 export const IndexModelingSection = ({
@@ -42,12 +43,11 @@ export const IndexModelingSection = ({
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedWallet) {
-      // Если кошелек не выбран, показываем подсказку
       setIsTooltipOpen(true);
-      event.preventDefault(); // Блокируем изменение состояния переключателя
+      event.preventDefault();
     } else {
-      setUseWalletCapital(event.target.checked); // Если кошелек выбран, меняем состояние переключателя
-      setIsTooltipOpen(false); // Скрываем подсказку, если переключили
+      setUseWalletCapital(event.target.checked); 
+      setIsTooltipOpen(false); 
     }
   };
   
@@ -89,7 +89,6 @@ export const IndexModelingSection = ({
     XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
   };
-  console.log('Selected wallet:', selectedWallet);
 
   return (
     <AppAccordionSection
