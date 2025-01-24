@@ -59,6 +59,11 @@ export const IndexModelingSection = ({
   };
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if(useWalletCapital)
+      onCapitalChange(0)
+    else
+      onCapitalChange(1000)
+
     if (!selectedWallet) {
       setIsTooltipOpen(true);
       event.preventDefault();
@@ -182,8 +187,7 @@ export const IndexModelingSection = ({
               variant="outlined"
               fullWidth
               sx={{ width: "70%", height: "10px",marginTop:"5.4px" }}
-              value={totalAmount}
-              disabled={useWalletCapital}
+              value={useWalletCapital=== true ? 0 : parseFloat(totalAmount.toFixed(2))}
               inputProps={{ style: { padding: "13px" } }}
             />
 
@@ -191,13 +195,11 @@ export const IndexModelingSection = ({
           style={{width:"70%", marginLeft: "auto" }}
             min={0}
             step={10}
-            value={capital}
+            value={useWalletCapital=== true ? capital : 0}
             onChange={(_, value) => onCapitalChange(value || 0)}
+            
           />
-
-
           </Box>
-
         </LeftContainer>
         <RightContainer>
           <StyledWalletsTable
