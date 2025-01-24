@@ -74,7 +74,7 @@ export const IndexModelingSection = ({
       setTotalAmount(calculateTotalUsdAmount(selectedWallet));
       setIsTooltipOpen(false); 
         if(useWalletCapital)
-          onCapitalChange(0)
+          onCapitalChange(totalAmount)
         else
           onCapitalChange(1000)
     }
@@ -208,17 +208,19 @@ export const IndexModelingSection = ({
               variant="outlined"
               fullWidth
               sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
-              value={useWalletCapital=== true ? 0 : parseFloat(totalAmount.toFixed(2))}
+              value={useWalletCapital=== true ? " " : parseFloat(totalAmount.toFixed(2))}
               inputProps={{ style: { padding: "13px" } }}
+              disabled={useWalletCapital=== true ? true : false}
             />
             
           <TextField
               variant="outlined"
               fullWidth
               sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
-              value={useWalletCapital=== true ? capital : 0}
+              value={useWalletCapital=== true ? capital : " "}
               inputProps={{ style: { padding: "13px" } }}
               onChange={(event) => onCapitalChange(Number(event.target.value) || 0)}
+              disabled={useWalletCapital=== true ? false : true}
             />
           </Box>
         </LeftContainer>
