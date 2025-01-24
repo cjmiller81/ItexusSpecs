@@ -154,7 +154,7 @@ export default function PrefilterTokensSection({
       </StyledAccordionSummary>
       <AccordionDetails
         sx={{
-          bgcolor: theme.palette.mode === "dark" ? "background.default" : "background.paper",
+          backgroundColor: theme.palette.mode === "dark" ? "#363640" : "background.paper",
           width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
         }}>
