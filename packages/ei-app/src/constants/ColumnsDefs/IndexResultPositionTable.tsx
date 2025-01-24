@@ -116,8 +116,6 @@ export const getIndexPositionTableColumns = (
               },
             }}>
             <MenuItem value="Kraken">Kraken</MenuItem>
-            <MenuItem value="Test">Test</MenuItem>
-            <MenuItem value="Test">Test</MenuItem>
           </Select>
         );
       },
