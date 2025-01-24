@@ -5,7 +5,7 @@ import { Wallet } from "@/models/Wallet/Wallet";
 import DownloadIcon from "@mui/icons-material/Download";
 import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
-import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
+import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable, toTableTokensModel } from "components";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
@@ -40,6 +40,23 @@ export const IndexModelingSection = ({
   const apiRef = useGridApiRef();
   const [useWalletCapital, setUseWalletCapital] = useState(true)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [totalAmount,setTotalAmount] = useState<number>(0);
+
+  const calculateTotalUsdAmount = (selectedWallet: Wallet): number => {
+    let totalUsdAmount = 0;
+  
+    selectedWallet.chainAssets.forEach(chainAsset => {
+      const tableAssets = toTableTokensModel(chainAsset);
+  
+      tableAssets.forEach(asset => {
+        if (asset.usdAmount) {
+          totalUsdAmount += asset.usdAmount; 
+        }
+      });
+    });
+  
+    return totalUsdAmount;
+  };
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedWallet) {
@@ -47,6 +64,7 @@ export const IndexModelingSection = ({
       event.preventDefault();
     } else {
       setUseWalletCapital(event.target.checked); 
+      setTotalAmount(calculateTotalUsdAmount(selectedWallet));
       setIsTooltipOpen(false); 
     }
   };
@@ -164,7 +182,7 @@ export const IndexModelingSection = ({
               variant="outlined"
               fullWidth
               sx={{ width: "70%", height: "10px",marginTop:"5.4px" }}
-              value={capital}
+              value={totalAmount}
               disabled={useWalletCapital}
               inputProps={{ style: { padding: "13px" } }}
             />
