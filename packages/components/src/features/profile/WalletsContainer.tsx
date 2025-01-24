@@ -39,6 +39,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
         onSelectedRowsChanged={rows => dispatch(selectWallets(rows))}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
+        totalAmount={0}
       />
     </Box>
   )
