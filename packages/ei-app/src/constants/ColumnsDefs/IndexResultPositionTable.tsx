@@ -1,12 +1,15 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import i18next, { t } from "i18next";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Select, MenuItem } from "@mui/material";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { darken } from "@mui/material/styles";
 
 i18next.setDefaultNamespace("ColumnsDefs");
 
-export const getIndexPositionTableColumns = (): GridColDef<PositionAllocation>[] => {
+export const getIndexPositionTableColumns = (
+  selectedExchanges?: any,
+  handleExchangeChange?: (event: any, id) => void,
+): GridColDef<PositionAllocation>[] => {
   return [
     {
       field: "symbol",
@@ -87,20 +90,39 @@ export const getIndexPositionTableColumns = (): GridColDef<PositionAllocation>[]
 
     {
       field: "exchanges",
-      headerName: t("Exchanges"),
+      headerName: "Exchanges",
       sortable: false,
-      editable: false,
       filterable: false,
       flex: 1,
-      disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams<PositionAllocation, any, any>) => (
-        <Typography
-          variant="body1"
-          sx={{ textTransform: "uppercase", fontSize: "0.80rem" }}>
-          {params.row.connection}
-        </Typography>
-      ),
+      renderCell: params => {
+        const rowId = params.row.id;
+        return (
+          <Select
+            value={selectedExchanges[rowId] || "Kraken"}
+            onChange={e => handleExchangeChange?.(e, rowId)}
+            sx={{
+              fontSize: "0.8rem",
+              width: "85%",
+              border: "none",
+              boxShadow: "none",
+              ".MuiOutlinedInput-notchedOutline": {
+                border: "none",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                border: "none",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                border: "none",
+              },
+            }}>
+            <MenuItem value="Kraken">Kraken</MenuItem>
+            <MenuItem value="Test">Test</MenuItem>
+            <MenuItem value="Test">Test</MenuItem>
+          </Select>
+        );
+      },
     },
+
     {
       field: "chain",
       headerName: t("Chain"),
