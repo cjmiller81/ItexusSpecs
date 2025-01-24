@@ -39,6 +39,7 @@ interface Props extends BoxProps {
   onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
+  totalAmount: number;
 }
 
 export const MyWalletsSection = ({
@@ -48,6 +49,7 @@ export const MyWalletsSection = ({
   onUpdateWallet,
   wallets,
   totalWalletsWorthData,
+  totalAmount,
   loading,
   selectedWalletsIds,
   sx,
@@ -65,12 +67,11 @@ export const MyWalletsSection = ({
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
-
+  
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
     setAddWalletModalOpen(false);
   };
-
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
   };
@@ -81,7 +82,7 @@ export const MyWalletsSection = ({
       apiPassphrase: "",
       network: "",
       customRpcUrl: "",
-      chainName: "",
+      chainName: selectedService === "Kraken" ? "Kraken" : "Coinbase",
     },
     validationSchema: Yup.object({
       apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
@@ -115,6 +116,7 @@ setExchange([...exchange, newExchanges]);
       value === "Coinbase"
     ) {
       setSelectedService(value);
+      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
     }
   };
 
@@ -210,7 +212,7 @@ setExchange([...exchange, newExchanges]);
       <StyledWalletWorthContainer>
         <TotalWalletsWorthCard
           growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
-          totalWorth={totalWalletsWorthData?.totalWorth ?? 0}
+          totalWorth={totalAmount}
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
@@ -273,6 +275,7 @@ setExchange([...exchange, newExchanges]);
           })}
           rows={wallets || []}
           rowSelectionModel={selectedWalletsIds}
+          checkboxSelection={true}
         />
       </Box>
 

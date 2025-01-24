@@ -5,18 +5,19 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Stack } from "@mui/material";
 import {
   LookUpOption,
-  MyWalletsSection,
   Wallet,
   createWallet,
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
   selectWallets,
+  toTableTokensModel,
   updateWallet,
 } from "components";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MyWalletsSectionForPage } from "../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
@@ -25,10 +26,11 @@ export default function MyWalletsPage() {
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
     useAppSelector(state => state.walletWorthChart);
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
-  const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, 'day').toDate());
+  const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, "day").toDate());
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
+  const [totalAmount,setTotalAmount] = useState<number>(0);
 
   const { t } = useTranslation("MyWalletsPage");
 
@@ -45,9 +47,30 @@ export default function MyWalletsPage() {
     }
   };
 
+  const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
+    let totalUsdAmount = 0;
+
+    selectedWallets.forEach(wallet => {
+      wallet.chainAssets.forEach(chainAsset => {
+        const tableAssets = toTableTokensModel(chainAsset);
+
+        tableAssets.forEach(asset => {
+          if (asset.usdAmount) {
+            totalUsdAmount += asset.usdAmount;
+          }
+        });
+      });
+    });
+
+    return totalUsdAmount;
+  };
+
   useEffect(() => {
     if (selectedWallets.length) {
       fetchHistoricalData();
+      setTotalAmount(calculateTotalUsdAmount(selectedWallets));
+    } else {
+      setTotalAmount(0);
     }
   }, [selectedWallets]);
 
@@ -73,7 +96,7 @@ export default function MyWalletsPage() {
 
   return (
     <Stack>
-      <MyWalletsSection
+      <MyWalletsSectionForPage
         onUpdateWallet={onUpdateWallet}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
