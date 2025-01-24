@@ -15,6 +15,7 @@ import {
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
 import { defaultTotalTokensCount } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { Wallet } from "@/models/Wallet/Wallet";
 import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
@@ -42,6 +43,7 @@ export default function MarketCapEqualWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 
   const { t } = useTranslation(["MarketCapPage", "Common"]);
 
@@ -69,6 +71,10 @@ export default function MarketCapEqualWeightedPage() {
       refreshIndexModelingData(take);
     }
   }, [currentSorter, currentFilter, take]);
+
+  const onWalletChange = (wallet: Wallet | null) => {
+    setSelectedWallet(wallet); 
+  };
 
   const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
@@ -151,6 +157,7 @@ export default function MarketCapEqualWeightedPage() {
         isEqualWeight
         tableAssets={tableData}
         title={t("IndexModeling")}
+        selectedWallet={selectedWallet}
       />
 
       <AppAccordionSection
@@ -186,6 +193,7 @@ export default function MarketCapEqualWeightedPage() {
       <IndexResultsSection
         title={t("IndexResults")}
         tableAssets={tableData}
+        onWalletChange={onWalletChange}
       />
     </Stack>
   );

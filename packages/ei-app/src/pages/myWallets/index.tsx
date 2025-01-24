@@ -100,7 +100,6 @@ export default function MyWalletsPage() {
         onUpdateWallet={onUpdateWallet}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
-        totalAmount={totalAmount}
         loading={statusFetchingWallets === "loading"}
         wallets={wallets}
         onSelectedRowsChanged={rows => onRowsChanged(rows)}

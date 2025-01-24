@@ -159,6 +159,9 @@
     "AddCentralizedExchangeConnection": "Add Centralized Exchange Connection",
     "ConnectKrakenExchange": "Connect Kraken Exchange",
     "ConnectCoinbaseExchange": "Connect Coinbase Exchange",
+    "WalletCapital": "Wallet Capital",
+    "DeploymentCapital": "Deployment Capital",
+    "SelectSavedWallet": "Please select a saved wallet from Index Results versus Wallet below",
     "EqualWeight": "Equal Weight",
     "TotalCapital": "Total Capital",
     "MarketCap": "Market Cap"
