@@ -57,6 +57,7 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
 
   const handleClearTable = () => {
     setSelectedWallet(null);
+    onWalletChange(null);
     setFilteredRows([]);
   };
 

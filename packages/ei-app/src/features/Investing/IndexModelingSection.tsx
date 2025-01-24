@@ -6,7 +6,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable, toTableTokensModel } from "components";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 
@@ -42,6 +42,13 @@ export const IndexModelingSection = ({
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount,setTotalAmount] = useState<number>(0);
 
+  useEffect(() => {
+    if (!selectedWallet) {
+      setUseWalletCapital(true);
+      onCapitalChange(1000);
+    } 
+  }, [selectedWallet])
+
   const calculateTotalUsdAmount = (selectedWallet: Wallet): number => {
     let totalUsdAmount = 0;
   
@@ -59,11 +66,6 @@ export const IndexModelingSection = ({
   };
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if(useWalletCapital)
-      onCapitalChange(0)
-    else
-      onCapitalChange(1000)
-
     if (!selectedWallet) {
       setIsTooltipOpen(true);
       event.preventDefault();
@@ -71,6 +73,10 @@ export const IndexModelingSection = ({
       setUseWalletCapital(event.target.checked); 
       setTotalAmount(calculateTotalUsdAmount(selectedWallet));
       setIsTooltipOpen(false); 
+        if(useWalletCapital)
+          onCapitalChange(0)
+        else
+          onCapitalChange(1000)
     }
   };
   
@@ -186,19 +192,19 @@ export const IndexModelingSection = ({
             <TextField
               variant="outlined"
               fullWidth
-              sx={{ width: "70%", height: "10px",marginTop:"5.4px" }}
+              sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
               value={useWalletCapital=== true ? 0 : parseFloat(totalAmount.toFixed(2))}
               inputProps={{ style: { padding: "13px" } }}
             />
-
-          <AppNumberInput
-          style={{width:"70%", marginLeft: "auto" }}
-            min={0}
-            step={10}
-            value={useWalletCapital=== true ? capital : 0}
-            onChange={(_, value) => onCapitalChange(value || 0)}
             
-          />
+          <TextField
+              variant="outlined"
+              fullWidth
+              sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
+              value={useWalletCapital=== true ? capital : 0}
+              inputProps={{ style: { padding: "13px" } }}
+              onChange={(event) => onCapitalChange(Number(event.target.value) || 0)}
+            />
           </Box>
         </LeftContainer>
         <RightContainer>
