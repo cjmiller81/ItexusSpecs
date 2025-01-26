@@ -1,36 +1,67 @@
-import appAxios from "@/libs/axios/axios"
-import { IDteUser } from "./iDteUser"
-import { Bot } from "./details/bot"
-import { OpenPosition } from "./details/openPosition"
-import { ICurrentDayFills } from "./details/currentDayFillsInterface"
-import { IWorkingOrder } from "./details/workingOrderInterface"
+import appAxios from "@/libs/axios/axios";
+import {
+  ICurrentDayFills,
+  IDteStrategiesResponse,
+  IDteStrategy,
+  IWorkingOrder,
+  OpenPosition,
+  StrategyBot,
+  StrategyBotList,
+} from "./types";
 
 export const dteUsersService = {
-  update: async (user: IDteUser): Promise<void> => {
-    const response = await appAxios.put(`/api/zero-dte/users/${user.id}`, user)
-    return response.data
+  getAll: async (): Promise<IDteStrategiesResponse> => {
+    return (await appAxios.get<IDteStrategiesResponse>(`/api/admin/strategies/zeroDteFlyStrategy`)).data;
   },
-  getAll: async (): Promise<IDteUser[]> => {
-    const response = await appAxios.get<IDteUser[]>(`/api/zero-dte/users`)
-    return response.data
+  getBots: async (userId: string): Promise<StrategyBotList> => {
+    return (await appAxios.get<StrategyBotList>(`/api/admin/strategies/zeroDteFlyStrategy/${userId}`)).data;
+  },
+  startBot: async (userId: string, accountNumber: string, masterSymbol: string): Promise<StrategyBot> => {
+    return (
+      await appAxios.post(`/api/admin/strategies/zeroDteFlyStrategy/${userId}/${accountNumber}/${masterSymbol}/start`)
+    ).data;
+  },
+  stopBot: async (userId: string, accountNumber: string, masterSymbol: string): Promise<StrategyBot> => {
+    return (
+      await appAxios.post(`/api/admin/strategies/zeroDteFlyStrategy/${userId}/${accountNumber}/${masterSymbol}/stop`)
+    ).data;
+  },
+  forceStopExitBot: async (userId: string, accountNumber: string, masterSymbol: string): Promise<StrategyBot> => {
+    return (
+      await appAxios.post(
+        `/api/admin/strategies/zeroDteFlyStrategy/${userId}/${accountNumber}/${masterSymbol}/forceStopExitOrder`,
+      )
+    ).data;
+  },
+  resetBot: async (userId: string, accountNumber: string, masterSymbol: string): Promise<StrategyBot> => {
+    return (
+      await appAxios.post(`/api/admin/strategies/zeroDteFlyStrategy/${userId}/${accountNumber}/${masterSymbol}/reset`)
+    ).data;
+  },
+  getOpenPositions: async (userId: string, accountNumber: string, symbol: string): Promise<OpenPosition> => {
+    const response = await appAxios.get<OpenPosition>(
+      `/api/admin/users/${userId}/accounts/${accountNumber}/positions/${symbol}`,
+    );
+    return response.data;
+  },
+  getCurrentDayFills: async (userId: string, accountNumber: string, orderId: string): Promise<ICurrentDayFills> => {
+    const response = await appAxios.get<ICurrentDayFills>(
+      `/api/admin/users/${userId}/accounts/${accountNumber}/orders/${orderId}`,
+    );
+    return response.data;
+  },
+  getUserWorkingOrders: async (userId: string, accountNumber: string, orderId: string): Promise<IWorkingOrder> => {
+    const response = await appAxios.get<IWorkingOrder>(
+      `/api/admin/users/${userId}/accounts/${accountNumber}/orders/${orderId}`,
+    );
+    return response.data;
+  },
+  // not used functions below
+  update: async (user: IDteStrategy): Promise<void> => {
+    const response = await appAxios.put(`/api/zero-dte/users/${user.userId}`, user);
+    return response.data;
   },
   delete: async (id: string): Promise<void> => {
-    return appAxios.delete(`/api/zero-dte/users/${id}`)
+    return appAxios.delete(`/api/zero-dte/users/${id}`);
   },
-  getUserBots: async (userId: string): Promise<Bot[]> => {
-    const response = await appAxios.get<Bot[]>(`/api/zero-dte/users/${userId}/bots`)
-    return response.data
-  },
-  getOpenPositions: async (userId: string): Promise<OpenPosition[]> => {
-    const response = await appAxios.get<OpenPosition[]>(`/api/zero-dte/users/${userId}/open-positions`)
-    return response.data
-  },
-  getCurrentDayFills: async (userId: string): Promise<ICurrentDayFills[]> => {
-    const response = await appAxios.get<ICurrentDayFills[]>(`/api/zero-dte/users/${userId}/current-day-fills`)
-    return response.data
-  },
-  getUserWorkingOrders: async (userId: string): Promise<IWorkingOrder[]> => {
-    const response = await appAxios.get<IWorkingOrder[]>(`/api/zero-dte/users/${userId}/working-orders`)
-    return response.data
-  },
-}
+};

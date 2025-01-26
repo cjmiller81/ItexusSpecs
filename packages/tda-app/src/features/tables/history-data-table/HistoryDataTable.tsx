@@ -43,7 +43,6 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
   const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
   const theme = useTheme();
   const { t } = useTranslation("TradeHistory");
-  const isDesktop = useMediaQuery("(max-width: 1030px)");
   const isPad = useMediaQuery("(max-width: 714px)");
 
   const handleToDateChange = (newToDate: Date | null) => {
@@ -119,8 +118,6 @@ export const HistoryDataTable: FC<RFQTableProps> = ({
           position: "relative",
           borderRadius: "10px",
           ...sx,
-          ...(isDesktop && { mt: "50px" }),
-          ...(isPad && { mt: "230px" }),
         }}
         {...props}>
         <ReactTable

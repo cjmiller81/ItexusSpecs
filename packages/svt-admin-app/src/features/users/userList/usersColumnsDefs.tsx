@@ -10,9 +10,9 @@ import {
   GridRowModesModel,
   GridValidRowModel,
 } from "@mui/x-data-grid";
-import { IUserList } from "./iUserList";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Theme, lighten } from "@mui/system";
+import { Theme, lighten, Box } from "@mui/system";
+import { IUserAccountConnection } from "@/features/strategies/users/types";
 
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
@@ -22,13 +22,14 @@ export function getColumns(
   rowModesModel: GridRowModesModel,
   theme: Theme,
   currentUserId?: string,
+  isMobile?: boolean,
 ) {
-  const columns: GridColDef<IUserList>[] = [
+  const columns: GridColDef<IUserAccountConnection>[] = [
     {
       field: "actions",
       type: "actions",
       headerName: i18next.t("Details", { ns: "ColumnsDefs" }),
-      maxWidth: 70,
+      maxWidth: 90,
       cellClassName: "actions",
       getActions: props => {
         const id = props.id;
@@ -75,33 +76,48 @@ export function getColumns(
       },
     },
     {
-      field: "id",
+      field: "userId",
       headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
-      minWidth: 80,
+      minWidth: isMobile ? 60 : 100,
       editable: true,
       type: "string",
-      flex: 0,
+      flex: 1,
     },
     {
       field: "exchangeUsername",
       headerName: i18next.t("ExchangeUsername", { ns: "ColumnsDefs" }),
-      minWidth: 80,
+      minWidth: isMobile ? 80 : 120,
       editable: true,
       type: "string",
-      flex: 0,
+      flex: 1,
     },
     {
-      field: "connectionStatus",
+      field: "status",
       headerName: i18next.t("ConnectionStatus", { ns: "ColumnsDefs" }),
-      minWidth: 85,
+      minWidth: 125,
       editable: true,
       type: "string",
-      flex: 0,
-      cellClassName: (param: GridCellParams<GridValidRowModel>) => {
-        if (param.value === "Disconnected") {
-          return "red";
-        }
-        return "";
+      flex: 1,
+      cellClassName: (params: GridCellParams<GridValidRowModel>) =>
+        params.value === "disconnected" ? "disconnected-cell" : "",
+      renderCell: (params: GridCellParams<GridValidRowModel>) => {
+        const value = params.value as string;
+        return (
+          <Box
+            sx={{
+              width: "100%",
+              height: "100%",
+              mr: "10px",
+              bgcolor: value === "disconnected" ? "red" : "inherit",
+              color: value === "disconnected" ? "white" : "inherit",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}>
+            {value}
+          </Box>
+        );
       },
     },
   ];

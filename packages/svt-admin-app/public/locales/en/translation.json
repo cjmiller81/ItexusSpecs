@@ -151,7 +151,23 @@
     "PandL": "P&L",
     "Flat": "Flat",
     "OrderID": "Order ID",
-    "EntryID": "Entry ID"
+    "EntryID": "Entry ID",
+    "Connected": "Connected",
+    "Removed": "Removed",
+    "LastUpdated": "Last Updated",
+    "TradeQty": "Trade Qty",
+    "EntryStatus": "Entry Status",
+    "NextEntryTime": "Next Entry Time",
+    "TargetStatus": "Target Status",
+    "CloseStatus": "Close Status",
+    "EndofDayCloseTime": "End of Day Close Time",
+    "Disconnected": "Disconnected",
+    "Inactive": "Inactive",
+    "FillQty": "Fill Qty",
+    "OrderQty": "Order Qty",
+    "FlattenBot": "Flatten Bot",
+    "ForceExit": "Force Exit",
+    "CapAlloNext": "Cap Allo Next"
   },
   "UserDetailsSection": {
     "CapitalAllocation": "Capital Allocation",
@@ -173,9 +189,15 @@
     "FilledQTY": "Filled QTY",
     "SellToClose": "SellToClose",
     "BuyToClose": "BuyToClose",
-    "BuyingPowerError":  "Your account does not have sufficient buying power available for this order. Please deposit funds or reduce the order size to place this",
-    "LastTimeUpdate": "Last Time Update"
-
-
+    "BuyingPowerError": "Your account does not have sufficient buying power available for this order. Please deposit funds or reduce the order size to place this",
+    "LastTimeUpdate": "Last Time Update",
+    "Symbol": "Symbol",
+    "QtyPlaced": "Qty Placed",
+    "QtyFilled": "Qty Filled",
+    "LimitPrice": "Limit Price",
+    "AvgFillPrice": "Avg Fill Price",
+    "SpreadPrice": "Spread Price",
+    "SpreadType": "Spread Type",
+    "0DTEHeader": "0 DTE Strategies for Account #: {{accountNumber}}"
   }
 }

@@ -29,6 +29,7 @@ import { vaultsFilterBuilderFields } from "./vaultsTableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -64,8 +65,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   useEffect(() => {
     const grid = datagrid?.current?.instance;
     if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
+  }, [currentFilter, datagrid]);
 
   useEffect(() => {
     dispatch(fetchFilters({}));
@@ -82,13 +82,11 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", 
-        () => {
-          if (currentFilter && currentFilter.length > 0) {
-            setFilterBuilderOpen(true)
-          }
+      filterPanelTextDiv.addEventListener("click", () => {
+        if (currentFilter && currentFilter.length > 0) {
+          setFilterBuilderOpen(true);
         }
-      );
+      });
     }
 
     reconfigureFilterPanelStyles(containerRef, currentFilter);
@@ -107,7 +105,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
 
   return (
     <div ref={containerRef}>
-      <DataGridDef<VaultsData>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<VaultsData>
+        style={{ pointerEvents: "auto" }}
         id="vaults-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
@@ -137,7 +137,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             e.cancel = true;
           }}
         />
-        <HeaderFilter visible={false}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -155,7 +157,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         />
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="vaults"
                 filterBuilderFields={vaultsFilterBuilderFields}
@@ -239,6 +241,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="number"
           allowHiding={false}
+          allowHeaderFiltering={false}
           customizeText={toDollarAmountField}
           sortOrder="desc"
           sortIndex={0}
@@ -249,6 +252,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="number"
           allowHiding={false}
+          allowHeaderFiltering={false}
           calculateCellValue={data => {
             const apyValue = data.totalApy !== undefined ? data.totalApy : data.apy || 0;
             const apyStr = apyValue.toString();
@@ -299,7 +303,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };

@@ -19,6 +19,7 @@ import {
   setTokens,
 } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { Wallet } from "@/models/Wallet/Wallet";
 import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
@@ -46,8 +47,9 @@ export default function MarketCapWeightedPage() {
     state => state.marketCapWeightedModeling,
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 
-  const { t } = useTranslation("MarketCapPage");
+  const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   const dataSource = useMemo(
     () =>
@@ -126,6 +128,10 @@ export default function MarketCapWeightedPage() {
     setCurrentFilter(filter ? JSON.stringify(filter) : "[]");
   };
 
+  const onWalletChange = (wallet: Wallet | null) => {
+      setSelectedWallet(wallet); 
+    };
+
   return (
     <Stack gap={2}>
       <Typography
@@ -154,17 +160,14 @@ export default function MarketCapWeightedPage() {
         tokens={tokensCount || 0}
         tableAssets={tableData}
         title={t("IndexModeling")}
-      />
-
-      <IndexResultsSection
-        title={t("IndexResults")}
-        tableAssets={tableData}
+        selectedWallet={selectedWallet}
       />
 
       <AppAccordionSection
         persistKey="WeightedHistoricalWalletsWorth"
         defaultExpanded
-        title={t("WeightedChartTitle")}>
+        title={t("WeightedChartTitle")}
+        tooltip={t("ToggleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
           onFetchPage={fetchLookupPage}
           toDate={endDate}
@@ -189,6 +192,12 @@ export default function MarketCapWeightedPage() {
           title={""}
         />
       </AppAccordionSection>
+
+      <IndexResultsSection
+        title={t("IndexResults")}
+        tableAssets={tableData}
+        onWalletChange={onWalletChange}
+      />
     </Stack>
   );
 }

@@ -71,12 +71,15 @@ const CryptoCalendar = ({
     setSelectedCategories(typeof value === "string" ? value.split(",") : value);
   };
   const filteredEvents = calendarData.filter(event => {
-    const eventDate = moment(event.date_event).startOf("day");
+    const eventDate = moment.utc(event.date_event).startOf("day");
+
+    const selectedStartDate = moment.utc(selectedDate[0]).startOf("day");
+    const selectedEndDate = moment.utc(selectedDate[1]).endOf("day");
 
     const isWithinDateRange =
       selectedDate &&
-      eventDate.isSameOrAfter(selectedDate[0], "day") &&
-      eventDate.isSameOrBefore(selectedDate[1], "day");
+      eventDate.isSameOrAfter(selectedStartDate, "day") &&
+      eventDate.isSameOrBefore(selectedEndDate, "day");
 
     const matchesCategory =
       selectedCategories.length === 0 ||
@@ -165,7 +168,12 @@ const CryptoCalendar = ({
         </Box>
 
         <SimpleBarStyled
-          style={{ height: "519px" }}
+          sx={{
+            height: "519px",
+            "@media (min-width: 1200px) and (max-width: 1800px)": {
+              height: "483px",
+            },
+          }}
           onScroll={handleScroll}>
           {filteredEvents.length > 0 ? (
             <Grid

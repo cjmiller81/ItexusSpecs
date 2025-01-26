@@ -1,7 +1,18 @@
 import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { AccordionDetails, AccordionProps, Box, Typography } from "@mui/material";
+import {
+  AccordionDetails,
+  AccordionProps,
+  Box,
+  IconButton,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import { exportDataGrid } from "devextreme/excel_exporter";
@@ -12,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
+import { useGetDexsQuery } from "./DexApi";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -19,11 +31,11 @@ type Props = Omit<AccordionProps, "children"> & {
 
 export default function DefiTokensSection({ persisKey, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
+  const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
-  const { t } = useTranslation("LiquidityPoolsPage");
-
+  const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
+  const theme = useTheme();
   const { sidebarOpened } = useAppSelector(store => store.ui);
-
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
@@ -61,6 +73,37 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
     e.cancel = true;
   }, []);
 
+  const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip
+      {...props}
+      arrow
+      classes={{ popper: className }}
+    />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+      color: "white",
+    },
+  }));
+
+  const darkThemeStyles = {
+    cursor: "default !important",
+    mt: 2,
+    pointerEvents: "none",
+    position: "inherit",
+    borderRadius: "2px",
+    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#363640",
+    border: "1.6px solid #25252AFF",
+    outline: "1.9px solid #363640",
+    "& .MuiAccordionSummary-root": {
+      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
+    },
+  };
+
   return (
     <>
       <Typography
@@ -73,10 +116,30 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
       <StatePersistedAccordion
         persistKey={persisKey}
         defaultExpanded
+        sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", mt: 2 }}
         {...props}>
-        <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <StyledAccordionSummary
+          expandIcon={
+            <CustomTooltip
+              title={t("ToggleView", { ns: "Common" })}
+              arrow>
+              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
+                <ExpandMoreIcon />
+              </IconButton>
+            </CustomTooltip>
+          }
+          sx={{
+            pointerEvents: "none",
+            "&.MuiAccordionSummary-root:hover": {
+              cursor: "default",
+            },
+          }}>
           <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-            <PageTitle sx={{ width: "100%" }}>{t("PrefilterLiquidityPools")}</PageTitle>
+            <PageTitle
+              sx={{ width: "100%" }}
+              onClick={e => e.stopPropagation()}>
+              {t("PrefilterLiquidityPools")}
+            </PageTitle>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails
@@ -84,9 +147,11 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
             bgcolor: "background.paper",
             width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+            pointerEvents: "auto",
           }}>
           <MemoizedDefiPoolsTable
-            loading={isPoolsLoading}
+            loading={isPoolsLoading && isDexsLoading}
+            dexs={dexsData || []} 
             onUpdate={() => {}}
             onExport={onExporting}
             dataSource={allTokensSource}

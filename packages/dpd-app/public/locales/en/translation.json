@@ -127,7 +127,11 @@
     "MyWallets": "Wallets",
     "Community": "Community",
     "Platform": "Platform",
-    "Tools": "Tools"
+    "Tools": "Tools",
+    "DarkPoolsData": "Dark Pools Data",
+    "DIShortSaleVolume": "DI Short Sale Volume",
+    "SingleStockView": "Single Stock View",
+    "SectorsView": "Sectors View"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -175,5 +179,40 @@
     "Required": "Required",
     "PublicEye": "Watched Public Wallet",
     "CompareToSymbol": "Leave Blank for Plot Only"
+  },
+  "UserInputsSection": {
+    "AvgSellVolume": "Avg Sell Volume",
+    "AvgBuyVolume": "Avg Buy Volume",
+    "AvgBuy-SellRatio": "Avg Buy-Sell Ratio",
+    "AvgTotalVolume": "Avg Total Volume",
+    "TotalSold": "Total Sold",
+    "TotalBought": "Total Bought",
+    "TotalVolume": "Total Volume",
+    "TotalStatistics": "Total Statistics",
+    "RunModel": "Run Model",
+    "EndDate": "End Date",
+    "StartDate": "Start Date",
+    "Ticker": "Ticker",
+    "EnterTicker": "Enter Ticker",
+    "Date": "Date",
+    "EndIsRequired": "End date is required",
+    "StartIsRequired": "Start date is required",
+    "TickerIsRequired": "Ticker is required",
+    "ErrorFetching": "Error fetching stock data::"
+  },
+  "MarketTableColumns": {
+    "Date": "Date",
+    "Symbol": "Symbol",
+    "Bought": "Bought",
+    "Sold": "Sold",
+    "%Avg": "% Avg",
+    "BuyRatio": "Buy Ratio",
+    "DPIndex": "DP Index",
+    "Total": "Total"
+  },
+  "DISingleStock": {
+    "UserInputs": "User Inputs",
+    "SingleStockPage": "Single Stock View Page",
+    "SectorsView": "Sectors View"
   }
 }

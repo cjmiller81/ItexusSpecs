@@ -1,13 +1,17 @@
 import i18next from "@/libs/i18n/i18n"
-import CancelIcon from "@mui/icons-material/Close"
+import CancelIcon from "@mui/icons-material/Cancel"
 import DeleteIcon from "@mui/icons-material/DeleteOutlined"
-import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"
-import { GridActionsCellItem, GridCellParams, GridColDef, GridRowId, GridRowModes, GridRowModesModel, GridTreeNodeWithRender, GridValidRowModel, GridValueFormatterParams, GridValueGetterParams } from "@mui/x-data-grid"
+import { GridActionsCellItem, GridCellParams, GridColDef, GridRenderCellParams, GridRowId, GridRowModes, GridRowModesModel, GridTreeNodeWithRender, GridValidRowModel, GridValueFormatterParams, GridValueGetterParams } from "@mui/x-data-grid"
 import { IvlUser } from "./IvlUser"
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Theme, lighten, useTheme } from "@mui/system"
-import moment from "moment"
+import { Theme, lighten } from "@mui/system"
+import { ITradeQuantity } from "../../dte/users/types"
+import CheckIcon from '@mui/icons-material/Check';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import { Chip } from "@mui/material"
+import { ITimestamp } from "./types"
+import { formatCurrencyForQuantity } from "@/utils/common"
 
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
@@ -18,7 +22,7 @@ export function getColumns(
   handleSetSelection: (id: GridRowId) => void,
   rowModesModel: GridRowModesModel,
   theme: Theme,
-  currentUserId?: string
+  currentRowId?: string
 ) {
   const columns: GridColDef<IvlUser>[] = [
     {
@@ -56,7 +60,7 @@ export function getColumns(
         return [
           <GridActionsCellItem
             key="3"
-            icon={<VisibilityIcon sx={{fill: currentUserId !== id ? selectedIconColor : theme.palette.text.primary}} />}
+            icon={<VisibilityIcon sx={{fill: currentRowId !== id ? selectedIconColor : theme.palette.text.primary}} />}
             label={i18next.t("View", { ns: "Common" })}
             className="textPrimary"
             onClick={() => 
@@ -71,12 +75,14 @@ export function getColumns(
       },
     },
     {
-      field: "id",
+      field: "userId",
       headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "exchangeUsername",
@@ -85,14 +91,8 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
-    },
-    {
-      field: "email",
-      headerName: i18next.t("Email", { ns: "ColumnsDefs" }),
-      minWidth: 100,
-      editable: true,
-      type: "string",
-      flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "accountNumber",
@@ -101,20 +101,103 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left'
     },
     {
       field: "connectionStatus",
-      headerName: i18next.t("ConnectionStatus", { ns: "ColumnsDefs" }),
+      headerName: i18next.t("Connected", { ns: "ColumnsDefs" }),
+      minWidth: 120,
+      editable: true,
+      type: "boolean",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params: GridRenderCellParams) => {
+        if (params.value) {
+          return <Chip 
+                    variant="outlined" 
+                    color="success" 
+                    label={i18next.t("Connected", { ns: "ColumnsDefs" })} 
+                    size="small" 
+                    icon={<CheckIcon />} 
+                    sx={{ color: "#85a560", border: "1px solid" }}/>;
+        } else {
+          return <Chip 
+                    variant="outlined" 
+                    color="error" 
+                    label={i18next.t("Disconnected", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<ReportProblemIcon />} />;
+        }
+      },
+    },
+    {
+      field: "removed",
+      headerName: i18next.t("Removed", { ns: "ColumnsDefs" }),
+      minWidth: 110,
+      editable: true,
+      type: "boolean",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params: GridRenderCellParams) => {
+        if (params.value) {
+          return <Chip 
+                    variant="outlined" 
+                    color="error" 
+                    label={i18next.t("Removed", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<DeleteIcon />}/>;
+        } else {
+          return <></>
+        }
+      },
+    },
+    {
+      field: "active",
+      headerName: i18next.t("Active", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
-      type: "string",
+      type: "boolean",
       flex: 1,
-      cellClassName: (param: GridCellParams<GridValidRowModel>) => {
-        if (param.value === "Disconnected") {
-          return "red"
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params: GridRenderCellParams) => {
+        if (params.value) {
+          return <Chip 
+                    variant="outlined" 
+                    color="success" 
+                    label={i18next.t("Active", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<CheckIcon />} 
+                    sx={{ color: "#85a560", border: "1px solid" }}/>;
+        } else {
+          return <Chip 
+                    variant="outlined" 
+                    color="error" 
+                    label={i18next.t("Inactive", { ns: "ColumnsDefs" })}
+                    size="small" 
+                    icon={<ReportProblemIcon />} />;
         }
-        return "";
-      }
+      },
+    },
+    {
+      field: "closingOnly",
+      headerName: i18next.t("ClosingOnly", { ns: "ColumnsDefs" }),
+      minWidth: 100,
+      editable: false,
+      type: "boolean",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left',
+      renderCell: (params: GridRenderCellParams) => {
+        if (params.value) {
+          return <CancelIcon color="error" />;
+        } else {
+          return "";
+        }
+      },
     },
     {
       field: "botStatus",
@@ -123,51 +206,105 @@ export function getColumns(
       editable: true,
       type: "string",
       flex: 1,
+      headerAlign: 'left',
+      align: 'left',
       cellClassName: (param: GridCellParams<GridValidRowModel>) => {
-        if (param.value === "error" || param.value === "" || param.value === " ") {
+        if (param.value && (param.value as string).toLowerCase().indexOf("error") > -1) {
           return "dark-yellow"
         }
         return "";
       }
     },
     {
-      field: "lastFill",
-      headerName: i18next.t("LastFill", { ns: "ColumnsDefs" }),
-      minWidth: 100,
-      editable: true,
-      type: "number",
-      flex: 1,
-      valueGetter: (param) => {
-        if (param.row.openQty === 0) {
-          return null;
-        }
-
-        return Number(param.value.toFixed(2));
-      }
-    },
-    {
-      field: "fillTime",
-      headerName: i18next.t("FillTime", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      field: "lastUpdatedAt",
+      headerName: i18next.t("LastUpdated", { ns: "ColumnsDefs" }),
+      minWidth: 150,
       editable: true,
       type: "date",
       flex: 1,
-      valueFormatter: (param: GridValueFormatterParams<Date>) => {
+      headerAlign: 'left',
+      align: 'left',
+      valueFormatter: (param: GridValueFormatterParams<ITimestamp>) => {
         if (param.value) {
-          return moment(param.value).format("HH:mm:ss");
+          return new Date(param.value.seconds * 1000).toLocaleString()
         }
-
-        return param.value;
+        return "";
       }
     },
     {
-      field: "openQty",
-      headerName: i18next.t("OpenQty", { ns: "ColumnsDefs" }),
+      field: "capitalAllocationNext",
+      headerName: i18next.t("CapAlloNext", { ns: "ColumnsDefs" }),
+      minWidth: 150,
+      editable: true,
+      flex: 1,
+      type: "number",
+      valueGetter: (params) => formatCurrencyForQuantity(
+        params.row.capitalAllocationNext.units, 
+        params.row.capitalAllocationNext.nanos,
+        "$"),
+    },
+    {
+      field: "tradeQty",
+      headerName: i18next.t("TradeQty", { ns: "ColumnsDefs" }),
       minWidth: 100,
       editable: true,
       type: "number",
       flex: 1,
+      headerAlign: 'left',
+      align: 'right',
+      valueFormatter: (param: GridValueFormatterParams<ITradeQuantity>) => {
+        if(param.value) {
+          return param.value.units;
+        }
+        return null;
+      },
     },
+    {
+      field: "entryOrderStatus",
+      headerName: i18next.t("EntryStatus", { ns: "ColumnsDefs" }),
+      minWidth: 100,
+      editable: true,
+      type: "string",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left'
+    },
+    {
+      field: "nextEntryTimestamp",
+      headerName: i18next.t("NextEntryTime", { ns: "ColumnsDefs" }),
+      minWidth: 150,
+      editable: true,
+      type: "date",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left',
+      valueFormatter: (param: GridValueFormatterParams<ITimestamp>) => {
+        if (param.value) {
+          return new Date(param.value.seconds * 1000).toLocaleString()
+        }
+        return "";
+      }
+    },
+    {
+      field: "targetOrderStatus",
+      headerName: i18next.t("TargetStatus", { ns: "ColumnsDefs" }),
+      minWidth: 100,
+      editable: true,
+      type: "string",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left'
+    },
+    {
+      field: "userMessage",
+      headerName: i18next.t("Message", { ns: "ColumnsDefs" }),
+      minWidth: 150,
+      editable: true,
+      type: "string",
+      flex: 1,
+      headerAlign: 'left',
+      align: 'left'
+    }
   ]
 
   return columns

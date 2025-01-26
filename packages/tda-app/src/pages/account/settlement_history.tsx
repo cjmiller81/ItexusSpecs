@@ -5,12 +5,11 @@ import { useTranslation } from "react-i18next";
 
 const SettlementHistory: React.FC = () => {
   const { t } = useTranslation("SettlementHistory");
-  const isPad = useMediaQuery("(max-width: 1030px)");
-  const isMobile = useMediaQuery("(max-width: 715px)");
+  const isMobile = useMediaQuery("(max-width: 850px)");
   return (
     <>
       <Typography
-        sx={{ mt: isMobile ? "300px" : isPad ? "100px" : "20px" }}
+        sx={{ mt: isMobile ? "70px" : "20px" }}
         variant="h3">
         {t("Title")}
       </Typography>

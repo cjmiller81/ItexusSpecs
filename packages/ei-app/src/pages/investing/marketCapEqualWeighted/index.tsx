@@ -15,6 +15,7 @@ import {
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
 import { defaultTotalTokensCount } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { Wallet } from "@/models/Wallet/Wallet";
 import { Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
@@ -42,8 +43,9 @@ export default function MarketCapEqualWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 
-  const { t } = useTranslation("MarketCapPage");
+  const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   useEffect(() => {
     dispatch(resetState());
@@ -69,6 +71,10 @@ export default function MarketCapEqualWeightedPage() {
       refreshIndexModelingData(take);
     }
   }, [currentSorter, currentFilter, take]);
+
+  const onWalletChange = (wallet: Wallet | null) => {
+    setSelectedWallet(wallet); 
+  };
 
   const refreshIndexModelingData = currentTake => {
     if (!indexModelRequestPromise) {
@@ -151,17 +157,14 @@ export default function MarketCapEqualWeightedPage() {
         isEqualWeight
         tableAssets={tableData}
         title={t("IndexModeling")}
-      />
-
-      <IndexResultsSection
-        title={t("IndexResults")}
-        tableAssets={tableData}
+        selectedWallet={selectedWallet}
       />
 
       <AppAccordionSection
         persistKey="EqualWeightedHistoricalWalletsWorth"
         defaultExpanded
-        title={t("EqualWeightedChartTitle")}>
+        title={t("EqualWeightedChartTitle")}
+        tooltip={t("ToggleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
           sx={{ mt: 4, width: "100%" }}
           onFetchPage={fetchLookupPage}
@@ -186,6 +189,12 @@ export default function MarketCapEqualWeightedPage() {
           title={""}
         />
       </AppAccordionSection>
+
+      <IndexResultsSection
+        title={t("IndexResults")}
+        tableAssets={tableData}
+        onWalletChange={onWalletChange}
+      />
     </Stack>
   );
 }

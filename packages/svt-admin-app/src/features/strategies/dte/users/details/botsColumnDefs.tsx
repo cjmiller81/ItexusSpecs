@@ -1,14 +1,21 @@
 import i18next from "@/libs/i18n/i18n";
-import { Button, Checkbox, darken, lighten, styled } from "@mui/material";
-import { GridColDef, GridRowId } from "@mui/x-data-grid";
-import { Bot } from "./bot";
+import { Button, darken, lighten, styled } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
+import { StrategyBot } from "../types";
 
 export function getBotColumnsDefs(
-  handleStartClick: (id: GridRowId) => void,
-  handleStopClick: (id: GridRowId) => void,
-  handleResetClick: (id: GridRowId) => void,
+  handleStartClick: (row: StrategyBot) => void,
+  handleStopClick: (row: StrategyBot) => void,
+  handleResetClick: (row: StrategyBot) => void,
+  handleForceExitClick: (row: StrategyBot) => void,
 ) {
-  const columns: GridColDef<Bot>[] = [
+
+  const isForceExitActive = (row: StrategyBot) => {
+    return row.active 
+    || (row.hasEntryOrderStatus && (!row.hasTargetOrderStatus || row.targetOrderStatus === 'working'))
+  }
+
+  const columns: GridColDef<StrategyBot>[] = [
     {
       field: "active",
       headerName: i18next.t("Active", { ns: "ColumnsDefs" }),
@@ -29,7 +36,7 @@ export function getBotColumnsDefs(
           <StyledCellButton
             disabled={params.row.active}
             onClick={e => {
-              handleStartClick(params.row.userId);
+              handleStartClick(params.row);
             }}
             variant="contained"
             sx={{
@@ -45,19 +52,6 @@ export function getBotColumnsDefs(
       },
     },
     {
-      field: "closingOnly",
-      headerAlign: "center",
-      disableColumnMenu: true,
-      sortable: false,
-      headerName: i18next.t("ClosingOnly", { ns: "ColumnsDefs" }),
-      minWidth: 80,
-      editable: true,
-      renderCell: params => {
-        return <Checkbox sx={{ marginLeft: "auto", marginRight: "auto" }}></Checkbox>;
-      },
-      flex: 1,
-    },
-    {
       field: "stopBot",
       headerName: i18next.t("StopBot", { ns: "ColumnsDefs" }),
       width: 120,
@@ -68,7 +62,7 @@ export function getBotColumnsDefs(
         return (
           <StyledCellButton
             onClick={e => {
-              handleStopClick(params.row.userId);
+              handleStopClick(params.row);
             }}
             disabled={!params.row.active}
             variant="contained"
@@ -94,8 +88,9 @@ export function getBotColumnsDefs(
       renderCell: params => {
         return (
           <StyledCellButton
+          disabled={!params.row.active}
             onClick={e => {
-              handleResetClick(params.row.userId);
+              handleResetClick(params.row);
             }}
             variant="contained"
             sx={{
@@ -119,18 +114,45 @@ export function getBotColumnsDefs(
         );
       },
     },
+
     {
-      field: "capitalAllocation",
-      headerName: i18next.t("CapitalAllocation", { ns: "ColumnsDefs" }),
-      minWidth: 100,
+      field: "flattenBot",
+      headerName: i18next.t("FlattenBot", { ns: "ColumnsDefs" }),
+      width: 120,
       disableColumnMenu: true,
+      headerAlign: "center",
       sortable: false,
-      editable: true,
-      type: "number",
-      flex: 1,
+      renderCell: params => {
+        return (
+          <StyledCellButton
+            disabled={!isForceExitActive(params.row)}
+            onClick={e => {
+              handleForceExitClick(params.row);
+            }}
+            variant="contained"
+            sx={{
+              ":hover": {
+                backgroundColor: theme =>
+                  theme.palette.mode === "dark"
+                    ? darken(theme.palette.warning.light, 0.5)
+                    : lighten(theme.palette.warning.light, 0.6),
+              },
+              color: theme =>
+                theme.palette.mode === "dark"
+                  ? darken(theme.palette.warning.main, 0.1)
+                  : lighten(theme.palette.warning.main, 0.1),
+              backgroundColor: theme =>
+                theme.palette.mode === "dark"
+                  ? darken(theme.palette.warning.light, 0.6)
+                  : lighten(theme.palette.warning.light, 0.7),
+            }}>
+            {i18next.t("ForceExit", { ns: "ColumnsDefs" })}
+          </StyledCellButton>
+        );
+      },
     },
     {
-      field: "tradeSymbol",
+      field: "masterSymbol",
       headerName: i18next.t("TradeSymbol", { ns: "ColumnsDefs" }),
       minWidth: 80,
       disableColumnMenu: true,
@@ -140,7 +162,7 @@ export function getBotColumnsDefs(
       flex: 1,
     },
     {
-      field: "qty",
+      field: "tradeQty",
       headerName: i18next.t("TradeQty", { ns: "ColumnsDefs" }),
       minWidth: 100,
       disableColumnMenu: true,
@@ -148,6 +170,7 @@ export function getBotColumnsDefs(
       editable: true,
       type: "number",
       flex: 1,
+      valueGetter: (params) => params.value.units
     },
     {
       field: "entryOrderStatus",

@@ -36,7 +36,7 @@ export const SettlementTable: FC<RFQTableProps> = ({
   sx,
   ...props
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: "transactTime", desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "date", desc: false }]);
 
   const handleToDateChange = (newToDate: Date | null) => {
     if (fromDate && newToDate && newToDate < fromDate) {
@@ -67,8 +67,6 @@ export const SettlementTable: FC<RFQTableProps> = ({
     link.click();
   };
 
-  const columns = useMemo(() => getSettlementDataTableColumns(), []);
-
   const handleDownloadPdf = () => {
     const tableColumns = columns as { accessorKey: string; header: string }[];
     const doc = new jsPDF();
@@ -93,6 +91,8 @@ export const SettlementTable: FC<RFQTableProps> = ({
     setSorting(newSorting);
   };
 
+  const columns = useMemo(() => getSettlementDataTableColumns(), []);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <MainCard
@@ -102,7 +102,7 @@ export const SettlementTable: FC<RFQTableProps> = ({
         <ReactTable
           title={title}
           data={rows}
-          columns={getSettlementDataTableColumns()}
+          columns={columns}
           sorting={sorting}
           onSortingChange={handleSortingChange}
           header={

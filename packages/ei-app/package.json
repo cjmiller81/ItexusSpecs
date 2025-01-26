@@ -26,5 +26,8 @@
       "public"
     ]
   },
-  "packageManager": "yarn@4.2.1"
+  "packageManager": "yarn@4.2.1",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3"
+  }
 }

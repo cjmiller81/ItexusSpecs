@@ -5,10 +5,10 @@ export interface IPrefilterTokensFilterValues {
   name: string;
   description?: string | null;
   filterType?: FilterType;
-  icon: string | null;
-  isPublic: boolean;
+  icon?: string | null;
+  isPublic?: boolean;
   OwnerUserId?: string | null;
-  isPublished: boolean;
+  isPublished?: boolean;
   accessPlanName?: string | null;
   filter: object[];
 }

@@ -20,11 +20,12 @@ import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
+import { StrategyBot } from "@/features/strategies/dte/users/types";
 
 type Props = BoxProps & {
   user: IvlUser;
   orders: Order[];
-  bots: Bot[];
+  bot: Bot;
   allocations: CapitalAllocation[];
   billings: Billing[];
   openPositions: OpenPosition[];
@@ -40,42 +41,16 @@ export default function UserDetailsSection({
   allocations,
   billings,
   openPositions,
-  bots,
+  bot,
   currentDayFills,
   workingOrders,
   theme,
   ...props
 }: Props) {
   const { t } = useTranslation("UserDetailsSection");
-
   const handleStopClick = () => {};
   const handleStartClick = () => {};
   const handleResetClick = () => {};
-
-  const getPandLStyleAndValue = useMemo(() => {
-    if (!openPositions || openPositions.length === 0) {
-      return { text: "-", color: "#84b067" };
-    }
-
-    let sumPanAndL = 0;
-    openPositions.forEach(x => {
-      if (x.pAndL) {
-        sumPanAndL += x.pAndL;
-      }
-    });
-
-    return {
-      text: formatCurrencyToString(sumPanAndL, openPositions[0].currencySymbol),
-      color: sumPanAndL >= 0 ? "#84b067" : "#ff7782",
-    };
-  }, [openPositions]);
-
-  const getOpenPositionStyleAndValue = useMemo(() => {
-    console.info(openPositions);
-    return openPositions && openPositions.length > 0
-      ? { color: "#89d08d", text: t("OpenPositions") }
-      : { color: "#bfbfbf", text: t("Flat") };
-  }, [openPositions]);
 
   return (
     <Box {...props}>
@@ -85,15 +60,8 @@ export default function UserDetailsSection({
         variant="h6">
         {t("OpenPositions")}
       </Typography>
+
       <StyledMetricsBox>
-        <UserMetricCard
-          sx={{ backgroundColor: getOpenPositionStyleAndValue.color }}
-          title={undefined}
-          subtitle={getOpenPositionStyleAndValue.text}></UserMetricCard>
-        <UserMetricCard
-          sx={{ backgroundColor: getPandLStyleAndValue.color }}
-          title={t("OpenPANDL")}
-          subtitle={getPandLStyleAndValue.text}></UserMetricCard>
         <DataGrid<OpenPosition>
           slots={{
             footer: () => <></>,
@@ -106,9 +74,15 @@ export default function UserDetailsSection({
           columnHeaderHeight={25}
           isCellEditable={() => false}
           columns={getOpenPositionColumns()}
-          getRowId={row => row.id}
+          getRowId={row => {
+            if (!row.username) {
+              throw new Error("Row does not have a valid username");
+            }
+            return row.username;
+          }}
         />
       </StyledMetricsBox>
+
       <Typography
         mt={2}
         align="center"
@@ -126,56 +100,59 @@ export default function UserDetailsSection({
             paddingBottom: "0px",
           },
         }}
-        rows={bots}
+        rows={[bot]}
         rowHeight={25}
         isCellEditable={() => false}
         columns={getBotColumnsDefs(handleStartClick, handleStopClick, handleResetClick)}
         editMode="row"
-        getRowId={row => row.userId}
+        getRowId={row => row.entryOrderId}
       />
+
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("CurrentDayFills")}
+      </Typography>
       <Stack>
-        <Typography
-          mt={2}
-          align="center"
-          variant="h6">
-          {t("CurrentDayFills")}
-        </Typography>
-        <Stack>
-          <DataGrid<ICurrentDayFills>
-            slots={{
-              footer: () => <></>,
-            }}
-            sx={adaptiveHeightTableSx}
-            rowSelection={false}
-            checkboxSelection={false}
-            rows={currentDayFills}
-            rowHeight={25}
-            isCellEditable={() => false}
-            columns={getCurrentDayFillsColumns()}
-            getRowId={row => row.id}
-          />
-        </Stack>
-        <Typography
-          mt={2}
-          align="center"
-          variant="h6">
-          {t("WorkingOrders")}
-        </Typography>
-        <Stack>
-          <DataGrid<IWorkingOrder>
-            slots={{
-              footer: () => <></>,
-            }}
-            sx={adaptiveHeightTableSx}
-            rowSelection={false}
-            checkboxSelection={false}
-            rows={workingOrders}
-            rowHeight={25}
-            isCellEditable={() => false}
-            columns={getWorkingOrdersColumns()}
-            getRowId={row => row.id}
-          />
-        </Stack>
+        <DataGrid<ICurrentDayFills>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={adaptiveHeightTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={currentDayFills}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getCurrentDayFillsColumns()}
+          getRowId={row => row.orderId}
+        />
+      </Stack>
+
+      <Typography
+        mt={2}
+        align="center"
+        variant="h6">
+        {t("WorkingOrders")}
+      </Typography>
+      <Stack>
+        <DataGrid<IWorkingOrder>
+          slots={{
+            footer: () => <></>,
+          }}
+          sx={adaptiveHeightTableSx}
+          rowSelection={false}
+          checkboxSelection={false}
+          rows={workingOrders}
+          rowHeight={25}
+          isCellEditable={() => false}
+          columns={getWorkingOrdersColumns()}
+          getRowId={row => row.orderId}
+        />
+      </Stack>
+
+      <Stack>
         <Typography
           mt={2}
           align="center"

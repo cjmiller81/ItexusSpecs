@@ -1,14 +1,16 @@
 import { getIndexModelingTableColumns } from "@/constants/ColumnsDefs/IndexModelingTable";
 import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
+import { Wallet } from "@/models/Wallet/Wallet";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, styled } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Tooltip, Typography,useTheme } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
-import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
+import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable, toTableTokensModel } from "components";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 
-interface Props extends Omit<AccordionProps, "children"> {
+interface Props extends Omit<AccordionProps, "children"> { 
   title: string;
   tableAssets: InvestingTableAsset[];
   isEqualWeight?: boolean;
@@ -18,6 +20,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
+  selectedWallet: Wallet | null;
 }
 
 export const IndexModelingSection = ({
@@ -30,13 +33,65 @@ export const IndexModelingSection = ({
   tableAssets,
   isEqualWeight,
   persistKey,
+  selectedWallet,
   ...props
 }: Props) => {
-  const { t } = useTranslation("IndexModelingSection");
+  const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
+  const [useWalletCapital, setUseWalletCapital] = useState(true)
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [totalAmount,setTotalAmount] = useState<number>(0);
+
+  useEffect(() => {
+    if (!selectedWallet) {
+      setUseWalletCapital(true);
+      onCapitalChange(1000);
+    } 
+  }, [selectedWallet])
+
+  const calculateTotalUsdAmount = (selectedWallet: Wallet): number => {
+    let totalUsdAmount = 0;
+  
+    selectedWallet.chainAssets.forEach(chainAsset => {
+      const tableAssets = toTableTokensModel(chainAsset);
+  
+      tableAssets.forEach(asset => {
+        if (asset.usdAmount) {
+          totalUsdAmount += asset.usdAmount; 
+        }
+      });
+    });
+  
+    return totalUsdAmount;
+  };
+
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedWallet) {
+      setIsTooltipOpen(true);
+      event.preventDefault();
+    } else {
+      setUseWalletCapital(event.target.checked); 
+      setTotalAmount(calculateTotalUsdAmount(selectedWallet));
+      setIsTooltipOpen(false); 
+        if(useWalletCapital)
+          onCapitalChange(totalAmount)
+        else
+          onCapitalChange(1000)
+    }
+  };
+
+  const theme = useTheme();
   const onExport = () => {
+    const updatedAssets = tableAssets.map(asset => ({
+      symbol: asset.symbol,
+      price: asset.price,
+      marketCap: asset.marketCap,
+      weight: asset.weight,
+      qty: asset.qty * (tokens / 100),
+    }));
+
     const worksheet = XLSX.utils.json_to_sheet(
-      tableAssets.map(asset => ({
+      updatedAssets.map(asset => ({
         symbol: asset.symbol,
         price: asset.price,
         marketCap: asset.marketCap,
@@ -65,28 +120,44 @@ export const IndexModelingSection = ({
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
   };
 
+  const darkThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none",
+    position: "inherit",
+    borderRadius: "2px",
+    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#363640",
+    border: "1.6px solid #25252AFF",
+    outline: "1.9px solid #363640",
+    "& .MuiAccordionSummary-root": {
+      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
+    },
+  };
+
   return (
     <AppAccordionSection
       persistKey={persistKey}
       defaultExpanded
+      sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", pointerEvents: "none" }}
       title={title}
+      tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={
         <Button
-          sx={{ mr: 2 }}
+          sx={{ mr: 2, pointerEvents: "auto" }}
           onClick={event => {
             event.stopPropagation();
             onExport();
           }}
           variant="outlined">
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <DownloadIcon></DownloadIcon>
+            <DownloadIcon />
             {t("Export")}
           </Box>
         </Button>
       }
       {...props}>
       <MainContainer
-        sx={{ width: "100%" }}
+        sx={{ width: "100%", pointerEvents: "auto" }}
         gap={2}>
         <LeftContainer>
           <AppNumberInput
@@ -106,13 +177,52 @@ export const IndexModelingSection = ({
               maxDecimals={2}
             />
           )}
-          <AppNumberInput
-            label={t("TotalCapital")}
-            min={0}
-            step={10}
-            value={capital}
-            onChange={(_, value) => onCapitalChange(value || 0)}
-          />
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <Typography variant="body1" sx={{ textAlign: "center", flex: 1 }}>
+              {t("WalletCapital", { ns: "IndexModelingSection" })}
+            </Typography>
+            
+            <Tooltip
+              open={isTooltipOpen}
+              title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
+              placement="top"
+              arrow
+            >
+              <span>
+                <FormControlLabel
+                  control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
+                  label=""
+                  labelPlacement="top"
+                  sx={{ flex: 0 }}
+                />
+              </span>
+            </Tooltip>
+            
+            <Typography variant="body1" sx={{ paddingRight: "10px", textAlign: "center", flex: 1 }}>
+              {t("DeploymentCapital", { ns: "IndexModelingSection" })}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <TextField
+              variant="outlined"
+              fullWidth
+              sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
+              value={useWalletCapital=== true ? " " : parseFloat(totalAmount.toFixed(2))}
+              inputProps={{ style: { padding: "13px" } }}
+              disabled={useWalletCapital=== true ? true : false}
+            />
+            
+          <TextField
+              variant="outlined"
+              fullWidth
+              sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
+              value={useWalletCapital=== true ? capital : " "}
+              inputProps={{ style: { padding: "13px" } }}
+              onChange={(event) => onCapitalChange(Number(event.target.value) || 0)}
+              disabled={useWalletCapital=== true ? false : true}
+            />
+          </Box>
         </LeftContainer>
         <RightContainer>
           <StyledWalletsTable

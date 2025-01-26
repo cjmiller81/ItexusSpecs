@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { ICoin } from "components/src/models/token/ICoin"
+import { ICoin } from "components/src/models/token/ICoin";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -18,32 +17,39 @@ import DataGridDef, {
   Search,
   Sorting,
   Toolbar,
-} from "devextreme-react/data-grid"
-import DataSource from "devextreme/data/data_source"
-import { ExportingEvent } from "devextreme/ui/data_grid"
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable"
-import { SymbolCellIdComponent } from "./SymbolCellIdComponent"
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder"
-import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice"
-import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter"
-import SimpleBar from "simplebar-react"
+} from "devextreme-react/data-grid";
+import DataSource from "devextreme/data/data_source";
+import { ExportingEvent } from "devextreme/ui/data_grid";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable";
+import { SymbolCellIdComponent } from "./SymbolCellIdComponent";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import SimpleBar from "simplebar-react";
+import { ICategory, IExchange, IPlatform } from "components";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
   dataSource: DataSource;
   onSorterChanged: (sorter: any) => void;
   onExport: (e: ExportingEvent<ICoin, any>) => void;
+  chains: IPlatform[];
+  categories: ICategory[];
+  exchanges: IExchange[];
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   onCurrentFilterChange,
   dataSource,
   onSorterChanged,
+  chains,
+  categories,
+  exchanges,
   onExport,
 }) => {
-  const [currentSorter, setCurrentSorter] = useState<any>();
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
@@ -54,32 +60,25 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const dispatch = useAppDispatch();
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const filterPanelText = useRef<Element | null>(null);
+  const [currentSorter, setCurrentSorter] = useState<any>();
 
   useEffect(() => {
     onCurrentFilterChange(currentFilter);
   }, [currentFilter]);
 
-
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
-    const grid = datagrid?.current?.instance;
-
-    if (!grid) return;
-
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const gridFilter = grid.getCombinedFilter(true);
-
+  useEffect(() => {
     handleOnUpdate();
+  }, [currentSorter]);
+
+  useEffect(() => {
+    const grid = datagrid?.current?.instance;
+    if (!grid) return;
   }, [currentFilter, datagrid]);
 
   const onSortingChanged = e => {
     const sortedColumns = e.component.getDataSource().sort();
     setCurrentSorter(sortedColumns);
   };
-
-  useEffect(() => {
-    handleOnUpdate();
-  }, [currentSorter]);
 
   const handleOnUpdate = () => {
     const dataGrid = datagrid?.current?.instance;
@@ -92,11 +91,58 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     onSorterChanged(sort);
   };
 
-  useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
+  const categoryToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.category_id,
+    };
+  };
+
+  const exchangeToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.id,
+    };
+  };
+
+  const chainsToFilterItem = (item): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.id,
+    };
+  };
+
+  const calculateFilterExpression = useCallback(function (
+    this: any,
+    filterValues: any,
+    selectedFilterOperation: string | null,
+    _target: string,
+  ): any {
+    try {
+      let column = this;
+      if (filterValues) {
+        let selectedValue = filterValues;
+
+        if (selectedValue && selectedFilterOperation === "=") {
+          return [column.dataField, "contains", selectedValue];
+        }
+
+        if (selectedFilterOperation === "contains") {
+          return [column.dataField, "contains", selectedValue];
+        }
+
+        if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+          return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+        }
+
+        return column.defaultCalculateFilterExpression.apply(this, arguments);
+      }
+      return column.defaultCalculateFilterExpression.apply(this, arguments);
+    } catch (err) {
+      console.error("Error on calculateFilterExpression:", err);
+      return null;
+    }
+  }, []);
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
@@ -110,21 +156,22 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
-      filterPanelTextDiv.addEventListener("click", 
-        () => {
-          if (currentFilter && currentFilter.length > 0) {
-            setFilterBuilderOpen(true)
-          }
+      filterPanelTextDiv.addEventListener("click", () => {
+        if (currentFilter && currentFilter.length > 0) {
+          setFilterBuilderOpen(true);
         }
-      );
+      });
     }
 
     reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
   return (
-    <div ref={containerRef}>
-      <DataGridDef<ICoin>
+    <div
+      ref={containerRef}
+      style={{ pointerEvents: "auto" }}>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<ICoin>
         onOptionChanged={e => {
           if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
             setTimeout(() => {
@@ -154,12 +201,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}
-        >
+        onFilterValueChange={onApplyFilter}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
-          customizeText={e => e.text ? e.text : 'No Filter Applied' }
+          customizeText={e => (e.text ? e.text : "No Filter Applied")}
         />
 
         <FilterBuilderPopup
@@ -168,8 +214,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           }}
         />
         <Sorting mode="single" />
-        <HeaderFilter visible={false}>
-          <Search enabled={true} />
+        <HeaderFilter
+          visible={true}
+          height={650}>
+          <Search enabled={false} />
         </HeaderFilter>
         <LoadPanel enabled />
         <Paging defaultPageSize={10} />
@@ -204,27 +252,27 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         </ColumnChooser>
 
         <Toolbar>
-           <Item location="before">
-           <SimpleBar style={{ maxHeight: "600px" }}>
-             <CustomFilterBuilder
-               filterType="market-cap"
-               filterBuilderFields={filterBuilderFields}
-               filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
-               filterDeletingLoading={deletingFilterStatus === "loading"}
-               open={filterBuildeOpen}
-               onCreateFilter={filter => dispatch(createFilter(filter))}
-               onClose={() => setFilterBuilderOpen(false)}
-               onOpen={() => setFilterBuilderOpen(true)}
-               predefinedFilters={marketCapFilters}
-               onUpdateFilter={filter => dispatch(updateFilter(filter))}
-               onDisableFilter={() => setCurrentFilter(null)}
-               onApply={filter => {
-                setCurrentFilter(filter);
-                setFilterBuilderOpen(false);
-               }}
-               filterToAppply={currentFilter}
-               onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
-             />
+          <Item location="before">
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
+              <CustomFilterBuilder
+                filterType="market-cap"
+                filterBuilderFields={filterBuilderFields}
+                filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
+                filterDeletingLoading={deletingFilterStatus === "loading"}
+                open={filterBuildeOpen}
+                onCreateFilter={filter => dispatch(createFilter(filter))}
+                onClose={() => setFilterBuilderOpen(false)}
+                onOpen={() => setFilterBuilderOpen(true)}
+                predefinedFilters={marketCapFilters}
+                onUpdateFilter={filter => dispatch(updateFilter(filter))}
+                onDisableFilter={() => setCurrentFilter(null)}
+                onApply={filter => {
+                  setCurrentFilter(filter);
+                  setFilterBuilderOpen(false);
+                }}
+                filterToAppply={currentFilter}
+                onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+              />
             </SimpleBar>
           </Item>
           <Item name="exportButton" />
@@ -236,18 +284,19 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           caption={PrefilterTokensLabel.Symbol}
           alignment="left"
           visible={true}
-          minWidth={150}
+          minWidth={95}
           allowHiding={false}
+          allowHeaderFiltering={false}
           cellComponent={SymbolCellIdComponent}
         />
         <Column
           dataField={PrefilterTokensField.Price}
           caption={PrefilterTokensLabel.Price}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
           minWidth={175}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -260,11 +309,12 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.MarketCap}
           caption={PrefilterTokensLabel.MarketCap}
-          alignment="right"
+          alignment="left"
           defaultSortOrder="desc"
           visible={true}
           dataType="number"
           minWidth={160}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -277,11 +327,12 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.FullyDilutedValuation}
           caption={PrefilterTokensLabel.FullyDilutedValuation}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={190}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          minWidth={160}
+          width={170}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "currency",
@@ -294,10 +345,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Tokenomics}
           caption={PrefilterTokensLabel.Tokenomics}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={130}
+          minWidth={87}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, {
               style: "percent",
@@ -309,31 +361,22 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         <Column
           dataField={PrefilterTokensField.Volume}
           caption={PrefilterTokensLabel.Volume}
-          alignment="right"
+          alignment="left"
           visible={true}
           dataType="number"
-          minWidth={140}
+          minWidth={130}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
         />
         <Column
-          dataField={PrefilterTokensField.Chains}
-          caption={PrefilterTokensLabel.Chains}
-          alignment="left"
-          visible={true}
-          dataType="string"
-          minWidth={150}
-          width={200}
-          allowHiding={true}>
-        </Column>
-        <Column
           dataField={PrefilterTokensField.IsErc20}
           caption={PrefilterTokensLabel.IsErc20}
           alignment="center"
-          visible={true}
+          visible={false}
           dataType="boolean"
-          minWidth={130}
+          minWidth={110}
         />
         <Column
           dataField={PrefilterTokensField.Categories}
@@ -341,8 +384,81 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="left"
           visible={true}
           dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
           minWidth={150}
-          width={200}>
+          width={210}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: categories,
+              },
+              map: categoryToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
+        <Column
+          dataField={PrefilterTokensField.Chains}
+          caption={PrefilterTokensLabel.Chains}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          minWidth={150}
+          width={210}
+          allowHiding={true}>
+          <HeaderFilter
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: chainsToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}
+            height={650}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
+        <Column
+          dataField={PrefilterTokensField.Exchanges}
+          caption={PrefilterTokensLabel.Exchanges}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          calculateFilterExpression={calculateFilterExpression}
+          minWidth={150}
+          width={190}>
+          <HeaderFilter
+            height={650}
+            visible={true}
+            dataSource={{
+              store: {
+                type: "array",
+                data: exchanges,
+              },
+              map: exchangeToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
         </Column>
         <Column
           dataField={PrefilterTokensField.CirculatingSupply}
@@ -350,6 +466,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="right"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           minWidth={200}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
@@ -362,6 +479,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           visible={false}
           dataType="number"
           minWidth={200}
+          allowHeaderFiltering={false}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
           }
@@ -372,6 +490,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           alignment="right"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           minWidth={250}
           customizeText={(cellInfo: any) =>
             (cellInfo.value ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 })
@@ -388,7 +507,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };

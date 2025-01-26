@@ -1,108 +1,133 @@
-import { BottomNavigation, BottomNavigationAction, Typography, Tooltip } from "@mui/material";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableSortLabel,
+} from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/system";
-import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { fetchExchangeAccounts, fetchUserDetails } from "../userDetailsSlice";
+import { ManagedOrderRow } from "./managedOrderList";
 
-export default function UserDetailsSection({
-  opened,
-  user,
-  orders,
-  currentDayFills,
-  workingOrders,
-  bots,
-  openPositions,
-  theme,
-  ...props
-}) {
+export default function UserDetailsSection({ opened, id, user, theme, ...props }) {
   const dispatch = useAppDispatch();
   const { exchangeAccounts, userDetails } = useAppSelector(state => state.adminDetails);
   const [navValue, setNavValue] = useState<number>(0);
+  const [order, setOrder] = useState<"asc" | "desc" | undefined>("asc");
+  const [orderBy, setOrderBy] = useState("");
   const { t } = useTranslation(["UserDetailsSection", "ColumnsDefs"]);
+  const borderColor = theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50];
 
   useEffect(() => {
-    if (user.id) {
-      dispatch(fetchExchangeAccounts({ userId: user.id }));
+    if (id) {
+      dispatch(fetchExchangeAccounts({ userId: id }));
     }
-  }, [dispatch, user]);
+  }, [dispatch, id]);
 
   useEffect(() => {
-  if (user.id && navValue >= 0 && exchangeAccounts?.exchangeAccountList_ && exchangeAccounts.exchangeAccountList_.length > 0) {
-      dispatch(fetchUserDetails({ userId: user.id, accountNumber: exchangeAccounts?.exchangeAccountList_[navValue].accountNumber }));
+    if (id && navValue >= 0 && exchangeAccounts?.accounts && exchangeAccounts.accounts.length > 0) {
+      dispatch(
+        fetchUserDetails({
+          userId: id,
+          accountNumber: exchangeAccounts?.accounts[navValue].accountNumber,
+        }),
+      );
     }
-  }, [dispatch, navValue, user.id, exchangeAccounts]);
+  }, [dispatch, navValue, exchangeAccounts]);
 
   const pageLinks = useMemo(() => {
     if (exchangeAccounts) {
-        return exchangeAccounts.exchangeAccountList_?.map(x => x.accountNumber);
+      return exchangeAccounts.accounts?.map(x => x.accountNumber);
     }
-
     return [];
-}, [exchangeAccounts]);
+  }, [exchangeAccounts]);
 
-  const columns = [
-    { field: "timestamp", headerName: t("FillTime", { ns: "ColumnsDefs" }), width: 120 },
-    { field: "underlyingSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 80 },
-    { field: "marketSymbol", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 120 },
-    { field: "direction", headerName: t("Side", { ns: "UserDetailsSection" }), width: 80 },
-    { field: "amount", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 100 },
-    { field: "averagePrice", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 120 },
-  ];
+  const accountBalance = useMemo(() => {
+    if (exchangeAccounts?.accounts && exchangeAccounts?.accounts?.length > 0) {
+      const account = exchangeAccounts.accounts[navValue];
+
+      return (
+        "$" +
+        Number(`${account.accountBalance.units}.${account.accountBalance.nanos}`).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      );
+    }
+    return "";
+  }, [exchangeAccounts, navValue]);
+
   const orderColumns = [
-    { field: "timeLastUpdated", headerName: t("LastTimeUpdate", { ns: "UserDetailsSection" }), width: 110 },
-    { field: "marketSymbol", headerName: t("Symbol", { ns: "ColumnsDefs" }), width: 60 },
-    { field: "optionLeg", headerName: t("OptionLeg", { ns: "UserDetailsSection" }), width: 130 },
-    { field: "marketAssetType", headerName: t("Side", { ns: "UserDetailsSection" }), width: 100 },
-    { field: "qtyPlaced", headerName: t("QTY", { ns: "ColumnsDefs" }), width: 50 },
-    { field: "qtyFilled", headerName: t("FilledQTY", { ns: "UserDetailsSection" }), width: 68 },
-    { field: "priceAverageFill", headerName: t("AvgPrice", { ns: "ColumnsDefs" }), width: 68 },
-    { field: "orderId", headerName: t("Id", { ns: "ColumnsDefs" }), width: 65 },
-    { field: "orderStatus", headerName: t("Status", { ns: "ColumnsDefs" }), width: 73 },
-    {
-      field: "rejectReason",
-      headerName: t("Error", { ns: "ColumnsDefs" }),
-      width: 130,
-      renderCell: params => {
-        const { error } = params.row;
-        return (
-          <Tooltip
-            title={error}
-            placement="left"
-            componentsProps={{
-              tooltip: {
-                sx: {
-                  backgroundColor: "#FFBF00",
-                  maxWidth: "700px",
-                  color: "black",
-                  fontSize: "13px",
-                  borderRadius: "4px",
-                },
-              },
-            }}>
-            {params.value}
-          </Tooltip>
-        );
-      },
-    },
+    { id: "timeLastUpdated.seconds", label: t("LastTimeUpdate"), minWidth: 100, maxWidth: 200 },
+    { id: "marketSymbol", label: t("Symbol"), minWidth: 80, maxWidth: 150 },
+    { id: "orderType", label: t("SpreadType"), minWidth: 100, maxWidth: 150 },
+    { id: "qtyPlaced", label: t("QtyPlaced"), minWidth: 70, maxWidth: 120 },
+    { id: "qtyFilled", label: t("QtyFilled"), minWidth: 70, maxWidth: 120 },
+    { id: "priceLimit", label: t("SpreadPrice"), minWidth: 90, maxWidth: 150 },
+    { id: "priceAverageFill", label: t("AvgFillPrice"), minWidth: 90, maxWidth: 150 },
+    { id: "exchangeOrderId", label: t("OrderId"), minWidth: 50, maxWidth: 100 },
+    { id: "orderStatus", label: t("Status"), minWidth: 50, maxWidth: 100 },
+    { id: "source", label: t("Source"), minWidth: 70, maxWidth: 120 },
+    { id: "rejectReason", label: t("Error"), minWidth: 90, maxWidth: 200 },
   ];
+
+  const handleRequestSort = property => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const createSortHandler = property => () => {
+    handleRequestSort(property);
+  };
+
+  const isExchangeAccountsExists = () => {
+    return exchangeAccounts && exchangeAccounts?.accounts.length > 0;
+  }
+
+  const sortedRows = [...(userDetails?.managedOrderList.orders || [])].sort((a, b) => {
+    if (orderBy) {
+      const firstValue = orderBy.includes(".") ? orderBy.split(".").reduce((o, i) => o[i], a) : a[orderBy];
+      const secondValue = orderBy.includes(".") ? orderBy.split(".").reduce((o, i) => o[i], b) : b[orderBy];
+
+      if (order === "asc") {
+        return firstValue < secondValue ? -1 : 1;
+      } else {
+        return firstValue > secondValue ? -1 : 1;
+      }
+    }
+    return 0;
+  });
 
   return (
     <Box
       {...props}
-      sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Box sx={{ mb: 3 }}>
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        marginLeft: opened ? 0 : "50px",
+        transition: "margin-left 0.3s ease",
+        overflow: "hidden",
+      }}>
+      <Box sx={{ mb: 3, marginLeft: "16px" }}>
         <Typography
           variant="h5"
           align="left"
-          sx={{ mt: 2, ml: 2 }}>
+          sx={{ mt: 2, ml: 1 }}>
           Accounts
         </Typography>
-
         <BottomNavigation
           value={navValue}
-          onChange={(event, newValue) => setNavValue(newValue)}
+          onChange={(_, newValue) => setNavValue(newValue)}
           showLabels
           sx={{
             display: "flex",
@@ -130,16 +155,11 @@ export default function UserDetailsSection({
             />
           ))}
         </BottomNavigation>
-        <Box
-          sx={{
-            borderTop: `0.5px solid grey`,
-            width: "1000px !important",
-          }}
-        />
+        <Box sx={{ borderTop: `0.5px solid grey`, width: "1000px !important" }} />
       </Box>
       <Typography
         sx={{
-          marginLeft: "15px",
+          marginLeft: "25px",
           backgroundColor: "#4cbb17",
           color: "black",
           padding: "8px 16px",
@@ -147,36 +167,85 @@ export default function UserDetailsSection({
           whiteSpace: "nowrap",
           width: "fit-content",
         }}>
-        {t("AccountBalance")} $350,000
+        {t("AccountBalance")} {accountBalance}
       </Typography>
-
-      <Box sx={{ height: "auto", width: "95%", marginLeft: "15px" }}>
-        <Typography sx={{ marginTop: "20px" }}>{t("OpenPositions")}</Typography>
-        <DataGrid
-          slots={{
-            footer: () => <></>,
-          }}
-          sx={{ marginTop: "10px", height: "auto" }}
-          getRowId={_ => Math.random()}
-          rows={userDetails?.positionList.positionList_ ?? []}
-          columns={columns}
-          rowHeight={45}
-        />
-      </Box>
-
-      <Box sx={{ height: "auto", width: "95%", marginLeft: "15px" }}>
+      {isExchangeAccountsExists() && 
+      (<Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", overflow: "hidden", marginLeft: "25px" }}>
         <Typography sx={{ marginTop: "20px" }}>{t("Orders", { ns: "UserDetailsSection" })}</Typography>
-        <DataGrid
-          slots={{
-            footer: () => <></>,
-          }}
-          getRowId={row => row.orderId}
-          sx={{ marginTop: "10px", height: "440px", width: "100%" }}
-          rows={userDetails?.managedOrderList.managedOrderList_ ?? []}
-          columns={orderColumns}
-          rowHeight={45}
-        />
-      </Box>
+        <TableContainer
+          sx={{
+            flexGrow: 1,
+            overflow: "auto",
+            marginTop: "10px",
+            borderRadius: "1px",
+            "&::-webkit-scrollbar": {
+              width: "6px",
+              height: "6px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: theme.palette.mode === "dark" ? theme.palette.grey[400] : theme.palette.grey[500],
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: theme.palette.mode === "dark" ? "#333" : "#f1f1f1",
+              borderRadius: "4px",
+            },
+          }}>
+          <Table
+            stickyHeader
+            sx={{ width: "100%", borderCollapse: "unset" }}>
+            <TableHead>
+              <TableRow
+                sx={{
+                  padding: 0,
+                  margin: 0,
+                  borderSpacing: 0,
+                  backgroundColor: `${borderColor}`,
+                }}>
+                <TableCell
+                  sx={{
+                    backgroundColor: "#009acf",
+                    color: "white",
+                    maxWidth: "300px",
+                    borderTop: `0.3px solid ${borderColor}`,
+                    borderBottom: `0.5px solid ${borderColor}`,
+                    borderLeft: `0.9px solid ${borderColor}`,
+                  }}
+                />
+                {orderColumns.map(column => (
+                  <TableCell
+                    key={column.id}
+                    sx={{
+                      backgroundColor: "#009acf",
+                      color: theme.palette.text.primary,
+                      minWidth: column.minWidth || "auto",
+                      maxWidth: column.maxWidth,
+                      borderBottom: `0.3px solid ${borderColor}`,
+                      borderTop: `0.3px solid ${borderColor}`,
+                      borderRight: `0.3px solid ${borderColor}`,
+                      boxShadow: `0px -0.6px 0px 0.6px ${theme.palette.mode === "light" ? theme.palette.grey[700] : theme.palette.grey[50]}`,
+                    }}>
+                    <TableSortLabel
+                      active={orderBy === column.id}
+                      direction={orderBy === column.id ? order : "asc"}
+                      onClick={createSortHandler(column.id)}>
+                      {column.label}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sortedRows.map(row => (
+                <ManagedOrderRow
+                  key={row.exchangeOrderId}
+                  row={row}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>)}
     </Box>
   );
 }

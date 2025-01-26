@@ -27,10 +27,12 @@ export enum DefiField {
   VolumeUsd1d = "volumeUsd1d",
   VolumeUsd7d = "volumeUsd7d",
   ApyBaseInception = "apyBaseInception",
+  Dex = "dexFormatted"
 }
 
 export enum DefiLabel {
   Chain = "Chain",
+  Dex = "DEX",
   Project = "Project",
   Symbol = "Pool",
   TVL = "TVL",
@@ -72,6 +74,11 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
+    dataType: "string",
+  },
+  {
+    caption: DefiLabel.Dex,
+    dataField: DefiField.Dex,
     dataType: "string",
   },
   {

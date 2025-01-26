@@ -31,15 +31,17 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
 import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
+import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
   onExport: (e: ExportingEvent<PoolData, any>) => void;
+  dexs: string[];
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport }) => {
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport, dexs }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
@@ -62,6 +64,38 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     const prefilteredData = filteredDataSource.items() as ICoin[];
     onUpdate(prefilteredData);
   }, [datagrid, currentFilter, onUpdate]);
+
+  const calculateFilterExpression = useCallback(function (
+      this: any,
+      filterValues: any,
+      selectedFilterOperation: string | null,
+      _target: string,
+    ): any {
+      try {
+        let column = this;
+        if (filterValues) {
+          let selectedValue = filterValues;
+  
+          if (selectedValue && selectedFilterOperation === "=") {
+            return [column.dataField, "contains", selectedValue];
+          }
+  
+          if (selectedFilterOperation === "contains") {
+            return [column.dataField, "contains", selectedValue];
+          }
+  
+          if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+            return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+          }
+  
+          return column.defaultCalculateFilterExpression.apply(this, arguments);
+        }
+        return column.defaultCalculateFilterExpression.apply(this, arguments);
+      } catch (err) {
+        console.error("Error on calculateFilterExpression:", err);
+        return null;
+      }
+    }, []);
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
@@ -87,12 +121,12 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
   useEffect(() => {
     const grid = datagrid?.current?.instance;
     if (!grid) return;
-    updatePrefilteredTokens();
-  }, [currentFilter, datagrid, updatePrefilteredTokens]);
+  }, [currentFilter, datagrid]);
 
   return (
     <div ref={containerRef}>
-      <DataGridDef<PoolData>
+      {/*@ts-ignore*/}
+      <StyledDataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
@@ -105,7 +139,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         showBorders={true}
         onExporting={onExport}
         filterBuilder={{
-          customOperations: [],
+          customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
         filterValue={currentFilter || []}
@@ -122,7 +156,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
             e.cancel = true;
           }}
         />
-        <HeaderFilter visible={false}>
+        <HeaderFilter
+          height={650}
+          visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
         <LoadPanel
@@ -159,7 +195,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         </ColumnChooser>
         <Toolbar>
           <Item location="before">
-            <SimpleBar style={{ maxHeight: "600px" }}>
+            <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
@@ -212,14 +248,42 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           cellComponent={ChainCell}
         />
         <Column
+          dataField={DefiField.Dex}
+          caption={DefiLabel.Dex}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          allowHiding={true}
+          calculateFilterExpression={calculateFilterExpression}
+          width="320px"
+        >
+           <HeaderFilter
+            height={650}
+            visible={true}
+            dataSource={{
+            store: {
+              type: "array",
+              data: dexs.map(dex => ({ value: dex, text: dex })),
+              },
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+          </Column>
+        <Column
           dataField={DefiField.TVL}
           caption={DefiLabel.TVL}
           alignment="left"
           visible={true}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toDollarAmountField}
           sortOrder="desc"
+          width="auto"
         />
         <Column
           dataField={DefiField.APY}
@@ -228,7 +292,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}
           dataType="number"
           allowHiding={true}
+          allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          width="auto"
         />
         <Column
           dataField={DefiField.ApyBase}
@@ -236,6 +302,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -245,6 +312,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -255,6 +323,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -264,6 +333,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -274,7 +344,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}
           dataType="number"
           allowHiding={true}
+          allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          width="auto"
         />
         <Column
           dataField={DefiField.VolumeUsd1d}
@@ -282,6 +354,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toDollarAmountField}
         />
@@ -292,6 +365,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toDollarAmountField}
         />
@@ -301,6 +375,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -310,6 +385,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -319,6 +395,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -336,6 +413,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -345,6 +423,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="number"
+          allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
         />
@@ -353,6 +432,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           caption={DefiLabel.Count}
           alignment="left"
           visible={false}
+          allowHeaderFiltering={false}
           dataType="number"
           allowHiding={true}
         />
@@ -377,7 +457,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           enabled={true}
           allowExportSelectedData={true}
         />
-      </DataGridDef>
+      </StyledDataGridDef>
     </div>
   );
 };

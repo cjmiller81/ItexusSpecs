@@ -15,6 +15,7 @@ export enum PrefilterTokensField {
   Tokenomics = "tNom",
   IsErc20 = "erc20",
   Categories = "categoriesFormatted",
+  Exchanges = "exchangesFormatted",
 }
 export enum PrefilterTokensLabel {
   Id = "Id",
@@ -31,6 +32,7 @@ export enum PrefilterTokensLabel {
   Tokenomics = "Tokenomics",
   IsErc20 = "ERC 20",
   Categories = "Categories",
+  Exchanges = "Exchanges",
 }
 
 export interface FilterBuilderItems {
@@ -96,6 +98,11 @@ export const filterBuilderFields: FilterBuilderItems[] = [
   {
     caption: PrefilterTokensLabel.Categories,
     dataField: PrefilterTokensField.Categories,
+    dataType: "string",
+  },
+  {
+    caption: PrefilterTokensLabel.Exchanges,
+    dataField: PrefilterTokensField.Exchanges,
     dataType: "string",
   },
 ]

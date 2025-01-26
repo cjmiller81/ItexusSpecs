@@ -18,8 +18,10 @@ appAxios.interceptors.response.use(
     const originalRequest = _error.config
 
     if (originalRequest) {
-      if (_error.status === 500) {
+      if (_error.response?.status === 500) {
         appStore.dispatch(addError(i18next.t("somethingWentWrong", { ns: "ErrorMessages" })))
+      } else if (_error.response?.status === 404) {
+        return Promise.resolve(_error.response);
       }
 
       return Promise.reject(_error)
@@ -29,7 +31,7 @@ appAxios.interceptors.response.use(
   },
 )
 
-if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API) {
+if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API === "true") {
   configureAxiosMockHandlers(appAxios)
 }
 

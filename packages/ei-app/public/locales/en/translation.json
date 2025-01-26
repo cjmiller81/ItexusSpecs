@@ -8,7 +8,8 @@
     "Clear": "Clear",
     "Yes": "Yes",
     "No": "No",
-    "Selected": "selected"
+    "Selected": "selected",
+    "ToggleView": "Toggle View"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
@@ -51,8 +52,10 @@
     "Personal": "Personal"
   },
   "MyWalletsSection": {
-    "AddWallet": "+Add Wallet",
-    "Wallets": "Wallets"
+    "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
+    "Wallets": "Wallets",
+    "AddCentarlizedWallet": "+ADD CENTRALIZED EXCHANGE/CUSTODIAL WALLET",
+    "SelectService": "Select Service"
   },
   "MyWalletsPage": {
     "HistoricalWalletsWorth": "Historical Wallets Worth",
@@ -114,24 +117,68 @@
     "AndGoogleApp": "and Google Authenticator"
   },
   "IndexModelingSection": {
-   "AddSavedWallet": "+ADD SAVED WALLET",
-   "AddSavedPosition": "+ADD SAVED POSITION",
-   "CurrentPosition": "Current Position",
-   "RebalancedIndexQuantities": "Rebalanced Index Quantities",
-   "PositionAllocationUpdates": "Position Allocation Updates",
-   "Clear": "Clear",
-   "Save": "Save",
-   "AddManualPosition": "+ADD MANUAL POSITION",
-   "TokenName": "Token name",
-   "Qty": "Qty",
-   "Add": "Add",
-   "Cancel": "Cancel"
+    "AddSavedWallet": "+ADD SAVED WALLET",
+    "AddSavedPosition": "+ADD SAVED POSITION",
+    "CurrentPosition": "Current Position",
+    "RebalancedIndexQuantities": "Rebalanced Index Quantities",
+    "PositionAllocationUpdates": "Position Allocation Updates",
+    "Clear": "Clear",
+    "ExchangeAccountName": "Exchange Account Name",
+    "Save": "Save",
+    "AddManualPosition": "+ADD MANUAL POSITION",
+    "TokenName": "Token name",
+    "Qty": "Qty",
+    "Add": "Add",
+    "Cancel": "Cancel",
+    "SelectService*": "Select Service *",
+    "SelectService": "Select Service",
+    "ConnectWallet": "Connect Wallet",
+    "PleaseEnsureYouHaveTheNecessaryKraken": "Please ensure you have the necessary permissions enabled for your Kraken connection",
+    "PleaseEnsureYouHaveTheNecessary": "Please ensure you have the necessary permissions enabled for your MetaMask connection",
+    "PleaseEnsureYouHaveTheNecessaryCoinbase": "Please ensure you have the necessary permissions enabled for your Coinbase connection",
+    "Network": "Network",
+    "CustomRPCURL": "Custom RPC URL",
+    "Connect": "Connect",
+    "AddNewConnection": "Add New Connection",
+    "AddConnection": "Add Connection",
+    "AddExchange": "Add Exchange",
+    "AddWallet": "Add Wallet",
+    "AddDefiProtocol": "Add Defi Protocol",
+    "ConnectExchange": "Connect Exchange",
+    "ActiveConnections": "Active Connections",
+    "SelectConnection": "Select Connection",
+    "APIKey*": "API Key *",
+    "APIKey": "API Key",
+    "APISecret*": "API Secret *",
+    "APISecret": "API Secret",
+    "APIPassphrase": "API Passphrase",
+    "Connect*": "Connect",
+    "PublicAPIKey": "Public Key",
+    "PrivateAPIKey": "Private Key",
+    "AddCustomExchangeAccountName": "Exchange Account Name",
+    "AddCentralizedExchangeConnection": "Add Centralized Exchange Connection",
+    "ConnectKrakenExchange": "Connect Kraken Exchange",
+    "ConnectCoinbaseExchange": "Connect Coinbase Exchange",
+    "WalletCapital": "Wallet Capital",
+    "DeploymentCapital": "Deployment Capital",
+    "SelectSavedWallet": "Please select a saved wallet from Index Results versus Wallet below",
+    "EqualWeight": "Equal Weight",
+    "TotalCapital": "Total Capital",
+    "MarketCap": "Market Cap"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
     "TotalCapital": "Total Capital",
     "Export": "Export",
-    "EqualWeight": "Equal Weight"
+    "EqualWeight": "Equal Weight",
+    "Connections": "Connections",
+    "ActiveConnections": "Active Connections",
+    "SelectConnection": "Select Connection",
+    "AddNewConnection": "Add New Connection",
+    "AddConnection": "Add Connection",
+    "AddExchange": "Add Connection",
+    "AddWallet": "Add Wallet",
+    "AddDefiProtocol": "Add Defi Protocol"
   },
   "ProfilePage": {
     "PROFILE": "PROFILE",
@@ -231,7 +278,7 @@
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
     "IndexModeling": "Index Modeling",
-    "IndexResults": "Index Results (Compare to Position)",
+    "IndexResults": "Index Results versus Wallet",
     "RunTest": "Run Test",
     "MarketCapWeighted": "Market Cap Weighted Index Investing Strategy Model",
     "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model"
@@ -260,7 +307,9 @@
     "WalletName": "Wallet Name",
     "FullyDilutedValuation": "Fully Diluted Valuation",
     "Action": "Action",
-    "Connection": "Connection"
+    "Connection": "Connection",
+    "Exchanges": "Exchanges",
+    "ExchangeAccountName": "Centralized Exchange Account Name"
   },
   "SymbolLookup": {
     "Search": "Search"
@@ -271,7 +320,6 @@
     "Top100Coins": "Top 100 Coins",
     "Top300Coins": "Top 300 Coins",
     "Top500Coins": "Top 500 Coins"
-    
   },
   "MarketCapEqualWeight": {
     "Index": "Index"
@@ -309,7 +357,6 @@
     "Tomorrow": "Tomorrow",
     "Next7days": "Next 7 days",
     "Next30days": "Next 30 days"
-
   },
   "CryptoCalendar": {
     "CryptoCalendarTitle": "Crypto Calendar:",
@@ -318,7 +365,6 @@
     "Categories": "Categories",
     "Coins": "Coins",
     "NoMoreСurrentEventsForThisDate": "No More Сurrent Events for this Date"
-
   },
   "Vaults": {
     "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",

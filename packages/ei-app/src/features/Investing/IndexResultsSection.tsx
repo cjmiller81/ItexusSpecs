@@ -14,6 +14,7 @@ import {
   DialogActions,
   Dialog,
   DialogContent,
+  Grid,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -33,17 +34,20 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
+import { ConnectionCard } from "@/features/Investing/ConnectionCard";
+import { Wallet } from "@/models/Wallet/Wallet";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
   tableAssets: InvestingTableAsset[];
+  onWalletChange: (wallet: Wallet | null) => void;
 }
 
-export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => {
-  const { t } = useTranslation("IndexModelingSection");
+export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...props }: Props) => {
+  const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
-  const [selectedWallet, setSelectedWallet] = useState<string>("");
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
@@ -52,7 +56,8 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
 
   const handleClearTable = () => {
-    setSelectedWallet("");
+    setSelectedWallet(null);
+    onWalletChange(null);
     setFilteredRows([]);
   };
 
@@ -63,9 +68,10 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
     setFilteredWalletData(
       selectedWallet
         ? toTableTokensModels(
-            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet)?.chainAssets ?? [],
-          ).map(({ tokenName, balance }) => ({
+            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ?? [],
+          ).map(({ tokenName, chainName, balance }) => ({
             tokenName,
+            chain: chainName,
             balance: balance,
           }))
         : [],
@@ -76,9 +82,64 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
     setFilteredRows(filteredWalletData);
   }, [filteredWalletData]);
 
+  useEffect(() => {
+    if (filteredRows.length > 0 || tableAssets.length > 0) {
+      const rebalancedData = tableAssets.map(asset => ({
+        id: asset.symbol ? asset.symbol.toLowerCase() : "",
+        symbol: asset.symbol ? asset.symbol.toLowerCase() : "",
+        qty: asset.qty,
+        action: "",
+        connection: true,
+      }));
+
+      const walletData = filteredRows.map(({ tokenName, balance }) => ({
+        id: tokenName ? tokenName.toLowerCase() : "",
+        symbol: tokenName ? tokenName.toLowerCase() : "",
+        qty: balance,
+        action: "",
+        connection: true,
+      }));
+
+      const mergedData = [...rebalancedData, ...walletData];
+
+      const updatedRows = mergedData.map(row => {
+        const rebalancedRow = rebalancedData.find(asset => asset.symbol === row.symbol);
+        const walletRow = walletData.find(wallet => wallet.symbol === row.symbol);
+
+        let qty = 0;
+        let action = "";
+
+        if (rebalancedRow && walletRow) {
+          qty = rebalancedRow.qty - walletRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        } else if (!rebalancedRow && walletRow) {
+          qty = -walletRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        } else if (rebalancedRow && !walletRow) {
+          qty = rebalancedRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        }
+
+        return {
+          ...row,
+          qty,
+          action: action.charAt(0).toUpperCase() + action.slice(1).toLowerCase(),
+        };
+      });
+
+      const uniqueRows = Array.from(new Map(updatedRows.map(item => [item.id, item])).values());
+      setPositionRows(uniqueRows);
+    }
+  }, [filteredRows, tableAssets]);
+
   const handleWalletSelect = (event: SelectChangeEvent) => {
     const selectedWalletId = event.target.value as string;
-    setSelectedWallet(selectedWalletId);
+    const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
+    setSelectedWallet(selectedWallet);
+    if (onWalletChange && selectedWallet) {
+      onWalletChange(selectedWallet);
+    }
+
   };
 
   const handleCancelManualPosition = () => {
@@ -89,12 +150,20 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
 
   const handleSaveManualPosition = () => {
     if (newToken && newBalance) {
-      const newRow: WalletBalance = {
-        tokenName: newToken,
-        balance: parseFloat(newBalance),
-      };
+      const tokenNameLower = newToken.toLowerCase();
+      const existingRowIndex = filteredRows.findIndex(row => row.tokenName?.toLowerCase() === tokenNameLower);
 
-      setFilteredRows(prevRows => [newRow, ...prevRows]);
+      if (existingRowIndex >= 0) {
+        const updatedRows = [...filteredRows];
+        updatedRows[existingRowIndex].balance += parseFloat(newBalance);
+        setFilteredRows(updatedRows);
+      } else {
+        const newRow: WalletBalance = {
+          tokenName: newToken,
+          balance: parseFloat(newBalance),
+        };
+        setFilteredRows(prevRows => [newRow, ...prevRows]);
+      }
 
       setNewToken("");
       setNewBalance("");
@@ -107,36 +176,63 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
       persistKey="IndexResultsSection"
       defaultExpanded={false}
       title={title}
+      tooltip={t("ToggleView", { ns: "Common" })}
       {...props}>
-      <MainContainer
-        display="flex"
-        justifyContent="space-between">
-        <LeftContainer>
-          <LeftColumn>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ alignSelf: "flex-start", fontSize: "14px", paddingTop: "12px" }}>
-              {t("CurrentPosition")}
-            </Typography>
+      <Grid
+        mt={2}
+        spacing={0}
+        container
+        sx={{ marginTop: 0 }}>
+        <Grid
+          xs={12}
+          md={7.64}
+          lg={4}
+          container
+          direction="row"
+          sx={{
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
+            marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+          }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              alignSelf: "flex-start",
+              fontSize: "14px",
+              marginTop: "11px",
+              marginBottom: "-7px",
+              marginLeft: "10px",
+              width: "100%",
+            }}>
+            {t("CurrentPosition")}
+          </Typography>
+
+          <Grid
+            item
+            xs={4.5}
+            md={4.5}
+            lg={4.8}
+            sx={{ marginTop: "15px", marginLeft: "2%" }}>
             <Select
               displayEmpty
-              value={selectedWallet}
+              value={selectedWallet?.walletId || ""}
               onChange={handleWalletSelect}
               renderValue={selected =>
-                selected ? wallets?.find(wallet => wallet?.walletId === selected)?.walletName : t("AddSavedWallet")
+                selected ? selectedWallet?.walletName : t("AddSavedWallet")
               }
               sx={{
                 backgroundColor: "#109EEF",
+                fontSize: "11px",
                 color: "white",
                 width: "98%",
                 maxHeight: "40px",
+                marginBottom: "12px",
                 "& .MuiSelect-icon": { color: "white" },
               }}>
               {wallets?.map(wallet => (
-                <MenuItem
-                  key={wallet.walletId}
-                  value={wallet.walletId}>
+                <MenuItem key={wallet.walletId} value={wallet.walletId}>
                   {wallet.walletName}
                 </MenuItem>
               ))}
@@ -149,26 +245,36 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 color: "black",
                 justifyContent: "flex-start",
                 paddingLeft: "15px",
+                fontSize: "11px",
               }}
               variant="outlined"
               onClick={() => setIsAddingManualPosition(true)}>
               {t("AddManualPosition")}
             </Button>
-            <Button
-              sx={{ mr: 2, width: "90px", height: "35px" }}
-              variant="outlined"
-              disabled>
-              {t("Save")}
-            </Button>
-            <Button
-              sx={{ mr: 2, width: "90px", height: "35px" }}
-              variant="outlined"
-              onClick={handleClearTable}>
-              {t("Clear")}
-            </Button>
-          </LeftColumn>
+            <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <Button
+                sx={{ mr: 2, width: "70px", height: "35px", fontSize: "11px" }}
+                variant="outlined"
+                disabled>
+                {t("Save")}
+              </Button>
+              <Button
+                sx={{ mr: 2, width: "70px", height: "35px", fontSize: "11px" }}
+                variant="outlined"
+                onClick={handleClearTable}>
+                {t("Clear")}
+              </Button>
+            </Box>
+          </Grid>
 
-          <RightColumn>
+          <Grid
+            item
+            xs={6.8}
+            md={6.9}
+            lg={6.6}
+            spacing={1}
+            sx={{ marginTop: "15px", marginLeft: { lg: "0%", md: "2%", xs: "0%" } }}>
+            {" "}
             <WalletsTable
               sx={{
                 ...tableScrollSx,
@@ -219,19 +325,29 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 </Button>
               </DialogActions>
             </Dialog>
-          </RightColumn>
-        </LeftContainer>
+          </Grid>
+        </Grid>
 
-        <MiddleContainer>
+        <Grid
+          container
+          xs={12}
+          md={4.17}
+          lg={2}
+          sx={{
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            marginRight: { lg: "1.5%", md: 0, xs: 0 },
+            marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+          }}>
           <Typography
             variant="h6"
             component="div"
             sx={{
               alignSelf: "flex-start",
               fontSize: "14px",
-              marginBottom: "13px",
+              marginBottom: "5px",
               paddingLeft: "10px",
-              paddingTop: "4px",
+              paddingTop: "15px",
             }}>
             {t("RebalancedIndexQuantities")}
           </Typography>
@@ -254,38 +370,67 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
               rows={tableAssets}
             />
           </Box>
-        </MiddleContainer>
-
-        <RightContainer>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ alignSelf: "flex-start", fontSize: "14px", paddingLeft: "10px", paddingTop: "4px" }}>
-            {t("PositionAllocationUpdates")}
-          </Typography>
-
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          xs={12}
+          md={12}
+          lg={5.63}
+          sx={{
+            display: "flex",
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            borderRadius: "10px",
+            marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+            padding: "10px",
+            height: "100%",
+            "@media (max-width: 700px)": {
+              display: "block",
+            },
+          }}>
           <Box
             sx={{
-              paddingTop: "12px",
-              paddingLeft: "15px",
+              flexGrow: 1,
+              width: "70%",
               paddingRight: "15px",
-              width: "72%",
+              "@media (max-width: 700px)": {
+                width: "100%",
+              },
             }}>
-            <StyledWalletsTable
+            <Typography
+              variant="h6"
+              component="div"
               sx={{
-                ...tableScrollSx,
-              }}
-              hideFooter
-              rowSelection={false}
-              checkboxSelection={false}
-              apiRef={apiRef}
-              getRowId={x => x.id}
-              columns={getIndexPositionTableColumns()}
-              rows={positionRows}
-            />
-          </Box>
-        </RightContainer>
-      </MainContainer>
+                alignSelf: "flex-start",
+                fontSize: "14px",
+                paddingLeft: "10px",
+                paddingTop: "4px",
+              }}>
+              {t("PositionAllocationUpdates")}
+            </Typography>
+
+            <Box
+              sx={{
+                paddingTop: "12px",
+                width: "100%",
+                marginRight: "10px",
+              }}>
+              <StyledWalletsTable
+                sx={{ ...tableScrollSx }}
+                hideFooter
+                rowSelection={false}
+                checkboxSelection={false}
+                apiRef={apiRef}
+                getRowId={x => x.id}
+                columns={getIndexPositionTableColumns()}
+                rows={positionRows}
+              />
+            </Box>
+          </Box>      
+        </Grid>
+      </Grid>
     </AppAccordionSection>
   );
 };
@@ -295,70 +440,6 @@ const tableScrollSx = {
     ...nativeBarSx,
   },
 };
-
-const LeftContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  width: "34%",
-  borderRadius: "10px",
-  padding: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    width: "100%",
-  },
-}));
-
-const LeftColumn = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing(2),
-  width: "51%",
-  marginTop: "-128px",
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
-
-const RightColumn = styled(Box)(({ theme }) => ({
-  width: "49%",
-  paddingLeft: 1,
-  marginTop: "25px",
-  gap: theme.spacing(2),
-  [theme.breakpoints.down("sm")]: {
-    width: "100%",
-  },
-}));
-
-const MainContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  width: "100%",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-}));
-
-const MiddleContainer = styled(Box)(({ theme }) => ({
-  width: "18%",
-  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  borderRadius: "10px",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    width: "100%",
-  },
-}));
-
-const RightContainer = styled(Box)(({ theme }) => ({
-  width: "46%",
-  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  borderRadius: "10px",
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    width: "100%",
-  },
-}));
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",

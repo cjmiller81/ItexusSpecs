@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button, CircularProgress } from "@mui/material";
+import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
 import { styled } from "@mui/system";
 import {
   GridCellParams,
@@ -12,18 +12,23 @@ import {
   MuiEvent,
   useGridApiRef,
 } from "@mui/x-data-grid";
-
-import { useState } from "react";
+import * as Yup from "yup";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
-import { Wallet } from "../../models";
+import { IExchange, Wallet } from "../../models";
 import { TotalWalletWorthData } from "../../slices";
 import { ExpandableRow } from "./TokensRow";
 import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
 import { StyledWalletsTable } from "./WalletsTable";
 import { getWalletsColumns } from "./WalletsTableColumnsDefs";
+import { getExchangeAccountColumns } from "./ExchangeAccountTable";
+import { ExchangeDialog } from "./dialogs/ExchangeDialog";
+import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
+import { KrakenDialog } from "./dialogs/KrakenDialog";
+import { useFormik } from "formik";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -34,6 +39,7 @@ interface Props extends BoxProps {
   onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
+  totalAmount: number;
 }
 
 export const MyWalletsSection = ({
@@ -43,6 +49,7 @@ export const MyWalletsSection = ({
   onUpdateWallet,
   wallets,
   totalWalletsWorthData,
+  totalAmount,
   loading,
   selectedWalletsIds,
   sx,
@@ -53,13 +60,73 @@ export const MyWalletsSection = ({
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
+  const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
+  const [openCoinbaseDialog, setOpenCoinbaseDialog] = useState(false);
+  const [selectedService, setSelectedService] = useState<string>("");
+  const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
+  const [exchange, setExchange] = useState<IExchange[]>([]);
+  const [activeConnection, setActiveConnection] = useState<string>("");
+  const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
+  
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
     setAddWalletModalOpen(false);
   };
-
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
+  };
+  const formik = useFormik({
+    initialValues: {
+      apiKey: "",
+      apiSecret: "",
+      apiPassphrase: "",
+      network: "",
+      customRpcUrl: "",
+      chainName: selectedService === "Kraken" ? "Kraken" : "Coinbase",
+    },
+    validationSchema: Yup.object({
+      apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
+      apiSecret: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
+      apiPassphrase: activeConnection === "api" ? Yup.string().optional() : Yup.string().optional(),
+      network: activeConnection === "rpc" ? Yup.string().required(t("NetworkRequired")) : Yup.string().optional(),
+      customRpcUrl:
+        activeConnection === "rpc"
+          ? Yup.string().url(t("InvalidURL")).required(t("CustomRPCRequired"))
+          : Yup.string().optional(),
+          chainName: Yup.string().required(t("ChainNameRequired")),
+    }),
+    onSubmit: (values, { resetForm }) => {
+      resetForm();
+      setOpenKrakenDialog(false);
+      setOpenCoinbaseDialog(false);
+      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService};
+setExchange([...exchange, newExchanges]);
+    },
+  });
+  
+  const handleChainNameChange = (name: string) => {
+    setSelectedService(name);
+  };
+
+  const handleServiceChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    if (
+      value === "" ||
+      value === "Kraken" ||
+      value === "Coinbase"
+    ) {
+      setSelectedService(value);
+      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
+    }
+  };
+
+  const handleCancelExchange = () => {
+    setDialogState(["Kraken", "Coinbase"]);
+    setActiveConnection("");
+    setSelectedService("");
+    setOpenExchangeDialog(false);
+    setOpenKrakenDialog(false);
+    setOpenCoinbaseDialog(false);
   };
 
   //eslint-disable-next-line no-undef
@@ -69,6 +136,19 @@ export const MyWalletsSection = ({
       event.stopPropagation();
     }
   };
+
+  const handleOpenModal = () => {
+    setOpenExchangeDialog(true);
+  };
+
+    useEffect(() => {
+    if (selectedService === "Kraken") {
+      setOpenKrakenDialog(true);
+    } else if (selectedService === "Coinbase") {
+      setOpenCoinbaseDialog(true);
+    }
+    setOpenExchangeDialog(false);
+  }, [selectedService]);  
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -100,8 +180,15 @@ export const MyWalletsSection = ({
     onDeleteWallet(id as string);
   };
 
+  const handleExchangeEditClick = (id: GridRowId) => {
+    
+  };
+
+  const handleExchangeDeleteClick = (id: GridRowId) => {
+    setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
+  };
+
   const processRowUpdate = (newRow: GridRowModel<Wallet>, _oldRow: GridRowModel<Wallet>) => {
-    //TODO add validation
     const updatedRow = { ...newRow, isNew: false };
     onUpdateWallet(newRow);
     return updatedRow;
@@ -125,14 +212,14 @@ export const MyWalletsSection = ({
       <StyledWalletWorthContainer>
         <TotalWalletsWorthCard
           growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
-          totalWorth={totalWalletsWorthData?.totalWorth ?? 0}
+          totalWorth={totalAmount}
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
         <StyledAddWalletButton
           variant="contained"
           onClick={() => setAddWalletModalOpen(true)}>
-          {t("AddWallet")}
+          {t("AddWalletWeb3")}
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
@@ -188,8 +275,57 @@ export const MyWalletsSection = ({
           })}
           rows={wallets || []}
           rowSelectionModel={selectedWalletsIds}
+          checkboxSelection={true}
         />
       </Box>
+
+      <Box>
+      <StyledAdaptivePageBox>
+        <StyledAddWalletButton
+          variant="contained"
+          onClick={handleOpenModal}>
+          {t("AddCentarlizedWallet")}
+        </StyledAddWalletButton>
+        <ExchangeDialog
+        open={openExchangeDialog}
+        title={dialogState}
+        selectedService={dialogState}
+        onClose={handleCancelExchange}
+        onServiceChange={handleServiceChange}
+      />
+      <KrakenDialog
+        open={openKrakenDialog}
+        formik={formik}
+        onClose={handleCancelExchange}
+        onChainNameChange={handleChainNameChange}
+      />
+
+      <CoinbaseDialog
+        open={openCoinbaseDialog}
+        formik={formik}
+        onClose={handleCancelExchange}
+        onChainNameChange={handleChainNameChange}
+      />
+      </StyledAdaptivePageBox>
+      </Box>
+
+      <StyledWalletsTable
+          disableVirtualization
+          hideFooter
+          sx={{
+            ...tableScrollSx,
+          }}
+          editMode="row"   
+          getRowId={x => x.exchange_id}
+          checkboxSelection={false}
+          columns={getExchangeAccountColumns({
+            handleEditClick: handleExchangeEditClick,
+            handleDeleteClick: handleExchangeDeleteClick,
+            expandedRows: expandedRows,
+            onExpandClick: handleExpandClick,
+          })}
+          rows={exchange || []}
+        />
     </Box>
   );
 };

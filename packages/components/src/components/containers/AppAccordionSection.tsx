@@ -1,29 +1,93 @@
-import ExpandMore from "@mui/icons-material/ExpandMore"
-import { AccordionDetails, AccordionSummary, Box, styled } from "@mui/material"
-import * as React from "react"
-import { PageTitle } from "../TextDisplay/PageTitle"
-import { StatePersistedAccordion, StatePersistedAccordionProps } from "./StatePersistedAccordion"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  IconButton,
+  styled,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
+} from "@mui/material";
+import * as React from "react";
+import { useTheme } from "@mui/material/styles";
+import { PageTitle } from "../TextDisplay/PageTitle";
+import { StatePersistedAccordion, StatePersistedAccordionProps } from "./StatePersistedAccordion";
 
 interface Props extends StatePersistedAccordionProps {
-  headerChildren?: React.ReactNode
-  title?: string
+  headerChildren?: React.ReactNode;
+  title?: string;
+  tooltip: string;
 }
 
-export const AppAccordionSection = ({ children, headerChildren, title, ...props }: Props) => {
+const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip
+    {...props}
+    arrow
+    classes={{ popper: className }}
+  />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+    color: "white",
+  },
+}));
+
+export const AppAccordionSection = ({ children, headerChildren, title, tooltip, ...props }: Props) => {
+  const theme = useTheme();
+
+  const darkThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none",
+    position: "inherit",
+    borderRadius: "2px",
+    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#363640",
+    border: "1.6px solid #25252AFF",
+    outline: "1.9px solid #363640",
+    "& .MuiAccordionSummary-root": {
+      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
+    },
+  };
+
   return (
     <StatePersistedAccordion
+      sx={{
+        ...(theme.palette.mode === "dark" ? darkThemeStyles : {}),
+        pointerEvents: "auto",
+      }}
       defaultExpanded
       {...props}>
-      <StyledAccordionSummary expandIcon={<ExpandMore />}>
+      <StyledAccordionSummary
+        expandIcon={
+          <CustomTooltip title={tooltip}>
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
+              <ExpandMoreIcon />
+            </IconButton>
+          </CustomTooltip>
+        }
+        sx={{
+          pointerEvents: "none",
+          "&.MuiAccordionSummary-root:hover": {
+            cursor: "default !important",
+          },
+        }}>
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }}>{title}</PageTitle>
+          <PageTitle
+            sx={{ width: "100%" }}
+            onClick={e => e.stopPropagation()}>
+            {title}
+          </PageTitle>
           {headerChildren}
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails sx={{ bgcolor: "background.paper" }}>{children}</AccordionDetails>
     </StatePersistedAccordion>
-  )
-}
+  );
+};
 
 export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
   transition: "none",

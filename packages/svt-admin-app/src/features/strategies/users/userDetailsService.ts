@@ -1,7 +1,11 @@
 import appAxios from "@/libs/axios/axios";
-import { IExchangeAccountList, IManagedOrderList, IPositionList } from "./types";
+import { IAdminUserConnectionList, IExchangeAccountList, IManagedOrderList, IPositionList } from "./types";
 
 export const userDetailsService = {
+  getUserConnectionList: async (): Promise<IAdminUserConnectionList> => {
+    const response = await appAxios.get<IAdminUserConnectionList>(`/api/admin/users`);
+    return response.data;
+  },
   getExchangeAccountList: async (userId: string): Promise<IExchangeAccountList> => {
     const response = await appAxios.get<IExchangeAccountList>(`/api/admin/users/${userId}/accounts`);
     return response.data;

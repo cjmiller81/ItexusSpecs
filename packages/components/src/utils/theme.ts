@@ -1,34 +1,34 @@
-import { Theme } from "@emotion/react"
-import "@mui/lab/themeAugmentation"
-import { createTheme, PaletteMode, PaletteOptions } from "@mui/material"
-import { TypographyOptions } from "@mui/material/styles/createTypography"
+import { Theme } from "@emotion/react";
+import "@mui/lab/themeAugmentation";
+import { createTheme, PaletteMode, PaletteOptions } from "@mui/material";
+import { TypographyOptions } from "@mui/material/styles/createTypography";
 
 declare module "@mui/material/Button" {
   interface ButtonPropsVariantOverrides {
-    link: true
+    link: true;
   }
 }
 
 declare module "@mui/material/styles/createTypography" {
   interface TypographyOptions {
-    body3?: React.CSSProperties
-    body4?: React.CSSProperties
-    h7: React.CSSProperties
+    body3?: React.CSSProperties;
+    body4?: React.CSSProperties;
+    h7: React.CSSProperties;
   }
 
   interface Typography {
-    body3: React.CSSProperties
-    body4: React.CSSProperties
-    h7: React.CSSProperties
+    body3: React.CSSProperties;
+    body4: React.CSSProperties;
+    h7: React.CSSProperties;
   }
 }
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
-    subtitle3: true
-    body3: true
-    body4: true
-    h7: true
+    subtitle3: true;
+    body3: true;
+    body4: true;
+    h7: true;
   }
 }
 
@@ -49,7 +49,26 @@ const darkPalette: PaletteOptions = {
     paper: "#363640",
     default: "#363640",
   },
-}
+};
+
+const darkEIPalette: PaletteOptions = {
+  primary: {
+    main: "#26BAFC",
+    light: "#2F4355",
+  },
+  success: {
+    main: "#8BC34A",
+    light: "#404641",
+  },
+  error: {
+    light: "#4C373E",
+    main: "#F64336",
+  },
+  background: {
+    paper: "#363640",
+    default: "#262626",
+  },
+};
 
 const lightPalette: PaletteOptions = {
   primary: {
@@ -64,7 +83,7 @@ const lightPalette: PaletteOptions = {
     light: "#FDE8E6",
     main: "#F64336",
   },
-}
+};
 
 const typographyOverrides: TypographyOptions = {
   //fontFamily: "font-family: Roboto, RobotoFallback, Noto Kufi Arabic, Helvetica, Arial, sans-serif;",
@@ -90,19 +109,35 @@ const typographyOverrides: TypographyOptions = {
   },
   h7: {
     fontWeight: 500,
-    fontSize: '0.875rem',
-    lineHeight: 1.5
+    fontSize: "0.875rem",
+    lineHeight: 1.5,
   },
-}
+};
 
-export const getAppTheme = (mode: PaletteMode): Theme => {
+export const getAppTheme = (mode: PaletteMode) => {
+  return getTheme(mode, "");
+};
+
+export const getEIAppTheme = (mode: PaletteMode) => {
+  return getTheme(mode, "EI");
+};
+
+const getTheme = (mode: PaletteMode, darkTheme: string): Theme => {
+  let dark;
+
+  if (darkTheme === "EI") {
+    dark = darkEIPalette;
+  } else {
+    dark = darkPalette;
+  }
+
   const commonTheme = createTheme({
     palette: {
       mode,
-      ...(mode === "light" ? lightPalette : darkPalette),
+      ...(mode === "light" ? lightPalette : dark),
     },
     typography: typographyOverrides,
-  })
+  });
 
   const finaleTheme = createTheme(
     {
@@ -175,7 +210,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       },
     },
     commonTheme,
-  )
+  );
 
-  return finaleTheme
-}
+  return finaleTheme;
+};
