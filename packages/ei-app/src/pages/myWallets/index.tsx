@@ -11,6 +11,7 @@ import {
   fetchTotalWalletsWorthData,
   fetchWallets,
   selectWallets,
+  toTableTokensModel,
   updateWallet,
 } from "components";
 import moment from "moment";
@@ -29,6 +30,7 @@ export default function MyWalletsPage() {
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
+  const [totalAmount,setTotalAmount] = useState<number>(0);
 
   const { t } = useTranslation("MyWalletsPage");
 
@@ -45,9 +47,30 @@ export default function MyWalletsPage() {
     }
   };
 
+  const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
+    let totalUsdAmount = 0;
+
+    selectedWallets.forEach(wallet => {
+      wallet.chainAssets.forEach(chainAsset => {
+        const tableAssets = toTableTokensModel(chainAsset);
+
+        tableAssets.forEach(asset => {
+          if (asset.usdAmount) {
+            totalUsdAmount += asset.usdAmount;
+          }
+        });
+      });
+    });
+
+    return totalUsdAmount;
+  };
+
   useEffect(() => {
     if (selectedWallets.length) {
       fetchHistoricalData();
+      setTotalAmount(calculateTotalUsdAmount(selectedWallets));
+    } else {
+      setTotalAmount(0);
     }
   }, [selectedWallets]);
 

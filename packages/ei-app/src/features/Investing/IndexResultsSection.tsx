@@ -35,17 +35,19 @@ import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexR
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { ConnectionCard } from "@/features/Investing/ConnectionCard";
+import { Wallet } from "@/models/Wallet/Wallet";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
   tableAssets: InvestingTableAsset[];
+  onWalletChange: (wallet: Wallet | null) => void;
 }
 
-export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => {
+export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...props }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
-  const [selectedWallet, setSelectedWallet] = useState<string>("");
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
@@ -55,7 +57,8 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
   const [selectedExchanges, setSelectedExchanges] = useState<{ [key: number]: string }>({});
 
   const handleClearTable = () => {
-    setSelectedWallet("");
+    setSelectedWallet(null);
+    onWalletChange(null);
     setFilteredRows([]);
   };
 
@@ -66,7 +69,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
     setFilteredWalletData(
       selectedWallet
         ? toTableTokensModels(
-            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet)?.chainAssets ?? [],
+            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ?? [],
           ).map(({ tokenName, chainName, balance }) => ({
             tokenName,
             chain: chainName,
@@ -132,7 +135,12 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
 
   const handleWalletSelect = (event: SelectChangeEvent) => {
     const selectedWalletId = event.target.value as string;
-    setSelectedWallet(selectedWalletId);
+    const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
+    setSelectedWallet(selectedWallet);
+    if (onWalletChange && selectedWallet) {
+      onWalletChange(selectedWallet);
+    }
+
   };
 
   const handleExchangeChange = (event: React.ChangeEvent<{ value: unknown }>, rowId: string) => {
@@ -219,10 +227,10 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
             sx={{ marginTop: "15px", marginLeft: "2%" }}>
             <Select
               displayEmpty
-              value={selectedWallet}
+              value={selectedWallet?.walletId || ""}
               onChange={handleWalletSelect}
               renderValue={selected =>
-                selected ? wallets?.find(wallet => wallet?.walletId === selected)?.walletName : t("AddSavedWallet")
+                selected ? selectedWallet?.walletName : t("AddSavedWallet")
               }
               sx={{
                 backgroundColor: "#109EEF",
@@ -234,9 +242,7 @@ export const IndexResultsSection = ({ title, tableAssets, ...props }: Props) => 
                 "& .MuiSelect-icon": { color: "white" },
               }}>
               {wallets?.map(wallet => (
-                <MenuItem
-                  key={wallet.walletId}
-                  value={wallet.walletId}>
+                <MenuItem key={wallet.walletId} value={wallet.walletId}>
                   {wallet.walletName}
                 </MenuItem>
               ))}

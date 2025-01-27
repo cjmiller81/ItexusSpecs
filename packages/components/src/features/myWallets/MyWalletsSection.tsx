@@ -39,6 +39,7 @@ interface Props extends BoxProps {
   onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
+  totalAmount: number;
 }
 
 export const MyWalletsSection = ({
@@ -48,6 +49,7 @@ export const MyWalletsSection = ({
   onUpdateWallet,
   wallets,
   totalWalletsWorthData,
+  totalAmount,
   loading,
   selectedWalletsIds,
   sx,
@@ -65,12 +67,11 @@ export const MyWalletsSection = ({
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
-
+  
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
     setAddWalletModalOpen(false);
   };
-
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
   };
@@ -211,7 +212,7 @@ setExchange([...exchange, newExchanges]);
       <StyledWalletWorthContainer>
         <TotalWalletsWorthCard
           growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
-          totalWorth={totalWalletsWorthData?.totalWorth ?? 0}
+          totalWorth={totalAmount}
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
