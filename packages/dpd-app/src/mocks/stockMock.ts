@@ -26,17 +26,17 @@ export function configureStockMock(mock) {
 
         const filteredData = mockState.stocks.filter((stock) => {
             const stockDateUTC = Date.UTC(
-                stock.date.getUTCFullYear(),
-                stock.date.getUTCMonth(),
-                stock.date.getUTCDate(),
-                stock.date.getUTCHours(),
-                stock.date.getUTCMinutes(),
-                stock.date.getUTCSeconds(),
-                stock.date.getUTCMilliseconds()
+                stock.tradeReportDate.getUTCFullYear(),
+                stock.tradeReportDate.getUTCMonth(),
+                stock.tradeReportDate.getUTCDate(),
+                stock.tradeReportDate.getUTCHours(),
+                stock.tradeReportDate.getUTCMinutes(),
+                stock.tradeReportDate.getUTCSeconds(),
+                stock.tradeReportDate.getUTCMilliseconds()
             );
 
             return (
-                stock.symbol === ticker &&
+                stock.securitiesInformationProcessorSymbolIdentifier === ticker &&
                 stockDateUTC >= startUTC &&
                 stockDateUTC <= endUTC
             );
