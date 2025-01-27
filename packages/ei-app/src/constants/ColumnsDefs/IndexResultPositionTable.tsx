@@ -7,7 +7,7 @@ import { darken } from "@mui/material/styles";
 i18next.setDefaultNamespace("ColumnsDefs");
 
 export const getIndexPositionTableColumns = (
-  selectedExchanges?: any,
+  selectedExchanges?: { [key: number]: string },
   handleExchangeChange?: (event: any, id) => void,
 ): GridColDef<PositionAllocation>[] => {
   return [
@@ -98,7 +98,7 @@ export const getIndexPositionTableColumns = (
         const rowId = params.row.id;
         return (
           <Select
-            value={selectedExchanges[rowId] || "Kraken"}
+            value={selectedExchanges?.[rowId] || "Kraken"}
             onChange={e => handleExchangeChange?.(e, rowId)}
             sx={{
               fontSize: "0.8rem",
