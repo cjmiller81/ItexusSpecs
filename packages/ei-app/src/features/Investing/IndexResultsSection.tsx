@@ -54,6 +54,7 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
   const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
   const [filteredWalletData, setFilteredWalletData] = useState<WalletBalance[]>([]);
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
+  const [selectedExchanges, setSelectedExchanges] = useState<{ [key: number]: string }>({});
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -140,6 +141,15 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
       onWalletChange(selectedWallet);
     }
 
+  };
+
+  const handleExchangeChange = (event: React.ChangeEvent<{ value: unknown }>, rowId: string) => {
+    const value = event.target.value as string;
+
+    setSelectedExchanges(prev => ({
+      ...prev,
+      [rowId]: value,
+    }));
   };
 
   const handleCancelManualPosition = () => {
@@ -424,11 +434,11 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
                 checkboxSelection={false}
                 apiRef={apiRef}
                 getRowId={x => x.id}
-                columns={getIndexPositionTableColumns()}
+                columns={getIndexPositionTableColumns(selectedExchanges, handleExchangeChange)}
                 rows={positionRows}
               />
             </Box>
-          </Box>      
+          </Box>
         </Grid>
       </Grid>
     </AppAccordionSection>
