@@ -84,13 +84,13 @@ const UserInputsSection = () => {
   };
 
   const calculateStatistics = (data: Market[]) => {
-    const totalVolume = data.reduce((acc, item) => acc + item.totalVolume, 0);
+    const totalVolume = data.reduce((acc, item) => item.totalVolume, 0);
     const totalBought = data.reduce((acc, item) => acc + item.bought, 0);
     const totalSold = data.reduce((acc, item) => acc + item.sold, 0);
     const avgTotalVolume = data.length > 0 ? totalVolume / data.length : 0;
-    const avgBuySellRatio = 0;
-    const avgBuyVolume = data.length > 0 ? totalBought / data.length : 0;
-    const avgSellVolume = data.length > 0 ? totalSold / data.length : 0;
+    const avgBuyVolume = data.reduce((acc, item) => item.averageBuyVolume, 0);
+    const avgSellVolume = data.reduce((acc, item) => item.averageSellVolume, 0);
+    const avgBuySellRatio = avgBuyVolume / avgSellVolume;
 
     return {
       totalVolume,
@@ -107,7 +107,7 @@ const UserInputsSection = () => {
     if (data) {
       const updatedData = data.map(item => ({
         ...item,
-        tradeReportDate: moment.utc(item.tradeReportDate).local().toDate(),
+        tradeReportDate: moment.utc(item.date).local().toDate(),
       }));
   
       updatedData.sort((a, b) => {
@@ -117,9 +117,9 @@ const UserInputsSection = () => {
       });
   
       setFilteredData(updatedData);
-
       const statistics = calculateStatistics(updatedData);
       setStatisticsData(statistics);
+      setFetchData(false);
     }
   }, [data]);
   
@@ -130,8 +130,6 @@ const UserInputsSection = () => {
       setStartDateError(false);
       setEndDateError(false);
       setTickerError(false);
-      setFetchData(true);
-    } else {
       setFilteredData([]);
       setStatisticsData({
         totalVolume: 0,
@@ -142,6 +140,10 @@ const UserInputsSection = () => {
         avgBuyVolume: 0,
         avgSellVolume: 0,
       });
+  
+      setFetchData(true);
+    } else {
+      setFetchData(false);
     }
   };
 

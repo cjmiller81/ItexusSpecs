@@ -24,7 +24,7 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
             fontWeight: 'bold'
           }}
         >
-          {new Date(params.row.tradeReportDate).toISOString().split('T')[0]}
+          {new Date(params.row.date).toISOString().split('T')[0]}
         </Typography>
       ),
     },
@@ -40,7 +40,7 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         <Typography
           variant="body1"
           sx={{ textTransform: "uppercase", fontSize: "0.85rem", color: "#ff9e00", fontWeight: 'bold'}}>
-          {params.row.securitiesInformationProcessorSymbolIdentifier}
+          {params.row.symbol}
         </Typography>
       ),
     },
@@ -102,8 +102,8 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         flex: 1,
         disableColumnMenu: true,
         valueGetter: (params) => {
-          // if (!params.row.percentAvg) return "--";
-          // return (params.row.percentAvg * 100).toFixed(0);
+           if (!params.row.percentAvg) return "--";
+           return (params.row.percentAvg * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -123,17 +123,12 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         filterable: false,
         flex: 1,
         disableColumnMenu: true,
-        valueGetter: (params) => {
-          const bought = params.row.bought || 0;
-          const sold = params.row.sold || 1;
-          const buyRatio = bought / sold;
-      
-          return buyRatio
-            ? buyRatio.toLocaleString("en-US", {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2,
-              })
-            : "--";
+        valueGetter: params => {
+          if (!params.row.buyRatio) return "--";
+          return params.row.buyRatio.toLocaleString("en-US", {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+          });
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -154,8 +149,8 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         flex: 1,
         disableColumnMenu: true,
         valueGetter: (params) => {
-          //if (!params.row.dpIndex) return "--";
-          // return (params.row.dpIndex * 100).toFixed(0);
+          if (!params.row.dpIndex) return "--";
+           return (params.row.dpIndex * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -174,25 +169,18 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         filterable: false,
         flex: 1,
         disableColumnMenu: true,
-        valueGetter: (params) => {
-          const bought = params.row.bought || 0;
-          const sold = params.row.sold || 0;
-          const total = bought + sold;
-          return total;
+        valueGetter: params => {
+          if (!params.row.total) return "--";
+          return params.row.total.toLocaleString("en-US", {
+            maximumFractionDigits: 0,
+            minimumFractionDigits: 0,
+          });
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
             variant="body1"
-            sx={{
-              fontSize: "0.85rem", 
-              color: "#9E9E9E", 
-              fontWeight: "bold"
-            }}
-          >
-            {params.value.toLocaleString("en-US", {
-              maximumFractionDigits: 0,
-              minimumFractionDigits: 0,
-            })}
+            sx={{ fontSize: "0.85rem", color:"#9E9E9E", fontWeight: 'bold' }}>
+            {params.formattedValue}
           </Typography>
         ),
       }
