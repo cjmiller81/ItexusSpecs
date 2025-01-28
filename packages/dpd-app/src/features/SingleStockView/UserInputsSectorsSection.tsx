@@ -257,7 +257,7 @@ const UserInputsSectorsSection = () => {
                     hideFooter
                     rowSelection={false}
                     checkboxSelection={false}
-                    getRowId={(row) => row.id}
+                    getRowId={(row) => row.bought}
                     columns={getMarketTableColumns()}
                     rows={filteredData}
                 />

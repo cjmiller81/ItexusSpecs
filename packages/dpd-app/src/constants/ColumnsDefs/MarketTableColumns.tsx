@@ -102,8 +102,8 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         flex: 1,
         disableColumnMenu: true,
         valueGetter: (params) => {
-          if (!params.row.percentAvg) return "--";
-          return (params.row.percentAvg * 100).toFixed(0);
+           if (!params.row.percentAvg) return "--";
+           return (params.row.percentAvg * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -133,11 +133,12 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
             variant="body1"
-            sx={{ fontSize: "0.85rem", color:"#9E9E9E", fontWeight: 'bold' }}>
+            sx={{ fontSize: "0.85rem", color: "#9E9E9E", fontWeight: 'bold' }}
+          >
             {params.formattedValue}
           </Typography>
         ),
-      },
+      },      
 
       {
         field: "dpIndex",
@@ -149,7 +150,7 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         disableColumnMenu: true,
         valueGetter: (params) => {
           if (!params.row.dpIndex) return "--";
-          return (params.row.dpIndex * 100).toFixed(0);
+           return (params.row.dpIndex * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -182,6 +183,6 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
             {params.formattedValue}
           </Typography>
         ),
-      },
+      }
   ];
 };
