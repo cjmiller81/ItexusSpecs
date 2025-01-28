@@ -9,7 +9,7 @@ const mockState: {
 
 export function configureStockMock(mock) {
     const getStockRangeRegExp = new RegExp(
-        `${process.env.API_BASE_URL}/api/dpd/([^/]+)/range/([^/]+)/([^/]+)`
+        `${process.env.API_BASE_URL}/api/dpd/([^/]+)/range/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})`
     );
 
     mock.onGet(getStockRangeRegExp).reply((config) => {
@@ -21,24 +21,17 @@ export function configureStockMock(mock) {
         const startDate = new Date(from);
         const endDate = new Date(to);
 
-        const startUTC = Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
-        const endUTC = Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate());
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
 
         const filteredData = mockState.stocks.filter((stock) => {
-            const stockDateUTC = Date.UTC(
-                stock.tradeReportDate.getUTCFullYear(),
-                stock.tradeReportDate.getUTCMonth(),
-                stock.tradeReportDate.getUTCDate(),
-                stock.tradeReportDate.getUTCHours(),
-                stock.tradeReportDate.getUTCMinutes(),
-                stock.tradeReportDate.getUTCSeconds(),
-                stock.tradeReportDate.getUTCMilliseconds()
-            );
+            const stockDate = new Date(stock.date);
+            stockDate.setHours(0, 0, 0, 0);
 
             return (
-                stock.securitiesInformationProcessorSymbolIdentifier === ticker &&
-                stockDateUTC >= startUTC &&
-                stockDateUTC <= endUTC
+                stock.symbol === ticker &&
+                stockDate >= startDate &&
+                stockDate <= endDate
             );
         });
 
