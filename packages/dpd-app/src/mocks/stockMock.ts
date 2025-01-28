@@ -9,7 +9,7 @@ const mockState: {
 
 export function configureStockMock(mock) {
     const getStockRangeRegExp = new RegExp(
-        `${process.env.API_BASE_URL}/api/dpd/([^/]+)/range/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})`
+        `${process.env.API_BASE_URL}/api/dpd/([^/]+)/range/([^/]+)/([^/]+)`
     );
 
     mock.onGet(getStockRangeRegExp).reply((config) => {
