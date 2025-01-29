@@ -1,5 +1,5 @@
 import { Box, BoxProps } from "@mui/material"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../../slices"
 import {
   createWallet,
@@ -10,8 +10,6 @@ import {
   updateWallet,
 } from "../../slices/walletsSlice"
 import { MyWalletsSection } from "../myWallets/MyWalletsSection"
-import { Wallet } from "../../models"
-import { toTableTokensModel } from "../../utils/tokensTableHelpers"
 
 interface Props extends BoxProps {}
 
@@ -19,7 +17,6 @@ export const WalletsContainer = ({ ...props }: Props) => {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
     state => state.wallets,
   )
-  const [totalAmount,setTotalAmount] = useState<number>(0);
 
   const dispatch = useAppDispatch()
 
@@ -30,32 +27,6 @@ export const WalletsContainer = ({ ...props }: Props) => {
   useEffect(() => {
     dispatch(fetchTotalWalletsWorthData({}))
   }, [selectedWallets])
-
-  const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
-    let totalUsdAmount = 0;
-
-    selectedWallets.forEach(wallet => {
-      wallet.chainAssets.forEach(chainAsset => {
-        const tableAssets = toTableTokensModel(chainAsset);
-
-        tableAssets.forEach(asset => {
-          if (asset.usdAmount) {
-            totalUsdAmount += asset.usdAmount;
-          }
-        });
-      });
-    });
-
-    return totalUsdAmount;
-  };
-
-  useEffect(() => {
-    if (selectedWallets.length) {
-      setTotalAmount(calculateTotalUsdAmount(selectedWallets));
-    } else {
-      setTotalAmount(0);
-    }
-  }, [selectedWallets]);
 
   return (
     <Box {...props}>
@@ -68,7 +39,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
         onSelectedRowsChanged={rows => dispatch(selectWallets(rows))}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
-        totalAmount={totalAmount}
+        totalAmount={0}
       />
     </Box>
   )
