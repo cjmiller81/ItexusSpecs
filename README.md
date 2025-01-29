@@ -80,7 +80,6 @@ yarn build:svt
 ```
 This will create a production build in the `packages/svt-app/build` directory.
 
-
 ##### TDA Web App:
 
 To start the `tda-app` web app development server, run:
