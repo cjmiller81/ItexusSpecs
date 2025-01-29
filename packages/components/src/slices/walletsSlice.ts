@@ -8,6 +8,7 @@ import { RootState } from "./store";
 
 export type Status = "idle" | "loading" | "failed";
 export interface TotalWalletWorthData {
+  totalWorth: number;
   growPercentage: number;
 }
 
@@ -101,6 +102,7 @@ export const walletsSlice = createAppSlice({
         if (!state.wallets.selectedWallets.length) {
           return {
             growPercentage: 0,
+            totalWorth: 0,
           };
         }
         const historicalWalletsData = await walletsApi.getHistoricalWalletData(
@@ -114,6 +116,7 @@ export const walletsSlice = createAppSlice({
             ? (historicalWalletsData[1].walletValue - historicalWalletsData[0].walletValue) /
             historicalWalletsData[0].walletValue
             : 0,
+          totalWorth: historicalWalletsData[1].walletValue,
         };
       },
       {
