@@ -104,11 +104,25 @@ export default function PrefilterTokensSection({
     },
   }));
 
+  const darkThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none",
+    position: "inherit",
+    borderRadius: "2px",
+    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#363640",
+    border: "1.6px solid #25252AFF",
+    outline: "1.9px solid #363640",
+    "& .MuiAccordionSummary-root": {
+      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
+    },
+  };
+
   return (
     <StatePersistedAccordion
       persistKey={persisKey}
       defaultExpanded
-      sx={{ cursor: "default !important", pointerEvents: "none" }}
+      sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", pointerEvents: "none" }}
       {...props}>
       <StyledAccordionSummary
         expandIcon={
@@ -140,7 +154,7 @@ export default function PrefilterTokensSection({
       </StyledAccordionSummary>
       <AccordionDetails
         sx={{
-          bgcolor: "background.paper",
+          backgroundColor: theme.palette.mode === "dark" ? "#363640" : "background.paper",
           width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
         }}>
