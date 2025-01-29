@@ -37,11 +37,10 @@ export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
-  onExport: (e: ExportingEvent<PoolData, any>) => void;
   dexs: string[];
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport, dexs }) => {
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dexs }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
@@ -137,7 +136,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         columnAutoWidth={false}
         showRowLines={true}
         showBorders={true}
-        onExporting={onExport}
         filterBuilder={{
           customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
@@ -217,7 +215,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
               />
             </SimpleBar>
           </Item>
-          <Item name="exportButton" />
           <Item name="columnChooserButton" />
         </Toolbar>
         <Column

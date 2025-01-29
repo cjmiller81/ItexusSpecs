@@ -35,10 +35,9 @@ export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<VaultsData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
-  onExport: (e: ExportingEvent<VaultsData, any>) => void;
 }
 
-export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport }) => {
+export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource }) => {
   const datagrid = React.createRef<DataGridDef<VaultsData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
@@ -118,7 +117,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         columnAutoWidth={false}
         showRowLines={true}
         showBorders={true}
-        onExporting={onExport}
         filterBuilder={{
           customOperations: [],
           allowHierarchicalFields: true,
@@ -179,7 +177,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
               />
             </SimpleBar>
           </Item>
-          <Item name="exportButton" />
           <Item name="columnChooserButton" />
         </Toolbar>
         <ColumnChooser

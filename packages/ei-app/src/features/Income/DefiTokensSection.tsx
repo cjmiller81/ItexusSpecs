@@ -5,6 +5,7 @@ import {
   AccordionDetails,
   AccordionProps,
   Box,
+  Button,
   IconButton,
   styled,
   Tooltip,
@@ -15,9 +16,8 @@ import {
 } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
-import { exportDataGrid } from "devextreme/excel_exporter";
-import { Workbook } from "exceljs";
-import { saveAs } from "file-saver-es";
+import DownloadIcon from "@mui/icons-material/Download";
+import * as XLSX from "xlsx";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGetPoolsQuery } from "./DefiApi";
@@ -52,26 +52,49 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
     [poolsData],
   );
 
-  const onExporting = useCallback(async (e: any): Promise<void> => {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Main sheet");
-
-    const currentDate = new Date();
-
-    await exportDataGrid({
-      component: e.component,
-      worksheet,
-      autoFilterEnabled: true,
+  const onExport = () => {
+    const updatedAssets = allTokensSource.items().map(asset => {
+      return {
+        pool: asset.symbol || "N/A",
+        project: asset.project || "N/A",
+        chain: asset.chain || "N/A",
+        dex: asset.dex ? asset.dex.join(", ") : "N/A",
+        tvl: asset.tvlUsd ? `$${asset.tvlUsd}` : "$0.00",
+        apy: asset.apy ? `${asset.apy}%` : "0.00%",
+        apyMean30d: asset.apyMean30d ? `${asset.apyMean30d}%` : "0.00%",
+      };
     });
-
-    await workbook.xlsx.writeBuffer().then(buffer => {
-      saveAs(
-        new Blob([buffer], { type: "application/octet-stream" }),
-        `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split("T")[0]}.xlsx`,
-      );
+  
+    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
+      header: [
+        "pool",
+        "project",
+        "chain",
+        "dex",
+        "tvl",
+        "apy",
+        "apyMean30d",
+      ],
     });
-    e.cancel = true;
-  }, []);
+  
+    const columnWidth = { wch: 20 };
+    worksheet["!cols"] = [
+      columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth,
+    ];
+  
+    for (let i = 2; i < updatedAssets.length + 2; i++) {
+      worksheet[`E${i}`].z = "$#,##0.00";
+      worksheet[`F${i}`].z = "0.00%";
+      worksheet[`G${i}`].z = "0.00%";
+    }
+  
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], { origin: "A1" });
+    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+  
+    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+  };
+  
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
@@ -129,17 +152,29 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
             </CustomTooltip>
           }
           sx={{
-            pointerEvents: "none",
             "&.MuiAccordionSummary-root:hover": {
-              cursor: "default",
             },
           }}>
-          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+          <Box sx={{ display: "flex", width: "100%", alignItems: "center",  pointerEvents: "auto !important",
+            cursor: "default", }}>
             <PageTitle
               sx={{ width: "100%" }}
               onClick={e => e.stopPropagation()}>
               {t("PrefilterLiquidityPools")}
             </PageTitle>
+            <Button
+              onClick={e => {
+                e.stopPropagation();
+                onExport();
+              }}
+              variant="outlined"
+              sx={{ ml: 4, marginRight:"17px" }}
+            >
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <DownloadIcon />
+              {t("Export")}
+            </Box>
+          </Button>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails
@@ -153,7 +188,6 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
             loading={isPoolsLoading && isDexsLoading}
             dexs={dexsData || []} 
             onUpdate={() => {}}
-            onExport={onExporting}
             dataSource={allTokensSource}
           />
         </AccordionDetails>
