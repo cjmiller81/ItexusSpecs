@@ -97,7 +97,6 @@ export default function PrefilterTokensSection({
     },
   };
 
-  console.log(dataSource)
     const onExport = () => {
       const updatedAssets = dataSource.items().map(asset => {
     
