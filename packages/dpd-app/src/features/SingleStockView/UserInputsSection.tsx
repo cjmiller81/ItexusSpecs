@@ -6,8 +6,11 @@ import moment from "moment";
 import { useGetStockDataQuery } from "../stockApi";
 import { BasicTable, nativeBarSx } from "components";
 import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
+import { display, minHeight } from "@mui/system";
 
 const tableScrollSx = {
+  display:"flex",
+  minHeight:"300px",
   "& .MuiDataGrid-virtualScroller": {
     ...nativeBarSx,
   },
