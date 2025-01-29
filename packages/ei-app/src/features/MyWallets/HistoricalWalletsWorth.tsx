@@ -39,7 +39,6 @@ interface Props extends BoxProps {
   submitButtonDisabled: boolean;
   sumbitButtonText?: string;
   onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
-  //eslint-disable-next-line no-undef
   chartSeries?: ApexAxisChartSeries | null;
 }
 export const HistoricalWalletsWorth = ({
@@ -85,7 +84,6 @@ export const HistoricalWalletsWorth = ({
     event: PickerChangeHandlerContext<DateValidationError>,
     setIsValid: (isValid: boolean) => void,
   ) => {
-    //eslint-disable-next-line no-extra-boolean-cast
     const isValid = !Boolean(event.validationError);
     setIsValid(isValid);
     if (onDatesValidChanged) onDatesValidChanged(isValid);
