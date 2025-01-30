@@ -49,6 +49,7 @@ export const MyWalletsSectionForPage = ({
   onUpdateWallet,
   wallets,
   totalWalletsWorthData,
+  totalAmount,
   loading,
   selectedWalletsIds,
   totalAmount,

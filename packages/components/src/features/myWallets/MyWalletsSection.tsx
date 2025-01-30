@@ -29,6 +29,7 @@ import { ExchangeDialog } from "./dialogs/ExchangeDialog";
 import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
 import { KrakenDialog } from "./dialogs/KrakenDialog";
 import { useFormik } from "formik";
+import { krakenApi } from "../../services/krakenService";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -79,30 +80,37 @@ export const MyWalletsSection = ({
     initialValues: {
       apiKey: "",
       apiSecret: "",
-      apiPassphrase: "",
-      network: "",
-      customRpcUrl: "",
-      chainName: selectedService === "Kraken" ? "Kraken" : "Coinbase",
+      chainName: "",
     },
     validationSchema: Yup.object({
       apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
       apiSecret: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
-      apiPassphrase: activeConnection === "api" ? Yup.string().optional() : Yup.string().optional(),
-      network: activeConnection === "rpc" ? Yup.string().required(t("NetworkRequired")) : Yup.string().optional(),
-      customRpcUrl:
-        activeConnection === "rpc"
-          ? Yup.string().url(t("InvalidURL")).required(t("CustomRPCRequired"))
-          : Yup.string().optional(),
-          chainName: Yup.string().required(t("ChainNameRequired")),
+      chainName: Yup.string().required(t("ChainNameRequired")),
     }),
-    onSubmit: (values, { resetForm }) => {
+    onSubmit: async (values, { resetForm }) => {
       resetForm();
       setOpenKrakenDialog(false);
       setOpenCoinbaseDialog(false);
-      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService};
-setExchange([...exchange, newExchanges]);
+      
+        try {
+          
+          const result = await krakenApi.connectToKraken({
+            login: null,
+            publicApiKey: values.apiKey,
+            privateApiKey: values.apiSecret,
+            userId: null,
+          });
+          console.log("great api sended")
+          if (result) {
+            setExchange([...exchange, { exchange_id: "Kraken", name: "Kraken" }]);
+          }
+        } catch (error) {
+          console.error("Failed to connect to Kraken", error);
+        }
+      
     },
   });
+  
   
   const handleChainNameChange = (name: string) => {
     setSelectedService(name);
