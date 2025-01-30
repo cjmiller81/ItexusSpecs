@@ -335,7 +335,7 @@
     "CardEnding": "Card Ending In {{number}}",
     "NoPaymentMethods": "No payment methods yet",
     "Default": "Default",
-    "AddNewMethod": "Add New Method",
+    "AddPayment": "Add Payment",
     "PaymentMethods": "Payment Methods",
     "MakeDefault": "Make Default",
     "CardAddedMessage": "Card was successfully added",

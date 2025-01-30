@@ -130,7 +130,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
               onClick={() => setPaymentMethodModal(true)}
               sx={{ minWidth: "160px", alignSelf: "center" }}
               variant="contained">
-              {t("AddNewMethod")}
+              {t("AddPayment")}
             </Button>
           }
           title={t("PaymentMethods")}>
