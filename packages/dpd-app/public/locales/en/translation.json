@@ -131,7 +131,8 @@
     "DarkPoolsData": "Dark Pools Data",
     "DIShortSaleVolume": "DI Short Sale Volume",
     "SingleStockView": "Single Stock View",
-    "SectorsView": "Sectors View"
+    "SectorsView": "Sectors View",
+    "HighVolumeDailyScan": "High Volume Daily Scan"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -198,7 +199,9 @@
     "EndIsRequired": "End date is required",
     "StartIsRequired": "Start date is required",
     "TickerIsRequired": "Ticker is required",
-    "ErrorFetching": "Error fetching stock data::"
+    "ErrorFetching": "Error fetching stock data::",
+    "TopTickers": "Top Tickers",
+    "VolumeLevel": "Volume Level"
   },
   "MarketTableColumns": {
     "Date": "Date",
@@ -213,6 +216,7 @@
   "DISingleStock": {
     "UserInputs": "User Inputs",
     "SingleStockPage": "Single Stock View Page",
-    "SectorsView": "Sectors View"
+    "SectorsView": "Sectors View",
+    "HighVolumeDailyScan": "High Volume Daily Scan"
   }
 }
