@@ -35,7 +35,6 @@ export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
   dataSource: DataSource;
   onSorterChanged: (sorter: any) => void;
-  onExport: (e: ExportingEvent<ICoin, any>) => void;
   chains: IPlatform[];
   categories: ICategory[];
   exchanges: IExchange[];
@@ -48,7 +47,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   chains,
   categories,
   exchanges,
-  onExport,
 }) => {
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -193,7 +191,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         columnAutoWidth={false}
         allowColumnReordering={true}
         columnHidingEnabled={false}
-        onExporting={onExport}
         filterBuilder={{
           customOperations: [],
           allowHierarchicalFields: true,
@@ -275,7 +272,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               />
             </SimpleBar>
           </Item>
-          <Item name="exportButton" />
           <Item name="columnChooserButton" />
         </Toolbar>
 
