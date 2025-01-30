@@ -105,6 +105,7 @@ export default function MyWalletsPage() {
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
+        totalAmount = {totalAmount}
       />
 
       <HistoricalWalletsWorth

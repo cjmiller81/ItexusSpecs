@@ -39,6 +39,7 @@ interface Props extends BoxProps {
   onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
+  totalAmount: number;
 }
 
 export const MyWalletsSectionForPage = ({
@@ -50,6 +51,7 @@ export const MyWalletsSectionForPage = ({
   totalWalletsWorthData,
   loading,
   selectedWalletsIds,
+  totalAmount,
   sx,
   ...props
 }: Props) => {
@@ -205,7 +207,7 @@ export const MyWalletsSectionForPage = ({
       <StyledWalletWorthContainer>
         <TotalWalletsWorthCard
           growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
-          totalWorth={totalWalletsWorthData?.totalWorth ?? 0}
+          totalWorth={totalAmount}
         />
       </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
