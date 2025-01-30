@@ -52,7 +52,6 @@ export const MyWalletsSectionForPage = ({
   totalAmount,
   loading,
   selectedWalletsIds,
-  totalAmount,
   sx,
   ...props
 }: Props) => {
