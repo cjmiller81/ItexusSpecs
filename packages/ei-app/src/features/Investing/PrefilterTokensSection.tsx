@@ -21,6 +21,7 @@ import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -127,8 +128,8 @@ export default function PrefilterTokensSection({
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
-            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-              <ExpandMoreIcon />
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+              <ArrowBackIosNewOutlinedIcon />
             </IconButton>
           </CustomTooltip>
         }
