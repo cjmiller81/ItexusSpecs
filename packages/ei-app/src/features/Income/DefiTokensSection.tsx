@@ -24,6 +24,7 @@ import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -146,8 +147,8 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-                <ExpandMoreIcon />
+              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+                <ArrowBackIosNewOutlinedIcon />
               </IconButton>
             </CustomTooltip>
           }
@@ -186,7 +187,7 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
           }}>
           <MemoizedDefiPoolsTable
             loading={isPoolsLoading && isDexsLoading}
-            dexs={dexsData || []} 
+            dexs={dexsData || []}
             onUpdate={() => {}}
             dataSource={allTokensSource}
           />

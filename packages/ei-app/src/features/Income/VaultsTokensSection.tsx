@@ -22,6 +22,7 @@ import * as XLSX from "xlsx";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -157,8 +158,8 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-                <ExpandMoreIcon />
+              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+                <ArrowBackIosNewOutlinedIcon />
               </IconButton>
             </CustomTooltip>
           }
