@@ -9,7 +9,7 @@ interface KrakenDialogProps {
   open: boolean;
   formik: FormikProps<any>;
   onClose: () => void;
-  onChainNameChange: (name: string) => void; 
+  onChainNameChange: (name: string) => void;
 }
 
 export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChainNameChange, onClose }) => {
@@ -33,7 +33,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           fullWidth
           variant="outlined"
           value={formik.values.chainName || ""}
-          onChange={(e) => {
+          onChange={e => {
             formik.handleChange(e);
             onChainNameChange(e.target.value);
           }}
@@ -65,7 +65,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {`${t("PublicAPIKey")}*`}
+          {`${t("APIKey")}*`}
         </Typography>
         <TextField
           fullWidth
@@ -73,7 +73,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           value={formik.values.apiKey}
           onChange={formik.handleChange}
           name="apiKey"
-          placeholder={`${t("PublicAPIKey")}*`}
+          placeholder={`${t("APIKey")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiKey && Boolean(formik.errors.apiKey)}
           helperText={formik.touched.apiKey && (typeof formik.errors.apiKey === "string" ? formik.errors.apiKey : "")}
