@@ -309,7 +309,8 @@
     "Action": "Action",
     "Connection": "Connection",
     "Exchanges": "Exchanges",
-    "ExchangeAccountName": "Centralized Exchange Account Name"
+    "ExchangeAccountName": "Centralized Exchange Account Name",
+    "Asset": "Asset"
   },
   "SymbolLookup": {
     "Search": "Search"

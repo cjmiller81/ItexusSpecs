@@ -30,6 +30,7 @@ import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
 import { KrakenDialog } from "./dialogs/KrakenDialog";
 import { useFormik } from "formik";
 import { krakenApi } from "../../services/krakenService";
+import { ExpandableChainRow } from "./ChainsRow";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -100,9 +101,13 @@ export const MyWalletsSection = ({
             privateApiKey: values.apiSecret,
             userId: null,
           });
-          console.log("great api sended")
           if (result) {
-            setExchange([...exchange, { exchange_id: "Kraken", name: "Kraken" }]);
+            const newExchange = {
+              exchange_id: selectedService,
+              name: selectedService,
+            };
+          
+            setExchange(prevExchange => [...prevExchange, newExchange]);
           }
         } catch (error) {
           console.error("Failed to connect to Kraken", error);
@@ -333,6 +338,14 @@ export const MyWalletsSection = ({
             onExpandClick: handleExpandClick,
           })}
           rows={exchange || []}
+          slotProps={{
+            row: {
+              isExpanded: (id: GridRowId) => expandedRows.includes(id),
+            },
+          }}
+          slots={{
+            row: ExpandableChainRow,
+          }}
         />
     </Box>
   );
