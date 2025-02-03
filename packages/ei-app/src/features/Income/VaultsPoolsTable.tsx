@@ -19,17 +19,16 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import { ExportingEvent } from "devextreme/ui/data_grid";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { toDollarAmountField, toPercentageField } from "./helpers";
 import { VaultsData } from "./Models/VaultsData";
 import SimpleBar from "simplebar-react";
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { vaultsFilterBuilderFields } from "./vaultsTableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
+import CustomFilterBuilder from "../Common/DevExpressTable/CustomFilterBuilder";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -41,54 +40,52 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   const datagrid = React.createRef<DataGridDef<VaultsData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
-  const [filterBuilderOpen, setFilterBuilderOpen] = useState<boolean>(false);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
+  
+  const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const filterRef = useRef<any>();
+    
   const filterPanelText = useRef<Element | null>(null);
-
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-
-    const filteredDataSource = grid.getDataSource();
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const prefilteredData = filteredDataSource.items() as ICoin[];
-    onUpdate(prefilteredData);
-  }, [datagrid, currentFilter, onUpdate]);
-
-  useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-  }, [currentFilter, datagrid]);
 
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  const onApplyFilter = useCallback(
-    (filter: string | any[] | (() => any)) => {
+  const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
+    currentFilterRef.current = filter as object[];
+
+    // Send new information to filter builder
+    filterRef.current.onUpdateFilter(filter || []);
+    
+    if (!filter) {
+      datagrid.current?.instance.clearFilter();
+    }
+    else {
+      datagrid.current?.instance.filter(filter);
+    }
+
+    if (isExternalFiltering) {
       setCurrentFilter(filter as object[]);
-    },
-    [setCurrentFilter],
-  );
+    }
+  }
 
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
-        if (currentFilter && currentFilter.length > 0) {
-          setFilterBuilderOpen(true);
+        if (currentFilterRef.current && currentFilterRef.current.length > 0) {
+          filterRef.current.onOpenBuilder(true);
         }
       });
     }
 
-    reconfigureFilterPanelStyles(containerRef, currentFilter);
+    reconfigureFilterPanelStyles(containerRef, currentFilterRef.current);
   };
 
   const calculateSafetyScore = (risks: string[]) => {
@@ -121,10 +118,11 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           customOperations: [],
           allowHierarchicalFields: true,
         }}
-        filterValue={currentFilter || []}
+        filterValue={currentFilterRef.current || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}>
+        onFilterValueChange={onApplyFilter}
+        >
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -157,22 +155,21 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           <Item location="before">
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
+                ref={filterRef}
                 filterType="vaults"
                 filterBuilderFields={vaultsFilterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
                 filterDeletingLoading={deletingFilterStatus === "loading"}
-                open={filterBuilderOpen}
                 onCreateFilter={filter => dispatch(createFilter(filter))}
-                onClose={() => setFilterBuilderOpen(false)}
-                onOpen={() => setFilterBuilderOpen(true)}
                 predefinedFilters={liquidityPoolFilters}
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
-                onDisableFilter={() => setCurrentFilter(null)}
-                onApply={filter => {
-                  setCurrentFilter(filter);
-                  setFilterBuilderOpen(false);
+                onDisableFilter={() => {
+                  onApplyFilter(null);
                 }}
-                filterToAppply={currentFilter}
+                onApply={filter => {
+                  onApplyFilter(filter, true);
+                }}
+                filterToAppply={currentFilterRef.current}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>

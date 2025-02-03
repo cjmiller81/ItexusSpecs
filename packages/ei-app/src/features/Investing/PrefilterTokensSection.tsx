@@ -1,5 +1,4 @@
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useAppSelector } from "@/libs/redux/Store";
 import {
   AccordionDetails,
   AccordionProps,

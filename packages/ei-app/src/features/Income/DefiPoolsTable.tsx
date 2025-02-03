@@ -20,7 +20,6 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import { ExportingEvent } from "devextreme/ui/data_grid";
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
@@ -29,9 +28,9 @@ import { ProjectCellComponent } from "./ProjectCellComponent";
 import { DefiField, defiFilterBuilderFields, DefiLabel } from "./tableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
+import CustomFilterBuilder from "../Common/DevExpressTable/CustomFilterBuilder";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -47,22 +46,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
+  
+  const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const filterRef = useRef<any>();
+  
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
-  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const filterPanelText = useRef<Element | null>(null);
-
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-
-    const filteredDataSource = grid.getDataSource();
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const prefilteredData = filteredDataSource.items() as ICoin[];
-    onUpdate(prefilteredData);
-  }, [datagrid, currentFilter, onUpdate]);
 
   const calculateFilterExpression = useCallback(function (
       this: any,
@@ -96,31 +87,37 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
       }
     }, []);
 
-  const onApplyFilter = useCallback(
-    (filter: string | any[] | (() => any)) => {
-      setCurrentFilter(filter as object[]);
-    },
-    [setCurrentFilter],
-  );
+  const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
+    currentFilterRef.current = filter as object[];
 
+    // Send new information to filter builder
+    filterRef.current.onUpdateFilter(filter || []);
+    
+    if (!filter) {
+      datagrid.current?.instance.clearFilter();
+    }
+    else {
+      datagrid.current?.instance.filter(filter);
+    }
+
+    if (isExternalFiltering) {
+      setCurrentFilter(filter as object[]);
+    }
+  }
+  
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
-        if (currentFilter && currentFilter.length > 0) {
-          setFilterBuilderOpen(true);
+        if (currentFilterRef.current && currentFilterRef.current.length > 0) {
+          filterRef.current.onOpenBuilder(true);
         }
       });
     }
 
-    reconfigureFilterPanelStyles(containerRef, currentFilter);
+    reconfigureFilterPanelStyles(containerRef, currentFilterRef.current);
   };
-
-  useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-  }, [currentFilter, datagrid]);
 
   return (
     <div ref={containerRef}>
@@ -140,7 +137,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
-        filterValue={currentFilter || []}
+        filterValue={currentFilterRef.current || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}>
@@ -195,22 +192,21 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           <Item location="before">
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
+                ref={filterRef}             
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
                 filterDeletingLoading={deletingFilterStatus === "loading"}
-                open={filterBuildeOpen}
                 onCreateFilter={filter => dispatch(createFilter(filter))}
-                onClose={() => setFilterBuilderOpen(false)}
-                onOpen={() => setFilterBuilderOpen(true)}
                 predefinedFilters={liquidityPoolFilters}
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
-                onDisableFilter={() => setCurrentFilter(null)}
-                onApply={filter => {
-                  setCurrentFilter(filter);
-                  setFilterBuilderOpen(false);
+                onDisableFilter={() => {
+                  onApplyFilter(null);
                 }}
-                filterToAppply={currentFilter}
+                onApply={filter => {
+                  onApplyFilter(filter, true);
+                }}
+                filterToAppply={currentFilterRef.current}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>
