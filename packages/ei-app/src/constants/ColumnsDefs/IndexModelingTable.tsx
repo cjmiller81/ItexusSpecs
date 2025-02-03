@@ -71,21 +71,5 @@ export const getIndexModelingTableColumns = (): GridColDef<InvestingTableAsset>[
         })}%`
       },
     },
-    {
-      field: "qty",
-      headerName: t("Qty"),
-      sortable: false,
-      editable: false,
-      filterable: false,
-      flex: 1,
-      disableColumnMenu: true,
-      valueGetter: params => {
-        if (!params.row.price) return "--"
-        return params.row.qty.toLocaleString("en-US", {
-          maximumFractionDigits: 4,
-          minimumFractionDigits: 4,
-        })
-      },
-    },
   ]
 }
