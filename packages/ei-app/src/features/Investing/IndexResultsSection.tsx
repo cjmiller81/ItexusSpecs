@@ -265,12 +265,6 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
               <Button
                 sx={{ mr: 2, width: "70px", height: "35px", fontSize: "11px" }}
                 variant="outlined"
-                disabled>
-                {t("Save")}
-              </Button>
-              <Button
-                sx={{ mr: 2, width: "70px", height: "35px", fontSize: "11px" }}
-                variant="outlined"
                 onClick={handleClearTable}>
                 {t("Clear")}
               </Button>
