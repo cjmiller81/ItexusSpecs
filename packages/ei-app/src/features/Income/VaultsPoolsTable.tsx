@@ -28,7 +28,7 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
-import CustomFilterBuilder from "../Common/DevExpressTable/CustomFilterBuilder";
+import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -47,8 +47,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
   
   const currentFilterRef = useRef<object[] | null | undefined>(null);
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
-  const filterRef = useRef<any>();
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
+  const filterRef = useRef<CustomFilterBuilderRef>(null);  
     
   const filterPanelText = useRef<Element | null>(null);
 
@@ -60,7 +60,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     currentFilterRef.current = filter as object[];
 
     // Send new information to filter builder
-    filterRef.current.onUpdateFilter(filter || []);
+    filterRef.current?.onUpdateFilter(filter || []);
     
     if (!filter) {
       datagrid.current?.instance.clearFilter();
@@ -80,7 +80,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
         if (currentFilterRef.current && currentFilterRef.current.length > 0) {
-          filterRef.current.onOpenBuilder(true);
+          filterRef.current?.onOpenBuilder(true);
         }
       });
     }

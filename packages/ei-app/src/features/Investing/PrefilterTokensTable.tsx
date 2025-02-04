@@ -28,7 +28,7 @@ import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/d
 import SimpleBar from "simplebar-react";
 import { ICategory, IExchange, IPlatform } from "components";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
-import CustomFilterBuilder from "../Common/DevExpressTable/CustomFilterBuilder";
+import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
@@ -59,7 +59,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(null);
-  const filterRef = useRef<any>();
+  const filterRef = useRef<CustomFilterBuilderRef>(null);
 
   useEffect(() => {
     handleOnUpdate();
@@ -139,7 +139,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     currentFilterRef.current = filter as object[];
 
     // Send new information to filter builder
-    filterRef.current.onUpdateFilter(filter || []);
+    filterRef.current?.onUpdateFilter(filter || []);
     
     if (!filter) {
       datagrid.current?.instance.clearFilter();
@@ -159,7 +159,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
         if (currentFilterRef.current && currentFilterRef.current.length > 0) {
-          filterRef.current.onOpenBuilder(true);
+          filterRef.current?.onOpenBuilder(true);
         }
       });
     }

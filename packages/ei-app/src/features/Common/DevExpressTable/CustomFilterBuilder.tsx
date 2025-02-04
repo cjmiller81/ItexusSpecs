@@ -44,7 +44,12 @@ export interface ICustomFilterBuilderProps {
   filterBuilderFields: FilterBuilderItems[];
 }
 
-const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = forwardRef(({
+export interface CustomFilterBuilderRef {
+  onUpdateFilter: (filter: string | any[] | (() => any) | null) => void;
+  onOpenBuilder: (status: boolean) => void;
+}
+
+const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttributes<CustomFilterBuilderRef>> = forwardRef<CustomFilterBuilderRef, ICustomFilterBuilderProps>(({
   predefinedFilters,
   onCreateFilter,
   onUpdateFilter,
@@ -69,9 +74,18 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = forwardRef(({
   useImperativeHandle(ref, () => ({
     onUpdateFilter: (filter) => {
       if (filter && !Array.isArray(filter)) {
-        setFilterValue([filter]);
+        setFilterValue([filter] as object[]);
       } else {
-        setFilterValue(filter);
+        setFilterValue(filter as object[]);
+      }
+
+      const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filter?.toString());
+      if (isPredefinedFilter) {
+        setSelectedSavedFilter(isPredefinedFilter);
+        setFilterName(isPredefinedFilter.name);
+      } else {
+        setSelectedSavedFilter(null);
+        setFilterName("");
       }
     },
     onOpenBuilder: (status) => {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
-import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -20,7 +20,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
@@ -30,7 +30,7 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
-import CustomFilterBuilder from "../Common/DevExpressTable/CustomFilterBuilder";
+import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -48,8 +48,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
   const dispatch = useAppDispatch();
   
   const currentFilterRef = useRef<object[] | null | undefined>(null);
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
-  const filterRef = useRef<any>();
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
+  const filterRef = useRef<CustomFilterBuilderRef>(null);
   
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
@@ -91,7 +91,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     currentFilterRef.current = filter as object[];
 
     // Send new information to filter builder
-    filterRef.current.onUpdateFilter(filter || []);
+    filterRef.current?.onUpdateFilter(filter || []);
     
     if (!filter) {
       datagrid.current?.instance.clearFilter();
@@ -100,6 +100,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
       datagrid.current?.instance.filter(filter);
     }
 
+    // re-render component 
     if (isExternalFiltering) {
       setCurrentFilter(filter as object[]);
     }
@@ -111,7 +112,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
         if (currentFilterRef.current && currentFilterRef.current.length > 0) {
-          filterRef.current.onOpenBuilder(true);
+          filterRef.current?.onOpenBuilder(true);
         }
       });
     }
