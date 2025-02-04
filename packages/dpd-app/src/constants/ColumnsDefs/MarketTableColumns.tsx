@@ -2,6 +2,7 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 import { Market } from "@/models/Market";
 import i18next, { t } from "i18next";
+import moment from "moment";
 
 i18next.setDefaultNamespace("MarketTableColumns");
 
@@ -24,10 +25,11 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
             fontWeight: 'bold'
           }}
         >
-          {new Date(params.row.date).toISOString().split('T')[0]}
+           {moment.utc(params.row.date).format("YYYY-MM-DD")}
         </Typography>
       ),
     },
+
     {
       field: "symbol",
       headerName: t("Symbol"),
@@ -161,6 +163,7 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
           </Typography>
         ),
       },
+      
       {
         field: "total",
         headerName: t("Total"),

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
-import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -20,8 +20,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import { ExportingEvent } from "devextreme/ui/data_grid";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
@@ -29,41 +28,31 @@ import { ProjectCellComponent } from "./ProjectCellComponent";
 import { DefiField, defiFilterBuilderFields, DefiLabel } from "./tableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
+import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
-  onExport: (e: ExportingEvent<PoolData, any>) => void;
   dexs: string[];
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport, dexs }) => {
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dexs }) => {
   const datagrid = React.createRef<DataGridDef<PoolData, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
+  
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const filterRef = useRef<CustomFilterBuilderRef>(null);
+  
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
-  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const filterPanelText = useRef<Element | null>(null);
-
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-
-    const filteredDataSource = grid.getDataSource();
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const prefilteredData = filteredDataSource.items() as ICoin[];
-    onUpdate(prefilteredData);
-  }, [datagrid, currentFilter, onUpdate]);
 
   const calculateFilterExpression = useCallback(function (
       this: any,
@@ -103,25 +92,20 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     },
     [setCurrentFilter],
   );
-
+  
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
         if (currentFilter && currentFilter.length > 0) {
-          setFilterBuilderOpen(true);
+          filterRef.current?.onOpenBuilder(true);
         }
       });
     }
 
     reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
-
-  useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-  }, [currentFilter, datagrid]);
 
   return (
     <div ref={containerRef}>
@@ -137,7 +121,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         columnAutoWidth={false}
         showRowLines={true}
         showBorders={true}
-        onExporting={onExport}
         filterBuilder={{
           customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
@@ -197,27 +180,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           <Item location="before">
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
+                ref={filterRef}             
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
                 filterDeletingLoading={deletingFilterStatus === "loading"}
-                open={filterBuildeOpen}
                 onCreateFilter={filter => dispatch(createFilter(filter))}
-                onClose={() => setFilterBuilderOpen(false)}
-                onOpen={() => setFilterBuilderOpen(true)}
                 predefinedFilters={liquidityPoolFilters}
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
-                onDisableFilter={() => setCurrentFilter(null)}
+                onDisableFilter={() => {
+                  setCurrentFilter(null)
+                }}
                 onApply={filter => {
                   setCurrentFilter(filter);
-                  setFilterBuilderOpen(false);
                 }}
                 filterToAppply={currentFilter}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>
           </Item>
-          <Item name="exportButton" />
           <Item name="columnChooserButton" />
         </Toolbar>
         <Column

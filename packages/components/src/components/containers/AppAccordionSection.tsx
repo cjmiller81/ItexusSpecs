@@ -1,4 +1,4 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import {
   AccordionDetails,
   AccordionSummary,
@@ -64,8 +64,16 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={tooltip}>
-            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-              <ExpandMoreIcon />
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+              <ArrowBackIosNewOutlinedIcon
+                sx={{
+                  "& path": {
+                    stroke: "currentColor",
+                    strokeWidth: 2,
+                    fill: "currentColor",
+                  },
+                }}
+              />
             </IconButton>
           </CustomTooltip>
         }

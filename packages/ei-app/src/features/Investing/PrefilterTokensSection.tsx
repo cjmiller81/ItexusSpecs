@@ -1,9 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useAppSelector } from "@/libs/redux/Store";
 import {
   AccordionDetails,
   AccordionProps,
   Box,
+  Button,
   IconButton,
   styled,
   Tooltip,
@@ -12,15 +12,15 @@ import {
 } from "@mui/material";
 import { ICategory, IExchange, IPlatform, PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
-import { exportDataGrid } from "devextreme/excel_exporter";
-import { Workbook } from "exceljs";
-import { saveAs } from "file-saver-es";
-import React, { useCallback, useEffect, useState } from "react";
+import DownloadIcon from "@mui/icons-material/Download";
+import * as XLSX from "xlsx";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -67,27 +67,6 @@ export default function PrefilterTokensSection({
     fetchData();
   }, []);
 
-  const onExporting = useCallback(async (e: any): Promise<void> => {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Main sheet");
-
-    const currentDate = new Date();
-
-    await exportDataGrid({
-      component: e.component,
-      worksheet,
-      autoFilterEnabled: true,
-    });
-
-    await workbook.xlsx.writeBuffer().then(buffer => {
-      saveAs(
-        new Blob([buffer], { type: "application/octet-stream" }),
-        `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split("T")[0]}.xlsx`,
-      );
-    });
-    e.cancel = true;
-  }, []);
-
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
       {...props}
@@ -118,6 +97,81 @@ export default function PrefilterTokensSection({
     },
   };
 
+  const onExport = () => {
+    const updatedAssets = dataSource.items().map(asset => {
+      return {
+        symbol: asset.sym,
+        price: asset.price,
+        marketCap: asset.mCap ? asset.mCap : 0,
+        fullyDilutedValuation: asset.fulDilVal ? asset.fulDilVal : 0,
+        tokenomics: asset.tNom ? (asset.tNom * 100).toFixed(2) + "%" : "",
+        volume: asset.tVol ? asset.tVol : 0,
+        categories: asset.cats && Array.isArray(asset.cats) ? asset.cats.join(", ") : "",
+        chains: asset.chains && Array.isArray(asset.chains) && asset.chains[0] !== "" ? asset.chains.join(", ") : "",
+        exchanges: asset.exchanges && Array.isArray(asset.exchanges) ? asset.exchanges.join(", ") : "",
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
+      header: [
+        "symbol",
+        "price",
+        "marketCap",
+        "fullyDilutedValuation",
+        "tokenomics",
+        "volume",
+        "categories",
+        "chains",
+        "exchanges",
+      ],
+    });
+
+    const columnWidth = { wch: 20 };
+    worksheet["!cols"] = [
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+    ];
+
+    for (let i = 2; i < updatedAssets.length + 2; i++) {
+      worksheet[`B${i}`].z = "$#,##0.00";
+      worksheet[`C${i}`].z = "$#,##0.00";
+      worksheet[`D${i}`].z = "$#,##0.00";
+      worksheet[`F${i}`].z = "#,##0";
+      worksheet[`G${i}`].z = "@";
+      worksheet[`H${i}`].z = "@";
+      worksheet[`I${i}`].z = "@";
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_aoa(
+      worksheet,
+      [
+        [
+          "Symbol",
+          "Price",
+          "Market Cap",
+          "Fully Diluted Valuation",
+          "Tokenomics",
+          "Volume",
+          "Categories",
+          "Chains",
+          "Exchanges",
+        ],
+      ],
+      { origin: "A1" },
+    );
+    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+
+    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+  };
+
   return (
     <StatePersistedAccordion
       persistKey={persisKey}
@@ -127,8 +181,16 @@ export default function PrefilterTokensSection({
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
-            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-              <ExpandMoreIcon />
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+              <ArrowBackIosNewOutlinedIcon
+                sx={{
+                  "& path": {
+                    stroke: "currentColor",
+                    strokeWidth: 2,
+                    fill: "currentColor",
+                  },
+                }}
+              />
             </IconButton>
           </CustomTooltip>
         }
@@ -150,6 +212,18 @@ export default function PrefilterTokensSection({
             onClick={e => e.stopPropagation()}>
             {t("PrefilterTokens")}
           </PageTitle>
+          <Button
+            onClick={e => {
+              e.stopPropagation();
+              onExport();
+            }}
+            variant="outlined"
+            sx={{ ml: 4, marginRight: "17px" }}>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <DownloadIcon />
+              {t("Export")}
+            </Box>
+          </Button>
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails
@@ -167,7 +241,6 @@ export default function PrefilterTokensSection({
             exchanges={exchanges}
             onCurrentFilterChange={onFilterChanged}
             dataSource={dataSource}
-            onExport={onExporting}
             onSorterChanged={onSorterChanged}
           />
         )}

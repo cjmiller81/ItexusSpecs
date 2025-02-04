@@ -6,6 +6,7 @@ import {
   AccordionDetails,
   AccordionProps,
   Box,
+  Button,
   IconButton,
   styled,
   Tooltip,
@@ -16,12 +17,12 @@ import {
 } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
-import { exportDataGrid } from "devextreme/excel_exporter";
-import { Workbook } from "exceljs";
-import { saveAs } from "file-saver-es";
+import DownloadIcon from "@mui/icons-material/Download";
+import * as XLSX from "xlsx";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -61,25 +62,47 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
       }),
     [processedVaults],
   );
+  const calculateSafetyScore = (risks: string[]) => {
+    if (!risks || risks.length === 0) return 0;
 
-  const onExporting = useCallback(async (e: any) => {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Vaults");
-    const currentDate = new Date();
+    let score = 3;
 
-    await exportDataGrid({
-      component: e.component,
-      worksheet,
-      autoFilterEnabled: true,
+    if (risks.includes("IL_HIGH")) score -= 1;
+    if (risks.includes("MCAP_MICRO")) score -= 1;
+
+    return Math.max(score, 0);
+  };
+
+  const onExport = () => {
+    const updatedAssets = filteredTokensSource.items().map(asset => {
+      return {
+        name: asset.name,
+        chain: asset.chain,
+        platform: asset.platformId,
+        tvl: asset.tvl ? `$${asset.tvl.toFixed(2)}` : "$0.00",
+        apy: asset.apy ? `${asset.apy}%` : "0.00%",
+        safety: calculateSafetyScore(asset.risks),
+      };
     });
 
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(
-      new Blob([buffer], { type: "application/octet-stream" }),
-      `Vaults-Data-${currentDate.toISOString().split("T")[0]}.xlsx`,
-    );
-    e.cancel = true;
-  }, []);
+    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
+      header: ["name", "chain", "platform", "tvl", "apy", "safety"],
+    });
+
+    const columnWidth = { wch: 20 };
+    worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
+
+    for (let i = 2; i < updatedAssets.length + 2; i++) {
+      worksheet[`D${i}`].z = "$#,##0.00";
+      worksheet[`E${i}`].z = "0.00%";
+    }
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Chain", "Platform", "TVL", "APY", "Safety"]], { origin: "A1" });
+    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+
+    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+  };
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
@@ -131,23 +154,49 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
               arrow>
-              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-                <ExpandMoreIcon />
+              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+                <ArrowBackIosNewOutlinedIcon
+                  sx={{
+                    "& path": {
+                      stroke: "currentColor",
+                      strokeWidth: 2,
+                      fill: "currentColor",
+                    },
+                  }}
+                />
               </IconButton>
             </CustomTooltip>
           }
           sx={{
-            pointerEvents: "none",
             "&.MuiAccordionSummary-root:hover": {
               cursor: "default",
             },
           }}>
-          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              pointerEvents: "auto !important",
+              cursor: "default",
+            }}>
             <PageTitle
               sx={{ width: "100%" }}
               onClick={e => e.stopPropagation()}>
               {t("VaultsTitle")}
             </PageTitle>
+            <Button
+              onClick={e => {
+                e.stopPropagation();
+                onExport();
+              }}
+              variant="outlined"
+              sx={{ ml: 4, marginRight: "17px" }}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                <DownloadIcon />
+                {t("Export")}
+              </Box>
+            </Button>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails
@@ -160,7 +209,6 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           <MemoizedDefiPoolsTable
             loading={isVaultsLoading}
             onUpdate={() => {}}
-            onExport={onExporting}
             dataSource={filteredTokensSource}
           />
         </AccordionDetails>

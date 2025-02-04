@@ -29,6 +29,10 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
           href: "/di_single_stock",
         },
         {
+          title: t("HighVolumeDailyScan", {ns: "SideBar"}),
+          href: "/di_high_volume_scan"
+        },
+        {
           title: t("SectorsView", { ns: "SideBar" }),
           href: "/di_sectors",
         },

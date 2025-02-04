@@ -1,3 +1,4 @@
+import { highvolumescanApi } from "@/features/highVolumeScanApi"
 import { stockApi } from "@/features/stockApi"
 import { stockSlice } from "@/features/strategies/stockSlice"
 
@@ -12,6 +13,7 @@ export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   stocks: stockSlice.reducer,
   [stockApi.reducerPath]: stockApi.reducer,
+  [highvolumescanApi.reducerPath]: highvolumescanApi.reducer
 })
 
 const config = getPersistConfig<RootState>({
