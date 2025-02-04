@@ -47,8 +47,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
   );
   const dispatch = useAppDispatch();
   
-  const currentFilterRef = useRef<object[] | null | undefined>(null);
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const filterRef = useRef<CustomFilterBuilderRef>(null);
   
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
@@ -87,37 +86,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
       }
     }, []);
 
-  const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
-    currentFilterRef.current = filter as object[];
-
-    // Send new information to filter builder
-    filterRef.current?.onUpdateFilter(filter || []);
-    
-    if (!filter) {
-      datagrid.current?.instance.clearFilter();
-    }
-    else {
-      datagrid.current?.instance.filter(filter);
-    }
-
-    // re-render component 
-    if (isExternalFiltering) {
+  const onApplyFilter = useCallback(
+    (filter: string | any[] | (() => any)) => {
       setCurrentFilter(filter as object[]);
-    }
-  }
+    },
+    [setCurrentFilter],
+  );
   
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
-        if (currentFilterRef.current && currentFilterRef.current.length > 0) {
+        if (currentFilter && currentFilter.length > 0) {
           filterRef.current?.onOpenBuilder(true);
         }
       });
     }
 
-    reconfigureFilterPanelStyles(containerRef, currentFilterRef.current);
+    reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
   return (
@@ -138,7 +125,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
-        filterValue={currentFilterRef.current || []}
+        filterValue={currentFilter || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}>
@@ -202,12 +189,12 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
                 predefinedFilters={liquidityPoolFilters}
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
                 onDisableFilter={() => {
-                  onApplyFilter(null);
+                  setCurrentFilter(null)
                 }}
                 onApply={filter => {
-                  onApplyFilter(filter, true);
+                  setCurrentFilter(filter);
                 }}
-                filterToAppply={currentFilterRef.current}
+                filterToAppply={currentFilter}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>
