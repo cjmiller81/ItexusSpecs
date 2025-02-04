@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 import { persistStore } from "redux-persist"
 import { RootState, persistedReducer } from "./RootReducer"
 import { stockApi } from "@/features/stockApi"
+import { highvolumescanApi } from "@/features/highVolumeScanApi"
 
 
 const makeStore = () => {
@@ -13,6 +14,7 @@ const makeStore = () => {
         serializableCheck: false,
       }).concat(
         stockApi.middleware,
+        highvolumescanApi.middleware,
       )
   })
 }
