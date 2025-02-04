@@ -26,11 +26,11 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, Ref, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 
-interface ICustomFilterBuilderProps {
+export interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
   onCreateFilter: (filter: CreateFilterModel) => void;
   onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void;
@@ -38,16 +38,18 @@ interface ICustomFilterBuilderProps {
   onDisableFilter: () => void;
   filterToAppply?: object | null;
   onApply: (filterValue: object[]) => void;
-  onClose: () => void;
-  onOpen: () => void;
   filterType: FilterType;
-  open?: boolean;
   filterLoading?: boolean;
   filterDeletingLoading?: boolean;
   filterBuilderFields: FilterBuilderItems[];
 }
 
-export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
+export interface CustomFilterBuilderRef {
+  onUpdateFilter: (filter: string | any[] | (() => any) | null) => void;
+  onOpenBuilder: (status: boolean) => void;
+}
+
+const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttributes<CustomFilterBuilderRef>> = forwardRef<CustomFilterBuilderRef, ICustomFilterBuilderProps>(({
   predefinedFilters,
   onCreateFilter,
   onUpdateFilter,
@@ -55,14 +57,12 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   onDisableFilter,
   filterToAppply,
   onApply,
-  onClose,
-  onOpen,
   filterLoading,
   filterDeletingLoading,
   filterBuilderFields,
-  filterType,
-  open,
-}) => {
+  filterType
+}, ref) => {
+  const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
   const [filterName, setFilterName] = useState<string | undefined>("");
   const [filterValue, setFilterValue] = useState<object[] | undefined | null>();
@@ -70,6 +70,28 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
   const { t } = useTranslation("CustomFilterBuilder");
   const theme = useTheme();
+
+  useImperativeHandle(ref, () => ({
+    onUpdateFilter: (filter) => {
+      if (filter && !Array.isArray(filter)) {
+        setFilterValue([filter] as object[]);
+      } else {
+        setFilterValue(filter as object[]);
+      }
+
+      const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filter?.toString());
+      if (isPredefinedFilter) {
+        setSelectedSavedFilter(isPredefinedFilter);
+        setFilterName(isPredefinedFilter.name);
+      } else {
+        setSelectedSavedFilter(null);
+        setFilterName("");
+      }
+    },
+    onOpenBuilder: (status) => {
+      setFilterBuilderOpen(status);
+    }
+  }));
 
   useEffect(() => {
     if (filterToAppply && !Array.isArray(filterToAppply)) {
@@ -103,8 +125,11 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
   };
 
   const handleApplyFilter = () => {
-    if (filterValue) onApply(filterValue);
-    else onClose();
+    if (filterValue) { 
+      onApply(filterValue); 
+      setFilterBuilderOpen(false);
+    }
+    else setFilterBuilderOpen(false);
   };
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
@@ -251,7 +276,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
             },
           }}
           color={"success"}
-          onClick={() => onOpen()}
+          onClick={() => setFilterBuilderOpen(true)}
           startIcon={<TuneIcon />}>
           {t("BuildStrategyFilter")}
         </StyledFilterButton>
@@ -270,7 +295,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
           }}
           variant="contained"
           color={"error"}
-          disabled={!filterValue}
+          disabled={!filterValue || filterValue?.length == 0}
           onClick={() => handleClearFilters()}>
           {t("ClearFilter")}
         </StyledFilterButton>
@@ -284,7 +309,7 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
       />
       <Dialog
         fullWidth
-        open={open!}
+        open={filterBuilderOpen!}
         sx={{
           "& .MuiDialog-container": {
             "& .MuiPaper-root": {
@@ -293,10 +318,10 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
             },
           },
         }}
-        onClose={onClose}>
+        onClose={() => setFilterBuilderOpen(false)}>
         <IconButton
           sx={{ position: "absolute", right: "10px", top: "10px" }}
-          onClick={onClose}>
+          onClick={() => setFilterBuilderOpen(false)}>
           <CloseIcon />
         </IconButton>
         <DialogTitle sx={{ bgcolor: "background.paper" }}>
@@ -313,9 +338,8 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
                     onValueChanged={handleFilterValueChanged}
                   />
                 </FilterBuilderComponentContainer>
-
                 <ClearButton
-                  disabled={!filterValue || !filterValue.length}
+                  disabled={!filterValue || !filterValue.length || filterValue.length == 0}
                   onClick={handleClearFilters}
                   variant="contained"
                   color="warning">
@@ -408,7 +432,11 @@ export const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps> = ({
       </Dialog>
     </>
   );
-};
+});
+
+CustomFilterBuilder.displayName = 'CustomFilterBuilder';
+
+export default CustomFilterBuilder;
 
 const FilterBuilderComponentContainer = styled(Box)(({ theme }) => ({
   minHeight: theme.spacing(16),
