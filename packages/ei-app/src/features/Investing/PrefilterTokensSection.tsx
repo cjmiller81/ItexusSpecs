@@ -97,21 +97,20 @@ export default function PrefilterTokensSection({
     },
   };
 
-    const onExport = () => {
-      const updatedAssets = dataSource.items().map(asset => {
-    
-        return {
-          symbol: asset.sym,
-          price: asset.price,
-          marketCap: asset.mCap ? asset.mCap : 0,
-          fullyDilutedValuation: asset.fulDilVal ? asset.fulDilVal : 0,
-          tokenomics: asset.tNom ? (asset.tNom * 100).toFixed(2) + "%" : "",
-          volume: asset.tVol ? asset.tVol : 0,
-          categories: asset.cats && Array.isArray(asset.cats) ? asset.cats.join(", ") : "",
-          chains: (asset.chains && Array.isArray(asset.chains) && asset.chains[0] !== '') ? asset.chains.join(", ") : "",
-          exchanges: (asset.exchanges && Array.isArray(asset.exchanges)) ? asset.exchanges.join(", ") : "",
-        };
-      });
+  const onExport = () => {
+    const updatedAssets = dataSource.items().map(asset => {
+      return {
+        symbol: asset.sym,
+        price: asset.price,
+        marketCap: asset.mCap ? asset.mCap : 0,
+        fullyDilutedValuation: asset.fulDilVal ? asset.fulDilVal : 0,
+        tokenomics: asset.tNom ? (asset.tNom * 100).toFixed(2) + "%" : "",
+        volume: asset.tVol ? asset.tVol : 0,
+        categories: asset.cats && Array.isArray(asset.cats) ? asset.cats.join(", ") : "",
+        chains: asset.chains && Array.isArray(asset.chains) && asset.chains[0] !== "" ? asset.chains.join(", ") : "",
+        exchanges: asset.exchanges && Array.isArray(asset.exchanges) ? asset.exchanges.join(", ") : "",
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
       header: [
@@ -129,7 +128,15 @@ export default function PrefilterTokensSection({
 
     const columnWidth = { wch: 20 };
     worksheet["!cols"] = [
-      columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
+      columnWidth,
     ];
 
     for (let i = 2; i < updatedAssets.length + 2; i++) {
@@ -138,12 +145,28 @@ export default function PrefilterTokensSection({
       worksheet[`D${i}`].z = "$#,##0.00";
       worksheet[`F${i}`].z = "#,##0";
       worksheet[`G${i}`].z = "@";
-      worksheet[`H${i}`].z = "@"; 
-      worksheet[`I${i}`].z = "@"; 
+      worksheet[`H${i}`].z = "@";
+      worksheet[`I${i}`].z = "@";
     }
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(worksheet, [["Symbol", "Price", "Market Cap", "Fully Diluted Valuation", "Tokenomics", "Volume", "Categories", "Chains", "Exchanges"]], { origin: "A1" });
+    XLSX.utils.sheet_add_aoa(
+      worksheet,
+      [
+        [
+          "Symbol",
+          "Price",
+          "Market Cap",
+          "Fully Diluted Valuation",
+          "Tokenomics",
+          "Volume",
+          "Categories",
+          "Chains",
+          "Exchanges",
+        ],
+      ],
+      { origin: "A1" },
+    );
     XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
 
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
@@ -159,7 +182,15 @@ export default function PrefilterTokensSection({
         expandIcon={
           <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
             <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
-              <ArrowBackIosNewOutlinedIcon />
+              <ArrowBackIosNewOutlinedIcon
+                sx={{
+                  "& path": {
+                    stroke: "currentColor",
+                    strokeWidth: 2,
+                    fill: "currentColor",
+                  },
+                }}
+              />
             </IconButton>
           </CustomTooltip>
         }
@@ -175,7 +206,7 @@ export default function PrefilterTokensSection({
             alignItems: "center",
             pointerEvents: "auto !important",
             cursor: "default",
-          }}>      
+          }}>
           <PageTitle
             sx={{ width: "100%" }}
             onClick={e => e.stopPropagation()}>
@@ -187,8 +218,7 @@ export default function PrefilterTokensSection({
               onExport();
             }}
             variant="outlined"
-            sx={{ ml: 4, marginRight:"17px" }}
-          >
+            sx={{ ml: 4, marginRight: "17px" }}>
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
               <DownloadIcon />
               {t("Export")}

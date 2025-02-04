@@ -65,7 +65,15 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
         expandIcon={
           <CustomTooltip title={tooltip}>
             <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
-              <ArrowBackIosNewOutlinedIcon />
+              <ArrowBackIosNewOutlinedIcon
+                sx={{
+                  "& path": {
+                    stroke: "currentColor",
+                    strokeWidth: 2,
+                    fill: "currentColor",
+                  },
+                }}
+              />
             </IconButton>
           </CustomTooltip>
         }
