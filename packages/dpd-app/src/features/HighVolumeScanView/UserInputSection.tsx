@@ -131,9 +131,7 @@ const UserInputSection = () => {
             
             tradeReportDate: moment(item.date).toDate(),
           }));
-          console.log(updatedData);
           setFilteredData(updatedData);
-          console.log(filteredData);
           const statistics = calculateStatistics(updatedData);
           setStatisticsData(statistics);
           setFetchData(false);
