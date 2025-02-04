@@ -65,37 +65,28 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         apyMean30d: asset.apyMean30d ? `${asset.apyMean30d}%` : "0.00%",
       };
     });
-  
+
     const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-      header: [
-        "pool",
-        "project",
-        "chain",
-        "dex",
-        "tvl",
-        "apy",
-        "apyMean30d",
-      ],
+      header: ["pool", "project", "chain", "dex", "tvl", "apy", "apyMean30d"],
     });
-  
+
     const columnWidth = { wch: 20 };
-    worksheet["!cols"] = [
-      columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth,
-    ];
-  
+    worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
+
     for (let i = 2; i < updatedAssets.length + 2; i++) {
       worksheet[`E${i}`].z = "$#,##0.00";
       worksheet[`F${i}`].z = "0.00%";
       worksheet[`G${i}`].z = "0.00%";
     }
-  
+
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], { origin: "A1" });
+    XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], {
+      origin: "A1",
+    });
     XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
-  
+
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
   };
-  
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
@@ -148,16 +139,29 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
               title={t("ToggleView", { ns: "Common" })}
               arrow>
               <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
-                <ArrowBackIosNewOutlinedIcon />
+                <ArrowBackIosNewOutlinedIcon
+                  sx={{
+                    "& path": {
+                      stroke: "currentColor",
+                      strokeWidth: 2,
+                      fill: "currentColor",
+                    },
+                  }}
+                />
               </IconButton>
             </CustomTooltip>
           }
           sx={{
-            "&.MuiAccordionSummary-root:hover": {
-            },
+            "&.MuiAccordionSummary-root:hover": {},
           }}>
-          <Box sx={{ display: "flex", width: "100%", alignItems: "center",  pointerEvents: "auto !important",
-            cursor: "default", }}>
+          <Box
+            sx={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              pointerEvents: "auto !important",
+              cursor: "default",
+            }}>
             <PageTitle
               sx={{ width: "100%" }}
               onClick={e => e.stopPropagation()}>
@@ -169,13 +173,12 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
                 onExport();
               }}
               variant="outlined"
-              sx={{ ml: 4, marginRight:"17px" }}
-            >
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-              <DownloadIcon />
-              {t("Export")}
-            </Box>
-          </Button>
+              sx={{ ml: 4, marginRight: "17px" }}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                <DownloadIcon />
+                {t("Export")}
+              </Box>
+            </Button>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails
