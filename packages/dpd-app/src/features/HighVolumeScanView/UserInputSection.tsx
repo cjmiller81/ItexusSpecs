@@ -2,10 +2,11 @@ import { Grid, Typography, TextField, Box, Button, Divider } from "@mui/material
 import { darken, lighten, styled } from "@mui/material/styles";
 import { BasicTable, nativeBarSx } from "components";
 import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { tableSectorsData } from "@/mocks/tableSectorsData";
 import { Market } from "@/models/Market";
+import { useGetHighVolumeScanDataQuery } from "../highVolumeScanApi";
+import moment from "moment";
 
 const tableScrollSx = {
     "& .MuiDataGrid-virtualScroller": {
@@ -60,8 +61,11 @@ export const MarketTable = styled(BasicTable)(({ theme }) => ({
 }));
 
 const UserInputSection = () => {
-    const [date, setDate] = useState < Date | null > (null);
+    const [date, setDate] = useState<string>("");
+    const [topRecords, setTopRecords] = useState<number>(17);
+    const [volumeThreshold, setVolumeThreshold] = useState<number>(10000000);
     const [filteredData, setFilteredData] = useState < Market[] > ([]);
+    const [fetchData, setFetchData] = useState(false);
     const { t } = useTranslation("UserInputsSection");
     const [statisticsData, setStatisticsData] = useState({
         totalVolume: 0,
@@ -73,48 +77,44 @@ const UserInputSection = () => {
         avgSellVolume: 0,
     });
 
-    const handleDateChange = (e, type) => {
-        const newDate = e.target.value ? new Date(e.target.value) : null;
-        setDate(newDate);
-    };
+    const { data, isFetching } = useGetHighVolumeScanDataQuery(
+        { date, volumeThreshold, topRecords },
+        { skip: !fetchData }
+    );
+
+
+    const handleVolumeChange = (e) => {
+        setVolumeThreshold(e.target.value);
+      };
+
+      const handleTopTockerChange = (e) => {
+        setTopRecords(e.target.value);
+      };
+
+    const handleDateChange = (e) => {
+        const newDate = e.target.value ? e.target.value : "";
     
-    const filterDataByDate = (selectedDate: Date | null): Market[] => {
-        if (!selectedDate) return [];
-
-        const targetDate = new Date(selectedDate);
-        targetDate.setHours(0, 0, 0, 0);
-
-        return tableSectorsData.filter((data: Market) => {
-            const dataDate = new Date(data.date);
-            dataDate.setHours(0, 0, 0, 0); 
-            return dataDate.getTime() === targetDate.getTime();
-        });
-    };
+          setDate(newDate);
+        }
 
     const handleRunModel = () => {
-        if (!date) {
-            setFilteredData([]);
-            setStatisticsData({
-                totalVolume: 0,
-                totalBought: 0,
-                totalSold: 0,
-                avgTotalVolume: 0,
-                avgBuySellRatio: 0,
-                avgBuyVolume: 0,
-                avgSellVolume: 0,
-            });
+        if (date !== "") {
+          setFilteredData([]);
+          setStatisticsData({
+            totalVolume: 0,
+            totalBought: 0,
+            totalSold: 0,
+            avgTotalVolume: 0,
+            avgBuySellRatio: 0,
+            avgBuyVolume: 0,
+            avgSellVolume: 0,
+          });
+      
+          setFetchData(true);
         } else {
-            const filtered = filterDataByDate(date);
-            const updatedData = filtered.map(item => ({
-                ...item,
-                symbol: item.symbol,
-            }));
-            setFilteredData(updatedData);
-
-            const newStats = calculateStatistics(updatedData);
-            setStatisticsData(newStats);
+          setFetchData(false);
         }
-    };
+      };
 
 
     const formatNumber = (value: number) => {
@@ -123,6 +123,22 @@ const UserInputSection = () => {
             minimumFractionDigits: 2,
         }).format(value);
     };
+
+    useEffect(() => {
+        if (data) {
+          const updatedData = data.map(item => ({
+            ...item,
+            
+            tradeReportDate: moment(item.date).toDate(),
+          }));
+          console.log(updatedData);
+          setFilteredData(updatedData);
+          console.log(filteredData);
+          const statistics = calculateStatistics(updatedData);
+          setStatisticsData(statistics);
+          setFetchData(false);
+        }
+      }, [data]);
 
     const calculateStatistics = (data: Market[]) => {
         const totalVolume = data.reduce((acc, item) => acc + item.total, 0);
@@ -160,8 +176,8 @@ const UserInputSection = () => {
                             InputLabelProps={{
                                 shrink: true,
                             }}
-                            value={date ? date.toISOString().split("T")[0] : ""}
-                            onChange={(e) => handleDateChange(e, "start")}
+                            value={date ? date : ""}
+                            onChange={(e) => handleDateChange(e)}
                         />
                     </Grid>
                     <Grid item>
@@ -174,9 +190,11 @@ const UserInputSection = () => {
                             size="small"
                             sx={{ width: 70, fontSize: "12px" }}
                             defaultValue={17}
+                            value={topRecords}
                             InputLabelProps={{
                                 shrink: true,
-                            }}/>
+                            }}
+                            onChange={handleTopTockerChange}/>
                     </Grid>
                 </Grid>
 
@@ -191,9 +209,11 @@ const UserInputSection = () => {
                             size="small"
                             sx={{ width: 105, fontSize: "12px" }}
                             defaultValue={10000000}
+                            value={volumeThreshold}
                             InputLabelProps={{
                                 shrink: true,
-                            }}/>
+                            }}
+                            onChange={handleVolumeChange}/>
                     </Grid>   
                     <Grid item>
                         <Button
@@ -282,7 +302,7 @@ const UserInputSection = () => {
                     hideFooter
                     rowSelection={false}
                     checkboxSelection={false}
-                    getRowId={(row) => row.id}
+                    getRowId={(row) => row.symbol}
                     columns={getMarketTableColumns()}
                     rows={filteredData}
                 />
