@@ -86,10 +86,9 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
   useEffect(() => {
     const allRowIds = filteredRows
       .map((row) => row.tokenName)
-      .filter((id) => id !== undefined);
-  
+      .filter((id): id is string => id !== undefined);
+
     setSelectedRows(allRowIds);
-    
   }, [filteredRows]);
   
   useEffect(() => {
