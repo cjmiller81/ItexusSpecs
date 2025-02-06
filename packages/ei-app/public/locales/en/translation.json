@@ -54,6 +54,7 @@
   "MyWalletsSection": {
     "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
     "Wallets": "Wallets",
+    "WalletsWeb3": "Web3 Wallets",
     "AddCentarlizedWallet": "+ADD CENTRALIZED EXCHANGE/CUSTODIAL WALLET",
     "SelectService": "Select Service"
   },
