@@ -15,9 +15,12 @@ import {
   Dialog,
   DialogContent,
   Grid,
+  Tooltip,
+  FormControlLabel,
 } from "@mui/material";
 import {
   AppAccordionSection,
+  AppNumberInput,
   BasicTable,
   InvestingTableAsset,
   nativeBarSx,
@@ -35,6 +38,7 @@ import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexR
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { Wallet } from "@/models/Wallet/Wallet";
+import CapitalSwitch from "@/components/CapitalSwitch";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -55,6 +59,10 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedExchanges, setSelectedExchanges] = useState<{ [key: number]: string }>({});
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [tokens,setTokens] = useState<number>(0);
+  const [useWalletCapital, setUseWalletCapital] = useState(true)
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [totalAmount,setTotalAmount] = useState<number>(0);
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -213,6 +221,7 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
     }
   };
 
+
   return (
     <AppAccordionSection
   persistKey="IndexResultsSection"
@@ -315,9 +324,9 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
           item
           xs={6.8}
           md={6.9}
-          lg={6.3}
+          lg={7.1}
           spacing={1}
-          sx={{ marginTop: "15px", marginLeft: { lg: "10%", md: "2%", xs: "0%" } }}
+          sx={{ marginTop: "15px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}
         >
           <WalletsTable
             sx={{
@@ -371,14 +380,19 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
       <Grid
         item
         xs={12}
-        md={4.17}
-        lg={3}
+        md={7.64}
+        lg={5.5}
+        container
+        direction="row"
         sx={{
           boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
           borderRadius: "10px",
-          marginRight: { lg: "1.5%", md: 0, xs: 0 },
+          marginLeft: {
+            xs: "0",
+            lg: "auto",
+          },
+          marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
           marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
-          marginLeft: "auto",
         }}
       >
         <Typography
@@ -387,14 +401,54 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
           sx={{
             alignSelf: "flex-start",
             fontSize: "14px",
-            marginBottom: "5px",
-            paddingLeft: "10px",
-            paddingTop: "15px",
+            marginTop: "11px",
+            marginBottom: "-7px",
+            marginLeft: "10px",
+            width: "100%",
           }}
         >
           {t("RebalancedIndexQuantities")}
         </Typography>
-        <Box sx={{ paddingLeft: "15px", paddingRight: "15px", width: "100%" }}>
+        <Grid
+          item
+          xs={12}
+          md={12}
+          lg={4.7}
+          sx={{ marginLeft: "2%",marginTop:"30px" }}
+        >
+          <AppNumberInput
+             label={t("Tokens To Trade")}
+             value={tokens}
+             min={0}
+             onChange={(_) => {}} 
+          />
+
+          <Box sx={{ display: "flex", width: "100%", marginLeft:"-22px" }}>    
+            <Tooltip
+              open={isTooltipOpen}
+              title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
+              placement="top"
+              arrow
+            >
+              <span>
+                <FormControlLabel
+                  control={<CapitalSwitch  onToggle={setUseWalletCapital} selectedWallet={selectedWallet} />}
+                  label=""
+                  labelPlacement="top"
+                  sx={{ flex: 0 }}
+                />
+              </span>
+            </Tooltip>
+          </Box>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={12}
+          lg={6.8}
+          spacing={1}
+          sx={{ marginTop: "25px", marginLeft: { lg: "2%", md: "2%", xs: "0%" } }}
+        >
           <StyledWalletsTable
             sx={tableScrollSx}
             hideFooter
@@ -405,7 +459,7 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
             columns={getIndexResultTableColumns()}
             rows={tableAssets}
           />
-        </Box>
+        </Grid>
       </Grid>
     </Grid>
 
