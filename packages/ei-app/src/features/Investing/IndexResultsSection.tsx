@@ -17,8 +17,6 @@ import {
   Grid,
   Tooltip,
   FormControlLabel,
-  Switch,
-  InputBase,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -27,7 +25,6 @@ import {
   InvestingTableAsset,
   nativeBarSx,
   StyledWalletsTable,
-  toTableTokensModel,
   toTableTokensModels,
   useAppSelector,
 } from "components";
@@ -40,42 +37,20 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
-import { Coins, Wallet } from "lucide-react";
-import { ChainAsset } from "@/models/Wallet/ChainAsset";
-
-interface SelectedWallet {
-  address: string;
-  walletId: string;
-  isValid: boolean;
-  walletName?: string;
-  isPersonal: boolean;
-  chainAssets: ChainAsset[];
-}
+import { Wallet } from "@/models/Wallet/Wallet";
+import CapitalSwitch from "@/components/CapitalSwitch";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
   tableAssets: InvestingTableAsset[];
-  onWalletChange: (wallet: SelectedWallet | null) => void;
-  onCapitalChange: (capital: number) => void;
-  capital: number;
-  onTokensChange: (tokens: number) => void;
-  tokens: number;
+  onWalletChange: (wallet: Wallet | null) => void;
 }
 
-export const IndexResultsSection = ({ 
-  title,
-  tableAssets,
-  onWalletChange,
-  onTokensChange,
-  capital,
-  onCapitalChange,
-  tokens,
-  ...props
-}: Props) => {
+export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...props }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
-  const [selectedWallet, setSelectedWallet] = useState<SelectedWallet | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
@@ -84,6 +59,7 @@ export const IndexResultsSection = ({
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedExchanges, setSelectedExchanges] = useState<{ [key: number]: string }>({});
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [tokens,setTokens] = useState<number>(0);
   const [useWalletCapital, setUseWalletCapital] = useState(true)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount,setTotalAmount] = useState<number>(0);
@@ -95,13 +71,6 @@ export const IndexResultsSection = ({
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
-
-  useEffect(() => {
-      if (!selectedWallet) {
-        setUseWalletCapital(true);
-        onCapitalChange(1000);
-      } 
-    }, [selectedWallet])
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -198,35 +167,7 @@ export const IndexResultsSection = ({
       setPositionRows(uniqueRows);
     }
   }, [filteredRows, tableAssets, selectedWallet, selectedRows]);
-
-  const calculateTotalUsdAmount = (selectedWallet: SelectedWallet): number => {
-    let totalUsdAmount = 0;
-        
-    selectedWallet.chainAssets.forEach(chainAsset => {
-      const tableAssets = toTableTokensModel(chainAsset);
-        
-      tableAssets.forEach(asset => {
-          if (asset.usdAmount) {
-                totalUsdAmount += asset.usdAmount; 
-              }
-            });
-          });
-          return totalUsdAmount;
-        };
-
-  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedWallet) {
-      setIsTooltipOpen(true);
-      event.preventDefault();
-    } else {
-      setUseWalletCapital(event.target.checked); 
-      setIsTooltipOpen(false); 
-        if(useWalletCapital)
-          onCapitalChange(totalAmount)
-        else
-          onCapitalChange(1000)
-        }
-      };  
+  
 
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
     setSelectedRows(newSelection);
@@ -473,98 +414,32 @@ export const IndexResultsSection = ({
           xs={12}
           md={12}
           lg={4.7}
-          sx={{ marginLeft: "2%",marginTop:"20px" }}
+          sx={{ marginLeft: "2%",marginTop:"30px" }}
         >
           <AppNumberInput
              label={t("Tokens To Trade")}
              value={tokens}
              min={0}
-             onChange={(_, value) => onTokensChange(value || 0)}
+             onChange={(_) => {}} 
           />
 
-    <Grid container spacing={2} alignItems="center" sx={{paddingTop:"10px"}}>
-        <Grid item>
-          <Wallet color={useWalletCapital ? "#22c55e" : "gray"} />
-        </Grid>
-        <Grid item>
-          <Typography
-            color={useWalletCapital ? "#22c55e" : "gray"}
-            variant="h6"
-            sx={{
-              alignSelf: "flex-start",
-              fontSize: "14px",
-            }}
-          >
-            {t("WalletCapital", { ns: "IndexModelingSection" })}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Box
-              sx={{
-                mt: 1,
-                p: 1,
-                borderRadius: 2,
-                border: `1px solid ${!useWalletCapital ? "#0ea5e9" : "#333"}`,
-                bgcolor: !useWalletCapital ? "#f0f9ff" : "transparent",
-              }}
+          <Box sx={{ display: "flex", width: "100%", marginLeft:"-22px" }}>    
+            <Tooltip
+              open={isTooltipOpen}
+              title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
+              placement="top"
+              arrow
             >
-              <InputBase
-                value={useWalletCapital=== true ? " " : parseFloat(totalAmount.toFixed(2))}
-                fullWidth
-                sx={{ color: !useWalletCapital ? "black" : "gray", width: "100%" }}
-                disabled={useWalletCapital=== true ? true : false}
-              />
-            </Box>
-      <Grid container justifyContent="center" sx={{ mt: 2 }}>
-        <Tooltip
-          open={isTooltipOpen}
-          title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
-          placement="top"
-          arrow
-          >
-          <span>
-          <FormControlLabel
-            control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
-            label=""
-            labelPlacement="top"
-              sx={{ flex: 0 }}
-          />
-          </span>
-        </Tooltip>
-      </Grid>
-
-      <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
-        <Grid item>
-          <Coins color={!useWalletCapital ? "#0ea5e9" : "gray"} />
-        </Grid>
-        <Grid item>
-          <Typography
-            color={!useWalletCapital ? "#0ea5e9" : "gray"}
-            variant="h6"
-            sx={{
-              alignSelf: "flex-start",
-              fontSize: "14px",
-            }}
-          >
-            {t("DeploymentCapital", { ns: "IndexModelingSection" })}
-          </Typography>
-        </Grid>
-      </Grid>
-      <Box
-              sx={{
-                mt: 1,
-                p: 1,
-                borderRadius: 2,
-                border: `1px solid ${useWalletCapital ? "#22c55e" : "#333"}`,
-                bgcolor: useWalletCapital ? "#f0fdf4" : "transparent",
-              }}
-            >
-              <InputBase
-                value={useWalletCapital=== true ? capital : " "}
-                sx={{ color: useWalletCapital ? "black" : "gray", width: "100%" }}
-                onChange={(event) => onCapitalChange(Number(event.target.value) || 0)}
-              />
-            </Box>     
+              <span>
+                <FormControlLabel
+                  control={<CapitalSwitch  onToggle={setUseWalletCapital} selectedWallet={selectedWallet} />}
+                  label=""
+                  labelPlacement="top"
+                  sx={{ flex: 0 }}
+                />
+              </span>
+            </Tooltip>
+          </Box>
         </Grid>
         <Grid
           item
