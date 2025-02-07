@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Market } from "@/models/Market";
 import { useGetHighVolumeScanDataQuery } from "../highVolumeScanApi";
 import moment from "moment";
+import React from "react";
 
 const tableScrollSx = {
     "& .MuiDataGrid-virtualScroller": {
@@ -15,7 +16,7 @@ const tableScrollSx = {
 };
 
 export const MarketTable = styled(BasicTable)(({ theme }) => ({
-    minHeight: 300,
+    minHeight: 650,
     mt: 2,
     display: "grid",
     "& .MuiDataGrid-virtualScroller": {
@@ -23,7 +24,7 @@ export const MarketTable = styled(BasicTable)(({ theme }) => ({
     },
     "& .MuiDataGrid-main": {
         height: "auto",
-        maxHeight: "400px",
+        maxHeight: "650px",
     },
     "& .MuiDataGrid-footerContainer": {
         height: "40px",
@@ -77,14 +78,23 @@ const UserInputSection = () => {
         avgSellVolume: 0,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data, isFetching } = useGetHighVolumeScanDataQuery(
         { date, volumeThreshold, topRecords },
         { skip: !fetchData }
     );
 
+    const formatNumberWithCommas = (value: number): string => {
+        return value.toLocaleString();
+      };
 
-    const handleVolumeChange = (e) => {
-        setVolumeThreshold(e.target.value);
+      const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = event.target.value.replace(/,/g, ""); 
+        const numericValue = Number(rawValue);
+    
+        if (!isNaN(numericValue)) {
+          setVolumeThreshold(numericValue);
+        }
       };
 
       const handleTopTockerChange = (e) => {
@@ -203,11 +213,10 @@ const UserInputSection = () => {
                     <Grid item>
                         <TextField
                             variant="outlined"
-                            type="number"
+                            type="string"
                             size="small"
                             sx={{ width: 105, fontSize: "12px" }}
-                            defaultValue={10000000}
-                            value={volumeThreshold}
+                            value={formatNumberWithCommas(volumeThreshold)}
                             InputLabelProps={{
                                 shrink: true,
                             }}
