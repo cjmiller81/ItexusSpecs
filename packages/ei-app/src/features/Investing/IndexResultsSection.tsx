@@ -87,6 +87,7 @@ export const IndexResultsSection = ({
   const [useWalletCapital, setUseWalletCapital] = useState(true)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount,setTotalAmount] = useState<number>(0);
+  const [tokensToTrade,settokensToTrade] = useState<number>(0);
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -148,7 +149,7 @@ export const IndexResultsSection = ({
         connection: true,
       }));
   
-      const mergedData = [...rebalancedData, ...walletData];
+      const mergedData = [...rebalancedData.slice(0, tokensToTrade), ...walletData];
   
       const updatedRows = mergedData.map(row => {
         const rebalancedRow = rebalancedData.find(asset => asset.symbol === row.symbol);
@@ -197,7 +198,7 @@ export const IndexResultsSection = ({
   
       setPositionRows(uniqueRows);
     }
-  }, [filteredRows, tableAssets, selectedWallet, selectedRows]);
+  }, [filteredRows, tableAssets, selectedWallet, selectedRows,tokensToTrade]);
 
   const calculateTotalUsdAmount = (selectedWallet: SelectedWallet): number => {
     let totalUsdAmount = 0;
@@ -220,7 +221,8 @@ export const IndexResultsSection = ({
       event.preventDefault();
     } else {
       setUseWalletCapital(event.target.checked); 
-      setIsTooltipOpen(false); 
+      setIsTooltipOpen(false);
+      setTotalAmount(calculateTotalUsdAmount(selectedWallet)); 
         if(useWalletCapital)
           onCapitalChange(totalAmount)
         else
@@ -239,7 +241,6 @@ export const IndexResultsSection = ({
     if (onWalletChange && selectedWallet) {
       onWalletChange(selectedWallet);
     }
-
   };
 
   const handleExchangeChange = (event: React.ChangeEvent<{ value: unknown }>, rowId: string) => {
@@ -477,9 +478,9 @@ export const IndexResultsSection = ({
         >
           <AppNumberInput
              label={t("Tokens To Trade")}
-             value={tokens}
+             value={tokensToTrade}
              min={0}
-             onChange={(_, value) => onTokensChange(value || 0)}
+             onChange={(_, value) => settokensToTrade(value ?? tokensToTrade )}
           />
 
     <Grid container spacing={2} alignItems="center" sx={{paddingTop:"10px"}}>
@@ -582,7 +583,7 @@ export const IndexResultsSection = ({
             apiRef={apiRef}
             getRowId={(x) => x.id}
             columns={getIndexResultTableColumns()}
-            rows={tableAssets}
+            rows={tableAssets.slice(0, tokensToTrade)}
           />
         </Grid>
       </Grid>
