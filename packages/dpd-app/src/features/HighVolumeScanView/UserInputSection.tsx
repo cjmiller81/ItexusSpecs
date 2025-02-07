@@ -15,7 +15,7 @@ const tableScrollSx = {
 };
 
 export const MarketTable = styled(BasicTable)(({ theme }) => ({
-    minHeight: 300,
+    minHeight: 650,
     mt: 2,
     display: "grid",
     "& .MuiDataGrid-virtualScroller": {
@@ -23,7 +23,7 @@ export const MarketTable = styled(BasicTable)(({ theme }) => ({
     },
     "& .MuiDataGrid-main": {
         height: "auto",
-        maxHeight: "400px",
+        maxHeight: "650px",
     },
     "& .MuiDataGrid-footerContainer": {
         height: "40px",
