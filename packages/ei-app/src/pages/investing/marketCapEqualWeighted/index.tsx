@@ -147,17 +147,14 @@ export default function MarketCapEqualWeightedPage() {
 
       <IndexModelingSection
         persistKey="EqualWeightedIndexModeling"
-        onCapitalChange={value => dispatch(setCapital(value))}
         onTokensChange={value => {
           dispatch(setTokens(value));
         }}
         weighted={weight * 100}
-        capital={totalCapital}
         tokens={tokensCount || 0}
         isEqualWeight
         tableAssets={tableData}
         title={t("IndexModeling")}
-        selectedWallet={selectedWallet}
       />
 
       <AppAccordionSection
@@ -194,6 +191,12 @@ export default function MarketCapEqualWeightedPage() {
         title={t("IndexResults")}
         tableAssets={tableData}
         onWalletChange={onWalletChange}
+        onCapitalChange={value => dispatch(setCapital(value))}
+        capital={totalCapital}
+        onTokensChange={value => {
+          dispatch(setTokens(value));
+        }}
+        tokens={tokensCount || 0}
       />
     </Stack>
   );
