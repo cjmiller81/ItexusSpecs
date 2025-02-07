@@ -58,14 +58,18 @@ interface Props extends Omit<AccordionProps, "children"> {
   onWalletChange: (wallet: SelectedWallet | null) => void;
   onCapitalChange: (capital: number) => void;
   capital: number;
+  onTokensChange: (tokens: number) => void;
+  tokens: number;
 }
 
 export const IndexResultsSection = ({ 
   title,
   tableAssets,
   onWalletChange,
+  onTokensChange,
   capital,
   onCapitalChange,
+  tokens,
   ...props
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
@@ -80,7 +84,6 @@ export const IndexResultsSection = ({
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedExchanges, setSelectedExchanges] = useState<{ [key: number]: string }>({});
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-  const [tokens,setTokens] = useState<number>(0);
   const [useWalletCapital, setUseWalletCapital] = useState(true)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount,setTotalAmount] = useState<number>(0);
@@ -217,7 +220,6 @@ export const IndexResultsSection = ({
       event.preventDefault();
     } else {
       setUseWalletCapital(event.target.checked); 
-      setTotalAmount(calculateTotalUsdAmount(selectedWallet));
       setIsTooltipOpen(false); 
         if(useWalletCapital)
           onCapitalChange(totalAmount)
@@ -477,7 +479,7 @@ export const IndexResultsSection = ({
              label={t("Tokens To Trade")}
              value={tokens}
              min={0}
-             onChange={(_) => {}} 
+             onChange={(_, value) => onTokensChange(value || 0)}
           />
 
     <Grid container spacing={2} alignItems="center" sx={{paddingTop:"10px"}}>

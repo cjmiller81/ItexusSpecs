@@ -196,6 +196,10 @@ export default function MarketCapWeightedPage() {
         onWalletChange={onWalletChange}
         onCapitalChange={value => dispatch(setCapital(value))}
         capital={totalCapital}
+        onTokensChange={value => {
+            dispatch(setTokens(value));
+        }}
+        tokens={tokensCount || 0}
       />
     </Stack>
   );
