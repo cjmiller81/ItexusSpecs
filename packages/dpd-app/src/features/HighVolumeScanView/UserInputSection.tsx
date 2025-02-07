@@ -82,9 +82,17 @@ const UserInputSection = () => {
         { skip: !fetchData }
     );
 
+    const formatNumberWithCommas = (value: number): string => {
+        return value.toLocaleString();
+      };
 
-    const handleVolumeChange = (e) => {
-        setVolumeThreshold(e.target.value);
+      const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = event.target.value.replace(/,/g, ""); 
+        const numericValue = Number(rawValue);
+    
+        if (!isNaN(numericValue)) {
+          setVolumeThreshold(numericValue);
+        }
       };
 
       const handleTopTockerChange = (e) => {
@@ -203,11 +211,10 @@ const UserInputSection = () => {
                     <Grid item>
                         <TextField
                             variant="outlined"
-                            type="number"
+                            type="string"
                             size="small"
                             sx={{ width: 105, fontSize: "12px" }}
-                            defaultValue={10000000}
-                            value={volumeThreshold}
+                            value={formatNumberWithCommas(volumeThreshold)}
                             InputLabelProps={{
                                 shrink: true,
                             }}
