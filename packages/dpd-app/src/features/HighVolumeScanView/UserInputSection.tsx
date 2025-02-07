@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Market } from "@/models/Market";
 import { useGetHighVolumeScanDataQuery } from "../highVolumeScanApi";
 import moment from "moment";
+import React from "react";
 
 const tableScrollSx = {
     "& .MuiDataGrid-virtualScroller": {
@@ -77,6 +78,7 @@ const UserInputSection = () => {
         avgSellVolume: 0,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data, isFetching } = useGetHighVolumeScanDataQuery(
         { date, volumeThreshold, topRecords },
         { skip: !fetchData }

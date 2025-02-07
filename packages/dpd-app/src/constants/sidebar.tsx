@@ -41,6 +41,7 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
   ];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
   return [
     {
