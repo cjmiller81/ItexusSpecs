@@ -93,15 +93,25 @@ export const IndexResultsSection = ({
     setSelectedWallet(null);
     onWalletChange(null);
     setFilteredRows([]);
+    setUseWalletCapital(true);
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
 
   useEffect(() => {
       if (!selectedWallet) {
-        setUseWalletCapital(true);
         onCapitalChange(1000);
-      } 
+      }
+      else{
+        const newTotalAmount = calculateTotalUsdAmount(selectedWallet);
+        setTotalAmount(newTotalAmount); 
+        onCapitalChange(newTotalAmount);
+        if (!useWalletCapital) {
+          onCapitalChange(newTotalAmount);
+        } else {
+          onCapitalChange(1000);
+        }
+      }
     }, [selectedWallet])
 
   useEffect(() => {
@@ -127,7 +137,6 @@ export const IndexResultsSection = ({
     const allRowIds = filteredRows
       .map((row) => row.tokenName)
       .filter((id): id is string => id !== undefined);
-
     setSelectedRows(allRowIds);
   }, [filteredRows]);
   
