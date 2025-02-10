@@ -4,12 +4,14 @@ export interface KrakenState {
     isConnected: boolean;
     loading: boolean;
     error: string | null;
+    balance: Record<string, number> | null;
 }
 
 const initialState: KrakenState = {
     isConnected: false,
     loading: false,
     error: null,
+    balance: null,
 };
 
 export const krakenSlice = createSlice({
@@ -25,6 +27,19 @@ export const krakenSlice = createSlice({
             state.isConnected = true;
         },
         connectFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+        },
+
+        fetchBalanceRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        fetchBalanceSuccess(state, action: PayloadAction<Record<string, number>>) {
+            state.loading = false;
+            state.balance = action.payload;
+        },
+        fetchBalanceFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
         },
