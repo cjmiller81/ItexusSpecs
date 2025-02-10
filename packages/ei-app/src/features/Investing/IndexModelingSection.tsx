@@ -3,9 +3,9 @@ import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, FormControlLabel, styled, Switch, TextField, Tooltip, Typography,useTheme } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, styled,useTheme } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
-import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable, toTableTokensModel } from "components";
+import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable, } from "components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
@@ -15,70 +15,24 @@ interface Props extends Omit<AccordionProps, "children"> {
   tableAssets: InvestingTableAsset[];
   isEqualWeight?: boolean;
   onTokensChange: (tokens: number) => void;
-  onCapitalChange: (capital: number) => void;
-  capital: number;
   tokens: number;
   weighted: number;
   persistKey: string;
-  selectedWallet: Wallet | null;
 }
 
 export const IndexModelingSection = ({
   tokens,
-  capital,
   weighted,
-  onCapitalChange,
   onTokensChange,
   title,
   tableAssets,
   isEqualWeight,
   persistKey,
-  selectedWallet,
   ...props
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
-  const [useWalletCapital, setUseWalletCapital] = useState(true)
-  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
-  const [totalAmount,setTotalAmount] = useState<number>(0);
 
-  useEffect(() => {
-    if (!selectedWallet) {
-      setUseWalletCapital(true);
-      onCapitalChange(1000);
-    } 
-  }, [selectedWallet])
-
-  const calculateTotalUsdAmount = (selectedWallet: Wallet): number => {
-    let totalUsdAmount = 0;
-  
-    selectedWallet.chainAssets.forEach(chainAsset => {
-      const tableAssets = toTableTokensModel(chainAsset);
-  
-      tableAssets.forEach(asset => {
-        if (asset.usdAmount) {
-          totalUsdAmount += asset.usdAmount; 
-        }
-      });
-    });
-  
-    return totalUsdAmount;
-  };
-
-  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedWallet) {
-      setIsTooltipOpen(true);
-      event.preventDefault();
-    } else {
-      setUseWalletCapital(event.target.checked); 
-      setTotalAmount(calculateTotalUsdAmount(selectedWallet));
-      setIsTooltipOpen(false); 
-        if(useWalletCapital)
-          onCapitalChange(totalAmount)
-        else
-          onCapitalChange(1000)
-    }
-  };
 
   const theme = useTheme();
   const onExport = () => {
@@ -177,52 +131,6 @@ export const IndexModelingSection = ({
               maxDecimals={2}
             />
           )}
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-            <Typography variant="body1" sx={{ textAlign: "center", flex: 1 }}>
-              {t("WalletCapital", { ns: "IndexModelingSection" })}
-            </Typography>
-            
-            <Tooltip
-              open={isTooltipOpen}
-              title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
-              placement="top"
-              arrow
-            >
-              <span>
-                <FormControlLabel
-                  control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
-                  label=""
-                  labelPlacement="top"
-                  sx={{ flex: 0 }}
-                />
-              </span>
-            </Tooltip>
-            
-            <Typography variant="body1" sx={{ paddingRight: "10px", textAlign: "center", flex: 1 }}>
-              {t("DeploymentCapital", { ns: "IndexModelingSection" })}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-            <TextField
-              variant="outlined"
-              fullWidth
-              sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
-              value={useWalletCapital=== true ? " " : parseFloat(totalAmount.toFixed(2))}
-              inputProps={{ style: { padding: "13px" } }}
-              disabled={useWalletCapital=== true ? true : false}
-            />
-            
-          <TextField
-              variant="outlined"
-              fullWidth
-              sx={{ width: "40%", height: "10px",marginTop:"5.4px" }}
-              value={useWalletCapital=== true ? capital : " "}
-              inputProps={{ style: { padding: "13px" } }}
-              onChange={(event) => onCapitalChange(Number(event.target.value) || 0)}
-              disabled={useWalletCapital=== true ? false : true}
-            />
-          </Box>
         </LeftContainer>
         <RightContainer>
           <StyledWalletsTable
