@@ -17,8 +17,8 @@ import {
   Grid,
   Tooltip,
   FormControlLabel,
-  Switch,
   InputBase,
+  Switch,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -40,8 +40,8 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
-import { Coins, Wallet } from "lucide-react";
 import { ChainAsset } from "@/models/Wallet/ChainAsset";
+import { Coins, Wallet, } from "lucide-react";
 
 interface SelectedWallet {
   address: string;
@@ -62,16 +62,14 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
 }
 
-export const IndexResultsSection = ({ 
-  title,
+export const IndexResultsSection = ({ title,
   tableAssets,
   onWalletChange,
   onTokensChange,
   capital,
   onCapitalChange,
   tokens,
-  ...props
-}: Props) => {
+  ...props }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
@@ -98,7 +96,7 @@ export const IndexResultsSection = ({
 
   const { wallets } = useAppSelector(state => state.wallets);
 
-  useEffect(() => {
+    useEffect(() => {
       if (!selectedWallet) {
         onCapitalChange(1000);
       }
@@ -113,6 +111,7 @@ export const IndexResultsSection = ({
         }
       }
     }, [selectedWallet])
+
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -489,7 +488,7 @@ export const IndexResultsSection = ({
           xs={12}
           md={12}
           lg={4.7}
-          sx={{ marginLeft: "2%",marginTop:"20px" }}
+          sx={{ marginLeft: "2%",marginTop:"30px" }}
         >
           <AppNumberInput
              label={t("Tokens To Trade")}

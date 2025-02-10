@@ -218,7 +218,7 @@ export const MyWalletsSectionForPage = ({
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
-        <PageTitle sx={{ mt: 4 }}>{t("Wallets")}</PageTitle>
+        <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
       <Box sx={{ width: "100%", overflow: "auto" }}>
