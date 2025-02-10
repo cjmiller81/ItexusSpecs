@@ -150,13 +150,15 @@ export const IndexResultsSection = ({
         connection: true,
       }));
   
-      const walletData = filteredRows.map(({ tokenName, balance }) => ({
-        id: tokenName ? tokenName.toLowerCase() : "",
-        symbol: tokenName ? tokenName.toLowerCase() : "",
-        qty: balance,
-        action: "",
-        connection: true,
-      }));
+      const walletData = filteredRows
+        .filter(row => selectedRows.includes(row.tokenName || ""))
+        .map(({ tokenName, balance }) => ({
+          id: tokenName ? tokenName.toLowerCase() : "default-id",
+          symbol: tokenName ? tokenName.toLowerCase() : "",
+          qty: balance,
+          action: "",
+          connection: true,
+        }));
   
       const mergedData = [...rebalancedData.slice(0, tokensToTrade), ...walletData];
   
@@ -191,20 +193,24 @@ export const IndexResultsSection = ({
         if (selectedRows.length > 0) {
           uniqueRows = Array.from(new Map(
             updatedRows
-              .filter(row => selectedRows.includes(row.symbol) || rebalancedData.some(reb => reb.symbol === row.symbol))
+              .filter(row => selectedRows.includes(row.symbol) || rebalancedData.slice(0, tokensToTrade).some(reb => reb.symbol === row.symbol))
               .map(item => [item.id, item])
           ).values());
-        } else {
-          uniqueRows = Array.from(new Map(
-            updatedRows
-              .filter(row => rebalancedData.some(reb => reb.symbol === row.symbol))
-              .map(item => [item.id, item])
-          ).values());
+        } 
+        else {
+          uniqueRows = rebalancedData.slice(0, tokensToTrade).map(walletRow => {
+            const qty = walletRow.qty;
+            return {
+              ...walletRow,
+              qty,
+              action: qty >= 0 ? "Buy" : "Sell"
+            };
+          });
         }
-      } else {
+      } 
+      else {
         uniqueRows = Array.from(new Map(updatedRows.map(item => [item.id, item])).values());
       }
-  
       setPositionRows(uniqueRows);
     }
   }, [filteredRows, tableAssets, selectedWallet, selectedRows,tokensToTrade]);
