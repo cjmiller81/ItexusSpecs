@@ -17,6 +17,8 @@ import {
   Grid,
   Tooltip,
   FormControlLabel,
+  InputBase,
+  Switch,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -25,6 +27,7 @@ import {
   InvestingTableAsset,
   nativeBarSx,
   StyledWalletsTable,
+  toTableTokensModel,
   toTableTokensModels,
   useAppSelector,
 } from "components";
@@ -37,20 +40,40 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
-import { Wallet } from "@/models/Wallet/Wallet";
-import CapitalSwitch from "@/components/CapitalSwitch";
+import { ChainAsset } from "@/models/Wallet/ChainAsset";
+import { Coins, Wallet, } from "lucide-react";
+
+interface SelectedWallet {
+  address: string;
+  walletId: string;
+  isValid: boolean;
+  walletName?: string;
+  isPersonal: boolean;
+  chainAssets: ChainAsset[];
+}
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
   tableAssets: InvestingTableAsset[];
-  onWalletChange: (wallet: Wallet | null) => void;
+  onWalletChange: (wallet: SelectedWallet | null) => void;
+  onCapitalChange: (capital: number) => void;
+  capital: number;
+  onTokensChange: (tokens: number) => void;
+  tokens: number;
 }
 
-export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...props }: Props) => {
+export const IndexResultsSection = ({ title,
+  tableAssets,
+  onWalletChange,
+  onTokensChange,
+  capital,
+  onCapitalChange,
+  tokens,
+  ...props }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
-  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<SelectedWallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
@@ -59,18 +82,36 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedExchanges, setSelectedExchanges] = useState<{ [key: number]: string }>({});
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-  const [tokens,setTokens] = useState<number>(0);
   const [useWalletCapital, setUseWalletCapital] = useState(true)
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount,setTotalAmount] = useState<number>(0);
+  const [tokensToTrade,settokensToTrade] = useState<number>(0);
 
   const handleClearTable = () => {
     setSelectedWallet(null);
     onWalletChange(null);
     setFilteredRows([]);
+    setUseWalletCapital(true);
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
+
+    useEffect(() => {
+      if (!selectedWallet) {
+        onCapitalChange(1000);
+      }
+      else{
+        const newTotalAmount = calculateTotalUsdAmount(selectedWallet);
+        setTotalAmount(newTotalAmount); 
+        onCapitalChange(newTotalAmount);
+        if (!useWalletCapital) {
+          onCapitalChange(newTotalAmount);
+        } else {
+          onCapitalChange(1000);
+        }
+      }
+    }, [selectedWallet])
+
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -95,7 +136,6 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
     const allRowIds = filteredRows
       .map((row) => row.tokenName)
       .filter((id): id is string => id !== undefined);
-
     setSelectedRows(allRowIds);
   }, [filteredRows]);
   
@@ -109,15 +149,17 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
         connection: true,
       }));
   
-      const walletData = filteredRows.map(({ tokenName, balance }) => ({
-        id: tokenName ? tokenName.toLowerCase() : "",
-        symbol: tokenName ? tokenName.toLowerCase() : "",
-        qty: balance,
-        action: "",
-        connection: true,
-      }));
+      const walletData = filteredRows
+        .filter(row => selectedRows.includes(row.tokenName || ""))
+        .map(({ tokenName, balance }) => ({
+          id: tokenName ? tokenName.toLowerCase() : "default-id",
+          symbol: tokenName ? tokenName.toLowerCase() : "",
+          qty: balance,
+          action: "",
+          connection: true,
+        }));
   
-      const mergedData = [...rebalancedData, ...walletData];
+      const mergedData = [...rebalancedData.slice(0, tokensToTrade), ...walletData];
   
       const updatedRows = mergedData.map(row => {
         const rebalancedRow = rebalancedData.find(asset => asset.symbol === row.symbol);
@@ -150,24 +192,57 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
         if (selectedRows.length > 0) {
           uniqueRows = Array.from(new Map(
             updatedRows
-              .filter(row => selectedRows.includes(row.symbol) || rebalancedData.some(reb => reb.symbol === row.symbol))
+              .filter(row => selectedRows.includes(row.symbol) || rebalancedData.slice(0, tokensToTrade).some(reb => reb.symbol === row.symbol))
               .map(item => [item.id, item])
           ).values());
-        } else {
-          uniqueRows = Array.from(new Map(
-            updatedRows
-              .filter(row => rebalancedData.some(reb => reb.symbol === row.symbol))
-              .map(item => [item.id, item])
-          ).values());
+        } 
+        else {
+          uniqueRows = rebalancedData.slice(0, tokensToTrade).map(walletRow => {
+            const qty = walletRow.qty;
+            return {
+              ...walletRow,
+              qty,
+              action: qty >= 0 ? "Buy" : "Sell"
+            };
+          });
         }
-      } else {
+      } 
+      else {
         uniqueRows = Array.from(new Map(updatedRows.map(item => [item.id, item])).values());
       }
-  
       setPositionRows(uniqueRows);
     }
-  }, [filteredRows, tableAssets, selectedWallet, selectedRows]);
-  
+  }, [filteredRows, tableAssets, selectedWallet, selectedRows,tokensToTrade]);
+
+  const calculateTotalUsdAmount = (selectedWallet: SelectedWallet): number => {
+    let totalUsdAmount = 0;
+        
+    selectedWallet.chainAssets.forEach(chainAsset => {
+      const tableAssets = toTableTokensModel(chainAsset);
+        
+      tableAssets.forEach(asset => {
+          if (asset.usdAmount) {
+                totalUsdAmount += asset.usdAmount; 
+              }
+            });
+          });
+          return totalUsdAmount;
+        };
+
+  const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedWallet) {
+      setIsTooltipOpen(true);
+      event.preventDefault();
+    } else {
+      setUseWalletCapital(event.target.checked); 
+      setIsTooltipOpen(false);
+      setTotalAmount(calculateTotalUsdAmount(selectedWallet)); 
+        if(useWalletCapital)
+          onCapitalChange(totalAmount)
+        else
+          onCapitalChange(1000)
+        }
+      };  
 
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
     setSelectedRows(newSelection);
@@ -180,7 +255,6 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
     if (onWalletChange && selectedWallet) {
       onWalletChange(selectedWallet);
     }
-
   };
 
   const handleExchangeChange = (event: React.ChangeEvent<{ value: unknown }>, rowId: string) => {
@@ -418,28 +492,94 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
         >
           <AppNumberInput
              label={t("Tokens To Trade")}
-             value={tokens}
+             value={tokensToTrade}
              min={0}
-             onChange={(_) => {}} 
+             onChange={(_, value) => settokensToTrade(value ?? tokensToTrade )}
           />
 
-          <Box sx={{ display: "flex", width: "100%", marginLeft:"-22px" }}>    
-            <Tooltip
-              open={isTooltipOpen}
-              title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
-              placement="top"
-              arrow
+    <Grid container spacing={2} alignItems="center" sx={{paddingTop:"10px"}}>
+        <Grid item>
+          <Wallet color={useWalletCapital ? "#22c55e" : "gray"} />
+        </Grid>
+        <Grid item>
+          <Typography
+            color={useWalletCapital ? "#22c55e" : "gray"}
+            variant="h6"
+            sx={{
+              alignSelf: "flex-start",
+              fontSize: "14px",
+            }}
+          >
+            {t("WalletCapital", { ns: "IndexModelingSection" })}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Box
+              sx={{
+                mt: 1,
+                p: 1,
+                borderRadius: 2,
+                border: `1px solid ${!useWalletCapital ? "#0ea5e9" : "#333"}`,
+                bgcolor: !useWalletCapital ? "#f0f9ff" : "transparent",
+              }}
             >
-              <span>
-                <FormControlLabel
-                  control={<CapitalSwitch  onToggle={setUseWalletCapital} selectedWallet={selectedWallet} />}
-                  label=""
-                  labelPlacement="top"
-                  sx={{ flex: 0 }}
-                />
-              </span>
-            </Tooltip>
-          </Box>
+              <InputBase
+                value={useWalletCapital=== true ? " " : parseFloat(totalAmount.toFixed(2))}
+                fullWidth
+                sx={{ color: !useWalletCapital ? "black" : "gray", width: "100%" }}
+                disabled={useWalletCapital=== true ? true : false}
+              />
+            </Box>
+      <Grid container justifyContent="center" sx={{ mt: 2 }}>
+        <Tooltip
+          open={isTooltipOpen}
+          title={t("SelectSavedWallet", { ns: "IndexModelingSection" } )}
+          placement="top"
+          arrow
+          >
+          <span>
+          <FormControlLabel
+            control={<Switch checked={useWalletCapital} onChange={handleSwitchChange} />}
+            label=""
+            labelPlacement="top"
+              sx={{ flex: 0 }}
+          />
+          </span>
+        </Tooltip>
+      </Grid>
+
+      <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
+        <Grid item>
+          <Coins color={!useWalletCapital ? "#0ea5e9" : "gray"} />
+        </Grid>
+        <Grid item>
+          <Typography
+            color={!useWalletCapital ? "#0ea5e9" : "gray"}
+            variant="h6"
+            sx={{
+              alignSelf: "flex-start",
+              fontSize: "14px",
+            }}
+          >
+            {t("DeploymentCapital", { ns: "IndexModelingSection" })}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Box
+              sx={{
+                mt: 1,
+                p: 1,
+                borderRadius: 2,
+                border: `1px solid ${useWalletCapital ? "#22c55e" : "#333"}`,
+                bgcolor: useWalletCapital ? "#f0fdf4" : "transparent",
+              }}
+            >
+              <InputBase
+                value={useWalletCapital=== true ? capital : " "}
+                sx={{ color: useWalletCapital ? "black" : "gray", width: "100%" }}
+                onChange={(event) => onCapitalChange(Number(event.target.value) || 0)}
+              />
+            </Box>     
         </Grid>
         <Grid
           item
@@ -457,7 +597,7 @@ export const IndexResultsSection = ({ title, tableAssets, onWalletChange, ...pro
             apiRef={apiRef}
             getRowId={(x) => x.id}
             columns={getIndexResultTableColumns()}
-            rows={tableAssets}
+            rows={tableAssets.slice(0, tokensToTrade)}
           />
         </Grid>
       </Grid>
