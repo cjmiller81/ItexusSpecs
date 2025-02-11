@@ -129,8 +129,8 @@ export default function MarketCapWeightedPage() {
   };
 
   const onWalletChange = (wallet: Wallet | null) => {
-      setSelectedWallet(wallet); 
-    };
+    setSelectedWallet(wallet);
+  };
 
   return (
     <Stack gap={2}>
@@ -161,11 +161,13 @@ export default function MarketCapWeightedPage() {
       />
 
       <AppAccordionSection
+        className="index-modeling-section-container"
         persistKey="WeightedHistoricalWalletsWorth"
         defaultExpanded
         title={t("WeightedChartTitle")}
         tooltip={t("ToggleView", { ns: "Common" })}>
         <HistoricalWalletsWorth
+          className="index-modeling-section-container"
           onFetchPage={fetchLookupPage}
           toDate={endDate}
           sx={{ mt: 4, width: "100%" }}
@@ -197,7 +199,7 @@ export default function MarketCapWeightedPage() {
         onCapitalChange={value => dispatch(setCapital(value))}
         capital={totalCapital}
         onTokensChange={value => {
-            dispatch(setTokens(value));
+          dispatch(setTokens(value));
         }}
         tokens={tokensCount || 0}
       />

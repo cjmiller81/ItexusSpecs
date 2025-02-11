@@ -10,6 +10,8 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700);
 @import url(https://fonts.googleapis.com/earlyaccess/notokufiarabic.css);
 
+
+/*-----------   STYLES FOR THE LIGHT THEME CARDS BACKGROUND   ----------*/
 .ei-app #__next {
     background-color: #aaaaaa !important;
 }
@@ -34,19 +36,36 @@
     background-color: #aaaaaa !important;
 }
 
+.index-modeling-section-container {
+    background-color: #aaaaaa;
 
-.dx-validationsummary-item {
-    cursor: pointer;
-}
+    .MuiAccordion-root {
+        background-color: #aaaaaa;
+    }
 
-.dx-invalid-message.dx-overlay {
-    position: relative;
-}
+    .MuiAccordionDetails-root {
+        background-color: #aaaaaa;
+    }
 
-.dx-invalid-message.dx-overlay-wrapper {
-    width: 100%;
-    visibility: hidden;
-    pointer-events: none;
+    .MuiAccordionDetails-root > .MuiBox-root {
+        background-color: #aaaaaa;
+    }
+
+    .MuiAccordionDetails-root .MuiTypography-root {
+        background-color: #aaaaaa;
+    }
+
+    .MuiAccordionDetails-root .MuiFormControl-root {
+        background-color: #aaaaaa;
+    }
+
+    .MuiDataGrid-root {
+        background-color: #aaaaaa;
+    }
+
+    .base-NumberInput-root {
+        background-color: #aaaaaa;
+    }
 }
 
 
@@ -70,6 +89,24 @@
 
 .base-NumberInput-root {
     background-color: #aaaaaa !important;
+}
+
+.index-modeling-section-container .MuiDataGrid-cell {
+    background-color: inherit !important;
+}
+
+.dx-validationsummary-item {
+    cursor: pointer;
+}
+
+.dx-invalid-message.dx-overlay {
+    position: relative;
+}
+
+.dx-invalid-message.dx-overlay-wrapper {
+    width: 100%;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 
