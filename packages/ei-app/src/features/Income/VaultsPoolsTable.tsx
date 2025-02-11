@@ -45,11 +45,11 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   );
   const dispatch = useAppDispatch();
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
-  
+
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
-  const filterRef = useRef<CustomFilterBuilderRef>(null);  
-    
+  const filterRef = useRef<CustomFilterBuilderRef>(null);
+
   const filterPanelText = useRef<Element | null>(null);
 
   useEffect(() => {
@@ -61,18 +61,17 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
 
     // Send new information to filter builder
     filterRef.current?.onUpdateFilter(filter || []);
-    
+
     if (!filter) {
       datagrid.current?.instance.clearFilter();
-    }
-    else {
+    } else {
       datagrid.current?.instance.filter(filter);
     }
 
     if (isExternalFiltering) {
       setCurrentFilter(filter as object[]);
     }
-  }
+  };
 
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
@@ -121,8 +120,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         filterValue={currentFilterRef.current || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}
-        >
+        onFilterValueChange={onApplyFilter}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}

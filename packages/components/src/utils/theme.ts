@@ -83,10 +83,32 @@ const lightPalette: PaletteOptions = {
     light: "#FDE8E6",
     main: "#F64336",
   },
+  background: {
+    paper: "#e2e2e2",
+    default: "#F5F5F5",
+  },
+};
+
+const lightEIPalette: PaletteOptions = {
+  primary: {
+    main: "#03A9F4",
+    light: "#CDEFFD",
+  },
+  success: {
+    main: "#8BC34A",
+    light: "#DFF5D7",
+  },
+  error: {
+    light: "#FAE5E3",
+    main: "#F44336",
+  },
+  background: {
+    paper: "#FAFAFA",
+    default: "#e2e2e2",
+  },
 };
 
 const typographyOverrides: TypographyOptions = {
-  //fontFamily: "font-family: Roboto, RobotoFallback, Noto Kufi Arabic, Helvetica, Arial, sans-serif;",
   fontWeightBold: 700,
   fontWeightMedium: 500,
   fontWeightRegular: 400,
@@ -122,19 +144,19 @@ export const getEIAppTheme = (mode: PaletteMode) => {
   return getTheme(mode, "EI");
 };
 
-const getTheme = (mode: PaletteMode, darkTheme: string): Theme => {
-  let dark;
+const getTheme = (mode: PaletteMode, themeType: string): Theme => {
+  let palette: PaletteOptions;
 
-  if (darkTheme === "EI") {
-    dark = darkEIPalette;
+  if (mode === "dark") {
+    palette = themeType === "EI" ? darkEIPalette : darkPalette;
   } else {
-    dark = darkPalette;
+    palette = themeType === "EI" ? lightEIPalette : lightPalette;
   }
 
   const commonTheme = createTheme({
     palette: {
       mode,
-      ...(mode === "light" ? lightPalette : dark),
+      ...palette,
     },
     typography: typographyOverrides,
   });
