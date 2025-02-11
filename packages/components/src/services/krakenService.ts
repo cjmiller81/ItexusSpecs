@@ -15,4 +15,16 @@ export const krakenApi = {
             throw new Error("Connection to Kraken failed");
         }
     },
+
+    getAccountBalance: async (): Promise<Record<string, number>> => {
+        try {
+            const response = await appAxios.get("/api/kraken/account-balance", {
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Failed to fetch Kraken account balance:", error);
+            throw new Error("Fetching Kraken account balance failed");
+        }
+    },
 };
