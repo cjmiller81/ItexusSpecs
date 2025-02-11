@@ -20,13 +20,25 @@ export const ExpandableChainRow = (props: any) => {
         setLoading(true);
         try {
             const response = await krakenApi.getAccountBalance();
-            setBalanceData(Object.entries(response).map(([chainName, balance]) => ({ chainName, balance })));
+    
+            if (response && typeof response === "object" && !Array.isArray(response)) {
+                const formattedData = Object.entries(response).map(([chainName, balance]) => ({
+                    asset: chainName,
+                    balance,
+                }));
+    
+                setBalanceData(formattedData);
+            } else {
+                console.error("Unexpected response format:", response);
+                setBalanceData([]);
+            }
         } catch (error) {
             console.error("Failed to fetch Kraken balance:", error);
         } finally {
             setLoading(false);
         }
     };
+    
 
     return (
         <Box sx={{ overflowX: "auto" }}>
@@ -58,7 +70,7 @@ export const ExpandableChainRow = (props: any) => {
                             }}
                             rowSelection={false}
                             checkboxSelection={false}
-                            getRowId={(x) => x.chainName + x.balance}
+                            getRowId={(x) => x.asset}
                             columnHeaderHeight={40}
                             rowHeight={20}
                             columns={getChainNamesColumns()}
