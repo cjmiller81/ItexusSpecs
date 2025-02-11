@@ -3,9 +3,9 @@ import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, styled,useTheme } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, styled, useTheme } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
-import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable, } from "components";
+import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
@@ -32,7 +32,6 @@ export const IndexModelingSection = ({
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
-
 
   const theme = useTheme();
   const onExport = () => {
@@ -110,6 +109,7 @@ export const IndexModelingSection = ({
 
   return (
     <AppAccordionSection
+      className="index-modeling-section-container"
       persistKey={persistKey}
       defaultExpanded
       sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}

@@ -16,6 +16,7 @@ import moment from "moment";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LookupPageSize } from "../Common/fetchLookupPage";
+
 export type Period = "daily" | "weekly" | "monthly";
 
 interface Props extends BoxProps {
@@ -41,7 +42,9 @@ interface Props extends BoxProps {
   onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
   // eslint-disable-next-line no-undef
   chartSeries?: ApexAxisChartSeries | null;
+  className?: string;
 }
+
 export const HistoricalWalletsWorth = ({
   title,
   period,
@@ -64,6 +67,7 @@ export const HistoricalWalletsWorth = ({
   chartSeries,
   onFetchPage,
   sumbitButtonText,
+  className,
   ...props
 }: Props) => {
   const { t } = useTranslation("HistoricalWalletsWorth");
@@ -91,7 +95,9 @@ export const HistoricalWalletsWorth = ({
     if (onDatesValidChanged) onDatesValidChanged(isValid);
   };
   return (
-    <StyledWalletWorthContainer {...props}>
+    <StyledWalletWorthContainer
+      {...props}
+      className="index-modeling-section-container">
       <StyledWalletWorthMenuContainer>
         <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
         <StyledWalletWorthMenu>

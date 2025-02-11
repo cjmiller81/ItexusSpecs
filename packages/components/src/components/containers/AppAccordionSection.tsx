@@ -75,6 +75,7 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
 
   return (
     <StatePersistedAccordion
+      className="index-modeling-section-container"
       sx={{
         ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
         pointerEvents: "auto",
