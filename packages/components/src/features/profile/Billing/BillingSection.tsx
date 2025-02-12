@@ -34,8 +34,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     dispatch(getBillingAsync()); 
   }, [dispatch]);
 
-  const { billing, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
+  const { billing, defaultSourceId, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
 
+  useEffect(() => {
+    if (defaultSourceId) {
+      setCards([
+        {
+          number: `**** **** **** ${defaultSourceId.slice(-4)}`, 
+          expiry: "N/A",
+          cvc: "•••",
+          isDefault: true,
+        },
+      ]);
+    }
+  }, [defaultSourceId]);
+  
   const handleCreateBilling = async (index:number) => {
     setSelectedPlanIndex(index);
     try {
@@ -174,12 +187,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           title={t("PaymentMethods")}>
           {cards.map((card, index) => (
             <PaymentCardTableRow
-              onEdit={() => setCardToEditIndex(index)}
-              onDelete={() => setCardToDeleteIndex(index)}
-              onSetDefault={() => onSetDefault(index)}
-              key={index}
-              isDefault={card.isDefault}
-              number={card.number}
+            key={index}
+            isDefault={card.isDefault}
+            number={card.number}
+            onEdit={() => setCardToEditIndex(index)}
+            onDelete={() => setCardToDeleteIndex(index)}
+            onSetDefault={() => onSetDefault(index)}
               sx={{
                 borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
                 borderWidth: "1px",

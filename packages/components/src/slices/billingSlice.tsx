@@ -11,6 +11,7 @@ export interface BillingState {
   loading: boolean;
   error: string | null;
   subscription: Subscription | null;
+  defaultSourceId: string | null;
 }
 
 const initialState: BillingState = {
@@ -19,6 +20,7 @@ const initialState: BillingState = {
   loading: false,
   error: null,
   subscription: null,
+  defaultSourceId:null,
 };
 
 
@@ -38,16 +40,16 @@ export const fetchPlansAsync = createAsyncThunk<PlanModel[], void, { rejectValue
 );
 
 export const getBillingAsync = createAsyncThunk<Billing, void, { rejectValue: string }>(
-  "billing/getBilling",
+  "billing/fetchBilling",
   async (_, { rejectWithValue }) => {
     try {
       const billing = await billingService.getBilling();
       return billing;
     } catch (error) {
       if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data?.message || "Failed to fetch billing details");
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch billing");
       }
-      return rejectWithValue("Failed to fetch billing details");
+      return rejectWithValue("Failed to fetch billing");
     }
   }
 );
@@ -140,6 +142,7 @@ export const billingSlice = createSlice({
       .addCase(getBillingAsync.fulfilled, (state, action: PayloadAction<Billing>) => {
         state.loading = false;
         state.billing = action.payload;
+        state.defaultSourceId = action.payload.defaultSourceId || null;
       })
       .addCase(getBillingAsync.rejected, (state, action) => {
         state.loading = false;
