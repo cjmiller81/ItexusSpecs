@@ -24,10 +24,8 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
   
   const { nickname, unitAmount, recurring, active } = plan;
 
-  // Преобразуем цену в формат отображения (например, из центов в доллары)
   const price = unitAmount ? unitAmount / 100 : undefined;
 
-  // Преобразуем данные из recurring в формат, который отображается
   const plans: PermissionItem[] = [
     {
       permission: "Usage Type",
