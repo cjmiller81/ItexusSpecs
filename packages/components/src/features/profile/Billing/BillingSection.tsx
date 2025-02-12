@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, createBillingAsync, fetchPlansAsync, useAppDispatch } from "../../../slices";
+import { addMessage, createBillingAsync, createSubscriptionAsync, fetchPlansAsync, getBillingAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 
 import { ProfileContainer } from "../ProfileContainer";
@@ -31,6 +31,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
   useEffect(() => {
     dispatch(fetchPlansAsync());
+    dispatch(getBillingAsync()); 
   }, [dispatch]);
 
   const { billing, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
@@ -52,6 +53,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       })),
     );
   };
+
+  const handleCreateSubscription = async (PriceId: string,index:number) => {
+    if (cards.length === 0) {
+      dispatch(addMessage(t("SubscriptionError")));
+      return;
+    }
+  
+    setSelectedPlanIndex(index);
+    // try {
+    //   await dispatch(createSubscriptionAsync(PriceId)).unwrap();
+    // } catch (err) {
+    //   console.error(("SubscriptionCreationFailed"), err);
+    // }
+  };
+  
 
   const onAddCard = (card: CardModel) => {
     setCards(prev => [
@@ -130,21 +146,19 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         <PlansContainer>
         <Grid item container spacing={3}>
         <Grid item container spacing={3}>
-          {plans
-            .slice()
-            .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
-            .map((plan, index) => (
-              <BillingPlan
-                onSelectPlan={() => handleCreateBilling(index)}
-                isSelected={index === selectedPlanIndex}
-                key={plan.id || index}
-                plan={plan}
-              />
-            ))}
+        {plans
+          .slice()
+          .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
+          .map((plan, index) => (
+            <BillingPlan
+              onSelectPlan={() => handleCreateSubscription(plan.id,index)}
+              isSelected={index === selectedPlanIndex}
+              key={plan.id || index}
+              plan={plan}
+            />
+          ))}
         </Grid>
         </Grid>
-
-
         </PlansContainer>
 
         <ProfileContainer

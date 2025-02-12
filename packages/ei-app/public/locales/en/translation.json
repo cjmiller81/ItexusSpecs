@@ -344,7 +344,9 @@
     "DeleteCardDialogContent": "Are you sure you want to delete this card?",
     "DeleteCardDialogTitle": "Delete Card",
     "CardDeletedMessage": "Card was successfully deleted",
-    "CardEditedMessage": "Card was successfully edited"
+    "CardEditedMessage": "Card was successfully edited",
+    "SubscriptionCreationFailed": "Subscription creation failed:",
+    "SubscriptionError": "This customer has no attached payment source or default payment method. Please consider adding a default payment method"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",
