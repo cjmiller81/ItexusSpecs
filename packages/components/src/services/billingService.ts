@@ -12,7 +12,6 @@ interface BillingRequest {
 }
 
 export const billingService = {
-    // Получаем список планов
     getPlans: async (): Promise<PlanModel[]> => {
         try {
             const response = await appAxios.get("/api/billing/plans", {
@@ -25,34 +24,28 @@ export const billingService = {
         }
     },
 
-    // Создаем биллинг для пользователя
     createBilling: async (): Promise<Billing> => {
         try {
-            // Получаем данные пользователя из сессии Ory
             const { data: session } = await ory.toSession();
 
             if (!session || !session.identity) {
                 throw new Error("User is not authenticated or session is invalid");
             }
 
-            // Извлекаем данные пользователя
             const UserId = session.identity.id;
             const Email = session.identity.traits.email;
 
-            // Формируем запрос
             const requestData: BillingRequest = {
                 UserId: UserId,
                 Email: Email,
             };
 
-            // Отправляем POST-запрос с данными
             const response = await appAxios.post("/api/billing", requestData, {
-                withCredentials: true, // Чтобы передавать куки, если требуется
+                withCredentials: true,
             });
 
             return response.data;
         } catch (error) {
-            // Обработка ошибок
             console.error("Failed to create billing:", error);
             if (error instanceof AxiosError) {
                 throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
