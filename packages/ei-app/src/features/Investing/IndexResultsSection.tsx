@@ -506,11 +506,11 @@ export const IndexResultsSection = ({
                 alignItems="center"
                 sx={{ paddingTop: "10px" }}>
                 <Grid item>
-                  <Wallet color={useWalletCapital ? "#22c55e" : "gray"} />
+                  <Wallet color={useWalletCapital ? "gray" : "#0ea5e9"} />
                 </Grid>
                 <Grid item>
                   <Typography
-                    color={useWalletCapital ? "#22c55e" : "gray"}
+                    color={useWalletCapital ? "gray" : "#0ea5e9"}
                     variant="h6"
                     sx={{
                       alignSelf: "flex-start",
@@ -566,11 +566,11 @@ export const IndexResultsSection = ({
                 alignItems="center"
                 sx={{ mt: 2 }}>
                 <Grid item>
-                  <Coins color={!useWalletCapital ? "#0ea5e9" : "gray"} />
+                  <Coins color={!useWalletCapital ? "gray" : "#0ea5e9"} />
                 </Grid>
                 <Grid item>
                   <Typography
-                    color={!useWalletCapital ? "#0ea5e9" : "gray"}
+                    color={!useWalletCapital ? "gray" : "#0ea5e9"}
                     variant="h6"
                     sx={{
                       alignSelf: "flex-start",
@@ -585,7 +585,7 @@ export const IndexResultsSection = ({
                   mt: 1,
                   p: 1,
                   borderRadius: 2,
-                  border: `1px solid ${useWalletCapital ? "#22c55e" : "#333"}`,
+                  border: `1px solid ${useWalletCapital ? "#0ea5e9" : "#333"}`,
                   bgcolor: useWalletCapital ? "#f0fdf4" : "transparent",
                 }}>
                 <InputBase
