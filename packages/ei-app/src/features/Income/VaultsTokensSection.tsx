@@ -166,6 +166,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         {t("VaultsPageTitle")}
       </Typography>
       <StatePersistedAccordion
+        className="index-modeling-section-container"
         persistKey={persisKey}
         sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
         defaultExpanded
