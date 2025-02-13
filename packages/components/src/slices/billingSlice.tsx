@@ -11,6 +11,7 @@ export interface BillingState {
   loading: boolean;
   error: string | null;
   subscription: Subscription | null;
+  defaultSourceId: string | null;
 }
 
 const initialState: BillingState = {
@@ -19,6 +20,7 @@ const initialState: BillingState = {
   loading: false,
   error: null,
   subscription: null,
+  defaultSourceId:null,
 };
 
 
@@ -33,6 +35,21 @@ export const fetchPlansAsync = createAsyncThunk<PlanModel[], void, { rejectValue
         return rejectWithValue(error.response?.data?.message || "Failed to fetch billing plans");
       }
       return rejectWithValue("Failed to fetch billing plans");
+    }
+  }
+);
+
+export const getBillingAsync = createAsyncThunk<Billing, void, { rejectValue: string }>(
+  "billing/fetchBilling",
+  async (_, { rejectWithValue }) => {
+    try {
+      const billing = await billingService.getBilling();
+      return billing;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch billing");
+      }
+      return rejectWithValue("Failed to fetch billing");
     }
   }
 );
@@ -118,6 +135,19 @@ export const billingSlice = createSlice({
         state.loading = false;
         state.plans = action.payload;
       })
+      .addCase(getBillingAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBillingAsync.fulfilled, (state, action: PayloadAction<Billing>) => {
+        state.loading = false;
+        state.billing = action.payload;
+        state.defaultSourceId = action.payload.defaultSourceId || null;
+      })
+      .addCase(getBillingAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch billing details";
+      })
       .addCase(createBillingAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -145,5 +175,3 @@ export const {
   createBillingSuccess,
   createBillingFailure
 } = billingSlice.actions;
-
-
