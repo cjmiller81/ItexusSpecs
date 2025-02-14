@@ -29,6 +29,45 @@ export const getIndexPositionTableColumns = (
     },
 
     {
+      field: "chain",
+      headerName: t("Chain"),
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <div style={{ display: "flex", width: "100%" }}>
+          <Select
+            displayEmpty
+            renderValue={(selected) =>
+              !selected ? (
+                <Typography sx={{ fontSize: "0.8rem" }}>{t("SelectChain")}</Typography>
+              ) : (
+                selected as string
+              )
+            }
+            sx={{
+              fontSize: "0.8rem",
+              minWidth: "100%",
+              maxWidth: "100%",
+              height: "36px", 
+              backgroundColor: "#474A51",
+              borderRadius: "8px",
+              border: "none",
+              boxShadow: "none",
+              ".MuiOutlinedInput-notchedOutline": { border: "none" },
+              "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+            }}>
+            <MenuItem value="" disabled>
+            </MenuItem>
+          </Select>
+        </div>
+      )
+    },
+
+    {
       field: "qty",
       headerName: t("Qty"),
       sortable: false,
@@ -53,6 +92,87 @@ export const getIndexPositionTableColumns = (
     },
 
     {
+      field: "swapFor",
+      headerName: t("Swap For"),
+      sortable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <div style={{ display: "flex", width: "100%" }}>
+          <Select
+            displayEmpty
+            renderValue={(selected) =>
+              !selected ? (
+                <Typography sx={{ fontSize: "0.8rem" }}>{t("SelectToken")}</Typography>
+              ) : (
+                selected as string
+              )
+            }
+            sx={{
+              fontSize: "0.8rem",
+              minWidth: "100%",
+              maxWidth: "100%",
+              height: "36px", 
+              backgroundColor: "#474A51",
+              borderRadius: "8px",
+              border: "none",
+              boxShadow: "none",
+              ".MuiOutlinedInput-notchedOutline": { border: "none" },
+              "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+            }}>
+            <MenuItem value="" disabled>
+            </MenuItem>
+          </Select>
+        </div>
+      ),
+    },
+    
+
+    {
+      field: "estGasFees",
+      headerName: t("EstGasFees"),
+      sortable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <Typography variant="body2" sx={{ fontSize: "0.80rem", }}>
+          --
+        </Typography>
+      ),
+    },
+
+    {
+      field: "estTotal",
+      headerName: t("EstTotal"),
+      sortable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <Typography variant="body2" sx={{ fontSize: "0.80rem",}}>
+          --
+        </Typography>
+      ),
+    },
+
+    {
+      field: "slippageTolerance",
+      headerName: t("SlippageTolerance"),
+      sortable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      renderCell: () => (
+        <Typography variant="body2" sx={{ fontSize: "0.80rem", }}>
+          0.5%
+        </Typography>
+      ),
+    },
+
+    {
       field: "action",
       headerName: t("Action"),
       sortable: false,
@@ -62,19 +182,15 @@ export const getIndexPositionTableColumns = (
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionAllocation, any, any>) => {
         const action = params.row.action;
-
         const isBuyAction = action === "Buy";
-        const buttonText = action;
-
-        const buttonColor = isBuyAction ? "#53ec53" : "#ff0000";
         const buttonHoverColor = isBuyAction ? "#66c466" : darken("#f44336", 0.2);
 
         return (
           <Button
             variant="contained"
             sx={{
-              backgroundColor: buttonColor,
-              color: isBuyAction ? "black" : "white",
+              backgroundColor: "#53ec53",
+              color: "black",
               "&:hover": {
                 backgroundColor: buttonHoverColor,
               },
@@ -82,7 +198,7 @@ export const getIndexPositionTableColumns = (
               height: "30px",
               textTransform: "none",
             }}>
-            {buttonText}
+            {t("Send")}
           </Button>
         );
       },
@@ -121,21 +237,5 @@ export const getIndexPositionTableColumns = (
       },
     },
 
-    {
-      field: "chain",
-      headerName: t("Chain"),
-      sortable: false,
-      editable: false,
-      filterable: false,
-      flex: 1,
-      disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams<PositionAllocation, any, any>) => (
-        <Typography
-          variant="body1"
-          sx={{ textTransform: "uppercase", fontSize: "0.80rem" }}>
-          {params.row.connection}
-        </Typography>
-      ),
-    },
   ];
 };

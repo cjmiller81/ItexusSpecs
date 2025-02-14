@@ -311,7 +311,13 @@
     "Connection": "Connection",
     "Exchanges": "Exchanges",
     "ExchangeAccountName": "Centralized Exchange Account Name",
-    "Asset": "Asset"
+    "Asset": "Asset",
+    "EstGasFees": "Est Gas Fees",
+    "EstTotal": "Est Total",
+    "SlippageTolerance": "Slippage Tolerance",
+    "Send": "Send",
+    "SelectToken": "Select Token",
+    "SelectChain": "Select Chain"
   },
   "SymbolLookup": {
     "Search": "Search"
