@@ -150,6 +150,7 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         {t("PageTitleLiquidityPools")}
       </Typography>
       <StatePersistedAccordion
+        className="index-modeling-section-container"
         persistKey={persisKey}
         defaultExpanded
         sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}

@@ -195,6 +195,7 @@ export default function PrefilterTokensSection({
 
   return (
     <StatePersistedAccordion
+      className="index-modeling-section-container"
       persistKey={persisKey}
       defaultExpanded
       sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}

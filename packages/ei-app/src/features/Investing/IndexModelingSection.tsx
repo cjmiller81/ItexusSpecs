@@ -109,7 +109,6 @@ export const IndexModelingSection = ({
 
   return (
     <AppAccordionSection
-      className="index-modeling-section-container"
       persistKey={persistKey}
       defaultExpanded
       sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
