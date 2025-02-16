@@ -31,7 +31,6 @@ export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props })
     {
       name: t("ChartSeriesTitle"),
       data: chartData || [],
-      color: "#000000",
     },
   ];
   return (
