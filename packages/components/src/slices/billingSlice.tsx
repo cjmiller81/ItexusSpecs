@@ -13,7 +13,9 @@ export interface BillingState {
   error: string | null;
   subscription: Subscription | null;
   defaultSourceId: string | null;
-  paymentIntentClientSecret: string | null; // Добавим для хранения clientSecret
+  paymentIntentClientSecret: string | null;
+  paymentMethods: any[];
+  customerId: string | null;
 }
 
 const initialState: BillingState = {
@@ -23,20 +25,40 @@ const initialState: BillingState = {
   error: null,
   subscription: null,
   defaultSourceId: null,
-  paymentIntentClientSecret: null, // Начальное значение
+  paymentIntentClientSecret: null,
+  paymentMethods: [],
+  customerId: null,
 };
 
-// Асинхронный экшен для создания PaymentIntent
+export const fetchPaymentMethodsAsync = createAsyncThunk<
+  any[],
+  string, 
+  { rejectValue: string }
+>(
+  "billing/fetchPaymentMethods",
+  async (customerId, { rejectWithValue }) => {
+    try {
+      const paymentMethods = await billingService.getPaymentMethods(customerId);
+      return paymentMethods;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch payment methods");
+      }
+      return rejectWithValue("Failed to fetch payment methods");
+    }
+  }
+);
+
 export const createPaymentIntentAsync = createAsyncThunk<
   { clientSecret: string },
-  string, // customerId
+  string, 
   { rejectValue: string }
 >(
   "billing/createPaymentIntent",
   async (customerId, { rejectWithValue }) => {
     try {
       const response = await billingService.createPaymentIntent(customerId);
-      return response; // Возвращаем clientSecret
+      return response;
     } catch (error) {
       if (error instanceof AxiosError) {
         return rejectWithValue(error.response?.data?.message || "Failed to create Payment Intent");
@@ -146,7 +168,6 @@ export const billingSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    // Добавляем новый редьюсер для сохранения clientSecret
     createPaymentIntentSuccess(state, action: PayloadAction<{ clientSecret: string }>) {
       state.paymentIntentClientSecret = action.payload.clientSecret;
     },
@@ -157,6 +178,18 @@ export const billingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    .addCase(fetchPaymentMethodsAsync.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchPaymentMethodsAsync.fulfilled, (state, action: PayloadAction<any[]>) => {
+      state.loading = false;
+      state.paymentMethods = action.payload;
+    })
+    .addCase(fetchPaymentMethodsAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload || "Failed to fetch payment methods";
+    })
       .addCase(fetchPlansAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -164,10 +197,6 @@ export const billingSlice = createSlice({
       .addCase(fetchPlansAsync.fulfilled, (state, action: PayloadAction<PlanModel[]>) => {
         state.loading = false;
         state.plans = action.payload;
-      })
-      .addCase(getBillingAsync.pending, (state) => {
-        state.loading = true;
-        state.error = null;
       })
       .addCase(getBillingAsync.fulfilled, (state, action: PayloadAction<Billing>) => {
         state.loading = false;
@@ -194,7 +223,6 @@ export const billingSlice = createSlice({
         state.loading = false;
         state.subscription = action.payload;
       })
-      // Обрабатываем создание PaymentIntent
       .addCase(createPaymentIntentAsync.pending, (state) => {
         state.loading = true;
         state.error = null;

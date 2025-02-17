@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, createBillingAsync, createSubscriptionAsync, fetchPlansAsync, getBillingAsync, useAppDispatch } from "../../../slices";
+import { addMessage, createBillingAsync, createSubscriptionAsync, fetchPaymentMethodsAsync, fetchPlansAsync, getBillingAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 
 import { ProfileContainer } from "../ProfileContainer";
@@ -28,13 +28,19 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const [cardToEditIndex, setCardToEditIndex] = useState<number | undefined>(undefined);
 
   const { plans, loading, error } = useSelector((state: RootState) => state.billing);
+  const { billing, defaultSourceId, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
 
   useEffect(() => {
     dispatch(fetchPlansAsync());
-    dispatch(getBillingAsync()); 
+    dispatch(getBillingAsync());
   }, [dispatch]);
 
-  const { billing, defaultSourceId, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
+  useEffect(() => {
+    const customerId = billing?.id;
+    if (customerId) {
+      dispatch(fetchPaymentMethodsAsync(customerId));
+    }
+  }, [dispatch, billing]);
 
   useEffect(() => {
     if (defaultSourceId) {
@@ -54,9 +60,8 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       });
     }
   }, [defaultSourceId]);
-  
-  
-  const handleCreateBilling = async (index:number) => {
+
+  const handleCreateBilling = async (index: number) => {
     setSelectedPlanIndex(index);
     try {
       await dispatch(createBillingAsync()).unwrap();
@@ -74,12 +79,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     );
   };
 
-  const handleCreateSubscription = async (PriceId: string,index:number) => {
+  const handleCreateSubscription = async (PriceId: string, index: number) => {
     if (cards.length === 0) {
       dispatch(addMessage(t("SubscriptionError")));
       return;
     }
-  
+
     setSelectedPlanIndex(index);
     // try {
     //   await dispatch(createSubscriptionAsync(PriceId)).unwrap();
@@ -87,7 +92,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     //   console.error(("SubscriptionCreationFailed"), err);
     // }
   };
-  
 
   const onAddCard = (card: CardModel) => {
     setCards(prev => [
@@ -145,16 +149,14 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       <PaymentMethodModal
         onClose={() => setCardToEditIndex(undefined)}
         open={cardToEditIndex !== undefined}>
-        <>
-          {cardToEditIndex !== undefined && (
-            <PaymentMethodEditor
-              number={cards[cardToEditIndex].number}
-              cvc={cards[cardToEditIndex].cvc}
-              expiry={cards[cardToEditIndex].expiry}
-              onClose={() => setCardToEditIndex(undefined)}
-              onAttachCard={onEditCard}></PaymentMethodEditor>
-          )}
-        </>
+        <>{cardToEditIndex !== undefined && (
+          <PaymentMethodEditor
+            number={cards[cardToEditIndex].number}
+            cvc={cards[cardToEditIndex].cvc}
+            expiry={cards[cardToEditIndex].expiry}
+            onClose={() => setCardToEditIndex(undefined)}
+            onAttachCard={onEditCard}></PaymentMethodEditor>
+        )}</>
       </PaymentMethodModal>
 
       <Stack {...props}>
@@ -164,21 +166,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         {error && <Typography color="error">{t("ErrorLoadingPlans")}</Typography>}
 
         <PlansContainer>
-        <Grid item container spacing={3}>
-        <Grid item container spacing={3}>
-        {plans
-          .slice()
-          .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
-          .map((plan, index) => (
-            <BillingPlan
-              onSelectPlan={() => handleCreateSubscription(plan.id,index)}
-              isSelected={index === selectedPlanIndex}
-              key={plan.id || index}
-              plan={plan}
-            />
-          ))}
-        </Grid>
-        </Grid>
+          <Grid item container spacing={3}>
+            <Grid item container spacing={3}>
+              {plans
+                .slice()
+                .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
+                .map((plan, index) => (
+                  <BillingPlan
+                    onSelectPlan={() => handleCreateSubscription(plan.id, index)}
+                    isSelected={index === selectedPlanIndex}
+                    key={plan.id || index}
+                    plan={plan}
+                  />
+                ))}
+            </Grid>
+          </Grid>
         </PlansContainer>
 
         <ProfileContainer
@@ -194,12 +196,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           title={t("PaymentMethods")}>
           {cards.map((card, index) => (
             <PaymentCardTableRow
-            key={index}
-            isDefault={card.isDefault}
-            number={card.number}
-            onEdit={() => setCardToEditIndex(index)}
-            onDelete={() => setCardToDeleteIndex(index)}
-            onSetDefault={() => onSetDefault(index)}
+              key={index}
+              isDefault={card.isDefault}
+              number={card.number}
+              onEdit={() => setCardToEditIndex(index)}
+              onDelete={() => setCardToDeleteIndex(index)}
+              onSetDefault={() => onSetDefault(index)}
               sx={{
                 borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
                 borderWidth: "1px",

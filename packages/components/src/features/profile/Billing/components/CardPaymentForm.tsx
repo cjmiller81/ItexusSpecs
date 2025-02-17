@@ -27,12 +27,10 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => 
   );
 
   useEffect(() => {
-    // Получаем данные о клиенте (billing) из Redux при монтировании компонента
     dispatch(getBillingAsync());
   }, [dispatch]);
 
   useEffect(() => {
-    // Создаем PaymentIntent после получения данных клиента
     if (billing?.id) {
       dispatch(createPaymentIntentAsync(billing.id));
     }
@@ -54,11 +52,11 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => 
       return;
     }
 
-    // if (!paymentIntentClientSecret) {
-    //   setError("Ошибка: не найдено PaymentIntent.");
-    //   setIsProcessing(false);
-    //   return;
-    // }
+    if (!paymentIntentClientSecret) {
+      setError("Ошибка: не найдено PaymentIntent.");
+      setIsProcessing(false);
+      return;
+    }
 
     const cardElement = elements.getElement(CardNumberElement);
     if (!cardElement) {

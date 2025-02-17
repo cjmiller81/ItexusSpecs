@@ -114,4 +114,20 @@ export const billingService = {
             throw new Error("Failed to create Payment Intent");
         }
     },
+
+    getPaymentMethods: async (customerId: string): Promise<any[]> => {
+        try {
+            const response = await appAxios.get(`/api/billing/paymentMethods`, {
+                params: { customerId },
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Failed to fetch payment methods:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to load payment methods");
+        }
+    },
 };
