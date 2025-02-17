@@ -9,6 +9,7 @@ i18next.setDefaultNamespace("ColumnsDefs");
 export const getIndexPositionTableColumns = (
   selectedExchanges?: { [key: number]: string },
   handleExchangeChange?: (event: any, id) => void,
+  onConfirmSend?: (row: PositionAllocation) => void
 ): GridColDef<PositionAllocation>[] => {
   return [
     {
@@ -197,7 +198,8 @@ export const getIndexPositionTableColumns = (
               width: "75px",
               height: "30px",
               textTransform: "none",
-            }}>
+            }}
+            onClick={() => onConfirmSend?.(params.row)}>
             {t("Send")}
           </Button>
         );
