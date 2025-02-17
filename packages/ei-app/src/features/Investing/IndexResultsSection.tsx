@@ -19,6 +19,7 @@ import {
   FormControlLabel,
   InputBase,
   Switch,
+  DialogTitle,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -50,6 +51,11 @@ interface SelectedWallet {
   walletName?: string;
   isPersonal: boolean;
   chainAssets: ChainAsset[];
+}
+interface SelectedRow {
+  id: string;
+  symbol: string;
+  qty: number;
 }
 
 interface Props extends Omit<AccordionProps, "children"> {
@@ -88,6 +94,8 @@ export const IndexResultsSection = ({
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [tokensToTrade, settokensToTrade] = useState<number>(0);
+  const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -217,6 +225,12 @@ export const IndexResultsSection = ({
     }
   }, [filteredRows, tableAssets, selectedWallet, selectedRows, tokensToTrade]);
 
+  const handleConfirmSend = (row) => {
+    setSelectedRow(row);
+    setOpen(true); 
+  };
+
+
   const calculateTotalUsdAmount = (selectedWallet: SelectedWallet): number => {
     let totalUsdAmount = 0;
 
@@ -294,6 +308,9 @@ export const IndexResultsSection = ({
       setNewBalance("");
       setIsAddingManualPosition(false);
     }
+  };
+  const handleConfirm = () => {
+    setOpen(false);
   };
 
   return (
@@ -669,10 +686,73 @@ export const IndexResultsSection = ({
                 checkboxSelection={false}
                 apiRef={apiRef}
                 getRowId={x => x.id}
-                columns={getIndexPositionTableColumns(selectedExchanges, handleExchangeChange)}
+                columns={getIndexPositionTableColumns(selectedExchanges, handleExchangeChange,handleConfirmSend)}
                 rows={positionRows}
               />
             </Box>
+            <Dialog
+            sx={{
+              '& .MuiDialog-paper': {
+                backgroundColor: '#1E213D',
+                color: 'white',
+                border: '2px solid white', 
+                borderRadius: '6px', 
+                width: 'auto',
+                height: 'auto', 
+              }
+            }}
+             open={open} onClose={() => setOpen(false)}>
+        <DialogTitle sx={{display: 'flex', marginLeft:"5%" }}>{t("ConfirmTransaction")}</DialogTitle>
+        <DialogContent sx={{display: 'flex', marginLeft: "5%" }}>
+          {selectedRow && (
+            <Box display="flex" flexDirection="column" gap={1}>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "20px"}}><strong>{t("Symbol")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{selectedRow.symbol.toUpperCase()}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "20px"}}><strong>{t("Chain")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{t("NotSelected")}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "20px"}}><strong>{t("Qty")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{selectedRow.qty.toFixed(4)}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "20px"}}><strong>{t("SwapFor")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{t("NotSelected")}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "20px"}}><strong>{t("EstGasFees")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{"--"}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "20px"}}><strong>{t("EstTotal")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{"--"}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "40px"}}><strong>{t("SlippageTolerance")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{"0.5%"}</Typography>
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Typography sx={{color: "darkgray", marginRight: "40px"}}><strong>{t("Exchanges")}:</strong></Typography>
+                <Typography sx={{color: "darkgray"}}>{"Kraken"}</Typography>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+
+        <DialogActions sx={{display: 'flex', justifyContent: 'center' }}>
+          <Button 
+          sx={{color:"white", backgroundColor:"#49678D", borderRadius:"6px", textTransform: "none",}}
+          onClick={() => setOpen(false)}>{t("Cancel")}</Button>
+          <Button 
+          sx={{color:"white", backgroundColor:"#1D1E33", borderRadius:"6px", textTransform: "none",}}
+          onClick={handleConfirm} color="primary">
+            {t("ConfirmSend")}
+          </Button>
+        </DialogActions>
+      </Dialog>
           </Box>
         </Grid>
       </Grid>
