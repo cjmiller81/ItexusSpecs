@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, createBillingAsync, fetchPlansAsync, useAppDispatch } from "../../../slices";
+import { addMessage, createBillingAsync, createSubscriptionAsync, fetchPlansAsync, getBillingAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 
 import { ProfileContainer } from "../ProfileContainer";
@@ -31,10 +31,31 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
   useEffect(() => {
     dispatch(fetchPlansAsync());
+    dispatch(getBillingAsync()); 
   }, [dispatch]);
 
-  const { billing, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
+  const { billing, defaultSourceId, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
 
+  useEffect(() => {
+    if (defaultSourceId) {
+      setCards(prevCards => {
+        if (prevCards.some(card => card.number.endsWith(defaultSourceId.slice(-4)))) {
+          return prevCards;
+        }
+        return [
+          ...prevCards,
+          {
+            number: `**** **** **** ${defaultSourceId.slice(-4)}`,
+            expiry: "N/A",
+            cvc: "•••",
+            isDefault: true,
+          },
+        ];
+      });
+    }
+  }, [defaultSourceId]);
+  
+  
   const handleCreateBilling = async (index:number) => {
     setSelectedPlanIndex(index);
     try {
@@ -52,6 +73,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       })),
     );
   };
+
+  const handleCreateSubscription = async (PriceId: string,index:number) => {
+    if (cards.length === 0) {
+      dispatch(addMessage(t("SubscriptionError")));
+      return;
+    }
+  
+    setSelectedPlanIndex(index);
+    // try {
+    //   await dispatch(createSubscriptionAsync(PriceId)).unwrap();
+    // } catch (err) {
+    //   console.error(("SubscriptionCreationFailed"), err);
+    // }
+  };
+  
 
   const onAddCard = (card: CardModel) => {
     setCards(prev => [
@@ -130,21 +166,19 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         <PlansContainer>
         <Grid item container spacing={3}>
         <Grid item container spacing={3}>
-          {plans
-            .slice()
-            .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
-            .map((plan, index) => (
-              <BillingPlan
-                onSelectPlan={() => handleCreateBilling(index)}
-                isSelected={index === selectedPlanIndex}
-                key={plan.id || index}
-                plan={plan}
-              />
-            ))}
+        {plans
+          .slice()
+          .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
+          .map((plan, index) => (
+            <BillingPlan
+              onSelectPlan={() => handleCreateSubscription(plan.id,index)}
+              isSelected={index === selectedPlanIndex}
+              key={plan.id || index}
+              plan={plan}
+            />
+          ))}
         </Grid>
         </Grid>
-
-
         </PlansContainer>
 
         <ProfileContainer
@@ -160,12 +194,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           title={t("PaymentMethods")}>
           {cards.map((card, index) => (
             <PaymentCardTableRow
-              onEdit={() => setCardToEditIndex(index)}
-              onDelete={() => setCardToDeleteIndex(index)}
-              onSetDefault={() => onSetDefault(index)}
-              key={index}
-              isDefault={card.isDefault}
-              number={card.number}
+            key={index}
+            isDefault={card.isDefault}
+            number={card.number}
+            onEdit={() => setCardToEditIndex(index)}
+            onDelete={() => setCardToDeleteIndex(index)}
+            onSetDefault={() => onSetDefault(index)}
               sx={{
                 borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
                 borderWidth: "1px",

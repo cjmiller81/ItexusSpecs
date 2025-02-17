@@ -25,9 +25,6 @@ export const PaymentMethodEditor: FC<Props> = ({ onClose, onAttachCard, number, 
 
       <CardPaymentForm
         style={{ marginTop: 32 }}
-        number={number}
-        cvc={cvc}
-        expiry={expiry}
         onClose={onClose}
         onAttachCard={onAttachCard}
       />

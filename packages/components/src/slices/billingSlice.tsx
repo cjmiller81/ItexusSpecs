@@ -1,3 +1,4 @@
+
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { PlanModel } from "../features/profile/Billing/models/PlanModel";
 import { Billing } from "../features/profile/Billing/models/Billing";
@@ -11,6 +12,8 @@ export interface BillingState {
   loading: boolean;
   error: string | null;
   subscription: Subscription | null;
+  defaultSourceId: string | null;
+  paymentIntentClientSecret: string | null; // Добавим для хранения clientSecret
 }
 
 const initialState: BillingState = {
@@ -19,8 +22,29 @@ const initialState: BillingState = {
   loading: false,
   error: null,
   subscription: null,
+  defaultSourceId: null,
+  paymentIntentClientSecret: null, // Начальное значение
 };
 
+// Асинхронный экшен для создания PaymentIntent
+export const createPaymentIntentAsync = createAsyncThunk<
+  { clientSecret: string },
+  string, // customerId
+  { rejectValue: string }
+>(
+  "billing/createPaymentIntent",
+  async (customerId, { rejectWithValue }) => {
+    try {
+      const response = await billingService.createPaymentIntent(customerId);
+      return response; // Возвращаем clientSecret
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to create Payment Intent");
+      }
+      return rejectWithValue("Failed to create Payment Intent");
+    }
+  }
+);
 
 export const fetchPlansAsync = createAsyncThunk<PlanModel[], void, { rejectValue: string }>(
   "billing/fetchPlans",
@@ -33,6 +57,21 @@ export const fetchPlansAsync = createAsyncThunk<PlanModel[], void, { rejectValue
         return rejectWithValue(error.response?.data?.message || "Failed to fetch billing plans");
       }
       return rejectWithValue("Failed to fetch billing plans");
+    }
+  }
+);
+
+export const getBillingAsync = createAsyncThunk<Billing, void, { rejectValue: string }>(
+  "billing/fetchBilling",
+  async (_, { rejectWithValue }) => {
+    try {
+      const billing = await billingService.getBilling();
+      return billing;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch billing");
+      }
+      return rejectWithValue("Failed to fetch billing");
     }
   }
 );
@@ -107,6 +146,14 @@ export const billingSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    // Добавляем новый редьюсер для сохранения clientSecret
+    createPaymentIntentSuccess(state, action: PayloadAction<{ clientSecret: string }>) {
+      state.paymentIntentClientSecret = action.payload.clientSecret;
+    },
+    createPaymentIntentFailure(state, action: PayloadAction<string>) {
+      state.paymentIntentClientSecret = null;
+      state.error = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -117,6 +164,19 @@ export const billingSlice = createSlice({
       .addCase(fetchPlansAsync.fulfilled, (state, action: PayloadAction<PlanModel[]>) => {
         state.loading = false;
         state.plans = action.payload;
+      })
+      .addCase(getBillingAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBillingAsync.fulfilled, (state, action: PayloadAction<Billing>) => {
+        state.loading = false;
+        state.billing = action.payload;
+        state.defaultSourceId = action.payload.defaultSourceId || null;
+      })
+      .addCase(getBillingAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch billing details";
       })
       .addCase(createBillingAsync.pending, (state) => {
         state.loading = true;
@@ -134,6 +194,19 @@ export const billingSlice = createSlice({
         state.loading = false;
         state.subscription = action.payload;
       })
+      // Обрабатываем создание PaymentIntent
+      .addCase(createPaymentIntentAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createPaymentIntentAsync.fulfilled, (state, action: PayloadAction<{ clientSecret: string }>) => {
+        state.loading = false;
+        state.paymentIntentClientSecret = action.payload.clientSecret;
+      })
+      .addCase(createPaymentIntentAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to create Payment Intent";
+      });
   },
 });
 
@@ -143,7 +216,7 @@ export const {
   fetchPlansFailure,
   createBillingRequest,
   createBillingSuccess,
-  createBillingFailure
+  createBillingFailure,
+  createPaymentIntentSuccess,
+  createPaymentIntentFailure,
 } = billingSlice.actions;
-
-
