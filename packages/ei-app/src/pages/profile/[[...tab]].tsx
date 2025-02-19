@@ -25,7 +25,6 @@ export default function ProfilePage() {
   const { onUpdateAvatar, session, onUpdateProfile } = useOry()
   const dispatch = useAppDispatch()
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
-  console.log("Stripe Public Key:", process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
   const router = useRouter()
   const routeParams = (router.query.tab as string[]) || undefined
 

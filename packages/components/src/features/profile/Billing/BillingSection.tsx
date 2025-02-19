@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, createBillingAsync, createSubscriptionAsync, fetchPaymentMethodsAsync, fetchPlansAsync, getBillingAsync, useAppDispatch } from "../../../slices";
+import { addMessage, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 
 import { ProfileContainer } from "../ProfileContainer";
@@ -15,94 +15,190 @@ import { PaymentMethodModal } from "./components/PaymentMethodModal";
 import { PaymentMethodEditor } from "./components/PaymentMethodEditor";
 import { CardModel, PaymentMethodSelector } from "./components/PaymentMethodSelector";
 import { PaymentCardModel } from "./models/PaymentCardModel";
+import { useElements, useStripe } from "@stripe/react-stripe-js";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
   const { t } = useTranslation(["BillingContainer"]);
   const dispatch = useAppDispatch();
   const theme = useTheme();
-  const twoTilesPerRow = useMediaQuery("(max-width: 1280px)");
+  const stripe = useStripe();
+  const elements = useElements();
   const [paymetMethodModal, setPaymentMethodModal] = useState(false);
   const [cards, setCards] = useState<PaymentCardModel[]>([]);
-  const [selectedPlanIndex, setSelectedPlanIndex] = useState(0);
   const [cardToDeleteIndex, setCardToDeleteIndex] = useState<number | undefined>(undefined);
   const [cardToEditIndex, setCardToEditIndex] = useState<number | undefined>(undefined);
-
-  const { plans, loading, error } = useSelector((state: RootState) => state.billing);
-  const { billing, defaultSourceId, loading: billingLoading, error: billingError } = useSelector((state: RootState) => state.billing);
+  const { plans, loading, error, subscriptions,billing  } = useSelector((state: RootState) => state.billing);
+  const paymentMethods = useSelector((state: RootState) => state.billing.paymentMethods);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 
   useEffect(() => {
+    const initializeBilling = async () => {
+      try {
+        let billingData = await dispatch(getBillingAsync()).unwrap();
+  
+        if (!billingData?.id) {
+          await dispatch(createBillingAsync());
+          billingData = await dispatch(getBillingAsync()).unwrap();
+        }
+  
+        if (billingData?.id) {
+          dispatch(fetchPaymentMethodsAsync(billingData.id));
+          
+          const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
+          
+          const activeSubscription = subscriptionsData
+            ?.filter((sub) => sub.status === "active")
+            ?.sort((a, b) => b.created - a.created)[0];
+  
+          if (activeSubscription?.items[0]?.price?.id) {
+            setSelectedPlanId(activeSubscription.items[0].price.id);
+          }
+        }
+      } catch (error) {
+        console.error("Billing initialization error:", error);
+      }
+    };
+  
     dispatch(fetchPlansAsync());
-    dispatch(getBillingAsync());
+    initializeBilling();
   }, [dispatch]);
 
   useEffect(() => {
-    const customerId = billing?.id;
-    if (customerId) {
-      dispatch(fetchPaymentMethodsAsync(customerId));
+    if (paymentMethods?.length) {
+      const allCards = paymentMethods
+        .filter((method) => method.card)
+        .map((method) => ({
+          id: method.id,
+          number: `**** **** **** ${method.card.last4}`,
+          expiry:
+            method.card.exp_month && method.card.exp_year
+              ? `${method.card.exp_month}/${method.card.exp_year}`
+              : "00/00",
+          cvc: "•••",
+          isDefault: method.id === billing?.invoiceSettings?.defaultPaymentMethodId,
+        }));
+  
+      setCards(allCards);
     }
-  }, [dispatch, billing]);
-
-  useEffect(() => {
-    if (defaultSourceId) {
-      setCards(prevCards => {
-        if (prevCards.some(card => card.number.endsWith(defaultSourceId.slice(-4)))) {
-          return prevCards;
-        }
-        return [
-          ...prevCards,
-          {
-            number: `**** **** **** ${defaultSourceId.slice(-4)}`,
-            expiry: "N/A",
-            cvc: "•••",
-            isDefault: true,
-          },
-        ];
-      });
-    }
-  }, [defaultSourceId]);
-
-  const handleCreateBilling = async (index: number) => {
-    setSelectedPlanIndex(index);
-    try {
-      await dispatch(createBillingAsync()).unwrap();
-    } catch (err) {
-      console.error("Billing creation failed:", err);
-    }
-  };
-
-  const onSetDefault = (index: number) => {
-    setCards(
-      cards.map((card, currentIndex) => ({
-        ...card,
-        isDefault: index === currentIndex,
-      })),
-    );
-  };
-
-  const handleCreateSubscription = async (PriceId: string, index: number) => {
-    if (cards.length === 0) {
-      dispatch(addMessage(t("SubscriptionError")));
+  }, [paymentMethods, billing?.invoiceSettings?.defaultPaymentMethodId]);
+  
+  
+  const handleCreatePaymentIntent = async (plan: any) => {
+    if (!stripe || !elements) return;
+  
+    if (!billing?.invoiceSettings?.defaultPaymentMethodId) {
+      dispatch(addMessage(t("NoDefaultCardError")));
       return;
     }
-
-    setSelectedPlanIndex(index);
-    // try {
-    //   await dispatch(createSubscriptionAsync(PriceId)).unwrap();
-    // } catch (err) {
-    //   console.error(("SubscriptionCreationFailed"), err);
-    // }
+  
+    setSelectedPlanId(plan.id); 
+  
+    try {
+      const paymentIntent: any = await dispatch(
+        createPaymentIntentAsync({
+          amount: plan.unitAmountDecimal,
+          currency: "usd",
+          customerId: billing?.id || "",
+          description: `Subscription for plan ${plan.id}`,
+        })
+      ).unwrap();
+  
+      if (!paymentIntent?.id) {
+        dispatch(addMessage(t("PaymentError")));
+        return;
+      }
+  
+      if (paymentIntent.status === "succeeded") {
+        dispatch(addMessage(t("PaymentSuccess")));
+  
+        await dispatch(
+          createSubscriptionAsync({
+            CustomerId: billing?.id || "",
+            PriceId: plan.id,
+          })
+        ).unwrap();
+  
+        dispatch(fetchSubscriptionsAsync(billing?.id || ""));
+      } else if (paymentIntent.status === "requires_action") {
+        dispatch(addMessage(t("PaymentRequiresAction")));
+      } else {
+        dispatch(addMessage(t("PaymentPending")));
+      }
+    } catch (err) {
+      dispatch(addMessage(t("PaymentError")));
+    }
+  };
+  
+  const handlePlanChange = async (newPlan: any) => {
+    if (!billing?.id) return;
+  
+    try {
+      if (!selectedPlanId) {
+        await handleCreatePaymentIntent(newPlan);
+      } else {
+        const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
+  
+        if (!currentPlan) return;
+  
+        if (newPlan.unitAmountDecimal < currentPlan.unitAmountDecimal) {
+          const activeSubscription = subscriptions
+            ?.filter((sub) => sub.status === "active")
+            ?.sort((a, b) => b.created - a.created)[0];
+  
+          if (activeSubscription) {
+            await dispatch(
+              updateSubscriptionAsync({
+                SubscriptionId: activeSubscription.id,
+                SubscriptionItemId: activeSubscription.items[0]?.id,
+                NewPriceId: newPlan.id,
+              })
+            ).unwrap();
+  
+            dispatch(addMessage(t("PlanDowngraded")));
+            setSelectedPlanId(newPlan.id);
+          }
+        } else {
+          await handleCreatePaymentIntent(newPlan);
+          setSelectedPlanId(newPlan.id);
+        }
+      }
+    } catch (err) {
+      console.error("Plan change failed:", err);
+      dispatch(addMessage(t("PlanChangeError")));
+    }
+  };
+  
+  const handleSetDefaultCard = async (cardId: string) => {
+    if (!billing?.id) return;
+  console.log(cardId)
+    try {
+      await dispatch(setDefaultPaymentMethodAsync({ customerId: billing.id, paymentMethodId: cardId })).unwrap();
+  
+      const updatedBilling = await dispatch(getBillingAsync()).unwrap();
+      const newDefaultId = updatedBilling?.invoiceSettings?.defaultPaymentMethodId;
+      if (!newDefaultId) {
+        throw new Error("Failed to update default payment method");
+      }
+  
+      setCards(prevCards =>
+        prevCards.map(card => ({
+          ...card,
+          isDefault: paymentMethods.some(pm => pm.id === newDefaultId && pm.card?.last4 === card.number.slice(-4)),
+        }))
+      );
+  
+      dispatch(addMessage(t("DefaultCardUpdated")));
+    } catch (err) {
+      dispatch(addMessage(t("DefaultCardUpdateError")));
+    }
   };
 
   const onAddCard = (card: CardModel) => {
-    setCards(prev => [
-      ...prev,
-      {
-        isDefault: false,
-        ...card,
-      },
-    ]);
+    if (!cards.some(c => c.number === card.number)) {
+      setCards(prev => [...prev, { isDefault: false, ...card }]);
+      dispatch(addMessage(t("CardAddedMessage")));
+    }
     setPaymentMethodModal(false);
-    dispatch(addMessage(t("CardAddedMessage")));
   };
 
   const onDeleteCard = () => {
@@ -116,10 +212,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     if (cardToEditIndex === undefined) return;
     setCards(prev => [
       ...prev.slice(0, cardToEditIndex),
-      {
-        isDefault: false,
-        ...cardData,
-      },
+      { isDefault: false, ...cardData },
       ...prev.slice(cardToEditIndex + 1),
     ]);
     setCardToEditIndex(undefined);
@@ -137,26 +230,20 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         onClose={() => setCardToDeleteIndex(undefined)}
       />
 
-      <PaymentMethodModal
-        onClose={() => setPaymentMethodModal(false)}
-        open={paymetMethodModal}>
-        <PaymentMethodSelector
-          onClose={() => setPaymentMethodModal(false)}
-          onAttachCard={onAddCard}
-        />
+      <PaymentMethodModal onClose={() => setPaymentMethodModal(false)} open={paymetMethodModal}>
+        <PaymentMethodSelector onClose={() => setPaymentMethodModal(false)} onAttachCard={onAddCard} />
       </PaymentMethodModal>
 
-      <PaymentMethodModal
-        onClose={() => setCardToEditIndex(undefined)}
-        open={cardToEditIndex !== undefined}>
-        <>{cardToEditIndex !== undefined && (
+      <PaymentMethodModal onClose={() => setCardToEditIndex(undefined)} open={cardToEditIndex !== undefined}>
+        {cardToEditIndex !== undefined ? (
           <PaymentMethodEditor
             number={cards[cardToEditIndex].number}
             cvc={cards[cardToEditIndex].cvc}
             expiry={cards[cardToEditIndex].expiry}
             onClose={() => setCardToEditIndex(undefined)}
-            onAttachCard={onEditCard}></PaymentMethodEditor>
-        )}</>
+            onAttachCard={onEditCard}
+          />
+        ) : <></>}
       </PaymentMethodModal>
 
       <Stack {...props}>
@@ -167,19 +254,17 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
         <PlansContainer>
           <Grid item container spacing={3}>
-            <Grid item container spacing={3}>
-              {plans
-                .slice()
-                .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
-                .map((plan, index) => (
-                  <BillingPlan
-                    onSelectPlan={() => handleCreateSubscription(plan.id, index)}
-                    isSelected={index === selectedPlanIndex}
-                    key={plan.id || index}
-                    plan={plan}
-                  />
-                ))}
-            </Grid>
+            {plans
+              .slice()
+              .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
+              .map((plan, index) => (
+                <BillingPlan
+                  onSelectPlan={() => handlePlanChange(plan)}
+                  isSelected={selectedPlanId === plan.id}
+                  key={plan.id || index}
+                  plan={plan}
+                />
+              ))}
           </Grid>
         </PlansContainer>
 
@@ -195,21 +280,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           }
           title={t("PaymentMethods")}>
           {cards.map((card, index) => (
-            <PaymentCardTableRow
-              key={index}
-              isDefault={card.isDefault}
-              number={card.number}
-              onEdit={() => setCardToEditIndex(index)}
-              onDelete={() => setCardToDeleteIndex(index)}
-              onSetDefault={() => onSetDefault(index)}
-              sx={{
-                borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
-                borderWidth: "1px",
-                borderColor: theme.palette.divider,
-              }}
-              {...props}
-            />
-          ))}
+          <PaymentCardTableRow
+            key={index}
+            isDefault={card.isDefault}
+            number={card.number}
+            onEdit={() => setCardToEditIndex(index)}
+            onDelete={() => setCardToDeleteIndex(index)}
+            onSetDefault={() => handleSetDefaultCard(paymentMethods[index].id)}
+            sx={{
+              borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
+              borderWidth: "1px",
+              borderColor: theme.palette.divider,
+            }}
+            {...props}
+          />
+        ))}
 
           {!cards.length && (
             <Typography sx={{ margin: "auto", paddingY: 10 }} variant="h5">

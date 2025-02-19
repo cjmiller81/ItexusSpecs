@@ -12,6 +12,19 @@ interface BillingRequest {
     Email: string;
 }
 
+interface UpdateSubscriptionRequest {
+    SubscriptionId: string;
+    SubscriptionItemId: string;
+    NewPriceId: string;
+}
+
+interface PaymentIntentRequest {
+    amount: number;
+    currency: string;
+    customerId: string;
+    description: string;
+}
+
 interface SubscriptionRequest {
     UserId: string;
     PriceId: string;
@@ -72,24 +85,13 @@ export const billingService = {
         }
     },
 
-    createSubscription: async (PriceId: string): Promise<Subscription> => {
+    createSubscription: async (CustomerId: string, PriceId: string): Promise<Subscription> => {
         try {
-            const { data: session } = await ory.toSession();
-
-            if (!session || !session.identity) {
-                throw new Error("User is not authenticated or session is invalid");
-            }
-
-            const UserId = session.identity.id;
-
-            const requestData: SubscriptionRequest = {
-                UserId,
-                PriceId,
-            };
-
-            const response = await appAxios.post("/api/billing/subscriptions", requestData, {
-                withCredentials: true,
-            });
+            const response = await appAxios.post(
+                "/api/billing/subscriptions",
+                { CustomerId, PriceId },
+                { withCredentials: true }
+            );
 
             return response.data as Subscription;
         } catch (error) {
@@ -101,17 +103,41 @@ export const billingService = {
         }
     },
 
-    createPaymentIntent: async (customerId: string): Promise<{ clientSecret: string }> => {
+    createPaymentIntent: async (data: PaymentIntentRequest): Promise<{ clientSecret: string }> => {
         try {
             const response = await appAxios.post(
-                "/api/billing/payment-intent",
-                { customerId },
+                "/api/billing/paymentIntent",
+                data,
                 { withCredentials: true }
             );
+
             return response.data;
         } catch (error) {
             console.error("Failed to create Payment Intent:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(
+                    error.response?.data?.message || "Failed to create Payment Intent"
+                );
+            }
             throw new Error("Failed to create Payment Intent");
+        }
+    },
+
+    updateSubscription: async (data: UpdateSubscriptionRequest): Promise<Subscription> => {
+        try {
+            const response = await appAxios.post(
+                "/api/billing/updateSubscription",
+                data,
+                { withCredentials: true }
+            );
+
+            return response.data as Subscription;
+        } catch (error) {
+            console.error("Failed to update subscription:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to update subscription");
         }
     },
 
@@ -130,4 +156,71 @@ export const billingService = {
             throw new Error("Failed to load payment methods");
         }
     },
+
+    attachPaymentMethod: async (customerId: string, paymentMethodId: string): Promise<any> => {
+        try {
+            const response = await appAxios.post(
+                "/api/billing/attach",
+                { CustomerId: customerId, PaymentMethodId: paymentMethodId },
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error) {
+            console.error("Failed to attach payment method:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to attach payment method");
+        }
+    },
+
+    setDefaultPaymentMethod: async (customerId: string, paymentMethodId: string): Promise<any> => {
+        try {
+            const response = await appAxios.post(
+                "/api/billing/setDefaultPaymentMethod",
+                { CustomerId: customerId, PaymentMethodId: paymentMethodId },
+                { withCredentials: true }
+            );
+
+            return response.data;
+        } catch (error) {
+            console.error("Failed to set default payment method:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to set default payment method");
+        }
+    },
+
+    getSubscriptions: async (customerId: string): Promise<Subscription[]> => {
+        try {
+            const response = await appAxios.get("/api/billing/subscriptions", {
+                params: { customerId },
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Failed to fetch subscriptions:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to load subscriptions");
+        }
+    },
+
+    handleWebhook: async (webhookData: any): Promise<void> => {
+        try {
+            await appAxios.post("/api/billing/webhook", webhookData, {
+                withCredentials: true,
+            });
+        } catch (error) {
+            console.error("Failed to process webhook event:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to process webhook event");
+        }
+    },
+
 };

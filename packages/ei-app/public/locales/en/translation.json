@@ -344,7 +344,16 @@
     "DeleteCardDialogContent": "Are you sure you want to delete this card?",
     "DeleteCardDialogTitle": "Delete Card",
     "CardDeletedMessage": "Card was successfully deleted",
-    "CardEditedMessage": "Card was successfully edited"
+    "CardEditedMessage": "Card was successfully edited",
+    "NoDefaultCardError": "No Default Card",
+    "PaymentError": "Payment Error",
+    "PaymentSuccess": "Payment Success",
+    "PaymentRequiresAction": "Payment Requires Action",
+    "PaymentPending": "Payment Pending",
+    "PlanDowngraded": "Plan Downgraded",
+    "PlanChangeError": "Plan Change Error",
+    "DefaultCardUpdated": "Default Card Updated",
+    "DefaultCardUpdateError": "Default Card Update Error"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

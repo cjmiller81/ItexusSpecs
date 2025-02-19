@@ -5,7 +5,7 @@ import { Form, Formik } from "formik";
 import { SaveChancelButtons } from "./SaveChancelButtons";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { createPaymentIntentAsync, getBillingAsync } from "../../../../slices/billingSlice";
+import { getBillingAsync, attachPaymentMethodAsync } from "../../../../slices/billingSlice";
 import { RootState } from "../../../../slices/store";
 
 type Props = {
@@ -22,7 +22,7 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => 
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { billing, paymentIntentClientSecret, loading, error: reduxError } = useSelector(
+  const { billing, error: reduxError } = useSelector(
     (state: RootState) => state.billing
   );
 
@@ -30,11 +30,6 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => 
     dispatch(getBillingAsync());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (billing?.id) {
-      dispatch(createPaymentIntentAsync(billing.id));
-    }
-  }, [dispatch, billing]);
 
   useEffect(() => {
     if (reduxError) {
@@ -45,48 +40,56 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => 
   const handleSubmit = async () => {
     setIsProcessing(true);
     setError(null);
-
+  
     if (!stripe || !elements) {
-      setError("Stripe.js has not loaded yet.");
       setIsProcessing(false);
       return;
     }
-
-    if (!paymentIntentClientSecret) {
-      setError("Ошибка: не найдено PaymentIntent.");
-      setIsProcessing(false);
-      return;
-    }
-
+  
     const cardElement = elements.getElement(CardNumberElement);
     if (!cardElement) {
       setError("Card element not found.");
       setIsProcessing(false);
       return;
     }
-
-    const { token, error: stripeError } = await stripe.createToken(cardElement);
-
+  
+    const { paymentMethod, error: stripeError } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+    });
+  
     if (stripeError) {
-      setError(stripeError.message || "Ошибка при обработке карты.");
+      setError(stripeError.message || "Error processing card");
       setIsProcessing(false);
       return;
     }
-
-    if (token && token.card) {
-      const cardData = {
-        number: token.card.last4,
-        expiry: `${token.card.exp_month}/${token.card.exp_year}`,
-        cvc: "•••",
-      };
-
-      onAttachCard(cardData);
+  
+    if (paymentMethod && paymentMethod.id && billing?.id) {
+      try {
+        dispatch(
+          attachPaymentMethodAsync({
+            customerId: billing.id,
+            paymentMethodId: paymentMethod.id,
+          })
+        );
+  
+        onAttachCard({
+          number: paymentMethod.card?.last4 || "****",
+          expiry: `${paymentMethod.card?.exp_month}/${paymentMethod.card?.exp_year}`,
+          cvc: "•••",
+        });
+  
+        onClose(); 
+      } catch (error) {
+        setError("Error while linking the card.");
+      }
     } else {
-      setError("Ошибка: данные карты отсутствуют.");
+      setError("Error: card data is missing.");
     }
-
+  
     setIsProcessing(false);
   };
+  
 
   return (
     <Formik initialValues={{}} onSubmit={handleSubmit}>
