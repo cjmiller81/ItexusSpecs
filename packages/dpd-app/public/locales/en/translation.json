@@ -132,7 +132,10 @@
     "DIShortSaleVolume": "DI Short Sale Volume",
     "SingleStockView": "Single Stock View",
     "SectorsView": "Sectors View",
-    "HighVolumeDailyScan": "High Volume Daily Scan"
+    "HighVolumeDailyScan": "High Volume Daily Scan",
+    "OptionTrader": "Option Trader",
+    "TradingSets": "Trading Sets",
+    "Calls": "Calls"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -218,5 +221,8 @@
     "SingleStockPage": "Single Stock View Page",
     "SectorsView": "Sectors View",
     "HighVolumeDailyScan": "High Volume Daily Scan"
+  },
+  "OptionTradeCalls": {
+    "CallOptionSet": "Call Option Set"
   }
 }

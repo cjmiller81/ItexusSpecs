@@ -41,6 +41,21 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
   ];
 }
 
+function getOptionTraderPageItems(): SidebarListItem[] {
+  return [
+    {
+      title: t("TradingSets", { ns: "SideBar" }),
+      icon: <AutoGraphIcon />,
+      children: [
+        {
+          title: t("Calls", { ns: "SideBar" }),
+          href: "/optionTrade_calls",
+        },
+      ],
+    },
+  ];
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
   return [
@@ -51,6 +66,10 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
     {
       title: t("DarkPoolsData", { ns: "SideBar" }),
       sidebarListItems: getDIShortSaleVolumePageItems(),
+    },
+    {
+      title: t("OptionTrader", { ns: "SideBar" }),
+      sidebarListItems: getOptionTraderPageItems(),
     },
   ];
 }
