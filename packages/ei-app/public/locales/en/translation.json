@@ -165,7 +165,14 @@
     "SelectSavedWallet": "Please select a saved wallet from Index Results versus Wallet below",
     "EqualWeight": "Equal Weight",
     "TotalCapital": "Total Capital",
-    "MarketCap": "Market Cap"
+    "MarketCap": "Market Cap",
+    "ConfirmTransaction": "Confirm Transaction",
+    "NotSelected": "Not Selected",
+    "EstGasFees": "Est Gas Fees",
+    "EstTotal": "Est Total",
+    "SlippageTolerance": "Slippage Tolerance",
+    "SwapFor": "Swap For",
+    "ConfirmSend": "Confirm Send"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
@@ -311,7 +318,13 @@
     "Connection": "Connection",
     "Exchanges": "Exchanges",
     "ExchangeAccountName": "Centralized Exchange Account Name",
-    "Asset": "Asset"
+    "Asset": "Asset",
+    "EstGasFees": "Est Gas Fees",
+    "EstTotal": "Est Total",
+    "SlippageTolerance": "Slippage Tolerance",
+    "Send": "Send",
+    "SelectToken": "Select Token",
+    "SelectChain": "Select Chain"
   },
   "SymbolLookup": {
     "Search": "Search"

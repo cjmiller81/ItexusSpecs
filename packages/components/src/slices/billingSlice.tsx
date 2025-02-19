@@ -220,6 +220,21 @@ export const getBillingAsync = createAsyncThunk<Billing, void, { rejectValue: st
   }
 );
 
+export const getBillingAsync = createAsyncThunk<Billing, void, { rejectValue: string }>(
+  "billing/fetchBilling",
+  async (_, { rejectWithValue }) => {
+    try {
+      const billing = await billingService.getBilling();
+      return billing;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch billing");
+      }
+      return rejectWithValue("Failed to fetch billing");
+    }
+  }
+);
+
 export const createBillingAsync = createAsyncThunk<Billing, void, { rejectValue: string }>(
   "billing/createBilling",
   async (_, { rejectWithValue }) => {

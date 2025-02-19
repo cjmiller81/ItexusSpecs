@@ -249,9 +249,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       <Stack {...props}>
         <PageTitle>{t("Plans")}</PageTitle>
 
-        {loading && <Typography>{t("Loading")}</Typography>}
-        {error && <Typography color="error">{t("ErrorLoadingPlans")}</Typography>}
-
         <PlansContainer>
           <Grid item container spacing={3}>
             {plans
