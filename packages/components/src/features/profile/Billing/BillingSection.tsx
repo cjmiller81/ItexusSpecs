@@ -193,6 +193,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     }
   };
 
+  const handleCreateSubscription = async (PriceId: string,index:number) => {
+    if (cards.length === 0) {
+      dispatch(addMessage(t("SubscriptionError")));
+      return;
+    }
+  
+    setSelectedPlanIndex(index);
+    // try {
+    //   await dispatch(createSubscriptionAsync(PriceId)).unwrap();
+    // } catch (err) {
+    //   console.error(("SubscriptionCreationFailed"), err);
+    // }
+  };
+  
+
   const onAddCard = (card: CardModel) => {
     if (!cards.some(c => c.number === card.number)) {
       setCards(prev => [...prev, { isDefault: false, ...card }]);
@@ -248,9 +263,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
       <Stack {...props}>
         <PageTitle>{t("Plans")}</PageTitle>
-
-        {loading && <Typography>{t("Loading")}</Typography>}
-        {error && <Typography color="error">{t("ErrorLoadingPlans")}</Typography>}
 
         <PlansContainer>
           <Grid item container spacing={3}>

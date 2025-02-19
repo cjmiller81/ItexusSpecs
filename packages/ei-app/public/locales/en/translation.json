@@ -165,7 +165,14 @@
     "SelectSavedWallet": "Please select a saved wallet from Index Results versus Wallet below",
     "EqualWeight": "Equal Weight",
     "TotalCapital": "Total Capital",
-    "MarketCap": "Market Cap"
+    "MarketCap": "Market Cap",
+    "ConfirmTransaction": "Confirm Transaction",
+    "NotSelected": "Not Selected",
+    "EstGasFees": "Est Gas Fees",
+    "EstTotal": "Est Total",
+    "SlippageTolerance": "Slippage Tolerance",
+    "SwapFor": "Swap For",
+    "ConfirmSend": "Confirm Send"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
@@ -311,7 +318,13 @@
     "Connection": "Connection",
     "Exchanges": "Exchanges",
     "ExchangeAccountName": "Centralized Exchange Account Name",
-    "Asset": "Asset"
+    "Asset": "Asset",
+    "EstGasFees": "Est Gas Fees",
+    "EstTotal": "Est Total",
+    "SlippageTolerance": "Slippage Tolerance",
+    "Send": "Send",
+    "SelectToken": "Select Token",
+    "SelectChain": "Select Chain"
   },
   "SymbolLookup": {
     "Search": "Search"
@@ -354,6 +367,8 @@
     "PlanChangeError": "Plan Change Error",
     "DefaultCardUpdated": "Default Card Updated",
     "DefaultCardUpdateError": "Default Card Update Error"
+    "SubscriptionCreationFailed": "Subscription creation failed:",
+    "SubscriptionError": "This customer has no attached payment source or default payment method. Please consider adding a default payment method"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

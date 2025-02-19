@@ -66,6 +66,122 @@
     .base-NumberInput-root {
         background-color: #aaaaaa;
     }
+
+    .dx-datagrid {
+        border-color: rgba(0, 0, 0, 0.12) !important;
+    }
+
+    /* Horizontal borders in cells */
+
+    .dx-datagrid .dx-row > td {
+        border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-right: none !important;
+        background-color: inherit !important;
+    }
+
+    /* Header row horizontal border */
+
+    .dx-datagrid .dx-row.dx-header-row > td {
+        border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+        background-color: inherit !important;
+    }
+
+    /* Footer border (if any) */
+
+    .dx-datagrid .dx-footer {
+        border-top-color: rgba(0, 0, 0, 0.12) !important;
+        background-color: inherit !important;
+    }
+
+    /*Target all specific parts for the border color*/
+
+    .dx-datagrid-borders > .dx-datagrid-headers, .dx-datagrid-borders > .dx-datagrid-rowsview, .dx-datagrid-borders > .dx-datagrid-total-footer {
+        border-color: rgba(0, 0, 0, 0.12) !important;
+    }
+
+    /* Target the DataGrid's root element within your container */
+
+    .MuiDataGrid-root {
+        border-color: rgba(0, 0, 0, 0.12) !important;
+        border-style: solid;
+        background-color: inherit !important;
+    }
+
+    /* Target column headers and cells for horizontal borders*/
+
+    .MuiDataGrid-columnHeader,
+    .MuiDataGrid-cell {
+        border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+        border-bottom-style: solid;
+        background-color: inherit !important;
+        border-right: none !important;
+    }
+
+    /* Optional: Target footer */
+
+    .MuiDataGrid-footer {
+        border-top-color: rgba(0, 0, 0, 0.12) !important;
+        background-color: inherit !important;
+    }
+
+    .MuiDataGrid-virtualScrollerRenderZone {
+        background-color: inherit !important;
+    }
+
+    .MuiDataGrid-row {
+        background-color: inherit !important;
+    }
+}
+
+.apexcharts-canvas {
+    background: #aaaaaa !important;
+}
+
+.base-NumberInput-root {
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 4px;
+}
+
+
+.dx-datagrid .dx-row.dx-datagrid-filter-row > td {
+    background-color: #aaaaaa !important;
+}
+
+/* Set background color on td */
+.dx-datagrid .dx-filter-menu {
+    background-color: #aaaaaa !important;
+    margin-top: 0 !important;
+}
+
+
+.dx-datagrid-rowsview {
+    margin-top: 3px;
+}
+
+
+.MuiDataGrid-root .MuiDataGrid-withBorderColor {
+    border-bottom: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+
+/*Target the outermost container of the TradeView Widget */
+.tradingview-widget-container {
+    background-color: #aaaaaa !important;
+}
+
+/*Target nested elements to ensure they inherit from  */
+.tradingview-widget-container * {
+    background-color: inherit !important;
+}
+
+.tradingview-widget-container,
+.tradingview-widget-container *,
+.tradingview-widget-container *:before,
+.tradingview-widget-container *:after {
+    background-color: #aaaaaa !important;
 }
 
 
