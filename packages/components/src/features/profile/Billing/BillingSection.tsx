@@ -170,7 +170,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   
   const handleSetDefaultCard = async (cardId: string) => {
     if (!billing?.id) return;
-  console.log(cardId)
+
     try {
       await dispatch(setDefaultPaymentMethodAsync({ customerId: billing.id, paymentMethodId: cardId })).unwrap();
   
