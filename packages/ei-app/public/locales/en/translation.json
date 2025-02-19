@@ -358,8 +358,15 @@
     "DeleteCardDialogTitle": "Delete Card",
     "CardDeletedMessage": "Card was successfully deleted",
     "CardEditedMessage": "Card was successfully edited",
-    "SubscriptionCreationFailed": "Subscription creation failed:",
-    "SubscriptionError": "This customer has no attached payment source or default payment method. Please consider adding a default payment method"
+    "NoDefaultCardError": "No Default Card",
+    "PaymentError": "Payment Error",
+    "PaymentSuccess": "Payment Success",
+    "PaymentRequiresAction": "Payment Requires Action",
+    "PaymentPending": "Payment Pending",
+    "PlanDowngraded": "Plan Downgraded",
+    "PlanChangeError": "Plan Change Error",
+    "DefaultCardUpdated": "Default Card Updated",
+    "DefaultCardUpdateError": "Default Card Update Error"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",

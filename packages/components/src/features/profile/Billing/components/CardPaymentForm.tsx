@@ -1,140 +1,163 @@
-import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
+import { FC, useState, useEffect } from "react";
+import { Grid, Typography } from "@mui/material";
+import { useStripe, useElements, CardCvcElement, CardExpiryElement, CardNumberElement } from "@stripe/react-stripe-js";
 import { Form, Formik } from "formik";
-import i18next from "i18next";
-import { FC } from "react";
-import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
-import * as Yup from "yup";
-import { InferType } from "yup";
-import AppTextField from "../../../../components/common/inputs/AppTextField";
 import { SaveChancelButtons } from "./SaveChancelButtons";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { getBillingAsync, attachPaymentMethodAsync } from "../../../../slices/billingSlice";
+import { RootState } from "../../../../slices/store";
 
-const requiredError = i18next.t("mandatoryField", { ns: "ErrorMessages" });
-
-const cardModelSchema = Yup.object().shape({
-  expiry: Yup.string().trim().length(5, " ").required(requiredError),
-  number: Yup.string().trim().length(19, " ").required(requiredError),
-  cvc: Yup.string().trim().length(3, " ").required(requiredError),
-});
-
-type CardModel = InferType<typeof cardModelSchema>;
-
-type Props = React.FormHTMLAttributes<HTMLFormElement> & {
-  onAttachCard: (cardData: CardModel) => void;
+type Props = {
+  onAttachCard: (cardData: { number: string; expiry: string; cvc: string }) => void;
   onClose: () => void;
-  number?: string;
-  cvc?: string;
-  expiry?: string;
+  style?: React.CSSProperties;
 };
 
-export const CardPaymentForm: FC<Props> = ({ onClose, onAttachCard, style, number, cvc, expiry, ...props }) => {
+export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => {
   const { t } = useTranslation("CardPaymentForm");
+  const stripe = useStripe();
+  const elements = useElements();
+  const dispatch = useDispatch();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { billing, error: reduxError } = useSelector(
+    (state: RootState) => state.billing
+  );
+
+  useEffect(() => {
+    dispatch(getBillingAsync());
+  }, [dispatch]);
+
+
+  useEffect(() => {
+    if (reduxError) {
+      setError(reduxError);
+    }
+  }, [reduxError]);
+
+  const handleSubmit = async () => {
+    setIsProcessing(true);
+    setError(null);
+  
+    if (!stripe || !elements) {
+      setIsProcessing(false);
+      return;
+    }
+  
+    const cardElement = elements.getElement(CardNumberElement);
+    if (!cardElement) {
+      setError("Card element not found.");
+      setIsProcessing(false);
+      return;
+    }
+  
+    const { paymentMethod, error: stripeError } = await stripe.createPaymentMethod({
+      type: "card",
+      card: cardElement,
+    });
+  
+    if (stripeError) {
+      setError(stripeError.message || "Error processing card");
+      setIsProcessing(false);
+      return;
+    }
+  
+    if (paymentMethod && paymentMethod.id && billing?.id) {
+      try {
+        dispatch(
+          attachPaymentMethodAsync({
+            customerId: billing.id,
+            paymentMethodId: paymentMethod.id,
+          })
+        );
+  
+        onAttachCard({
+          number: paymentMethod.card?.last4 || "****",
+          expiry: `${paymentMethod.card?.exp_month}/${paymentMethod.card?.exp_year}`,
+          cvc: "•••",
+        });
+  
+        onClose(); 
+      } catch (error) {
+        setError("Error while linking the card.");
+      }
+    } else {
+      setError("Error: card data is missing.");
+    }
+  
+    setIsProcessing(false);
+  };
+  
+
   return (
-    <Formik<CardModel>
-      validateOnBlur={false}
-      validateOnChange={false}
-      initialValues={{
-        number: number || "",
-        cvc: cvc || "",
-        expiry: expiry || "",
-      }}
-      validationSchema={cardModelSchema}
-      onSubmit={values => {
-        onAttachCard(values);
-      }}>
-      {({ errors, handleBlur, handleChange, values, initialValues }) => (
-        <Form
-          style={{ marginTop: "20px", height: "100%", display: "flex", flexDirection: "column", ...style }}
-          noValidate
-          {...props}>
-          <Grid
-            container
-            spacing={2}>
-            <Grid
-              item
-              xs={12}>
-              <PatternFormat
-                autoComplete="cc-number"
-                inputProps={{
-                  size: "small",
-                  placeholder: "#### #### #### ####",
-                  InputProps: {
-                    name: "number",
-                    value: values.number,
-                    endAdornment: (
-                      <Stack
-                        direction="row"
-                        spacing="2px">
-                        <img
-                          width={32}
-                          src="/visa.svg"
-                        />
-                        <img
-                          width={32}
-                          src="/mastercard.svg"
-                        />
-                        <img
-                          width={32}
-                          src="/american-express.svg"
-                        />
-                        <img
-                          width={32}
-                          src="/discover.svg"
-                        />
-                      </Stack>
-                    ),
-                  },
-                }}
-                label={t("CardNumber")}
-                name="number"
-                format="#### #### #### ####"
-                prefix=""
-                fullWidth
-                onBlur={handleBlur}
-                onChange={handleChange}
-                customInput={AppTextField}
-                fieldError={errors.number}
-              />
+    <Formik initialValues={{}} onSubmit={handleSubmit}>
+      {({ submitForm }) => (
+        <Form style={{ marginTop: "20px", display: "flex", flexDirection: "column", ...style }} noValidate>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <div style={{ border: "2px solid #aab7c4", borderRadius: "8px", padding: "10px" }}>
+                <CardNumberElement
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: "18px",
+                        color: "white",
+                        letterSpacing: "0.025em",
+                        "::placeholder": { color: "#aab7c4" },
+                      },
+                    },
+                  }}
+                />
+              </div>
             </Grid>
-            <Grid
-              item
-              xs={5}>
-              <PatternFormat
-                sx={{ width: "100px" }}
-                autoComplete="cc-exp"
-                inputProps={{ size: "small", placeholder: "MM/YY", name: "expiry", value: values.expiry }}
-                label="Expiry Date"
-                format="##/##"
-                prefix=""
-                fullWidth
-                customInput={AppTextField}
-                value={values.expiry}
-                onBlur={handleBlur}
-                onChange={handleChange}
-                fieldError={errors.expiry}
-              />
-            </Grid>
-            <Grid
-              item
-              xs={7}>
-              <PatternFormat
-                sx={{ width: "100px" }}
-                autoComplete="cc-exp"
-                inputProps={{ size: "small", placeholder: t("CVC"), name: "cvc", value: values.cvc }}
-                label={t("CVC")}
-                format="###"
-                prefix=""
-                fullWidth
-                onBlur={handleBlur}
-                onChange={handleChange}
-                customInput={AppTextField}
-                fieldError={errors.cvc}
-              />
+
+            <Grid container item xs={12} spacing={2}>
+              <Grid item xs={6}>
+                <div style={{ border: "2px solid #aab7c4", borderRadius: "8px", padding: "10px" }}>
+                  <CardExpiryElement
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: "18px",
+                          color: "white",
+                          letterSpacing: "0.025em",
+                          "::placeholder": { color: "#aab7c4" },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </Grid>
+              <Grid item xs={6}>
+                <div style={{ border: "2px solid #aab7c4", borderRadius: "8px", padding: "10px" }}>
+                  <CardCvcElement
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: "18px",
+                          color: "white",
+                          letterSpacing: "0.025em",
+                          "::placeholder": { color: "#aab7c4" },
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              </Grid>
             </Grid>
           </Grid>
+
+          {error && (
+            <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+              {error}
+            </Typography>
+          )}
+
           <SaveChancelButtons
-            sx={{ position: "absolute", bottom: theme => theme.spacing(2), right: theme => theme.spacing(2) }}
+            sx={{ position: "absolute", bottom: (theme) => theme.spacing(2), right: (theme) => theme.spacing(2) }}
+            onSave={submitForm}
             onCancel={onClose}
           />
         </Form>

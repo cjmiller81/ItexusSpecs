@@ -16,13 +16,15 @@ import {
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js"
 
 export default function ProfilePage() {
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
   const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
   const { onUpdateAvatar, session, onUpdateProfile } = useOry()
   const dispatch = useAppDispatch()
-
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
   const router = useRouter()
   const routeParams = (router.query.tab as string[]) || undefined
 
@@ -117,7 +119,9 @@ export default function ProfilePage() {
           <WalletsContainer />
         </TabPanel>
         <TabPanel value="billing">
-          <BillingContainer />
+        <Elements stripe={stripePromise}>
+    <BillingContainer />
+  </Elements>
         </TabPanel>
       </TabContext>
     </ProfileContainer>
