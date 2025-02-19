@@ -55,18 +55,6 @@ export const billingService = {
         }
     },
 
-    getBilling: async (): Promise<Billing> => {
-        try {
-            const response = await appAxios.get("/api/billing", {
-                withCredentials: true,
-            });
-            return response.data as Billing;
-        } catch (error) {
-            console.error("Failed to fetch billing:", error);
-            throw new Error("Failed to load billing details");
-        }
-    },
-
     createBilling: async (): Promise<Billing> => {
         try {
             const { data: session } = await ory.toSession();
