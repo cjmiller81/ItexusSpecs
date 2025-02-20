@@ -132,7 +132,10 @@
     "DIShortSaleVolume": "DI Short Sale Volume",
     "SingleStockView": "Single Stock View",
     "SectorsView": "Sectors View",
-    "HighVolumeDailyScan": "High Volume Daily Scan"
+    "HighVolumeDailyScan": "High Volume Daily Scan",
+    "OptionTrader": "Option Trader",
+    "TradingSets": "Trading Sets",
+    "Calls": "Calls"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -218,5 +221,29 @@
     "SingleStockPage": "Single Stock View Page",
     "SectorsView": "Sectors View",
     "HighVolumeDailyScan": "High Volume Daily Scan"
+  },
+  "OptionTradeCalls": {
+    "CallOptionSet": "Call Option Set"
+  },
+  "CallsSection": {
+    "SaveCopy": "Save Copy",
+    "CreateNewSub-Profile": "+ Create New Sub-Profile",
+    "SelectSub-Profile": "Select Sub-Profile",
+    "CallOptionSet": "Call Option Set",
+    "Account": "Account",
+    "Save": "Save",
+    "SendOrder": "+Send Order",
+    "OptionDetails": "Option Details",
+    "DTERange": "DTE Range",
+    "to": "to",
+    "RequireActiveBid": "Require Active Bid",
+    "B/AMaxOn/Off": "B/A Max On/Off",
+    "B/AMax(e.g 5 = 5%)": "B/A Max (e.g 5 = 5%)",
+    "MinContractAsk": "Min Contract Ask",
+    "TradeAsSet": "Trade As Set",
+    "OptionFilter": "Option Filter",
+    "MinOpenInterest": "Min Open Interest",
+    "MinVolume": "Min Volume",
+    "B/ASpreadDiff": "B/A Spread Diff (e.g 5 = 5%)"
   }
 }

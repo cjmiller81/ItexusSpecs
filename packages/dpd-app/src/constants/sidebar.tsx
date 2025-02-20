@@ -4,6 +4,7 @@ import i18next, { t } from "i18next";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -41,6 +42,21 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
   ];
 }
 
+function getOptionTraderPageItems(): SidebarListItem[] {
+  return [
+    {
+      title: t("TradingSets", { ns: "SideBar" }),
+      icon: <TrendingUpOutlinedIcon />,
+      children: [
+        {
+          title: t("Calls", { ns: "SideBar" }),
+          href: "/optionTrade_calls",
+        },
+      ],
+    },
+  ];
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
   return [
@@ -51,6 +67,10 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
     {
       title: t("DarkPoolsData", { ns: "SideBar" }),
       sidebarListItems: getDIShortSaleVolumePageItems(),
+    },
+    {
+      title: t("OptionTrader", { ns: "SideBar" }),
+      sidebarListItems: getOptionTraderPageItems(),
     },
   ];
 }
