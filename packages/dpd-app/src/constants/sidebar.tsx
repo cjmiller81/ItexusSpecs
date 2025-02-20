@@ -4,6 +4,7 @@ import i18next, { t } from "i18next";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -45,7 +46,7 @@ function getOptionTraderPageItems(): SidebarListItem[] {
   return [
     {
       title: t("TradingSets", { ns: "SideBar" }),
-      icon: <AutoGraphIcon />,
+      icon: <TrendingUpOutlinedIcon />,
       children: [
         {
           title: t("Calls", { ns: "SideBar" }),
