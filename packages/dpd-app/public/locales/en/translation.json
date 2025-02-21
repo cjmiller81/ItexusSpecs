@@ -244,6 +244,22 @@
     "OptionFilter": "Option Filter",
     "MinOpenInterest": "Min Open Interest",
     "MinVolume": "Min Volume",
-    "B/ASpreadDiff": "B/A Spread Diff (e.g 5 = 5%)"
+    "B/ASpreadDiff": "B/A Spread Diff (e.g 5 = 5%)",
+    "EntryOrder": "Entry Order",
+    "TotalDollarAmount": "Total Dollar Amount",
+    "OIPercentCap": "OI Percent Cap (e.g 5 = 5%)",
+    "EntryType": "Entry Type",
+    "Buy_Ask": "Buy_Ask",
+    "Buy_Mid": "Buy_Mid",
+    "Buy_Bid": "Buy_Bid",
+    "UseLaddering": "Use Laddering?",
+    "OffsetMustBe": "Offset must be <0 if Buy_Ask",
+    "OffsetPercent": "Offset Percent (e.g 5 = 5%)",
+    "TradeUnderlyingOptionFound": "Trade Underlying if no Option Found?",
+    "OnlyTradeUnderlying": "Only Trade Underlying",
+    "CancelResubmitNoPartialFill": "Cancel and Resubmit on No or Partial Fill?",
+    "BreakUpOrder": "Break-Up Order?",
+    "SendTriggerExitOrder": "Send Trigger Exit Order",
+    "OrderBreaks": "Order Breaks"
   }
 }
