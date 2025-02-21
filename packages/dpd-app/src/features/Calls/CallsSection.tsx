@@ -6,6 +6,7 @@ export default function CallOptionSet() {
   const [account, setAccount] = useState("");
   const [subProfile, setSubProfile] = useState("");
   const { t } = useTranslation("CallsSection");
+  const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
 
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
@@ -135,33 +136,40 @@ export default function CallOptionSet() {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center",marginLeft:"auto" }}>
-              <Checkbox sx={{ color: "gray" }} />
+              <Checkbox checked={isBAMaxEnabled}
+                onChange={() => setIsBAMaxEnabled((prev) => !prev)}
+                sx={{ color: "gray" }} />
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
               {t("B/AMaxOn/Off")}
               </Typography>
               
-              <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: "gray", mt: 0.5 }}>
+              <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: isBAMaxEnabled ? "white" : "gray" }}>
               {t("B/AMax(e.g 5 = 5%)")}
-              </Typography>
+            </Typography>
               </Box>
               <TextField 
                 placeholder="20"
                 variant="outlined"
+                disabled={!isBAMaxEnabled}
                 InputLabelProps={{ shrink: false }} 
                 sx={{ 
                   bgcolor: "#1E1E1E", 
                   width: "60px",
-                  marginLeft:"10px",
+                  marginLeft: "10px",
                   input: { 
-                    color: "white", 
-                    padding: "10px 12px" 
+                    color: isBAMaxEnabled ? "white" : "gray",
+                    padding: "10px 12px",
                   }, 
                   "& .MuiOutlinedInput-root": { 
                     height: "40px", 
                     display: "flex", 
-                    alignItems: "center" 
-                  } 
+                    alignItems: "center",
+                    borderColor: "gray",
+                    "&:hover": {
+                      borderColor: "white",
+                    },
+                  }, 
                 }} 
               />
             </Box>
