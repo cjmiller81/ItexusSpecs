@@ -45,7 +45,6 @@ export default function CallOptionSet() {
   const handleTradeUnderlyingFoundChange = () => {
     setTradeUnderlyingFound(!tradeUnderlyingFound);
   };
-  
 
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
