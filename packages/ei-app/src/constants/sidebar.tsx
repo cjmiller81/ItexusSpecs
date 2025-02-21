@@ -14,6 +14,7 @@ import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import { MergeIcon } from "lucide-react";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -78,15 +79,15 @@ function getPlatformsItems(): SidebarListItem[] {
 function getToolsItems(): SidebarListItem[] {
   return [
     {
-      title: t("Portfolios", { ns: "SideBar" }),
+      title: t("MyWallets", { ns: "SideBar" }),
       icon: <AccountBalanceWalletIcon />,
-      open: false,
-      children: [
-        {
-          title: t("MyWallets", { ns: "SideBar" }),
-          href: "/myWallets",
-        },
-      ],
+      href: "/myWallets"
+    },
+    {
+      title: t("TradeAggregator", { ns: "SideBar" }),
+      icon: <MergeIcon width="21px"
+        height="21px" />,
+      href: "/tradeAggregator"
     },
   ];
 }
