@@ -102,6 +102,7 @@ export default function CallOptionSet() {
       </Box>
 
       <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
+
       <Box sx={{display: "flex", marginTop:"50px"}}>
         <Button variant="outlined" 
           sx={{ 
@@ -111,7 +112,6 @@ export default function CallOptionSet() {
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        
           <Box sx={{ width: "500px", 
                     bgcolor: "#2A2A2A", 
                     p: 3, 
