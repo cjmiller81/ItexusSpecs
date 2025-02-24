@@ -43,13 +43,17 @@ export const billingService = {
         }
     },
 
-    getBilling: async (): Promise<Billing> => {
+    getBilling: async (): Promise<Billing | null> => {
         try {
             const response = await appAxios.get("/api/billing", {
                 withCredentials: true,
             });
             return response.data as Billing;
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                console.warn("Billing not found, returning null");
+                return null;
+            }
             console.error("Failed to fetch billing:", error);
             throw new Error("Failed to load billing details");
         }

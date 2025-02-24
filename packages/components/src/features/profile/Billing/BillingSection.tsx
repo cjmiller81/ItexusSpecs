@@ -35,8 +35,9 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     const initializeBilling = async () => {
       try {
         let billingData = await dispatch(getBillingAsync()).unwrap();
+        console.log(billingData)
   
-        if (!billingData?.id) {
+        if (!billingData) {
           await dispatch(createBillingAsync());
           billingData = await dispatch(getBillingAsync()).unwrap();
         }
