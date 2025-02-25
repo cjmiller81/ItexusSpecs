@@ -9,6 +9,8 @@ export default function CallOptionSet() {
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(10);
   const [isBreakUpEnabled, setIsBreakUpEnabled] = useState(false);
+  const [amount, setAmount] = useState(30000);
+  const [breakUp, setBreakUp] = useState(20);
   const isBuyAsk = entryType === "Buy_Ask";
   const isOffsetValid = offsetPercent >= 0;
   const shouldDisableLaddering = isBuyAsk && isOffsetValid;
@@ -35,15 +37,33 @@ export default function CallOptionSet() {
     } 
   };
 
+  const handleBreakUpChange = (event) => {
+    const newBreakup = event.target.value === "" ? offsetPercent : parseFloat(event.target.value);
+    setBreakUp(newBreakup);
+  };
+
   const handleOnlyTradeUnderlyingChange = () => {
     setOnlyTradeUnderlying(!onlyTradeUnderlying);
     if (!onlyTradeUnderlying) {
       setTradeUnderlyingFound(true); 
     }
+    else
+    setTradeUnderlyingFound(false);
   };
 
   const handleTradeUnderlyingFoundChange = () => {
     setTradeUnderlyingFound(!tradeUnderlyingFound);
+  };
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat("en-US").format(num);
+  };
+
+  const handleChangeAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const numericValue = event.target.value.replace(/,/g, "");
+    if (!isNaN(Number(numericValue))) {
+      setAmount(Number(numericValue));
+    }
   };
 
   return (
@@ -299,9 +319,9 @@ export default function CallOptionSet() {
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <Typography sx={{ color: "white", }}>{t("TotalDollarAmount")}</Typography>
                   <TextField 
-                    type="number"
                     variant="outlined" 
-                    defaultValue={30000}
+                    value={formatNumber(amount)}
+                    onChange={handleChangeAmount}
                     sx={{ 
                       bgcolor: "#1E1E1E", 
                       input: { color: "white", textAlign: "center" }, 
@@ -413,7 +433,7 @@ export default function CallOptionSet() {
                         <Checkbox 
                           sx={{ color: "gray", p: 0 }} 
                           checked={isBreakUpEnabled}
-                          onChange={() => setIsBreakUpEnabled(!isBreakUpEnabled)}
+                          onChange={() => setIsBreakUpEnabled((prev) => !prev)}
                         />
                         <Typography 
                           sx={{ fontSize: "13px", color: "white", mt: 0.5 }}
@@ -421,14 +441,16 @@ export default function CallOptionSet() {
                           {t("BreakUpOrder")}
                         </Typography>
                       </Box>
-
                       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "15px" }}>
                         <Typography sx={{ fontSize: "13px", color: isBreakUpEnabled ? "white" : "gray", mt: 0.5 }}>
                           {t("OrderBreaks")}
                         </Typography>
                         <TextField 
                           placeholder="20"
+                          type="number"
                           variant="outlined"
+                          value={breakUp}
+                          onChange={handleBreakUpChange}
                           disabled={!isBreakUpEnabled}
                           InputLabelProps={{ shrink: false }} 
                           sx={{ 
