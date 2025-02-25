@@ -16,6 +16,7 @@ export default function CallOptionSet() {
   const [useLaddering, setUseLaddering] = useState(false);
   const [tradeUnderlyingFound, setTradeUnderlyingFound] = useState(false);
   const [onlyTradeUnderlying, setOnlyTradeUnderlying] = useState(false);
+  const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
 
   const handleEntryTypeChange = (event) => {
     const newEntryType = event.target.value;
@@ -176,32 +177,40 @@ export default function CallOptionSet() {
               </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center",marginLeft:"auto" }}>
-                  <Checkbox sx={{ color: "gray" }} />
+                <Checkbox checked={isBAMaxEnabled}
+                  onChange={() => setIsBAMaxEnabled((prev) => !prev)}
+                  sx={{ color: "gray" }} />
                   <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                   <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
                   {t("B/AMaxOn/Off")}
                   </Typography>
                   
-                  <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: "gray", mt: 0.5 }}>
+                  <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: isBAMaxEnabled ? "white" : "gray" }}>
                   {t("B/AMax(e.g 5 = 5%)")}
                   </Typography>
                   </Box>
                   <TextField 
                     placeholder="20"
                     variant="outlined"
+                    type="number"
+                    disabled={!isBAMaxEnabled}
                     InputLabelProps={{ shrink: false }} 
                     sx={{ 
                       bgcolor: "#1E1E1E", 
                       width: "60px",
                       marginLeft:"10px",
                       input: { 
-                        color: "white", 
+                        color: isBAMaxEnabled ? "white" : "gray",
                         padding: "10px 12px" 
                       }, 
                       "& .MuiOutlinedInput-root": { 
                         height: "40px", 
                         display: "flex", 
-                        alignItems: "center" 
+                        alignItems: "center",
+                        borderColor: "gray",
+                        "&:hover": {
+                          borderColor: "white",
+                    },
                       } 
                     }} 
                   />
