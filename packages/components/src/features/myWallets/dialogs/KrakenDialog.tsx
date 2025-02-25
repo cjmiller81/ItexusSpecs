@@ -70,6 +70,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
         <TextField
           fullWidth
           variant="outlined"
+          autoComplete="off"
           value={formik.values.apiKey}
           onChange={formik.handleChange}
           name="apiKey"
@@ -88,6 +89,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({ open, formik, onChai
           fullWidth
           variant="outlined"
           type="password"
+          autoComplete="off"
           value={formik.values.apiSecret}
           onChange={formik.handleChange}
           name="apiSecret"

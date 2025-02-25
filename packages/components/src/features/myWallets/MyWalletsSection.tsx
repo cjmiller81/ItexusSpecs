@@ -111,6 +111,7 @@ export const MyWalletsSection = ({
           }
         } catch (error) {
           console.error("Failed to connect to Kraken", error);
+          handleCancelExchange();
         }
       
     },
