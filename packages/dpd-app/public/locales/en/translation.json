@@ -260,6 +260,10 @@
     "CancelResubmitNoPartialFill": "Cancel and Resubmit on No or Partial Fill?",
     "BreakUpOrder": "Break-Up Order?",
     "SendTriggerExitOrder": "Send Trigger Exit Order",
-    "OrderBreaks": "Order Breaks"
+    "OrderBreaks": "Order Breaks",
+    "ExitTiers": "Exit Tiers",
+    "AddTier": "Add Tier",
+    "Limit": "Limit",
+    "OCO": "OCO"
   }
 }
