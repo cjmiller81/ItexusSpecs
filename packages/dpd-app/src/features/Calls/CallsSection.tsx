@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import ExitTierTable from "./ExitTierTable";
 import React from "react";
+
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState("");
@@ -19,6 +21,7 @@ export default function CallOptionSet() {
   const [useLaddering, setUseLaddering] = useState(false);
   const [tradeUnderlyingFound, setTradeUnderlyingFound] = useState(false);
   const [onlyTradeUnderlying, setOnlyTradeUnderlying] = useState(false);
+  const [isSendTriggerChecked, setIsSendTriggerChecked] = useState(false);
   const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
 
   const handleEntryTypeChange = (event) => {
@@ -142,7 +145,7 @@ export default function CallOptionSet() {
                     marginTop: "25px",
                     border: "2px solid green", 
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
-            <h3>{t("OptionDetails")}</h3>
+            <Typography variant="h5">{t("OptionDetails")}</Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <TextField 
@@ -483,7 +486,9 @@ export default function CallOptionSet() {
                     </Box>
 
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                        <Checkbox sx={{ color: "gray", p: 0 }} />
+                        <Checkbox sx={{ color: "gray", p: 0 }}
+                        checked={isSendTriggerChecked}
+                        onChange={(e) => setIsSendTriggerChecked(e.target.checked)} />
                         <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
                         {t("SendTriggerExitOrder")}
                         </Typography>
@@ -493,8 +498,21 @@ export default function CallOptionSet() {
                   </Box>
               </Box>     
             </Box>
+              <Box>
+                  <Box sx={{width: "auto", 
+                      bgcolor: "#2A2A2A", 
+                      p: 3, 
+                      borderRadius: 2, 
+                      color: "white", 
+                      height:"670px",
+                      marginTop: "25px",
+                      border: "2px solid green", 
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
+                <Typography variant="h5">{t("EntryOrder")}</Typography>
+                <ExitTierTable isSendTriggerChecked = {isSendTriggerChecked} /> 
+                  </Box>
+              </Box>
             </Box>
-            
         </Box>
   );
 }
