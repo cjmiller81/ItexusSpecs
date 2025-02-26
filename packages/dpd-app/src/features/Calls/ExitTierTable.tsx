@@ -19,6 +19,8 @@ import {
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { TierData } from '@/models/TierData';
 import { useTranslation } from 'react-i18next';
+import React from "react";
+
 
 const columns = [
   { id: 'addTier', label: 'Add Tier', minWidth: 80, align: 'center' },
