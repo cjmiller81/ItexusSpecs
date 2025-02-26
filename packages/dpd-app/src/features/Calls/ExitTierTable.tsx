@@ -21,7 +21,6 @@ import { TierData } from '@/models/TierData';
 import { useTranslation } from 'react-i18next';
 import React from "react";
 
-
 const columns = [
   { id: 'addTier', label: 'Add Tier', minWidth: 80, align: 'center' },
   { id: 'exitTier', label: 'Exit Tier', minWidth: 80, align: 'center' },
