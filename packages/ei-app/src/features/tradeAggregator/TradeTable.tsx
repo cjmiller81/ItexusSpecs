@@ -153,7 +153,7 @@ export function TradeTable() {
         </Select>
       </Box>
 
-      <Box flex="1">
+      <Box flex="0.6">
         <Typography
           variant="h6"
           sx={{
@@ -207,7 +207,7 @@ export function TradeTable() {
         </TableContainer>
       </Box>
 
-      <Box flex="1">
+      <Box flex="1.6">
         <Typography
           variant="h6"
           sx={{
@@ -222,9 +222,9 @@ export function TradeTable() {
           <Table sx={{ tableLayout: 'fixed' }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '15%' }}>{t("Symbol")}</TableCell>
-                <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '18%' }}>{t("MKT")}</TableCell>
-                <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '19%', paddingLeft: '40px' }}>{t("Qty")}</TableCell>
+                <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '17%' }}>{t("Symbol")}</TableCell>
+                <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '20%' }}>{t("MKT")}</TableCell>
+                <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '21%', paddingLeft: '40px' }}>{t("Qty")}</TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>{t("Value")}</TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>{t("Trade")}</TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>{t("Action")}</TableCell>
