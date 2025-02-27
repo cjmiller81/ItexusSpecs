@@ -5,6 +5,7 @@ import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
+import ListIcon from '@mui/icons-material/List';
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -44,6 +45,11 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
 
 function getOptionTraderPageItems(): SidebarListItem[] {
   return [
+    {
+      title: t("CallSetList", { ns: "SideBar" }),
+      icon: <ListIcon />,
+      href: "/callSetList",
+    },
     {
       title: t("TradingSets", { ns: "SideBar" }),
       icon: <TrendingUpOutlinedIcon />,
