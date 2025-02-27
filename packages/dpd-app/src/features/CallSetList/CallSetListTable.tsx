@@ -8,7 +8,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
   return [
     {
       field: "ticker",
-      headerName: t("Ticker"),
+      headerName: t("Ticker", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -22,7 +22,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "action",
-      headerName: t("Action"),
+      headerName: t("Action", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -36,7 +36,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "optionType",
-      headerName: t("OptionType"),
+      headerName: t("OptionType", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -50,7 +50,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "account",
-      headerName: t("Account"),
+      headerName: t("Account", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -64,7 +64,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "dte",
-      headerName: t("DTE"),
+      headerName: t("DTE", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -78,7 +78,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "range",
-      headerName: t("Range"),
+      headerName: t("Range", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -92,7 +92,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "entryOrder",
-      headerName: t("EntryOrder"),
+      headerName: t("EntryOrder", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -106,7 +106,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "entryType",
-      headerName: t("EntryType"),
+      headerName: t("EntryType", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -120,7 +120,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "entryPrice",
-      headerName: t("EntryPrice"),
+      headerName: t("EntryPrice", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -134,7 +134,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "exitType",
-      headerName: t("ExitType"),
+      headerName: t("ExitType", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -148,7 +148,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "targetOrder",
-      headerName: t("TargetOrder"),
+      headerName: t("TargetOrder", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -162,7 +162,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "targetPrice",
-      headerName: t("TargetPrice"),
+      headerName: t("TargetPrice", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -176,7 +176,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "stopOrder",
-      headerName: t("StopOrder"),
+      headerName: t("StopOrder", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -190,7 +190,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "stopPrice",
-      headerName: t("StopPrice"),
+      headerName: t("StopPrice", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
@@ -204,7 +204,7 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
     },
     {
       field: "speed",
-      headerName: t("Speed"),
+      headerName: t("Speed", { ns: "ColumnsDefs" }),
       sortable: false,
       editable: false,
       filterable: false,
