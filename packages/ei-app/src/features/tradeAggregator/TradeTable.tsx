@@ -15,8 +15,10 @@ import {
   Checkbox,
   Alert,
   Box,
+  Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
 
 interface TradeData {
   symbol: string;
@@ -54,11 +56,11 @@ const currentPositions: CurrentPosition[] = [
 
 export function TradeTable() {
   const [tradeData, setTradeData] = useState<TradeData>({
-    symbol: 'SOL',
+    symbol: '',
     mkt: '',
     qty: '0',
     value: '',
-    action: 'buy',
+    action: '',
   });
   const [showMarketSelector, setShowMarketSelector] = useState(false);
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
@@ -66,11 +68,17 @@ export function TradeTable() {
   const [selectedCEX, setSelectedCEX] = useState('');
   const savedCEXOptions = ['Binance', 'Kraken', 'Coinbase',];
   const { t } = useTranslation(["TradeTable"]);
+  const [insufficientFunds, setInsufficientFunds] = useState<boolean>(false);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
     const parts = marketPair.split('/');
     return parts.length > 1 ? parts[1] : '';
+  };
+
+  const handleSendClick = () => {
+    setConfirmDialogOpen(true);
   };
 
   useEffect(() => {
@@ -96,28 +104,46 @@ export function TradeTable() {
 
   useEffect(() => {
     if (!tradeData.mkt || !tradeData.qty) {
-      setTradeData(prev => ({ ...prev, value: '' }));
+      setTradeData((prev) => ({ ...prev, value: '' }));
+      setInsufficientFunds(false);
       return;
     }
-
-    const selectedMarket = marketData.find(market => market.pair === tradeData.mkt);
+  
+    const selectedMarket = marketData.find((market) => market.pair === tradeData.mkt);
     if (!selectedMarket) {
-      setTradeData(prev => ({ ...prev, value: '' }));
+      setTradeData((prev) => ({ ...prev, value: '' }));
+      setInsufficientFunds(false);
       return;
     }
-
+  
     const price = parseFloat(selectedMarket.price);
     const qty = parseFloat(tradeData.qty.replace(/,/g, ''));
-
+  
     if (isNaN(price) || isNaN(qty)) {
-      setTradeData(prev => ({ ...prev, value: '' }));
+      setTradeData((prev) => ({ ...prev, value: '' }));
+      setInsufficientFunds(false);
       return;
     }
-
-    const calculatedValue = (price * qty).toFixed(2);
-    setTradeData(prev => ({ ...prev, value: calculatedValue }));
-  }, [tradeData.mkt, tradeData.qty]);
-
+  
+    const calculatedValue = price * qty;
+    const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    setTradeData((prev) => ({ ...prev, value: formattedValue }));
+  
+    const position = currentPositions.find(
+      (pos) => pos.symbol.toLowerCase() === tradeData.symbol.toLowerCase()
+    );
+    
+    if (tradeData.action === 'sell') {
+      if (!position) {
+        setInsufficientFunds(true);
+      } else {
+        setInsufficientFunds(calculatedValue > parseFloat(position.qty.replace(/,/g, '')));
+      }
+    } else {
+      setInsufficientFunds(false);
+    }
+  }, [tradeData.mkt, tradeData.qty, tradeData.action, tradeData.symbol]);
+  
   const handleMarketSelect = (market: string) => {
     setTradeData({ ...tradeData, mkt: market });
     setShowMarketSelector(false);
@@ -244,6 +270,7 @@ export function TradeTable() {
                   />
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingRight: '20px' }}>
+                <Tooltip title={t("ExchangeTradePairs")} arrow>
                   <Button
                     onClick={() => setShowMarketSelector(!showMarketSelector)}
                     sx={{
@@ -261,19 +288,24 @@ export function TradeTable() {
                   >
                     {tradeData.mkt || 'Select Market'}
                   </Button>
+                  </Tooltip>
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingLeft: '40px' }}>
-                  <TextField
-                    value={tradeData.qty}
-                    onChange={(e) => setTradeData({ ...tradeData, qty: e.target.value })}
-                    variant="standard"
-                    fullWidth
-                    sx={{
-                      input: { color: 'white' },
-                      '&:before': { borderBottomColor: 'rgba(255, 255, 255, 0.1)' },
-                      width: '100%',
-                    }}
-                  />
+                <TextField
+                  value={tradeData.qty ? Number(tradeData.qty).toLocaleString() : ''}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/,/g, '');
+                    if (!isNaN(Number(rawValue))) {
+                      setTradeData(prev => ({ ...prev, qty: rawValue }));
+                    }
+                  }}
+                  variant="standard"
+                  sx={{
+                    input: { color: 'white' },
+                    '&:before': { borderBottomColor: 'rgba(255, 255, 255, 0.1)' },
+                  }}
+                />
+
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
                   <TextField
@@ -294,6 +326,7 @@ export function TradeTable() {
                   <Select
                     value={tradeData.action}
                     onChange={(e) => setTradeData({ ...tradeData, action: e.target.value })}
+                    displayEmpty
                     variant="standard"
                     sx={{
                       color: 'white',
@@ -301,40 +334,49 @@ export function TradeTable() {
                       '& .MuiSelect-icon': { color: 'white' },
                     }}
                   >
-                    <MenuItem value="buy">Buy</MenuItem>
-                    <MenuItem value="sell">Sell</MenuItem>
+                    <MenuItem value="" disabled>
+                    {t("Select")}
+                  </MenuItem>
+                    <MenuItem value="buy">{t("Buy")}</MenuItem>
+                    <MenuItem value="sell">{t("Sell")}</MenuItem>
                   </Select>
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: '#4caf50',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      '&:hover': {
-                        backgroundColor: '#45a049',
-                      },
-                    }}
-                  >
-                    {t("SEND")}
-                  </Button>
+                <Tooltip title={t("SendTradeExchange")} arrow>
+                <Button
+                  variant="contained"
+                  disabled={!tradeData.mkt || !tradeData.action || crossPairWarning !== null}
+                  onClick={handleSendClick}
+                  sx={{ backgroundColor: '#4caf50', color: 'white', fontWeight: 'bold', '&:hover': { backgroundColor: '#45a049' } }}
+                >
+                  {t("SEND")}
+                </Button>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
 
-        {crossPairWarning && (
-          <Typography 
-            sx={{ 
-              color: '#ff4d4d', 
+        <ConfirmTransactionDialog
+                  open={confirmDialogOpen}
+                  onClose={() => setConfirmDialogOpen(false)}
+                  tradeData={tradeData}
+                  selectedCEX={selectedCEX}
+                />
+
+        {(crossPairWarning || insufficientFunds) && (
+          <Typography
+            sx={{
+              color: '#ff4d4d',
               marginBottom: 2,
               fontSize: '0.875rem',
-              fontWeight: 500
+              fontWeight: 500,
             }}
           >
-            {crossPairWarning}
+            {crossPairWarning || insufficientFunds ? (
+              insufficientFunds ? t("WarningInsufficientFunds") : crossPairWarning
+            ) : null}
           </Typography>
         )}
 
@@ -343,8 +385,8 @@ export function TradeTable() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>MKT</TableCell>
-                  <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>Price</TableCell>
+                  <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>{t("MKT")}</TableCell>
+                  <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>{t("Price")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
