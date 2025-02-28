@@ -175,7 +175,7 @@
     "ConfirmSend": "Confirm Send"
   },
   "TradeTable": {
-    "PleaseSelectDifferentMarket": "Please select a different market, cross pair to trade against is not available in your Current Positions",
+    "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
     "CEX": "CEX",
     "CurrentPosition": "Current Position",
     "Symbol": "Symbol",
@@ -185,7 +185,13 @@
     "Value": "Value",
     "Trade": "Trade",
     "Action": "Action",
-    "SEND": "SEND"
+    "SEND": "SEND",
+    "Select": "Select",
+    "Buy": "Buy",
+    "Sell": "Sell",
+    "WarningInsufficientFunds": "Warning, you have insufficient funds of your trading pair currency to make this trade. You must either increase your currency amount or decrease the quantity of the target coin",
+    "SendTradeExchange": "Send Trade to Exchange",
+    "ExchangeTradePairs": "Exchange trade pairs"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
