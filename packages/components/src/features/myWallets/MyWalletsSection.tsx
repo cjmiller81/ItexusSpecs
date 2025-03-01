@@ -68,7 +68,7 @@ export const MyWalletsSection = ({
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
-  const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
+  const [dialogState, setDialogState] = useState(["Kraken"]);
   
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
@@ -91,7 +91,7 @@ export const MyWalletsSection = ({
     onSubmit: async (values, { resetForm }) => {
       resetForm();
       setOpenKrakenDialog(false);
-      setOpenCoinbaseDialog(false);
+      //setOpenCoinbaseDialog(false);
       
         try {
           
@@ -126,21 +126,22 @@ export const MyWalletsSection = ({
     const value = event.target.value;
     if (
       value === "" ||
-      value === "Kraken" ||
-      value === "Coinbase"
+      value === "Kraken" 
+      // ||
+      // value === "Coinbase"
     ) {
       setSelectedService(value);
-      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
+      formik.setFieldValue("chainName", value === "Kraken");
     }
   };
 
   const handleCancelExchange = () => {
-    setDialogState(["Kraken", "Coinbase"]);
+    setDialogState(["Kraken"]);
     setActiveConnection("");
     setSelectedService("");
     setOpenExchangeDialog(false);
     setOpenKrakenDialog(false);
-    setOpenCoinbaseDialog(false);
+    //setOpenCoinbaseDialog(false);
   };
 
   //eslint-disable-next-line no-undef
@@ -158,9 +159,10 @@ export const MyWalletsSection = ({
     useEffect(() => {
     if (selectedService === "Kraken") {
       setOpenKrakenDialog(true);
-    } else if (selectedService === "Coinbase") {
-      setOpenCoinbaseDialog(true);
-    }
+    } 
+    // else if (selectedService === "Coinbase") {
+    //   setOpenCoinbaseDialog(true);
+    // }
     setOpenExchangeDialog(false);
   }, [selectedService]);  
 
@@ -314,12 +316,12 @@ export const MyWalletsSection = ({
         onChainNameChange={handleChainNameChange}
       />
 
-      <CoinbaseDialog
+      {/* <CoinbaseDialog
         open={openCoinbaseDialog}
         formik={formik}
         onClose={handleCancelExchange}
         onChainNameChange={handleChainNameChange}
-      />
+      /> */}
       </StyledAdaptivePageBox>
       </Box>
 
