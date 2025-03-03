@@ -135,7 +135,8 @@
     "HighVolumeDailyScan": "High Volume Daily Scan",
     "OptionTrader": "Option Trader",
     "TradingSets": "Trading Sets",
-    "Calls": "Calls"
+    "Calls": "Calls",
+    "CallSetList": "Call Set List"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -155,7 +156,22 @@
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address",
     "PersonalPublic": "Personal",
-    "WalletName": "Wallet Name"
+    "WalletName": "Wallet Name",
+    "Ticker": "Ticker",
+    "Action": "Action",
+    "OptionType": "Option Type",
+    "Account": "Account",
+    "DTE": "DTE",
+    "Range": "Range",
+    "EntryOrder": "Entry Order",
+    "EntryType": "Entry Type",
+    "EntryPrice": "Entry Price",
+    "ExitType": "Exit Type",
+    "TargetOrder": "Target Order",
+    "TargetPrice": "Target Price",
+    "StopOrder": "Stop Order",
+    "StopPrice": "Stop Price",
+    "Speed": "Speed"
   },
   "SymbolLookup": {
     "Search": "Search"

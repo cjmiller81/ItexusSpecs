@@ -13,15 +13,15 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
-  useTheme,
   FormControl
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { TierData } from '@/models/TierData';
+import { Column } from '@/models/Column';
 import { useTranslation } from 'react-i18next';
-import React from "react";
 
-const columns = [
+const columns: Column[] = [
   { id: 'addTier', label: 'Add Tier', minWidth: 80, align: 'center' },
   { id: 'exitTier', label: 'Exit Tier', minWidth: 80, align: 'center' },
   { id: 'percentPosition', label: '% Position', minWidth: 100, align: 'center' },
@@ -65,6 +65,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
       const value = parseFloat(row.percentPosition);
       return sum + (isNaN(value) ? 0 : value);
     }, 0);
+
     const remainingPercent = Math.max(0, 100 - totalAllocated);
     
     const newRow: TierData = {
@@ -270,6 +271,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
+                  align={column.align}
                   style={{ minWidth: column.minWidth }}
                   sx={styles.headerCell}
                 >
@@ -281,17 +283,13 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
           <TableBody>
             {rows.map((row, index) => (
               <TableRow hover tabIndex={-1} key={row.id}>
-                {/* Add Tier Button - empty cell for regular rows */}
                 <TableCell sx={styles.tableCell} align="center">
-                  {/* No add button in regular rows */}
                 </TableCell>
                 
-                {/* Exit Tier - static number */}
                 <TableCell sx={styles.tableCell} align="center">
                   <span style={styles.staticText}>{row.exitTier}</span>
                 </TableCell>
                 
-                {/* % Position - number input */}
                 <TableCell sx={styles.tableCell} align="center">
                   <TextField
                     value={row.percentPosition}
@@ -304,7 +302,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                   />
                 </TableCell>
                 
-                {/* Exit Type - dropdown */}
                 <TableCell sx={styles.tableCell} align="center">
                   <FormControl size="small" fullWidth sx={styles.selectInput}>
                     <Select
@@ -312,13 +309,14 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                       onChange={(e) => handleExitTypeChange(row.id, e)}
                       displayEmpty
                     >
-                      <MenuItem value="Limit">Limit</MenuItem>
-                      <MenuItem value="OCO">OCO</MenuItem>
+                      <MenuItem value="Limit">{t("Limit")}</MenuItem>
+                      <MenuItem value="OCO">{t("OCO")}</MenuItem>
+                      <MenuItem value="Limit">{t("Limit")}</MenuItem>
+                      <MenuItem value="OCO">{t("OCO")}</MenuItem>
                     </Select>
                   </FormControl>
                 </TableCell>
                 
-                {/* Option Pft Offset - number input */}
                 <TableCell sx={styles.tableCell} align="center">
                   <TextField
                     value={row.optionPftOffset}
@@ -331,7 +329,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                   />
                 </TableCell>
                 
-                {/* Option Stop Offset - number input, disabled for Limit */}
                 <TableCell sx={styles.tableCell} align="center">
                   {row.exitType === 'Limit' ? (
                     <span style={styles.staticText}>--</span>
@@ -348,7 +345,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                   )}
                 </TableCell>
                 
-                {/* Stock Pft Offset - number input */}
                 <TableCell sx={styles.tableCell} align="center">
                   <TextField
                     value={row.stockPftOffset}
@@ -361,7 +357,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                   />
                 </TableCell>
                 
-                {/* Stock Stop Offset - number input, disabled for Limit */}
                 <TableCell sx={styles.tableCell} align="center">
                   {row.exitType === 'Limit' ? (
                     <span style={styles.staticText}>--</span>
@@ -378,7 +373,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                   )}
                 </TableCell>
                 
-                {/* Remove Tier Button - only for rows after the first */}
                 <TableCell sx={styles.tableCell} align="center">
                   {index > 0 && (
                     <IconButton 
@@ -394,7 +388,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
             ))}
           </TableBody>
           
-          {/* Add the "+Add Tier" row that appears when % Position < 100 */}
           {shouldShowAddTierButton() && (
             <TableBody>
               <TableRow hover tabIndex={-1} key="add-tier-row">
@@ -410,7 +403,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     onClick={handleAddTier}
                   >
                     <AddIcon fontSize="small" style={{ marginRight: '4px' }} />
-                    Add Tier
+                    {t("AddTier")}
                   </div>
                 </TableCell>
                 <TableCell sx={styles.tableCell} align="center"></TableCell>
