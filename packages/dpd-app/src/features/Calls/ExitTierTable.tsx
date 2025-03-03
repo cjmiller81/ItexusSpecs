@@ -388,7 +388,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
             ))}
           </TableBody>
           
-          {shouldShowAddTierButton() && (
+          {isSendTriggerChecked && shouldShowAddTierButton() && (
             <TableBody>
               <TableRow hover tabIndex={-1} key="add-tier-row">
                 <TableCell sx={{...styles.tableCell, backgroundColor: '#1976d2', padding: '0'}} align="center">
