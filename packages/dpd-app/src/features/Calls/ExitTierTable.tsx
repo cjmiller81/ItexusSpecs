@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -13,15 +13,14 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
-  useTheme,
   FormControl
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { TierData } from '@/models/TierData';
-import { useTranslation } from 'react-i18next';
-import React from "react";
+import { Column } from '@/models/Column';
 
-const columns = [
+const columns: Column[] = [
   { id: 'addTier', label: 'Add Tier', minWidth: 80, align: 'center' },
   { id: 'exitTier', label: 'Exit Tier', minWidth: 80, align: 'center' },
   { id: 'percentPosition', label: '% Position', minWidth: 100, align: 'center' },
@@ -44,14 +43,9 @@ const defaultInitialRow: TierData = {
   stockStopOffset: '--',
 };
 
-export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecked}) {
+export default function DynamicTable() {
   const theme = useTheme();
   const [rows, setRows] = useState<TierData[]>([defaultInitialRow]);
-  const { t } = useTranslation("CallsSection");
-
-  useEffect(() => {
-    setRows(isSendTriggerChecked ? [defaultInitialRow] : []);
-  }, [isSendTriggerChecked]);
 
   const updateExitTiers = (updatedRows: TierData[]) => {
     return updatedRows.map((row, index) => ({
@@ -61,7 +55,10 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   };
 
   const handleAddTier = () => {
-    const totalAllocated = rows.reduce((sum, row) => sum + parseFloat(row.percentPosition), 0);
+    const totalAllocated = rows.reduce((sum, row) => {
+      const value = parseFloat(row.percentPosition);
+      return sum + (isNaN(value) ? 0 : value);
+    }, 0);
     const remainingPercent = Math.max(0, 100 - totalAllocated);
     
     const newRow: TierData = {
@@ -107,14 +104,19 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
 
   const handleNumberChange = (id: string, field: keyof TierData, value: string) => {
     if (field === 'percentPosition') {
-      const newRows = rows.map(row => {
+      const otherRowsSum = rows.reduce((sum, row) => 
+        row.id !== id ? sum + parseFloat(row.percentPosition) : sum, 0);
+      
+      const numValue = parseFloat(value);
+      const maxAllowed = 100 - otherRowsSum;
+      const validValue = isNaN(numValue) ? '0' : Math.min(numValue, maxAllowed).toString();
+      
+      setRows(rows.map(row => {
         if (row.id === id) {
-          return { ...row, [field]: value };
+          return { ...row, [field]: validValue };
         }
         return row;
-      });
-      
-      setRows(newRows);
+      }));
     } else {
       setRows(
         rows.map(row => {
@@ -154,9 +156,12 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   };
 
   const shouldShowAddTierButton = () => {
-    const totalAllocated = rows.reduce((sum, row) => sum + parseFloat(row.percentPosition), 0);
+    const totalAllocated = rows.reduce((sum, row) => {
+      const value = parseFloat(row.percentPosition);
+      return sum + (isNaN(value) ? 0 : value);
+    }, 0);
     
-    return totalAllocated < 100;
+    return Math.round(totalAllocated) < 100;
   };
 
   const styles = {
@@ -259,6 +264,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
+                  align={column.align}
                   style={{ minWidth: column.minWidth }}
                   sx={styles.headerCell}
                 >
@@ -271,15 +277,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
             {rows.map((row, index) => (
               <TableRow hover tabIndex={-1} key={row.id}>
                 <TableCell sx={styles.tableCell} align="center">
-                  {index > 0 && (
-                    <IconButton 
-                      size="small" 
-                      sx={styles.addButton}
-                      onClick={handleAddTier}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  )}
                 </TableCell>
                 
                 <TableCell sx={styles.tableCell} align="center">
@@ -305,8 +302,8 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                       onChange={(e) => handleExitTypeChange(row.id, e)}
                       displayEmpty
                     >
-                      <MenuItem value="Limit">{t("Limit")}</MenuItem>
-                      <MenuItem value="OCO">{t("OCO")}</MenuItem>
+                      <MenuItem value="Limit">Limit</MenuItem>
+                      <MenuItem value="OCO">OCO</MenuItem>
                     </Select>
                   </FormControl>
                 </TableCell>
@@ -382,7 +379,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
             ))}
           </TableBody>
           
-          {isSendTriggerChecked && shouldShowAddTierButton() && (
+          {shouldShowAddTierButton() && (
             <TableBody>
               <TableRow hover tabIndex={-1} key="add-tier-row">
                 <TableCell sx={{...styles.tableCell, backgroundColor: '#1976d2', padding: '0'}} align="center">
@@ -397,7 +394,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     onClick={handleAddTier}
                   >
                     <AddIcon fontSize="small" style={{ marginRight: '4px' }} />
-                    {t("AddTier")}
+                    Add Tier
                   </div>
                 </TableCell>
                 <TableCell sx={styles.tableCell} align="center"></TableCell>
