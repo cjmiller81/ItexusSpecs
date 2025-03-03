@@ -292,11 +292,11 @@ export function TradeTable() {
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingLeft: '40px' }}>
                 <TextField
-                  value={tradeData.qty ? Number(tradeData.qty).toLocaleString() : ''}
+                  value={tradeData.qty}
                   onChange={(e) => {
-                    const rawValue = e.target.value.replace(/,/g, '');
-                    if (!isNaN(Number(rawValue))) {
-                      setTradeData(prev => ({ ...prev, qty: rawValue }));
+                    let rawValue = e.target.value.replace(/,/g, '');
+                    if (/^\d*\.?\d*$/.test(rawValue)) {
+                      setTradeData((prev) => ({ ...prev, qty: rawValue }));
                     }
                   }}
                   variant="standard"
