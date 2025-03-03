@@ -172,7 +172,8 @@
     "EstTotal": "Est Total",
     "SlippageTolerance": "Slippage Tolerance",
     "SwapFor": "Swap For",
-    "ConfirmSend": "Confirm Send"
+    "ConfirmSend": "Confirm Send",
+    "ExchangeNameAlreadyExists": "Exchange name already exists"
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",

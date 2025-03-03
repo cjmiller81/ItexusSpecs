@@ -63,12 +63,13 @@ export const MyWalletsSection = ({
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
-  const [openCoinbaseDialog, setOpenCoinbaseDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [dialogState, setDialogState] = useState(["Kraken"]);
+  const [isEditing, setIsEditing] = useState(false);
+
   
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
@@ -86,37 +87,54 @@ export const MyWalletsSection = ({
     validationSchema: Yup.object({
       apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
       apiSecret: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
-      chainName: Yup.string().required(t("ChainNameRequired")),
+      chainName: Yup.string()
+      .required(t("ChainNameRequired"))
+      .test("unique-name", t("ExchangeNameExists"), (value) => {
+        if (!value) return true;
+        
+        return (
+          !isEditing ||
+          !exchange.some((ex) => String(ex?.name || "").toLowerCase() === String(value || "").toLowerCase())
+        );
+      }),
     }),
+    
     onSubmit: async (values, { resetForm }) => {
-      resetForm();
-      setOpenKrakenDialog(false);
-      //setOpenCoinbaseDialog(false);
-      
-        try {
-          
-          const result = await krakenApi.connectToKraken({
-            login: null,
-            publicApiKey: values.apiKey,
-            privateApiKey: values.apiSecret,
-            userId: null,
-          });
-          if (result) {
-            const newExchange = {
-              exchange_id: selectedService,
-              name: selectedService,
-            };
-          
-            setExchange(prevExchange => [...prevExchange, newExchange]);
+      try {
+        const result = await krakenApi.connectToKraken({
+          login: null,
+          publicApiKey: values.apiKey,
+          privateApiKey: values.apiSecret,
+          userId: null,
+        });
+    
+        if (result) {
+          const newExchange = {
+            exchange_id: selectedService,
+            name: values.chainName,
+            apiKey: values.apiKey,
+            apiSecret: values.apiSecret,
+          };
+    
+          if (isEditing) {
+            setExchange((prevExchange) =>
+              prevExchange.map((ex) =>
+                ex.exchange_id === selectedService ? newExchange : ex
+              )
+            );
+          } else {
+            setExchange((prevExchange) => [...prevExchange, newExchange]);
           }
-        } catch (error) {
-          console.error("Failed to connect to Kraken", error);
-          handleCancelExchange();
         }
-      
-    },
-  });
-  
+      } catch (error) {
+        console.error("Failed to connect to Kraken", error);
+      } finally {
+        resetForm();
+        setIsEditing(false);
+        setOpenKrakenDialog(false);
+      }
+    }
+  });  
   
   const handleChainNameChange = (name: string) => {
     setSelectedService(name);
@@ -127,8 +145,6 @@ export const MyWalletsSection = ({
     if (
       value === "" ||
       value === "Kraken" 
-      // ||
-      // value === "Coinbase"
     ) {
       setSelectedService(value);
       formik.setFieldValue("chainName", value === "Kraken");
@@ -141,7 +157,6 @@ export const MyWalletsSection = ({
     setSelectedService("");
     setOpenExchangeDialog(false);
     setOpenKrakenDialog(false);
-    //setOpenCoinbaseDialog(false);
   };
 
   //eslint-disable-next-line no-undef
@@ -160,9 +175,6 @@ export const MyWalletsSection = ({
     if (selectedService === "Kraken") {
       setOpenKrakenDialog(true);
     } 
-    // else if (selectedService === "Coinbase") {
-    //   setOpenCoinbaseDialog(true);
-    // }
     setOpenExchangeDialog(false);
   }, [selectedService]);  
 
@@ -197,8 +209,21 @@ export const MyWalletsSection = ({
   };
 
   const handleExchangeEditClick = (id: GridRowId) => {
+    setIsEditing(true); 
+    const exchangeToEdit = exchange.find((ex) => ex.exchange_id === id);
     
+    if (exchangeToEdit) {
+      formik.setValues({
+        apiKey: exchangeToEdit.apiKey || "",
+        apiSecret: exchangeToEdit.apiSecret || "",
+        chainName: exchangeToEdit.name,
+      });
+    }
+  
+    setOpenKrakenDialog(true);
   };
+  
+  
 
   const handleExchangeDeleteClick = (id: GridRowId) => {
     setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
@@ -303,25 +328,20 @@ export const MyWalletsSection = ({
           {t("AddCentarlizedWallet")}
         </StyledAddWalletButton>
         <ExchangeDialog
-        open={openExchangeDialog}
-        title={dialogState}
-        selectedService={dialogState}
-        onClose={handleCancelExchange}
-        onServiceChange={handleServiceChange}
-      />
+          open={openExchangeDialog}
+          title={dialogState}
+          selectedService={dialogState}
+          onClose={handleCancelExchange}
+          onServiceChange={handleServiceChange}
+        />
+
       <KrakenDialog
         open={openKrakenDialog}
         formik={formik}
         onClose={handleCancelExchange}
         onChainNameChange={handleChainNameChange}
+        existingExchanges={exchange}
       />
-
-      {/* <CoinbaseDialog
-        open={openCoinbaseDialog}
-        formik={formik}
-        onClose={handleCancelExchange}
-        onChainNameChange={handleChainNameChange}
-      /> */}
       </StyledAdaptivePageBox>
       </Box>
 
