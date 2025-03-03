@@ -191,7 +191,9 @@
     "Sell": "Sell",
     "WarningInsufficientFunds": "Warning, you have insufficient funds of your trading pair currency to make this trade. You must either increase your currency amount or decrease the quantity of the target coin",
     "SendTradeExchange": "Send Trade to Exchange",
-    "ExchangeTradePairs": "Exchange trade pairs"
+    "ExchangeTradePairs": "Exchange trade pairs",
+    "ConfirmTransaction": "Confirm Transaction",
+    "EstTotal": "Est Total"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
