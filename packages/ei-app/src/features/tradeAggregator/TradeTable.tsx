@@ -128,12 +128,12 @@ export function TradeTable() {
     const calculatedValue = price * qty;
     const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     setTradeData((prev) => ({ ...prev, value: formattedValue }));
-  
+    const crossPair = getCrossPair(tradeData.mkt);
     const position = currentPositions.find(
-      (pos) => pos.symbol.toLowerCase() === tradeData.symbol.toLowerCase()
+      (pos) => pos.symbol.toLowerCase() === crossPair.toLowerCase()
     );
     
-    if (tradeData.action === 'sell') {
+    if (tradeData.action === 'sell' || tradeData.action === 'buy') {
       if (!position) {
         setInsufficientFunds(true);
       } else {
@@ -267,6 +267,7 @@ export function TradeTable() {
                       input: { color: 'white' },
                       '&:before': { borderBottomColor: 'rgba(255, 255, 255, 0.1)' },
                     }}
+                    autoComplete="off"
                   />
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingRight: '20px' }}>
@@ -292,11 +293,11 @@ export function TradeTable() {
                 </TableCell>
                 <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingLeft: '40px' }}>
                 <TextField
-                  value={tradeData.qty ? Number(tradeData.qty).toLocaleString() : ''}
+                  value={tradeData.qty}
                   onChange={(e) => {
-                    const rawValue = e.target.value.replace(/,/g, '');
-                    if (!isNaN(Number(rawValue))) {
-                      setTradeData(prev => ({ ...prev, qty: rawValue }));
+                    let rawValue = e.target.value.replace(/,/g, '');
+                    if (/^\d*\.?\d*$/.test(rawValue)) {
+                      setTradeData((prev) => ({ ...prev, qty: rawValue }));
                     }
                   }}
                   variant="standard"
@@ -345,7 +346,7 @@ export function TradeTable() {
                 <Tooltip title={t("SendTradeExchange")} arrow>
                 <Button
                   variant="contained"
-                  disabled={!tradeData.mkt || !tradeData.action || crossPairWarning !== null}
+                  disabled={!tradeData.mkt || !tradeData.action || crossPairWarning !== null || insufficientFunds === true}
                   onClick={handleSendClick}
                   sx={{ backgroundColor: '#4caf50', color: 'white', fontWeight: 'bold', '&:hover': { backgroundColor: '#45a049' } }}
                 >
