@@ -100,7 +100,7 @@ export const MyWalletsSectionForPage = ({
       resetForm();
       setOpenKrakenDialog(false);
       setOpenCoinbaseDialog(false);
-      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService };
+      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService, apiKey:values.apiKey, apiSecret: values.apiSecret };
       setExchange([...exchange, newExchanges]);
     },
   });
