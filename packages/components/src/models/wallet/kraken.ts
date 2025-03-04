@@ -3,5 +3,5 @@ export interface Kraken {
     publicApiKey: string;
     privateApiKey: string;
     userId: string | null;
-
+    accountName: string | null
 }
