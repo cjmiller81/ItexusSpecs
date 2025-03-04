@@ -208,7 +208,7 @@ export const MyWalletsSection = ({
     const updatedExchanges = exchange.map(ex =>
       ex.name === editingExchangeName ? updatedExchange : ex 
     );
-  
+  console.log(updatedExchanges)
     setExchange(updatedExchanges); 
     setOpenKrakenDialog(false);
     setIsEditing(false);

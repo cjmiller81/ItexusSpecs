@@ -43,7 +43,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
       if (existingExchange) {
         
         const updatedExchange: IExchange = {
-          exchange_id: existingExchange.exchange_id || "",
+          exchange_id: formik.values.chainName,
           name: formik.values.chainName,
           apiKey: formik.values.apiKey,
           apiSecret: formik.values.apiSecret,
