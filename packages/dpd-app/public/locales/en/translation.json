@@ -136,7 +136,7 @@
     "OptionTrader": "Option Trader",
     "TradingSets": "Trading Sets",
     "Calls": "Calls",
-    "CallSetList": "Call Set List"
+    "SetList": "Set List"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
