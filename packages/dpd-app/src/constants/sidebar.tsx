@@ -48,7 +48,7 @@ function getOptionTraderPageItems(): SidebarListItem[] {
     {
       title: t("SetList", { ns: "SideBar" }),
       icon: <ListIcon />,
-      href: "/SetList",
+      href: "/setList",
     },
     {
       title: t("TradingSets", { ns: "SideBar" }),
