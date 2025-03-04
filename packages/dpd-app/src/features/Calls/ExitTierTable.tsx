@@ -311,8 +311,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     >
                       <MenuItem value="Limit">{t("Limit")}</MenuItem>
                       <MenuItem value="OCO">{t("OCO")}</MenuItem>
-                      <MenuItem value="Limit">{t("Limit")}</MenuItem>
-                      <MenuItem value="OCO">{t("OCO")}</MenuItem>
                     </Select>
                   </FormControl>
                 </TableCell>
