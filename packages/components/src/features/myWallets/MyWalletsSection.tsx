@@ -106,6 +106,7 @@ export const MyWalletsSection = ({
           publicApiKey: values.apiKey,
           privateApiKey: values.apiSecret,
           userId: null,
+          accountName: null,
         });
     
         if (result) {
