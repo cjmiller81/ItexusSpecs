@@ -145,7 +145,7 @@ export default function CallOptionSet() {
                     marginTop: "25px",
                     border: "2px solid green", 
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
-            <Typography variant="h5">{t("OptionDetails")}</Typography>
+            <Typography variant="h5"sx={{marginBottom:"10px"}}>{t("OptionDetails")}</Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <TextField 
@@ -268,7 +268,7 @@ export default function CallOptionSet() {
                 marginTop: "25px",
                 border: "2px solid green", 
                 boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
-        <h3>{t("OptionFilter")}</h3>
+        <Typography variant="h5" sx={{marginBottom:"10px"}}>{t("OptionFilter")}</Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -326,7 +326,7 @@ export default function CallOptionSet() {
                 marginTop: "25px",
                 border: "2px solid green", 
                 boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
-          <h3>{t("EntryOrder")}</h3>
+          <Typography variant="h5" sx={{marginBottom:"10px"}}>{t("EntryOrder")}</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Box sx={{ display: "flex", flexDirection: "row", gap: 4 }}>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -508,7 +508,7 @@ export default function CallOptionSet() {
                       marginTop: "25px",
                       border: "2px solid green", 
                       boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
-                <Typography variant="h5">{t("EntryOrder")}</Typography>
+                <Typography variant="h5" sx={{marginBottom:"10px"}}>{t("ExitTiers")}</Typography>
                 <ExitTierTable isSendTriggerChecked = {isSendTriggerChecked} /> 
                   </Box>
               </Box>
