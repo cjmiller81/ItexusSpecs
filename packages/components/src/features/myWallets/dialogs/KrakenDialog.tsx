@@ -14,10 +14,13 @@ interface KrakenDialogProps {
   onClose: () => void;
   onChainNameChange: (name: string) => void;
   existingExchanges: IExchange[];
+  isEditing: boolean;
+  onUpdateExchange: (updatedExchange: IExchange) => void;
+  editingExchangeName: string;
 }
 
 export const KrakenDialog: React.FC<KrakenDialogProps> = ({ 
-  open, formik, onChainNameChange, onClose, existingExchanges,
+  open, formik, onChainNameChange, onClose, existingExchanges, isEditing, onUpdateExchange,editingExchangeName,
 }) => {
   const { t } = useTranslation("IndexModelingSection");
   const theme = useTheme();
@@ -32,17 +35,32 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   
     setExchangeNameError(isDuplicate ? t("ExchangeNameAlreadyExists") : null);
   }, [formik.values.chainName, existingExchanges, t]);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isEditing && formik.values.chainName && !exchangeNameError) {
+      const existingExchange = existingExchanges.find(ex => ex.name === editingExchangeName);
+      if (existingExchange) {
+        
+        const updatedExchange: IExchange = {
+          exchange_id: existingExchange.exchange_id || "",
+          name: formik.values.chainName,
+          apiKey: formik.values.apiKey,
+          apiSecret: formik.values.apiSecret,
+        };
+  
+        onUpdateExchange(updatedExchange);
+  
+        onClose();
+      }
+    }
+  };
+  
   return (
-    <Dialog
-     open={open}
-     onClose={onClose}
-     fullWidth
-     maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{t("ConnectKrakenExchange")}</DialogTitle>
       <DialogContent>
-        <Typography
-         variant="subtitle2"
-         sx={{ marginBottom: "8px" }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: "8px" }}>
           {`${t("AddCustomExchangeAccountName")}*`}
         </Typography>
         <TextField
@@ -73,20 +91,15 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
             mt: "10px",
             borderRadius: "8px",
             display: "flex",
-          }}>
-          <ErrorOutlineIcon
-           fontSize="small"
-           sx={{ height: "17px", width: "17px", margin: "2px 5px 0 0 " }} />
-          <Typography
-            variant="body2"
-            sx={{ color: "black" }}>
+          }}
+        >
+          <ErrorOutlineIcon fontSize="small" sx={{ height: "17px", width: "17px", margin: "2px 5px 0 0 " }} />
+          <Typography variant="body2" sx={{ color: "black" }}>
             {t("PleaseEnsureYouHaveTheNecessaryKraken")}
           </Typography>
         </Box>
 
-        <Typography 
-          variant="subtitle2" 
-          sx={{ marginBottom: "8px" }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: "8px" }}>
           {`${t("APIKey")}*`}
         </Typography>
         <TextField
@@ -100,11 +113,10 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiKey && Boolean(formik.errors.apiKey)}
           helperText={formik.touched.apiKey && (typeof formik.errors.apiKey === "string" ? formik.errors.apiKey : "")}
+          disabled={isEditing} 
         />
 
-        <Typography 
-          variant="subtitle2" 
-          sx={{ marginBottom: "8px" }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: "8px" }}>
           {`${t("PrivateAPIKey")}*`}
         </Typography>
         <TextField
@@ -119,22 +131,21 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiSecret && Boolean(formik.errors.apiSecret)}
           helperText={formik.touched.apiSecret && (typeof formik.errors.apiSecret === "string" ? formik.errors.apiSecret : "")}
+          disabled={isEditing}
         />
       </DialogContent>
       <DialogActions>
-        <Button 
-         variant="outlined" 
-         onClick={onClose}>
+        <Button variant="outlined" onClick={onClose}>
           {t("Cancel")}
         </Button>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={isEditing ? handleSave : formik.handleSubmit}>
           <Button
             variant="contained"
             color="primary"
             type="submit"
             disabled={formik.isSubmitting || Boolean(exchangeNameError)}
           >
-            {t("Connect")}
+            {isEditing ? t("Save") : t("Connect")}
           </Button>
         </form>
       </DialogActions>

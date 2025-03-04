@@ -69,7 +69,7 @@ export const MyWalletsSection = ({
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [dialogState, setDialogState] = useState(["Kraken"]);
   const [isEditing, setIsEditing] = useState(false);
-
+  const [editingExchangeName, setEditingExchangeName] = useState<string>("");
   
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
@@ -147,7 +147,7 @@ export const MyWalletsSection = ({
       value === "Kraken" 
     ) {
       setSelectedService(value);
-      formik.setFieldValue("chainName", value === "Kraken");
+      formik.setFieldValue("chainName", value);
     }
   };
 
@@ -204,6 +204,17 @@ export const MyWalletsSection = ({
     });
   };
 
+  const handleUpdateExchange = ( updatedExchange: IExchange) => {
+    const updatedExchanges = exchange.map(ex =>
+      ex.name === editingExchangeName ? updatedExchange : ex 
+    );
+  
+    setExchange(updatedExchanges); 
+    setOpenKrakenDialog(false);
+    setIsEditing(false);
+  };
+  
+  
   const handleDeleteClick = (id: GridRowId) => {
     onDeleteWallet(id as string);
   };
@@ -211,19 +222,16 @@ export const MyWalletsSection = ({
   const handleExchangeEditClick = (id: GridRowId) => {
     setIsEditing(true); 
     const exchangeToEdit = exchange.find((ex) => ex.exchange_id === id);
-    
     if (exchangeToEdit) {
+      setEditingExchangeName(exchangeToEdit.name)
       formik.setValues({
-        apiKey: exchangeToEdit.apiKey || "",
-        apiSecret: exchangeToEdit.apiSecret || "",
+        apiKey: exchangeToEdit.apiKey,
+        apiSecret: exchangeToEdit.apiSecret,
         chainName: exchangeToEdit.name,
       });
     }
-  
     setOpenKrakenDialog(true);
   };
-  
-  
 
   const handleExchangeDeleteClick = (id: GridRowId) => {
     setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
@@ -335,12 +343,15 @@ export const MyWalletsSection = ({
           onServiceChange={handleServiceChange}
         />
 
-      <KrakenDialog
+      <KrakenDialog 
         open={openKrakenDialog}
         formik={formik}
         onClose={handleCancelExchange}
         onChainNameChange={handleChainNameChange}
         existingExchanges={exchange}
+        isEditing={isEditing}
+        onUpdateExchange={handleUpdateExchange}
+        editingExchangeName ={editingExchangeName}
       />
       </StyledAdaptivePageBox>
       </Box>
