@@ -52,6 +52,7 @@ const currentPositions: CurrentPosition[] = [
   { id: 1, symbol: 'BTC', qty: '0.0050' },
   { id: 2, symbol: 'USDT', qty: '1,110.0000' },
   { id: 3, symbol: 'USD', qty: '10,000.0000' },
+  { id: 4, symbol: 'SOL', qty: '5' },
 ];
 
 export function TradeTable() {
@@ -128,12 +129,25 @@ export function TradeTable() {
     const calculatedValue = price * qty;
     const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     setTradeData((prev) => ({ ...prev, value: formattedValue }));
+    
     const crossPair = getCrossPair(tradeData.mkt);
+
     const position = currentPositions.find(
       (pos) => pos.symbol.toLowerCase() === crossPair.toLowerCase()
     );
-    
-    if (tradeData.action === 'sell' || tradeData.action === 'buy') {
+
+    const positionSell = currentPositions.find(
+      (pos) => pos.symbol.toLowerCase() === tradeData.symbol.toLowerCase()
+    );
+
+    if ( tradeData.action === 'sell') {
+      if (positionSell === undefined) {
+        setInsufficientFunds(true);
+      } else {
+        setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.qty.replace(/,/g, '')));
+      }
+    }     
+    else if ( tradeData.action === 'buy') {
       if (!position) {
         setInsufficientFunds(true);
       } else {
