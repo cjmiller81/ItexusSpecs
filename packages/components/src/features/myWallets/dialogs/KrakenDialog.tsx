@@ -25,12 +25,11 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   const { t } = useTranslation("IndexModelingSection");
   const theme = useTheme();
   const [exchangeNameError, setExchangeNameError] = useState<string | null>(null);
-
   useEffect(() => {
     const isDuplicate = existingExchanges.some((ex) => {
       const exchangeName = typeof ex.name === 'string' ? ex.name : ""; 
       const chainName = typeof formik.values.chainName === 'string' ? formik.values.chainName : "";
-      return exchangeName.toLowerCase() === chainName.toLowerCase();
+      return exchangeName.toLowerCase() === chainName.toLowerCase() && chainName !== editingExchangeName;
     });    
   
     setExchangeNameError(isDuplicate ? t("ExchangeNameAlreadyExists") : null);

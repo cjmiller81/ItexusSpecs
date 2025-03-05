@@ -34,6 +34,7 @@ import { ExpandableChainRow } from "./ChainsRow";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
+  exchanges: IExchange[]| null;
   selectedWalletsIds: string[];
   loading?: boolean;
   onUpdateWallet: (wallet: Wallet) => void;
@@ -50,6 +51,7 @@ export const MyWalletsSection = ({
   onSelectedRowsChanged,
   onUpdateWallet,
   wallets,
+  exchanges,
   totalWalletsWorthData,
   totalAmount,
   loading,
@@ -106,7 +108,7 @@ export const MyWalletsSection = ({
           publicApiKey: values.apiKey,
           privateApiKey: values.apiSecret,
           userId: null,
-          accountName: null,
+          accountName: values.chainName,
         });
     
         if (result) {
@@ -133,6 +135,7 @@ export const MyWalletsSection = ({
         resetForm();
         setIsEditing(false);
         setOpenKrakenDialog(false);
+        setSelectedService("");
       }
     }
   });  
@@ -158,6 +161,12 @@ export const MyWalletsSection = ({
     setSelectedService("");
     setOpenExchangeDialog(false);
     setOpenKrakenDialog(false);
+    setIsEditing(false);
+    formik.setValues({
+      apiKey: "",
+      apiSecret: "",
+      chainName: "",
+    });
   };
 
   //eslint-disable-next-line no-undef
@@ -178,6 +187,12 @@ export const MyWalletsSection = ({
     } 
     setOpenExchangeDialog(false);
   }, [selectedService]);  
+
+  useEffect(() =>{
+    if(exchanges !== null){
+      setExchange(exchanges)
+    }
+  },[exchanges])
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -357,6 +372,7 @@ export const MyWalletsSection = ({
       </Box>
 
       <StyledWalletsTable
+          loading={exchanges === null && loading}
           disableVirtualization
           hideFooter
           sx={{
