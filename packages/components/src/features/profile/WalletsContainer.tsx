@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../slices"
 import {
   createWallet,
   deleteWallet,
+  fetchExchanges,
   fetchTotalWalletsWorthData,
   fetchWallets,
   selectWallets,
@@ -16,7 +17,7 @@ import { toTableTokensModel } from "../../utils/tokensTableHelpers"
 interface Props extends BoxProps {}
 
 export const WalletsContainer = ({ ...props }: Props) => {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, exchanges } = useAppSelector(
     state => state.wallets,
   )
   const [totalAmount,setTotalAmount] = useState<number>(0);
@@ -25,6 +26,10 @@ export const WalletsContainer = ({ ...props }: Props) => {
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null))
+  }, [dispatch])
+
+  useEffect(() => {
+    if (exchanges === null) dispatch(fetchExchanges(null))
   }, [dispatch])
 
   useEffect(() => {
@@ -65,6 +70,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
         totalWalletsWorthData={totalWalletsWorthData}
         loading={statusFetchingWallets === "loading"}
         wallets={wallets}
+        exchanges={exchanges}
         onSelectedRowsChanged={rows => dispatch(selectWallets(rows))}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
