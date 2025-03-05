@@ -61,6 +61,7 @@
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@metamask/sdk": "^0.32.0",
     "@microsoft/signalr": "^8.0.0",
     "@mui/icons-material": "^5.15.12",
     "@mui/lab": "^5.0.0-alpha.167",
