@@ -40,14 +40,6 @@ export const getExchangeAccountColumns = ({
   
           return [
             <GridActionsCellItem
-              key={2}
-              icon={<Edit />}
-              label={t("Edit", { ns: "Common" })}
-              className="textPrimary"
-              onClick={() => handleEditClick(id)}
-              color="inherit"
-            />,
-            <GridActionsCellItem
               key={3}
               icon={<Delete />}
               label={t("Delete", { ns: "Common" })}
