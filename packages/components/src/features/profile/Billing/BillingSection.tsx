@@ -92,11 +92,11 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     }
   
     setSelectedPlanId(plan.id); 
-  
+
     try {
       const paymentIntent: any = await dispatch(
         createPaymentIntentAsync({
-          amount: plan.unitAmountDecimal,
+          amount: plan.unitAmountDecimal / 100,
           currency: "usd",
           customerId: billing?.id || "",
           description: `Subscription for plan ${plan.id}`,
@@ -131,7 +131,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   
   const handlePlanChange = async (newPlan: any) => {
     if (!billing?.id) return;
-  
+
     try {
       if (!selectedPlanId) {
         await handleCreatePaymentIntent(newPlan);
