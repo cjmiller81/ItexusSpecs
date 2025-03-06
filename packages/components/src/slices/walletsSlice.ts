@@ -20,6 +20,7 @@ export interface WalletsState {
   statstatusCreatingWalletus: Status;
   statusFetchingWallets: Status;
   statusDeletingWallets: Status;
+  statusDeletingExchange: Status;
   statusUpdatingWallets: Status;
   statusFetchingExchanges: Status;
   statusTotalWalletWorthFetching: Status;
@@ -33,6 +34,7 @@ const initialState: WalletsState = {
   statstatusCreatingWalletus: "idle",
   statusFetchingWallets: "idle",
   statusDeletingWallets: "idle",
+  statusDeletingExchange: "idle",
   statusUpdatingWallets: "idle",
   statusFetchingExchanges: "idle",
   statusTotalWalletWorthFetching: "idle",
@@ -196,8 +198,26 @@ export const walletsSlice = createAppSlice({
         },
       },
     ),
+    deleteExchange: create.asyncThunk(
+      async (exchange: string) => {
+        await walletsApi.deleteExchange(exchange);
+        return { removedExchange: exchange };
+      },
+      {
+        pending: state => {
+          state.statusDeletingExchange = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.statusDeletingExchange = "idle";
+          state.exchanges = state.exchanges!.filter(w => w.exchange_id !== action.payload.removedExchange);
+        },
+        rejected: state => {
+          state.statusDeletingWallets = "failed";
+        },
+      },
+    ),
   }),
 });
 
-export const { createWallet, deleteWallet, fetchWallets, fetchTotalWalletsWorthData, selectWallets, updateWallet, fetchExchanges } =
+export const { createWallet, deleteWallet, fetchWallets, fetchTotalWalletsWorthData, selectWallets, updateWallet, fetchExchanges, deleteExchange } =
   walletsSlice.actions;
