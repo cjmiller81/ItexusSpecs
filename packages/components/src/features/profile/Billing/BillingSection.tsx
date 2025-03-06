@@ -7,7 +7,6 @@ import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
 import { addMessage, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
-
 import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
 import { PaymentCardTableRow } from "./components/PaymentCardTableRow";
@@ -231,7 +230,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       />
 
       <PaymentMethodModal onClose={() => setPaymentMethodModal(false)} open={paymetMethodModal}>
-        <PaymentMethodSelector onClose={() => setPaymentMethodModal(false)} onAttachCard={onAddCard} />
+        <PaymentMethodSelector onClose={() => setPaymentMethodModal(false)} onAttachCard={onAddCard} paymentMethods ={paymentMethods} />
       </PaymentMethodModal>
 
       <PaymentMethodModal onClose={() => setCardToEditIndex(undefined)} open={cardToEditIndex !== undefined}>
@@ -242,6 +241,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             expiry={cards[cardToEditIndex].expiry}
             onClose={() => setCardToEditIndex(undefined)}
             onAttachCard={onEditCard}
+            paymentMethods ={paymentMethods}
           />
         ) : <></>}
       </PaymentMethodModal>

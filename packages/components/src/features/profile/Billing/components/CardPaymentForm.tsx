@@ -12,9 +12,10 @@ type Props = {
   onAttachCard: (cardData: { number: string; expiry: string; cvc: string }) => void;
   onClose: () => void;
   style?: React.CSSProperties;
+  paymentMethods: any[]
 };
 
-export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => {
+export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style, paymentMethods }) => {
   const { t } = useTranslation("CardPaymentForm");
   const stripe = useStripe();
   const elements = useElements();
@@ -26,70 +27,90 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style }) => 
     (state: RootState) => state.billing
   );
 
-  useEffect(() => {
-    dispatch(getBillingAsync());
-  }, [dispatch]);
+    useEffect(() => {
+      dispatch(getBillingAsync());
+    }, [dispatch]);
 
 
-  useEffect(() => {
-    if (reduxError) {
-      setError(reduxError);
-    }
-  }, [reduxError]);
-
-  const handleSubmit = async () => {
-    setIsProcessing(true);
-    setError(null);
-  
-    if (!stripe || !elements) {
-      setIsProcessing(false);
-      return;
-    }
-  
-    const cardElement = elements.getElement(CardNumberElement);
-    if (!cardElement) {
-      setError("Card element not found.");
-      setIsProcessing(false);
-      return;
-    }
-  
-    const { paymentMethod, error: stripeError } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
-    });
-  
-    if (stripeError) {
-      setError(stripeError.message || "Error processing card");
-      setIsProcessing(false);
-      return;
-    }
-  
-    if (paymentMethod && paymentMethod.id && billing?.id) {
-      try {
-        dispatch(
-          attachPaymentMethodAsync({
-            customerId: billing.id,
-            paymentMethodId: paymentMethod.id,
-          })
-        );
-  
-        onAttachCard({
-          number: paymentMethod.card?.last4 || "****",
-          expiry: `${paymentMethod.card?.exp_month}/${paymentMethod.card?.exp_year}`,
-          cvc: "•••",
-        });
-  
-        onClose(); 
-      } catch (error) {
-        setError("Error while linking the card.");
+    useEffect(() => {
+      if (reduxError) {
+        setError(reduxError);
       }
-    } else {
-      setError("Error: card data is missing.");
-    }
-  
-    setIsProcessing(false);
-  };
-  
+    }, [reduxError]);
+
+    const handleSubmit = async () => {
+      if (isProcessing) return;
+    
+      setIsProcessing(true);
+      setError(null);
+    
+      if (!stripe || !elements) {
+        setIsProcessing(false);
+        return;
+      }
+    
+      const cardElement = elements.getElement(CardNumberElement);
+      if (!cardElement) {
+        setError("Card element not found.");
+        setIsProcessing(false);
+        return;
+      }
+    
+      const { paymentMethod, error: stripeError } = await stripe.createPaymentMethod({
+        type: "card",
+        card: cardElement,
+      });
+    
+      if (stripeError) {
+        setError(stripeError.message || "Error processing card");
+        setIsProcessing(false);
+        return;
+      }
+    
+      if (paymentMethod && paymentMethod.id && billing?.id) {
+        try {
+          const existingPaymentMethod = paymentMethods?.find(pm => pm.id === paymentMethod.id);
+          if (existingPaymentMethod) {
+            setError("This card is already linked.");
+            setIsProcessing(false);
+            return;
+          }
+    
+          const actionResult = await dispatch(
+            attachPaymentMethodAsync({
+              customerId: billing.id,
+              paymentMethodId: paymentMethod.id,
+            })
+          );
+    
+          if (attachPaymentMethodAsync.fulfilled.match(actionResult)) {
+            console.log(actionResult)
+            if (actionResult.payload.success == false && actionResult.payload.message) {
+              setError(actionResult.payload.message);
+            } else {
+              onAttachCard({
+                number: paymentMethod.card?.last4 || "****",
+                expiry: `${paymentMethod.card?.exp_month}/${paymentMethod.card?.exp_year}`,
+                cvc: "•••",
+              });
+              onClose();
+            }
+          }
+    
+          if (attachPaymentMethodAsync.rejected.match(actionResult)) {
+            setError(actionResult.payload || "Error while linking the card.");
+          }
+    
+        } catch (error) {
+          setError("An unknown error occurred.");
+        }
+      } else {
+        setError("Error: card data is missing.");
+      }
+    
+      setIsProcessing(false);
+    };
+    
 
   return (
     <Formik initialValues={{}} onSubmit={handleSubmit}>

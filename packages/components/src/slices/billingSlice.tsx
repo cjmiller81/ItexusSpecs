@@ -41,9 +41,9 @@ const initialState: BillingState = {
 export const attachPaymentMethodAsync = createAsyncThunk<
   any,
   { customerId: string; paymentMethodId: string },
-  { rejectValue: string }
+  { rejectValue: string } 
 >(
-  "billing/attachPaymentMethod",
+  'billing/attachPaymentMethod',
   async ({ customerId, paymentMethodId }, { rejectWithValue }) => {
     try {
       const response = await billingService.attachPaymentMethod(customerId, paymentMethodId);

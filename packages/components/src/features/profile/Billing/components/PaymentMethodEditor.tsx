@@ -14,10 +14,11 @@ type Props = StackProps & {
   number?: string;
   cvc?: string;
   expiry?: string;
+  paymentMethods: any[]
 };
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
 
-export const PaymentMethodEditor: FC<Props> = ({ onClose, onAttachCard, number, cvc, expiry, ...props }) => {
+export const PaymentMethodEditor: FC<Props> = ({ onClose, onAttachCard, number, cvc, expiry,paymentMethods, ...props }) => {
   const { t } = useTranslation("PaymentMethodSelector");
   return (
     <Stack
@@ -27,6 +28,7 @@ export const PaymentMethodEditor: FC<Props> = ({ onClose, onAttachCard, number, 
       <Typography variant="h6">{t("Title")}</Typography>
       <Elements stripe={stripePromise}>
       <CardPaymentForm
+        paymentMethods={paymentMethods}
         style={{ marginTop: 32 }}
         onClose={onClose}
         onAttachCard={onAttachCard}

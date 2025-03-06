@@ -171,11 +171,19 @@ export const billingService = {
 
             return response.data;
         } catch (error) {
-            console.error("Failed to attach payment method:", error);
             if (error instanceof AxiosError) {
-                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+                return {
+                    success: false,
+                    message: error.response?.data?.message || error.message,
+                    status: error.response?.status || 'unknown'
+                };
             }
-            throw new Error("Failed to attach payment method");
+    
+            return {
+                success: false,
+                message: "Failed to attach payment method",
+                status: 'unknown'
+            };
         }
     },
 
