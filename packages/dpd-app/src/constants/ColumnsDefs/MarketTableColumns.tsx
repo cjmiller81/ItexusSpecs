@@ -125,23 +125,46 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         filterable: false,
         flex: 1,
         disableColumnMenu: true,
-        valueGetter: params => {
+        valueGetter: (params) => {
           if (!params.row.buyRatio) return "--";
           return params.row.buyRatio.toLocaleString("en-US", {
             maximumFractionDigits: 2,
             minimumFractionDigits: 2,
           });
         },
-        renderCell: (params: GridRenderCellParams<Market, any, any>) => (
-          <Typography
-            variant="body1"
-            sx={{ fontSize: "0.85rem", color: "#9E9E9E", fontWeight: 'bold' }}
-          >
-            {params.formattedValue}
-          </Typography>
-        ),
-      },      
-
+        renderCell: (params: GridRenderCellParams<Market, any, any>) => {
+          const buyRatioValue = params.formattedValue;
+          let cellStyle = {};
+          let textColor = "#9E9E9E";
+          
+          if (buyRatioValue > 1 && buyRatioValue < 1.50) {
+            textColor = "green";
+          } else if (buyRatioValue > 1.5 && buyRatioValue < 3.0) {
+            cellStyle = { backgroundColor: "green", color: "black" };
+          } else if (buyRatioValue > 3.0) {
+            cellStyle = { backgroundColor: "lightblue", color: "black" };
+          } else if (buyRatioValue < 1 && buyRatioValue > 0.50) {
+            textColor = "red";
+          } else if (buyRatioValue < 0.50) {
+            cellStyle = { backgroundColor: "red", color: "white" }; 
+          }
+      
+          return (
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "0.85rem",
+                fontWeight: "bold",
+                color: textColor,
+                ...cellStyle, 
+              }}
+            >
+              {buyRatioValue}
+            </Typography>
+          );
+        },
+      },
+      
       {
         field: "dpIndex",
         headerName: t("DPIndex"),
