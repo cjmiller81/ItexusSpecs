@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../../slices"
 import {
   createWallet,
+  deleteExchange,
   deleteWallet,
   fetchExchanges,
   fetchTotalWalletsWorthData,
@@ -74,6 +75,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
         onSelectedRowsChanged={rows => dispatch(selectWallets(rows))}
         onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
+        onDeleteExchange={exchange => dispatch(deleteExchange(exchange))}
         totalAmount={totalAmount}
       />
     </Box>

@@ -17,6 +17,10 @@ export const walletsApi = {
     return response.data
   },
 
+  deleteExchange: async (exchange: string): Promise<void> => {
+    return appAxios.delete(`/api/kraken/connect/${exchange}`)
+  },
+
   deleteWallet: async (wallet: string): Promise<void> => {
     return appAxios.delete(`/user/wallet/${wallet}`)
   },

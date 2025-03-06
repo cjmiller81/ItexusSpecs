@@ -39,6 +39,7 @@ interface Props extends BoxProps {
   loading?: boolean;
   onUpdateWallet: (wallet: Wallet) => void;
   onDeleteWallet: (wallet: string) => void;
+  onDeleteExchange: (exchange: string) => void;
   onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
@@ -48,6 +49,7 @@ interface Props extends BoxProps {
 export const MyWalletsSection = ({
   onAddWallet,
   onDeleteWallet,
+  onDeleteExchange,
   onSelectedRowsChanged,
   onUpdateWallet,
   wallets,
@@ -250,6 +252,7 @@ export const MyWalletsSection = ({
 
   const handleExchangeDeleteClick = (id: GridRowId) => {
     setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
+    onDeleteExchange(id as string);
   };
 
   const processRowUpdate = (newRow: GridRowModel<Wallet>, _oldRow: GridRowModel<Wallet>) => {
