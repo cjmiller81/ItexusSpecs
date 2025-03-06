@@ -84,7 +84,6 @@ export const CardPaymentForm: FC<Props> = ({ onAttachCard, onClose, style, payme
           );
     
           if (attachPaymentMethodAsync.fulfilled.match(actionResult)) {
-            console.log(actionResult)
             if (actionResult.payload.success == false && actionResult.payload.message) {
               setError(actionResult.payload.message);
             } else {
