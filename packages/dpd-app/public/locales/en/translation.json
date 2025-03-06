@@ -107,7 +107,19 @@
     "BILLING": "BILLING",
     "UserProfile": "User Profile",
     "AvatarUploadingError": "Error while loading image",
-    "ProfileUpdatingError": "Error while updating profile"
+    "ProfileUpdatingError": "Error while updating profile",
+    "BrokerageConnection": "BROKERAGE CONNECTION"
+  },
+  "BrokerageConnectionContainer": {
+    "AuthorizedForTrading": "Authorized for Trading",
+    "AuthorizationExpires": "Authorization expires: Feb 27, 2025 9:58AM",
+    "Disconnect": "Disconnect",
+    "Status": "Status",
+    "AccountNumber": "Account Number",
+    "Reauthorize": "Reauthorize",
+    "ConnectToSchwab": "Connect To Schwab",
+    "Connected": "Connected",
+    "ConnectedToSchwab": "Connected To Schwab"
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",

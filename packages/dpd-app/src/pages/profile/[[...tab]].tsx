@@ -2,7 +2,8 @@ import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
 import {
-  ProfileContainer,
+  BrokerageConnectionContainer,
+    ProfileContainer,
   ProfileDetails,
   ProfilePicture,
   SecurityContainer,
@@ -14,6 +15,7 @@ import {
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+
 
 export default function ProfilePage() {
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
@@ -83,6 +85,10 @@ export default function ProfilePage() {
             label={t("SECURITY")}
             value="security"
           />
+          <Tab
+            label={t("BrokerageConnection")}
+            value="brokerageConnection"
+          />
         </StyledTabList>
         <TabPanel value="details">
           <StyledProfileBox>
@@ -102,6 +108,9 @@ export default function ProfilePage() {
         </TabPanel>
         <TabPanel value="security">
           <SecurityContainer />
+        </TabPanel>
+        <TabPanel value="brokerageConnection">
+        <BrokerageConnectionContainer />
         </TabPanel>
       </TabContext>
     </ProfileContainer>
