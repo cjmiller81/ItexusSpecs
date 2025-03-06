@@ -227,4 +227,21 @@ export const billingService = {
         }
     },
 
+    detachPaymentMethod: async (customerId: string, paymentMethodId: string): Promise<any> => {
+        try {
+          const response = await appAxios.post(
+            "/api/billing/detachPaymentMethod",
+            { CustomerId: customerId, PaymentMethodId: paymentMethodId },
+            { withCredentials: true }
+          );
+          return response.data;
+        } catch (error) {
+          console.error("Failed to detach payment method:", error);
+          if (error instanceof AxiosError) {
+            throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+          }
+          throw new Error("Failed to detach payment method");
+        }
+      },
+
 };

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
+import { addMessage, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 
 import { ProfileContainer } from "../ProfileContainer";
@@ -201,11 +201,26 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     setPaymentMethodModal(false);
   };
 
-  const onDeleteCard = () => {
+  const onDeleteCard = async () => {
     if (cardToDeleteIndex === undefined) return;
-    setCards(cards => [...cards.slice(0, cardToDeleteIndex), ...cards.slice(cardToDeleteIndex + 1)]);
+  
+    const paymentMethodId = paymentMethods[cardToDeleteIndex]?.id;
+  
+    if (!paymentMethodId) return;
+  
+    try {
+      await dispatch(detachPaymentMethodAsync({
+        customerId: billing?.id || "", 
+        paymentMethodId,
+      })).unwrap();
+  
+      setCards(prevCards => prevCards.filter((_, index) => index !== cardToDeleteIndex));
+      dispatch(addMessage(t("CardDeletedMessage")));
+    } catch (error) {
+      dispatch(addMessage(t("CardDeleteErrorMessage")));
+    }
+  
     setCardToDeleteIndex(undefined);
-    dispatch(addMessage(t("CardDeletedMessage")));
   };
 
   const onEditCard = (cardData: CardModel) => {
