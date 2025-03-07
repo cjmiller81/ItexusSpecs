@@ -201,7 +201,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     setPaymentMethodModal(false);
   };
 
-  const onDeleteCard = async () => {
+  const onDeleteCard = async () => {    
     if (cardToDeleteIndex === undefined) return;
   
     const paymentMethodId = paymentMethods[cardToDeleteIndex]?.id;
@@ -214,7 +214,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         paymentMethodId,
       })).unwrap();
   
-      setCards(prevCards => prevCards.filter((_, index) => index !== cardToDeleteIndex));
+      setCards(cards => [...cards.slice(0, cardToDeleteIndex), ...cards.slice(cardToDeleteIndex + 1)]);
       dispatch(addMessage(t("CardDeletedMessage")));
     } catch (error) {
       dispatch(addMessage(t("CardDeleteErrorMessage")));
