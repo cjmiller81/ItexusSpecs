@@ -57,6 +57,25 @@ export const attachPaymentMethodAsync = createAsyncThunk<
   }
 );
 
+export const detachPaymentMethodAsync = createAsyncThunk<
+  any,
+  { customerId: string; paymentMethodId: string },
+  { rejectValue: string }
+>(
+  "billing/detachPaymentMethod",
+  async ({ customerId, paymentMethodId }, { rejectWithValue }) => {
+    try {
+      const response = await billingService.detachPaymentMethod(customerId, paymentMethodId);
+      return response;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to detach payment method");
+      }
+      return rejectWithValue("Failed to detach payment method");
+    }
+  }
+);
+
 export const handleWebhookEventAsync = createAsyncThunk<
   any,
   { eventType: string; eventData: any },
@@ -418,6 +437,20 @@ export const billingSlice = createSlice({
       .addCase(createPaymentIntentAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to create Payment Intent";
+      })
+      .addCase(detachPaymentMethodAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(detachPaymentMethodAsync.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.paymentMethods = state.paymentMethods.filter(
+          (paymentMethod) => paymentMethod.id !== action.payload.id
+        );
+      })
+      .addCase(detachPaymentMethodAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to detach payment method";
       });
   },
 });
