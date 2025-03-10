@@ -1,21 +1,25 @@
 import { useSyncProviders } from "@/hooks/useSyncProviders";
-import { TokenHolding, getAccountHoldings } from "@/utils/metamask";
 import { AccordionDetails, AccordionProps, Box, Checkbox, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, TooltipProps, Typography, styled, tooltipClasses, useTheme } from "@mui/material";
-import { PageTitle, StatePersistedAccordion, StyledAccordionSummary, StyledWalletsTable } from "components";
-import { t } from "i18next";
+import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import { useEffect, useState } from "react";
 import Web3 from 'web3'
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import React from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
-import { positions } from "@mui/system";
+import { type MetaMaskInpageProvider } from '@metamask/providers';
 
 export interface chainModel {
     chainId: number;
     chainName: string;
     symbol: string;
 }
+
+declare global {
+    interface Window {
+      ethereum?: MetaMaskInpageProvider;
+    }
+  }
 
 export interface holding {
     id: number;
