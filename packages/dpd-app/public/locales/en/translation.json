@@ -292,6 +292,7 @@
     "ExitTiers": "Exit Tiers",
     "AddTier": "Add Tier",
     "Limit": "Limit",
-    "OCO": "OCO"
+    "OCO": "OCO",
+    "SaveSubProfileName": "Save Sub-Profile Name As:"
   }
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography } from "@mui/material";
+import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ExitTierTable from "./ExitTierTable";
 import React from "react";
@@ -23,6 +23,7 @@ export default function CallOptionSet() {
   const [onlyTradeUnderlying, setOnlyTradeUnderlying] = useState(false);
   const [isSendTriggerChecked, setIsSendTriggerChecked] = useState(false);
   const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
+  const [newSubProfileOpen, setNewSubProfileOpen] = useState(false);
 
   const handleEntryTypeChange = (event) => {
     const newEntryType = event.target.value;
@@ -71,6 +72,14 @@ export default function CallOptionSet() {
     }
   };
 
+  const handleClickNewSubProfileClose = () =>{
+    setNewSubProfileOpen(false);
+  }
+
+  const handleClickNewSubProfileOpen = () =>{
+    setNewSubProfileOpen(true);
+  }
+
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
       <Typography 
@@ -102,6 +111,7 @@ export default function CallOptionSet() {
         </Select>
 
         <Button variant="contained" 
+        onClick={handleClickNewSubProfileOpen}
           sx={{ 
             height: "40px", 
             bgcolor: "#2A9D8F", 
@@ -114,6 +124,32 @@ export default function CallOptionSet() {
             maxWidth: "100%", }}>
               {t("CreateNewSub-Profile")}
         </Button>
+        <Dialog
+         open={newSubProfileOpen}
+         onClose={handleClickNewSubProfileClose} 
+         fullWidth   
+         maxWidth="xs" 
+         sx={{ width: '100%' }}>
+        <DialogTitle>{t("SaveSubProfileName")}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            type="text"
+            fullWidth
+            variant="outlined"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" sx={{bgcolor: "gray", color: "white"}} onClick={handleClickNewSubProfileClose}>
+            {t("Cancel")}
+          </Button>
+          <Button variant="outlined" sx={{bgcolor: "#2A9D8F", color: "white",}}>
+            {t("Save")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    
         <Button variant="contained" 
           sx={{ 
             height: "40px", bgcolor: "#2A9D8F", color: "white",textTransform: "none",boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}>
