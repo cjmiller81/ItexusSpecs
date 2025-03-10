@@ -127,7 +127,7 @@ export function TradeTable() {
     }
   
     const calculatedValue = price * qty;
-    const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
     setTradeData((prev) => ({ ...prev, value: formattedValue }));
     
     const crossPair = getCrossPair(tradeData.mkt);
