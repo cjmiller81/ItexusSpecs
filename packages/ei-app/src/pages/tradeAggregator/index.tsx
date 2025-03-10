@@ -7,7 +7,6 @@ export default function TradeAggregator(){
     return(
         <Stack>
             <TradeTable></TradeTable>
-            <DexSection></DexSection>
         </Stack>
     )
 }
