@@ -62,9 +62,8 @@ export function TradeTable() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const dispatch = useAppDispatch()
   const [balanceData, setBalanceData] = useState<any[]>([]);
-  const { exchanges } = useAppSelector(
-      state => state.wallets,
-    )
+  const { exchanges } = useAppSelector( state => state.wallets)
+  const balance = useAppSelector((state) => state.kraken.balance);
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -175,16 +174,20 @@ const fetchBalance = async () => {
 };
 
 useEffect(() => {
-  if (balanceData) {
-    const formattedData = Object.entries(balanceData).map(([chainName, balance]) => ({
-      asset: chainName,
-      balance,
-    }));
+  if (balance && typeof balance === 'object') {
+    const formattedData = Object.entries(balance).map(([asset, amount]) => {
+      const formattedAmount = parseFloat(amount.toString()).toFixed(10).replace(/\.?0+$/, '');
+
+      return {
+        asset,
+        balance: formattedAmount,
+      };
+    });
+
     setBalanceData(formattedData);
   }
-}, [balanceData]); // Когда данные из Redux изменяются, обработаем их
+}, [balance]);
 
-  
   const handleMarketSelect = (market: string) => {
     setTradeData({ ...tradeData, mkt: market });
     setShowMarketSelector(false);
