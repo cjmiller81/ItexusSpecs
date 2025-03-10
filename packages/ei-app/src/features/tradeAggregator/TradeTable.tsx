@@ -19,8 +19,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
-import { fetchExchanges, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
-import { krakenApi } from 'components/src/services/krakenService';
+import { fetchExchanges, getAccountBalance, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
 
 interface TradeData {
   symbol: string;
@@ -82,7 +81,6 @@ export function TradeTable() {
     }, [dispatch])
 
 
-    console.log(exchanges)
   useEffect(() => {
     if (!tradeData.mkt) {
       setSelectedPositions([]);
@@ -167,29 +165,25 @@ export function TradeTable() {
       fetchBalance();
     }
   };
-  useEffect(() => {
-    if (selectedCEX) {
-        fetchBalance();
-    }
-}, [selectedCEX]);
 
-  const fetchBalance = async () => {
-    try {
-      const response = await krakenApi.getAccountBalance();
-      if (response && typeof response === 'object' && !Array.isArray(response)) {
-        const formattedData = Object.entries(response).map(([chainName, balance]) => ({
-          asset: chainName,
-          balance,
-        }));
-        setBalanceData(formattedData);
-      } else {
-        console.error('Unexpected response format:', response);
-        setBalanceData([]);
-      }
-    } catch (error) {
-      console.error('Failed to fetch Kraken balance:', error);
-    }
-  };
+const fetchBalance = async () => {
+  try {
+    dispatch(getAccountBalance());
+  } catch (error) {
+    console.error('Failed to fetch Kraken balance:', error);
+  }
+};
+
+useEffect(() => {
+  if (balanceData) {
+    const formattedData = Object.entries(balanceData).map(([chainName, balance]) => ({
+      asset: chainName,
+      balance,
+    }));
+    setBalanceData(formattedData);
+  }
+}, [balanceData]); // Когда данные из Redux изменяются, обработаем их
+
   
   const handleMarketSelect = (market: string) => {
     setTradeData({ ...tradeData, mkt: market });
