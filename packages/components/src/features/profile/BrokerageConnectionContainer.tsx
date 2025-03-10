@@ -12,7 +12,9 @@ export const BrokerageConnectionContainer: React.FC = () => {
 
   const handleConnectionToggle = () => {
     if (!isConnected) {
-      setAccounts([{ accountNumber: "123456789", status: t("Connected") }]);
+      setAccounts([{ accountNumber: "12345", status: t("Connected") }, { accountNumber: "24566", status: t("Connected") }
+        ,{ accountNumber: "550383", status: t("Connected") }
+      ]);
     } else {
       setAccounts([]);
     }
