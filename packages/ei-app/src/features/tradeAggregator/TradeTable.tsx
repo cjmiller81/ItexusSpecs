@@ -13,12 +13,13 @@ import {
   Typography,
   Button,
   Checkbox,
-  Alert,
   Box,
   Tooltip,
+  SelectChangeEvent,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
+import { fetchExchanges, getAccountBalance, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
 
 interface TradeData {
   symbol: string;
@@ -35,11 +36,6 @@ interface MarketData {
   volume: string;
 }
 
-interface CurrentPosition {
-  id: number;
-  symbol: string;
-  qty: string;
-}
 
 const marketData: MarketData[] = [
   { pair: 'SOL/USD', price: '169.16', change24h: '-3.44%', volume: '36.3M' },
@@ -48,12 +44,6 @@ const marketData: MarketData[] = [
   { pair: 'SOL/USDC', price: '169.55', change24h: '-3.35%', volume: '4.12M' },
 ];
 
-const currentPositions: CurrentPosition[] = [
-  { id: 1, symbol: 'BTC', qty: '0.0050' },
-  { id: 2, symbol: 'USDT', qty: '1,110.0000' },
-  { id: 3, symbol: 'USD', qty: '10,000.0000' },
-  { id: 4, symbol: 'SOL', qty: '5' },
-];
 
 export function TradeTable() {
   const [tradeData, setTradeData] = useState<TradeData>({
@@ -67,10 +57,13 @@ export function TradeTable() {
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
   const [crossPairWarning, setCrossPairWarning] = useState<string | null>(null);
   const [selectedCEX, setSelectedCEX] = useState('');
-  const savedCEXOptions = ['Binance', 'Kraken', 'Coinbase',];
   const { t } = useTranslation(["TradeTable"]);
   const [insufficientFunds, setInsufficientFunds] = useState<boolean>(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const dispatch = useAppDispatch()
+  const [balanceData, setBalanceData] = useState<any[]>([]);
+  const { exchanges } = useAppSelector( state => state.wallets)
+  const balance = useAppSelector((state) => state.kraken.balance);
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -83,6 +76,11 @@ export function TradeTable() {
   };
 
   useEffect(() => {
+      if (exchanges === null) dispatch(fetchExchanges(null))
+    }, [dispatch])
+
+
+  useEffect(() => {
     if (!tradeData.mkt) {
       setSelectedPositions([]);
       setCrossPairWarning(null);
@@ -90,7 +88,7 @@ export function TradeTable() {
     }
 
     const crossPair = getCrossPair(tradeData.mkt);
-    const matchingPosition = currentPositions.find(position => position.symbol === crossPair);
+    const matchingPosition = balanceData.find(position => position.symbol === crossPair);
     
     if (matchingPosition) {
       setSelectedPositions([matchingPosition.id]);
@@ -132,11 +130,11 @@ export function TradeTable() {
     
     const crossPair = getCrossPair(tradeData.mkt);
 
-    const position = currentPositions.find(
+    const position = balanceData.find(
       (pos) => pos.symbol.toLowerCase() === crossPair.toLowerCase()
     );
 
-    const positionSell = currentPositions.find(
+    const positionSell = balanceData.find(
       (pos) => pos.symbol.toLowerCase() === tradeData.symbol.toLowerCase()
     );
 
@@ -157,7 +155,39 @@ export function TradeTable() {
       setInsufficientFunds(false);
     }
   }, [tradeData.mkt, tradeData.qty, tradeData.action, tradeData.symbol]);
-  
+
+  const handleCEXSelect = (event: SelectChangeEvent<string>) => {
+    const selectedCEXValue = event.target.value;
+    setSelectedCEX(selectedCEXValue);
+
+    if (selectedCEXValue) {
+      fetchBalance();
+    }
+  };
+
+const fetchBalance = async () => {
+  try {
+    dispatch(getAccountBalance());
+  } catch (error) {
+    console.error('Failed to fetch Kraken balance:', error);
+  }
+};
+
+useEffect(() => {
+  if (balance && typeof balance === 'object') {
+    const formattedData = Object.entries(balance).map(([asset, amount]) => {
+      const formattedAmount = parseFloat(amount.toString()).toFixed(10).replace(/\.?0+$/, '');
+
+      return {
+        asset,
+        balance: formattedAmount,
+      };
+    });
+
+    setBalanceData(formattedData);
+  }
+}, [balance]);
+
   const handleMarketSelect = (market: string) => {
     setTradeData({ ...tradeData, mkt: market });
     setShowMarketSelector(false);
@@ -172,7 +202,7 @@ export function TradeTable() {
       <Box sx={{ minWidth: 200 }}>
         <Select
           value={selectedCEX}
-          onChange={(e) => setSelectedCEX(e.target.value)}
+          onChange={handleCEXSelect}
           displayEmpty
           renderValue={(selected) => (selected ? selected : "+ ADD SAVED CEX")}
           sx={{
@@ -185,9 +215,9 @@ export function TradeTable() {
             "& .MuiSelect-icon": { color: "white" },
           }}
         >
-          {savedCEXOptions.map((cex) => (
-            <MenuItem key={cex} value={cex}>
-              {cex}
+          {exchanges?.map((cex) => (
+            <MenuItem key={cex.exchange_id} value={cex.name}>
+              {cex.name}
             </MenuItem>
           ))}
         </Select>
@@ -215,7 +245,7 @@ export function TradeTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {currentPositions.map((position) => (
+              {balanceData.map((position) => (
                 <TableRow
                   key={position.id}
                   sx={{
@@ -235,10 +265,10 @@ export function TradeTable() {
                     />
                   </TableCell>
                   <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                    {position.symbol}
+                    {position.asset}
                   </TableCell>
                   <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                    {position.qty}
+                    {position.balance}
                   </TableCell>
                 </TableRow>
               ))}
@@ -431,3 +461,9 @@ export function TradeTable() {
     </Box>
   );
 }
+
+const tableScrollSx = {
+    "& .MuiDataGrid-virtualScroller": {
+        ...nativeBarSx,
+    },
+};

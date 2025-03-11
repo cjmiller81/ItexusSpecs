@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Action, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
+import { appAxios } from '../lib/axios/customAxios';
+import { RootState } from './store';
 
 export interface KrakenState {
     isConnected: boolean;
@@ -13,6 +15,12 @@ const initialState: KrakenState = {
     error: null,
     balance: null,
 };
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string> 
+>;
 
 export const krakenSlice = createSlice({
     name: 'kraken',
@@ -46,5 +54,19 @@ export const krakenSlice = createSlice({
     },
 });
 
-export const { connectRequest, connectSuccess, connectFailure } = krakenSlice.actions;
+export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure } = krakenSlice.actions;
 
+export const getAccountBalance = (): AppThunk => async (dispatch) => {
+    dispatch(fetchBalanceRequest());
+    try {
+        const response = await appAxios.get("/api/kraken/account-balance", {
+            withCredentials: true,
+        });
+        dispatch(fetchBalanceSuccess(response.data));
+    } catch (error) {
+        console.error("Failed to fetch Kraken account balance:", error);
+        dispatch(fetchBalanceFailure("Fetching Kraken account balance failed"));
+    }
+};
+
+export default krakenSlice.reducer;
