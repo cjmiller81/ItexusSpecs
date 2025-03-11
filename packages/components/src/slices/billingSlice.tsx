@@ -111,7 +111,7 @@ export const handleWebhookEventAsync = createAsyncThunk<
 );
 
 export const updateSubscriptionAsync = createAsyncThunk<
-  Subscription,
+  Subscription, 
   { SubscriptionId: string; SubscriptionItemId: string; NewPriceId: string },
   { rejectValue: string }
 >(
@@ -123,12 +123,30 @@ export const updateSubscriptionAsync = createAsyncThunk<
         SubscriptionItemId,
         NewPriceId,
       });
+
       return updatedSubscription;
     } catch (error) {
       if (error instanceof AxiosError) {
-        return rejectWithValue(error.response?.data?.message || "Failed to update subscription");
+        const errorMessage = error.response?.data?.message || error.message;
+        return rejectWithValue(errorMessage);
       }
+
       return rejectWithValue("Failed to update subscription");
+    }
+  }
+);
+
+export const cancelSubscriptionAsync = createAsyncThunk<Subscription, { SubscriptionId: string }, { rejectValue: string }>(
+  'billing/cancelSubscription',
+  async ({ SubscriptionId }, { rejectWithValue }) => {
+    try {
+      const cancelledSubscription = await billingService.cancelSubscription({ SubscriptionId });
+      return cancelledSubscription;
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || 'Failed to cancel subscription');
+      }
+      return rejectWithValue("Failed to cancel subscription");
     }
   }
 );
@@ -362,6 +380,19 @@ export const billingSlice = createSlice({
     .addCase(updateSubscriptionAsync.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload || "Failed to update subscription";
+    })
+    .addCase(cancelSubscriptionAsync.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(cancelSubscriptionAsync.fulfilled, (state, action) => {
+      state.loading = false;
+      state.subscription = action.payload;
+      state.error = null;
+    })
+    .addCase(cancelSubscriptionAsync.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
     })
     .addCase(fetchSubscriptionsAsync.pending, (state) => {
       state.loading = true;

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
+import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
@@ -110,14 +110,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       if (paymentIntent.status === "succeeded") {
         dispatch(addMessage(t("PaymentSuccess")));
   
-        await dispatch(
-          createSubscriptionAsync({
-            CustomerId: billing?.id || "",
-            PriceId: plan.id,
-          })
-        ).unwrap();
-  
-        dispatch(fetchSubscriptionsAsync(billing?.id || ""));
       } else if (paymentIntent.status === "requires_action") {
         dispatch(addMessage(t("PaymentRequiresAction")));
       } else {
@@ -132,17 +124,24 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     if (!billing?.id) return;
 
     try {
+      const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billing?.id)).unwrap();
+
       if (!selectedPlanId) {
         await handleCreatePaymentIntent(newPlan);
+
+        await dispatch(
+          createSubscriptionAsync({
+            CustomerId: billing?.id || "",
+            PriceId: newPlan.id,
+          })
+        ).unwrap();
       } else {
         const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
   
         if (!currentPlan) return;
   
         if (newPlan.unitAmountDecimal < currentPlan.unitAmountDecimal) {
-          const activeSubscription = subscriptions
-            ?.filter((sub) => sub.status === "active")
-            ?.sort((a, b) => b.created - a.created)[0];
+          const activeSubscription = subscriptionsData?.[0];
   
           if (activeSubscription) {
             await dispatch(
@@ -157,13 +156,94 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             setSelectedPlanId(newPlan.id);
           }
         } else {
-          await handleCreatePaymentIntent(newPlan);
-          setSelectedPlanId(newPlan.id);
+          const activeSubscription = subscriptionsData?.[0];
+        
+          if (activeSubscription) {
+            await handleCreatePaymentIntentWithProrations(newPlan,activeSubscription);
+    
+            await dispatch(
+              updateSubscriptionAsync({
+                SubscriptionId: activeSubscription.id,
+                SubscriptionItemId: activeSubscription.items[0]?.id,
+                NewPriceId: newPlan.id,
+              })
+            ).unwrap();
+
+            dispatch(addMessage(t("PlanUpgraded")));
+            setSelectedPlanId(newPlan.id);
+          }
         }
       }
     } catch (err) {
       console.error("Plan change failed:", err);
       dispatch(addMessage(t("PlanChangeError")));
+    }
+  };
+
+  const handleCreatePaymentIntentWithProrations = async (newPlan: any, activeSubscription: any) => {
+    try {
+      const prorationAmount = await calculateProrationAmount(activeSubscription, newPlan);
+  
+      if (!prorationAmount) {
+        throw new Error("Failed to calculate proration amount");
+      }
+
+      const paymentIntent: any = await dispatch(
+        createPaymentIntentAsync({
+          amount: prorationAmount,
+          currency: "usd",
+          customerId: billing?.id || "",
+          description: `Proration for plan change to ${newPlan.id}`,
+        })
+      ).unwrap();
+  
+      if (!paymentIntent?.id) {
+        dispatch(addMessage(t("PaymentError")));
+        return;
+      }
+  
+      if (paymentIntent.status === "succeeded") {
+        dispatch(addMessage(t("PaymentSuccess")));
+  
+      } else if (paymentIntent.status === "requires_action") {
+        dispatch(addMessage(t("PaymentRequiresAction")));
+      } else {
+        dispatch(addMessage(t("PaymentPending")));
+      }
+    } catch (err) {
+      console.error("Failed to create payment intent with proration", err);
+      dispatch(addMessage(t("PaymentError")));
+    }
+  };
+  
+  const calculateProrationAmount = (activeSubscription: any, newPlan: any) => {
+    try {
+  
+      const currentPlanAmount = activeSubscription.items[0]?.price?.unitAmount;
+      const newPlanAmount = newPlan?.unitAmount;
+
+      if (!currentPlanAmount || !newPlanAmount) {
+        throw new Error('Invalid current plan or new plan amount');
+      }
+  
+      const currentPeriodEnd = new Date(activeSubscription.currentPeriodEnd).getTime();
+
+      const currentDate = Date.now();
+      const daysLeft = Math.max((currentPeriodEnd - currentDate) / (1000 * 60 * 60 * 24), 0);
+
+      const currentPeriodStart = new Date(activeSubscription.currentPeriodStart).getTime(); ;
+      const countOfDayInMonth = Math.max((currentPeriodEnd - currentPeriodStart) / (1000 * 60 * 60 * 24), 0);
+      const dailyRate = newPlanAmount / countOfDayInMonth;
+
+      const oldSubscriptionRate = currentPlanAmount /countOfDayInMonth;
+
+      const prorationAmount = Math.floor(dailyRate * daysLeft - oldSubscriptionRate * daysLeft);
+
+      return prorationAmount;
+  
+    } catch (error) {
+      console.error('Failed to calculate proration amount:', error);
+      return null;
     }
   };
   
