@@ -1,8 +1,7 @@
-import { useSyncProviders } from "@/hooks/useSyncProviders";
 import { AccordionDetails, AccordionProps, Box, Checkbox, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, TooltipProps, Typography, styled, tooltipClasses, useTheme } from "@mui/material";
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import { useEffect, useState } from "react";
-import Web3 from 'web3'
+import Web3, { EIP6963ProviderDetail } from 'web3'
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import React from "react";
 import { useAppSelector } from "@/libs/redux/Store";
@@ -17,9 +16,9 @@ export interface chainModel {
 
 declare global {
     interface Window {
-      ethereum?: MetaMaskInpageProvider;
+        ethereum?: MetaMaskInpageProvider;
     }
-  }
+}
 
 export interface holding {
     id: number;
@@ -34,15 +33,13 @@ type Props = Omit<AccordionProps, "children"> & {
 
 export function DexSection({ persisKey, ...props }: Props) {
     const [selectedDEX, setSelectedDEX] = useState<string>('');
-    const savedDEXOptions = ['Metamask'];
-    const [selectedWallet, setSelectedWallet] = useState<EIP6963ProviderDetail>()
     const [userAccounts, setUserAccounts] = useState<string[]>()
     const [userAccount, setUserAccount] = useState<string>('')
     const [selectedPositions, setSelectedPositions] = useState<holding[]>([]);
     const [currentPositions, setCurrentPositions] = useState<holding[]>([]);
     const [web3Enabled, setWeb3Enabled] = useState(false);
     const [isSelectAll, setSelectAll] = useState(false);
-    const providers = useSyncProviders();
+    const [providers, setProviders] = useState<EIP6963ProviderDetail[]>([]);
     const theme = useTheme();
     const { sidebarOpened } = useAppSelector(store => store.ui);
     const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
@@ -61,7 +58,6 @@ export function DexSection({ persisKey, ...props }: Props) {
     let web3: Web3 = new Web3()
 
     const ethEnabled = async () => {
-
         if (typeof window.ethereum !== 'undefined') {
             // Instance web3 with the provided information from the MetaMask provider information
             web3 = new Web3(window.ethereum);
@@ -74,11 +70,23 @@ export function DexSection({ persisKey, ...props }: Props) {
                 // User denied access
                 return false
             }
-
         }
-
-        return false;
     }
+
+    useEffect(() => {
+        const web3Connect = async () => {
+            // Following will subscribe to event that will be triggered when providers map is updated.
+
+            // Call the function and wait for the promise to resolve
+            let listOfProviders = await Web3.requestEIP6963Providers();
+            let providersArray: EIP6963ProviderDetail[] = [];
+            listOfProviders.forEach((provider, key) => {
+                providersArray.push(provider);
+                setProviders(providersArray);
+            })
+        }
+        web3Connect().catch(console.error);
+    }, [])
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
@@ -129,7 +137,7 @@ export function DexSection({ persisKey, ...props }: Props) {
                         method: 'wallet_switchEthereumChain',
                         params: [{ chainId: web3.utils.toHex(chain.chainId) }]
                     }).catch(console.error)
-                    const nativeBalance = await web3.eth.getBalance("0xda32721c5e54805e7605ae77030f7f9df43e302a");
+                    const nativeBalance = await web3.eth.getBalance(userAccount);
                     const nativeBalanceNumber = web3.utils.fromWei(nativeBalance, 'ether')
                     if (Number.parseFloat(nativeBalanceNumber) !== 0) {
                         let hld: holding = { chain: chain.chainName, id: index, symbol: chain.symbol, quantity: nativeBalanceNumber, selected: false };
@@ -279,7 +287,7 @@ export function DexSection({ persisKey, ...props }: Props) {
                                             "& .MuiSelect-icon": { color: "white" },
                                         }}
                                     >{
-                                            providers.length > 0 ? providers?.map((provider: EIP6963ProviderDetail) => (
+                                            providers?.length > 0 ? providers.map((provider: EIP6963ProviderDetail) => (
                                                 <MenuItem key={provider.info.uuid} value={provider.info.name} onClick={() => handleConnect(provider)}>{provider.info.name}</MenuItem>
                                             )) :
                                                 <div>
