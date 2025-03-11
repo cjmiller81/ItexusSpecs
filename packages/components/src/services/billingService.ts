@@ -12,6 +12,10 @@ interface BillingRequest {
     Email: string;
 }
 
+interface CancelSubscriptionRequest {
+    SubscriptionId: string;
+  }
+
 interface UpdateSubscriptionRequest {
     SubscriptionId: string;
     SubscriptionItemId: string;
@@ -127,24 +131,37 @@ export const billingService = {
         }
     },
 
-    updateSubscription: async (data: UpdateSubscriptionRequest): Promise<Subscription> => {
+ updateSubscription : async (data: UpdateSubscriptionRequest): Promise<Subscription> => {
         try {
             const response = await appAxios.post(
                 "/api/billing/updateSubscription",
                 data,
                 { withCredentials: true }
             );
-
+    
             return response.data as Subscription;
         } catch (error) {
             console.error("Failed to update subscription:", error);
+    
             if (error instanceof AxiosError) {
-                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+                const errorMessage = error.response?.data?.message || error.message;
+                throw new Error(`API Error: ${errorMessage}`);
             }
+            
             throw new Error("Failed to update subscription");
         }
     },
 
+    cancelSubscription: async (data: CancelSubscriptionRequest): Promise<Subscription> => {
+        try {
+            const response = await appAxios.post("/api/billing/cancelSubscription", data, { withCredentials: true });
+            return response.data as Subscription;
+        } catch (error) {
+            console.error("Failed to cancel subscription:", error);
+            throw new Error(error instanceof Error ? error.message : 'Failed to cancel subscription');
+          }
+        },
+      
     getPaymentMethods: async (customerId: string): Promise<any[]> => {
         try {
             const response = await appAxios.get(`/api/billing/paymentMethods`, {

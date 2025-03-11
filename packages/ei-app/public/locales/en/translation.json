@@ -389,7 +389,8 @@
     "PlanDowngraded": "Plan Downgraded",
     "PlanChangeError": "Plan Change Error",
     "DefaultCardUpdated": "Default Card Updated",
-    "DefaultCardUpdateError": "Default Card Update Error"
+    "DefaultCardUpdateError": "Default Card Update Error",
+    "PlanUpgraded": "Plan Upgraded"
   },
   "Tooltips": {
     "Password": "The password must contain at least 8 characters. Use a combination of numbers and symbols with different case.",
