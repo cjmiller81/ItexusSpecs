@@ -88,10 +88,10 @@ export function TradeTable() {
     }
 
     const crossPair = getCrossPair(tradeData.mkt);
-    const matchingPosition = balanceData.find(position => position.symbol === crossPair);
-    
+    const matchingPosition = balanceData.find(position => position.asset === crossPair);
+
     if (matchingPosition) {
-      setSelectedPositions([matchingPosition.id]);
+      setSelectedPositions([matchingPosition.asset]);
       setCrossPairWarning(null);
     } else {
       setSelectedPositions([]);
@@ -130,26 +130,24 @@ export function TradeTable() {
     
     const crossPair = getCrossPair(tradeData.mkt);
 
-    const position = balanceData.find(
-      (pos) => pos.symbol.toLowerCase() === crossPair.toLowerCase()
-    );
+    const position = balanceData.find((pos) => pos.asset?.toLowerCase() === crossPair?.toLowerCase());
 
     const positionSell = balanceData.find(
-      (pos) => pos.symbol.toLowerCase() === tradeData.symbol.toLowerCase()
+      (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
     );
 
     if ( tradeData.action === 'sell') {
       if (positionSell === undefined) {
         setInsufficientFunds(true);
       } else {
-        setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.qty.replace(/,/g, '')));
+        setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.balance.replace(/,/g, '')));
       }
     }     
     else if ( tradeData.action === 'buy') {
       if (!position) {
         setInsufficientFunds(true);
       } else {
-        setInsufficientFunds(calculatedValue > parseFloat(position.qty.replace(/,/g, '')));
+        setInsufficientFunds(calculatedValue > parseFloat(position.balance.replace(/,/g, '')));
       }
     } else {
       setInsufficientFunds(false);
@@ -177,7 +175,6 @@ useEffect(() => {
   if (balance && typeof balance === 'object') {
     const formattedData = Object.entries(balance).map(([asset, amount]) => {
       const formattedAmount = parseFloat(amount.toString()).toFixed(10).replace(/\.?0+$/, '');
-
       return {
         asset,
         balance: formattedAmount,
@@ -247,9 +244,9 @@ useEffect(() => {
             <TableBody>
               {balanceData.map((position) => (
                 <TableRow
-                  key={position.id}
+                  key={position.asset}
                   sx={{
-                    backgroundColor: selectedPositions.includes(position.id) ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                    backgroundColor: selectedPositions.includes(position.asset) ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
                   }}
                 >
                   <TableCell padding="checkbox" sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
@@ -260,7 +257,7 @@ useEffect(() => {
                           color: 'white',
                         },
                       }}
-                      checked={selectedPositions.includes(position.id)}
+                      checked={selectedPositions.includes(position.asset)}
                       disabled={true}
                     />
                   </TableCell>
