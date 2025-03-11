@@ -303,7 +303,9 @@
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
-    "PrefilterLiquidityPools": "Prefilter Liquidity Pools"
+    "PrefilterLiquidityPools": "Prefilter Liquidity Pools",
+    "TradeAggregatorDEX": "Trade Aggregator, DEX",
+    "TradeAggregatorCurrentPosition": "Current Position"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
