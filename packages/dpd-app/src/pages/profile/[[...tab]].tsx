@@ -13,7 +13,7 @@ import {
   useOry,
 } from "components"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 
@@ -31,18 +31,23 @@ export default function ProfilePage() {
   )
   const { t } = useTranslation("ProfilePage")
 
-  useEffect(() => {
-    router.push(
-      {
-        pathname: `${value}`,
-      },
-      undefined,
-      {
-        shallow: true,
-      },
-    )
-  }, [value, router])
+  const prevValue = useRef(value)
 
+  useEffect(() => {
+    if (prevValue.current !== value) {
+      router.push(
+        {
+          pathname: `${value}`,
+        },
+        undefined,
+        {
+          shallow: true,
+        },
+      )
+      prevValue.current = value
+    }
+  }, [value, router])
+  
   const handleChange = (newValue: string) => {
     //eslint-disable-next-line no-unused-vars
     setValue(newValue)
