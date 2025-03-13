@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
+import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchProductAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
@@ -15,6 +15,7 @@ import { PaymentMethodEditor } from "./components/PaymentMethodEditor";
 import { CardModel, PaymentMethodSelector } from "./components/PaymentMethodSelector";
 import { PaymentCardModel } from "./models/PaymentCardModel";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
+import { Product } from "./models/Product";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
   const { t } = useTranslation(["BillingContainer"]);
@@ -61,6 +62,14 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     dispatch(fetchPlansAsync());
     initializeBilling();
   }, [dispatch]);
+
+  useEffect(() => {
+    const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
+
+    if (currentPlan?.productId) {
+      const product = dispatch(fetchProductAsync(currentPlan?.productId));
+    }
+  },[plans, selectedPlanId])
 
   useEffect(() => {
     if (paymentMethods?.length) {
@@ -137,7 +146,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         ).unwrap();
       } else {
         const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
-  
+
         if (!currentPlan) return;
   
         if (newPlan.unitAmountDecimal < currentPlan.unitAmountDecimal) {

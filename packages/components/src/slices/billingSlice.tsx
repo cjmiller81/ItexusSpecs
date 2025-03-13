@@ -5,6 +5,7 @@ import { Billing } from "../features/profile/Billing/models/Billing";
 import { billingService } from "../services/billingService"; 
 import { AxiosError } from "axios";
 import { Subscription } from "../features/profile/Billing/models/Subscription";
+import { Product } from "../features/profile/Billing/models/Product";
 
 export interface BillingState {
   plans: PlanModel[];
@@ -16,7 +17,8 @@ export interface BillingState {
   paymentIntentClientSecret: string | null;
   paymentMethods: any[];
   customerId: string | null;
-  subscriptions: Subscription[] | null
+  subscriptions: Subscription[] | null;
+  product: Product | null;
 }
 interface PaymentIntentRequest {
   amount: number;
@@ -36,6 +38,7 @@ const initialState: BillingState = {
   paymentIntentClientSecret: null,
   paymentMethods: [],
   customerId: null,
+  product: null
 };
 
 export const attachPaymentMethodAsync = createAsyncThunk<
@@ -132,6 +135,25 @@ export const updateSubscriptionAsync = createAsyncThunk<
       }
 
       return rejectWithValue("Failed to update subscription");
+    }
+  }
+);
+
+export const fetchProductAsync = createAsyncThunk<
+  Product,
+  string,
+  { rejectValue: string }
+>(
+  "billing/fetchProduct",
+  async (productId, { rejectWithValue }) => {
+    try {
+      const product = await billingService.getProduct(productId);
+      return product;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("Failed to fetch product details");
     }
   }
 );
@@ -456,6 +478,18 @@ export const billingSlice = createSlice({
       .addCase(createSubscriptionAsync.fulfilled, (state, action: PayloadAction<Subscription>) => {
         state.loading = false;
         state.subscription = action.payload;
+      })
+      .addCase(fetchProductAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductAsync.fulfilled, (state, action: PayloadAction<Product>) => {
+        state.loading = false;
+        state.product = action.payload;
+      })
+      .addCase(fetchProductAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch product details";
       })
       .addCase(createPaymentIntentAsync.pending, (state) => {
         state.loading = true;
