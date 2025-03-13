@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
-import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
+import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
 
 interface TradeData {
   symbol: string;
@@ -63,6 +63,12 @@ export function TradeTable() {
   useEffect(() => {
       if (exchanges === null) dispatch(fetchExchanges(null))
     }, [dispatch])
+
+    useEffect(() => {
+      return () =>{
+        dispatch(resetAccountBalance());
+      };
+    },[])
 
     useEffect(() =>{
       if(tradeData.symbol.length >= 3){
