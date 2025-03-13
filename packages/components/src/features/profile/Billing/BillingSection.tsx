@@ -274,11 +274,17 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
   const onAddCard = (card: CardModel) => {
     if (!cards.some(c => c.number === card.number)) {
-      setCards(prev => [...prev, { isDefault: false, ...card }]);
-      dispatch(addMessage(t("CardAddedMessage")));
+        setCards(prev => {
+            const updatedCards = [...prev, { isDefault: false, ...card }];
+            if (billing?.id) {
+               dispatch(fetchPaymentMethodsAsync(billing.id));
+          }          
+            return updatedCards;
+        });
+        dispatch(addMessage(t("CardAddedMessage")));
     }
     setPaymentMethodModal(false);
-  };
+};
 
   const onDeleteCard = async () => {    
     if (cardToDeleteIndex === undefined) return;
@@ -293,7 +299,13 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         paymentMethodId,
       })).unwrap();
   
-      setCards(cards => [...cards.slice(0, cardToDeleteIndex), ...cards.slice(cardToDeleteIndex + 1)]);
+      setCards(prev => {
+        const updatedCards = prev.filter((_, index) => index !== cardToDeleteIndex);
+        if (billing?.id) {
+          dispatch(fetchPaymentMethodsAsync(billing.id));
+        }
+        return updatedCards;
+      });
       dispatch(addMessage(t("CardDeletedMessage")));
     } catch (error) {
       dispatch(addMessage(t("CardDeleteErrorMessage")));
