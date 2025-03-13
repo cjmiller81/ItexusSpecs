@@ -363,6 +363,9 @@ export const billingSlice = createSlice({
       state.paymentIntentClientSecret = null;
       state.error = action.payload;
     },
+    setProduct(state, action) {
+      state.product = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -448,20 +451,21 @@ export const billingSlice = createSlice({
         state.loading = false;
         state.plans = action.payload;
       })
+      .addCase(getBillingAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(getBillingAsync.fulfilled, (state, action: PayloadAction<Billing | null>) => {
         state.loading = false;
-        
         if (action.payload) {
           state.billing = action.payload;
-          state.defaultSourceId = action.payload.defaultSourceId || null;
         } else {
           state.billing = null;
-          state.defaultSourceId = null;
         }
-      })      
+      })
       .addCase(getBillingAsync.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch billing details";
+        state.error = action.payload || "Failed to fetch billing details"; 
       })
       .addCase(createBillingAsync.pending, (state) => {
         state.loading = true;
@@ -484,7 +488,6 @@ export const billingSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchProductAsync.fulfilled, (state, action: PayloadAction<Product>) => {
-        state.loading = false;
         state.product = action.payload;
       })
       .addCase(fetchProductAsync.rejected, (state, action) => {
@@ -529,4 +532,5 @@ export const {
   createBillingFailure,
   createPaymentIntentSuccess,
   createPaymentIntentFailure,
+  setProduct,
 } = billingSlice.actions;
