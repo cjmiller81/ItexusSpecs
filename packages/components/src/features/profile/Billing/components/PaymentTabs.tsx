@@ -31,7 +31,7 @@ export const PaymentTabs: FC<PaymentTabsProps> = ({ tab, onTabChange, ...rest })
           text={t("Card")}
         />
       </SelectableButton>
-      <SelectableButton
+      {/* <SelectableButton
         onClick={() => onTabChange("apple-pay")}
         selected={tab === "apple-pay"}>
         <ButtonContent
@@ -48,7 +48,7 @@ export const PaymentTabs: FC<PaymentTabsProps> = ({ tab, onTabChange, ...rest })
           }
           text={t("GooglePay")}
         />
-      </SelectableButton>
+      </SelectableButton> */}
       <SelectableButton
         onClick={() => onTabChange("crypto")}
         selected={tab === "crypto"}>
