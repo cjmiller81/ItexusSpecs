@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
-import { fetchExchanges, getAccountBalance, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
+import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
 
 interface TradeData {
   symbol: string;
@@ -28,22 +28,6 @@ interface TradeData {
   value: string;
   action: string;
 }
-
-interface MarketData {
-  pair: string;
-  price: string;
-  change24h: string;
-  volume: string;
-}
-
-
-const marketData: MarketData[] = [
-  { pair: 'SOL/USD', price: '169.16', change24h: '-3.44%', volume: '36.3M' },
-  { pair: 'SOL/USDT', price: '169.33', change24h: '-3.40%', volume: '3.93M' },
-  { pair: 'SOL/BTC', price: '.001779', change24h: '-0.04%', volume: '2.93M' },
-  { pair: 'SOL/USDC', price: '169.55', change24h: '-3.35%', volume: '4.12M' },
-];
-
 
 export function TradeTable() {
   const [tradeData, setTradeData] = useState<TradeData>({
@@ -64,6 +48,7 @@ export function TradeTable() {
   const [balanceData, setBalanceData] = useState<any[]>([]);
   const { exchanges } = useAppSelector( state => state.wallets)
   const balance = useAppSelector((state) => state.kraken.balance);
+  const marketData = useAppSelector((state) => state.kraken.tradablePairs);
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -78,6 +63,12 @@ export function TradeTable() {
   useEffect(() => {
       if (exchanges === null) dispatch(fetchExchanges(null))
     }, [dispatch])
+
+    useEffect(() =>{
+      if(tradeData.symbol.length >= 3){
+        fetchTradePairs(tradeData.symbol);
+      }
+    },[tradeData.symbol])
 
 
   useEffect(() => {
@@ -108,7 +99,7 @@ export function TradeTable() {
       return;
     }
   
-    const selectedMarket = marketData.find((market) => market.pair === tradeData.mkt);
+    const selectedMarket = marketData.find((market) => market.displayName === tradeData.mkt);
     if (!selectedMarket) {
       setTradeData((prev) => ({ ...prev, value: '' }));
       setInsufficientFunds(false);
@@ -168,6 +159,14 @@ const fetchBalance = async () => {
     dispatch(getAccountBalance());
   } catch (error) {
     console.error('Failed to fetch Kraken balance:', error);
+  }
+};
+
+const fetchTradePairs = async (symbol: string) => {
+  try {
+    dispatch(getTradablePairs(symbol));
+  } catch (error) {
+    console.error('Failed to fetch Kraken tradable pairs:', error);
   }
 };
 
@@ -432,17 +431,17 @@ useEffect(() => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {marketData.map((market) => (
+                {marketData.map((market: MarketData) => (
                   <TableRow
-                    key={market.pair}
-                    onClick={() => handleMarketSelect(market.pair)}
+                    key={market.pairName}
+                    onClick={() => handleMarketSelect(market.displayName)}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
                     }}
                   >
                     <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      {market.pair}
+                      {market.displayName}
                     </TableCell>
                     <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
                       {market.price}
