@@ -194,7 +194,8 @@
     "SendTradeExchange": "Send Trade to Exchange",
     "ExchangeTradePairs": "Exchange trade pairs",
     "ConfirmTransaction": "Confirm Transaction",
-    "EstTotal": "Est Total"
+    "EstTotal": "Est Total",
+    "EnteredSymbolNotExist": "Entered symbol does not exist"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
