@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
-  Box, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle 
+  Box, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, 
+  IconButton
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTheme } from "@mui/material/styles";
 import { FormikProps } from "formik";
 import { IExchange } from "../../../models";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface KrakenDialogProps {
   open: boolean;
@@ -25,6 +28,8 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   const { t } = useTranslation("IndexModelingSection");
   const theme = useTheme();
   const [exchangeNameError, setExchangeNameError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+
   useEffect(() => {
     const isDuplicate = existingExchanges.some((ex) => {
       const exchangeName = typeof ex.name === 'string' ? ex.name : ""; 
@@ -34,6 +39,11 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   
     setExchangeNameError(isDuplicate ? t("ExchangeNameAlreadyExists") : null);
   }, [formik.values.chainName, existingExchanges, t]);
+
+  const handleClose = () => {
+    setIsExpanded(false);
+    onClose();
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,16 +60,16 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   
         onUpdateExchange(updatedExchange);
   
-        onClose();
+        handleClose();
       }
     }
   };
   
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>{t("ConnectKrakenExchange")}</DialogTitle>
       <DialogContent>
-        <Typography variant="subtitle2" sx={{ marginBottom: "8px" }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: "8px", color: theme.palette.mode === "light" ? "black" : "lightgray"}}>
           {`${t("AddCustomExchangeAccountName")}*`}
         </Typography>
         <TextField
@@ -98,7 +108,7 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           </Typography>
         </Box>
 
-        <Typography variant="subtitle2" sx={{ marginBottom: "8px" }}>
+        <Typography variant="subtitle2" sx={{ marginBottom: "8px", color: theme.palette.mode === "light" ? "black" : "lightgray"}}>
           {`${t("APIKey")}*`}
         </Typography>
         <TextField
@@ -115,7 +125,13 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           disabled={isEditing} 
         />
 
-        <Typography variant="subtitle2" sx={{ marginBottom: "8px" }}>
+        <Typography
+          variant="subtitle2"
+          sx={(theme) => ({
+            marginBottom: "8px",
+            color: theme.palette.mode === "light" ? "black" : "lightgray",
+          })}
+        >
           {`${t("PrivateAPIKey")}*`}
         </Typography>
         <TextField
@@ -132,9 +148,76 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           helperText={formik.touched.apiSecret && (typeof formik.errors.apiSecret === "string" ? formik.errors.apiSecret : "")}
           disabled={isEditing}
         />
+
+        <Box
+              sx={{
+                ...scrollBoxSx,
+                overflowY: "auto",
+                mt: 2,
+                p: 2,
+                border: "1px solid gray",
+                borderRadius: "8px",
+                transition: "all 0.3s ease",
+                position: isExpanded ? "fixed" : "relative",
+                top: isExpanded ? "50%" : "auto",
+                left: isExpanded ? "50%" : "auto",
+                transform: isExpanded ? "translate(-50%, -50%) scale(1)" : "none",
+                maxHeight: isExpanded ? "80vh" : "170px",
+                width: isExpanded ? "60vw" : "auto",
+                backgroundColor: isExpanded ? "background.default" : "background.default",
+                zIndex: isExpanded ? 1000 : "auto",
+                boxShadow: isExpanded ? "0px 4px 30px rgba(0, 0, 0, 0.3)" : "none",
+              }}
+            >
+              {!isExpanded && (
+                <IconButton
+                  sx={{ position: "absolute", top: 5, right: 5 }}
+                  onClick={() => setIsExpanded(true)}
+                >
+                  <OpenInFullIcon />
+                </IconButton>
+              )}
+
+            <Typography variant="h6">{t("KrakenAPIInstructions")}</Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {t("OnceLoggedIntoKraken")}
+                  </Typography>
+                  <Typography variant="body2" sx={{marginTop:"5px"}}>
+                    {t("ThenClickSetting")}
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                    <Typography variant="body2" sx={{ marginRight: "8px" }}>
+                      {t("NextFillInTheForm")}
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2"sx={{marginTop:"15px"}}>
+                  {t("BeSureToCopyPasteEachAPIKeys")}
+                  </Typography>
+                  
+                  <Typography variant="body2" sx={{ fontWeight: "bold", mt: 1,marginTop:"5px" }}>
+                    {t("IMPORTANTBeSure")}
+                  </Typography>
+
+                  <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+                    <img src="/KrakenApiSetup.png"
+                      alt="Kraken API Setup"
+                      style={{ maxWidth: "100%", borderRadius: "8px" }}
+                    />
+                  </Box>
+
+              {isExpanded && (
+                <IconButton
+                  sx={{ position: "absolute", top: 5, right: 5 }}
+                  onClick={() => setIsExpanded(false)}
+                >
+                  <CloseIcon />
+                </IconButton>
+              )}
+            </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
+        <Button variant="outlined" onClick={handleClose}>
           {t("Cancel")}
         </Button>
         <form onSubmit={isEditing ? handleSave : formik.handleSubmit}>
@@ -150,4 +233,31 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
       </DialogActions>
     </Dialog>
   );
+};
+const nativeBarSx = {
+  "&::-webkit-scrollbar": {
+    width: "8px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "gray",
+    borderRadius: "8px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    backgroundColor: "darkgray",
+  },
+  "&::-webkit-scrollbar-track": {
+    backgroundColor: "transparent",
+  },
+  scrollbarWidth: "thin",
+  scrollbarColor: "gray transparent",
+};
+
+const scrollBoxSx = {
+  maxHeight: "170px",
+  overflowY: "auto",
+  mt: 2,
+  p: 2,
+  border: "1px solid gray",
+  borderRadius: "8px",
+  ...nativeBarSx, 
 };
