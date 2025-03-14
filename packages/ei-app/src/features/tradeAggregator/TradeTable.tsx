@@ -80,6 +80,7 @@ const [debouncedSymbol, setDebouncedSymbol] = useState('');
       return () => clearTimeout(timer);
     }, [tradeData.symbol]);
 
+
     useEffect(() => {
       if (debouncedSymbol.length < 3) {
         return;
