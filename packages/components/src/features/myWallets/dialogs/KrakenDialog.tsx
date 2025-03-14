@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   Box, Typography, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle 
 } from "@mui/material";
@@ -7,6 +7,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTheme } from "@mui/material/styles";
 import { FormikProps } from "formik";
 import { IExchange } from "../../../models";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 interface KrakenDialogProps {
   open: boolean;
@@ -25,6 +26,8 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   const { t } = useTranslation("IndexModelingSection");
   const theme = useTheme();
   const [exchangeNameError, setExchangeNameError] = useState<string | null>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const isDuplicate = existingExchanges.some((ex) => {
       const exchangeName = typeof ex.name === 'string' ? ex.name : ""; 
@@ -34,6 +37,10 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
   
     setExchangeNameError(isDuplicate ? t("ExchangeNameAlreadyExists") : null);
   }, [formik.values.chainName, existingExchanges, t]);
+
+  const scrollToImage = () => {
+    imageRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,6 +139,47 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           helperText={formik.touched.apiSecret && (typeof formik.errors.apiSecret === "string" ? formik.errors.apiSecret : "")}
           disabled={isEditing}
         />
+
+        <Box sx={{ maxHeight: "170px", overflowY: "auto", mt: 2, p: 2, border: "1px solid gray", borderRadius: "8px" }}>
+          <Typography variant="h6">{t("KrakenAPIInstructions")}</Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            {t("OnceLoggedIntoKraken")}
+          </Typography>
+          <Typography variant="body2" sx={{marginTop:"5px"}}>
+            {t("ThenClickSetting")}
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+            <Typography variant="body2" sx={{ marginRight: "8px" }}>
+              {t("NextFillInTheForm")}
+            </Typography>
+            <ArrowDownwardIcon
+              sx={{
+                fontSize: 25,
+                marginLeft:"auto",
+                cursor: "pointer",
+                color: "white",
+                transition: "0.3s",
+                "&:hover": { color: "gray" }
+              }}
+              onClick={scrollToImage}
+            />
+          </Box>
+
+          <Typography variant="body2"sx={{marginTop:"15px"}}>
+          {t("BeSureToCopyPasteEachAPIKeys")}
+          </Typography>
+          
+          <Typography variant="body2" sx={{ fontWeight: "bold", mt: 1,marginTop:"5px" }}>
+            {t("IMPORTANTBeSure")}
+          </Typography>
+
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+            <img src="/KrakenApiSetup.png"
+              alt="Kraken API Setup"
+              style={{ maxWidth: "100%", borderRadius: "8px" }}
+            />
+          </Box>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={onClose}>
