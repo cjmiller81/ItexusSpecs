@@ -1,3 +1,4 @@
+
 import { Action, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
 import { appAxios } from '../lib/axios/customAxios';
 import { RootState } from './store';
@@ -62,6 +63,10 @@ export const krakenSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        resetBalance(state) {
+            state.loading = false;
+            state.balance = null;
+        },
 
         fetchTradablePairsRequest(state) {
             state.loading = true;
@@ -74,11 +79,12 @@ export const krakenSlice = createSlice({
         fetchTradablePairsFailure(state, action: PayloadAction<string>) {
             state.loading = false;
             state.error = action.payload;
+            state.tradablePairs = [];
         },
     },
 });
 
-export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure } = krakenSlice.actions;
+export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure, resetBalance } = krakenSlice.actions;
 
 export const getAccountBalance = (): AppThunk => async (dispatch) => {
     dispatch(fetchBalanceRequest());
@@ -106,4 +112,12 @@ export const getTradablePairs = (symbol: string): AppThunk => async (dispatch) =
     }
 };
 
+export const resetAccountBalance = () => async(dispatch) =>{
+    dispatch(resetBalance());
+}
+
 export default krakenSlice.reducer;
+
+
+
+

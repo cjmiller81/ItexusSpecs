@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
-import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
+import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
 
 interface TradeData {
   symbol: string;
@@ -49,6 +49,7 @@ export function TradeTable() {
   const { exchanges } = useAppSelector( state => state.wallets)
   const balance = useAppSelector((state) => state.kraken.balance);
   const marketData = useAppSelector((state) => state.kraken.tradablePairs);
+  const { error } = useAppSelector((state) => state.kraken);
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -64,12 +65,28 @@ export function TradeTable() {
       if (exchanges === null) dispatch(fetchExchanges(null))
     }, [dispatch])
 
-    useEffect(() =>{
-      if(tradeData.symbol.length >= 3){
-        fetchTradePairs(tradeData.symbol);
-      }
-    },[tradeData.symbol])
+    useEffect(() => {
+      return () =>{
+        dispatch(resetAccountBalance());
+      };
+    },[])
+    
+const [debouncedSymbol, setDebouncedSymbol] = useState('');
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setDebouncedSymbol(tradeData.symbol);
+      }, 150);
+    
+      return () => clearTimeout(timer);
+    }, [tradeData.symbol]);
 
+    useEffect(() => {
+      if (debouncedSymbol.length < 3) {
+        return;
+      }
+    
+      dispatch(getTradablePairs(debouncedSymbol));
+    }, [debouncedSymbol, dispatch]);
 
   useEffect(() => {
     if (!tradeData.mkt) {
@@ -159,14 +176,6 @@ const fetchBalance = async () => {
     dispatch(getAccountBalance());
   } catch (error) {
     console.error('Failed to fetch Kraken balance:', error);
-  }
-};
-
-const fetchTradePairs = async (symbol: string) => {
-  try {
-    dispatch(getTradablePairs(symbol));
-  } catch (error) {
-    console.error('Failed to fetch Kraken tradable pairs:', error);
   }
 };
 
@@ -431,23 +440,33 @@ useEffect(() => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {marketData.map((market: MarketData) => (
-                  <TableRow
-                    key={market.pairName}
-                    onClick={() => handleMarketSelect(market.displayName)}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
-                    }}
-                  >
-                    <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      {market.displayName}
-                    </TableCell>
-                    <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      {market.price}
+              {tradeData.symbol.length < 3 ? (
+                  <></> 
+                ) : error  ? (
+                  <TableRow>
+                    <TableCell colSpan={2} sx={{ textAlign: 'center', color: 'red' }}>
+                      {t("EnteredSymbolNotExist")}
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  marketData.map((market: MarketData) => (
+                    <TableRow
+                      key={market.pairName}
+                      onClick={() => handleMarketSelect(market.displayName)}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+                      }}
+                    >
+                      <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        {market.displayName}
+                      </TableCell>
+                      <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        {market.price}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>
