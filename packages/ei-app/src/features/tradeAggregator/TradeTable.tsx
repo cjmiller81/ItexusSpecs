@@ -75,7 +75,7 @@ const [debouncedSymbol, setDebouncedSymbol] = useState('');
     useEffect(() => {
       const timer = setTimeout(() => {
         setDebouncedSymbol(tradeData.symbol);
-      }, 150);
+      }, 150); 
     
       return () => clearTimeout(timer);
     }, [tradeData.symbol]);
