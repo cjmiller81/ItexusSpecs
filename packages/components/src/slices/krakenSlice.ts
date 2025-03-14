@@ -62,6 +62,10 @@ export const krakenSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
+        resetBalance(state) {
+            state.loading = false;
+            state.balance = null;
+        },
 
         fetchTradablePairsRequest(state) {
             state.loading = true;
@@ -78,7 +82,7 @@ export const krakenSlice = createSlice({
     },
 });
 
-export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure } = krakenSlice.actions;
+export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure, resetBalance } = krakenSlice.actions;
 
 export const getAccountBalance = (): AppThunk => async (dispatch) => {
     dispatch(fetchBalanceRequest());
@@ -105,5 +109,9 @@ export const getTradablePairs = (symbol: string): AppThunk => async (dispatch) =
         dispatch(fetchTradablePairsFailure("Fetching Kraken tradable pairs failed"));
     }
 };
+
+export const resetAccountBalance = () => async(dispatch) =>{
+    dispatch(resetBalance());
+}
 
 export default krakenSlice.reducer;
