@@ -14,6 +14,10 @@ import GitHubIcon from "../../public/gitHub.svg";
 import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
+import { MergeIcon } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "components";
+import { Product } from "components/src/features/profile/Billing/models/Product";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -28,7 +32,10 @@ function getHomeItems(): SidebarListItem[] {
   ];
 }
 
-function getPlatformsItems(): SidebarListItem[] {
+function getPlatformsItems(product: Product | null): SidebarListItem[] {
+  const pageAccess = product?.metadata?.page_access ? JSON.parse(product.metadata.page_access) : [];
+  const isChartsAvailable = pageAccess.includes("/charts");
+  
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -48,10 +55,14 @@ function getPlatformsItems(): SidebarListItem[] {
       title: "Trading",
       icon: <SyncAltIcon />,
       children: [
-        {
-          title: t("TradingSubpage", { ns: "SideBar" }),
-          href: "/charts",
-        },
+        ...(isChartsAvailable
+          ? [
+              {
+                title: t("TradingSubpage", { ns: "SideBar" }),
+                href: "/charts",
+              },
+            ]
+          : []),
         {
           title: t("Derivatives", { ns: "SideBar" }),
           href: "/derivatives",
@@ -78,15 +89,15 @@ function getPlatformsItems(): SidebarListItem[] {
 function getToolsItems(): SidebarListItem[] {
   return [
     {
-      title: t("Portfolios", { ns: "SideBar" }),
+      title: t("MyWallets", { ns: "SideBar" }),
       icon: <AccountBalanceWalletIcon />,
-      open: false,
-      children: [
-        {
-          title: t("MyWallets", { ns: "SideBar" }),
-          href: "/myWallets",
-        },
-      ],
+      href: "/myWallets"
+    },
+    {
+      title: t("TradeAggregator", { ns: "SideBar" }),
+      icon: <MergeIcon width="21px"
+        height="21px" />,
+      href: "/tradeAggregator"
     },
   ];
 }
@@ -180,7 +191,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
   ];
 }
 
-export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
+export function getSidebarMenuItems(theme: Theme, product: Product | null): SidebarItems[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
@@ -188,8 +199,9 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
     },
     {
       title: t("Platform", { ns: "SideBar" }),
-      sidebarListItems: getPlatformsItems(),
+      sidebarListItems: getPlatformsItems(product),
     },
+
     {
       title: t("Tools", { ns: "SideBar" }),
       sidebarListItems: getToolsItems(),

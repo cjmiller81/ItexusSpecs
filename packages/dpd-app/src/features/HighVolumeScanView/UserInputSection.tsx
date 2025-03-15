@@ -1,4 +1,4 @@
-import { Grid, Typography, TextField, Box, Button, Divider } from "@mui/material";
+import { Grid, Typography, TextField, Box, Button, Divider, useTheme } from "@mui/material";
 import { darken, lighten, styled } from "@mui/material/styles";
 import { BasicTable, nativeBarSx } from "components";
 import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Market } from "@/models/Market";
 import { useGetHighVolumeScanDataQuery } from "../highVolumeScanApi";
 import moment from "moment";
+import React from "react";
 
 const tableScrollSx = {
     "& .MuiDataGrid-virtualScroller": {
@@ -15,7 +16,7 @@ const tableScrollSx = {
 };
 
 export const MarketTable = styled(BasicTable)(({ theme }) => ({
-    minHeight: 300,
+    minHeight: 650,
     mt: 2,
     display: "grid",
     "& .MuiDataGrid-virtualScroller": {
@@ -23,7 +24,7 @@ export const MarketTable = styled(BasicTable)(({ theme }) => ({
     },
     "& .MuiDataGrid-main": {
         height: "auto",
-        maxHeight: "400px",
+        maxHeight: "650px",
     },
     "& .MuiDataGrid-footerContainer": {
         height: "40px",
@@ -67,6 +68,7 @@ const UserInputSection = () => {
     const [filteredData, setFilteredData] = useState < Market[] > ([]);
     const [fetchData, setFetchData] = useState(false);
     const { t } = useTranslation("UserInputsSection");
+    const theme = useTheme();
     const [statisticsData, setStatisticsData] = useState({
         totalVolume: 0,
         totalBought: 0,
@@ -77,14 +79,23 @@ const UserInputSection = () => {
         avgSellVolume: 0,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data, isFetching } = useGetHighVolumeScanDataQuery(
         { date, volumeThreshold, topRecords },
         { skip: !fetchData }
     );
 
+    const formatNumberWithCommas = (value: number): string => {
+        return value.toLocaleString();
+      };
 
-    const handleVolumeChange = (e) => {
-        setVolumeThreshold(e.target.value);
+      const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = event.target.value.replace(/,/g, ""); 
+        const numericValue = Number(rawValue);
+    
+        if (!isNaN(numericValue)) {
+          setVolumeThreshold(numericValue);
+        }
       };
 
       const handleTopTockerChange = (e) => {
@@ -158,6 +169,9 @@ const UserInputSection = () => {
         };
     };
 
+    const isBoughtGreaterThanSold = statisticsData.totalBought > statisticsData.totalSold;
+    const isBoughtLessThanSold = statisticsData.totalBought < statisticsData.totalSold;
+
     return (
         <Grid container spacing={1} alignItems="flex-start">
             <Grid item xs={12} md={3.5}>
@@ -203,11 +217,10 @@ const UserInputSection = () => {
                     <Grid item>
                         <TextField
                             variant="outlined"
-                            type="number"
+                            type="string"
                             size="small"
                             sx={{ width: 105, fontSize: "12px" }}
-                            defaultValue={10000000}
-                            value={volumeThreshold}
+                            value={formatNumberWithCommas(volumeThreshold)}
                             InputLabelProps={{
                                 shrink: true,
                             }}
@@ -243,13 +256,30 @@ const UserInputSection = () => {
                             <Grid item>
                                 <Box display="flex" justifyContent="space-between">
                                     <Typography variant="h7">{t("TotalBought")}:</Typography>
-                                    <Typography variant="body1" sx={{ color: "green", fontWeight: 'bold' }}>{formatNumber(statisticsData.totalBought)}</Typography>
+                                    <Typography variant="body1" sx={{
+                                        color: isBoughtGreaterThanSold
+                                        ? "green"
+                                        : theme.palette.mode === "dark"
+                                        ? "white"
+                                        : "black", 
+                                        fontWeight: 'bold',
+                                    }}>
+                                        {formatNumber(statisticsData.totalBought)}
+                                    </Typography>                                
                                 </Box>
                             </Grid>
                             <Grid item>
                                 <Box display="flex" justifyContent="space-between">
                                     <Typography variant="h7">{t("TotalSold")}:</Typography>
-                                    <Typography variant="body1" sx={{ color: "#DC143C", fontWeight: 'bold' }}>{formatNumber(statisticsData.totalSold)}</Typography>
+                                    <Typography variant="body1" sx={{
+                                        color: isBoughtLessThanSold
+                                        ? "red"
+                                        : theme.palette.mode === "dark"
+                                        ? "white" 
+                                        : "black",
+                                        fontWeight: 'bold',
+                                        }}>{formatNumber(statisticsData.totalSold)}
+                                    </Typography>
                                 </Box>
                             </Grid>
                         </Grid>
@@ -266,7 +296,14 @@ const UserInputSection = () => {
                             <Grid item>
                                 <Box display="flex" justifyContent="space-between">
                                     <Typography variant="h7">{t("AvgBuy-SellRatio")}:</Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{formatNumber(statisticsData.avgBuySellRatio)}</Typography>
+                                    <Typography variant="body1" sx={{
+                                        color: statisticsData.avgBuySellRatio === 0 
+                                        ? (theme => theme.palette.mode === 'dark' ? 'white' : 'black') 
+                                        : (isBoughtGreaterThanSold ? "green" : "red"),
+                                        fontWeight: 'bold',
+                                    }}>
+                                        {formatNumber(statisticsData.avgBuySellRatio)}
+                                    </Typography>
                                 </Box>
                             </Grid>
                         </Grid>
@@ -277,13 +314,30 @@ const UserInputSection = () => {
                             <Grid item>
                                 <Box display="flex" justifyContent="space-between">
                                     <Typography variant="h7">{t("AvgBuyVolume")}:</Typography>
-                                    <Typography variant="body1" sx={{ color: "green", fontWeight: 'bold' }}>{formatNumber(statisticsData.avgBuyVolume)}</Typography>
+                                    <Typography variant="body1" sx={{
+                                        color: isBoughtGreaterThanSold
+                                        ? "green"
+                                        : theme.palette.mode === "dark"
+                                        ? "white"
+                                        : "black", 
+                                        fontWeight: 'bold',
+                                    }}>
+                                        {formatNumber(statisticsData.avgBuyVolume)}
+                                    </Typography>
                                 </Box>
                             </Grid>
                             <Grid item>
                                 <Box display="flex" justifyContent="space-between">
                                     <Typography variant="h7">{t("AvgSellVolume")}:</Typography>
-                                    <Typography variant="body1" sx={{ color: "#DC143C", fontWeight: 'bold' }}>{formatNumber(statisticsData.avgSellVolume)}</Typography>
+                                    <Typography variant="body1" sx={{
+                                        color: isBoughtLessThanSold
+                                        ? "red"
+                                        : theme.palette.mode === "dark"
+                                        ? "white" 
+                                        : "black",
+                                        fontWeight: 'bold',
+                                    }}>{formatNumber(statisticsData.avgSellVolume)}
+                                    </Typography>
                                 </Box>
                             </Grid>
                         </Grid>

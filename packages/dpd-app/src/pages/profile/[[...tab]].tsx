@@ -2,7 +2,8 @@ import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
 import {
-  ProfileContainer,
+  BrokerageConnectionContainer,
+    ProfileContainer,
   ProfileDetails,
   ProfilePicture,
   SecurityContainer,
@@ -12,8 +13,9 @@ import {
   useOry,
 } from "components"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
+
 
 export default function ProfilePage() {
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
@@ -29,18 +31,23 @@ export default function ProfilePage() {
   )
   const { t } = useTranslation("ProfilePage")
 
-  useEffect(() => {
-    router.push(
-      {
-        pathname: `${value}`,
-      },
-      undefined,
-      {
-        shallow: true,
-      },
-    )
-  }, [value, router])
+  const prevValue = useRef(value)
 
+  useEffect(() => {
+    if (prevValue.current !== value) {
+      router.push(
+        {
+          pathname: `${value}`,
+        },
+        undefined,
+        {
+          shallow: true,
+        },
+      )
+      prevValue.current = value
+    }
+  }, [value, router])
+  
   const handleChange = (newValue: string) => {
     //eslint-disable-next-line no-unused-vars
     setValue(newValue)
@@ -83,6 +90,10 @@ export default function ProfilePage() {
             label={t("SECURITY")}
             value="security"
           />
+          <Tab
+            label={t("BrokerageConnection")}
+            value="brokerageConnection"
+          />
         </StyledTabList>
         <TabPanel value="details">
           <StyledProfileBox>
@@ -102,6 +113,9 @@ export default function ProfilePage() {
         </TabPanel>
         <TabPanel value="security">
           <SecurityContainer />
+        </TabPanel>
+        <TabPanel value="brokerageConnection">
+        <BrokerageConnectionContainer />
         </TabPanel>
       </TabContext>
     </ProfileContainer>

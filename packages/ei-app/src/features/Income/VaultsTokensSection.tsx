@@ -135,18 +135,40 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     },
   };
 
+  const lightThemeStyles = {
+    cursor: "default !important",
+    mt: 2,
+    pointerEvents: "none",
+    position: "inherit",
+    borderRadius: "2px",
+    boxShadow: `
+    0px 0px 2px 1.5px rgba(15, 15, 16, 1),
+    -6.5px 0px 8px rgba(0, 0, 0, 0.9),
+     6.5px 0px 8px rgba(0, 0, 0, 0.9),
+     0px 0.05px 0.05px rgba(0, 0, 0, 0.1),
+     0px -0.05px 0.05px rgba(0, 0, 0, 0.1) 
+  `,
+    backgroundColor: "#9e9e9e",
+    border: "1.6px solid #5e5e5e",
+    outline: "1.9px solid #4a4a4a",
+    "& .MuiAccordionSummary-root": {
+      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(200, 200, 200, 0.3) 24px, rgba(170, 170, 170, 1) 80%)`,
+    },
+  };
+
   return (
     <>
       <Typography
         variant="h4"
         component="div"
         gutterBottom
-        sx={{ fontWeight: "bold", mb: 0 }}>
+        sx={{ fontWeight: "bold" }}>
         {t("VaultsPageTitle")}
       </Typography>
       <StatePersistedAccordion
+        className="index-modeling-section-container"
         persistKey={persisKey}
-        sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", mt: 2 }}
+        sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
         defaultExpanded
         {...props}>
         <StyledAccordionSummary
@@ -201,7 +223,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         </StyledAccordionSummary>
         <AccordionDetails
           sx={{
-            bgcolor: theme.palette.mode === "dark" ? "#363640" : "background.paper",
+            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
             width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",

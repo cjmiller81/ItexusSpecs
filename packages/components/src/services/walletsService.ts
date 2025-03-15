@@ -4,11 +4,21 @@ import { HistoricalWalletData } from "../models/wallet/historicalWalletData"
 import { appAxios } from "../lib/axios/customAxios"
 import { CapHistoricalWeightedDate } from "../models/wallet/capHistoricalWeightedDate"
 import { apiDateFormatString } from "../constants/common"
+import { Exchange } from "../models/wallet/exchange"
 
 export const walletsApi = {
   getWalletsAssets: async (): Promise<Wallet[]> => {
     const response = await appAxios.get<Wallet[]>(`/user/wallet`)
     return response.data
+  },
+
+  getExchanges: async (): Promise<Exchange[]> => {
+    const response = await appAxios.get<Exchange[]>(`/api/exchanges`)
+    return response.data
+  },
+
+  deleteExchange: async (exchange: string): Promise<void> => {
+    return appAxios.delete(`/api/kraken/connect/${exchange}`)
   },
 
   deleteWallet: async (wallet: string): Promise<void> => {

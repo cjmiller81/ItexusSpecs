@@ -1,6 +1,6 @@
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { CircularProgress, Divider, ListItemText, MenuItem, Select, Typography } from "@mui/material";
+import { CircularProgress, Divider, ListItemText, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { AppLink } from "components";
 import moment from "moment";
@@ -8,6 +8,7 @@ import { FC, useRef } from "react";
 import { DashboardTile, DashboardTileProps } from "../DashboardTile";
 import { NewsHeader } from "../NewsHeader";
 import { MarketType, NewsArticle } from "./newsApi";
+
 type Props = Omit<DashboardTileProps, "children"> & {
   onLoadMoreNews: () => void;
   news: NewsArticle[];
@@ -15,6 +16,11 @@ type Props = Omit<DashboardTileProps, "children"> & {
   onNewsSourceChange: (newsSource: MarketType) => void;
   newsSource: MarketType;
 };
+
+enum ThemeMode {
+  LIGHT = "light",
+  DARK = "dark",
+}
 
 export const CryptoNewsTile: FC<Props> = ({
   news,
@@ -32,8 +38,9 @@ export const CryptoNewsTile: FC<Props> = ({
     const dateAgo = moment(date).unix();
     return dateAgo;
   };
-
+  const theme = useTheme();
   const sources: MarketType[] = ["crypto", "forex", "stock", "index", "futures"];
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa";
 
   return (
     <DashboardTile
@@ -44,6 +51,7 @@ export const CryptoNewsTile: FC<Props> = ({
       <>
         <Select
           sx={{
+            backgroundColor: backgroundColor,
             borderRadius: "0px",
             ":hover": {
               borderColor: theme => theme.palette.primary.main,
@@ -75,6 +83,7 @@ export const CryptoNewsTile: FC<Props> = ({
             borderColor: theme => theme.palette.divider,
             borderWidth: "1px",
             borderStyle: "solid",
+            backgroundColor: backgroundColor,
           }}>
           <SimpleBarStyled
             style={{ maxHeight: "359px" }}

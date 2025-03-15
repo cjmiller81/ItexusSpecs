@@ -1,6 +1,6 @@
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
-import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton } from "@mui/material";
+import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton, useTheme } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CalendarEventTile from "./CalendarEventTile";
@@ -13,16 +13,12 @@ import { CoinsLookupVirtualized, OnFetchResponse } from "components";
 import { CoinsLookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
 import moment from "moment";
 
-const CryptoCalendar = ({
-  loading,
-  title,
-  icon,
-  calendarData,
-  setSelectedDate,
-  selectedDate,
-  sx,
-  onFetchPage,
-}: {
+enum ThemeMode {
+  LIGHT = "light",
+  DARK = "dark",
+}
+
+interface Props {
   onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
   loading: boolean;
   title: string;
@@ -31,6 +27,17 @@ const CryptoCalendar = ({
   setSelectedDate: (dateRange: [Date, Date]) => void;
   selectedDate: [Date, Date];
   sx?: object;
+}
+
+const CryptoCalendar: React.FC<Props> = ({
+  loading,
+  title,
+  icon,
+  calendarData,
+  setSelectedDate,
+  selectedDate,
+  sx,
+  onFetchPage,
 }) => {
   const { t } = useTranslation(["CryptoCalendar", "Common"]);
   const [selectedCoins, setSelectedCoins] = useState<CoinsLookUpOption[]>([]);
@@ -38,6 +45,7 @@ const CryptoCalendar = ({
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [categoriesData, setCategoriesData] = useState<CategoriesResponse | null>(null);
   const { data: items } = useGetCategoriesQuery();
+  const theme = useTheme();
 
   useEffect(() => {
     if (items) {
@@ -101,13 +109,14 @@ const CryptoCalendar = ({
       event.currentTarget.scrollHeight === event.currentTarget.scrollTop + event.currentTarget.clientHeight;
   };
 
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa"; // Fixed code style
   return (
     <DashboardTile
       title={title}
       icon={icon}
       loading={loading}
       sx={sx}>
-      <Box>
+      <Box sx={{ backgroundColor: backgroundColor }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           <FormControl sx={{ width: "50%" }}>
             <CoinsLookupVirtualized
@@ -169,6 +178,7 @@ const CryptoCalendar = ({
 
         <SimpleBarStyled
           sx={{
+            backgroundColor: backgroundColor,
             height: "519px",
             "@media (min-width: 1200px) and (max-width: 1800px)": {
               height: "483px",
@@ -218,7 +228,15 @@ const CryptoCalendar = ({
           sx={{ width: "100%" }}
           variant="fullWidth"
         />
-        <Box sx={{ display: "flex", position: "relative", justifyContent: "center", margin: "3px 1px", width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            position: "relative",
+            justifyContent: "center",
+            padding: "3px 1px",
+            width: "100%",
+            backgroundColor: backgroundColor,
+          }}>
           <CustomDateSelector
             setSelectedDate={setSelectedDate}
             selectedDate={selectedDate}

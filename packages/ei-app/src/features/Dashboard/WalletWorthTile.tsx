@@ -1,22 +1,30 @@
-import { AppChart } from "@/components/Charts/AppChart"
-import { CompareToValues } from "@/libs/redux/Slices/Shared"
-import { chartDateFormatString } from "components"
-import { FC } from "react"
-import { useTranslation } from "react-i18next"
-import { DashboardTile, DashboardTileProps } from "./DashboardTile"
+import { AppChart } from "@/components/Charts/AppChart";
+import { CompareToValues } from "@/libs/redux/Slices/Shared";
+import { chartDateFormatString } from "components";
+import { FC } from "react";
+import { useTranslation } from "react-i18next";
+import { DashboardTile, DashboardTileProps } from "./DashboardTile";
+import { useTheme } from "@mui/material";
 
 type Props = Omit<DashboardTileProps, "children"> & {
-  chartData: CompareToValues | null
+  chartData: CompareToValues | null;
+};
+
+enum ThemeMode {
+  LIGHT = "light",
+  DARK = "dark",
 }
 
 export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props }) => {
-  const { t } = useTranslation("WalletWorthTile")
+  const { t } = useTranslation("WalletWorthTile");
+  const theme = useTheme();
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa";
   const percentageFormatter = (value?: number) => {
     return `${(value ?? 0).toLocaleString("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-    })}%`
-  }
+    })}%`;
+  };
 
   // eslint-disable-next-line no-undef
   const series: ApexAxisChartSeries = [
@@ -24,13 +32,14 @@ export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props })
       name: t("ChartSeriesTitle"),
       data: chartData || [],
     },
-  ]
+  ];
   return (
     <DashboardTile
       title={title}
       icon={icon}
       {...props}>
       <AppChart
+        sx={{ backgroundColor: backgroundColor }}
         series={series}
         height={398}
         optionsOverrides={{
@@ -92,5 +101,5 @@ export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props })
         }}
       />
     </DashboardTile>
-  )
-}
+  );
+};

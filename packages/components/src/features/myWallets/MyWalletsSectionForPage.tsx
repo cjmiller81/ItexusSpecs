@@ -100,7 +100,7 @@ export const MyWalletsSectionForPage = ({
       resetForm();
       setOpenKrakenDialog(false);
       setOpenCoinbaseDialog(false);
-      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService };
+      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService, apiKey:values.apiKey, apiSecret: values.apiSecret };
       setExchange([...exchange, newExchanges]);
     },
   });
@@ -218,7 +218,7 @@ export const MyWalletsSectionForPage = ({
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
-        <PageTitle sx={{ mt: 4 }}>{t("Wallets")}</PageTitle>
+        <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
       <Box sx={{ width: "100%", overflow: "auto" }}>

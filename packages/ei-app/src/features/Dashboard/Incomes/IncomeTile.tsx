@@ -26,7 +26,9 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
   }, [dispatch]);
 
   return (
-    <DashboardTile loading={loading} {...props}>
+    <DashboardTile
+      loading={loading}
+      {...props}>
       <DataGrid
         autoHeight
         loading={loading}
@@ -40,6 +42,7 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
           "& .MuiDataGrid-main": {
             height: "582px !important",
           },
+          borderColor: "rgba(0, 0, 0, 0.12)",
           ...tableScrollSx,
         }}
         slots={{

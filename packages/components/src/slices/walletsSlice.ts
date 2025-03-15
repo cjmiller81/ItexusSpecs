@@ -5,6 +5,7 @@ import { walletsApi } from "../services/walletsService";
 import { toTotalTokensBalances } from "../utils";
 import { createAppSlice } from "./createAppSlice";
 import { RootState } from "./store";
+import { IExchange } from "../models";
 
 export type Status = "idle" | "loading" | "failed";
 export interface TotalWalletWorthData {
@@ -14,11 +15,14 @@ export interface TotalWalletWorthData {
 type WalletsFilter = { isPersonal: boolean };
 export interface WalletsState {
   wallets: Wallet[] | null;
+  exchanges: IExchange[] | null;
   totalWalletsWorthData?: TotalWalletWorthData;
   statstatusCreatingWalletus: Status;
   statusFetchingWallets: Status;
   statusDeletingWallets: Status;
+  statusDeletingExchange: Status;
   statusUpdatingWallets: Status;
+  statusFetchingExchanges: Status;
   statusTotalWalletWorthFetching: Status;
   selectedWallets: Wallet[];
   currentWalletsFilter: WalletsFilter;
@@ -26,10 +30,13 @@ export interface WalletsState {
 
 const initialState: WalletsState = {
   wallets: null,
+  exchanges: null,
   statstatusCreatingWalletus: "idle",
   statusFetchingWallets: "idle",
   statusDeletingWallets: "idle",
+  statusDeletingExchange: "idle",
   statusUpdatingWallets: "idle",
+  statusFetchingExchanges: "idle",
   statusTotalWalletWorthFetching: "idle",
   selectedWallets: [],
   currentWalletsFilter: { isPersonal: false },
@@ -169,8 +176,48 @@ export const walletsSlice = createAppSlice({
         },
       },
     ),
+    fetchExchanges: create.asyncThunk(
+      async () => {
+        const response = await walletsApi.getExchanges();
+        const mappedResult = response.map(ex => {
+          const model: IExchange = {apiKey: '', apiSecret: '', exchange_id: ex.id, name: ex.account}
+          return model;
+        });
+        return mappedResult;
+      },
+      {
+        pending: state => {
+          state.statusFetchingExchanges = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.statusFetchingExchanges = "idle";
+          state.exchanges = action.payload;
+        },
+        rejected: state => {
+          state.statusFetchingExchanges = "failed";
+        },
+      },
+    ),
+    deleteExchange: create.asyncThunk(
+      async (exchange: string) => {
+        await walletsApi.deleteExchange(exchange);
+        return { removedExchange: exchange };
+      },
+      {
+        pending: state => {
+          state.statusDeletingExchange = "loading";
+        },
+        fulfilled: (state, action) => {
+          state.statusDeletingExchange = "idle";
+          state.exchanges = state.exchanges!.filter(w => w.exchange_id !== action.payload.removedExchange);
+        },
+        rejected: state => {
+          state.statusDeletingWallets = "failed";
+        },
+      },
+    ),
   }),
 });
 
-export const { createWallet, deleteWallet, fetchWallets, fetchTotalWalletsWorthData, selectWallets, updateWallet } =
+export const { createWallet, deleteWallet, fetchWallets, fetchTotalWalletsWorthData, selectWallets, updateWallet, fetchExchanges, deleteExchange } =
   walletsSlice.actions;

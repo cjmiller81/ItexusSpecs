@@ -1,12 +1,10 @@
-import CheckOutlined from "@ant-design/icons/CheckOutlined";
-import { Button, Card, Stack, Typography, useTheme } from "@mui/material";
-import Grid, { GridProps } from "@mui/material/Grid";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import { FC, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Grid, Card, Stack, Typography, Button, List, ListItem, ListItemText } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { StyledSwitch } from "./StyledSwitch";
+import { PlanModel } from "../models/PlanModel";
+
 
 export type PermissionItem = {
   permission: string;
@@ -14,137 +12,94 @@ export type PermissionItem = {
   isEnabled?: boolean;
 };
 
-export type PricingPeriod = "year" | "month";
-export type BillingPlan = {
-  planName: string;
-  price?: number;
-  isCustomPricing?: boolean;
-  plans: PermissionItem[];
+export type BillingPlanProps = {
+  plan: PlanModel;
+  isSelected?: boolean;
+  onSelectPlan?: () => void;
 };
 
-type Props = GridProps &
-  BillingPlan & {
-    isSelected?: boolean;
-    onSelectPlan?: () => void;
-  };
-
-export const BillingPlan: FC<Props> = ({
-  planName,
-  price,
-  plans,
-  isCustomPricing,
-  isSelected,
-  onSelectPlan,
-  ...props
-}) => {
-  const { t } = useTranslation("BillingPlan");
+export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan }) => {
   const theme = useTheme();
+  const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
+  
+  const { nickname, unitAmount, recurring, active } = plan;
 
-  const [pricingPeriod, setPricingPeriod] = useState<PricingPeriod | undefined>(isCustomPricing ? undefined : "month");
+  const price = unitAmount ? unitAmount / 100 : undefined;
+
+  const plans: PermissionItem[] = [
+    {
+      permission: "Usage Type",
+      permissionValue: recurring?.usageType,
+      isEnabled: active,
+    },
+    {
+      permission: "Billing Interval",
+      permissionValue: `${recurring?.intervalCount} ${recurring?.interval}`,
+      isEnabled: active,
+    },
+    {
+      permission: "Trial Period",
+      permissionValue: recurring?.trialPeriodDays ? `${recurring.trialPeriodDays} days` : "No trial",
+      isEnabled: active,
+    },
+  ];
+
   return (
-    <Grid
-      item
-      {...props}>
-      <Card
-        sx={{
-          height: "100%",
-          py: 3,
-          px: 2,
-          borderRadius: theme.shape.borderRadius,
-        }}>
+    <Grid item xs={12} sm={6} md={3}>
+      <Card sx={{ height: "100%", py: 3, px: 2, borderRadius: theme.shape.borderRadius }}>
         <Stack spacing={2}>
-          <Stack
-            direction="row"
-            spacing={2}
-            textAlign="center">
-            <Typography
-              fontWeight={500}
-              variant="h4">
-              {planName}
+          <Stack direction="row" spacing={2} textAlign="center">
+            <Typography fontWeight={500} variant="h4">
+              {nickname}
             </Typography>
           </Stack>
 
-          <Stack
-            minHeight={110}
-            justifyContent={"space-between"}>
+          <Stack minHeight={110} justifyContent={"space-between"}>
             {pricingPeriod && (
-              <Stack
-                direction="row"
-                alignItems={"center"}>
-                <Typography sx={{ opacity: pricingPeriod === "year" ? 1 : 0.5 }}>{t("BilledYearly")}</Typography>
+              <Stack direction="row" alignItems={"center"}>
+                <Typography sx={{ opacity: pricingPeriod === "year" ? 1 : 0.5 }}>
+                  Billed Yearly
+                </Typography>
                 <StyledSwitch
                   onChange={() => setPricingPeriod(pricingPeriod === "year" ? "month" : "year")}
                   checked={pricingPeriod === "month"}
                 />
-                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}>{t("BilledMonthly")}</Typography>
+                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}>
+                  Billed Monthly
+                </Typography>
               </Stack>
             )}
 
             {price && (
-              <Stack
-                direction="row"
-                spacing={1}
-                alignItems="center">
-                <Typography
-                  fontWeight={700}
-                  variant="h4">
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography fontWeight={700} variant="h4">
                   {pricingPeriod === "year" ? `$${price * 12}` : `$${price}`}
                 </Typography>
 
-                <Typography
-                  variant="h6"
-                  sx={{ opacity: 0.4 }}
-                  color="text.secondary">
-                  {pricingPeriod === "month" ? t("PerMonth") : t("PerYear")}
+                <Typography variant="h6" sx={{ opacity: 0.4 }} color="text.secondary">
+                  {pricingPeriod === "month" ? "Per Month" : "Per Year"}
                 </Typography>
               </Stack>
             )}
           </Stack>
 
-          {isCustomPricing && planName === "Enterprise" && (
-            <Button
-              sx={{
-                height: "40px",
-                fontSize: "11.5px",
-              }}
-              fullWidth
-              variant="contained">
-              {t("ContactUs")}
+          { nickname === "Enterprise" && (
+            <Button sx={{ height: "40px", fontSize: "11.5px" }} fullWidth variant="contained">
+              Contact Us
             </Button>
           )}
 
-          {planName !== "Enterprise" && (
-            <Button
-              onClick={onSelectPlan}
-              sx={{
-                height: "40px",
-              }}
-              variant={isSelected ? "contained" : "outlined"}
-              fullWidth>
-              {isSelected ? t("CurrentPlan") : t("SwitchToPlan")}
+          {nickname !== "Enterprise" && (
+            <Button onClick={onSelectPlan} sx={{ height: "40px" }} variant={isSelected ? "contained" : "outlined"} fullWidth>
+              {isSelected ? "Current Plan" : "Switch to Plan"}
             </Button>
           )}
 
-          <List
-            sx={{
-              m: 0,
-              p: 0,
-              marginTop: "auto",
-              "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } },
-            }}
-            component="ul">
-            {plans.map((plan, i) => (
-              <ListItem
-                content="li"
-                key={i}
-                sx={{ ...(!plan.isEnabled ? priceListDisable : {}), minWidth: 2 }}
-                divider={i !== plans.length - 1}>
+          <List sx={{ m: 0, p: 0, marginTop: "auto", "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } } }} component="ul">
+            {plans.map((planItem, i) => (
+              <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
                 <CheckOutlined />
-
-                <ListItemText
-                  sx={{ pl: 2 }}
-                  primary={plan.permissionValue ? `${plan.permission}: ${plan.permissionValue}` : `${plan.permission}`}
-                />
+                <ListItemText sx={{ pl: 2 }} primary={planItem.permissionValue ? `${planItem.permission}: ${planItem.permissionValue}` : `${planItem.permission}`} />
               </ListItem>
             ))}
           </List>
@@ -152,11 +107,4 @@ export const BillingPlan: FC<Props> = ({
       </Card>
     </Grid>
   );
-};
-
-const priceListDisable = {
-  opacity: 0.4,
-  "& >div> svg": {
-    fill: theme => theme.palette.secondary.light,
-  },
 };

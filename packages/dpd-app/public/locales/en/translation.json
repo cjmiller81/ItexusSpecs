@@ -107,7 +107,19 @@
     "BILLING": "BILLING",
     "UserProfile": "User Profile",
     "AvatarUploadingError": "Error while loading image",
-    "ProfileUpdatingError": "Error while updating profile"
+    "ProfileUpdatingError": "Error while updating profile",
+    "BrokerageConnection": "BROKERAGE CONNECTION"
+  },
+  "BrokerageConnectionContainer": {
+    "AuthorizedForTrading": "Authorized for Trading",
+    "AuthorizationExpires": "Authorization expires: Feb 27, 2025 9:58AM",
+    "Disconnect": "Disconnect",
+    "Status": "Status",
+    "AccountNumber": "Account Number",
+    "Reauthorize": "Reauthorize",
+    "ConnectToSchwab": "Connect To Schwab",
+    "Connected": "Connected",
+    "ConnectedToSchwab": "Connected To Schwab"
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",
@@ -132,7 +144,11 @@
     "DIShortSaleVolume": "DI Short Sale Volume",
     "SingleStockView": "Single Stock View",
     "SectorsView": "Sectors View",
-    "HighVolumeDailyScan": "High Volume Daily Scan"
+    "HighVolumeDailyScan": "High Volume Daily Scan",
+    "OptionTrader": "Option Trader",
+    "TradingSets": "Trading Sets",
+    "Calls": "Calls",
+    "SetList": "Set List"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -152,7 +168,22 @@
     "TokenName": "Token Name",
     "WalletAddress": "Wallet Address",
     "PersonalPublic": "Personal",
-    "WalletName": "Wallet Name"
+    "WalletName": "Wallet Name",
+    "Ticker": "Ticker",
+    "Action": "Action",
+    "OptionType": "Option Type",
+    "Account": "Account",
+    "DTE": "DTE",
+    "Range": "Range",
+    "EntryOrder": "Entry Order",
+    "EntryType": "Entry Type",
+    "EntryPrice": "Entry Price",
+    "ExitType": "Exit Type",
+    "TargetOrder": "Target Order",
+    "TargetPrice": "Target Price",
+    "StopOrder": "Stop Order",
+    "StopPrice": "Stop Price",
+    "Speed": "Speed"
   },
   "SymbolLookup": {
     "Search": "Search"
@@ -218,5 +249,50 @@
     "SingleStockPage": "Single Stock View Page",
     "SectorsView": "Sectors View",
     "HighVolumeDailyScan": "High Volume Daily Scan"
+  },
+  "OptionTradeCalls": {
+    "CallOptionSet": "Call Option Set"
+  },
+  "CallsSection": {
+    "SaveCopy": "Save Copy",
+    "CreateNewSub-Profile": "+ Create New Sub-Profile",
+    "SelectSub-Profile": "Select Sub-Profile",
+    "CallOptionSet": "Call Option Set",
+    "Account": "Account",
+    "Save": "Save",
+    "SendOrder": "+Send Order",
+    "OptionDetails": "Option Details",
+    "DTERange": "DTE Range",
+    "to": "to",
+    "RequireActiveBid": "Require Active Bid",
+    "B/AMaxOn/Off": "B/A Max On/Off",
+    "B/AMax(e.g 5 = 5%)": "B/A Max (e.g 5 = 5%)",
+    "MinContractAsk": "Min Contract Ask",
+    "TradeAsSet": "Trade As Set",
+    "OptionFilter": "Option Filter",
+    "MinOpenInterest": "Min Open Interest",
+    "MinVolume": "Min Volume",
+    "B/ASpreadDiff": "B/A Spread Diff (e.g 5 = 5%)",
+    "EntryOrder": "Entry Order",
+    "TotalDollarAmount": "Total Dollar Amount",
+    "OIPercentCap": "OI Percent Cap (e.g 5 = 5%)",
+    "EntryType": "Entry Type",
+    "Buy_Ask": "Buy_Ask",
+    "Buy_Mid": "Buy_Mid",
+    "Buy_Bid": "Buy_Bid",
+    "UseLaddering": "Use Laddering?",
+    "OffsetMustBe": "Offset must be <0 if Buy_Ask",
+    "OffsetPercent": "Offset Percent (e.g 5 = 5%)",
+    "TradeUnderlyingOptionFound": "Trade Underlying if no Option Found?",
+    "OnlyTradeUnderlying": "Only Trade Underlying",
+    "CancelResubmitNoPartialFill": "Cancel and Resubmit on No or Partial Fill?",
+    "BreakUpOrder": "Break-Up Order?",
+    "SendTriggerExitOrder": "Send Trigger Exit Order",
+    "OrderBreaks": "Order Breaks",
+    "ExitTiers": "Exit Tiers",
+    "AddTier": "Add Tier",
+    "Limit": "Limit",
+    "OCO": "OCO",
+    "SaveSubProfileName": "Save Sub-Profile Name As:"
   }
 }

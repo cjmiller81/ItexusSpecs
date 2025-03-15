@@ -34,10 +34,12 @@ import { ExpandableChainRow } from "./ChainsRow";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
+  exchanges: IExchange[]| null;
   selectedWalletsIds: string[];
   loading?: boolean;
   onUpdateWallet: (wallet: Wallet) => void;
   onDeleteWallet: (wallet: string) => void;
+  onDeleteExchange: (exchange: string) => void;
   onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
@@ -47,9 +49,11 @@ interface Props extends BoxProps {
 export const MyWalletsSection = ({
   onAddWallet,
   onDeleteWallet,
+  onDeleteExchange,
   onSelectedRowsChanged,
   onUpdateWallet,
   wallets,
+  exchanges,
   totalWalletsWorthData,
   totalAmount,
   loading,
@@ -63,12 +67,13 @@ export const MyWalletsSection = ({
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
-  const [openCoinbaseDialog, setOpenCoinbaseDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
-  const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
+  const [dialogState, setDialogState] = useState(["Kraken"]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingExchangeName, setEditingExchangeName] = useState<string>("");
   
   const addWallet = async (walletAddressModel: AddressModel) => {
     onAddWallet(walletAddressModel);
@@ -86,36 +91,56 @@ export const MyWalletsSection = ({
     validationSchema: Yup.object({
       apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
       apiSecret: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
-      chainName: Yup.string().required(t("ChainNameRequired")),
+      chainName: Yup.string()
+      .required(t("ChainNameRequired"))
+      .test("unique-name", t("ExchangeNameExists"), (value) => {
+        if (!value) return true;
+        
+        return (
+          !isEditing ||
+          !exchange.some((ex) => String(ex?.name || "").toLowerCase() === String(value || "").toLowerCase())
+        );
+      }),
     }),
+    
     onSubmit: async (values, { resetForm }) => {
-      resetForm();
-      setOpenKrakenDialog(false);
-      setOpenCoinbaseDialog(false);
-      
-        try {
-          
-          const result = await krakenApi.connectToKraken({
-            login: null,
-            publicApiKey: values.apiKey,
-            privateApiKey: values.apiSecret,
-            userId: null,
-          });
-          if (result) {
-            const newExchange = {
-              exchange_id: selectedService,
-              name: selectedService,
-            };
-          
-            setExchange(prevExchange => [...prevExchange, newExchange]);
+      try {
+        const result = await krakenApi.connectToKraken({
+          login: null,
+          publicApiKey: values.apiKey,
+          privateApiKey: values.apiSecret,
+          userId: null,
+          accountName: values.chainName,
+        });
+    
+        if (result) {
+          const newExchange = {
+            exchange_id: selectedService,
+            name: values.chainName,
+            apiKey: values.apiKey,
+            apiSecret: values.apiSecret,
+          };
+    
+          if (isEditing) {
+            setExchange((prevExchange) =>
+              prevExchange.map((ex) =>
+                ex.exchange_id === selectedService ? newExchange : ex
+              )
+            );
+          } else {
+            setExchange((prevExchange) => [...prevExchange, newExchange]);
           }
-        } catch (error) {
-          console.error("Failed to connect to Kraken", error);
         }
-      
-    },
-  });
-  
+      } catch (error) {
+        console.error("Failed to connect to Kraken", error);
+      } finally {
+        resetForm();
+        setIsEditing(false);
+        setOpenKrakenDialog(false);
+        setSelectedService("");
+      }
+    }
+  });  
   
   const handleChainNameChange = (name: string) => {
     setSelectedService(name);
@@ -125,21 +150,25 @@ export const MyWalletsSection = ({
     const value = event.target.value;
     if (
       value === "" ||
-      value === "Kraken" ||
-      value === "Coinbase"
+      value === "Kraken" 
     ) {
       setSelectedService(value);
-      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
+      formik.setFieldValue("chainName", value);
     }
   };
 
   const handleCancelExchange = () => {
-    setDialogState(["Kraken", "Coinbase"]);
+    setDialogState(["Kraken"]);
     setActiveConnection("");
     setSelectedService("");
     setOpenExchangeDialog(false);
     setOpenKrakenDialog(false);
-    setOpenCoinbaseDialog(false);
+    setIsEditing(false);
+    formik.setValues({
+      apiKey: "",
+      apiSecret: "",
+      chainName: "",
+    });
   };
 
   //eslint-disable-next-line no-undef
@@ -157,11 +186,15 @@ export const MyWalletsSection = ({
     useEffect(() => {
     if (selectedService === "Kraken") {
       setOpenKrakenDialog(true);
-    } else if (selectedService === "Coinbase") {
-      setOpenCoinbaseDialog(true);
-    }
+    } 
     setOpenExchangeDialog(false);
   }, [selectedService]);  
+
+  useEffect(() =>{
+    if(exchanges !== null){
+      setExchange(exchanges)
+    }
+  },[exchanges])
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -189,16 +222,37 @@ export const MyWalletsSection = ({
     });
   };
 
+  const handleUpdateExchange = ( updatedExchange: IExchange) => {
+    const updatedExchanges = exchange.map(ex =>
+      ex.name === editingExchangeName ? updatedExchange : ex 
+    );
+    setExchange(updatedExchanges); 
+    setOpenKrakenDialog(false);
+    setIsEditing(false);
+  };
+  
+  
   const handleDeleteClick = (id: GridRowId) => {
     onDeleteWallet(id as string);
   };
 
   const handleExchangeEditClick = (id: GridRowId) => {
-    
+    setIsEditing(true); 
+    const exchangeToEdit = exchange.find((ex) => ex.exchange_id === id);
+    if (exchangeToEdit) {
+      setEditingExchangeName(exchangeToEdit.name)
+      formik.setValues({
+        apiKey: exchangeToEdit.apiKey,
+        apiSecret: exchangeToEdit.apiSecret,
+        chainName: exchangeToEdit.name,
+      });
+    }
+    setOpenKrakenDialog(true);
   };
 
   const handleExchangeDeleteClick = (id: GridRowId) => {
     setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
+    onDeleteExchange(id as string);
   };
 
   const processRowUpdate = (newRow: GridRowModel<Wallet>, _oldRow: GridRowModel<Wallet>) => {
@@ -236,7 +290,7 @@ export const MyWalletsSection = ({
         </StyledAddWalletButton>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
-        <PageTitle sx={{ mt: 4 }}>{t("Wallets")}</PageTitle>
+        <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
       <Box sx={{ width: "100%", overflow: "auto" }}>
@@ -300,29 +354,28 @@ export const MyWalletsSection = ({
           {t("AddCentarlizedWallet")}
         </StyledAddWalletButton>
         <ExchangeDialog
-        open={openExchangeDialog}
-        title={dialogState}
-        selectedService={dialogState}
-        onClose={handleCancelExchange}
-        onServiceChange={handleServiceChange}
-      />
-      <KrakenDialog
+          open={openExchangeDialog}
+          title={dialogState}
+          selectedService={dialogState}
+          onClose={handleCancelExchange}
+          onServiceChange={handleServiceChange}
+        />
+
+      <KrakenDialog 
         open={openKrakenDialog}
         formik={formik}
         onClose={handleCancelExchange}
         onChainNameChange={handleChainNameChange}
-      />
-
-      <CoinbaseDialog
-        open={openCoinbaseDialog}
-        formik={formik}
-        onClose={handleCancelExchange}
-        onChainNameChange={handleChainNameChange}
+        existingExchanges={exchange}
+        isEditing={isEditing}
+        onUpdateExchange={handleUpdateExchange}
+        editingExchangeName ={editingExchangeName}
       />
       </StyledAdaptivePageBox>
       </Box>
 
       <StyledWalletsTable
+          loading={exchanges === null && loading}
           disableVirtualization
           hideFooter
           sx={{

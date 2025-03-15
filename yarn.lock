@@ -8961,6 +8961,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stripe/react-stripe-js@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@stripe/react-stripe-js@npm:3.1.1"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    "@stripe/stripe-js": ^1.44.1 || ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
+    react: ">=16.8.0 <20.0.0"
+    react-dom: ">=16.8.0 <20.0.0"
+  checksum: 10c0/d8f877e956f711acb96248ab6b183d330c6b194884aeeb82e96bc05dab08020a2c53f0c13359e893ac22bc7e15facc720877cfb04d999b1f3050bb58aca5124f
+  languageName: node
+  linkType: hard
+
+"@stripe/stripe-js@npm:^5.6.0":
+  version: 5.6.0
+  resolution: "@stripe/stripe-js@npm:5.6.0"
+  checksum: 10c0/56aa804ed2946aae4622b56c1736b7fa69e640d293d1ba6d465732851f313234c00d29006e2270bbdceee93222b5c62d8aa92791373ec56bfc4bd214a0b950c3
+  languageName: node
+  linkType: hard
+
 "@surma/rollup-plugin-off-main-thread@npm:^2.2.3":
   version: 2.2.3
   resolution: "@surma/rollup-plugin-off-main-thread@npm:2.2.3"
@@ -16009,6 +16029,8 @@ __metadata:
     "@ory/elements": "npm:^0.2.0"
     "@ory/integrations": "npm:^1.1.5"
     "@reduxjs/toolkit": "npm:^2.2.0"
+    "@stripe/react-stripe-js": "npm:^3.1.1"
+    "@stripe/stripe-js": "npm:^5.6.0"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/jest-dom": "npm:^6.6.3"
     "@testing-library/react": "npm:^16.1.0"
@@ -16062,6 +16084,7 @@ __metadata:
     lerna: "npm:^8.1.2"
     limiter: "npm:^2.1.0"
     lint-staged: "npm:^12.3.7"
+    lucide-react: "npm:^0.474.0"
     moment: "npm:^2.30.1"
     msw: "npm:^2.2.2"
     next: "npm:^14.2.3"
@@ -23259,6 +23282,15 @@ __metadata:
     pseudomap: "npm:^1.0.1"
     yallist: "npm:^2.0.0"
   checksum: 10c0/92ff839ef07632d35f6bddd870909ae49edc1956b409b6a6db342e6d92bbea4aa4f7107dae35db7d5dd59cf27d5a43bbd335f26e2458d1b8860783f68fc1a0af
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.474.0":
+  version: 0.474.0
+  resolution: "lucide-react@npm:0.474.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/60c88c251b2ed4d1074d24a7041122dc280c48cf68a1a25b23e35a296f49955e0edc22744f278929bc7e48dcd4248bed27d6a8227d5a42fc49fceb134194b310
   languageName: node
   linkType: hard
 

@@ -23,9 +23,10 @@ export type CardModel = InferType<typeof cardModelSchema>;
 type Props = StackProps & {
   onAttachCard: (cardData: CardModel) => void;
   onClose: () => void;
+  paymentMethods: any[];
 };
 
-export const PaymentMethodSelector: FC<Props> = ({ onClose, onAttachCard, ...props }) => {
+export const PaymentMethodSelector: FC<Props> = ({ onClose, onAttachCard,paymentMethods, ...props }) => {
   const [tab, setTab] = useState<TabsType>("card");
   const { t } = useTranslation("PaymentMethodSelector");
   return (
@@ -42,6 +43,7 @@ export const PaymentMethodSelector: FC<Props> = ({ onClose, onAttachCard, ...pro
         <CardPaymentForm
           onClose={onClose}
           onAttachCard={onAttachCard}
+          paymentMethods={paymentMethods}
         />
       ) : (
         <>
