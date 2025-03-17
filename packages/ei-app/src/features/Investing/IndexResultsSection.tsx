@@ -93,7 +93,7 @@ export const IndexResultsSection = ({
   const [useWalletCapital, setUseWalletCapital] = useState(true);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [tokensToTrade, settokensToTrade] = useState<number>(0);
+  const [tokensToTrade, settokensToTrade] = useState<number>(5);
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
 
@@ -334,7 +334,7 @@ export const IndexResultsSection = ({
             item
             xs={12}
             md={7.64}
-            lg={5}
+            lg={4.6}
             container
             direction="row"
             sx={{
@@ -478,7 +478,7 @@ export const IndexResultsSection = ({
             item
             xs={12}
             md={7.64}
-            lg={5.5}
+            lg={6.8}
             container
             direction="row"
             sx={{
@@ -488,7 +488,7 @@ export const IndexResultsSection = ({
                 xs: "0",
                 lg: "auto",
               },
-              marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
+              marginRight: { md: "1.5%", xs: 0 },
               marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
             }}>
             <Typography
@@ -508,20 +508,13 @@ export const IndexResultsSection = ({
               item
               xs={12}
               md={12}
-              lg={4.7}
+              lg={5.85}
               sx={{ marginLeft: "2%", marginTop: "30px" }}>
-              <AppNumberInput
-                label={t("Tokens To Trade")}
-                value={tokensToTrade}
-                min={0}
-                onChange={(_, value) => settokensToTrade(value ?? tokensToTrade)}
-              />
+              <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
 
-              <Grid
-                container
-                spacing={2}
-                alignItems="center"
-                sx={{ paddingTop: "10px" }}>
+            <Grid item container direction="column" alignItems="flex-start" spacing={1} sx={{ width: "auto" }}>
+              
+              <Grid container item alignItems="center" direction="row" spacing={1}>
                 <Grid item>
                   <Wallet color={useWalletCapital ? "gray" : "#0ea5e9"} />
                 </Grid>
@@ -529,94 +522,122 @@ export const IndexResultsSection = ({
                   <Typography
                     color={useWalletCapital ? "gray" : "#0ea5e9"}
                     variant="h6"
-                    sx={{
-                      alignSelf: "flex-start",
-                      fontSize: "14px",
-                    }}>
+                    sx={{ fontSize: "14px" }}>
                     {t("WalletCapital", { ns: "IndexModelingSection" })}
                   </Typography>
                 </Grid>
               </Grid>
-              <Box
-                sx={{
-                  mt: 1,
-                  p: 1,
-                  borderRadius: 2,
-                  border: `1px solid ${!useWalletCapital ? "#0ea5e9" : "#333"}`,
-                  bgcolor: !useWalletCapital ? "#f0f9ff" : "transparent",
-                }}>
-                <InputBase
-                  value={useWalletCapital === true ? " " : parseFloat(totalAmount.toFixed(2))}
-                  fullWidth
-                  sx={{ color: !useWalletCapital ? "black" : "gray", width: "100%" }}
-                  disabled={useWalletCapital === true ? true : false}
-                />
-              </Box>
-              <Grid
-                container
-                justifyContent="center"
-                sx={{ mt: 2 }}>
-                <Tooltip
-                  open={isTooltipOpen}
-                  title={t("SelectSavedWallet", { ns: "IndexModelingSection" })}
-                  placement="top"
-                  arrow>
-                  <span>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={useWalletCapital}
-                          onChange={handleSwitchChange}
-                        />
-                      }
-                      label=""
-                      labelPlacement="top"
-                      sx={{ flex: 0 }}
-                    />
-                  </span>
-                </Tooltip>
-              </Grid>
 
-              <Grid
-                container
-                spacing={2}
-                alignItems="center"
-                sx={{ mt: 2 }}>
-                <Grid item>
-                  <Coins color={!useWalletCapital ? "gray" : "#0ea5e9"} />
-                </Grid>
-                <Grid item>
-                  <Typography
-                    color={!useWalletCapital ? "gray" : "#0ea5e9"}
-                    variant="h6"
-                    sx={{
-                      alignSelf: "flex-start",
-                      fontSize: "14px",
-                    }}>
-                    {t("DeploymentCapital", { ns: "IndexModelingSection" })}
-                  </Typography>
-                </Grid>
+              <Grid item>
+                <Box
+                  sx={{
+                    mt: 1,
+                    p: 1,
+                    borderRadius: 2,
+                    border: `1px solid ${!useWalletCapital ? "#0ea5e9" : "gray"}`,
+                    bgcolor: !useWalletCapital ? "#f0f9ff" : "transparent",
+                    width: "90%",
+                  }}>
+                  <InputBase
+                    value={useWalletCapital === true ? " " : parseFloat(totalAmount.toFixed(2))}
+                    sx={{ color: !useWalletCapital ? "black" : "gray", width: "100%" }}
+                    disabled={useWalletCapital === true}
+                  />
+                </Box>
               </Grid>
-              <Box
-                sx={{
-                  mt: 1,
-                  p: 1,
-                  borderRadius: 2,
-                  border: `1px solid ${useWalletCapital ? "#0ea5e9" : "#333"}`,
-                  bgcolor: useWalletCapital ? "#f0fdf4" : "transparent",
-                }}>
-                <InputBase
-                  value={useWalletCapital === true ? capital : " "}
-                  sx={{ color: useWalletCapital ? "black" : "gray", width: "100%" }}
-                  onChange={event => onCapitalChange(Number(event.target.value) || 0)}
-                />
-              </Box>
             </Grid>
+
+          <Grid item sx={{ flexGrow: 1, display: "flex", justifyContent: "center", marginTop:"40px" }}>
+            <Tooltip
+            
+              open={isTooltipOpen}
+              title={t("SelectSavedWallet", { ns: "IndexModelingSection" })}
+              placement="top"
+              arrow>
+              <span>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={useWalletCapital}
+                      onChange={handleSwitchChange}
+                    />
+                  }
+                  label=""
+                />
+              </span>
+            </Tooltip>
+          </Grid>
+
+      <Grid item container direction="column" alignItems="flex-start" spacing={1} sx={{ width: "auto" }}>
+        <Grid container item alignItems="center" direction="row" spacing={1}>
+          <Grid item>
+            <Coins color={!useWalletCapital ? "gray" : "#0ea5e9"} />
+          </Grid>
+          <Grid item>
+            <Typography
+              color={!useWalletCapital ? "gray" : "#0ea5e9"}
+              variant="h6"
+              sx={{ fontSize: "14px" }}>
+              {t("DeploymentCapital", { ns: "IndexModelingSection" })}
+            </Typography>
+          </Grid>
+        </Grid>
+
+        <Grid item>
+          <Box
+            sx={{
+              mt: 1,
+              p: 1,
+              borderRadius: 2,
+              border: `1px solid ${useWalletCapital ? "#0ea5e9" : "gray"}`,
+              bgcolor: useWalletCapital ? "#f0fdf4" : "transparent",
+              width: "90%",
+            }}>
+            <InputBase
+              value={useWalletCapital === true ? capital : " "}
+              sx={{ color: useWalletCapital ? "black" : "gray", width: "100%" }}
+              onChange={event => onCapitalChange(Number(event.target.value) || 0)}
+            />
+          </Box>
+        </Grid>
+
+      </Grid>
+  </Grid>
+
+      <Grid container spacing={2} direction={"column"} sx={{justifyContent: "flex-start" , marginLeft:"0px", mt: 2 }}>
+        <Typography 
+          sx={{ color: "gray",fontSize: "14px" }} 
+          variant="h6">{t("TokensToTrade")}
+        </Typography>
+        <TextField
+          type="number"
+          value={tokensToTrade === 0 ? "" : tokensToTrade}
+          onChange={(event) => {
+            const value = event.target.value;
+            settokensToTrade(value === "" ? 0 : Number(value.replace(/^0+/, "")));
+          }}
+          onFocus={() => settokensToTrade(tokensToTrade)}
+          onBlur={(event) => {
+            if (event.target.value === "") {
+              settokensToTrade(tokensToTrade);
+            }
+          }}
+          InputProps={{ inputProps: { min: 0 } }}
+          sx={{
+            width: "70%",
+            maxWidth: "300px",
+            display: "flex",
+            justifyContent: "flex-start"
+          }}
+        />
+      </Grid>
+
+          </Grid>
             <Grid
               item
               xs={12}
               md={12}
-              lg={6.8}
+              lg={5.3}
               spacing={1}
               sx={{ marginTop: "25px", marginLeft: { lg: "2%", md: "2%", xs: "0%" } }}>
               <StyledWalletsTable
