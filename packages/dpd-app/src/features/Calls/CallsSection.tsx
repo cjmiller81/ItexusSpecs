@@ -101,9 +101,9 @@ export default function CallOptionSet() {
           sx={{ width: "200px", height: "40px", bgcolor: "gray", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}
         >
           <MenuItem value="" disabled>{t("Account")}</MenuItem>
-          {connectedAccounts.map(acc => {
-            return (<MenuItem value={acc} key={acc.accountNumber}>{acc.accountNumber}</MenuItem>)
-          })}
+          {
+            connectedAccounts.map(acc => (<MenuItem value={acc.accountNumber} key={acc.accountNumber}>{acc.accountNumber}</MenuItem>))
+          }
         </Select>
 
         <Select
