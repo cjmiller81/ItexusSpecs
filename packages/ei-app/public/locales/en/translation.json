@@ -281,7 +281,8 @@
     "BilledYearly": "Billed yearly",
     "BilledMonthly": "Billed monthly",
     "SwitchToPlan": "Switch to plan",
-    "CurrentPlan": "Current plan"
+    "CurrentPlan": "Current plan",
+    "SelectThisPlan": "Select this plan"
   },
   "SideBar": {
     "Home": "Home",
