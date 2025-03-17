@@ -547,8 +547,9 @@ export const IndexResultsSection = ({
               </Grid>
             </Grid>
 
-          <Grid item sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+          <Grid item sx={{ flexGrow: 1, display: "flex", justifyContent: "center", marginTop:"40px" }}>
             <Tooltip
+            
               open={isTooltipOpen}
               title={t("SelectSavedWallet", { ns: "IndexModelingSection" })}
               placement="top"
@@ -610,15 +611,24 @@ export const IndexResultsSection = ({
         </Typography>
         <TextField
           type="number"
-          value={tokensToTrade}
-          onChange={(event) => settokensToTrade(Number(event.target.value) || 0)}
+          value={tokensToTrade === 0 ? "" : tokensToTrade}
+          onChange={(event) => {
+            const value = event.target.value;
+            settokensToTrade(value === "" ? 0 : Number(value.replace(/^0+/, "")));
+          }}
+          onFocus={() => settokensToTrade(tokensToTrade)}
+          onBlur={(event) => {
+            if (event.target.value === "") {
+              settokensToTrade(tokensToTrade);
+            }
+          }}
           InputProps={{ inputProps: { min: 0 } }}
-          sx={{ 
-            width: "70%", 
-            maxWidth: "300px", 
-            display: "flex", 
+          sx={{
+            width: "70%",
+            maxWidth: "300px",
+            display: "flex",
             justifyContent: "flex-start"
-          }} 
+          }}
         />
       </Grid>
 
