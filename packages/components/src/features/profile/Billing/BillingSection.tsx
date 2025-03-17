@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchProductAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, setProduct, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
+import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchProductAsync, fetchProductsAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, setProduct, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
@@ -55,7 +55,9 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           if (activeSubscription.items[0]?.price?.productId) {
             const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
             dispatch(setProduct(productData));
+            console.log(productData)
           }
+          const products = await dispatch(fetchProductsAsync())
         }
       } catch (error) {
         console.error("Billing initialization error:", error);

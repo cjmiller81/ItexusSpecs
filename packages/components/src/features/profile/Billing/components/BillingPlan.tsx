@@ -23,6 +23,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
   
   const { nickname, unitAmount, recurring, active } = plan;
+  console.log(recurring)
 
   const price = unitAmount ? unitAmount / 100 : undefined;
 

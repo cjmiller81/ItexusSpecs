@@ -62,6 +62,21 @@ export const billingService = {
         }
     },
 
+    getProductsList: async (): Promise<any[]> => {
+        try {
+            const response = await appAxios.get("/api/billing/products", {
+                withCredentials: true,
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Failed to fetch product list:", error);
+            if (error instanceof AxiosError) {
+                throw new Error(`API Error: ${error.response?.data?.message || error.message}`);
+            }
+            throw new Error("Failed to fetch product list");
+        }
+    },
+
     getBilling: async (): Promise<Billing | null> => {
         try {
             const response = await appAxios.get("/api/billing", {
