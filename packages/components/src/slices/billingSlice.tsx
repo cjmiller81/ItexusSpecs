@@ -19,6 +19,7 @@ export interface BillingState {
   customerId: string | null;
   subscriptions: Subscription[] | null;
   product: Product | null;
+  products: Product[] | null;
 }
 interface PaymentIntentRequest {
   amount: number;
@@ -38,7 +39,8 @@ const initialState: BillingState = {
   paymentIntentClientSecret: null,
   paymentMethods: [],
   customerId: null,
-  product: null
+  product: null,
+  products: null
 };
 
 export const attachPaymentMethodAsync = createAsyncThunk<
@@ -154,6 +156,25 @@ export const fetchProductAsync = createAsyncThunk<
         return rejectWithValue(error.message);
       }
       return rejectWithValue("Failed to fetch product details");
+    }
+  }
+);
+
+export const fetchProductsAsync = createAsyncThunk<
+  Product[],
+  void,
+  { rejectValue: string }
+>(
+  "billing/fetchProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const products = await billingService.getProductsList();
+      return products;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch products");
+      }
+      return rejectWithValue("Failed to fetch products");
     }
   }
 );
@@ -519,6 +540,18 @@ export const billingSlice = createSlice({
       .addCase(detachPaymentMethodAsync.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to detach payment method";
+      })
+      .addCase(fetchProductsAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductsAsync.fulfilled, (state, action: PayloadAction<Product[]>) => {
+        state.loading = false;
+        state.products = action.payload;
+      })
+      .addCase(fetchProductsAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch products";
       });
   },
 });

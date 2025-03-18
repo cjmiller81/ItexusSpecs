@@ -4,11 +4,12 @@ import { useTheme } from "@mui/material/styles";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
+import { Product } from "../models/Product";
 import { useTranslation } from "react-i18next";
 
 
+
 export type PermissionItem = {
-  permission: string;
   permissionValue?: string;
   isEnabled?: boolean;
   selectedPlanId?: string;
@@ -18,10 +19,11 @@ export type BillingPlanProps = {
   plan: PlanModel;
   isSelected?: boolean;
   onSelectPlan?: () => void;
+  products: Product[] | null;
   selectedPlanId?: string | null;
 };
 
-export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId }) => {
+export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId,products }) => {
   const theme = useTheme();
     const { t } = useTranslation(["BillingPlan"]);
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
@@ -30,23 +32,24 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
 
   const price = unitAmount ? unitAmount / 100 : undefined;
 
-  const plans: PermissionItem[] = [
-    {
-      permission: "Usage Type",
-      permissionValue: recurring?.usageType,
-      isEnabled: active,
-    },
-    {
-      permission: "Billing Interval",
-      permissionValue: `${recurring?.intervalCount} ${recurring?.interval}`,
-      isEnabled: active,
-    },
-    {
-      permission: "Trial Period",
-      permissionValue: recurring?.trialPeriodDays ? `${recurring.trialPeriodDays} days` : "No trial",
-      isEnabled: active,
-    },
-  ];
+  const plans: PermissionItem[] = products
+    ? products
+        .filter((product) => product.id === plan.productId)
+        .flatMap((product) => [
+          {
+            permissionValue: product.marketingFeatures[0]?.name || "N/A",
+            isEnabled: active,
+          },
+          {
+            permissionValue: product.marketingFeatures[1]?.name || "N/A",
+            isEnabled: active,
+          },
+          {
+            permissionValue: product.marketingFeatures[2]?.name || "N/A",
+            isEnabled: active,
+          },
+        ])
+    : [];
 
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -103,7 +106,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             {plans.map((planItem, i) => (
               <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
                 <CheckOutlined />
-                <ListItemText sx={{ pl: 2 }} primary={planItem.permissionValue ? `${planItem.permission}: ${planItem.permissionValue}` : `${planItem.permission}`} />
+                <ListItemText sx={{ pl: 2 }} primary={ `${planItem.permissionValue}`}/>
               </ListItem>
             ))}
           </List>
