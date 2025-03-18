@@ -6,6 +6,8 @@ import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
 import { Product } from "../models/Product";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../slices";
 
 
 
@@ -29,10 +31,10 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
   
   const { nickname, unitAmount, recurring, active } = plan;
-
+  const { plans } = useSelector((state: RootState) => state.billing);
   const price = unitAmount ? unitAmount / 100 : undefined;
-
-  const plans: PermissionItem[] = products
+  const isToggleDisabled = plans.filter(p => p.productId === plan.productId).length === 1;
+  const plansInfo: PermissionItem[] = products
     ? products
         .filter((product) => product.id === plan.productId)
         .flatMap((product) => [
@@ -70,6 +72,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
                 <StyledSwitch
                   onChange={() => setPricingPeriod(pricingPeriod === "year" ? "month" : "year")}
                   checked={pricingPeriod === "month"}
+                  disabled={isToggleDisabled}
                 />
                 <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}> 
                   {t("BilledMonthly")}
@@ -103,7 +106,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           )}
 
           <List sx={{ m: 0, p: 0, marginTop: "auto", "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } } }} component="ul">
-            {plans.map((planItem, i) => (
+            {plansInfo.map((planItem, i) => (
               <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
                 <CheckOutlined />
                 <ListItemText sx={{ pl: 2 }} primary={ `${planItem.permissionValue}`}/>
