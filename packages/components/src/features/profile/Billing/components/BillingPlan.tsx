@@ -5,11 +5,14 @@ import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
 import { Product } from "../models/Product";
+import { useTranslation } from "react-i18next";
+
 
 
 export type PermissionItem = {
   permissionValue?: string;
   isEnabled?: boolean;
+  selectedPlanId?: string;
 };
 
 export type BillingPlanProps = {
@@ -17,10 +20,12 @@ export type BillingPlanProps = {
   isSelected?: boolean;
   onSelectPlan?: () => void;
   products: Product[] | null;
+  selectedPlanId?: string | null;
 };
 
-export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan, products }) => {
+export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId,products }) => {
   const theme = useTheme();
+    const { t } = useTranslation(["BillingPlan"]);
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
   
   const { nickname, unitAmount, recurring, active } = plan;
@@ -60,14 +65,14 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             {pricingPeriod && (
               <Stack direction="row" alignItems={"center"}>
                 <Typography sx={{ opacity: pricingPeriod === "year" ? 1 : 0.5 }}>
-                  Billed Yearly
+                  {t("BilledYearly")}
                 </Typography>
                 <StyledSwitch
                   onChange={() => setPricingPeriod(pricingPeriod === "year" ? "month" : "year")}
                   checked={pricingPeriod === "month"}
                 />
-                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}>
-                  Billed Monthly
+                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}> 
+                  {t("BilledMonthly")}
                 </Typography>
               </Stack>
             )}
@@ -87,13 +92,13 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
 
           { nickname === "Enterprise" && (
             <Button sx={{ height: "40px", fontSize: "11.5px" }} fullWidth variant="contained">
-              Contact Us
+              {t("ContactUs")}
             </Button>
           )}
 
           {nickname !== "Enterprise" && (
             <Button onClick={onSelectPlan} sx={{ height: "40px" }} variant={isSelected ? "contained" : "outlined"} fullWidth>
-              {isSelected ? "Current Plan" : "Switch to Plan"}
+             {selectedPlanId !== null ? (isSelected ? t("CurrentPlan")  : t("SwitchToPlan") ) : t("SelectThisPlan")}
             </Button>
           )}
 

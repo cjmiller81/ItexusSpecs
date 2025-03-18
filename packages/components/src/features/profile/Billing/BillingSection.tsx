@@ -382,6 +382,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
                 <BillingPlan
                   onSelectPlan={() => handlePlanChange(plan)}
                   isSelected={selectedPlanId === plan.id}
+                  selectedPlanId={selectedPlanId}
                   key={plan.id || index}
                   plan={plan}
                   products={products}
