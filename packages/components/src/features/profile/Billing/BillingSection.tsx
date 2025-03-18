@@ -15,6 +15,7 @@ import { PaymentMethodEditor } from "./components/PaymentMethodEditor";
 import { CardModel, PaymentMethodSelector } from "./components/PaymentMethodSelector";
 import { PaymentCardModel } from "./models/PaymentCardModel";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
+import { Product } from "./models/Product";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
   const { t } = useTranslation(["BillingContainer"]);
@@ -29,6 +30,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const { plans, loading, error, subscriptions,billing  } = useSelector((state: RootState) => state.billing);
   const paymentMethods = useSelector((state: RootState) => state.billing.paymentMethods);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[] | null>(null);
 
   useEffect(() => {
     const initializeBilling = async () => {
@@ -55,9 +57,14 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           if (activeSubscription.items[0]?.price?.productId) {
             const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
             dispatch(setProduct(productData));
-            console.log(productData)
           }
-          const products = await dispatch(fetchProductsAsync())
+          dispatch(fetchProductsAsync()).then((action) => {
+            if (fetchProductsAsync.fulfilled.match(action)) {
+              setProducts(action.payload);
+            } else {
+              console.error("Error loading products:", action.payload);
+            }
+          });
         }
       } catch (error) {
         console.error("Billing initialization error:", error);
@@ -377,6 +384,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
                   isSelected={selectedPlanId === plan.id}
                   key={plan.id || index}
                   plan={plan}
+                  products={products}
                 />
               ))}
           </Grid>

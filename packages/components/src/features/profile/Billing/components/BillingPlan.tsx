@@ -4,10 +4,10 @@ import { useTheme } from "@mui/material/styles";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
+import { Product } from "../models/Product";
 
 
 export type PermissionItem = {
-  permission: string;
   permissionValue?: string;
   isEnabled?: boolean;
 };
@@ -16,34 +16,35 @@ export type BillingPlanProps = {
   plan: PlanModel;
   isSelected?: boolean;
   onSelectPlan?: () => void;
+  products: Product[] | null;
 };
 
-export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan }) => {
+export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan, products }) => {
   const theme = useTheme();
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
   
   const { nickname, unitAmount, recurring, active } = plan;
-  console.log(recurring)
 
   const price = unitAmount ? unitAmount / 100 : undefined;
 
-  const plans: PermissionItem[] = [
-    {
-      permission: "Usage Type",
-      permissionValue: recurring?.usageType,
-      isEnabled: active,
-    },
-    {
-      permission: "Billing Interval",
-      permissionValue: `${recurring?.intervalCount} ${recurring?.interval}`,
-      isEnabled: active,
-    },
-    {
-      permission: "Trial Period",
-      permissionValue: recurring?.trialPeriodDays ? `${recurring.trialPeriodDays} days` : "No trial",
-      isEnabled: active,
-    },
-  ];
+  const plans: PermissionItem[] = products
+    ? products
+        .filter((product) => product.id === plan.productId)
+        .flatMap((product) => [
+          {
+            permissionValue: product.marketingFeatures[0]?.name || "N/A",
+            isEnabled: active,
+          },
+          {
+            permissionValue: product.marketingFeatures[1]?.name || "N/A",
+            isEnabled: active,
+          },
+          {
+            permissionValue: product.marketingFeatures[2]?.name || "N/A",
+            isEnabled: active,
+          },
+        ])
+    : [];
 
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -100,7 +101,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             {plans.map((planItem, i) => (
               <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
                 <CheckOutlined />
-                <ListItemText sx={{ pl: 2 }} primary={planItem.permissionValue ? `${planItem.permission}: ${planItem.permissionValue}` : `${planItem.permission}`} />
+                <ListItemText sx={{ pl: 2 }} primary={ `${planItem.permissionValue}`}/>
               </ListItem>
             ))}
           </List>
