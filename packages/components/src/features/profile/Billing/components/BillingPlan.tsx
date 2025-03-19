@@ -6,8 +6,8 @@ import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
 import { Product } from "../models/Product";
 import { useTranslation } from "react-i18next";
-
-
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../slices";
 
 export type PermissionItem = {
   permissionValue?: string;
@@ -18,21 +18,35 @@ export type PermissionItem = {
 export type BillingPlanProps = {
   plan: PlanModel;
   isSelected?: boolean;
-  onSelectPlan?: () => void;
+  onSelectPlan?: (plan: PlanModel) => void;
   products: Product[] | null;
   selectedPlanId?: string | null;
+  duplicatePlans?: PlanModel[] | null;
 };
 
-export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId,products }) => {
+export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId,products,duplicatePlans }) => {
   const theme = useTheme();
-    const { t } = useTranslation(["BillingPlan"]);
-  const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
+  const { t } = useTranslation(["BillingPlan"]);
+  const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.recurring?.interval === "month" ? "month" : "year");
+  const { nickname, active } = plan;
+  const { plans } = useSelector((state: RootState) => state.billing);
+  const isToggleDisabled = plans.filter(p => p.productId === plan.productId).length === 1;
+  const hasMatchingDuplicates = duplicatePlans?.some(p => p.productId === plan.productId) ?? false;
   
-  const { nickname, unitAmount, recurring, active } = plan;
+  const monthlyPlan = hasMatchingDuplicates
+    ? duplicatePlans?.find(p => p.recurring?.interval === "month") || plan
+    : plan;
 
-  const price = unitAmount ? unitAmount / 100 : undefined;
+  const yearlyPlan = hasMatchingDuplicates
+    ? duplicatePlans?.find(p => p.recurring?.interval === "year") || plan
+    : plan;
 
-  const plans: PermissionItem[] = products
+     const price = pricingPeriod === "month"
+     ? Math.floor((monthlyPlan.unitAmount ?? 0)) / 100
+     : Math.floor((yearlyPlan.unitAmount ?? 0)) / 100;
+
+
+  const plansInfo: PermissionItem[] = products
     ? products
         .filter((product) => product.id === plan.productId)
         .flatMap((product) => [
@@ -62,7 +76,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           </Stack>
 
           <Stack minHeight={110} justifyContent={"space-between"}>
-            {pricingPeriod && (
+          {duplicatePlans && duplicatePlans.length > 1 && (
               <Stack direction="row" alignItems={"center"}>
                 <Typography sx={{ opacity: pricingPeriod === "year" ? 1 : 0.5 }}>
                   {t("BilledYearly")}
@@ -70,6 +84,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
                 <StyledSwitch
                   onChange={() => setPricingPeriod(pricingPeriod === "year" ? "month" : "year")}
                   checked={pricingPeriod === "month"}
+                  disabled={isToggleDisabled}
                 />
                 <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}> 
                   {t("BilledMonthly")}
@@ -80,9 +95,8 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             {price && (
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography fontWeight={700} variant="h4">
-                  {pricingPeriod === "year" ? `$${price * 12}` : `$${price}`}
+                  ${price}
                 </Typography>
-
                 <Typography variant="h6" sx={{ opacity: 0.4 }} color="text.secondary">
                   {pricingPeriod === "month" ? "Per Month" : "Per Year"}
                 </Typography>
@@ -97,13 +111,29 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           )}
 
           {nickname !== "Enterprise" && (
-            <Button onClick={onSelectPlan} sx={{ height: "40px" }} variant={isSelected ? "contained" : "outlined"} fullWidth>
-             {selectedPlanId !== null ? (isSelected ? t("CurrentPlan")  : t("SwitchToPlan") ) : t("SelectThisPlan")}
-            </Button>
+            <Button
+            onClick={() => onSelectPlan?.(pricingPeriod === "year" ? yearlyPlan : monthlyPlan)}
+            sx={{
+              height: "40px",
+              "&.Mui-disabled": {
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+              },
+            }}
+            variant={isSelected ? "contained" : "outlined"}
+            fullWidth
+            disabled={isSelected}
+          >
+            {selectedPlanId !== null
+              ? isSelected
+                ? t("CurrentPlan")
+                : t("SwitchToPlan")
+              : t("SelectThisPlan")}
+          </Button>         
           )}
 
           <List sx={{ m: 0, p: 0, marginTop: "auto", "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } } }} component="ul">
-            {plans.map((planItem, i) => (
+            {plansInfo.map((planItem, i) => (
               <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
                 <CheckOutlined />
                 <ListItemText sx={{ pl: 2 }} primary={ `${planItem.permissionValue}`}/>
