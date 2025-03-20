@@ -4,24 +4,29 @@ import { ProfileContainer } from "./ProfileContainer";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckIcon from "@mui/icons-material/Check";
-import { getSchwabAccountList, getSchwabConnectUrl, resetConnectedAccounts, useAppDispatch, useAppSelector } from "../..";
 
-export const BrokerageConnectionContainer: React.FC = () => {
+interface Props extends BoxProps {
+  getSchwabAccountList: () => void,
+  resetConnectedAccounts: () => void,
+  getSchwabConnectUrl: () => void,
+  connectedAccounts: any[],
+  schwabConnectUrl: string
+}
+
+export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnectedAccounts, getSchwabConnectUrl, connectedAccounts, schwabConnectUrl , children, ...props }: Props) => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
-  const { connectedAccounts, schwabConnectUrl } = useAppSelector(state => state.userProfile || [])
 
-  const dispatch = useAppDispatch()
 
   useEffect(() =>{
-    dispatch(getSchwabConnectUrl());
+    getSchwabConnectUrl();
   },[])
 
   const handleConnectionToggle = () => {
     if (!isConnected) {
-      dispatch(getSchwabAccountList());
+      getSchwabAccountList();
     } else {
-      dispatch(resetConnectedAccounts())
+      resetConnectedAccounts();
     }
     //setIsConnected((prev) => !prev);
   };

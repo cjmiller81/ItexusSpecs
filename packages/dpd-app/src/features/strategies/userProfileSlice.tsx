@@ -1,5 +1,5 @@
 import { Action, PayloadAction, ThunkAction, createSlice } from "@reduxjs/toolkit";
-import { RootState, appAxios, createAppSlice } from "components";
+import { AppThunk, RootState, appAxios, createAppSlice } from "components";
 export interface connectedAccount {
     accountNumber: string;
     status: string;
@@ -19,14 +19,7 @@ const initialState: userProfileState = {
     error: null
 }
 
-export type AppThunk<ReturnType = void> = ThunkAction<
-    ReturnType,
-    RootState,
-    unknown,
-    Action<string>
->;
-
-export const userProfileSlice = createSlice({
+const userProfileSlice = createSlice({
     name: "userProfile",
     initialState,
     reducers: {
@@ -92,3 +85,5 @@ export const getSchwabAccountList = (): AppThunk => async (dispatch) => {
         dispatch(fetchSchwabAccountListFailure("Failed to fetch schwab connected accounts"));
     }
 };
+
+export default userProfileSlice;
