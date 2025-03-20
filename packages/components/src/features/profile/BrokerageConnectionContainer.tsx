@@ -1,26 +1,29 @@
-import { useState } from "react";
-import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, BoxProps, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { ProfileContainer } from "./ProfileContainer";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckIcon from "@mui/icons-material/Check";
-import { useAppDispatch, useAppSelector } from "../../slices";
-import { fetchConnectedAccounts, resetConnectedAccounts } from "../../slices/userProfileSlice";
+import { getSchwabAccountList, getSchwabConnectUrl, resetConnectedAccounts, useAppDispatch, useAppSelector } from "../..";
 
 export const BrokerageConnectionContainer: React.FC = () => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
-  const { connectedAccounts } = useAppSelector(state => state.userProfile || [])
+  const { connectedAccounts, schwabConnectUrl } = useAppSelector(state => state.userProfile || [])
 
   const dispatch = useAppDispatch()
 
+  useEffect(() =>{
+    dispatch(getSchwabConnectUrl());
+  },[])
+
   const handleConnectionToggle = () => {
     if (!isConnected) {
-      dispatch(fetchConnectedAccounts());
+      dispatch(getSchwabAccountList());
     } else {
       dispatch(resetConnectedAccounts())
     }
-    setIsConnected((prev) => !prev);
+    //setIsConnected((prev) => !prev);
   };
 
   return (
@@ -33,6 +36,8 @@ export const BrokerageConnectionContainer: React.FC = () => {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {!isConnected ? (
             <Button
+            href={schwabConnectUrl}
+            target="_blank"
               onClick={handleConnectionToggle}
               sx={{
                 backgroundColor: "blue",
@@ -85,7 +90,7 @@ export const BrokerageConnectionContainer: React.FC = () => {
           )}
         </Box>
       </ProfileContainer>
-      <ProfileContainer width={"50%"} title="Connected Account" sx={{ display: "flex", flexDirection: "column" }}>
+      <ProfileContainer width={"50%"} title="Connected Account(s)" sx={{ display: "flex", flexDirection: "column" }}>
         <TableContainer sx={{ backgroundColor: "transparent" }}>
           <Table sx={{ minWidth: 650, borderCollapse: "collapse", tableLayout: "fixed" }}>
             <TableHead>
