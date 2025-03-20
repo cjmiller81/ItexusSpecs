@@ -4,45 +4,66 @@ import { useTheme } from "@mui/material/styles";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
 import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
-
+import { Product } from "../models/Product";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../slices";
 
 export type PermissionItem = {
-  permission: string;
   permissionValue?: string;
   isEnabled?: boolean;
+  selectedPlanId?: string;
 };
 
 export type BillingPlanProps = {
   plan: PlanModel;
   isSelected?: boolean;
-  onSelectPlan?: () => void;
+  onSelectPlan?: (plan: PlanModel) => void;
+  products: Product[] | null;
+  selectedPlanId?: string | null;
+  duplicatePlans?: PlanModel[] | null;
 };
 
-export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan }) => {
+export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId,products,duplicatePlans }) => {
   const theme = useTheme();
-  const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.unitAmount ? "month" : undefined);
+  const { t } = useTranslation(["BillingPlan"]);
+  const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.recurring?.interval === "month" ? "month" : "year");
+  const { nickname, active } = plan;
+  const { plans } = useSelector((state: RootState) => state.billing);
+  const isToggleDisabled = plans.filter(p => p.productId === plan.productId).length === 1;
+  const hasMatchingDuplicates = duplicatePlans?.some(p => p.productId === plan.productId) ?? false;
   
-  const { nickname, unitAmount, recurring, active } = plan;
+  const monthlyPlan = hasMatchingDuplicates
+    ? duplicatePlans?.find(p => p.recurring?.interval === "month") || plan
+    : plan;
 
-  const price = unitAmount ? unitAmount / 100 : undefined;
+  const yearlyPlan = hasMatchingDuplicates
+    ? duplicatePlans?.find(p => p.recurring?.interval === "year") || plan
+    : plan;
 
-  const plans: PermissionItem[] = [
-    {
-      permission: "Usage Type",
-      permissionValue: recurring?.usageType,
-      isEnabled: active,
-    },
-    {
-      permission: "Billing Interval",
-      permissionValue: `${recurring?.intervalCount} ${recurring?.interval}`,
-      isEnabled: active,
-    },
-    {
-      permission: "Trial Period",
-      permissionValue: recurring?.trialPeriodDays ? `${recurring.trialPeriodDays} days` : "No trial",
-      isEnabled: active,
-    },
-  ];
+     const price = pricingPeriod === "month"
+     ? Math.floor((monthlyPlan.unitAmount ?? 0)) / 100
+     : Math.floor((yearlyPlan.unitAmount ?? 0)) / 100;
+
+
+  const plansInfo: PermissionItem[] = products
+    ? products
+        .filter((product) => product.id === plan.productId)
+        .flatMap((product) => [
+          {
+            permissionValue: product.marketingFeatures[0]?.name || "N/A",
+            isEnabled: active,
+          },
+          {
+            permissionValue: product.marketingFeatures[1]?.name || "N/A",
+            isEnabled: active,
+          },
+          {
+            permissionValue: product.marketingFeatures[2]?.name || "N/A",
+            isEnabled: active,
+          },
+        ])
+    : [];
 
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -55,17 +76,18 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           </Stack>
 
           <Stack minHeight={110} justifyContent={"space-between"}>
-            {pricingPeriod && (
+          {duplicatePlans && duplicatePlans.length > 1 && (
               <Stack direction="row" alignItems={"center"}>
                 <Typography sx={{ opacity: pricingPeriod === "year" ? 1 : 0.5 }}>
-                  Billed Yearly
+                  {t("BilledYearly")}
                 </Typography>
                 <StyledSwitch
                   onChange={() => setPricingPeriod(pricingPeriod === "year" ? "month" : "year")}
                   checked={pricingPeriod === "month"}
+                  disabled={isToggleDisabled}
                 />
-                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}>
-                  Billed Monthly
+                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}> 
+                  {t("BilledMonthly")}
                 </Typography>
               </Stack>
             )}
@@ -73,9 +95,8 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             {price && (
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography fontWeight={700} variant="h4">
-                  {pricingPeriod === "year" ? `$${price * 12}` : `$${price}`}
+                  ${price}
                 </Typography>
-
                 <Typography variant="h6" sx={{ opacity: 0.4 }} color="text.secondary">
                   {pricingPeriod === "month" ? "Per Month" : "Per Year"}
                 </Typography>
@@ -85,21 +106,37 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
 
           { nickname === "Enterprise" && (
             <Button sx={{ height: "40px", fontSize: "11.5px" }} fullWidth variant="contained">
-              Contact Us
+              {t("ContactUs")}
             </Button>
           )}
 
           {nickname !== "Enterprise" && (
-            <Button onClick={onSelectPlan} sx={{ height: "40px" }} variant={isSelected ? "contained" : "outlined"} fullWidth>
-              {isSelected ? "Current Plan" : "Switch to Plan"}
-            </Button>
+            <Button
+            onClick={() => onSelectPlan?.(pricingPeriod === "year" ? yearlyPlan : monthlyPlan)}
+            sx={{
+              height: "40px",
+              "&.Mui-disabled": {
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
+              },
+            }}
+            variant={isSelected ? "contained" : "outlined"}
+            fullWidth
+            disabled={isSelected}
+          >
+            {selectedPlanId !== null
+              ? isSelected
+                ? t("CurrentPlan")
+                : t("SwitchToPlan")
+              : t("SelectThisPlan")}
+          </Button>         
           )}
 
           <List sx={{ m: 0, p: 0, marginTop: "auto", "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } } }} component="ul">
-            {plans.map((planItem, i) => (
+            {plansInfo.map((planItem, i) => (
               <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
                 <CheckOutlined />
-                <ListItemText sx={{ pl: 2 }} primary={planItem.permissionValue ? `${planItem.permission}: ${planItem.permissionValue}` : `${planItem.permission}`} />
+                <ListItemText sx={{ pl: 2 }} primary={ `${planItem.permissionValue}`}/>
               </ListItem>
             ))}
           </List>

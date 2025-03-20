@@ -4,19 +4,21 @@ import { ProfileContainer } from "./ProfileContainer";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckIcon from "@mui/icons-material/Check";
+import { useAppDispatch, useAppSelector } from "../../slices";
+import { fetchConnectedAccounts, resetConnectedAccounts } from "../../slices/userProfileSlice";
 
 export const BrokerageConnectionContainer: React.FC = () => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
-  const [accounts, setAccounts] = useState<{ accountNumber: string; status: string }[]>([]);
+  const { connectedAccounts } = useAppSelector(state => state.userProfile || [])
+
+  const dispatch = useAppDispatch()
 
   const handleConnectionToggle = () => {
     if (!isConnected) {
-      setAccounts([{ accountNumber: "12345", status: t("Connected") }, { accountNumber: "24566", status: t("Connected") }
-        ,{ accountNumber: "550383", status: t("Connected") }
-      ]);
+      dispatch(fetchConnectedAccounts());
     } else {
-      setAccounts([]);
+      dispatch(resetConnectedAccounts())
     }
     setIsConnected((prev) => !prev);
   };
@@ -97,12 +99,12 @@ export const BrokerageConnectionContainer: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {accounts.length === 0 ? (
+              {connectedAccounts?.length === 0 ? (
                 <TableRow>
                   
                 </TableRow>
               ) : (
-                accounts.map((account, index) => (
+                connectedAccounts?.map((account, index) => (
                   <TableRow key={index}>
                     <TableCell align="left" sx={{ border: "1px solid #616161", width: "50%" }}>
                       {account.accountNumber}

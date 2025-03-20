@@ -30,7 +30,7 @@ export const WalletsContainer = ({ ...props }: Props) => {
   }, [dispatch])
 
   useEffect(() => {
-    if (exchanges === null) dispatch(fetchExchanges(null))
+    dispatch(fetchExchanges(null))
   }, [dispatch])
 
   useEffect(() => {

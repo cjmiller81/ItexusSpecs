@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
-import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchProductAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, setProduct, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
+import { addMessage, cancelSubscriptionAsync, createBillingAsync, createPaymentIntentAsync, createSubscriptionAsync, detachPaymentMethodAsync, fetchPaymentMethodsAsync, fetchPlansAsync, fetchProductAsync, fetchProductsAsync, fetchSubscriptionsAsync, getBillingAsync, setDefaultPaymentMethodAsync, setProduct, updateSubscriptionAsync, useAppDispatch } from "../../../slices";
 import { RootState } from "../../../slices/store";
 import { ProfileContainer } from "../ProfileContainer";
 import { BillingPlan } from "./components/BillingPlan";
@@ -15,6 +15,8 @@ import { PaymentMethodEditor } from "./components/PaymentMethodEditor";
 import { CardModel, PaymentMethodSelector } from "./components/PaymentMethodSelector";
 import { PaymentCardModel } from "./models/PaymentCardModel";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
+import { Product } from "./models/Product";
+import { PlanModel } from "./models/PlanModel";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
   const { t } = useTranslation(["BillingContainer"]);
@@ -29,6 +31,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const { plans, loading, error, subscriptions,billing  } = useSelector((state: RootState) => state.billing);
   const paymentMethods = useSelector((state: RootState) => state.billing.paymentMethods);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[] | null>(null);
 
   useEffect(() => {
     const initializeBilling = async () => {
@@ -56,6 +59,13 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
             dispatch(setProduct(productData));
           }
+          dispatch(fetchProductsAsync()).then((action) => {
+            if (fetchProductsAsync.fulfilled.match(action)) {
+              setProducts(action.payload);
+            } else {
+              console.error("Error loading products:", action.payload);
+            }
+          });
         }
       } catch (error) {
         console.error("Billing initialization error:", error);
@@ -333,6 +343,39 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     dispatch(addMessage(t("CardEditedMessage")));
   };
 
+  const plansToDisplay = plans.reduce<PlanModel[]>((acc, plan) => {
+    const matchingPlans = plans
+      .filter(p => p.productId === plan.productId)
+      .sort((a, b) => a.unitAmount - b.unitAmount);
+
+    if (matchingPlans.length > 1) {
+      const selectedPlan = matchingPlans.find(p => p.id === selectedPlanId);
+
+      if (selectedPlan) {
+        if (!acc.some(p => p.id === selectedPlan.id)) {
+          acc.push(selectedPlan);
+        }
+      } else {
+        if (!acc.some(p => p.id === matchingPlans[0].id)) {
+          acc.push(matchingPlans[0]);
+        }
+      }
+    } else {
+      if (!acc.some(p => p.id === plan.id)) {
+        acc.push(plan);
+      }
+    }
+  
+    return acc;
+  }, []);
+
+  const planCounts = plans.reduce((acc, plan) => {
+    acc[plan.productId] = (acc[plan.productId] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const duplicatePlans = plans.filter(plan => planCounts[plan.productId] > 1);
+  
   return (
     <>
       <YesNoDialog
@@ -366,15 +409,18 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
         <PlansContainer>
           <Grid item container spacing={3}>
-            {plans
+            {plansToDisplay
               .slice()
               .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
               .map((plan, index) => (
                 <BillingPlan
-                  onSelectPlan={() => handlePlanChange(plan)}
+                  onSelectPlan={(selectedPlan) => handlePlanChange(selectedPlan)} 
                   isSelected={selectedPlanId === plan.id}
+                  selectedPlanId={selectedPlanId}
                   key={plan.id || index}
                   plan={plan}
+                  products={products}
+                  duplicatePlans={duplicatePlans}
                 />
               ))}
           </Grid>

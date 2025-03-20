@@ -62,7 +62,7 @@ export function TradeTable() {
   };
 
   useEffect(() => {
-      if (exchanges === null) dispatch(fetchExchanges(null))
+      dispatch(fetchExchanges(null))
     }, [dispatch])
 
     useEffect(() => {
