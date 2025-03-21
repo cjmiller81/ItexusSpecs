@@ -23,7 +23,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "re
 import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable";
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import SimpleBar from "simplebar-react";
 import { ICategory, IExchange, IPlatform } from "components";
@@ -64,6 +64,10 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   useEffect(() => {
     handleOnUpdate();
   }, [currentSorter]);
+
+  useEffect(() => {
+    dispatch(fetchFilters({}));
+  }, [dispatch]);
 
   const onSortingChanged = e => {
     const sortedColumns = e.component.getDataSource().sort();
