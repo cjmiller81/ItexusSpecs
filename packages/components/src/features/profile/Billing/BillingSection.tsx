@@ -374,7 +374,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     return acc;
   }, {} as Record<string, number>);
   
-  const duplicatePlans = plans.filter(plan => planCounts[plan.productId] > 1);
+  const duplicatePlans = plans.filter(plan => planCounts[plan.productId] > 1 && plan.active === true);
   
   return (
     <>
