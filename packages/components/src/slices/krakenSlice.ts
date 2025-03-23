@@ -12,12 +12,37 @@ export interface MarketData {
     quote: string;
 }
 
+export interface PlaceOrderResponse {
+
+    orderId: string,
+    clientOrderId: string,
+    result: number,
+    resultCode: number,
+    message: string,
+    amount: number,
+    amountFilled: number,
+    isAmountFilledReversed: boolean,
+    price: number,
+    averagePrice: number,
+    orderDate: string,
+    httpHeaderDate: string,
+    completedDate: string,
+    marketSymbol: string,
+    isBuy: boolean,
+    fees: number,
+    feesCurrency: string,
+    tradeId: string,
+    tradeDate: string,
+    updateSequence: string
+}
+
 export interface KrakenState {
     isConnected: boolean;
     loading: boolean;
     error: string | null;
     balance: Record<string, number> | null;
     tradablePairs: MarketData[] | [];
+    placeOrderResponse: PlaceOrderResponse | null
 }
 
 const initialState: KrakenState = {
@@ -25,7 +50,8 @@ const initialState: KrakenState = {
     loading: false,
     error: null,
     balance: null,
-    tradablePairs: []
+    tradablePairs: [],
+    placeOrderResponse: null
 };
 export type AppThunk<ReturnType = void> = ThunkAction<
     ReturnType,
@@ -67,12 +93,11 @@ export const krakenSlice = createSlice({
             state.loading = false;
             state.balance = null;
         },
-
         fetchTradablePairsRequest(state) {
             state.loading = true;
             state.error = null;
         },
-        fetchTradablePairsSuccess(state, action: PayloadAction<MarketData[]>) {            
+        fetchTradablePairsSuccess(state, action: PayloadAction<MarketData[]>) {
             state.loading = false;
             state.tradablePairs = action.payload;
         },
@@ -81,10 +106,23 @@ export const krakenSlice = createSlice({
             state.error = action.payload;
             state.tradablePairs = [];
         },
+        placeOrderRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        placeOrderSuccess(state, action: PayloadAction<PlaceOrderResponse>) {
+            state.loading = false;
+            state.placeOrderResponse = action.payload;
+        },
+        placeOrderFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+            state.placeOrderResponse = null;
+        },
     },
 });
 
-export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure, resetBalance } = krakenSlice.actions;
+export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure, resetBalance, placeOrderRequest, placeOrderSuccess, placeOrderFailure } = krakenSlice.actions;
 
 export const getAccountBalance = (): AppThunk => async (dispatch) => {
     dispatch(fetchBalanceRequest());
@@ -112,12 +150,23 @@ export const getTradablePairs = (symbol: string): AppThunk => async (dispatch) =
     }
 };
 
-export const resetAccountBalance = () => async(dispatch) =>{
+export const resetAccountBalance = () => async (dispatch) => {
     dispatch(resetBalance());
 }
 
+export const postPlaceOrder = (orderRequest: any): AppThunk => async (dispatch) => {
+    dispatch(placeOrderRequest());
+    try {
+        const response = await appAxios.post("/api/kraken/orders", 
+        {
+            withCredentials: true,
+            ...orderRequest
+        });
+        dispatch(placeOrderSuccess(response.data));
+    } catch (error) {
+        console.error("Failed to place kraken order", error);
+        dispatch(placeOrderFailure("Failed to place kraken order"));
+    }
+};
+
 export default krakenSlice.reducer;
-
-
-
-
