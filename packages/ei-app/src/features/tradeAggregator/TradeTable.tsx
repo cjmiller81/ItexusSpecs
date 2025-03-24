@@ -56,6 +56,9 @@ export function TradeTable() {
   const [baseSymbols, setBaseSymbols] = useState<string[]>([]);
   const theme = useTheme();
   const textColor = theme.palette.mode === "dark" ? "#fff" : "#000";
+  const isDarkMode = theme.palette.mode === "dark";
+  const borderColor = theme.palette.divider;
+  const hoverColor = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -284,20 +287,30 @@ export function TradeTable() {
                       }}
                       sx={{
                         cursor: "pointer",
-                        backgroundColor: isSelected ? "rgba(255, 255, 255, 0.1)" : "transparent",
+                        backgroundColor: isSelected
+                          ? isDarkMode
+                            ? "rgba(255, 255, 255, 0.1)"
+                            : "rgba(0, 0, 0, 0.1)"
+                          : "transparent",
                         transition: "background-color 0.3s",
                         "&:hover": {
-                          backgroundColor: "rgba(255, 255, 255, 0.05)",
+                          backgroundColor: isDarkMode
+                            ? "rgba(255, 255, 255, 0.05)"
+                            : "rgba(0, 0, 0, 0.05)", 
                         },
                       }}
                     >
                       <TableCell
-                        sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
+                        sx={{
+                          borderBottom: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`, // Динамический цвет границ
+                        }}
                       >
                         {position.asset}
                       </TableCell>
                       <TableCell
-                        sx={{  borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
+                        sx={{
+                          borderBottom: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`,
+                        }}
                       >
                         {position.balance}
                       </TableCell>
@@ -482,10 +495,10 @@ export function TradeTable() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>
+                  <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "50%", color: textColor }}>
                     {t("MKT")}
                   </TableCell>
-                  <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>
+                  <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "50%", color: textColor }}>
                     {t("Price")}
                   </TableCell>
                 </TableRow>
@@ -495,35 +508,35 @@ export function TradeTable() {
                   <></> 
                 ) : error ? (
                   <TableRow>
-                    <TableCell colSpan={2} sx={{ textAlign: 'center', color: 'red' }}>
+                    <TableCell colSpan={2} sx={{ textAlign: "center", color: "red" }}>
                       {t("EnteredSymbolNotExist")}
                     </TableCell>
                   </TableRow>
                 ) : (
                   marketData.map((market: MarketData) => {
                     const crossPair = getCrossPair(market.displayName);
-                    const isHighlighted = baseSymbols.includes(crossPair); 
+                    const isHighlighted = baseSymbols.includes(crossPair);
 
                     return (
                       <TableRow
                         key={market.pairName}
                         onClick={() => handleMarketSelect(market.displayName)}
                         sx={{
-                          cursor: 'pointer',
-                          '&:hover': {
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          cursor: "pointer",
+                          "&:hover": {
+                            backgroundColor: hoverColor,
                           },
                         }}
                       >
                         <TableCell
                           sx={{
-                            color: isHighlighted ? 'rgb(0, 150, 255)' : textColor,
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                            color: isHighlighted ? "rgb(0, 150, 255)" : textColor,
+                            borderBottom: `1px solid ${borderColor}`,
                           }}
                         >
                           {market.displayName}
                         </TableCell>
-                        <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
                           {market.price}
                         </TableCell>
                       </TableRow>
