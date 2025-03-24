@@ -15,6 +15,7 @@ import {
   Box,
   Tooltip,
   SelectChangeEvent,
+  useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
@@ -53,6 +54,8 @@ export function TradeTable() {
   const { error } = useAppSelector((state) => state.kraken);
   const [debouncedSymbol, setDebouncedSymbol] = useState('');
   const [baseSymbols, setBaseSymbols] = useState<string[]>([]);
+  const theme = useTheme();
+  const textColor = theme.palette.mode === "dark" ? "#fff" : "#000";
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -209,7 +212,7 @@ export function TradeTable() {
 
   return (
     <Box>
-    <Typography variant="h4" sx={{ color: 'white', marginBottom: 2 }}>
+    <Typography variant="h4" sx={{  marginBottom: 2 }}>
         {t("CEX")}: {selectedCEX ? selectedCEX : ''}
     </Typography>
     <Box display="flex" justifyContent="space-between" gap={10}>
@@ -223,11 +226,9 @@ export function TradeTable() {
             sx={{
               backgroundColor: "#109EEF",
               fontSize: "11px",
-              color: "white",
               width: "58%",
               maxHeight: "40px",
               marginBottom: "12px",
-              "& .MuiSelect-icon": { color: "white" },
             }}
           >
             {exchanges?.map((cex) => (
@@ -242,7 +243,6 @@ export function TradeTable() {
           <Typography
             variant="h6"
             sx={{
-              color: 'white',
               marginBottom: 2,
               fontWeight: 500,
             }}
@@ -251,18 +251,18 @@ export function TradeTable() {
           </Typography>
           <TableContainer
             component={Paper}
-            sx={{ backgroundColor: "#1e1e1e", color: "white", width: "100%", boxShadow: 3 }}
+            sx={{ width: "100%", boxShadow: 3 }}
           >
             <Table sx={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableRow>
                   <TableCell
-                    sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "50%" }}
+                    sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "50%" }}
                   >
                     {t("Symbol")}
                   </TableCell>
                   <TableCell
-                    sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "50%" }}
+                    sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "50%" }}
                   >
                     {t("Qty")}
                   </TableCell>
@@ -292,12 +292,12 @@ export function TradeTable() {
                       }}
                     >
                       <TableCell
-                        sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
+                        sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
                       >
                         {position.asset}
                       </TableCell>
                       <TableCell
-                        sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
+                        sx={{  borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
                       >
                         {position.balance}
                       </TableCell>
@@ -310,11 +310,10 @@ export function TradeTable() {
           </Box>
         </Box>
 
-      <Box flex="1.6" sx={{marginTop:"67px"}}>
+      <Box flex="1.6" sx={{marginTop:"65px"}}>
         <Typography
           variant="h6"
           sx={{
-            color: 'white',
             marginBottom: 2,
             fontWeight: 500,
           }}
@@ -323,68 +322,64 @@ export function TradeTable() {
         </Typography>
         <TableContainer
           component={Paper}
-          sx={{ backgroundColor: "#1e1e1e", color: "white", width: "100%", boxShadow: 3 }}
+          sx={{ width: "100%", boxShadow: 3 }}
         >
           <Table sx={{ tableLayout: "fixed" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "17%" }}>
+                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "17%" }}>
                   {t("Symbol")}
                 </TableCell>
-                <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "15%" }}>
+                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "15%" }}>
                   {t("MKT")}
                 </TableCell>
                 <TableCell
-                  sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "21%", paddingLeft: "40px" }}
+                  sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "21%", paddingLeft: "40px" }}
                 >
                   {t("Qty")}
                 </TableCell>
-                <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Value")}</TableCell>
-                <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Trade")}</TableCell>
-                <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Action")}</TableCell>
+                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Value")}</TableCell>
+                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Trade")}</TableCell>
+                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Action")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
                   <TextField
                     value={tradeData.symbol}
                     onChange={(e) => setTradeData({ ...tradeData, symbol: e.target.value })}
                     variant="outlined"
                     fullWidth
                     sx={{
-                      input: { color: "white", height: "20px", padding: "8px" },
-                      fieldset: { borderColor: "rgba(255, 255, 255, 0.3)", borderRadius: "8px" },
-                      "&:hover fieldset": { borderColor: "white" },
+                      input: { height: "20px", padding: "8px" },
+                      fieldset: { borderRadius: "8px" },
                     }}
                     autoComplete="off"
                   />
                 </TableCell>
 
-              <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingRight: "20px" }}>
+              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingRight: "20px" }}>
                 <Tooltip title={t("ExchangeTradePairs")} arrow>
-                  <Button
-                    onClick={() => setShowMarketSelector(!showMarketSelector)}
-                    endIcon={showMarketSelector ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/> }
-                    sx={{
-                      color: "white",
-                      textTransform: "none",
-                      borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-                      borderRadius: "8px",
-                      padding: "0 0 5px 0",
-                      minWidth: "130px",
-                      justifyContent: "flex-start",
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  >
-                    {tradeData.mkt || "Select Market"}
-                  </Button>
+                <Button
+                  onClick={() => setShowMarketSelector(!showMarketSelector)}
+                  endIcon={showMarketSelector ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+                  sx={{
+                    textTransform: "none",
+                    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderRadius: "8px",
+                    padding: "0 0 5px 0",
+                    minWidth: "130px",
+                    justifyContent: "flex-start",
+                    color: textColor,
+                  }}
+                >
+                  {tradeData.mkt || "Select Market"}
+                </Button>
                 </Tooltip>
               </TableCell>
 
-              <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingLeft: "40px" }}>
+              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingLeft: "40px" }}>
                 <TextField
                   value={tradeData.qty}
                   onChange={(e) => {
@@ -396,50 +391,50 @@ export function TradeTable() {
                   variant="outlined"
                   fullWidth
                   sx={{
-                    input: { color: "white", height: "20px", padding: "8px" },
-                    fieldset: { borderColor: "rgba(255, 255, 255, 0.3)", borderRadius: "8px" },
-                    "&:hover fieldset": { borderColor: "white" },
+                    input: { height: "20px", padding: "8px" },
+                    fieldset: { borderRadius: "8px" },
                   }}
                 />
               </TableCell>
 
-              <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
                 <TextField
                       value={tradeData.value && tradeData.value !== "0" ? tradeData.value : "--"}
                   disabled
                   variant="standard"
                   sx={{
-                    input: { color: "white" },
                     "&:before": { borderBottomColor: "rgba(255, 255, 255, 0.1)" },
-                    "& .MuiInputBase-input.Mui-disabled": {
-                      color: "white",
-                      WebkitTextFillColor: "white",
-                    },
                   }}
                 />
               </TableCell>
 
-              <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
-                <Select
-                  value={tradeData.action}
-                  onChange={(e) => setTradeData({ ...tradeData, action: e.target.value })}
-                  displayEmpty
-                  variant="standard"
-                  sx={{
-                    color: "white",
-                    "&:before": { borderBottomColor: "rgba(255, 255, 255, 0.1)" },
-                    "& .MuiSelect-icon": { color: "white" },
-                  }}
-                >
-                  <MenuItem value="" disabled>
-                    {t("Select")}
-                  </MenuItem>
-                  <MenuItem value="buy">{t("Buy")}</MenuItem>
-                  <MenuItem value="sell">{t("Sell")}</MenuItem>
-                </Select>
+              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <Select
+                value={tradeData.action}
+                onChange={(e) => setTradeData({ ...tradeData, action: e.target.value })}
+                displayEmpty
+                variant="standard"
+                sx={{
+                  color: textColor,
+                  textTransform: "none",
+                  fontSize: "13px",
+                  fontWeight: "bold",
+                  "&:before": { borderBottomColor: "rgba(255, 255, 255, 0.1)" },
+                }}
+              >
+                <MenuItem value="" disabled sx={{ color: textColor }}>
+                  {t("Select")}
+                </MenuItem>
+                <MenuItem value="buy" sx={{ color: textColor }}>
+                  {t("Buy")}
+                </MenuItem>
+                <MenuItem value="sell" sx={{ color: textColor }}>
+                  {t("Sell")}
+                </MenuItem>
+              </Select>
               </TableCell>
 
-              <TableCell sx={{ color: "white", borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
                 <Tooltip title={t("SendTradeExchange")} arrow>
                   <Button
                     variant="contained"
@@ -447,7 +442,6 @@ export function TradeTable() {
                     onClick={handleSendClick}
                     sx={{
                       backgroundColor: "#4caf50",
-                      color: "white",
                       fontWeight: "bold",
                       "&:hover": { backgroundColor: "#45a049" },
                     }}
@@ -484,14 +478,14 @@ export function TradeTable() {
         )}
 
         {showMarketSelector && (
-          <TableContainer component={Paper} sx={{ backgroundColor: '#1e1e1e', color: 'white', marginBottom: 3, boxShadow: 3 }}>
+          <TableContainer component={Paper} sx={{ marginBottom: 3, boxShadow: 3 }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>
+                  <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>
                     {t("MKT")}
                   </TableCell>
-                  <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>
+                  <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', width: '50%' }}>
                     {t("Price")}
                   </TableCell>
                 </TableRow>
@@ -523,13 +517,13 @@ export function TradeTable() {
                       >
                         <TableCell
                           sx={{
-                            color: isHighlighted ? 'rgb(0, 150, 255)' : 'white',
+                            color: isHighlighted ? 'rgb(0, 150, 255)' : textColor,
                             borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                           }}
                         >
                           {market.displayName}
                         </TableCell>
-                        <TableCell sx={{ color: 'white', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                        <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
                           {market.price}
                         </TableCell>
                       </TableRow>
