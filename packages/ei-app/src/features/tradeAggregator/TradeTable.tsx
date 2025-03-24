@@ -302,7 +302,7 @@ export function TradeTable() {
                     >
                       <TableCell
                         sx={{
-                          borderBottom: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`, // Динамический цвет границ
+                          borderBottom: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`, 
                         }}
                       >
                         {position.asset}
