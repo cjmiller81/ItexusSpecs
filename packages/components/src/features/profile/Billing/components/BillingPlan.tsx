@@ -33,8 +33,6 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
   const isToggleDisabled = plans.filter(p => p.productId === plan.productId).length === 1;
   const hasMatchingDuplicates = duplicatePlans?.some(p => p.productId === plan.productId) ?? false;
 
-
-  
   const monthlyPlan = hasMatchingDuplicates
     ? duplicatePlans?.find(p => p.recurring?.interval === "month" && p.productId === plan.productId) || plan
     : plan;
@@ -47,10 +45,9 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
      ? Math.floor((monthlyPlan.unitAmount ?? 0)) / 100
      : Math.floor((yearlyPlan.unitAmount ?? 0)) / 100;
 
-
   const plansInfo: PermissionItem[] = products
     ? products
-        .filter((product) => product.id === plan.productId)
+        .filter((product) => product.id === plan.productId && product.active === true)
         .flatMap((product) => [
           {
             permissionValue: product.marketingFeatures[0]?.name || "N/A",
@@ -67,10 +64,8 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
         ])
     : [];
 
-    const productName = products?.find((product) => product.id === plan.productId)?.name || "Unknown Plan";
-
+    const productName = products?.find((product) => product.id === plan.productId && product.active === true)?.name || "Unknown Plan";
     const firstWord = productName.split(" ")[0];
-
 
   return (
     <Grid item xs={12} sm={6} md={3}>

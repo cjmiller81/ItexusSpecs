@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX }) {
+export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX, onConfirmTransaction }) {
   const { t } = useTranslation(["TradeTable"]);
   const theme = useTheme();
   const [basePair, quotePair] = tradeData.mkt ? tradeData.mkt.split('/') : ['', ''];

@@ -21,7 +21,9 @@ import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector } from 'components';
+import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector, postPlaceOrder, resetPlaceOrderResponseError } from 'components';
+import { makeId } from '@/utils/utils';
+import { PlaceOrderResponseDialog } from './PlaceOrderResponseDialog';
 
 interface TradeData {
   symbol: string;
@@ -29,6 +31,20 @@ interface TradeData {
   qty: string;
   value: string;
   action: string;
+}
+
+interface OrderRequest {
+  marketSymbol: string,
+  amount: number,
+  price: number,
+  stopPrice: number,
+  isBuy: boolean,
+  isMargin: boolean,
+  orderId: string,
+  clientOrderId: string,
+  shouldRoundAmount: boolean,
+  orderType: number,
+  isPostOnly: boolean
 }
 
 export function TradeTable() {
@@ -46,12 +62,14 @@ export function TradeTable() {
   const { t } = useTranslation(["TradeTable"]);
   const [insufficientFunds, setInsufficientFunds] = useState<boolean>(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [placeOrderResultDialogOpen, setPlaceOrderResultDialogOpen] = useState(false);
   const dispatch = useAppDispatch()
   const [balanceData, setBalanceData] = useState<any[]>([]);
-  const { exchanges } = useAppSelector( state => state.wallets)
+  const { exchanges } = useAppSelector(state => state.wallets)
   const balance = useAppSelector((state) => state.kraken.balance);
   const marketData = useAppSelector((state) => state.kraken.tradablePairs);
-  const { error } = useAppSelector((state) => state.kraken);
+  const { error, placeOrderError } = useAppSelector((state) => state.kraken);
+  const placeOrderResponse = useAppSelector((state) => state.kraken.placeOrderResponse)
   const [debouncedSymbol, setDebouncedSymbol] = useState('');
   const [baseSymbols, setBaseSymbols] = useState<string[]>([]);
   const theme = useTheme();
@@ -71,20 +89,27 @@ export function TradeTable() {
   };
 
   useEffect(() => {
-      dispatch(fetchExchanges(null))
-    }, [dispatch])
+    dispatch(fetchExchanges(null))
+  }, [dispatch])
 
   useEffect(() => {
-    return () =>{
+    return () => {
       dispatch(resetAccountBalance());
     };
-  },[])
-    
-  
+  }, [])
+
+  useEffect(() => {
+    if (placeOrderResponse != null || placeOrderError != null) {
+      setConfirmDialogOpen(false);
+      setPlaceOrderResultDialogOpen(true);
+    }
+
+  }, [placeOrderResponse, placeOrderError])
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSymbol(tradeData.symbol);
-    }, 150); 
+    }, 150);
     setTradeData((prev) => ({
       ...prev,
       mkt: '',
@@ -96,7 +121,7 @@ export function TradeTable() {
     if (debouncedSymbol.length < 3) {
       return;
     }
-    
+
     dispatch(getTradablePairs(debouncedSymbol));
     setShowMarketSelector(true);
   }, [debouncedSymbol, dispatch]);
@@ -128,27 +153,27 @@ export function TradeTable() {
       setInsufficientFunds(false);
       return;
     }
-  
+
     const selectedMarket = marketData.find((market) => market.displayName === tradeData.mkt);
     if (!selectedMarket) {
       setTradeData((prev) => ({ ...prev, value: '' }));
       setInsufficientFunds(false);
       return;
     }
-  
+
     const price = parseFloat(selectedMarket.price);
     const qty = parseFloat(tradeData.qty.replace(/,/g, ''));
-  
+
     if (isNaN(price) || isNaN(qty)) {
       setTradeData((prev) => ({ ...prev, value: '' }));
       setInsufficientFunds(false);
       return;
     }
-  
+
     const calculatedValue = price * qty;
     const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
     setTradeData((prev) => ({ ...prev, value: formattedValue }));
-    
+
     const crossPair = getCrossPair(tradeData.mkt);
 
     const position = balanceData.find((pos) => pos.asset?.toLowerCase() === crossPair?.toLowerCase());
@@ -157,14 +182,14 @@ export function TradeTable() {
       (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
     );
 
-    if ( tradeData.action === 'sell') {
+    if (tradeData.action === 'sell') {
       if (positionSell === undefined) {
         setInsufficientFunds(true);
       } else {
         setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.balance.replace(/,/g, '')));
       }
-    }     
-    else if ( tradeData.action === 'buy') {
+    }
+    else if (tradeData.action === 'buy') {
       if (!position) {
         setInsufficientFunds(true);
       } else {
@@ -208,10 +233,32 @@ export function TradeTable() {
       setBaseSymbols(extractedBaseSymbols);
     }
   }, [balance]);
-  
+
   const handleMarketSelect = (market: string) => {
     setTradeData({ ...tradeData, mkt: market });
   };
+
+  const onConfirmTransaction = () => {
+    let orderRequest: OrderRequest = {
+      isMargin: false,
+      orderId: "",
+      orderType: 1,
+      isPostOnly: false,
+      clientOrderId: makeId(10),
+      marketSymbol: tradeData.mkt.replace("/", ""),
+      amount: Number.parseFloat(tradeData.qty),
+      isBuy: tradeData.action === "buy",
+      price: 0,
+      stopPrice: 0,
+      shouldRoundAmount: true
+    }
+    dispatch(postPlaceOrder(orderRequest));
+  }
+
+  const onClosePlaceOrderResponseDialog = () => {
+    setPlaceOrderResultDialogOpen(false);
+    dispatch(resetPlaceOrderResponseError())
+  }
 
   return (
     <Box>
@@ -474,27 +521,36 @@ export function TradeTable() {
         </Table>
       </TableContainer>
 
-        <ConfirmTransactionDialog
-                  open={confirmDialogOpen}
-                  onClose={() => setConfirmDialogOpen(false)}
-                  tradeData={tradeData}
-                  selectedCEX={selectedCEX}
-                />
+          <ConfirmTransactionDialog
+            open={confirmDialogOpen}
+            onClose={() => setConfirmDialogOpen(false)}
+            tradeData={tradeData}
+            selectedCEX={selectedCEX}
+            onConfirmTransaction={onConfirmTransaction}
+          />
 
-        {(crossPairWarning || insufficientFunds) && (
-          <Typography
-            sx={{
-              color: '#ff4d4d',
-              marginBottom: 2,
-              fontSize: '0.875rem',
-              fontWeight: 500,
-            }}
-          >
-            {crossPairWarning || insufficientFunds ? (
-              insufficientFunds ? t("WarningInsufficientFunds") : crossPairWarning
-            ) : null}
-          </Typography>
-        )}
+          <PlaceOrderResponseDialog
+            open={placeOrderResultDialogOpen}
+            onClose={onClosePlaceOrderResponseDialog}
+            response={placeOrderResponse}
+            errors={placeOrderError}
+            t={t}
+          />
+
+          {(crossPairWarning || insufficientFunds) && (
+            <Typography
+              sx={{
+                color: '#ff4d4d',
+                marginBottom: 2,
+                fontSize: '0.875rem',
+                fontWeight: 500,
+              }}
+            >
+              {crossPairWarning || insufficientFunds ? (
+                insufficientFunds ? t("WarningInsufficientFunds") : crossPairWarning
+              ) : null}
+            </Typography>
+          )}
 
         {showMarketSelector && (
           <TableContainer component={Paper} sx={{ marginBottom: 3, boxShadow: 3 }}>
