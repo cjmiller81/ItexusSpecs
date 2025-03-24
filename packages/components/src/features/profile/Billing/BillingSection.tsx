@@ -344,13 +344,17 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   };
 
   const plansToDisplay = plans.reduce<PlanModel[]>((acc, plan) => {
-    const matchingPlans = plans
-      .filter(p => p.productId === plan.productId)
-      .sort((a, b) => a.unitAmount - b.unitAmount);
 
+    const product = products?.find(product => product.id === plan.productId);
+    if (!product || !product.active) return acc;
+  
+    const matchingPlans = plans
+      .filter(p => p.productId === plan.productId && p.active === true)
+      .sort((a, b) => a.unitAmount - b.unitAmount);
+  
     if (matchingPlans.length > 1) {
       const selectedPlan = matchingPlans.find(p => p.id === selectedPlanId);
-
+  
       if (selectedPlan) {
         if (!acc.some(p => p.id === selectedPlan.id)) {
           acc.push(selectedPlan);
@@ -367,7 +371,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     }
   
     return acc;
-  }, []);
+  }, []);  
 
   const planCounts = plans.reduce((acc, plan) => {
     acc[plan.productId] = (acc[plan.productId] || 0) + 1;
@@ -442,7 +446,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             key={index}
             isDefault={card.isDefault}
             number={card.number}
-            onEdit={() => setCardToEditIndex(index)}
             onDelete={() => setCardToDeleteIndex(index)}
             onSetDefault={() => handleSetDefaultCard(paymentMethods[index].id)}
             sx={{
