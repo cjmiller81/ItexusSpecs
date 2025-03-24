@@ -35,4 +35,5 @@ export type PoolData = {
   volumeUsd1d: number | null;
   volumeUsd7d: number | null;
   apyBaseInception: number | null;
+  url: string;
 };
