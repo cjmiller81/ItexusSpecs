@@ -4,13 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX }) {
   const { t } = useTranslation(["TradeTable"]);
-
-  if (!tradeData) return null;
-
+  const theme = useTheme();
   const [basePair, quotePair] = tradeData.mkt ? tradeData.mkt.split('/') : ['', ''];
   const isBuy = tradeData.action === 'buy';
-  const theme = useTheme();
   const textColor = theme.palette.mode === "dark" ? "#fff" : "#000";
+  
+  if (!tradeData) return null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" >
