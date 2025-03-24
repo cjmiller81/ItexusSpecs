@@ -2,7 +2,7 @@ import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX }) {
+export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX, onConfirmTransaction }) {
   const { t } = useTranslation(["TradeTable"]);
 
   if (!tradeData) return null;
@@ -32,7 +32,7 @@ export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">{t("Cancel")}</Button>
-        <Button onClick={() => { onClose(); }} color="primary" variant="contained">
+        <Button onClick={onConfirmTransaction} color="primary" variant="contained">
           {t("Confirm")}
         </Button>
       </DialogActions>
