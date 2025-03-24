@@ -259,16 +259,16 @@ export function TradeTable() {
             <Table sx={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "50%" }}
-                  >
-                    {t("Symbol")}
-                  </TableCell>
-                  <TableCell
-                    sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "50%" }}
-                  >
-                    {t("Qty")}
-                  </TableCell>
+                <TableCell
+                  sx={{ borderBottom: `1px solid ${borderColor}`, width: "50%", color: textColor }}
+                >
+                  {t("Symbol")}
+                </TableCell>
+                <TableCell
+                  sx={{ borderBottom: `1px solid ${borderColor}`, width: "50%", color: textColor }}
+                >
+                  {t("Qty")}
+                </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -340,25 +340,31 @@ export function TradeTable() {
           <Table sx={{ tableLayout: "fixed" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "17%" }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "17%", color: textColor }}>
                   {t("Symbol")}
                 </TableCell>
-                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "15%" }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "15%", color: textColor }}>
                   {t("MKT")}
                 </TableCell>
                 <TableCell
-                  sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", width: "21%", paddingLeft: "40px" }}
+                  sx={{ borderBottom: `1px solid ${borderColor}`, width: "21%", paddingLeft: "40px", color: textColor }}
                 >
                   {t("Qty")}
                 </TableCell>
-                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Value")}</TableCell>
-                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Trade")}</TableCell>
-                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>{t("Action")}</TableCell>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
+                  {t("Value")}
+                </TableCell>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
+                  {t("Trade")}
+                </TableCell>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
+                  {t("Action")}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor}}>
                   <TextField
                     value={tradeData.symbol}
                     onChange={(e) => setTradeData({ ...tradeData, symbol: e.target.value })}
@@ -372,14 +378,14 @@ export function TradeTable() {
                   />
                 </TableCell>
 
-              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingRight: "20px" }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, paddingRight: "20px" }}>
                 <Tooltip title={t("ExchangeTradePairs")} arrow>
                 <Button
                   onClick={() => setShowMarketSelector(!showMarketSelector)}
                   endIcon={showMarketSelector ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
                   sx={{
                     textTransform: "none",
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+                    borderBottom: `1px solid ${borderColor}`,
                     borderRadius: "8px",
                     padding: "0 0 5px 0",
                     minWidth: "130px",
@@ -392,7 +398,7 @@ export function TradeTable() {
                 </Tooltip>
               </TableCell>
 
-              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingLeft: "40px" }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, paddingLeft: "40px" }}>
                 <TextField
                   value={tradeData.qty}
                   onChange={(e) => {
@@ -410,18 +416,18 @@ export function TradeTable() {
                 />
               </TableCell>
 
-              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
                 <TextField
                       value={tradeData.value && tradeData.value !== "0" ? tradeData.value : "--"}
                   disabled
                   variant="standard"
                   sx={{
-                    "&:before": { borderBottomColor: "rgba(255, 255, 255, 0.1)" },
+                    "&:before": { borderBottom: `1px solid ${borderColor}`},
                   }}
                 />
               </TableCell>
 
-              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
               <Select
                 value={tradeData.action}
                 onChange={(e) => setTradeData({ ...tradeData, action: e.target.value })}
@@ -432,7 +438,7 @@ export function TradeTable() {
                   textTransform: "none",
                   fontSize: "13px",
                   fontWeight: "bold",
-                  "&:before": { borderBottomColor: "rgba(255, 255, 255, 0.1)" },
+                  "&:before": { borderBottom: `1px solid ${borderColor}` },
                 }}
               >
                 <MenuItem value="" disabled sx={{ color: textColor }}>
@@ -447,7 +453,7 @@ export function TradeTable() {
               </Select>
               </TableCell>
 
-              <TableCell sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}`}}>
                 <Tooltip title={t("SendTradeExchange")} arrow>
                   <Button
                     variant="contained"
