@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector, postPlaceOrder } from 'components';
+import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector, postPlaceOrder, resetPlaceOrderResponseError } from 'components';
 import { makeId } from '@/utils/utils';
 import { PlaceOrderResponseDialog } from './PlaceOrderResponseDialog';
 
@@ -67,7 +67,7 @@ export function TradeTable() {
   const { exchanges } = useAppSelector(state => state.wallets)
   const balance = useAppSelector((state) => state.kraken.balance);
   const marketData = useAppSelector((state) => state.kraken.tradablePairs);
-  const { error } = useAppSelector((state) => state.kraken);
+  const { error, placeOrderError } = useAppSelector((state) => state.kraken);
   const placeOrderResponse = useAppSelector((state) => state.kraken.placeOrderResponse)
   const [debouncedSymbol, setDebouncedSymbol] = useState('');
   const [baseSymbols, setBaseSymbols] = useState<string[]>([]);
@@ -93,13 +93,12 @@ export function TradeTable() {
   }, [])
 
   useEffect(() => {
-    console.log("refresh response")
-    if (placeOrderResponse !== null || error != null) {
+    if (placeOrderResponse != null || placeOrderError != null) {
       setConfirmDialogOpen(false);
       setPlaceOrderResultDialogOpen(true);
     }
 
-  }, [placeOrderResponse, error])
+  }, [placeOrderResponse, placeOrderError])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -248,6 +247,11 @@ export function TradeTable() {
       shouldRoundAmount: true
     }
     dispatch(postPlaceOrder(orderRequest));
+  }
+
+  const onClosePlaceOrderResponseDialog = () => {
+    setPlaceOrderResultDialogOpen(false);
+    dispatch(resetPlaceOrderResponseError())
   }
 
   return (
@@ -514,9 +518,10 @@ export function TradeTable() {
 
           <PlaceOrderResponseDialog
             open={placeOrderResultDialogOpen}
-            onClose={() => setPlaceOrderResultDialogOpen(false)}
+            onClose={onClosePlaceOrderResponseDialog}
             response={placeOrderResponse}
-            errors={error}
+            errors={placeOrderError}
+            t={t}
           />
 
           {(crossPairWarning || insufficientFunds) && (

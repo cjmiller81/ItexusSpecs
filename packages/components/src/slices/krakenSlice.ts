@@ -42,7 +42,8 @@ export interface KrakenState {
     error: string | null;
     balance: Record<string, number> | null;
     tradablePairs: MarketData[] | [];
-    placeOrderResponse: PlaceOrderResponse | null
+    placeOrderResponse: PlaceOrderResponse | null;
+    placeOrderError: string | null
 }
 
 const initialState: KrakenState = {
@@ -51,7 +52,8 @@ const initialState: KrakenState = {
     error: null,
     balance: null,
     tradablePairs: [],
-    placeOrderResponse: null
+    placeOrderResponse: null,
+    placeOrderError: null
 };
 export type AppThunk<ReturnType = void> = ThunkAction<
     ReturnType,
@@ -116,13 +118,17 @@ export const krakenSlice = createSlice({
         },
         placeOrderFailure(state, action: PayloadAction<string>) {
             state.loading = false;
-            state.error = action.payload;
+            state.placeOrderError = action.payload;
             state.placeOrderResponse = null;
+        },
+        resetOrderResponseError(state) {
+            state.loading = false;
+            state.placeOrderError = null;
         },
     },
 });
 
-export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure, resetBalance, placeOrderRequest, placeOrderSuccess, placeOrderFailure } = krakenSlice.actions;
+export const { connectRequest, connectSuccess, connectFailure, fetchBalanceRequest, fetchBalanceSuccess, fetchBalanceFailure, fetchTradablePairsRequest, fetchTradablePairsSuccess, fetchTradablePairsFailure, resetBalance, placeOrderRequest, placeOrderSuccess, placeOrderFailure, resetOrderResponseError } = krakenSlice.actions;
 
 export const getAccountBalance = (): AppThunk => async (dispatch) => {
     dispatch(fetchBalanceRequest());
@@ -152,6 +158,10 @@ export const getTradablePairs = (symbol: string): AppThunk => async (dispatch) =
 
 export const resetAccountBalance = () => async (dispatch) => {
     dispatch(resetBalance());
+}
+
+export const resetPlaceOrderResponseError = () => async (dispatch) => {
+    dispatch(resetOrderResponseError());
 }
 
 export const postPlaceOrder = (orderRequest: any): AppThunk => async (dispatch) => {

@@ -3,11 +3,9 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, 
 import { useTranslation } from 'react-i18next';
 import { PlaceOrderResponse } from 'components';
 
-export function PlaceOrderResponseDialog({ open, onClose, response, errors }) {
-
+export function PlaceOrderResponseDialog({ open, onClose, response, errors, t }) {
+    
     if (response == null && errors == null) return;
-    const { t } = useTranslation(["TradeTable"]);
-
     const resp: PlaceOrderResponse = response;
 
     return (
@@ -26,7 +24,7 @@ export function PlaceOrderResponseDialog({ open, onClose, response, errors }) {
                     </Box>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="secondary">{t("Cancel")}</Button>
+                <Button onClick={onClose} color="secondary">Close</Button>
             </DialogActions>
         </Dialog>
     );
