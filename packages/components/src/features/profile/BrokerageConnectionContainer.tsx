@@ -4,6 +4,7 @@ import { ProfileContainer } from "./ProfileContainer";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckIcon from "@mui/icons-material/Check";
+import { useSearchParams } from "next/navigation";
 
 interface Props extends BoxProps {
   getSchwabAccountList: () => void,
@@ -16,10 +17,13 @@ interface Props extends BoxProps {
 export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnectedAccounts, getSchwabConnectUrl, connectedAccounts, schwabConnectUrl , children, ...props }: Props) => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
+  const searchParams = useSearchParams()
+  const isConnectedBackend = searchParams.get("isConnected");
 
 
   useEffect(() =>{
     getSchwabConnectUrl();
+    getSchwabAccountList();
   },[])
 
   const handleConnectionToggle = () => {
@@ -28,8 +32,23 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
     } else {
       resetConnectedAccounts();
     }
-    //setIsConnected((prev) => !prev);
+    setIsConnected((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (isConnectedBackend) {
+      getSchwabAccountList();
+      setIsConnected(true)
+    }
+  },[isConnectedBackend])
+
+  useEffect(() => {
+    if(connectedAccounts.length > 0){
+      setIsConnected(true)
+    }else{
+      setIsConnected(false)
+    }
+  }, [connectedAccounts])
 
   return (
     <Box sx={{ display: "flex", gap: 4, p: 3 }}>
@@ -42,8 +61,6 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
           {!isConnected ? (
             <Button
             href={schwabConnectUrl}
-            target="_blank"
-              onClick={handleConnectionToggle}
               sx={{
                 backgroundColor: "blue",
                 color: "white",
@@ -81,6 +98,7 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
               <Typography sx={{ color: "red" }}>{t("AuthorizationExpires")}</Typography>
 
               <Button
+              href={schwabConnectUrl}
                 sx={{
                   backgroundColor: "#8dcd89",
                   color: "white",
