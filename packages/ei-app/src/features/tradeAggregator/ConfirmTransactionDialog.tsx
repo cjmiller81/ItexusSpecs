@@ -33,7 +33,7 @@ export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary" sx={{color:textColor}}>{t("Cancel")}</Button>
-        <Button onClick={() => { onClose(); }} color="primary" variant="contained">
+        <Button onClick={onConfirmTransaction} color="primary" variant="contained">
           {t("Confirm")}
         </Button>
       </DialogActions>

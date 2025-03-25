@@ -24,7 +24,7 @@ export function PlaceOrderResponseDialog({ open, onClose, response, errors, t })
                     </Box>}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="secondary">Close</Button>
+                <Button onClick={onClose} color="primary" variant='contained'>Close</Button>
             </DialogActions>
         </Dialog>
     );
