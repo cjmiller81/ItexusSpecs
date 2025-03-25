@@ -130,9 +130,10 @@ export const MyWalletsSection = ({
           } else {
             setExchange((prevExchange) => [...prevExchange, newExchange]);
           }
-        }
+        }        
       } catch (error) {
         console.error("Failed to connect to Kraken", error);
+        handleCancelExchange()
       } finally {
         resetForm();
         setIsEditing(false);
