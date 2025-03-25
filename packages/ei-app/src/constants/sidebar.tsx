@@ -15,8 +15,6 @@ import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "components";
 import { Product } from "components/src/features/profile/Billing/models/Product";
 
 i18next.setDefaultNamespace("SideBar");
@@ -89,16 +87,35 @@ function getPlatformsItems(product: Product | null): SidebarListItem[] {
 function getToolsItems(): SidebarListItem[] {
   return [
     {
-      title: t("MyWallets", { ns: "SideBar" }),
+      title: t("Wallets", { ns: "SideBar" }),
       icon: <AccountBalanceWalletIcon />,
-      href: "/myWallets"
+      children: [
+        {
+          title: t("Web3DeFi", { ns: "SideBar" }),
+          href: "/myWallets"
+        },
+        {
+          title: t("CEXWallets", { ns: "SideBar" }),
+          href: "/myWallets/cexWallets",
+        },
+      ],
     },
+
     {
       title: t("TradeAggregator", { ns: "SideBar" }),
       icon: <MergeIcon width="21px"
         height="21px" />,
-      href: "/tradeAggregator"
-    },
+      children: [
+        {
+          title: t("CEX", { ns: "SideBar" }),
+          href: "/tradeAggregator/cex"
+        },
+        {
+          title: t("DEX", { ns: "SideBar" }),
+          href: "/tradeAggregator/dex",
+        },
+      ],
+    }
   ];
 }
 
