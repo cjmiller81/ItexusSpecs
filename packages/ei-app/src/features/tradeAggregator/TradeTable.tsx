@@ -436,7 +436,6 @@ export function TradeTable() {
                     borderRadius: "8px",
                     padding: "0 0 5px 0",
                     minWidth: "130px",
-                    justifyContent: "flex-start",
                     color: textColor,
                   }}
                 >
