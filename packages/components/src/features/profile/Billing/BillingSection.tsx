@@ -45,6 +45,13 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   
         if (billingData?.id) {
           dispatch(fetchPaymentMethodsAsync(billingData.id));
+          dispatch(fetchProductsAsync()).then((action) => {
+            if (fetchProductsAsync.fulfilled.match(action)) {
+              setProducts(action.payload);
+            } else {
+              console.error("Error loading products:", action.payload);
+            }
+          });
           
           const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
           
@@ -59,13 +66,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
             dispatch(setProduct(productData));
           }
-          dispatch(fetchProductsAsync()).then((action) => {
-            if (fetchProductsAsync.fulfilled.match(action)) {
-              setProducts(action.payload);
-            } else {
-              console.error("Error loading products:", action.payload);
-            }
-          });
         }
       } catch (error) {
         console.error("Billing initialization error:", error);
