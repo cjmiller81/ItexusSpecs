@@ -127,7 +127,10 @@
     "MyWallets": "Wallets",
     "Community": "Community",
     "Platform": "Platform",
-    "Tools": "Tools"
+    "Tools": "Tools",
+    "Web3DeFi": "Web3 DeFi",
+    "CEX": "CEX",
+    "CEXWallets": "CEX Wallets"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",

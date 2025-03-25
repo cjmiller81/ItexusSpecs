@@ -315,7 +315,10 @@
     "Tools": "Tools",
     "Updates": "Updates",
     "Blog": "Blog",
-    "Education": "Education"
+    "Education": "Education",
+    "Web3DeFi": "Web3 DeFi",
+    "CEX": "CEX",
+    "CEXWallets": "CEX Wallets"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
