@@ -70,7 +70,9 @@
     "IvlReports": "IVL Reports",
     "ZeroDteStrategy": "0 DTE Strategy",
     "ZeroDteUsers": "0 DTE Users",
-    "ZeroDteReports": "0 DTE Reports"
+    "ZeroDteReports": "0 DTE Reports",
+    "ZeroDteMechanical": "0 DTE Mechanical",
+    "ZeroDteMechanicalUsers": "0 DTE Mechanical Users"
   },
   "ColumnsDefs": {
     "ATRMin": "ATR Min",

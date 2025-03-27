@@ -48,6 +48,18 @@ function getStrategiesItems(): SidebarListItem[] {
         // },
       ],
     },
+    {
+      title: i18next.t("ZeroDteMechanical", { ns: "SideBar" }),
+      icon: <CurrencyExchangeIcon />,
+      open: false,
+      children: [
+        {
+          title: t("ZeroDteUsers", { ns: "SideBar" }),
+          href: "/strategies/0dte-mechanical/users",
+        },
+
+      ],
+    },
   ];
 }
 
