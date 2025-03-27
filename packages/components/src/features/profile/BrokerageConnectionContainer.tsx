@@ -10,16 +10,16 @@ interface Props extends BoxProps {
   getSchwabAccountList: () => void,
   resetConnectedAccounts: () => void,
   getSchwabConnectUrl: () => void,
+  disconnect: () => void,
   connectedAccounts: any[],
   schwabConnectUrl: string
 }
 
-export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnectedAccounts, getSchwabConnectUrl, connectedAccounts, schwabConnectUrl , children, ...props }: Props) => {
+export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnectedAccounts, getSchwabConnectUrl, connectedAccounts, schwabConnectUrl, disconnect, children, ...props }: Props) => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
   const searchParams = useSearchParams()
   const isConnectedBackend = searchParams.get("isConnected");
-
 
   useEffect(() =>{
     getSchwabConnectUrl();
@@ -30,6 +30,7 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
     if (!isConnected) {
       getSchwabAccountList();
     } else {
+      disconnect();
       resetConnectedAccounts();
     }
     setIsConnected((prev) => !prev);

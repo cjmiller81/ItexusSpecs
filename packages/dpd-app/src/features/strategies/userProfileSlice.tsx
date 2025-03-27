@@ -9,7 +9,7 @@ export interface userProfileState {
     connectedAccounts: connectedAccount[],
     loading: boolean,
     schwabConnectUrl: string,
-    error: string | null,
+    error: string | null
 }
 
 const initialState: userProfileState = {
@@ -52,11 +52,22 @@ const userProfileSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
             state.connectedAccounts = [];
-        }
+        },
+        disconnectRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        disconnectSuccess(state) {
+            state.loading = false;
+        },
+        disconnectFailure(state, action: PayloadAction<string>) {
+            state.loading = false;
+            state.error = action.payload;
+        },
     }
 });
 
-export const { resetConnectedAccounts, fetchSchwabConnectUrlRequest, fetchSchwabConnectUrlSuccess, fetchSchwabConnectUrlFailure, fetchSchwabAccountListSuccess, fetchSchwabAccountListRequest, fetchSchwabAccountListFailure } = userProfileSlice.actions;
+export const { resetConnectedAccounts, disconnectRequest, disconnectSuccess, disconnectFailure, fetchSchwabConnectUrlRequest, fetchSchwabConnectUrlSuccess, fetchSchwabConnectUrlFailure, fetchSchwabAccountListSuccess, fetchSchwabAccountListRequest, fetchSchwabAccountListFailure } = userProfileSlice.actions;
 
 export const getSchwabConnectUrl = (): AppThunk => async (dispatch) => {
     dispatch(fetchSchwabConnectUrlRequest());
@@ -83,6 +94,19 @@ export const getSchwabAccountList = (): AppThunk => async (dispatch) => {
     } catch (error) {
         console.error("Failed to fetch schwab connected accounts", error);
         dispatch(fetchSchwabAccountListFailure("Failed to fetch schwab connected accounts"));
+    }
+};
+
+export const disconnect = (): AppThunk => async (dispatch) => {
+    dispatch(disconnectRequest());
+    try {
+        const response = await appAxios.delete("/api/schwab/auth/disconnect", {
+            withCredentials: true,
+        });
+        dispatch(disconnectSuccess());
+    } catch (error) {
+        console.error("Failed to fetch schwab connected accounts", error);
+        dispatch(disconnectFailure("Failed to fetch schwab connected accounts"));
     }
 };
 
