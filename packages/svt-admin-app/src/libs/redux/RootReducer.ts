@@ -11,6 +11,7 @@ import {
 } from "@/features/strategies/tradeInstruments/fifoTradeInstrumentsSlice"
 import { dteUsersSlice } from "@/features/strategies/dte/users/dteUsersSlice"
 import { adminUsersSlice } from "@/features/strategies/users/userDetailsSlice"
+import dteMechanicalUsersSlice from "@/features/strategies/0dte-mechanical/dteMechanicalUsersSlice"
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -19,7 +20,8 @@ export const rootReducer = combineReducers({
   ivlUsers: ivlUsersSlice.reducer,
   fifoUsers: fifoUsersSlice.reducer,
   dteUsers: dteUsersSlice.reducer, 
-  adminDetails: adminUsersSlice.reducer
+  adminDetails: adminUsersSlice.reducer,
+  dteMechanicalUsers: dteMechanicalUsersSlice
 })
 
 const config = getPersistConfig<RootState>({
