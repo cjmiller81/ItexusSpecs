@@ -1,3 +1,5 @@
+import { disconnect, getSchwabAccountList, getSchwabConnectUrl, resetConnectedAccounts } from "@/features/strategies/userProfileSlice"
+import { useAppSelector } from "@/libs/redux/Store"
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
@@ -21,6 +23,7 @@ export default function ProfilePage() {
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
   const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
   const { onUpdateAvatar, session, onUpdateProfile } = useOry()
+  const { connectedAccounts, schwabConnectUrl } = useAppSelector(store => store.userProfile);
   const dispatch = useAppDispatch()
 
   const router = useRouter()
@@ -115,7 +118,13 @@ export default function ProfilePage() {
           <SecurityContainer />
         </TabPanel>
         <TabPanel value="brokerageConnection">
-        <BrokerageConnectionContainer />
+        <BrokerageConnectionContainer  
+        connectedAccounts={ connectedAccounts }
+        schwabConnectUrl={ schwabConnectUrl }
+        getSchwabAccountList={ () => dispatch(getSchwabAccountList()) }
+        getSchwabConnectUrl={ () =>  dispatch(getSchwabConnectUrl()) }
+        resetConnectedAccounts={ () =>  dispatch(resetConnectedAccounts()) }
+        disconnect={ () => dispatch(disconnect())}/>
         </TabPanel>
       </TabContext>
     </ProfileContainer>

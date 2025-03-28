@@ -201,6 +201,13 @@
     "SendTradeExchange": "Send Trade to Exchange",
     "ExchangeTradePairs": "Exchange trade pairs",
     "ConfirmTransaction": "Confirm Transaction",
+    "TransactionResults": "Transaction Results", 
+    "OrderId": "Order Id",
+    "AmountFilled": "Amount Filled",
+    "MarketSymbol": "Symbol",
+    "Side": "Side",
+    "Bought": "Bought",
+    "Sold": "Sold",
     "EstTotal": "Est Total",
     "EnteredSymbolNotExist": "Entered symbol does not exist"
   },
@@ -308,7 +315,10 @@
     "Tools": "Tools",
     "Updates": "Updates",
     "Blog": "Blog",
-    "Education": "Education"
+    "Education": "Education",
+    "Web3DeFi": "Web3 DeFi",
+    "CEX": "CEX",
+    "CEXWallets": "CEX Wallets"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",

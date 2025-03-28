@@ -2,7 +2,7 @@ import { TradeTable } from "@/features/tradeAggregator/TradeTable";
 import { Stack } from "@mui/material";
 
 
-export default function TradeAggregator(){
+export default function Cex(){
     return(
         <Stack>
             <TradeTable></TradeTable>

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX }) {
+export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX, onConfirmTransaction }) {
   const { t } = useTranslation(["TradeTable"]);
-
-  if (!tradeData) return null;
-
+  const theme = useTheme();
   const [basePair, quotePair] = tradeData.mkt ? tradeData.mkt.split('/') : ['', ''];
   const isBuy = tradeData.action === 'buy';
+  const textColor = theme.palette.mode === "dark" ? "#fff" : "#000";
+  
+  if (!tradeData) return null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" >
@@ -31,8 +32,8 @@ export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">{t("Cancel")}</Button>
-        <Button onClick={() => { onClose(); }} color="primary" variant="contained">
+        <Button onClick={onClose} color="secondary" sx={{color:textColor}}>{t("Cancel")}</Button>
+        <Button onClick={onConfirmTransaction} color="primary" variant="contained">
           {t("Confirm")}
         </Button>
       </DialogActions>

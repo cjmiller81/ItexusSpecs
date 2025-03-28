@@ -45,6 +45,13 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   
         if (billingData?.id) {
           dispatch(fetchPaymentMethodsAsync(billingData.id));
+          dispatch(fetchProductsAsync()).then((action) => {
+            if (fetchProductsAsync.fulfilled.match(action)) {
+              setProducts(action.payload);
+            } else {
+              console.error("Error loading products:", action.payload);
+            }
+          });
           
           const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
           
@@ -59,13 +66,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
             dispatch(setProduct(productData));
           }
-          dispatch(fetchProductsAsync()).then((action) => {
-            if (fetchProductsAsync.fulfilled.match(action)) {
-              setProducts(action.payload);
-            } else {
-              console.error("Error loading products:", action.payload);
-            }
-          });
         }
       } catch (error) {
         console.error("Billing initialization error:", error);
@@ -344,13 +344,17 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   };
 
   const plansToDisplay = plans.reduce<PlanModel[]>((acc, plan) => {
-    const matchingPlans = plans
-      .filter(p => p.productId === plan.productId)
-      .sort((a, b) => a.unitAmount - b.unitAmount);
 
+    const product = products?.find(product => product.id === plan.productId);
+    if (!product || !product.active) return acc;
+  
+    const matchingPlans = plans
+      .filter(p => p.productId === plan.productId && p.active === true)
+      .sort((a, b) => a.unitAmount - b.unitAmount);
+  
     if (matchingPlans.length > 1) {
       const selectedPlan = matchingPlans.find(p => p.id === selectedPlanId);
-
+  
       if (selectedPlan) {
         if (!acc.some(p => p.id === selectedPlan.id)) {
           acc.push(selectedPlan);
@@ -367,14 +371,14 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     }
   
     return acc;
-  }, []);
+  }, []);  
 
   const planCounts = plans.reduce((acc, plan) => {
     acc[plan.productId] = (acc[plan.productId] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
   
-  const duplicatePlans = plans.filter(plan => planCounts[plan.productId] > 1);
+  const duplicatePlans = plans.filter(plan => planCounts[plan.productId] > 1 && plan.active === true);
   
   return (
     <>
@@ -442,7 +446,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             key={index}
             isDefault={card.isDefault}
             number={card.number}
-            onEdit={() => setCardToEditIndex(index)}
             onDelete={() => setCardToDeleteIndex(index)}
             onSetDefault={() => handleSetDefaultCard(paymentMethods[index].id)}
             sx={{

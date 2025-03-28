@@ -1,27 +1,55 @@
-import { useState } from "react";
-import { Box, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, BoxProps, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { ProfileContainer } from "./ProfileContainer";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckIcon from "@mui/icons-material/Check";
-import { useAppDispatch, useAppSelector } from "../../slices";
-import { fetchConnectedAccounts, resetConnectedAccounts } from "../../slices/userProfileSlice";
+import { useSearchParams } from "next/navigation";
 
-export const BrokerageConnectionContainer: React.FC = () => {
+interface Props extends BoxProps {
+  getSchwabAccountList: () => void,
+  resetConnectedAccounts: () => void,
+  getSchwabConnectUrl: () => void,
+  disconnect: () => void,
+  connectedAccounts: any[],
+  schwabConnectUrl: string
+}
+
+export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnectedAccounts, getSchwabConnectUrl, connectedAccounts, schwabConnectUrl, disconnect, children, ...props }: Props) => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
-  const { connectedAccounts } = useAppSelector(state => state.userProfile || [])
+  const searchParams = useSearchParams()
+  const isConnectedBackend = searchParams.get("isConnected");
 
-  const dispatch = useAppDispatch()
+  useEffect(() =>{
+    getSchwabConnectUrl();
+    getSchwabAccountList();
+  },[])
 
   const handleConnectionToggle = () => {
     if (!isConnected) {
-      dispatch(fetchConnectedAccounts());
+      getSchwabAccountList();
     } else {
-      dispatch(resetConnectedAccounts())
+      disconnect();
+      resetConnectedAccounts();
     }
     setIsConnected((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (isConnectedBackend) {
+      getSchwabAccountList();
+      setIsConnected(true)
+    }
+  },[isConnectedBackend])
+
+  useEffect(() => {
+    if(connectedAccounts.length > 0){
+      setIsConnected(true)
+    }else{
+      setIsConnected(false)
+    }
+  }, [connectedAccounts])
 
   return (
     <Box sx={{ display: "flex", gap: 4, p: 3 }}>
@@ -33,7 +61,7 @@ export const BrokerageConnectionContainer: React.FC = () => {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {!isConnected ? (
             <Button
-              onClick={handleConnectionToggle}
+            href={schwabConnectUrl}
               sx={{
                 backgroundColor: "blue",
                 color: "white",
@@ -71,6 +99,7 @@ export const BrokerageConnectionContainer: React.FC = () => {
               <Typography sx={{ color: "red" }}>{t("AuthorizationExpires")}</Typography>
 
               <Button
+              href={schwabConnectUrl}
                 sx={{
                   backgroundColor: "#8dcd89",
                   color: "white",
@@ -85,7 +114,7 @@ export const BrokerageConnectionContainer: React.FC = () => {
           )}
         </Box>
       </ProfileContainer>
-      <ProfileContainer width={"50%"} title="Connected Account" sx={{ display: "flex", flexDirection: "column" }}>
+      <ProfileContainer width={"50%"} title="Connected Account(s)" sx={{ display: "flex", flexDirection: "column" }}>
         <TableContainer sx={{ backgroundColor: "transparent" }}>
           <Table sx={{ minWidth: 650, borderCollapse: "collapse", tableLayout: "fixed" }}>
             <TableHead>

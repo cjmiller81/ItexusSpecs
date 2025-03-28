@@ -8,7 +8,7 @@ Before you can use this repo, you must have the following software installed:
 - [Node.js](https://nodejs.org/) v20.10+
 - [Yarn](https://yarnpkg.com/) v1.22+
 - [Lerna](https://lerna.js.org/) v8.1+
- 
+
 ### Installing: 
 
 To use/run this repo, follow these steps:
