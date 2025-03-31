@@ -2,6 +2,8 @@
 import { Action, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
 import { appAxios } from '../lib/axios/customAxios';
 import { RootState } from './store';
+import { getKrakenErrorMessage } from '../services/krakenService';
+import { toast } from 'react-toastify';
 
 export interface MarketData {
     base: string;
@@ -139,6 +141,7 @@ export const getAccountBalance = (): AppThunk => async (dispatch) => {
         dispatch(fetchBalanceSuccess(response.data));
     } catch (error) {
         console.error("Failed to fetch Kraken account balance:", error);
+        toast.error(getKrakenErrorMessage(error));
         dispatch(fetchBalanceFailure("Fetching Kraken account balance failed"));
     }
 };
@@ -173,9 +176,11 @@ export const postPlaceOrder = (orderRequest: any): AppThunk => async (dispatch) 
             ...orderRequest
         });
         dispatch(placeOrderSuccess(response.data));
-    } catch (error) {
+    } catch (error: any) { 
         console.error("Failed to place kraken order", error);
-        dispatch(placeOrderFailure("Failed to place kraken order"));
+        const message = getKrakenErrorMessage(error);
+    
+        dispatch(placeOrderFailure(message));
     }
 };
 
