@@ -2,6 +2,7 @@
 import { Action, createSlice, PayloadAction, ThunkAction } from '@reduxjs/toolkit';
 import { appAxios } from '../lib/axios/customAxios';
 import { RootState } from './store';
+import { AxiosResponse } from 'axios';
 
 export interface MarketData {
     base: string;
@@ -173,9 +174,24 @@ export const postPlaceOrder = (orderRequest: any): AppThunk => async (dispatch) 
             ...orderRequest
         });
         dispatch(placeOrderSuccess(response.data));
-    } catch (error) {
+    } catch (error: any) { 
         console.error("Failed to place kraken order", error);
-        dispatch(placeOrderFailure("Failed to place kraken order"));
+        
+        const response = (error as any).response as AxiosResponse<any, any>;
+        const { title, detail } = response?.data || {};
+        let message = '';
+    
+        if (title) {
+            message += title;
+        } else {
+            message += error.message || "An unknown error occurred";
+        }
+    
+        if (detail) {
+            message += `: ${detail}`;
+        }
+
+        dispatch(placeOrderFailure(message));
     }
 };
 
