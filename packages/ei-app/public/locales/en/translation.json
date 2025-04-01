@@ -22,7 +22,20 @@
     "SelectFilter": "Select pre-built filter:",
     "SaveFilterAs": "Save filter as:",
     "FilterTokens": "Filter Tokens",
-    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
+    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?",
+    "FilterBuilderTrainingVideos": "Filter Builder Training Videos",
+    "IntroductionVideos": "Introduction Videos",
+    "HowBuildFilter": "How to Build a Filter",
+    "HowBuildLogicGate": "How to Build a Logic Gate",
+    "FilterBuilderIntroGuide": "Filter Builder Intro and Guide",
+    "BuildingNORGate" :"Building the NOR Gate",
+    "BuildingNANDGate": "Building the NAND Gate",
+    "BuildingORGate": "Building the OR Gate",
+    "BuildingANDGate": "Building the AND Gate",
+    "LogicGateDiagramAND": "Logic Gate Diagram: AND",
+    "LogicGateDiagramNOTAND": "Logic Gate Diagram: NOT AND",
+    "LogicGateDiagramNORGate": "Logic Gate Diagram: NOR Gate",
+    "LogicGateDiagramOR": "Logic Gate Diagram: OR"
   },
   "CalendarEventTile": {
     "Proof": "Proof",
