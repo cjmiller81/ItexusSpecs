@@ -72,7 +72,8 @@
     "ZeroDteUsers": "0 DTE Users",
     "ZeroDteReports": "0 DTE Reports",
     "ZeroDteMechanical": "0 DTE Mechanical",
-    "ZeroDteMechanicalUsers": "0 DTE Mechanical Users"
+    "ZeroDteMechanicalUsers": "0 DTE Mechanical Users",
+    "0DTEIronFlies": "0DTE Iron Flies"
   },
   "ColumnsDefs": {
     "ATRMin": "ATR Min",

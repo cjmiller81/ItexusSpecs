@@ -4,7 +4,7 @@ import {
   IDteStrategiesResponse,
   OpenPosition,
   StrategyBotList,
-} from "@/features/strategies/dte/users/types";
+} from "@/features/strategies/0dte-iron-flies/users/types";
 import { initBotStrategiesList, initCurrentDayFills, initDteUsers, initOpenPosition } from "./initDteUsers";
 /* eslint-disable no-useless-escape */
 

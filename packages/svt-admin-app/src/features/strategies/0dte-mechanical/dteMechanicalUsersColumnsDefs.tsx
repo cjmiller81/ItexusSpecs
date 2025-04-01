@@ -49,16 +49,18 @@ export function getMechanical0DteSpxColumns(
         ];
       },
     },
+
     {
-      field: "strategyId",
-      headerName: i18next.t("Strategy ID", { ns: "ColumnsDefs" }),
+      field: "userId",
+      headerName: i18next.t("Id", { ns: "ColumnsDefs" }),
       minWidth: 100,
-      editable: false,
+      editable: true,
       type: "string",
       flex: 1,
-      headerAlign: "left",
-      align: "left",
+      headerAlign: 'left',
+      align: 'left'
     },
+
     {
       field: "accountNumber",
       headerName: i18next.t("Account Number", { ns: "ColumnsDefs" }),
@@ -69,6 +71,30 @@ export function getMechanical0DteSpxColumns(
       headerAlign: "left",
       align: "left",
     },
+
+    {
+      field: "strategyId",
+      headerName: i18next.t("Strategy ID", { ns: "ColumnsDefs" }),
+      minWidth: 100,
+      editable: false,
+      type: "string",
+      flex: 1,
+      headerAlign: "left",
+      align: "left",
+      valueGetter: params => params.value?.split("-")[0] || "",
+    },
+
+    {
+      field: "masterSymbol",
+      headerName: i18next.t("Master Symbol", { ns: "ColumnsDefs" }),
+      minWidth: 100,
+      editable: false,
+      type: "string",
+      flex: 1,
+      headerAlign: "left",
+      align: "left",
+    },
+
     {
       field: "botStatus",
       headerName: i18next.t("Bot Status", { ns: "ColumnsDefs" }),
@@ -95,32 +121,7 @@ export function getMechanical0DteSpxColumns(
           <Chip variant="outlined" color="error" label="Disconnected" size="small" icon={<ReportProblemIcon />} />
         ),
     },
-    {
-      field: "masterSymbol",
-      headerName: i18next.t("Master Symbol", { ns: "ColumnsDefs" }),
-      minWidth: 100,
-      editable: false,
-      type: "string",
-      flex: 1,
-      headerAlign: "left",
-      align: "left",
-    },
-    {
-      field: "lastUpdatedAt",
-      headerName: i18next.t("Last Updated", { ns: "ColumnsDefs" }),
-      minWidth: 150,
-      editable: false,
-      type: "date",
-      flex: 1,
-      headerAlign: "left",
-      align: "left",
-      valueFormatter: (param: GridValueFormatterParams<Timestamp>) => {
-        if (param.value) {
-          return new Date(param.value.seconds * 1000).toLocaleString();
-        }
-        return "";
-      },
-    },
+    
   ];
   return columns;
 }

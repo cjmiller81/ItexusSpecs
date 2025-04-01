@@ -17,14 +17,14 @@ import {
   fetchDteUsers,
   fetchUserDetails,
   updateDteUser,
-} from "@/features/strategies/dte/users/dteUsersSlice";
+} from "@/features/strategies/0dte-iron-flies/users/dteUsersSlice";
 import { autoSizeTableSx } from "@/features/strategies/shared/tableSx";
 import { Box, IconButton, useMediaQuery } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { getColumns } from "@/features/strategies/dte/users/dteUsersColumnsDefs";
-import UserDetailsSection from "@/features/strategies/dte/users/details/userDetailsSections";
-import { IDteStrategy } from "@/features/strategies/dte/users/types";
+import { getColumns } from "@/features/strategies/0dte-iron-flies/users/dteUsersColumnsDefs";
+import UserDetailsSection from "@/features/strategies/0dte-iron-flies/users/details/userDetailsSections";
+import { IDteStrategy } from "@/features/strategies/0dte-iron-flies/users/types";
 
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -57,7 +57,7 @@ export default function Reports() {
 
     const symbol = "SPX";
 
-    router.push(`/strategies/zero-dte/users/${currentUser.userId}`, undefined, {
+    router.push(`/strategies/0dte-iron-flies/users/${currentUser.userId}`, undefined, {
       shallow: true,
     });
     

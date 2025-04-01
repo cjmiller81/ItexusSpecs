@@ -21,7 +21,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Mechanical0DteSpx } from "@/features/strategies/0dte-mechanical/users/types";
 import { fetchAllMechanical0DteSpx } from "@/features/strategies/0dte-mechanical/dteMechanicalUsersSlice";
 import { getMechanical0DteSpxColumns } from "@/features/strategies/0dte-mechanical/dteMechanicalUsersColumnsDefs";
-import UserDetailsSection from "@/features/strategies/users/details/userDetailsSections";
 
 export default function Reports() {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
@@ -33,7 +32,6 @@ export default function Reports() {
   const [rightBarOpen, setRightBarOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<Mechanical0DteSpx | undefined>();
   const [selectedRow, handleSetSelection] = useState<GridRowId | undefined>();
-  const isMobile = useMediaQuery("(max-width: 485px)");
 
   useEffect(() => {
     dispatch(fetchAllMechanical0DteSpx());
@@ -68,9 +66,9 @@ export default function Reports() {
     handleSetSelection(id);
   };
   
-
   const getRowId = (strategy: Mechanical0DteSpx) => {
-    return strategy.userId + strategy.accountNumber;
+    const rowId = strategy.strategyId + strategy.accountNumber;
+    return rowId;
   };
 
   const columns = getMechanical0DteSpxColumns(
@@ -81,11 +79,20 @@ export default function Reports() {
     currentUser ? getRowId(currentUser) : undefined
   );
   
-console.log(dteMechanicalUsers?.strategies)
   return (
     <StyledRoot>
       <DataGrid
-        slots={{ toolbar: GridToolbar }}
+         slots={{ toolbar: GridToolbar }}
+         slotProps={{
+           toolbar: {
+             sx: {
+               "& .MuiButton-root": { 
+                 color: theme.palette.text.primary,
+                 fontWeight: "bold",
+               },
+             },
+           },
+         }}
         autoPageSize
         rowSelection={false}
         checkboxSelection={false}

@@ -14,11 +14,12 @@ import {
 } from "@mui/x-data-grid"
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Theme, lighten } from "@mui/system"
-import { IDteStrategy, ITimestamp, ITradeQuantity } from "./types"
+
 import { Chip } from "@mui/material";
 import CheckIcon from '@mui/icons-material/Check';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { IDteStrategy, ITimestamp, ITradeQuantity } from "./types";
 
 export function getColumns(
   handleSaveClick: (id: GridRowId) => void,
