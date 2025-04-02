@@ -1,16 +1,26 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Mechanical0DteSpx, Mechanical0DteSpxList } from './users/types';
+import { Mechanical0DteSpx, Mechanical0DteSpxList, StrategyBotList } from './users/types';
 import { dteMechanicalUsersService } from './dteMechanicalUsersService';
 import { Status } from 'components';
+import { ICurrentDayFills, IWorkingOrder, OpenPosition } from '../0dte-iron-flies/users/types';
 
 export interface IDteMechanicalUsersSliceState {
   dteMechanicalUsers: Mechanical0DteSpxList;
   statusFetchingDteUsers: Status;
-}
+  userDetails?: UserDetails;
+} 
+
+type UserDetails = {
+  bots: StrategyBotList;
+  openPositions: OpenPosition[];
+  workingOrders: IWorkingOrder[];
+  currentDayFills: ICurrentDayFills[];
+};
 
 const initialState: IDteMechanicalUsersSliceState = {
   dteMechanicalUsers: { strategies: [] },
   statusFetchingDteUsers: "idle",
+  
 };
 
 export const fetchAllMechanical0DteSpx = createAsyncThunk(

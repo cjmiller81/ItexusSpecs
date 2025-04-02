@@ -93,6 +93,10 @@ export interface WordpressApiSettings {
     vixEffect: DecimalValue;
     vixInflectionPoint: number;
   }
+
+  export interface StrategyBotList {
+    zeroDteFlyStrategyList : Mechanical0DteSpx[]
+  }
   
   export interface DiagonalHedge {
     accountNumber: string;
