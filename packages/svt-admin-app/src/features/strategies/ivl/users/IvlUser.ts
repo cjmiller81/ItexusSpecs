@@ -1,4 +1,4 @@
-import { ITradeQuantity, ITimestamp } from "../../dte/users/types";
+import { ITradeQuantity, ITimestamp } from "../../0dte-iron-flies/users/types";
 
 export interface IIvlStrategiesResponse
 {
