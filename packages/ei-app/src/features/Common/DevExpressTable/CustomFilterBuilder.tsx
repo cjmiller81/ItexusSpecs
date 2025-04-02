@@ -65,6 +65,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   filterBuilderFields,
   filterType
 }, ref) => {
+
+  const videoLinks = {
+    introduction: "https://www.youtube.com/embed/HMoJuK9mNtw",
+    buildFilter: "https://www.youtube.com/embed/e1tWUwDouiw",
+    nandGate: "https://www.youtube.com/embed/wYhxPBvQL1g",
+    buildingNORGate: "https://www.youtube.com/embed/IMm88o07GLg",
+    buildingORGate: "https://www.youtube.com/embed/PW-5hBCggu8",    
+    logicGateDiagramAND: "https://www.youtube.com/embed/pS3erHfCcY8",
+    logicGateDiagramNOTAND: "https://www.youtube.com/embed/SI1gUt3xNFU",
+    logicGateDiagramNorGate: "https://www.youtube.com/embed/xfSR3MgBWrc",
+    logicGateDiagramOR: "https://www.youtube.com/embed/c48K1wqo5ow",
+};
+
   const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
   const [filterName, setFilterName] = useState<string | undefined>("");
@@ -73,10 +86,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
   const { t } = useTranslation("CustomFilterBuilder");
   const theme = useTheme();
-  const [openIntroduction, setOpenIntroduction] = useState(false);
-  const [openLogicGate, setOpenLogicGate] = useState(false);
-  const [openBuildFilter, setOpenBuildFilter] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState("");
+  const [openIntroduction, setOpenIntroduction] = useState(true);
+  const [openLogicGate, setOpenLogicGate] = useState(true);
+  const [openBuildFilter, setOpenBuildFilter] = useState(true);
+  const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
 
   useImperativeHandle(ref, () => ({
     onUpdateFilter: (filter) => {
@@ -147,18 +160,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setFilterName(predefinedFilter.name);
     }
   };
-
-  const videoLinks = {
-    introduction: "https://www.youtube.com/embed/HMoJuK9mNtw",
-    buildFilter: "https://www.youtube.com/embed/e1tWUwDouiw",
-    nandGate: "https://www.youtube.com/embed/wYhxPBvQL1g",
-    buildingNORGate: "https://www.youtube.com/embed/IMm88o07GLg",
-    buildingORGate: "https://www.youtube.com/embed/PW-5hBCggu8",    
-    logicGateDiagramAND: "https://www.youtube.com/embed/pS3erHfCcY8",
-    logicGateDiagramNOTAND: "https://www.youtube.com/embed/SI1gUt3xNFU",
-    logicGateDiagramNorGate: "https://www.youtube.com/embed/xfSR3MgBWrc",
-    logicGateDiagramOR: "https://www.youtube.com/embed/c48K1wqo5ow",
-};
 
   const handleVideoChange = (videoKey) => {
     setCurrentVideo(videoLinks[videoKey]);
