@@ -11,10 +11,10 @@ export default function CallOptionSet() {
   const [entryType, setEntryType] = useState<string>("Buy_Ask");
   const [subProfile, setSubProfile] = useState("");
   const { t } = useTranslation("CallsSection");
-  const [offsetPercent, setOffsetPercent] = useState(10);
+  const [offsetPercent, setOffsetPercent] = useState(0);
   const [isBreakUpEnabled, setIsBreakUpEnabled] = useState(false);
   const [amount, setAmount] = useState(30000);
-  const [breakUp, setBreakUp] = useState(20);
+  const [breakUp, setBreakUp] = useState(3);
   const isBuyAsk = entryType === "Buy_Ask";
   const isOffsetValid = offsetPercent >= 0;
   const shouldDisableLaddering = isBuyAsk && isOffsetValid;
@@ -26,6 +26,7 @@ export default function CallOptionSet() {
   const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
   const [newSubProfileOpen, setNewSubProfileOpen] = useState(false);
   const { connectedAccounts } = useAppSelector(state => state.userProfile);
+  const [value, setValue] = useState<number | "">(20);
 
   const handleEntryTypeChange = (event) => {
     const newEntryType = event.target.value;
@@ -42,6 +43,17 @@ export default function CallOptionSet() {
 
     if (entryType === "Buy_Ask" && newOffset >= 0) {
       setUseLaddering(false);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value === "" ? "" : Number(event.target.value);
+    setValue(newValue);
+  };
+
+  const handleEnableToggle = () => {
+    if (isBAMaxEnabled && value === "") {
+      setValue(20); // При включении ставим 20, если пусто
     }
   };
 
@@ -195,22 +207,27 @@ export default function CallOptionSet() {
             <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("OptionDetails")}</Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                <TextField
-                  placeholder="Enter ticker"
-                  variant="outlined"
-                  InputLabelProps={{ shrink: false }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: {
-                      color: "white",
-                      padding: "10px 12px"
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      height: "40px",
-                      display: "flex",
-                      alignItems: "center"
-                    }
-                  }} />
+              <TextField
+                placeholder="Enter ticker"
+                variant="outlined"
+                name="tickerInput"
+                autoComplete="off"
+                inputProps={{
+                  autoComplete: "off",
+                }}
+                InputLabelProps={{ shrink: false }}
+                sx={{
+                  bgcolor: "#1E1E1E",
+                  input: {
+                    color: "white",
+                    padding: "10px 12px"
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    height: "40px",
+                    display: "flex",
+                    alignItems: "center"
+                  }
+                }}/>
 
                 <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
                 <TextField
@@ -261,18 +278,20 @@ export default function CallOptionSet() {
                     </Typography>
                   </Box>
                   <TextField
-                    placeholder="20"
                     variant="outlined"
                     type="number"
+                    value={value}
+                    onChange={handleChange}
                     disabled={!isBAMaxEnabled}
-                    InputLabelProps={{ shrink: false }}
+                    inputProps={{ min: 1, step: 1 }}
+                    onFocus={handleEnableToggle}
                     sx={{
                       bgcolor: "#1E1E1E",
                       width: "60px",
                       marginLeft: "10px",
                       input: {
                         color: isBAMaxEnabled ? "white" : "gray",
-                        padding: "10px 12px"
+                        padding: "10px 12px",
                       },
                       "& .MuiOutlinedInput-root": {
                         height: "40px",
@@ -282,23 +301,25 @@ export default function CallOptionSet() {
                         "&:hover": {
                           borderColor: "white",
                         },
-                      }
+                      },
                     }}
                   />
                 </Box>
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Typography sx={{ color: "white" }}>{t("MinContractAsk")}</Typography>
+              <Typography sx={{ color: "white" }}>{t("MinContractAsk")}</Typography>
                 <TextField
                   type="number"
                   variant="outlined"
-                  defaultValue={1.05}
+                  defaultValue={0.05}
+                  inputProps={{ step: 0.01 }}
                   sx={{
                     bgcolor: "#1E1E1E",
                     input: { color: "white", textAlign: "center" },
                     width: "70px",
                     "& .MuiOutlinedInput-root": { height: "40px" }
-                  }} />
+                  }}
+                />
                 <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
                   <Checkbox sx={{ color: "gray", p: 0 }} />
                   <Typography sx={{ color: "white" }}>{t("TradeAsSet")}</Typography>
@@ -399,7 +420,7 @@ export default function CallOptionSet() {
                   <TextField
                     type="number"
                     variant="outlined"
-                    defaultValue={10}
+                    defaultValue={500}
                     sx={{
                       bgcolor: "#1E1E1E",
                       input: { color: "white", textAlign: "center" },
