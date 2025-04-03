@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import ExitTierTable from "./ExitTierTable";
 import React from "react";
 import { useAppSelector } from "@/libs/redux/Store";
+import { ExitTier, SubProfile } from "@/models/SubProfile";
+import { optionTradeService } from "@/services/optionTradeService";
 
 
 export default function CallOptionSet() {
@@ -26,7 +28,24 @@ export default function CallOptionSet() {
   const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
   const [newSubProfileOpen, setNewSubProfileOpen] = useState(false);
   const { connectedAccounts } = useAppSelector(state => state.userProfile);
-  const [value, setValue] = useState<number | "">(20);
+  const [bidAskMax, setBidAskMax] = useState<number | "">(20);
+  const [loading, setLoading] = useState(false);
+  const [dteMin, setDteMin] = useState<number>(0);
+  const [dteMax, setDteMax] = useState<number>(32);
+  const [minContractAsk, setMinContractAsk] = useState<number>(0.05);
+  const [cancelAndResubmitOnPartial, setCancelAndResubmitOnPartial] = useState<boolean>(false);
+  const [minOpenInterest, setMinOpenInterest] = useState<number>(150);
+  const [minVolume, setMinVolume] = useState<number>(10);
+  const [oiCapPercent, setOiCapPercent] = useState<number>(500);
+  const [requireActiveBid, setRequireActiveBid] = useState<boolean>(false);
+  const [ticker, setTicker] = useState<string>("");
+  const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
+  const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
+  const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
+
+  const handleExitTiersChange = (newExitTiers: ExitTier[]) => {
+    setExitTiers(newExitTiers);
+  };
 
   const handleEntryTypeChange = (event) => {
     const newEntryType = event.target.value;
@@ -45,15 +64,58 @@ export default function CallOptionSet() {
       setUseLaddering(false);
     }
   };
+  const handleSaveSubProfile = async () => {
+    if (!subProfile.trim()) return;
+
+    setLoading(true);
+    try {
+      const subProfileRequest: SubProfile = {
+        name: subProfile,
+        cancelAndResubmitOnPartial: cancelAndResubmitOnPartial, 
+        dteMax: dteMax, 
+        dteMin: dteMin, 
+        entryOffsetPercent: offsetPercent,
+        entryType: entryType,
+        useLaddering: useLaddering, 
+        maxDelta: 0,
+        minContractAsk: minContractAsk,
+        minDelta: 0, 
+        minOpenInterest: minOpenInterest,
+        minVolume: minVolume, 
+        oiCapPercent: oiCapPercent,
+        onlyTradeUnderlying: onlyTradeUnderlying,
+        optionType: "CALL",
+        requireActiveBid: requireActiveBid,
+        useBidAskMax: isBAMaxEnabled,
+        bidAskMax: bidAskMax? bidAskMax : 0,
+        ticker: ticker,
+        totalDollarAmount: amount,
+        tradeUnderlying: tradeUnderlyingFound,
+        breakUpOrder: isBreakUpEnabled,
+        orderBreaks: breakUp,
+        tradeAsSet: tradeAsSet,
+        baSpreadDiff: baSpreadDiff,
+        account: account,
+        exitTiers: exitTiers
+      };
+
+      await optionTradeService.createSubProfile(subProfileRequest );
+      handleClickNewSubProfileClose();
+    } catch (error) {
+      console.error("Error creating sub-profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value === "" ? "" : Number(event.target.value);
-    setValue(newValue);
+    setBidAskMax(newValue);
   };
 
   const handleEnableToggle = () => {
-    if (isBAMaxEnabled && value === "") {
-      setValue(20); // При включении ставим 20, если пусто
+    if (isBAMaxEnabled && bidAskMax === "") {
+      setBidAskMax(20);
     }
   };
 
@@ -88,6 +150,7 @@ export default function CallOptionSet() {
 
   const handleClickNewSubProfileClose = () => {
     setNewSubProfileOpen(false);
+    setSubProfile("");
   }
 
   const handleClickNewSubProfileOpen = () => {
@@ -127,46 +190,50 @@ export default function CallOptionSet() {
           <MenuItem value="" disabled>{t("SelectSub-Profile")}</MenuItem>
         </Select>
 
-        <Button variant="contained"
-          onClick={handleClickNewSubProfileOpen}
-          sx={{
-            height: "40px",
-            bgcolor: "#2A9D8F",
-            color: "white",
-            textTransform: "none",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            minWidth: "150px",
-            maxWidth: "100%",
-          }}>
-          {t("CreateNewSub-Profile")}
-        </Button>
-        <Dialog
-          open={newSubProfileOpen}
-          onClose={handleClickNewSubProfileClose}
-          fullWidth
-          maxWidth="xs"
-          sx={{ width: '100%' }}>
-          <DialogTitle>{t("SaveSubProfileName")}</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              type="text"
-              fullWidth
-              variant="outlined"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button variant="outlined" sx={{ bgcolor: "gray", color: "white" }} onClick={handleClickNewSubProfileClose}>
-              {t("Cancel")}
-            </Button>
-            <Button variant="outlined" sx={{ bgcolor: "#2A9D8F", color: "white", }}>
-              {t("Save")}
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <Button
+        variant="contained"
+        onClick={handleClickNewSubProfileOpen}
+        sx={{
+          height: "40px",
+          bgcolor: "#2A9D8F",
+          color: "white",
+          textTransform: "none",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          minWidth: "150px",
+          maxWidth: "100%",
+        }}>
+        {t("CreateNewSub-Profile")}
+      </Button>
+
+      <Dialog open={newSubProfileOpen} onClose={handleClickNewSubProfileClose} fullWidth maxWidth="xs">
+        <DialogTitle>{t("SaveSubProfileName")}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={subProfile}
+            onChange={(e) => setSubProfile(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" sx={{ bgcolor: "gray", color: "white" }} onClick={handleClickNewSubProfileClose}>
+            {t("Cancel")}
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ bgcolor: "#2A9D8F", color: "white" }}
+            disabled={!subProfile.trim()}
+            onClick={handleSaveSubProfile}
+          >
+            {t("Save")}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
         <Button variant="contained"
           sx={{
@@ -212,6 +279,8 @@ export default function CallOptionSet() {
                 variant="outlined"
                 name="tickerInput"
                 autoComplete="off"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value)}
                 inputProps={{
                   autoComplete: "off",
                 }}
@@ -227,18 +296,19 @@ export default function CallOptionSet() {
                     display: "flex",
                     alignItems: "center"
                   }
-                }}/>
-
+                }}
+              />
                 <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
                 <TextField
                   type="number"
                   variant="outlined"
-                  defaultValue={0}
+                  value={dteMin}
+                  onChange={(e) => setDteMin(Number(e.target.value))}
                   sx={{
                     bgcolor: "#1E1E1E",
                     input: { color: "white", textAlign: "center" },
                     width: "60px",
-                    "& .MuiOutlinedInput-root": { height: "40px" }
+                    "& .MuiOutlinedInput-root": { height: "40px" },
                   }}
                 />
 
@@ -246,22 +316,24 @@ export default function CallOptionSet() {
                 <TextField
                   type="number"
                   variant="outlined"
-                  defaultValue={32}
+                  value={dteMax}
+                  onChange={(e) => setDteMax(Number(e.target.value))}
                   sx={{
                     bgcolor: "#1E1E1E",
                     input: { color: "white", textAlign: "center" },
                     width: "60px",
-                    "& .MuiOutlinedInput-root": { height: "40px" }
+                    "& .MuiOutlinedInput-root": { height: "40px" },
                   }}
                 />
               </Box>
 
               <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                  <Checkbox sx={{ color: "gray", p: 0 }} />
-                  <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                    {t("RequireActiveBid")}
-                  </Typography>
+                <Checkbox
+                  checked={requireActiveBid}
+                  onChange={(e) => setRequireActiveBid(e.target.checked)}
+                  sx={{ color: "gray", p: 0 }}
+                />
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
@@ -280,7 +352,7 @@ export default function CallOptionSet() {
                   <TextField
                     variant="outlined"
                     type="number"
-                    value={value}
+                    value={bidAskMax}
                     onChange={handleChange}
                     disabled={!isBAMaxEnabled}
                     inputProps={{ min: 1, step: 1 }}
@@ -308,20 +380,25 @@ export default function CallOptionSet() {
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography sx={{ color: "white" }}>{t("MinContractAsk")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  defaultValue={0.05}
-                  inputProps={{ step: 0.01 }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center" },
-                    width: "70px",
-                    "& .MuiOutlinedInput-root": { height: "40px" }
-                  }}
-                />
+              <TextField
+                type="number"
+                variant="outlined"
+                value={minContractAsk}
+                onChange={(e) => setMinContractAsk(Number(e.target.value))}
+                inputProps={{ step: 0.01 }}
+                sx={{
+                  bgcolor: "#1E1E1E",
+                  input: { color: "white", textAlign: "center" },
+                  width: "70px",
+                  "& .MuiOutlinedInput-root": { height: "40px" },
+                }}
+              />
                 <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                  <Checkbox sx={{ color: "gray", p: 0 }} />
+                <Checkbox
+                  checked={tradeAsSet}
+                  onChange={(e) => setTradeAsSet(e.target.checked)}
+                  sx={{ color: "gray", p: 0 }}
+                />
                   <Typography sx={{ color: "white" }}>{t("TradeAsSet")}</Typography>
                 </Box>
               </Box>
@@ -346,7 +423,8 @@ export default function CallOptionSet() {
                   <TextField
                     type="number"
                     variant="outlined"
-                    defaultValue={150}
+                    value={minOpenInterest}
+                    onChange={(e) => setMinOpenInterest(Number(e.target.value))}
                     sx={{
                       bgcolor: "#1E1E1E",
                       input: { color: "white", textAlign: "center" },
@@ -356,26 +434,26 @@ export default function CallOptionSet() {
                   />
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography sx={{ color: "white" }}>{t("MinVolume")}</Typography>
-                  <TextField
-                    type="number"
-                    variant="outlined"
-                    defaultValue={10}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      input: { color: "white", textAlign: "center" },
-                      width: "100px",
-                      "& .MuiOutlinedInput-root": { height: "40px" }
-                    }}
-                  />
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  value={minVolume}
+                  onChange={(e) => setMinVolume(Number(e.target.value))}
+                  sx={{
+                    bgcolor: "#1E1E1E",
+                    input: { color: "white", textAlign: "center" },
+                    width: "100px",
+                    "& .MuiOutlinedInput-root": { height: "40px" }
+                  }}
+                />
                 </Box>
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}></Box>
-              <Typography sx={{ color: "white" }}>{t("B/ASpreadDiff")}</Typography>
               <TextField
                 type="number"
                 variant="outlined"
-                defaultValue={10}
+                value={baSpreadDiff}
+                onChange={(e) => setBaSpreadDiff(Number(e.target.value))}
                 sx={{
                   bgcolor: "#1E1E1E",
                   input: { color: "white", textAlign: "center" },
@@ -416,18 +494,18 @@ export default function CallOptionSet() {
                   />
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography sx={{ color: "white" }}>{t("OIPercentCap")}</Typography>
-                  <TextField
-                    type="number"
-                    variant="outlined"
-                    defaultValue={500}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      input: { color: "white", textAlign: "center" },
-                      width: "110px",
-                      "& .MuiOutlinedInput-root": { height: "40px" }
-                    }}
-                  />
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  value={oiCapPercent}
+                  onChange={(e) => setOiCapPercent(Number(e.target.value))}
+                  sx={{
+                    bgcolor: "#1E1E1E",
+                    input: { color: "white", textAlign: "center" },
+                    width: "110px",
+                    "& .MuiOutlinedInput-root": { height: "40px" }
+                  }}
+                />
                 </Box>
               </Box>
               <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
@@ -507,7 +585,11 @@ export default function CallOptionSet() {
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                  <Checkbox sx={{ color: "gray", p: 0 }} />
+                <Checkbox
+                  checked={cancelAndResubmitOnPartial}
+                  onChange={(e) => setCancelAndResubmitOnPartial(e.target.checked)}
+                  sx={{ color: "gray", p: 0 }}
+                />
                   <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
                     {t("CancelResubmitNoPartialFill")}
                   </Typography>
@@ -583,7 +665,10 @@ export default function CallOptionSet() {
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
           }}>
             <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("ExitTiers")}</Typography>
-            <ExitTierTable isSendTriggerChecked={isSendTriggerChecked} />
+            <ExitTierTable
+              isSendTriggerChecked={isSendTriggerChecked}
+              onExitTiersChange={handleExitTiersChange}
+            />
           </Box>
         </Box>
       </Box>
