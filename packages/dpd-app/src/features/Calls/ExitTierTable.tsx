@@ -17,9 +17,9 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { TierData } from '@/models/TierData';
 import { Column } from '@/models/Column';
 import { useTranslation } from 'react-i18next';
+import { ExitTier } from '@/models/SubProfile';
 
 const columns: Column[] = [
   { id: 'addTier', label: 'Add Tier', minWidth: 80, align: 'center' },
@@ -33,127 +33,44 @@ const columns: Column[] = [
   { id: 'removeTier', label: 'Remove Tier', minWidth: 100, align: 'center' },
 ];
 
-const defaultInitialRow: TierData = {
-  id: 'row-0',
-  exitTier: '1',
-  percentPosition: '100',
+const defaultInitialRow: ExitTier = {
+  exitTierPositionPercent: 100,
   exitType: 'Limit',
-  optionPftOffset: '9',
-  optionStopOffset: '--',
-  stockPftOffset: '2',
-  stockStopOffset: '--',
+  exitTypeValue: '',
+  optionStopOffsetPercent: 0,
+  optionTargetOffsetPercent: 9,
+  stockStopOffsetPercent: 0,
+  stockTargetOffsetPercent: 10,
 };
 
-export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecked}) {
+export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecked, onExitTiersChange: handleExitTiersChange}) {
   const theme = useTheme();
-  const [rows, setRows] = useState<TierData[]>([defaultInitialRow]);
+  const [rows, setRows] = useState<ExitTier[]>([defaultInitialRow]);
   const { t } = useTranslation("CallsSection");
 
   useEffect(() => {
     setRows(isSendTriggerChecked ? [defaultInitialRow] : []);
   }, [isSendTriggerChecked]);
 
-  const updateExitTiers = (updatedRows: TierData[]) => {
-    return updatedRows.map((row, index) => ({
-      ...row,
-      exitTier: (index + 1).toString()
-    }));
-  };
 
-  const handleAddTier = () => {
-    const totalAllocated = rows.reduce((sum, row) => {
-      const value = parseFloat(row.percentPosition);
-      return sum + (isNaN(value) ? 0 : value);
-    }, 0);
-
-    const remainingPercent = Math.max(0, 100 - totalAllocated);
-    
-    const newRow: TierData = {
-      id: `row-${rows.length}`,
-      exitTier: (rows.length + 1).toString(), 
-      percentPosition: remainingPercent.toString(),
-      exitType: 'Limit',
-      optionPftOffset: '9',
-      optionStopOffset: '--',
-      stockPftOffset: '2',
-      stockStopOffset: '--',
-    };
-    
-    setRows([...rows, newRow]);
-  };
-
-  const handleRemoveTier = (id: string) => {
-    const rowToRemove = rows.find(row => row.id === id);
-    if (!rowToRemove) return;
-    
-    const removedPercentage = parseFloat(rowToRemove.percentPosition);
-    let remainingRows = rows.filter(row => row.id !== id);
-    
-    if (remainingRows.length === 1) {
-      remainingRows = [{
-        ...remainingRows[0],
-        percentPosition: '100'
-      }];
-    } else {
-      const firstRow = remainingRows[0];
-      const currentFirstRowPercentage = parseFloat(firstRow.percentPosition);
-      const newFirstRowPercentage = currentFirstRowPercentage + removedPercentage;
-      
-      remainingRows = remainingRows.map((row, index) => 
-        index === 0 
-          ? { ...row, percentPosition: newFirstRowPercentage.toString() } 
-          : row
-      );
-    }
-    
-    setRows(updateExitTiers(remainingRows));
-  };
-
-  const handleNumberChange = (id: string, field: keyof TierData, value: string) => {
-    if (field === 'percentPosition') {
-      const otherRowsSum = rows.reduce((sum, row) => 
-        row.id !== id ? sum + parseFloat(row.percentPosition) : sum, 0);
-      
-      const numValue = parseFloat(value);
-      const maxAllowed = 100 - otherRowsSum;
-      const validValue = isNaN(numValue) ? '0' : Math.min(numValue, maxAllowed).toString();
-      
-      setRows(rows.map(row => {
-        if (row.id === id) {
-          return { ...row, [field]: validValue };
-        }
-        return row;
-      }));
-    } else {
-      setRows(
-        rows.map(row => {
-          if (row.id === id) {
-            return { ...row, [field]: value };
-          }
-          return row;
-        })
-      );
-    }
-  };
-
-  const handleExitTypeChange = (id: string, event: SelectChangeEvent<string>) => {
+  const handleExitTypeChange = (id: number, event: SelectChangeEvent<string>) => {
     const exitType = event.target.value;
     setRows(
       rows.map(row => {
-        if (row.id === id) {
+        if (row.exitTierPositionPercent === id) {
           if (exitType === 'Limit') {
-            return { 
-              ...row, 
-              exitType, 
-              optionStopOffset: '--', 
-              stockStopOffset: '--' 
+            return {
+              ...row,
+              exitType,
+              optionStopOffsetPercent: 5,
+              stockStopOffsetPercent: 5
             };
           } else {
-            return { 
-              ...row, 
-              exitType, 
-              optionStopOffset: '5', 
-              stockStopOffset: '1' 
+            return {
+              ...row,
+              exitType,
+              optionStopOffsetPercent: 10,
+              stockStopOffsetPercent: 10
             };
           }
         }
@@ -162,104 +79,94 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
     );
   };
 
-  const shouldShowAddTierButton = () => {
+  const handleAddTier = () => {
     const totalAllocated = rows.reduce((sum, row) => {
-      const value = parseFloat(row.percentPosition);
-      return sum + (isNaN(value) ? 0 : value);
+      return sum + row.exitTierPositionPercent;
     }, 0);
-    
-    return Math.round(totalAllocated) < 100;
+  
+    const remainingPercent = Math.max(0, 100 - totalAllocated);
+  
+    const newRow: ExitTier = {
+      exitTierPositionPercent: remainingPercent,
+      exitType: 'Limit',
+      exitTypeValue: '',
+      optionStopOffsetPercent: 5,
+      optionTargetOffsetPercent: 10,
+      stockStopOffsetPercent: 5,
+      stockTargetOffsetPercent: 10,
+    };
+  
+    const updatedRows = [...rows, newRow];
+  
+    setRows(updatedRows);
+  
+    handleExitTiersChange(updatedRows);
+  }; 
+
+  const handleRemoveTier = (index: number) => {
+    const rowToRemove = rows[index];
+  
+    let remainingRows = rows.filter((_, i) => i !== index);
+  
+    if (remainingRows.length === 1) {
+      remainingRows = [{
+        ...remainingRows[0],
+        exitTierPositionPercent: 100,
+      }];
+    }
+  
+    setRows(remainingRows);
+  
+    handleExitTiersChange(remainingRows);
+  };
+  
+
+  const handleNumberChange = (index: number, field: keyof ExitTier, value: string) => {
+    if (field === 'exitTierPositionPercent') {
+      const numValue = parseFloat(value);
+  
+      if (isNaN(numValue) || numValue < 0) {
+        return; 
+      }
+  
+      const otherRowsSum = rows.reduce((sum, row, i) => 
+        i !== index ? sum + row.exitTierPositionPercent : sum, 0);
+  
+      const maxAllowed = 100 - otherRowsSum;
+  
+      const validValue = Math.min(numValue, maxAllowed);
+  
+      const updatedRows = rows.map((row, i) => {
+        if (i === index) {
+          return { ...row, [field]: validValue };
+        }
+        return row;
+      });
+  
+      setRows(updatedRows);
+  
+      handleExitTiersChange(updatedRows);
+    } else {
+      const updatedRows = rows.map((row, i) => {
+        if (i === index) {
+          return { ...row, [field]: value };
+        }
+        return row;
+      });
+  
+      setRows(updatedRows);
+  
+      handleExitTiersChange(updatedRows); 
+    }
   };
 
-  const styles = {
-    card: {
-      backgroundColor: '#333',
-      borderRadius: 2,
-      border: '1px solid #444',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      overflow: 'hidden',
-    },
-    tableContainer: {
-      backgroundColor: 'transparent',
-    },
-    table: {
-      minWidth: 650,
-    },
-    headerCell: {
-      backgroundColor: '#222',
-      color: '#fff',
-      fontWeight: 'bold',
-      border: '1px solid #444',
-      padding: '12px 8px',
-    },
-    tableCell: {
-      color: '#ddd',
-      border: '1px solid #444',
-      padding: '8px',
-    },
-    numberInput: {
-      '& .MuiInputBase-input': {
-        color: '#fff',
-        textAlign: 'center',
-      },
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: '#555',
-        },
-        '&:hover fieldset': {
-          borderColor: '#777',
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: '#4caf50',
-        },
-      },
-    },
-    selectInput: {
-      '& .MuiInputBase-input': {
-        color: '#fff',
-      },
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: '#555',
-        },
-        '&:hover fieldset': {
-          borderColor: '#777',
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: '#4caf50',
-        },
-      },
-      '& .MuiSelect-icon': {
-        color: '#aaa',
-      },
-    },
-    disabledInput: {
-      '& .MuiInputBase-input': {
-        color: '#777',
-        '-webkit-text-fill-color': '#777',
-      },
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: '#444',
-        },
-      },
-    },
-    addButton: {
-      color: '#4caf50',
-      '&:hover': {
-        backgroundColor: 'rgba(76, 175, 80, 0.08)',
-      },
-    },
-    removeButton: {
-      color: '#f44336',
-      '&:hover': {
-        backgroundColor: 'rgba(244, 67, 54, 0.08)',
-      },
-    },
-    staticText: {
-      color: '#ddd',
-      fontSize: '1rem',
-    },
+  
+  const shouldShowAddTierButton = () => {
+    const totalAllocated = rows.reduce((sum, row) => {
+      return sum + row.exitTierPositionPercent;
+    }, 0);
+  
+    return Math.round(totalAllocated) < 100;
   };
 
   return (
@@ -282,43 +189,41 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <TableRow hover tabIndex={-1} key={row.id}>
-                <TableCell sx={styles.tableCell} align="center">
-                </TableCell>
+              <TableRow hover tabIndex={-1} key={index}> 
                 
+                <TableCell sx={styles.tableCell} align="center"></TableCell>
+
                 <TableCell sx={styles.tableCell} align="center">
-                  <span style={styles.staticText}>{row.exitTier}</span>
+                  <span style={styles.staticText}>{index + 1}</span> 
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
                   <TextField
-                    value={row.percentPosition}
-                    onChange={(e) => handleNumberChange(row.id, 'percentPosition', e.target.value)}
+                    value={row.exitTierPositionPercent}
+                    onChange={(e) => handleNumberChange(index, 'exitTierPositionPercent', e.target.value)}
                     type="number"
                     InputProps={{ inputProps: { min: 0, max: 100, step: 1 } }}
                     variant="outlined"
                     size="small"
-                    sx={styles.numberInput}
                   />
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
-                  <FormControl size="small" fullWidth sx={styles.selectInput}>
+                  <FormControl size="small" fullWidth>
                     <Select
                       value={row.exitType}
-                      onChange={(e) => handleExitTypeChange(row.id, e)}
-                      displayEmpty
+                      onChange={(e) => handleExitTypeChange(index, e)}
                     >
                       <MenuItem value="Limit">{t("Limit")}</MenuItem>
                       <MenuItem value="OCO">{t("OCO")}</MenuItem>
                     </Select>
                   </FormControl>
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
                   <TextField
-                    value={row.optionPftOffset}
-                    onChange={(e) => handleNumberChange(row.id, 'optionPftOffset', e.target.value)}
+                    value={row.optionTargetOffsetPercent}
+                    onChange={(e) => handleNumberChange(index, 'optionTargetOffsetPercent', e.target.value)}
                     type="number"
                     InputProps={{ inputProps: { step: 0.1 } }}
                     variant="outlined"
@@ -326,14 +231,14 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     sx={styles.numberInput}
                   />
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
                   {row.exitType === 'Limit' ? (
                     <span style={styles.staticText}>--</span>
                   ) : (
                     <TextField
-                      value={row.optionStopOffset === '--' ? '5' : row.optionStopOffset}
-                      onChange={(e) => handleNumberChange(row.id, 'optionStopOffset', e.target.value)}
+                      value={row.optionStopOffsetPercent === 0 ? '5' : row.optionStopOffsetPercent}
+                      onChange={(e) => handleNumberChange(index, 'optionStopOffsetPercent', e.target.value)}
                       type="number"
                       InputProps={{ inputProps: { step: 0.1 } }}
                       variant="outlined"
@@ -342,11 +247,11 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     />
                   )}
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
                   <TextField
-                    value={row.stockPftOffset}
-                    onChange={(e) => handleNumberChange(row.id, 'stockPftOffset', e.target.value)}
+                    value={row.stockTargetOffsetPercent}
+                    onChange={(e) => handleNumberChange(index, 'stockTargetOffsetPercent', e.target.value)}
                     type="number"
                     InputProps={{ inputProps: { step: 0.1 } }}
                     variant="outlined"
@@ -354,14 +259,14 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     sx={styles.numberInput}
                   />
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
                   {row.exitType === 'Limit' ? (
                     <span style={styles.staticText}>--</span>
                   ) : (
                     <TextField
-                      value={row.stockStopOffset === '--' ? '1' : row.stockStopOffset}
-                      onChange={(e) => handleNumberChange(row.id, 'stockStopOffset', e.target.value)}
+                      value={row.stockStopOffsetPercent === 0 ? '1' : row.stockStopOffsetPercent}
+                      onChange={(e) => handleNumberChange(index, 'stockStopOffsetPercent', e.target.value)}
                       type="number"
                       InputProps={{ inputProps: { step: 0.1 } }}
                       variant="outlined"
@@ -370,13 +275,13 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     />
                   )}
                 </TableCell>
-                
+
                 <TableCell sx={styles.tableCell} align="center">
                   {index > 0 && (
                     <IconButton 
                       size="small" 
                       sx={styles.removeButton}
-                      onClick={() => handleRemoveTier(row.id)}
+                      onClick={() => handleRemoveTier(index)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -385,7 +290,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
               </TableRow>
             ))}
           </TableBody>
-          
+  
           {isSendTriggerChecked && shouldShowAddTierButton() && (
             <TableBody>
               <TableRow hover tabIndex={-1} key="add-tier-row">
@@ -420,3 +325,93 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
     </Card>
   );
 }
+const styles = {
+  card: {
+    backgroundColor: '#333',
+    borderRadius: 2,
+    border: '1px solid #444',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
+  },
+  tableContainer: {
+    backgroundColor: 'transparent',
+  },
+  table: {
+    minWidth: 650,
+  },
+  headerCell: {
+    backgroundColor: '#222',
+    color: '#fff',
+    fontWeight: 'bold',
+    border: '1px solid #444',
+    padding: '12px 8px',
+  },
+  tableCell: {
+    color: '#ddd',
+    border: '1px solid #444',
+    padding: '8px',
+  },
+  numberInput: {
+    '& .MuiInputBase-input': {
+      color: '#fff',
+      textAlign: 'center',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#555',
+      },
+      '&:hover fieldset': {
+        borderColor: '#777',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#4caf50',
+      },
+    },
+  },
+  selectInput: {
+    '& .MuiInputBase-input': {
+      color: '#fff',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#555',
+      },
+      '&:hover fieldset': {
+        borderColor: '#777',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#4caf50',
+      },
+    },
+    '& .MuiSelect-icon': {
+      color: '#aaa',
+    },
+  },
+  disabledInput: {
+    '& .MuiInputBase-input': {
+      color: '#777',
+      '-webkit-text-fill-color': '#777',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: '#444',
+      },
+    },
+  },
+  addButton: {
+    color: '#4caf50',
+    '&:hover': {
+      backgroundColor: 'rgba(76, 175, 80, 0.08)',
+    },
+  },
+  removeButton: {
+    color: '#f44336',
+    '&:hover': {
+      backgroundColor: 'rgba(244, 67, 54, 0.08)',
+    },
+  },
+  staticText: {
+    color: '#ddd',
+    fontSize: '1rem',
+  },
+};
