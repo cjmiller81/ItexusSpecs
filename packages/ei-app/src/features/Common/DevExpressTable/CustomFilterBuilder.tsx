@@ -67,15 +67,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 }, ref) => {
 
   const videoLinks = {
-    introduction: "https://www.youtube.com/embed/HMoJuK9mNtw",
-    buildFilter: "https://www.youtube.com/embed/e1tWUwDouiw",
-    nandGate: "https://www.youtube.com/embed/wYhxPBvQL1g",
-    buildingNORGate: "https://www.youtube.com/embed/IMm88o07GLg",
-    buildingORGate: "https://www.youtube.com/embed/PW-5hBCggu8",    
-    logicGateDiagramAND: "https://www.youtube.com/embed/pS3erHfCcY8",
-    logicGateDiagramNOTAND: "https://www.youtube.com/embed/SI1gUt3xNFU",
-    logicGateDiagramNorGate: "https://www.youtube.com/embed/xfSR3MgBWrc",
-    logicGateDiagramOR: "https://www.youtube.com/embed/c48K1wqo5ow",
+    introduction: "https://youtube.com/embed/8t8q5cIIY4Y",
+    buildFilter: "https://youtube.com/embed/6qPPjy_rs1c", 
+    nandGate: "https://youtube.com/embed/WbdrZvw1K_A",
+    buildingNORGate: "https://youtube.com/embed/v8tIWP8fiqc",
+    buildingORGate: "https://youtube.com/embed/SyBTdddW2bQ",    
+    logicGateDiagramAND: "https://youtube.com/embed/h6SJoqgHYcI?feature=share",
+    logicGateDiagramNOTAND: "https://youtube.com/embed/OEu8EkWLkpY?feature=share",
+    logicGateDiagramNorGate: "https://youtube.com/embed/9EboaPFmo8s?feature=share",
+    logicGateDiagramOR: "https://youtube.com/embed/k_OvR0fRRvM?feature=share", 
 };
 
   const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
@@ -443,7 +443,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                             justifyContent: "space-between",
                           }}
                         >
-                          <Typography>{t("IntroductionVideos")}</Typography>
+                          <Typography>{t("IntroductionVideo")}</Typography>
                           <IconButton onClick={handleToggle}>
                             <ExpandMoreIcon sx={{ color: "#fff" }} />
                           </IconButton>
@@ -465,95 +465,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                               >
                                 <YouTubeIcon sx={{ color: "#FF0000" }} />
                                 {t("FilterBuilderIntroGuide")}
-                              </a>
-                            </Typography>
-                          </Box>
-                        </Collapse>
-                      </Box>
-
-                      <Box>
-                        <Box
-                          sx={{
-                            backgroundColor: "#5a5a5a",
-                            padding: "8px 16px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Typography>{t("HowBuildFilter")}</Typography>
-                          <IconButton onClick={handleToggleBuildFilter}>
-                            <ExpandMoreIcon sx={{ color: "#fff" }} />
-                          </IconButton>
-                        </Box>
-
-                        <Collapse in={openBuildFilter}>
-                          <Box sx={{ padding: "8px 16px" }}>
-                            <Typography>
-                              <a
-                                href="#"
-                                onClick={() => handleVideoChange("buildFilter")}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "5px",
-                                  textDecoration: "none",
-                                  color: "#2196F3",
-                                }}
-                              >
-                                <YouTubeIcon sx={{ color: "#FF0000" }} />
-                                {t("BuildingANDGate")}
-                              </a>
-                            </Typography>
-
-                            <Typography>
-                              <a
-                                href="#"
-                                onClick={() => handleVideoChange("nandGate")}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "5px",
-                                  textDecoration: "none",
-                                  color: "#2196F3",
-                                }}
-                              >
-                                <YouTubeIcon sx={{ color: "#FF0000" }} />
-                                {t("BuildingNANDGate")}
-                              </a>
-                            </Typography>
-
-                            <Typography>
-                              <a
-                                href="#"
-                                onClick={() => handleVideoChange("buildingNORGate")}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "5px",
-                                  textDecoration: "none",
-                                  color: "#2196F3",
-                                }}
-                              >
-                                <YouTubeIcon sx={{ color: "#FF0000" }} />
-                                {t("BuildingNORGate")}
-                              </a>
-                            </Typography>
-
-                            <Typography>
-                              <a
-                                href="#"
-                                onClick={() => handleVideoChange("buildingORGate")}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "5px",
-                                  textDecoration: "none",
-                                  color: "#2196F3",
-                                }}
-                              >
-                                <YouTubeIcon sx={{ color: "#FF0000" }} />
-                                {t("BuildingORGate")}
                               </a>
                             </Typography>
                           </Box>
@@ -648,8 +559,97 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                           </Box>
                         </Collapse>
                       </Box>
-                    </Box>
 
+                      <Box>
+                        <Box
+                          sx={{
+                            backgroundColor: "#5a5a5a",
+                            padding: "8px 16px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography>{t("HowBuildFilter")}</Typography>
+                          <IconButton onClick={handleToggleBuildFilter}>
+                            <ExpandMoreIcon sx={{ color: "#fff" }} />
+                          </IconButton>
+                        </Box>
+
+                        <Collapse in={openBuildFilter}>
+                          <Box sx={{ padding: "8px 16px" }}>
+                            <Typography>
+                              <a
+                                href="#"
+                                onClick={() => handleVideoChange("buildFilter")}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                  textDecoration: "none",
+                                  color: "#2196F3",
+                                }}
+                              >
+                                <YouTubeIcon sx={{ color: "#FF0000" }} />
+                                {t("BuildingANDGate")}
+                              </a>
+                            </Typography>
+
+                            <Typography>
+                              <a
+                                href="#"
+                                onClick={() => handleVideoChange("nandGate")}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                  textDecoration: "none",
+                                  color: "#2196F3",
+                                }}
+                              >
+                                <YouTubeIcon sx={{ color: "#FF0000" }} />
+                                {t("BuildingNANDGate")}
+                              </a>
+                            </Typography>
+
+                            <Typography>
+                              <a
+                                href="#"
+                                onClick={() => handleVideoChange("buildingORGate")}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                  textDecoration: "none",
+                                  color: "#2196F3",
+                                }}
+                              >
+                                <YouTubeIcon sx={{ color: "#FF0000" }} />
+                                {t("BuildingORGate")}
+                              </a>
+                            </Typography>
+
+                            <Typography>
+                              <a
+                                href="#"
+                                onClick={() => handleVideoChange("buildingNORGate")}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "5px",
+                                  textDecoration: "none",
+                                  color: "#2196F3",
+                                }}
+                              >
+                                <YouTubeIcon sx={{ color: "#FF0000" }} />
+                                {t("BuildingNORGate")}
+                              </a>
+                            </Typography>
+
+                          </Box>
+                        </Collapse>
+                      </Box>
+                    </Box>
                     
                   </Stack>
                 </FilterControlsContainer>

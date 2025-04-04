@@ -368,6 +368,12 @@ export default function CallOptionSet() {
                         color: isBAMaxEnabled ? "white" : "gray",
                         padding: "10px 12px",
                       },
+                      "& .MuiOutlinedInput-root.Mui-disabled": {
+                        "& .MuiInputBase-input": {
+                          color: "gray !important",
+                          WebkitTextFillColor: "gray !important",
+                        },
+                      },
                       "& .MuiOutlinedInput-root": {
                         height: "40px",
                         display: "flex",
@@ -521,7 +527,13 @@ export default function CallOptionSet() {
                     value={entryType}
                     onChange={handleEntryTypeChange}
                     displayEmpty
-                    sx={{ width: "170px", height: "40px", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}
+                    sx={{
+                      width: "170px",
+                      height: "40px",
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
+                      color: "white",
+                      "& .MuiSelect-icon": { color: "#fff",},
+                    }}
                   >
                     <MenuItem value="Buy_Bid" >{t("Buy_Bid")}</MenuItem>
                     <MenuItem value="Buy_Mid" >{t("Buy_Mid")}</MenuItem>
@@ -534,7 +546,15 @@ export default function CallOptionSet() {
                     checked={useLaddering}
                     onChange={() => setUseLaddering(!useLaddering)}
                     disabled={shouldDisableLaddering}
-                    sx={{ color: "gray" }}
+                    sx={{
+                      color: "gray",
+                      "&.Mui-checked": {
+                        color: "gray", 
+                      },
+                      "&.Mui-disabled": {
+                        color: "rgba(255, 255, 255, 0.33)", 
+                      },
+                    }}
                   />
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
                     <Typography sx={{ fontSize: "13px", color: shouldDisableLaddering ? "gray" : "white" }}>
@@ -633,6 +653,12 @@ export default function CallOptionSet() {
                         input: {
                           color: "white",
                           padding: "10px 12px"
+                        },
+                        "& .MuiOutlinedInput-root.Mui-disabled": {
+                          "& .MuiInputBase-input": {
+                            color: "#bbb !important",
+                            WebkitTextFillColor: "#bbb !important",
+                          },
                         },
                         "& .MuiOutlinedInput-root": {
                           height: "40px",

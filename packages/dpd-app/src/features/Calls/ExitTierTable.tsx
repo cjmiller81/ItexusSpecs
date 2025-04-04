@@ -47,6 +47,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   const theme = useTheme();
   const [rows, setRows] = useState<ExitTier[]>([defaultInitialRow]);
   const { t } = useTranslation("CallsSection");
+  const tableContainerBackgroundColor = theme.palette.mode === 'dark' ? '#2b2b2b' : 'transparent';
 
   useEffect(() => {
     setRows(isSendTriggerChecked ? [defaultInitialRow] : []);
@@ -331,7 +332,7 @@ const styles = {
     overflow: 'hidden',
   },
   tableContainer: {
-    backgroundColor: 'transparent',
+    backgroundColor: "tableContainerBackgroundColor",
   },
   table: {
     minWidth: 650,
