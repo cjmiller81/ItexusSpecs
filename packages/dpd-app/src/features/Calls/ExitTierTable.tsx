@@ -37,10 +37,10 @@ const defaultInitialRow: ExitTier = {
   exitTierPositionPercent: 100,
   exitType: 'Limit',
   exitTypeValue: '',
-  optionStopOffsetPercent: 0,
+  optionStopOffsetPercent: 5,
   optionTargetOffsetPercent: 9,
-  stockStopOffsetPercent: 0,
-  stockTargetOffsetPercent: 10,
+  stockStopOffsetPercent: 1,
+  stockTargetOffsetPercent: 2,
 };
 
 export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecked, onExitTiersChange: handleExitTiersChange}) {
@@ -53,31 +53,24 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   }, [isSendTriggerChecked]);
 
 
-  const handleExitTypeChange = (id: number, event: SelectChangeEvent<string>) => {
+  const handleExitTypeChange = (index: number, event: SelectChangeEvent<string>) => {
     const exitType = event.target.value;
-    setRows(
-      rows.map(row => {
-        if (row.exitTierPositionPercent === id) {
-          if (exitType === 'Limit') {
-            return {
-              ...row,
-              exitType,
-              optionStopOffsetPercent: 5,
-              stockStopOffsetPercent: 5
-            };
-          } else {
-            return {
-              ...row,
-              exitType,
-              optionStopOffsetPercent: 10,
-              stockStopOffsetPercent: 10
-            };
-          }
-        }
-        return row;
-      })
+  
+    setRows((prevRows) =>
+      prevRows.map((row, i) =>
+        i === index
+          ? { 
+              ...row, 
+              exitType, 
+              optionStopOffsetPercent:5,
+              stockStopOffsetPercent: 1,
+            }
+          : row
+      )
     );
-  };
+  
+    handleExitTiersChange(rows);
+  };  
 
   const handleAddTier = () => {
     const totalAllocated = rows.reduce((sum, row) => {
@@ -91,9 +84,9 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
       exitType: 'Limit',
       exitTypeValue: '',
       optionStopOffsetPercent: 5,
-      optionTargetOffsetPercent: 10,
-      stockStopOffsetPercent: 5,
-      stockTargetOffsetPercent: 10,
+      optionTargetOffsetPercent: 9,
+      stockStopOffsetPercent: 1,
+      stockTargetOffsetPercent: 2,
     };
   
     const updatedRows = [...rows, newRow];
@@ -108,17 +101,19 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   
     let remainingRows = rows.filter((_, i) => i !== index);
   
-    if (remainingRows.length === 1) {
-      remainingRows = [{
+    if (remainingRows.length > 0) {
+      remainingRows[0] = {
         ...remainingRows[0],
-        exitTierPositionPercent: 100,
-      }];
+        exitTierPositionPercent: remainingRows[0].exitTierPositionPercent + rowToRemove.exitTierPositionPercent,
+      };
+    } else {
+      remainingRows = [{ ...defaultInitialRow }];
     }
   
     setRows(remainingRows);
-  
     handleExitTiersChange(remainingRows);
   };
+  
   
 
   const handleNumberChange = (index: number, field: keyof ExitTier, value: string) => {

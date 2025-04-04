@@ -334,6 +334,9 @@ export default function CallOptionSet() {
                   onChange={(e) => setRequireActiveBid(e.target.checked)}
                   sx={{ color: "gray", p: 0 }}
                 />
+                <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
+                    {t("RequireActiveBid")}
+                  </Typography>
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
@@ -434,6 +437,7 @@ export default function CallOptionSet() {
                   />
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Typography sx={{ color: "white" }}>{t("MinVolume")}</Typography>
                 <TextField
                   type="number"
                   variant="outlined"
@@ -449,6 +453,7 @@ export default function CallOptionSet() {
                 </Box>
               </Box>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}></Box>
+              <Typography sx={{ color: "white" }}>{t("B/ASpreadDiff")}</Typography>
               <TextField
                 type="number"
                 variant="outlined"
@@ -494,6 +499,7 @@ export default function CallOptionSet() {
                   />
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Typography sx={{ color: "white" }}>{t("OIPercentCap")}</Typography>
                 <TextField
                   type="number"
                   variant="outlined"
