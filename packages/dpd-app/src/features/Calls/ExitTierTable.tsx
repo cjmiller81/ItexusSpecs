@@ -56,21 +56,23 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   const handleExitTypeChange = (index: number, event: SelectChangeEvent<string>) => {
     const exitType = event.target.value;
   
-    setRows((prevRows) =>
-      prevRows.map((row, i) =>
+    setRows((prevRows) => {
+      const updatedRows = prevRows.map((row, i) =>
         i === index
-          ? { 
-              ...row, 
-              exitType, 
-              optionStopOffsetPercent:5,
+          ? {
+              ...row,
+              exitType,
+              optionStopOffsetPercent: 5,
               stockStopOffsetPercent: 1,
             }
           : row
-      )
-    );
+      );
   
-    handleExitTiersChange(rows);
-  };  
+      handleExitTiersChange(updatedRows);
+      return updatedRows;
+    });
+  };
+  
 
   const handleAddTier = () => {
     const totalAllocated = rows.reduce((sum, row) => {
