@@ -49,6 +49,97 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   const { t } = useTranslation("CallsSection");
   const tableContainerBackgroundColor = theme.palette.mode === 'dark' ? '#2b2b2b' : 'transparent';
 
+  const styles = {
+    card: {
+      backgroundColor: '#333',
+      borderRadius: 2,
+      border: '1px solid #444',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden',
+    },
+    tableContainer: {
+      backgroundColor: tableContainerBackgroundColor,
+    },
+    table: {
+      minWidth: 650,
+    },
+    headerCell: {
+      backgroundColor: '#222',
+      color: '#fff',
+      fontWeight: 'bold',
+      border: '1px solid #444',
+      padding: '12px 8px',
+    },
+    tableCell: {
+      color: '#ddd',
+      border: '1px solid #444',
+      padding: '8px',
+    },
+    numberInput: {
+      '& .MuiInputBase-input': {
+        color: '#fff',
+        textAlign: 'center',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: '#555',
+        },
+        '&:hover fieldset': {
+          borderColor: '#777',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: '#4caf50',
+        },
+      },
+    },
+    selectInput: {
+      '& .MuiInputBase-input': {
+        color: '#fff',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: '#555',
+        },
+        '&:hover fieldset': {
+          borderColor: '#777',
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: '#4caf50',
+        },
+      },
+      '& .MuiSelect-icon': {
+        color: '#aaa',
+      },
+    },
+    disabledInput: {
+      '& .MuiInputBase-input': {
+        color: '#777',
+        '-webkit-text-fill-color': '#777',
+      },
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: '#444',
+        },
+      },
+    },
+    addButton: {
+      color: '#4caf50',
+      '&:hover': {
+        backgroundColor: 'rgba(76, 175, 80, 0.08)',
+      },
+    },
+    removeButton: {
+      color: '#f44336',
+      '&:hover': {
+        backgroundColor: 'rgba(244, 67, 54, 0.08)',
+      },
+    },
+    staticText: {
+      color: '#ddd',
+      fontSize: '1rem',
+    },
+  };
+
   useEffect(() => {
     setRows(isSendTriggerChecked ? [defaultInitialRow] : []);
   }, [isSendTriggerChecked]);
@@ -323,93 +414,3 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
     </Card>
   );
 }
-const styles = {
-  card: {
-    backgroundColor: '#333',
-    borderRadius: 2,
-    border: '1px solid #444',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden',
-  },
-  tableContainer: {
-    backgroundColor: "tableContainerBackgroundColor",
-  },
-  table: {
-    minWidth: 650,
-  },
-  headerCell: {
-    backgroundColor: '#222',
-    color: '#fff',
-    fontWeight: 'bold',
-    border: '1px solid #444',
-    padding: '12px 8px',
-  },
-  tableCell: {
-    color: '#ddd',
-    border: '1px solid #444',
-    padding: '8px',
-  },
-  numberInput: {
-    '& .MuiInputBase-input': {
-      color: '#fff',
-      textAlign: 'center',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#555',
-      },
-      '&:hover fieldset': {
-        borderColor: '#777',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#4caf50',
-      },
-    },
-  },
-  selectInput: {
-    '& .MuiInputBase-input': {
-      color: '#fff',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#555',
-      },
-      '&:hover fieldset': {
-        borderColor: '#777',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#4caf50',
-      },
-    },
-    '& .MuiSelect-icon': {
-      color: '#aaa',
-    },
-  },
-  disabledInput: {
-    '& .MuiInputBase-input': {
-      color: '#777',
-      '-webkit-text-fill-color': '#777',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#444',
-      },
-    },
-  },
-  addButton: {
-    color: '#4caf50',
-    '&:hover': {
-      backgroundColor: 'rgba(76, 175, 80, 0.08)',
-    },
-  },
-  removeButton: {
-    color: '#f44336',
-    '&:hover': {
-      backgroundColor: 'rgba(244, 67, 54, 0.08)',
-    },
-  },
-  staticText: {
-    color: '#ddd',
-    fontSize: '1rem',
-  },
-};
