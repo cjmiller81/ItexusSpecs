@@ -294,6 +294,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     InputProps={{ inputProps: { min: 0, max: 100, step: 1 } }}
                     variant="outlined"
                     size="small"
+                    sx={styles.numberInput}
                   />
                 </TableCell>
 
@@ -302,6 +303,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     <Select
                       value={row.exitType}
                       onChange={(e) => handleExitTypeChange(index, e)}
+                      sx={styles.selectInput}
                     >
                       <MenuItem value="Limit">{t("Limit")}</MenuItem>
                       <MenuItem value="OCO">{t("OCO")}</MenuItem>
