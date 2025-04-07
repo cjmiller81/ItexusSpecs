@@ -145,9 +145,14 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   }, [isSendTriggerChecked]);
 
   useEffect(() => {
-    if(exitTiers)
-      setRows(exitTiers);
-  },[exitTiers])
+    if (Array.isArray(exitTiers)) {
+      const sortedExitTiers = [...exitTiers].sort((a, b) => b.exitTierPositionPercent - a.exitTierPositionPercent);
+      setRows(sortedExitTiers);
+    } else {
+      setRows([]);
+    }
+  }, [exitTiers]);
+  
 
   const handleExitTypeChange = (index: number, event: SelectChangeEvent<string>) => {
     const exitType = event.target.value;
