@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ExitTierTable from "./ExitTierTable";
 import React from "react";
-import { useAppSelector } from "@/libs/redux/Store";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
+import { fetchSubProfiles } from "@/slices/optionTradeSlice";
 
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState("");
   const [entryType, setEntryType] = useState<string>("Buy_Ask");
-  const [subProfile, setSubProfile] = useState("");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
   const [isBreakUpEnabled, setIsBreakUpEnabled] = useState(false);
@@ -42,7 +42,44 @@ export default function CallOptionSet() {
   const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
   const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
   const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
+  const [subProfile, setSubProfile] = useState<string>("");
+  const dispatch = useAppDispatch();
+  const { subProfiles } = useAppSelector((state) => state.optionTrade);
+  const [selectedSubProfile, setSelectedSubProfile] = useState<SubProfile | null>(null);
 
+  useEffect(() => {
+    dispatch(fetchSubProfiles());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedSubProfile) {
+      setSubProfile(selectedSubProfile.name);
+      setCancelAndResubmitOnPartial(selectedSubProfile.cancelAndResubmitOnPartial);
+      setDteMax(selectedSubProfile.dteMax);
+      setDteMin(selectedSubProfile.dteMin);
+      setOffsetPercent(selectedSubProfile.entryOffsetPercent);
+      setEntryType(selectedSubProfile.entryType);
+      setUseLaddering(selectedSubProfile.useLaddering);
+      setMinContractAsk(selectedSubProfile.minContractAsk);
+      setMinOpenInterest(selectedSubProfile.minOpenInterest);
+      setMinVolume(selectedSubProfile.minVolume);
+      setOiCapPercent(selectedSubProfile.oiCapPercent);
+      setOnlyTradeUnderlying(selectedSubProfile.onlyTradeUnderlying);
+      setRequireActiveBid(selectedSubProfile.requireActiveBid);
+      setIsBAMaxEnabled(selectedSubProfile.useBidAskMax);
+      setBidAskMax(selectedSubProfile.bidAskMax || 0);
+      setTicker(selectedSubProfile.ticker);
+      setAmount(selectedSubProfile.totalDollarAmount);
+      setTradeUnderlyingFound(selectedSubProfile.tradeUnderlying);
+      setIsBreakUpEnabled(selectedSubProfile.breakUpOrder);
+      setBreakUp(selectedSubProfile.orderBreaks);
+      setTradeAsSet(selectedSubProfile.tradeAsSet);
+      setBaSpreadDiff(selectedSubProfile.baSpreadDiff);
+      setAccount(selectedSubProfile.account);
+      setExitTiers(selectedSubProfile.exitTiers);
+    }
+  }, [selectedSubProfile]);
+  
   const handleExitTiersChange = (newExitTiers: ExitTier[]) => {
     setExitTiers(newExitTiers);
   };
@@ -147,6 +184,12 @@ export default function CallOptionSet() {
       setAmount(Number(numericValue));
     }
   };
+  const handleSelectSubProfile = (event: SelectChangeEvent) => {
+    const selectedName = event.target.value;
+    setSubProfile(selectedName);
+    const profile = subProfiles.find((profile) => profile.name === selectedName);
+    setSelectedSubProfile(profile || null);
+  }
 
   const handleClickNewSubProfileClose = () => {
     setNewSubProfileOpen(false);
@@ -183,11 +226,21 @@ export default function CallOptionSet() {
 
         <Select
           value={subProfile}
-          onChange={(event: SelectChangeEvent) => setSubProfile(event.target.value)}
+          onChange={handleSelectSubProfile}
           displayEmpty
           sx={{ width: "300px", height: "40px", bgcolor: "#2A9D8F", color: "white", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}
         >
-          <MenuItem value="" disabled>{t("SelectSub-Profile")}</MenuItem>
+          <MenuItem value="" disabled>
+            {t("SelectSub-Profile")}
+          </MenuItem>
+
+          {subProfiles
+            .filter((profile) => profile.optionType === "CALL")
+            .map((profile) => (
+              <MenuItem key={profile.account} value={profile.name}>
+                {profile.name}
+              </MenuItem>
+            ))}
         </Select>
 
         <Button
@@ -700,6 +753,7 @@ export default function CallOptionSet() {
             <ExitTierTable
               isSendTriggerChecked={isSendTriggerChecked}
               onExitTiersChange={handleExitTiersChange}
+              exitTiers={selectedSubProfile?.exitTiers}
             />
           </Box>
         </Box>

@@ -2,6 +2,7 @@ import { highvolumescanApi } from "@/features/highVolumeScanApi"
 import { stockApi } from "@/features/stockApi"
 import { stockSlice } from "@/features/strategies/stockSlice"
 import userProfileSlice from "@/features/strategies/userProfileSlice"
+import optionTradeSlice from "@/slices/optionTradeSlice"
 
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
@@ -15,16 +16,17 @@ export const rootReducer = combineReducers({
   stocks: stockSlice.reducer,
   [stockApi.reducerPath]: stockApi.reducer,
   [highvolumescanApi.reducerPath]: highvolumescanApi.reducer,
-  userProfile: userProfileSlice.reducer
+  userProfile: userProfileSlice.reducer,
+  optionTrade: optionTradeSlice,
 })
 
 const config = getPersistConfig<RootState>({
   key: "root",
   storage: storage,
-  whitelist: ["ui.mode", "ui.sidebarOpened", "ui.accordions"],
+  whitelist: ["ui.mode", "ui.sidebarOpened", "ui.accordions","optionTrade"],
   rootReducer,
 })
 
-export const persistedReducer = persistReducer(config, rootReducer)
+export const persistedReducer = persistReducer(config, rootReducer);
 export type RootState = ReturnType<typeof rootReducer>
 export default rootReducer

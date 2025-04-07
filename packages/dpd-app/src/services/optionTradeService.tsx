@@ -13,4 +13,14 @@ export class optionTradeService {
       throw error;
     }
   }
+
+  static async getCurrentUserSubProfiles(): Promise<SubProfile[]> {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/GetCurrentUserSubProfiles`, { withCredentials: true });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user sub-profiles:", error);
+      throw error;
+    }
+  }
 }
