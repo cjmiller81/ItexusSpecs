@@ -293,6 +293,7 @@
     "AddTier": "Add Tier",
     "Limit": "Limit",
     "OCO": "OCO",
-    "SaveSubProfileName": "Save Sub-Profile Name As:"
+    "SaveSubProfileName": "Save Sub-Profile Name As:",
+    "Cancel": "Cancel"
   }
 }

@@ -66,6 +66,18 @@ export const createSubProfile = createAsyncThunk(
   }
 );
 
+export const fetchSubProfiles = createAsyncThunk(
+  "optionTrade/fetchSubProfiles",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await optionTradeService.getCurrentUserSubProfiles();
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch sub-profiles");
+    }
+  }
+);
+
 const optionTradeSlice = createSlice({
   name: "optionTrade",
   initialState,
@@ -81,6 +93,18 @@ const optionTradeSlice = createSlice({
         state.subProfiles.push(action.payload);
       })
       .addCase(createSubProfile.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchSubProfiles.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSubProfiles.fulfilled, (state, action: PayloadAction<SubProfile[]>) => {
+        state.loading = false;
+        state.subProfiles = action.payload;
+      })
+      .addCase(fetchSubProfiles.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -43,7 +43,7 @@ const defaultInitialRow: ExitTier = {
   stockTargetOffsetPercent: 2,
 };
 
-export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecked, onExitTiersChange: handleExitTiersChange}) {
+export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecked, onExitTiersChange: handleExitTiersChange, exitTiers}) {
   const theme = useTheme();
   const [rows, setRows] = useState<ExitTier[]>([defaultInitialRow]);
   const { t } = useTranslation("CallsSection");
@@ -144,6 +144,10 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
     setRows(isSendTriggerChecked ? [defaultInitialRow] : []);
   }, [isSendTriggerChecked]);
 
+  useEffect(() => {
+    if(exitTiers)
+      setRows(exitTiers);
+  },[exitTiers])
 
   const handleExitTypeChange = (index: number, event: SelectChangeEvent<string>) => {
     const exitType = event.target.value;
