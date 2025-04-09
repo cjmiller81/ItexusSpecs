@@ -16,6 +16,8 @@ import {
   DialogContent,
   Grid,
   useTheme,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -57,6 +59,7 @@ export const CurrentPositionSection = () => {
   const [filteredWalletData, setFilteredWalletData] = useState<WalletBalance[]>([]);
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [selectedChain, setSelectedChain] = useState("");
 
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
   const { tableData } = useAppSelector(
@@ -212,6 +215,7 @@ export const CurrentPositionSection = () => {
         const newRow: WalletBalance = {
           tokenName: newToken,
           balance: parseFloat(newBalance),
+          chain: selectedChain,
         };
         setFilteredRows(prevRows => [newRow, ...prevRows]);
       }
@@ -228,6 +232,7 @@ export const CurrentPositionSection = () => {
         mt={2}
         spacing={0}
         container
+        xs={12}
         sx={{ marginTop: 0}}>
         <Grid
           container
@@ -236,8 +241,8 @@ export const CurrentPositionSection = () => {
           <Grid
             item
             xs={12}
-            md={7.64}
-            lg={4.6}
+            md={12}
+            lg={12}
             container
             direction="row"
             sx={{
@@ -248,19 +253,6 @@ export const CurrentPositionSection = () => {
               marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
               backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
             }}>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                alignSelf: "flex-start",
-                fontSize: "14px",
-                marginTop: "11px",
-                marginBottom: "-7px",
-                marginLeft: "10px",
-                width: "100%",
-              }}>
-              {t("CurrentPosition")}
-            </Typography>
 
             <Grid
               item
@@ -360,6 +352,23 @@ export const CurrentPositionSection = () => {
                     fullWidth
                     sx={{ marginBottom: 2 }}
                   />
+                <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
+                    <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
+                    <Select
+                        labelId="chain-select-label"
+                        value={selectedChain}
+                        label={t("Chain")}
+                        onChange={e => setSelectedChain(e.target.value)}
+                    >
+                        <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
+                        <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
+                        <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
+                        <MenuItem value="POLYGON">POLYGON</MenuItem>
+                        <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
+                        <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                        <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
+                    </Select>
+                </FormControl>
                 </DialogContent>
                 <DialogActions>
                   <Button
