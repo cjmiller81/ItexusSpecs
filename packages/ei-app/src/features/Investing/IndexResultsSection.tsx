@@ -824,5 +824,5 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   ".MuiDataGrid-withBorderColor": {
     bgColor: "transparent",
-  },
+  }, 
 }));

@@ -1,0 +1,428 @@
+import React, { useEffect, useState } from "react";
+import {
+  AccordionProps,
+  Box,
+  styled,
+  Typography,
+  Select,
+  SelectChangeEvent,
+  Button,
+  MenuItem,
+  darken,
+  lighten,
+  TextField,
+  DialogActions,
+  Dialog,
+  DialogContent,
+  Grid,
+  useTheme,
+} from "@mui/material";
+import {
+  AppAccordionSection,
+  BasicTable,
+  nativeBarSx,
+  toTableTokensModel,
+  toTableTokensModels,
+} from "components";
+import { useTranslation } from "react-i18next";
+import { GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
+import { fetchWallets } from "components";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
+import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
+import { ChainAsset } from "@/models/Wallet/ChainAsset";
+import { Wallet } from "@/models/Wallet/Wallet";
+
+
+interface SelectedWallet {
+  address: string;
+  walletId: string;
+  isValid: boolean;
+  walletName?: string;
+  isPersonal: boolean;
+  chainAssets: ChainAsset[];
+}
+
+export const CurrentPositionSection = () => {
+  const theme = useTheme();
+  const { t } = useTranslation(["IndexModelingSection", "Common"]);
+  const apiRef = useGridApiRef();
+  const dispatch = useAppDispatch();
+  const [selectedWallet, setSelectedWallet] = useState<SelectedWallet | null>(null);
+  const [newToken, setNewToken] = useState<string>("");
+  const [newBalance, setNewBalance] = useState<string>("");
+  const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
+  const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
+  const [filteredWalletData, setFilteredWalletData] = useState<WalletBalance[]>([]);
+  const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+  const [tokensToTrade, settokensToTrade] = useState<number>(5);
+  const { tableData } = useAppSelector(
+      state => state.marketCapWeightedModeling,
+    );
+
+  const handleClearTable = () => {
+    setSelectedWallet(null);
+    onWalletChange(null);
+    setFilteredRows([]);
+  };
+
+  const { wallets } = useAppSelector(state => state.wallets);
+
+  const onWalletChange = (wallet: Wallet | null) => {
+    setSelectedWallet(wallet);
+  };
+
+  useEffect(() => {
+    if (wallets === null) dispatch(fetchWallets(null));
+    setFilteredWalletData(
+      selectedWallet
+        ? toTableTokensModels(
+            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ??
+              [],
+          ).map(({ tokenName, chainName, balance }) => ({
+            tokenName,
+            chain: chainName,
+            balance: balance,
+          }))
+        : [],
+    );
+  }, [wallets, selectedWallet]);
+
+  useEffect(() => {
+    setFilteredRows(filteredWalletData);
+  }, [filteredWalletData]);
+
+  useEffect(() => {
+    const allRowIds = filteredRows.map(row => row.tokenName).filter((id): id is string => id !== undefined);
+    setSelectedRows(allRowIds);
+  }, [filteredRows]);
+
+  useEffect(() => {
+    if (filteredRows.length > 0 || tableData.length > 0) {
+      const rebalancedData = tableData.map(asset => ({
+        id: asset.symbol ? asset.symbol.toLowerCase() : "",
+        symbol: asset.symbol ? asset.symbol.toLowerCase() : "",
+        qty: asset.qty,
+        action: "",
+        connection: true,
+      }));
+
+      const walletData = filteredRows
+        .filter(row => selectedRows.includes(row.tokenName || ""))
+        .map(({ tokenName, balance }) => ({
+          id: tokenName ? tokenName.toLowerCase() : "default-id",
+          symbol: tokenName ? tokenName.toLowerCase() : "",
+          qty: balance,
+          action: "",
+          connection: true,
+        }));
+
+      const mergedData = [...rebalancedData.slice(0, tokensToTrade), ...walletData];
+
+      const updatedRows = mergedData.map(row => {
+        const rebalancedRow = rebalancedData.find(asset => asset.symbol === row.symbol);
+        const walletRow = walletData.find(wallet => wallet.symbol === row.symbol);
+
+        let qty = 0;
+        let action = "";
+
+        if (rebalancedRow && walletRow) {
+          qty = rebalancedRow.qty - walletRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        } else if (!rebalancedRow && walletRow) {
+          qty = -walletRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        } else if (rebalancedRow && !walletRow) {
+          qty = rebalancedRow.qty;
+          action = qty >= 0 ? "Buy" : "Sell";
+        }
+
+        return {
+          ...row,
+          qty,
+          action: action.charAt(0).toUpperCase() + action.slice(1).toLowerCase(),
+        };
+      });
+
+      let uniqueRows;
+
+      if (selectedWallet) {
+        if (selectedRows.length > 0) {
+          uniqueRows = Array.from(
+            new Map(
+              updatedRows
+                .filter(
+                  row =>
+                    selectedRows.includes(row.symbol) ||
+                    rebalancedData.slice(0, tokensToTrade).some(reb => reb.symbol === row.symbol),
+                )
+                .map(item => [item.id, item]),
+            ).values(),
+          );
+        } else {
+          uniqueRows = rebalancedData.slice(0, tokensToTrade).map(walletRow => {
+            const qty = walletRow.qty;
+            return {
+              ...walletRow,
+              qty,
+              action: qty >= 0 ? "Buy" : "Sell",
+            };
+          });
+        }
+      } else {
+        uniqueRows = Array.from(new Map(updatedRows.map(item => [item.id, item])).values());
+      }
+      setPositionRows(uniqueRows);
+    }
+  }, [filteredRows, tableData, selectedWallet, selectedRows, tokensToTrade]);
+
+
+  const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
+    setSelectedRows(newSelection);
+  };
+
+  const handleWalletSelect = (event: SelectChangeEvent) => {
+    const selectedWalletId = event.target.value as string;
+    const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
+    setSelectedWallet(selectedWallet);
+    if (onWalletChange && selectedWallet) {
+      onWalletChange(selectedWallet);
+    }
+  };
+
+  const handleCancelManualPosition = () => {
+    setNewToken("");
+    setNewBalance("");
+    setIsAddingManualPosition(false);
+  };
+
+  const handleSaveManualPosition = () => {
+    if (newToken && newBalance) {
+      const tokenNameLower = newToken.toLowerCase();
+      const existingRowIndex = filteredRows.findIndex(row => row.tokenName?.toLowerCase() === tokenNameLower);
+
+      if (existingRowIndex >= 0) {
+        const updatedRows = [...filteredRows];
+        updatedRows[existingRowIndex].balance += parseFloat(newBalance);
+        setFilteredRows(updatedRows);
+      } else {
+        const newRow: WalletBalance = {
+          tokenName: newToken,
+          balance: parseFloat(newBalance),
+        };
+        setFilteredRows(prevRows => [newRow, ...prevRows]);
+      }
+
+      setNewToken("");
+      setNewBalance("");
+      setIsAddingManualPosition(false);
+    }
+  };
+
+  return (
+
+      <Grid
+        mt={2}
+        spacing={0}
+        container
+        sx={{ marginTop: 0}}>
+        <Grid
+          container
+          xs={12}
+          spacing={1}>
+          <Grid
+            item
+            xs={12}
+            md={7.64}
+            lg={4.6}
+            container
+            direction="row"
+            sx={{
+              boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+              borderRadius: "10px",
+              marginLeft: "8px",
+              marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
+              marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+              backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+            }}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                alignSelf: "flex-start",
+                fontSize: "14px",
+                marginTop: "11px",
+                marginBottom: "-7px",
+                marginLeft: "10px",
+                width: "100%",
+              }}>
+              {t("CurrentPosition")}
+            </Typography>
+
+            <Grid
+              item
+              xs={4.5}
+              md={4.5}
+              lg={4}
+              sx={{ marginTop: "15px", marginLeft: "2%" }}>
+              <Select
+                displayEmpty
+                value={selectedWallet?.walletId || ""}
+                onChange={handleWalletSelect}
+                renderValue={selected => (selected ? selectedWallet?.walletName : t("AddSavedWallet"))}
+                sx={{
+                  backgroundColor: "#109EEF",
+                  fontSize: "11px",
+                  color: "white",
+                  width: "98%",
+                  maxHeight: "40px",
+                  marginBottom: "12px",
+                  "& .MuiSelect-icon": { color: "white" },
+                }}>
+                {wallets?.map(wallet => (
+                  <MenuItem
+                    key={wallet.walletId}
+                    value={wallet.walletId}>
+                    {wallet.walletName}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Button
+                sx={{
+                  backgroundColor: "white",
+                  width: "98%",
+                  height: "40px",
+                  color: "black",
+                  justifyContent: "flex-start",
+                  paddingLeft: "15px",
+                  fontSize: "11px",
+                }}
+                variant="outlined"
+                onClick={() => setIsAddingManualPosition(true)}>
+                {t("AddManualPosition")}
+              </Button>
+
+              <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column" }}>
+                <Button
+                  sx={{ width: "70px", height: "35px", fontSize: "11px" }}
+                  variant="outlined"
+                  onClick={handleClearTable}>
+                  {t("Clear")}
+                </Button>
+              </Box>
+            </Grid>
+
+            <Grid
+              item
+              xs={6.8}
+              md={6.9}
+              lg={7.1}
+              spacing={1}
+              sx={{ marginTop: "15px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
+              <WalletsTable
+                sx={{
+                  ...tableScrollSx,
+                  width: "100%",
+                }}
+                hideFooter
+                rowSelection={true}
+                checkboxSelection={false}
+                apiRef={apiRef}
+                getRowId={x => x.tokenName}
+                columns={getIndexResultWalletTableColumns()}
+                rows={filteredRows}
+                onRowSelectionModelChange={handleSelectionChange}
+              />
+              <Dialog
+                open={isAddingManualPosition}
+                onClose={handleCancelManualPosition}>
+                <DialogContent>
+                  <TextField
+                    label={t("TokenName")}
+                    variant="outlined"
+                    size="small"
+                    value={newToken}
+                    onChange={e => setNewToken(e.target.value)}
+                    fullWidth
+                    sx={{ marginBottom: 2 }}
+                  />
+                  <TextField
+                    label={t("Qty")}
+                    variant="outlined"
+                    size="small"
+                    value={newBalance}
+                    onChange={e => setNewBalance(e.target.value)}
+                    type="number"
+                    fullWidth
+                    sx={{ marginBottom: 2 }}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    variant="outlined"
+                    onClick={handleSaveManualPosition}>
+                    {t("Add")}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={handleCancelManualPosition}>
+                    {t("Cancel")}
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+  );
+};
+
+const tableScrollSx = {
+  "& .MuiDataGrid-virtualScroller": {
+    ...nativeBarSx,
+  },
+};
+
+export const WalletsTable = styled(BasicTable)(({ theme }) => ({
+  width: "100%",
+  minHeight: 300,
+  mt: 2,
+  display: "grid",
+  "& .MuiDataGrid-virtualScroller": {
+    overflowY: "auto !important",
+  },
+  "& .MuiDataGrid-main": {
+    height: "auto",
+    maxHeight: "300px",
+  },
+  "& .MuiDataGrid-footerContainer": {
+    height: "40px",
+  },
+  "& .MuiDataGrid-row": {
+    maxHeight: "1000px !important",
+  },
+  ".MuiDataGrid-cell--withRenderer ": {
+    maxHeight: "1000px !important",
+  },
+  "& .MuiDataGrid-row--editing": {
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: theme.palette.primary.main,
+  },
+  "& .MuiDataGrid-cell--editing[data-field=walletName]": {
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: theme.palette.primary.main,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? darken(theme.palette.primary.main, 0.6)
+        : lighten(theme.palette.primary.main, 0.7),
+  },
+  ".MuiDataGrid-withBorderColor": {
+    bgColor: "transparent",
+  }, 
+}));
