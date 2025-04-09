@@ -20,6 +20,8 @@ import {
   InputBase,
   Switch,
   DialogTitle,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -96,6 +98,7 @@ export const IndexResultsSection = ({
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
+  const [selectedChain, setSelectedChain] = useState("");
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -300,6 +303,7 @@ export const IndexResultsSection = ({
         const newRow: WalletBalance = {
           tokenName: newToken,
           balance: parseFloat(newBalance),
+          chain: selectedChain,
         };
         setFilteredRows(prevRows => [newRow, ...prevRows]);
       }
@@ -457,6 +461,24 @@ export const IndexResultsSection = ({
                     fullWidth
                     sx={{ marginBottom: 2 }}
                   />
+
+                  <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
+                      <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
+                      <Select
+                        labelId="chain-select-label"
+                        value={selectedChain}
+                        label={t("Chain")}
+                        onChange={e => setSelectedChain(e.target.value)}
+                      >
+                        <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
+                        <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
+                        <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
+                        <MenuItem value="POLYGON">POLYGON</MenuItem>
+                        <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
+                        <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                        <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
+                      </Select>
+                    </FormControl>
                 </DialogContent>
                 <DialogActions>
                   <Button
