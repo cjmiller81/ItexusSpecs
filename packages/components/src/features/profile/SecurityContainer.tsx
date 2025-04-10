@@ -234,7 +234,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     <Typography
       textAlign="center"
       variant="body1">
-      {t("ElanInsightsRquires")}{" "}
+      {t("ElanInsightsRequires")}{" "}
       <Link
         href="https://www.lastpass.com"
         rel="noreferrer"

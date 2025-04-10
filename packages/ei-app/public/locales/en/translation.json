@@ -130,7 +130,7 @@
     "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
     "AndGoogleApp": "and Google Authenticator",
     "AddAuthenticatorApp": "Add Authenticator App",
-    "ElanInsightsRquires": "Elan Insights requires adding an Authenticator App when any wallet or exchange connections are saved. Please add an app of your choosing, recommended apps are LastPass and Google Authenticator (iOS, Android)."
+    "ElanInsightsRequires": "Elan Insights requires adding an Authenticator App when any wallet or exchange connections are saved. Please add an app of your choosing, recommended apps are LastPass and Google Authenticator (iOS, Android)."
   },
   "IndexModelingSection": {
     "AddSavedWallet": "+ADD SAVED WALLET",
