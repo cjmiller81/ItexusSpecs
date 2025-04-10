@@ -42,6 +42,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   const LookupPageSize = 10;
 
+  useEffect(() => {
+    fetchTableData();
+  }, [symbolOptionSwap, symbolOptionSwapFor, selectedChain, selectedWallet]);
+
   const onOptionChangeSwap = (value: any) => {
     setSymbolOptionSwap(value);
   };
@@ -114,11 +118,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setTableData([]);
     }
   };
-  
-
-  useEffect(() => {
-    fetchTableData();
-  }, [symbolOptionSwap, symbolOptionSwapFor, selectedChain]);
 
   return (
     <Grid
