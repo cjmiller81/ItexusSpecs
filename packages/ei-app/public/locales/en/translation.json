@@ -257,7 +257,12 @@
     "Token": "Token",
     "Swap": "Swap",
     "Qty": "Qty",
-    "Chain": "Chain"
+    "Chain": "Chain",
+    "SwapFor": "Swap For",
+    "DEX": "DEX",
+    "Volume": "Volume",
+    "Price": "Price",
+    "EstGasFees": "Est. Gas Fees"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",

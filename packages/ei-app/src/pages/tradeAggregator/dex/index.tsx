@@ -1,8 +1,18 @@
 import { CurrentPositionSection } from "@/features/tradeAggregator/CurrentPositionSection";
 import { NewPositionSection } from "@/features/tradeAggregator/NewPositionSection";
+import { ChainAsset } from "@/models/Wallet/ChainAsset";
+import { Wallet } from "@/models/Wallet/Wallet";
 import { Box, Grid, Typography } from "@mui/material";
+import { useState } from "react";
+
 
 export default function Dex() {
+    const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+
+    const handleWalletChange = (newWallet: Wallet | null) => {
+        setSelectedWallet(newWallet);
+      };
+    
   return (
     <Box sx={{ padding: 2 }}>
       <Typography
@@ -27,7 +37,7 @@ export default function Dex() {
           >
             {"CurrentPosition"}
           </Typography>
-          <CurrentPositionSection />
+          <CurrentPositionSection onWalletChange={handleWalletChange}/>
         </Grid>
 
         <Grid item xs={12} md={7}>
@@ -38,7 +48,7 @@ export default function Dex() {
           >
             {"NewPosition"}
           </Typography>
-          <NewPositionSection/>
+          <NewPositionSection selectedWallet={selectedWallet}/>
         </Grid>
       </Grid>
     </Box>

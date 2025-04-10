@@ -37,21 +37,16 @@ import { ChainAsset } from "@/models/Wallet/ChainAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
 
 
-interface SelectedWallet {
-  address: string;
-  walletId: string;
-  isValid: boolean;
-  walletName?: string;
-  isPersonal: boolean;
-  chainAssets: ChainAsset[];
-}
+interface CurrentPositionSectionProps {
+    onWalletChange?: (wallet: Wallet | null) => void;
+  }
 
-export const CurrentPositionSection = () => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
-  const [selectedWallet, setSelectedWallet] = useState<SelectedWallet | null>(null);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
@@ -68,15 +63,13 @@ export const CurrentPositionSection = () => {
 
   const handleClearTable = () => {
     setSelectedWallet(null);
-    onWalletChange(null);
+      if (onWalletChange) {
+        onWalletChange(null);
+      }
     setFilteredRows([]);
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
-
-  const onWalletChange = (wallet: Wallet | null) => {
-    setSelectedWallet(wallet);
-  };
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -191,7 +184,7 @@ export const CurrentPositionSection = () => {
     const selectedWalletId = event.target.value as string;
     const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
     setSelectedWallet(selectedWallet);
-    if (onWalletChange && selectedWallet) {
+    if (onWalletChange) {
       onWalletChange(selectedWallet);
     }
   };
