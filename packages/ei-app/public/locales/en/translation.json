@@ -255,6 +255,18 @@
     "CVC": "CVC",
     "ExpirationDate": "Expiration Date"
   },
+  "NewPositionSection": {
+    "Bridge": "Bridge",
+    "Token": "Token",
+    "Swap": "Swap",
+    "Qty": "Qty",
+    "Chain": "Chain",
+    "SwapFor": "Swap For",
+    "DEX": "DEX",
+    "Volume": "Volume",
+    "Price": "Price",
+    "EstGasFees": "Est. Gas Fees"
+  },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
     "ComingSoon": "Coming soon..."
