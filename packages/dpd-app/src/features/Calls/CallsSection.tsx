@@ -6,8 +6,7 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
-import { fetchSubProfiles } from "@/slices/optionTradeSlice";
-
+import { deleteSubProfile, fetchSubProfiles } from "@/slices/optionTradeSlice";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState("");
@@ -46,6 +45,37 @@ export default function CallOptionSet() {
   const dispatch = useAppDispatch();
   const { subProfiles } = useAppSelector((state) => state.optionTrade);
   const [selectedSubProfile, setSelectedSubProfile] = useState<SubProfile | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
+
+  const resetForm = () => {
+    setAccount("");
+    setEntryType("Buy_Ask");
+    setOffsetPercent(0);
+    setIsBreakUpEnabled(false);
+    setAmount(30000);
+    setBreakUp(3);
+    setUseLaddering(false);
+    setTradeUnderlyingFound(false);
+    setOnlyTradeUnderlying(false);
+    setIsSendTriggerChecked(false);
+    setIsBAMaxEnabled(false);
+    setBidAskMax(20);
+    setDteMin(0);
+    setDteMax(32);
+    setMinContractAsk(0.05);
+    setCancelAndResubmitOnPartial(false);
+    setMinOpenInterest(150);
+    setMinVolume(10);
+    setOiCapPercent(500);
+    setRequireActiveBid(false);
+    setTicker("");
+    setTradeAsSet(false);
+    setBaSpreadDiff(10);
+    setExitTiers([]);
+    setSubProfile("");
+    setSelectedSubProfile(null);
+  };
 
   useEffect(() => {
     dispatch(fetchSubProfiles());
@@ -137,6 +167,7 @@ export default function CallOptionSet() {
       };
 
       await optionTradeService.createSubProfile(subProfileRequest );
+      await dispatch(fetchSubProfiles()); 
       handleClickNewSubProfileClose();
     } catch (error) {
       console.error("Error creating sub-profile:", error);
@@ -159,6 +190,27 @@ export default function CallOptionSet() {
   const handleBreakUpChange = (event) => {
     const newBreakup = event.target.value === "" ? offsetPercent : parseFloat(event.target.value);
     setBreakUp(newBreakup);
+  };
+
+  const handleDeleteSubProfile = (profileName: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>,) => {
+    event.stopPropagation();
+    setProfileToDelete(profileName);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (profileToDelete) {
+      try {
+        await dispatch(deleteSubProfile(profileToDelete));
+        dispatch(fetchSubProfiles());
+        resetForm();
+      } catch (error) {
+        console.error("Failed to delete subProfile:", error);
+      } finally {
+        setConfirmOpen(false);
+        setProfileToDelete(null);
+      }
+    }
   };
 
   const handleOnlyTradeUnderlyingChange = () => {
@@ -228,7 +280,16 @@ export default function CallOptionSet() {
           value={subProfile}
           onChange={handleSelectSubProfile}
           displayEmpty
-          sx={{ width: "300px", height: "40px", bgcolor: "#2A9D8F", color: "white", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}
+          sx={{
+            width: "300px",
+            height: "40px",
+            bgcolor: "#2A9D8F",
+            color: "white",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
+          }}
+          renderValue={() => {
+            return subProfile || t("SelectSub-Profile");
+          }}
         >
           <MenuItem value="" disabled>
             {t("SelectSub-Profile")}
@@ -237,8 +298,20 @@ export default function CallOptionSet() {
           {subProfiles
             .filter((profile) => profile.optionType === "CALL")
             .map((profile) => (
-              <MenuItem key={profile.account} value={profile.name}>
-                {profile.name}
+              <MenuItem
+                key={profile.account}
+                value={profile.name}
+                sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                <Typography>{profile.name}</Typography>
+                <Button
+                  size="small"
+                  color="error"
+                  variant="contained"
+                  onClick={(e) => handleDeleteSubProfile(profile.name, e)}
+                >
+                  {t("Delete", { ns: "Common" })}
+                </Button>
               </MenuItem>
             ))}
         </Select>
@@ -259,6 +332,18 @@ export default function CallOptionSet() {
         }}>
         {t("CreateNewSub-Profile")}
       </Button>
+
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+        <DialogTitle> {t("PleaseConfirmDelete", { name: profileToDelete })}</DialogTitle>
+        <DialogActions>
+          <Button variant="outlined" onClick={() => setConfirmOpen(false)}>
+            {t("Cancel")}
+          </Button>
+          <Button onClick={handleConfirmDelete} variant="contained">
+            {t("Confirm")}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={newSubProfileOpen} onClose={handleClickNewSubProfileClose} fullWidth maxWidth="xs">
         <DialogTitle>{t("SaveSubProfileName")}</DialogTitle>

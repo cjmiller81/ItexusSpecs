@@ -23,4 +23,15 @@ export class optionTradeService {
       throw error;
     }
   }
+  static async deleteSubProfile(name: string): Promise<void> {
+    try {
+      const response = await axios.delete(`${API_BASE_URL}/deleteCurrentUserSubProfile/${encodeURIComponent(name)}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting sub-profile:", error);
+      throw error;
+    }
+  }
 }

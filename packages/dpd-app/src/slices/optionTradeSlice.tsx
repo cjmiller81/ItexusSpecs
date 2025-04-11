@@ -78,6 +78,18 @@ export const fetchSubProfiles = createAsyncThunk(
   }
 );
 
+export const deleteSubProfile = createAsyncThunk(
+  "optionTrade/deleteSubProfile",
+  async (subProfileName: string, { rejectWithValue }) => {
+    try {
+      await optionTradeService.deleteSubProfile(subProfileName);
+      return subProfileName;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to delete sub-profile");
+    }
+  }
+);
+
 const optionTradeSlice = createSlice({
   name: "optionTrade",
   initialState,
@@ -105,6 +117,20 @@ const optionTradeSlice = createSlice({
         state.subProfiles = action.payload;
       })
       .addCase(fetchSubProfiles.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteSubProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteSubProfile.fulfilled, (state, action: PayloadAction<string>) => {
+        state.loading = false;
+        state.subProfiles = state.subProfiles.filter(
+          (profile) => profile.name !== action.payload
+        );
+      })
+      .addCase(deleteSubProfile.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
       });

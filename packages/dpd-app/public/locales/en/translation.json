@@ -294,6 +294,9 @@
     "Limit": "Limit",
     "OCO": "OCO",
     "SaveSubProfileName": "Save Sub-Profile Name As:",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "Delete": "Delete",
+    "PleaseConfirmDelete": "Please confirm you want to delete \"{{name}}\"?",
+    "Confirm": "Confirm"
   }
 }
