@@ -10,7 +10,7 @@ export function AppFormTextField({ name, inputProps, defaultValue, ...props }: A
       {...props}
       {...field}
       inputProps={{ ...field, ...inputProps, name: name }}
-      fieldError={meta.error}
+      fieldError={meta.error ?? props.error}
     />
   )
 }

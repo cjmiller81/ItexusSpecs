@@ -54,8 +54,16 @@ export const walletsSlice = createAppSlice({
   reducers: create => ({
     createWallet: create.asyncThunk(
       async (wallet: AddressModel, thunkApi) => {
-        await walletsApi.addWallets(wallet.address, wallet.walletName, wallet.isPersonal);
-        thunkApi.dispatch(fetchWallets(null));
+        try {
+          await walletsApi.addWallets(wallet.address, wallet.walletName, wallet.isPersonal);
+          thunkApi.dispatch(fetchWallets(null));
+        } catch (error: any) {
+          if (error.response && error.response.status === 400) {
+            console.error(error)
+            return thunkApi.rejectWithValue({ error: error.response.data });
+          }
+          return thunkApi.rejectWithValue({ error: "Failed to add wallet" });
+        }
       },
       {
         pending: state => {
