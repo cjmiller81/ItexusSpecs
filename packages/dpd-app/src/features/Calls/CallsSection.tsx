@@ -137,6 +137,7 @@ export default function CallOptionSet() {
       };
 
       await optionTradeService.createSubProfile(subProfileRequest );
+      await dispatch(fetchSubProfiles()); 
       handleClickNewSubProfileClose();
     } catch (error) {
       console.error("Error creating sub-profile:", error);
