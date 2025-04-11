@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
-import { createWallet, TotalWalletWorthData } from "../../slices";
+import { createWallet, TotalWalletWorthData, useAppDispatch } from "../../slices";
 import { ExpandableRow } from "./TokensRow";
 import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
@@ -29,7 +29,6 @@ import { ExchangeDialog } from "./dialogs/ExchangeDialog";
 import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
 import { KrakenDialog } from "./dialogs/KrakenDialog";
 import { useFormik } from "formik";
-import { useAppDispatch } from "@/libs/redux/Store";
 import { krakenApi } from "../../services/krakenService";
 import { ExpandableChainRow } from "./ChainsRow";
 

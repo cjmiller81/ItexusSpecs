@@ -15,11 +15,10 @@ import {
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppDispatch } from "@/libs/redux/Store";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
-import { createWallet, TotalWalletWorthData } from "../../slices";
+import { createWallet, TotalWalletWorthData, useAppDispatch } from "../../slices";
 import { ExpandableRow } from "./TokensRow";
 import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
