@@ -6,6 +6,7 @@ import { InferType, boolean, object, string } from "yup"
 import { AppFormCheckboxField, AppFormTextField } from "../../components"
 import { AppModal } from "../../components/modals/AppModal"
 import { cryptoWalletFormat } from "../../constants"
+import { useEffect, useState } from "react"
 
 const AddressFormSchema = object({
   address: string()
@@ -23,14 +24,21 @@ export interface WalletInputProps {
   onClose: () => void
   //eslint-disable-next-line no-unused-vars
   onEnter: (walletAddress: AddressModel) => void
-  open: boolean
+  open: boolean,
+  error: string | null;
+  onCleanupError: () => void;
 }
 
-export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) => {
+export const WalletInputModal = ({ onClose, onEnter, open, error, onCleanupError }: WalletInputProps) => {
   const { t } = useTranslation("WalletInputModal")
+  const [errorAddress, setErrorAddress] = useState<string | null>(null);
+
   return (
     <AppModal
-      onClose={onClose}
+      onClose={() => { 
+        onClose();
+        onCleanupError();
+      }}
       open={open}>
       <Formik<AddressModel>
         initialValues={{
@@ -44,6 +52,26 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
         onSubmit={data => {
           onEnter(data)
         }}>
+         {({ values }) => {
+          
+          useEffect(() => {
+            if (error) {
+              setErrorAddress(values.address.trim());
+            }
+          }, [error]);
+
+          useEffect(() => {
+            if (
+              error &&
+              errorAddress !== null &&
+              values.address.trim() !== errorAddress
+            ) {
+              onCleanupError();
+              setErrorAddress(null);
+            }
+          }, [values.address, error]);
+
+          return (
         <Form>
           <Typography
             sx={{ mt: 1 }}
@@ -56,7 +84,13 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
             inputProps={{
               size: "small",
             }}
+            error={Boolean(error)}
           />
+          {error && (
+            <Typography color="error" sx={{ mb: 2, ml: 2, fontWeight: 400, fontSize: 12 }}>
+              {error}
+            </Typography>
+           )}
           <Typography
             sx={{ mt: 3 }}
             variant="h6">
@@ -84,7 +118,10 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
             </Box>
             <Button
               variant="outlined"
-              onClick={onClose}>
+              onClick={() => { 
+                onClose(); 
+                onCleanupError();
+              }}>
               {t("Cancel", { ns: "Common" })}
             </Button>
             <Button
@@ -93,7 +130,8 @@ export const WalletInputModal = ({ onClose, onEnter, open }: WalletInputProps) =
               {t("Save", { ns: "Common" })}
             </Button>
           </Box>
-        </Form>
+        </Form>);
+        }}
       </Formik>
     </AppModal>
   )

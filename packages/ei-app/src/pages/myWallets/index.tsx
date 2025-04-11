@@ -6,7 +6,6 @@ import { Stack } from "@mui/material";
 import {
   LookUpOption,
   Wallet,
-  createWallet,
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
@@ -103,7 +102,6 @@ export default function MyWalletsPage() {
         loading={statusFetchingWallets === "loading"}
         wallets={wallets}
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
-        onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
         totalAmount = {totalAmount}
       />

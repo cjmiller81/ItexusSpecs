@@ -18,16 +18,12 @@ import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
-import { TotalWalletWorthData } from "../../slices";
+import { createWallet, TotalWalletWorthData, useAppDispatch } from "../../slices";
 import { ExpandableRow } from "./TokensRow";
 import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
 import { StyledWalletsTable } from "./WalletsTable";
 import { getWalletsColumns } from "./WalletsTableColumnsDefs";
-import { getExchangeAccountColumns } from "./ExchangeAccountTable";
-import { ExchangeDialog } from "./dialogs/ExchangeDialog";
-import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
-import { KrakenDialog } from "./dialogs/KrakenDialog";
 import { useFormik } from "formik";
 
 interface Props extends BoxProps {
@@ -36,14 +32,12 @@ interface Props extends BoxProps {
   loading?: boolean;
   onUpdateWallet: (wallet: Wallet) => void;
   onDeleteWallet: (wallet: string) => void;
-  onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
   totalAmount: number;
 }
 
 export const MyWalletsSectionForPage = ({
-  onAddWallet,
   onDeleteWallet,
   onSelectedRowsChanged,
   onUpdateWallet,
@@ -67,10 +61,17 @@ export const MyWalletsSectionForPage = ({
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
   const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
+  const dispatch = useAppDispatch();
+  const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
 
   const addWallet = async (walletAddressModel: AddressModel) => {
-    onAddWallet(walletAddressModel);
-    setAddWalletModalOpen(false);
+    const resultAction = await dispatch(createWallet(walletAddressModel));
+    if (createWallet.rejected.match(resultAction)) {
+      setCreateErrorMessage((resultAction.payload as any)?.error)
+    } else {
+      setCreateErrorMessage(null);
+      setAddWalletModalOpen(false);
+    }
   };
 
   const onSelectedChanged = (rows: Wallet[]) => {
@@ -202,6 +203,8 @@ export const MyWalletsSectionForPage = ({
           open={addWalletModalOpen}
           onEnter={addWallet}
           onClose={() => setAddWalletModalOpen(false)}
+          error={createErrorMessage}
+          onCleanupError={() => setCreateErrorMessage(null)}
         />
       )}
       <StyledWalletWorthContainer>

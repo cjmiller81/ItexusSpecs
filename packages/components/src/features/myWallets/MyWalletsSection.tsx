@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
-import { TotalWalletWorthData } from "../../slices";
+import { createWallet, TotalWalletWorthData, useAppDispatch } from "../../slices";
 import { ExpandableRow } from "./TokensRow";
 import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
@@ -74,11 +74,19 @@ export const MyWalletsSection = ({
   const [dialogState, setDialogState] = useState(["Kraken"]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingExchangeName, setEditingExchangeName] = useState<string>("");
-  
+  const dispatch = useAppDispatch();
+  const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
+   
   const addWallet = async (walletAddressModel: AddressModel) => {
-    onAddWallet(walletAddressModel);
-    setAddWalletModalOpen(false);
+    const resultAction = await dispatch(createWallet(walletAddressModel));
+    if (createWallet.rejected.match(resultAction)) {
+      setCreateErrorMessage((resultAction.payload as any)?.error)
+    } else {
+      setCreateErrorMessage(null);
+      setAddWalletModalOpen(false);
+    }
   };
+
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
   };
@@ -275,6 +283,8 @@ export const MyWalletsSection = ({
           open={addWalletModalOpen}
           onEnter={addWallet}
           onClose={() => setAddWalletModalOpen(false)}
+          error={createErrorMessage}
+          onCleanupError={() => setCreateErrorMessage(null)}
         />
       )}
       <StyledWalletWorthContainer>
