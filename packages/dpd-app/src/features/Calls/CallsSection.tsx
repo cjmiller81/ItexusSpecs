@@ -121,7 +121,7 @@ export default function CallOptionSet() {
     account,
     exitTiers,
   ]);
-  console.log(selectedSubProfile)
+
   useEffect(() => {
     if (selectedSubProfile) {
       setSubProfile(selectedSubProfile.name);
