@@ -14,6 +14,16 @@ export class optionTradeService {
     }
   }
 
+  static async updateSubProfile(tradeRequest: SubProfile): Promise<void> {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/updateSubProfile`, tradeRequest, { withCredentials: true });
+      return response.data;
+    } catch (error) {
+      console.error("Error updating sub-profile:", error);
+      throw error;
+    }
+  }
+
   static async getCurrentUserSubProfiles(): Promise<SubProfile[]> {
     try {
       const response = await axios.get(`${API_BASE_URL}/GetCurrentUserSubProfiles`, { withCredentials: true });
