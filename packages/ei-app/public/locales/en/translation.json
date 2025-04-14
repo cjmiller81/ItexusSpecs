@@ -136,6 +136,7 @@
     "AddSavedWallet": "+ADD SAVED WALLET",
     "AddSavedPosition": "+ADD SAVED POSITION",
     "CurrentPosition": "Current Position",
+    "NewPosition": "New Position",
     "RebalancedIndexQuantities": "Rebalanced Index Quantities",
     "PositionAllocationUpdates": "Position Allocation Updates",
     "Clear": "Clear",
@@ -258,6 +259,7 @@
   "NewPositionSection": {
     "Bridge": "Bridge",
     "Token": "Token",
+    "TokenPosition": "Token Position",
     "Swap": "Swap",
     "Qty": "Qty",
     "Chain": "Chain",
@@ -265,7 +267,9 @@
     "DEX": "DEX",
     "Volume": "Volume",
     "Price": "Price",
-    "EstGasFees": "Est. Gas Fees"
+    "EstGasFees": "Est. Gas Fees",
+    "Search": "Search",
+    "UseMax": "Use Max"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
