@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  AccordionProps,
   Box,
   styled,
-  Typography,
   Select,
   SelectChangeEvent,
   Button,
@@ -20,10 +18,8 @@ import {
   InputLabel,
 } from "@mui/material";
 import {
-  AppAccordionSection,
   BasicTable,
   nativeBarSx,
-  toTableTokensModel,
   toTableTokensModels,
 } from "components";
 import { useTranslation } from "react-i18next";
@@ -33,15 +29,15 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
-import { ChainAsset } from "@/models/Wallet/ChainAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
 
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
+    selectedToken: string | null;
   }
 
-export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange }) => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange, selectedToken }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
@@ -53,7 +49,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
   const [filteredWalletData, setFilteredWalletData] = useState<WalletBalance[]>([]);
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
-  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+  const [selectedRows, setSelectedRows] = useState<string | null>(null);
   const [selectedChain, setSelectedChain] = useState("");
 
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
@@ -70,6 +66,17 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
+
+  useEffect(() => {
+    if (selectedToken) {
+      const matchingRow = filteredRows.find(
+        row => row.tokenName?.toLowerCase() === selectedToken.toLowerCase()
+      );
+      setSelectedRows(matchingRow?.tokenName ?? null);
+    } else {
+      setSelectedRows(null);
+    }
+  }, [selectedToken, filteredRows]);  
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -92,11 +99,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   }, [filteredWalletData]);
 
   useEffect(() => {
-    const allRowIds = filteredRows.map(row => row.tokenName).filter((id): id is string => id !== undefined);
-    setSelectedRows(allRowIds);
-  }, [filteredRows]);
-
-  useEffect(() => {
     if (filteredRows.length > 0 || tableData.length > 0) {
       const rebalancedData = tableData.map(asset => ({
         id: asset.symbol ? asset.symbol.toLowerCase() : "",
@@ -107,7 +109,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
       }));
 
       const walletData = filteredRows
-        .filter(row => selectedRows.includes(row.tokenName || ""))
+        .filter(row => selectedRows === (row.tokenName || ""))
         .map(({ tokenName, balance }) => ({
           id: tokenName ? tokenName.toLowerCase() : "default-id",
           symbol: tokenName ? tokenName.toLowerCase() : "",
@@ -146,13 +148,13 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
       let uniqueRows;
 
       if (selectedWallet) {
-        if (selectedRows.length > 0) {
+        if (selectedRows !== null) {
           uniqueRows = Array.from(
             new Map(
               updatedRows
                 .filter(
                   row =>
-                    selectedRows.includes(row.symbol) ||
+                    selectedRows === row.symbol ||
                     rebalancedData.slice(0, tokensToTrade).some(reb => reb.symbol === row.symbol),
                 )
                 .map(item => [item.id, item]),
@@ -177,7 +179,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
 
 
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-    setSelectedRows(newSelection);
+    const selected = newSelection.length > 0 ? String(newSelection[0]) : null;
+    setSelectedRows(selected);
   };
 
   const handleWalletSelect = (event: SelectChangeEvent) => {
@@ -315,9 +318,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                 }}
                 hideFooter
                 rowSelection={true}
+                rowSelectionModel={selectedRows ? [selectedRows] : []}
                 checkboxSelection={false}
                 apiRef={apiRef}
-                getRowId={x => x.tokenName}
+                getRowId={(x) => String(x.tokenName)}
+
                 columns={getIndexResultWalletTableColumns()}
                 rows={filteredRows}
                 onRowSelectionModelChange={handleSelectionChange}

@@ -7,7 +7,6 @@ import {
   FormControl,
   MenuItem,
   Select,
-  InputLabel,
   TextField,
   TableCell,
   TableRow,
@@ -15,30 +14,36 @@ import {
   Table,
   TableContainer,
   TableBody,
-  Paper
+  Paper,
+  Box,
+  Checkbox
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { StyledSymbolLookup } from "../MyWallets/HistoricalWalletsWorth";
 import fetchLookupPage from "../Common/fetchLookupPage";
 import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/SymbolsLookup";
 import { Wallet } from "@/models/Wallet/Wallet";
+import SearchIcon from '@mui/icons-material/Search';
+import { Asset } from "@/models/Wallet/asset";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
+    onSelectedTokenChange?: (tokenInfo: any) => void; 
   }
 
-export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet })=> {
+export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange })=> {
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [lookupLoading, setLookupLoading] = useState<boolean>(false);
-  const [symbolOptionSwap, setSymbolOptionSwap] = useState<LookUpOption | null>(null);
+  const [symbolOptionSwap, setSymbolOptionSwap] = useState<string>("");
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<LookUpOption | null>(null);
-  const [inputSearchSwap, setInputSearchSwap] = useState("");
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
   const [tableData, setTableData] = useState<any[]>([]); 
+  const [useMax,setUseMax] = useState<boolean>(false);
+  const [selectedToken, setSelectedToken] = useState<string | null>(null)
 
   const LookupPageSize = 10;
 
@@ -46,16 +51,47 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     fetchTableData();
   }, [symbolOptionSwap, symbolOptionSwapFor, selectedChain, selectedWallet]);
 
-  const onOptionChangeSwap = (value: any) => {
-    setSymbolOptionSwap(value);
-  };
+  const maxBalance = selectedWallet?.chainAssets
+  .find(asset => asset.chainName.toUpperCase() === selectedChain.toUpperCase())
+  ?.walletAssets.find(token => token.tokenName.toUpperCase() === symbolOptionSwap.toUpperCase())
+  ?.balance || "";
+
+  useEffect(() => {
+    if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
+      setSelectedToken(null);
+      return;
+    }
+  
+    const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
+    const selectedSymbol = extractSymbol(symbolOptionSwap);
+    const selectedChainUpper = selectedChain.toUpperCase();
+  
+    const matchedChain = selectedWallet.chainAssets.find(
+      chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper
+    );
+  
+    const matchedToken = matchedChain?.walletAssets.find(
+      token => token.tokenName.toUpperCase() === selectedSymbol
+    );
+  
+    if (matchedToken) {
+      setSelectedToken(matchedToken.tokenName);
+      onSelectedTokenChange?.(matchedToken.tokenName);
+    } else {
+      setSelectedToken(null);
+      onSelectedTokenChange?.(null);
+    }
+  }, [symbolOptionSwap, selectedChain, selectedWallet]);
+  
+
+  useEffect(() => {
+    if (useMax) {
+      setNewBalance(maxBalance.toString());
+    }
+  }, [useMax, maxBalance]);
 
   const onOptionChangeSwapFor = (value: any) => {
     setSymbolOptionSwapFor(value); 
-  };
-
-  const onInputChangeSwap = (value: string) => {
-    setInputSearchSwap(value); 
   };
 
   const onInputChangeSwapFor = (value: string) => {
@@ -98,26 +134,31 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const fetchTableData = () => {
     if (symbolOptionSwap && selectedChain && selectedWallet) {
       const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
-      const selectedSymbol = extractSymbol(symbolOptionSwap.label);
+      const selectedSymbol = extractSymbol(symbolOptionSwap);
       const selectedChainUpper = selectedChain.toUpperCase();
   
       const hasTokenAndChain = selectedWallet.chainAssets.some(chainAsset => {
         const chainMatches = chainAsset.chainName.toUpperCase() === selectedChainUpper;
-
         if (!chainMatches) return false;
   
-        const hasToken = chainAsset.walletAssets.some(
+        return chainAsset.walletAssets.some(
           token => token.tokenName.toUpperCase() === selectedSymbol
         );
-  
-        return hasToken;
       });
   
       setTableData(hasTokenAndChain ? dexComparisons : []);
     } else {
       setTableData([]);
     }
-  };
+  };  
+
+  const tokenSymbols = Array.from(
+    new Set(
+      selectedWallet?.chainAssets.flatMap((chainAsset) =>
+        chainAsset.tokenDetails.map((token) => token.sym.toUpperCase())
+      )
+    )
+  ) || [];  
 
   return (
     <Grid
@@ -152,6 +193,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             {t("Swap")}
           </Button>
         </Grid>
+
+        {false && (
         <Grid item>
           <Button
             variant={activeTab === "bridge" ? "contained" : "outlined"}
@@ -171,29 +214,51 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             {t("Bridge")}
           </Button>
         </Grid>
+        )}
       </Grid>
 
       <Grid item>
         {activeTab === "swap" ? (
             <Grid container spacing={2}>
-                <Grid item xs={3}>
-                    <StyledSymbolLookup
-                    pageSize={LookupPageSize}
-                    onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwap)}
-                    tooltip={t("Token")}
-                    loading={lookupLoading}
-                    disableListWrap
-                    value={symbolOptionSwap}
-                    onChange={(_event, value) => onOptionChangeSwap(value)}
-                    autoComplete={true}
-                    onInputChange={(_event, value) => onInputChangeSwap(value)}
-                    filterOptions={x => x}
-                    inputValue={inputSearchSwap}
-                    label={t("Token")}
-                    />
+                <Grid item xs={2}>
+                <Typography sx={{ marginBottom: "4px" }}>{t("TokenPosition")}</Typography>
+                  <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
+                    <Select
+                      value={symbolOptionSwap}
+                      onChange={(e) => setSymbolOptionSwap(e.target.value)}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        if (!selected) {
+                          return (
+                            <Box sx={{ display: 'flex', alignItems: 'center', color: 'lightgray' }}>
+                              <SearchIcon fontSize="small" sx={{ marginRight: 1 }} />
+                              {t("Search")}
+                            </Box>
+                          );
+                        }
+                        return selected;
+                      }}
+                      sx={{
+                        height: "53px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <MenuItem disabled value="">
+                        {t("Search")}
+                      </MenuItem>
+
+                      {tokenSymbols.map((symbol, idx) => (
+                        <MenuItem key={idx} value={symbol}>
+                          {symbol}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
 
-                <Grid item xs={3}>
+                <Grid item xs={3.4}>
                     <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
                     <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
                         <Select
@@ -221,28 +286,42 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={3}>
-                    <Typography sx={{ marginBottom: "4px" }}>{t("Qty")}</Typography>
-                    <TextField
-                        variant="outlined"
+                <Grid item xs={2.7}>
+                  <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
+                    <Typography>{t("Qty")}</Typography>
+
+                    <Box display="flex" alignItems="center">
+                      <Checkbox
                         size="small"
-                        value={newBalance}
-                        onChange={e => setNewBalance(e.target.value)}
-                        type="number"
-                        fullWidth
-                        sx={{
-                            marginBottom: 2,
-                            "& .MuiInputBase-root": {
-                                height: "53px",
-                            },
-                            "& .MuiInputLabel-root": {
-                                marginTop: "8px",
-                            },
-                        }}
-                    />
+                        sx={{ padding: 0, marginRight: 1 }}
+                        checked={useMax} 
+                        onChange={() => setUseMax(prev => !prev)}
+                      />
+                      <Typography>{t("UseMax")}</Typography>
+                    </Box>
+                  </Box>
+
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    value={newBalance}
+                    onChange={e => setNewBalance(e.target.value)}
+                    type="number"
+                    fullWidth
+                    disabled={useMax}
+                    sx={{
+                      marginBottom: 2,
+                      "& .MuiInputBase-root": {
+                        height: "53px",
+                      },
+                      "& .MuiInputLabel-root": {
+                        marginTop: "8px",
+                      },
+                    }}
+                  />
                 </Grid>
 
-                <Grid item xs={3}>
+                <Grid item xs={3.9}>
                     <StyledSymbolLookup
                     pageSize={LookupPageSize}
                     onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
@@ -294,7 +373,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             </TableContainer>
         </Grid>
         )}
-
     </Grid>
   );
 };
