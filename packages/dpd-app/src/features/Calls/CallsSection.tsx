@@ -47,6 +47,7 @@ export default function CallOptionSet() {
   const [selectedSubProfile, setSelectedSubProfile] = useState<SubProfile | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
+  const [isSaveCopyEnabled, setIsSaveCopyEnabled] = useState(false);
 
   const resetForm = () => {
     setAccount("");
@@ -83,6 +84,46 @@ export default function CallOptionSet() {
 
   useEffect(() => {
     if (selectedSubProfile) {
+      const edited = isProfileEdited(selectedSubProfile);
+      if (edited) {
+        setIsSaveCopyEnabled(true);
+        if (selectedSubProfile.exitTiers && selectedSubProfile.exitTiers.length > 0) {
+          setIsSendTriggerChecked(true);
+        }
+        
+      } else {
+        setIsSaveCopyEnabled(false);
+      }
+    }
+  }, [
+    selectedSubProfile,
+    cancelAndResubmitOnPartial,
+    dteMax,
+    dteMin,
+    offsetPercent,
+    entryType,
+    useLaddering,
+    minContractAsk,
+    minOpenInterest,
+    minVolume,
+    oiCapPercent,
+    onlyTradeUnderlying,
+    requireActiveBid,
+    isBAMaxEnabled,
+    bidAskMax,
+    ticker,
+    amount,
+    tradeUnderlyingFound,
+    isBreakUpEnabled,
+    breakUp,
+    tradeAsSet,
+    baSpreadDiff,
+    account,
+    exitTiers,
+  ]);
+
+  useEffect(() => {
+    if (selectedSubProfile) {
       setSubProfile(selectedSubProfile.name);
       setCancelAndResubmitOnPartial(selectedSubProfile.cancelAndResubmitOnPartial);
       setDteMax(selectedSubProfile.dteMax);
@@ -109,6 +150,35 @@ export default function CallOptionSet() {
       setExitTiers(selectedSubProfile.exitTiers);
     }
   }, [selectedSubProfile]);
+
+  const isProfileEdited = (original: SubProfile | null): boolean => {
+    if (!original) return false;
+    return (
+      original.cancelAndResubmitOnPartial !== cancelAndResubmitOnPartial ||
+      original.dteMax !== dteMax ||
+      original.dteMin !== dteMin ||
+      original.entryOffsetPercent !== offsetPercent ||
+      original.entryType !== entryType ||
+      original.useLaddering !== useLaddering ||
+      original.minContractAsk !== minContractAsk ||
+      original.minOpenInterest !== minOpenInterest ||
+      original.minVolume !== minVolume ||
+      original.oiCapPercent !== oiCapPercent ||
+      original.onlyTradeUnderlying !== onlyTradeUnderlying ||
+      original.requireActiveBid !== requireActiveBid ||
+      original.useBidAskMax !== isBAMaxEnabled ||
+      original.bidAskMax !== bidAskMax ||
+      original.ticker !== ticker ||
+      original.totalDollarAmount !== amount ||
+      original.tradeUnderlying !== tradeUnderlyingFound ||
+      original.breakUpOrder !== isBreakUpEnabled ||
+      original.orderBreaks !== breakUp ||
+      original.tradeAsSet !== tradeAsSet ||
+      original.baSpreadDiff !== baSpreadDiff ||
+      original.account !== account ||
+      JSON.stringify(original.exitTiers) !== JSON.stringify(exitTiers)
+    );
+  };  
   
   const handleExitTiersChange = (newExitTiers: ExitTier[]) => {
     setExitTiers(newExitTiers);
@@ -163,7 +233,7 @@ export default function CallOptionSet() {
         tradeAsSet: tradeAsSet,
         baSpreadDiff: baSpreadDiff,
         account: account,
-        exitTiers: exitTiers
+        exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
 
       await optionTradeService.createSubProfile(subProfileRequest );
@@ -379,9 +449,12 @@ export default function CallOptionSet() {
           }}>
           {t("Save")}
         </Button>
-        <Button variant="outlined"
+        <Button variant="outlined" disabled={!isSaveCopyEnabled}
+          onClick={handleClickNewSubProfileOpen}
           sx={{
-            height: "40px", bgcolor: "#2A9D8F", color: "white", textTransform: "none", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
+            bgcolor: isSaveCopyEnabled ? "#2A9D8F" : "gray",
+            height: "40px", color: "white", 
+            textTransform: "none", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
           }}>
           {t("SaveCopy")}
         </Button>
