@@ -5,11 +5,18 @@ import { Wallet } from "@/models/Wallet/Wallet";
 import { Box, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 
 export default function Dex() {
     const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+    const { t } = useTranslation("IndexModelingSection");
+    const [selectedToken, setSelectedToken] = useState<string | null>(null);
 
+    const handleSelectedTokenChange = (tokenInfo: any) => {
+      setSelectedToken(tokenInfo);
+    };
+    
     const handleWalletChange = (newWallet: Wallet | null) => {
         setSelectedWallet(newWallet);
       };
@@ -36,9 +43,9 @@ export default function Dex() {
             component="div"
             sx={{ fontSize: "14px", marginBottom: 1 }}
           >
-            {"CurrentPosition"}
+            {t("CurrentPosition")}
           </Typography>
-          <CurrentPositionSection onWalletChange={handleWalletChange}/>
+          <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}/>
         </Grid>
 
         <Grid item xs={12} md={7}>
@@ -47,9 +54,12 @@ export default function Dex() {
             component="div"
             sx={{ fontSize: "14px", marginBottom: 1, marginLeft:"17px" }}
           >
-            {"NewPosition"}
+            {t("NewPosition")}
           </Typography>
-          <NewPositionSection selectedWallet={selectedWallet}/>
+          <NewPositionSection
+            selectedWallet={selectedWallet}
+            onSelectedTokenChange={handleSelectedTokenChange}
+          />
         </Grid>
       </Grid>
     </Box>
