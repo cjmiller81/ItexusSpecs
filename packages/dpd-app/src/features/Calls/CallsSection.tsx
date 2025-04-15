@@ -6,7 +6,7 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
-import { deleteSubProfile, fetchSubProfiles } from "@/slices/optionTradeSlice";
+import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState("");
@@ -26,6 +26,7 @@ export default function CallOptionSet() {
   const [isSendTriggerChecked, setIsSendTriggerChecked] = useState(false);
   const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
   const [newSubProfileOpen, setNewSubProfileOpen] = useState(false);
+  const [updateSubProfileOpen, setUpdateSubProfileOpen] = useState(false);
   const { connectedAccounts } = useAppSelector(state => state.userProfile);
   const [bidAskMax, setBidAskMax] = useState<number | "">(20);
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,8 @@ export default function CallOptionSet() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
   const [isSaveCopyEnabled, setIsSaveCopyEnabled] = useState(false);
+  const [isSaveEnabled, setIsSaveEnabled] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const resetForm = () => {
     setAccount("");
@@ -87,12 +90,14 @@ export default function CallOptionSet() {
       const edited = isProfileEdited(selectedSubProfile);
       if (edited) {
         setIsSaveCopyEnabled(true);
+        setIsSaveEnabled(true);
         if (selectedSubProfile.exitTiers && selectedSubProfile.exitTiers.length > 0) {
           setIsSendTriggerChecked(true);
         }
         
       } else {
         setIsSaveCopyEnabled(false);
+        setIsSaveEnabled(false);
       }
     }
   }, [
@@ -237,7 +242,6 @@ export default function CallOptionSet() {
       };
 
       await optionTradeService.createSubProfile(subProfileRequest );
-      await dispatch(fetchSubProfiles()); 
       handleClickNewSubProfileClose();
     } catch (error) {
       console.error("Error creating sub-profile:", error);
@@ -283,6 +287,51 @@ export default function CallOptionSet() {
     }
   };
 
+  const handleConfirmUpdate = async () => {
+    if (!subProfile.trim()) return;
+
+    setLoading(true);
+    try {
+      const subProfileRequest: SubProfile = {
+        name: subProfile,
+        cancelAndResubmitOnPartial: cancelAndResubmitOnPartial, 
+        dteMax: dteMax, 
+        dteMin: dteMin, 
+        entryOffsetPercent: offsetPercent,
+        entryType: entryType,
+        useLaddering: useLaddering, 
+        maxDelta: 0,
+        minContractAsk: minContractAsk,
+        minDelta: 0, 
+        minOpenInterest: minOpenInterest,
+        minVolume: minVolume, 
+        oiCapPercent: oiCapPercent,
+        onlyTradeUnderlying: onlyTradeUnderlying,
+        optionType: "CALL",
+        requireActiveBid: requireActiveBid,
+        useBidAskMax: isBAMaxEnabled,
+        bidAskMax: bidAskMax? bidAskMax : 0,
+        ticker: ticker,
+        totalDollarAmount: amount,
+        tradeUnderlying: tradeUnderlyingFound,
+        breakUpOrder: isBreakUpEnabled,
+        orderBreaks: breakUp,
+        tradeAsSet: tradeAsSet,
+        baSpreadDiff: baSpreadDiff,
+        account: account,
+        exitTiers: isSendTriggerChecked ? exitTiers : [],
+      };
+
+      await dispatch(updateSubProfile(subProfileRequest));
+      await dispatch(fetchSubProfiles()); 
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setErrorMessage(`${t("UpdatingError")}: ${message}`);
+    } finally {
+      setUpdateSubProfileOpen(false);
+    }
+  };
+
   const handleOnlyTradeUnderlyingChange = () => {
     setOnlyTradeUnderlying(!onlyTradeUnderlying);
     if (!onlyTradeUnderlying) {
@@ -320,6 +369,10 @@ export default function CallOptionSet() {
 
   const handleClickNewSubProfileOpen = () => {
     setNewSubProfileOpen(true);
+  }
+
+  const handleClickUpdateSubProfileOpen = () => {
+    setUpdateSubProfileOpen(true);
   }
 
   return (
@@ -415,6 +468,18 @@ export default function CallOptionSet() {
         </DialogActions>
       </Dialog>
 
+      <Dialog open={updateSubProfileOpen} onClose={() => setUpdateSubProfileOpen(false)}>
+        <DialogTitle> {t("PleaseConfirmUpdate", { name: selectedSubProfile?.name })}</DialogTitle>
+        <DialogActions>
+          <Button variant="outlined" onClick={() => setUpdateSubProfileOpen(false)}>
+            {t("Cancel")}
+          </Button>
+          <Button onClick={handleConfirmUpdate} variant="contained">
+            {t("Confirm")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog open={newSubProfileOpen} onClose={handleClickNewSubProfileClose} fullWidth maxWidth="xs">
         <DialogTitle>{t("SaveSubProfileName")}</DialogTitle>
         <DialogContent>
@@ -443,9 +508,12 @@ export default function CallOptionSet() {
         </DialogActions>
       </Dialog>
 
-        <Button variant="contained"
+        <Button variant="outlined" disabled={!isSaveEnabled}
+        onClick={handleClickUpdateSubProfileOpen}
           sx={{
-            height: "40px", bgcolor: "#2A9D8F", color: "white", textTransform: "none", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
+            height: "40px", bgcolor: isSaveEnabled ? "#2A9D8F" : "gray",
+            color: "white", textTransform: "none", 
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
           }}>
           {t("Save")}
         </Button>

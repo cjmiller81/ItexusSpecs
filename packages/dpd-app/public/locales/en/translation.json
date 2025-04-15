@@ -297,6 +297,8 @@
     "Cancel": "Cancel",
     "Delete": "Delete",
     "PleaseConfirmDelete": "Please confirm you want to delete \"{{name}}\"?",
-    "Confirm": "Confirm"
+    "Confirm": "Confirm",
+    "PleaseConfirmUpdate": "Please confirm you want to save changes to \"{{name}}\"?",
+    "UpdatingError": "Sub-profile changes can't be saved"
   }
 }

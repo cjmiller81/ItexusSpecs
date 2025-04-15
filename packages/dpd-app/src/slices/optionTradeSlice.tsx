@@ -66,6 +66,18 @@ export const createSubProfile = createAsyncThunk(
   }
 );
 
+export const updateSubProfile = createAsyncThunk(
+  "optionTrade/updateSubProfile",
+  async (tradeRequest: SubProfile, { rejectWithValue }) => {
+    try {
+      await optionTradeService.updateSubProfile(tradeRequest);
+      return tradeRequest;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to update sub-profile");
+    }
+  }
+);
+
 export const fetchSubProfiles = createAsyncThunk(
   "optionTrade/fetchSubProfiles",
   async (_, { rejectWithValue }) => {
@@ -131,6 +143,21 @@ const optionTradeSlice = createSlice({
         );
       })
       .addCase(deleteSubProfile.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateSubProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateSubProfile.fulfilled, (state, action: PayloadAction<TradeRequest>) => {
+        state.loading = false;
+        const index = state.subProfiles.findIndex(profile => profile.name === action.payload.name);
+        if (index !== -1) {
+          state.subProfiles[index] = action.payload;
+        }
+      })
+      .addCase(updateSubProfile.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
       });
