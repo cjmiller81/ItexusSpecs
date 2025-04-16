@@ -24,7 +24,8 @@ import fetchLookupPage from "../Common/fetchLookupPage";
 import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/SymbolsLookup";
 import { Wallet } from "@/models/Wallet/Wallet";
 import SearchIcon from '@mui/icons-material/Search';
-import { Asset } from "@/models/Wallet/asset";
+import RefreshIcon from '@mui/icons-material/Refresh';
+
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -373,6 +374,27 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                     label={t("SwapFor")}
                     />
                 </Grid>
+
+                <Grid item xs={12}>
+                <Grid container justifyContent="flex-end">
+                  <Button
+                    variant="contained"
+                    startIcon={<RefreshIcon />}
+                    sx={{
+                      backgroundColor: "#1e88e5",
+                      color: "#fff",
+                      textTransform: "none",
+                      fontWeight: 500,
+                      fontSize: "0.875rem",
+                      "&:hover": {
+                        backgroundColor: "#1565c0",
+                      },
+                    }}
+                  >
+                    {t("RefreshQuotes")}
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
         ) : (
             <Typography sx={{ color: "gray" }}></Typography>
