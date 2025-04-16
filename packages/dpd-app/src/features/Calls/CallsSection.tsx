@@ -263,10 +263,13 @@ export default function CallOptionSet() {
   };
 
   const handleBreakUpChange = (event) => {
-    const newBreakup = event.target.value === "" ? offsetPercent : parseFloat(event.target.value);
-    setBreakUp(newBreakup);
+    const newValue = event.target.value === "" ? breakUp : parseFloat(event.target.value);
+  
+    if (newValue >= 0) {
+      setBreakUp(newValue);
+    }
   };
-
+  
   const handleDeleteSubProfile = (profileName: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>,) => {
     event.stopPropagation();
     setProfileToDelete(profileName);
@@ -583,11 +586,16 @@ export default function CallOptionSet() {
                   type="number"
                   variant="outlined"
                   value={dteMin}
-                  onChange={(e) => setDteMin(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newValue = Number(e.target.value);
+                    if (newValue >= 0 && newValue < dteMax) {
+                      setDteMin(newValue);
+                    }
+                  }}
                   sx={{
                     bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center" },
-                    width: "60px",
+                    input: { color: "white", textAlign: "center", padding: "10px 12px", },
+                    width: "75px",
                     "& .MuiOutlinedInput-root": { height: "40px" },
                   }}
                 />
@@ -597,11 +605,16 @@ export default function CallOptionSet() {
                   type="number"
                   variant="outlined"
                   value={dteMax}
-                  onChange={(e) => setDteMax(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newValue = Number(e.target.value);
+                    if (newValue >= 0 && newValue > dteMin) {
+                      setDteMax(newValue);
+                    }
+                  }}
                   sx={{
                     bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center" },
-                    width: "60px",
+                    input: { color: "white", textAlign: "center", padding: "10px 12px", },
+                    width: "75px",
                     "& .MuiOutlinedInput-root": { height: "40px" },
                   }}
                 />
@@ -642,11 +655,12 @@ export default function CallOptionSet() {
                     onFocus={handleEnableToggle}
                     sx={{
                       bgcolor: "#1E1E1E",
-                      width: "60px",
+                      width: "67px",
                       marginLeft: "10px",
                       input: {
                         color: isBAMaxEnabled ? "white" : "gray",
                         padding: "10px 12px",
+                        textAlign: "center",  
                       },
                       "& .MuiOutlinedInput-root.Mui-disabled": {
                         "& .MuiInputBase-input": {
@@ -713,7 +727,12 @@ export default function CallOptionSet() {
                     type="number"
                     variant="outlined"
                     value={minOpenInterest}
-                    onChange={(e) => setMinOpenInterest(Number(e.target.value))}
+                    onChange={(e) => {
+                      const newValue = Number(e.target.value);
+                      if (newValue >= 0) {
+                        setMinOpenInterest(newValue);
+                      }
+                    }}
                     sx={{
                       bgcolor: "#1E1E1E",
                       input: { color: "white", textAlign: "center" },
@@ -728,7 +747,12 @@ export default function CallOptionSet() {
                   type="number"
                   variant="outlined"
                   value={minVolume}
-                  onChange={(e) => setMinVolume(Number(e.target.value))}
+                  onChange={(e) => {
+                    const newValue = Number(e.target.value);
+                    if (newValue >= 0) {
+                      setMinVolume(newValue);
+                    }
+                  }}
                   sx={{
                     bgcolor: "#1E1E1E",
                     input: { color: "white", textAlign: "center" },
@@ -928,11 +952,12 @@ export default function CallOptionSet() {
                       InputLabelProps={{ shrink: false }}
                       sx={{
                         bgcolor: "#1E1E1E",
-                        width: "60px",
+                        width: "70px",
                         marginLeft: "10px",
                         input: {
                           color: "white",
-                          padding: "10px 12px"
+                          padding: "10px 12px",
+                          textAlign: "center",
                         },
                         "& .MuiOutlinedInput-root.Mui-disabled": {
                           "& .MuiInputBase-input": {
