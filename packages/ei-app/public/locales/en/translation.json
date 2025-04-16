@@ -269,7 +269,8 @@
     "Price": "Price",
     "EstGasFees": "Est. Gas Fees",
     "Search": "Search",
-    "UseMax": "Use Max"
+    "UseMax": "Use Max",
+    "RefreshQuotes": "Refresh Quotes"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",

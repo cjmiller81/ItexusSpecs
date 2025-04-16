@@ -24,7 +24,8 @@ import fetchLookupPage from "../Common/fetchLookupPage";
 import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/SymbolsLookup";
 import { Wallet } from "@/models/Wallet/Wallet";
 import SearchIcon from '@mui/icons-material/Search';
-import { Asset } from "@/models/Wallet/asset";
+import RefreshIcon from '@mui/icons-material/Refresh';
+
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -130,6 +131,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       gasFee: '$18.23'
     }
   ];
+
+  const formatNumberWithCommas = (value: string) => {
+    const [intPart, decimalPart] = value.split(".");
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
+  };
 
   const fetchTableData = () => {
     if (symbolOptionSwap && selectedChain && selectedWallet) {
@@ -304,13 +311,43 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                   <TextField
                     variant="outlined"
                     size="small"
-                    value={newBalance}
-                    onChange={e => setNewBalance(e.target.value)}
-                    type="number"
+                    value={formatNumberWithCommas(newBalance)}
+                    onChange={(e) => {
+                      const input = e.target.value.replace(/,/g, "");
+                      
+                      const validInput = /^(\d+)?(\.\d*)?$/.test(input);
+                      const numericValue = parseFloat(input);
+                      const max = Number(maxBalance);
+
+                      if (validInput) {
+                        if (!isNaN(numericValue) && numericValue <= max) {
+                          setNewBalance(input);
+                        }
+
+                        if (input === "" || input === "." || input.endsWith(".")) {
+                          setNewBalance(input);
+                        }
+                      }
+                    }}
+                    type="text"
                     fullWidth
                     disabled={useMax}
+                    inputProps={{
+                      inputMode: "decimal",
+                      min: 0,
+                      style: {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                     sx={{
                       marginBottom: 2,
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+                        WebkitAppearance: "none",
+                        margin: 0,
+                      },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
                       "& .MuiInputBase-root": {
                         height: "53px",
                       },
@@ -337,6 +374,27 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                     label={t("SwapFor")}
                     />
                 </Grid>
+
+                <Grid item xs={12}>
+                <Grid container justifyContent="flex-end">
+                  <Button
+                    variant="contained"
+                    startIcon={<RefreshIcon />}
+                    sx={{
+                      backgroundColor: "#1e88e5",
+                      color: "#fff",
+                      textTransform: "none",
+                      fontWeight: 500,
+                      fontSize: "0.875rem",
+                      "&:hover": {
+                        backgroundColor: "#1565c0",
+                      },
+                    }}
+                  >
+                    {t("RefreshQuotes")}
+                  </Button>
+                </Grid>
+              </Grid>
             </Grid>
         ) : (
             <Typography sx={{ color: "gray" }}></Typography>
