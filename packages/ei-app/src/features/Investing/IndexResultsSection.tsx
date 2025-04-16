@@ -396,10 +396,10 @@ export const IndexResultsSection = ({
                   backgroundColor: "white",
                   width: "98%",
                   height: "40px",
-                  color: "black",
+                  color: "#1e90ff",
                   justifyContent: "flex-start",
                   paddingLeft: "15px",
-                  fontSize: "11px",
+                  fontSize: "11px bold",
                 }}
                 variant="outlined"
                 onClick={() => setIsAddingManualPosition(true)}>
