@@ -131,6 +131,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     }
   ];
 
+  const formatNumberWithCommas = (value: string) => {
+    const [intPart, decimalPart] = value.split(".");
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
+  };
+
   const fetchTableData = () => {
     if (symbolOptionSwap && selectedChain && selectedWallet) {
       const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
@@ -304,13 +310,43 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                   <TextField
                     variant="outlined"
                     size="small"
-                    value={newBalance}
-                    onChange={e => setNewBalance(e.target.value)}
-                    type="number"
+                    value={formatNumberWithCommas(newBalance)}
+                    onChange={(e) => {
+                      const input = e.target.value.replace(/,/g, "");
+                      
+                      const validInput = /^(\d+)?(\.\d*)?$/.test(input);
+                      const numericValue = parseFloat(input);
+                      const max = Number(maxBalance);
+
+                      if (validInput) {
+                        if (!isNaN(numericValue) && numericValue <= max) {
+                          setNewBalance(input);
+                        }
+
+                        if (input === "" || input === "." || input.endsWith(".")) {
+                          setNewBalance(input);
+                        }
+                      }
+                    }}
+                    type="text"
                     fullWidth
                     disabled={useMax}
+                    inputProps={{
+                      inputMode: "decimal",
+                      min: 0,
+                      style: {
+                        MozAppearance: "textfield",
+                      },
+                    }}
                     sx={{
                       marginBottom: 2,
+                      "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+                        WebkitAppearance: "none",
+                        margin: 0,
+                      },
+                      "& input[type=number]": {
+                        MozAppearance: "textfield",
+                      },
                       "& .MuiInputBase-root": {
                         height: "53px",
                       },
