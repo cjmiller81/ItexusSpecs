@@ -430,7 +430,25 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             </Table>
             </TableContainer>
         </Grid>
-        )}
+        )} {( 
+        <Grid item xs={12} sx={{ marginTop: 3 }}>
+          <TableContainer component={Paper} 
+            sx={{
+                border: "1px solid gray", 
+                borderRadius: "4px", 
+              }}>
+            <Table sx={{ color: "blue" }}>
+              <TableHead>
+                <TableRow>
+                    <TableCell>{t("DEX")}</TableCell>
+                    <TableCell>{t("Volume")}</TableCell>
+                    <TableCell>{t("Price")}</TableCell>
+                    <TableCell>{t("EstGasFees")}</TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
+        </Grid>)}
     </Grid>
   );
 };
