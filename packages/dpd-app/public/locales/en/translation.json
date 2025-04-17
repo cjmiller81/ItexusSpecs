@@ -252,7 +252,8 @@
     "HighVolumeDailyScan": "High Volume Daily Scan"
   },
   "OptionTradeCalls": {
-    "CallOptionSet": "Call Option Set"
+    "CallOptionSet": "Call Option Set",
+    "PutOptionSet": "Put Option Set"
   },
   "CallsSection": {
     "SaveCopy": "Save Copy",

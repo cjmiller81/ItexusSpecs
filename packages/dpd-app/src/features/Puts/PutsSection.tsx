@@ -385,7 +385,7 @@ export default function PutOptionSet() {
         variant="h4"
         sx={{ fontWeight: "bold", mb: 3 }}
       >
-        {t("CallOptionSet")}
+        {t("PutOptionSet")}
       </Typography>
 
       <Divider sx={{ mb: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
