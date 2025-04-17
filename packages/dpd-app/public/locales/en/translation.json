@@ -148,7 +148,8 @@
     "OptionTrader": "Option Trader",
     "TradingSets": "Trading Sets",
     "Calls": "Calls",
-    "SetList": "Set List"
+    "SetList": "Set List",
+    "Puts": "Puts"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -258,6 +259,7 @@
     "CreateNewSub-Profile": "+ Create New Sub-Profile",
     "SelectSub-Profile": "Select Sub-Profile",
     "CallOptionSet": "Call Option Set",
+    "PutOptionSet": "Put Option Set",
     "Account": "Account",
     "Save": "Save",
     "SendOrder": "+Send Order",
