@@ -401,54 +401,39 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         )}
       </Grid>
 
-      {symbolOptionSwap && symbolOptionSwapFor && selectedChain && (
-        <Grid item xs={12} sx={{ marginTop: 3 }}>
-            <TableContainer component={Paper} 
-            sx={{
-                border: "1px solid gray", 
-                borderRadius: "4px", 
-              }}>
-            <Table sx={{ color: "blue" }}>
-                <TableHead>
-                <TableRow>
-                    <TableCell>{t("DEX")}</TableCell>
-                    <TableCell>{t("Volume")}</TableCell>
-                    <TableCell>{t("Price")}</TableCell>
-                    <TableCell>{t("EstGasFees")}</TableCell>
-                </TableRow>
-                </TableHead>
-                <TableBody sx={{ backgroundColor: "#192132" }}>
+      <Grid item xs={12} sx={{ marginTop: 3 }}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            border: "1px solid gray",
+            borderRadius: "4px",
+          }}
+        >
+          <Table sx={{ color: "blue" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>{t("DEX")}</TableCell>
+                <TableCell>{t("Volume")}</TableCell>
+                <TableCell>{t("Price")}</TableCell>
+                <TableCell>{t("EstGasFees")}</TableCell>
+              </TableRow>
+            </TableHead>
+
+            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && tableData.length > 0 && (
+              <TableBody sx={{ backgroundColor: "#192132" }}>
                 {tableData.map((row, index) => (
-                    <TableRow key={index}>
+                  <TableRow key={index}>
                     <TableCell sx={{ color: "#539eec" }}>{row.dex}</TableCell>
                     <TableCell>{row.volume}</TableCell>
                     <TableCell>{row.price}</TableCell>
                     <TableCell>{row.gasFee}</TableCell>
-                    </TableRow>
+                  </TableRow>
                 ))}
-                </TableBody>
-            </Table>
-            </TableContainer>
-        </Grid>
-        )} {( 
-        <Grid item xs={12} sx={{ marginTop: 3 }}>
-          <TableContainer component={Paper} 
-            sx={{
-                border: "1px solid gray", 
-                borderRadius: "4px", 
-              }}>
-            <Table sx={{ color: "blue" }}>
-              <TableHead>
-                <TableRow>
-                    <TableCell>{t("DEX")}</TableCell>
-                    <TableCell>{t("Volume")}</TableCell>
-                    <TableCell>{t("Price")}</TableCell>
-                    <TableCell>{t("EstGasFees")}</TableCell>
-                </TableRow>
-              </TableHead>
-            </Table>
-          </TableContainer>
-        </Grid>)}
+              </TableBody>
+            )}
+          </Table>
+        </TableContainer>
+      </Grid>
     </Grid>
   );
 };
