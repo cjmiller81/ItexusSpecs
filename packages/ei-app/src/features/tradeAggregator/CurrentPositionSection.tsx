@@ -265,7 +265,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                   backgroundColor: "#109EEF",
                   fontSize: "11px",
                   color: "white",
-                  width: "98%",
+                  width: "100%",
                   maxHeight: "40px",
                   marginBottom: "12px",
                   "& .MuiSelect-icon": { color: "white" },
@@ -282,12 +282,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
               <Button
                 sx={{
                   backgroundColor: "white",
-                  width: "98%",
+                  width: "100%",
                   height: "40px",
-                  color: "black",
+                  color: "#1e90ff",
                   justifyContent: "flex-start",
                   paddingLeft: "15px",
-                  fontSize: "11px",
+                  fontSize: "11px bold",
                 }}
                 variant="outlined"
                 onClick={() => setIsAddingManualPosition(true)}>
