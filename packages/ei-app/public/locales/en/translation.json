@@ -62,7 +62,8 @@
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
-    "Personal": "Personal"
+    "Personal": "Personal",
+    "WalletAddressAlreadyInTheList": "Wallet Address is already in the List"
   },
   "MyWalletsSection": {
     "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
