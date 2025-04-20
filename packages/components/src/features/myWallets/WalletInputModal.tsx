@@ -88,7 +88,7 @@ export const WalletInputModal = ({ onClose, onEnter, open, error, onCleanupError
           />
           {error && (
             <Typography color="error" sx={{ mb: 2, ml: 2, fontWeight: 400, fontSize: 12 }}>
-              {error}
+              {t("WalletAddressAlreadyInTheList")}
             </Typography>
            )}
           <Typography
