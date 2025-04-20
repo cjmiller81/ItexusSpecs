@@ -270,7 +270,12 @@
     "EstGasFees": "Est. Gas Fees",
     "Search": "Search",
     "UseMax": "Use Max",
-    "RefreshQuotes": "Refresh Quotes"
+    "RefreshQuotes": "Get Quotes",
+    "MissingInputs": "Please provide the following inputs",
+    "EnterAmount": "Enter Amount",
+    "SelectChain": "Select Chain",
+    "SelectToken": "Select Token",
+    "LastUpdate": "Last Update"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",

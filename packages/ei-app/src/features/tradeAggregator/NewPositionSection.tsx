@@ -26,7 +26,6 @@ import { Wallet } from "@/models/Wallet/Wallet";
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
-
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
     onSelectedTokenChange?: (tokenInfo: any) => void; 
@@ -45,12 +44,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tableData, setTableData] = useState<any[]>([]); 
   const [useMax,setUseMax] = useState<boolean>(false);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const LookupPageSize = 10;
-
-  useEffect(() => {
-    fetchTableData();
-  }, [symbolOptionSwap, symbolOptionSwapFor, selectedChain, selectedWallet]);
 
   const maxBalance = selectedWallet?.chainAssets
   .find(asset => asset.chainName.toUpperCase() === selectedChain.toUpperCase())
@@ -90,6 +87,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setNewBalance(maxBalance.toString());
     }
   }, [useMax, maxBalance]);
+
+  useEffect(() => {
+    if (hasAttemptedSubmit) {
+      setErrorMessage(generateErrorMessage());
+    }
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
 
   const onOptionChangeSwapFor = (value: any) => {
     setSymbolOptionSwapFor(value); 
@@ -132,11 +135,48 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     }
   ];
 
+  const generateErrorMessage = () => {
+    const errors: string[] = [];
+  
+    if (!symbolOptionSwap) errors.push(t("TokenPosition"));
+    if (!selectedChain) errors.push(t("Chain"));
+    if (!symbolOptionSwapFor) errors.push(t("SwapFor"));
+    if (!newBalance || isNaN(Number(newBalance)) || Number(newBalance) <= 0) errors.push(t("Qty"));
+  
+    return errors.length > 0 ? `${t("MissingInputs")}: ${errors.join(", ")}` : null;
+  };
+
   const formatNumberWithCommas = (value: string) => {
     const [intPart, decimalPart] = value.split(".");
     const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
   };
+
+  const handleFetchQuotes = () => {
+    setHasAttemptedSubmit(true);
+    const err = generateErrorMessage();
+  
+    if (err) {
+      setTableData([]);
+      setErrorMessage(err);
+      setLastUpdated(null);
+    } else {
+      setErrorMessage(null);
+      fetchTableData();
+  
+      const now = new Date();
+      const formatted = now.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+  
+      setLastUpdated(formatted);
+    }
+  };  
 
   const fetchTableData = () => {
     if (symbolOptionSwap && selectedChain && selectedWallet) {
@@ -376,24 +416,42 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                 </Grid>
 
                 <Grid item xs={12}>
-                <Grid container justifyContent="flex-end">
-                  <Button
-                    variant="contained"
-                    startIcon={<RefreshIcon />}
-                    sx={{
-                      backgroundColor: "#1e88e5",
-                      color: "#fff",
-                      textTransform: "none",
-                      fontWeight: 500,
-                      fontSize: "0.875rem",
-                      "&:hover": {
-                        backgroundColor: "#1565c0",
-                      },
-                    }}
-                  >
-                    {t("RefreshQuotes")}
-                  </Button>
-                </Grid>
+                  <Grid container alignItems="center">
+                    {errorMessage && (
+                      <Grid item>
+                        <Typography sx={{ color: "red", fontSize: "0.875rem" }}>
+                          {errorMessage}
+                        </Typography>
+                      </Grid>
+                    )}
+                <Grid item xs />
+                  <Grid item>
+                  <Box display="flex" flexDirection="column" alignItems="flex-end">
+                    <Button
+                      variant="contained"
+                      startIcon={<RefreshIcon />}
+                      onClick={handleFetchQuotes}
+                      sx={{
+                        backgroundColor: "#1e88e5",
+                        color: "#fff",
+                        textTransform: "none",
+                        fontWeight: 500,
+                        fontSize: "0.875rem",
+                        "&:hover": {
+                          backgroundColor: "#1565c0",
+                        },
+                      }}
+                    >
+                      {t("RefreshQuotes")}
+                    </Button>
+                    </Box>
+                    {tableData.length > 0 && lastUpdated && (
+                  <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1 }}>
+                    {t("LastUpdate")}: {lastUpdated}
+                  </Typography>
+                )}
+                  </Grid>
+                </Grid>       
               </Grid>
             </Grid>
         ) : (
