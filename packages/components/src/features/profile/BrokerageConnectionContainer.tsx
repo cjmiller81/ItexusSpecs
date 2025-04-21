@@ -127,7 +127,7 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
               </Box>
 
               <Typography sx={{ color: "red" }}>
-                {t("AuthorizationExpires")}: {refreshTokenExpiration ? formatDate(refreshTokenExpiration) : "Loading..."}
+                {t("AuthorizationExpires")}: {refreshTokenExpiration ? formatDate(refreshTokenExpiration) : ""}
               </Typography>
 
               <Button
