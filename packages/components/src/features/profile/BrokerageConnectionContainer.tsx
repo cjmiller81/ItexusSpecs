@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckIcon from "@mui/icons-material/Check";
 import { useSearchParams } from "next/navigation";
+import { appAxios } from "../../lib/axios/customAxios";
 
 interface Props extends BoxProps {
   getSchwabAccountList: () => void,
@@ -20,11 +21,28 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
   const [isConnected, setIsConnected] = useState(false);
   const searchParams = useSearchParams()
   const isConnectedBackend = searchParams.get("isConnected");
+  const [refreshTokenExpiration, setRefreshTokenExpiration] = useState<string | null>(null);
 
   useEffect(() =>{
     getSchwabConnectUrl();
     getSchwabAccountList();
   },[])
+
+  useEffect(() => {
+    const fetchRefreshTokenExpiration = async () => {
+      if (isConnected) {
+        try {
+          const response = await appAxios.get("/api/schwab/auth/refreshToken");
+          const expiration = response.data.refreshTokenExpiration;
+          setRefreshTokenExpiration(expiration);
+        } catch (error) {
+          console.error("Failed to fetch refreshTokenExpiration:", error);
+        }
+      }
+    };
+  
+    fetchRefreshTokenExpiration();
+  }, [isConnected]);
 
   const handleConnectionToggle = () => {
     if (!isConnected) {
@@ -50,6 +68,18 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
       setIsConnected(false)
     }
   }, [connectedAccounts])
+
+  const formatDate = (isoString: string): string => {
+    const date = new Date(isoString);
+    return date.toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  };
 
   return (
     <Box sx={{ display: "flex", gap: 4, p: 3 }}>
@@ -96,7 +126,9 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
                 <Typography>{t("AuthorizedForTrading")}</Typography>
               </Box>
 
-              <Typography sx={{ color: "red" }}>{t("AuthorizationExpires")}</Typography>
+              <Typography sx={{ color: "red" }}>
+                {t("AuthorizationExpires")}: {refreshTokenExpiration ? formatDate(refreshTokenExpiration) : "Loading..."}
+              </Typography>
 
               <Button
               href={schwabConnectUrl}

@@ -112,7 +112,7 @@
   },
   "BrokerageConnectionContainer": {
     "AuthorizedForTrading": "Authorized for Trading",
-    "AuthorizationExpires": "Authorization expires: Feb 27, 2025 9:58AM",
+    "AuthorizationExpires": "Authorization expires", 
     "Disconnect": "Disconnect",
     "Status": "Status",
     "AccountNumber": "Account Number",

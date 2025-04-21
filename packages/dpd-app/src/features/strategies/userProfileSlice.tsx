@@ -9,20 +9,28 @@ export interface userProfileState {
     connectedAccounts: connectedAccount[],
     loading: boolean,
     schwabConnectUrl: string,
-    error: string | null
+    error: string | null,
+    refreshTokenExpiration: string | null
 }
 
 const initialState: userProfileState = {
     connectedAccounts: [],
     loading: false,
     schwabConnectUrl: "",
-    error: null
+    error: null,
+    refreshTokenExpiration: null
 }
 
 const userProfileSlice = createSlice({
     name: "userProfile",
     initialState,
     reducers: {
+        setRefreshTokenExpiration(state, action: PayloadAction<string>) {
+            state.refreshTokenExpiration = action.payload;
+        },
+        clearRefreshTokenExpiration(state) {
+            state.refreshTokenExpiration = null;
+        },        
         resetConnectedAccounts(state) {
             state.connectedAccounts = []
             state.loading = false;
@@ -67,8 +75,21 @@ const userProfileSlice = createSlice({
     }
 });
 
-export const { resetConnectedAccounts, disconnectRequest, disconnectSuccess, disconnectFailure, fetchSchwabConnectUrlRequest, fetchSchwabConnectUrlSuccess, fetchSchwabConnectUrlFailure, fetchSchwabAccountListSuccess, fetchSchwabAccountListRequest, fetchSchwabAccountListFailure } = userProfileSlice.actions;
-
+export const {
+    resetConnectedAccounts,
+    disconnectRequest,
+    disconnectSuccess,
+    disconnectFailure,
+    fetchSchwabConnectUrlRequest,
+    fetchSchwabConnectUrlSuccess,
+    fetchSchwabConnectUrlFailure,
+    fetchSchwabAccountListSuccess,
+    fetchSchwabAccountListRequest,
+    fetchSchwabAccountListFailure,
+    setRefreshTokenExpiration,
+    clearRefreshTokenExpiration
+  } = userProfileSlice.actions;
+  
 export const getSchwabConnectUrl = (): AppThunk => async (dispatch) => {
     dispatch(fetchSchwabConnectUrlRequest());
     try {
@@ -79,6 +100,19 @@ export const getSchwabConnectUrl = (): AppThunk => async (dispatch) => {
     } catch (error) {
         console.error("Failed to fetch schwab connect url", error);
         dispatch(fetchSchwabConnectUrlFailure("Failed to fetch schwab connect url"));
+    }
+};
+
+export const getRefreshTokenExpiration = (): AppThunk => async (dispatch) => {
+    try {
+        const response = await appAxios.get("/api/schwab/auth/refreshToken", {
+            withCredentials: true,
+        });
+        const expiration = response.data.refreshTokenExpiration;
+        dispatch(setRefreshTokenExpiration(expiration));
+    } catch (error) {
+        console.error("Failed to fetch refreshTokenExpiration", error);
+        dispatch(clearRefreshTokenExpiration());
     }
 };
 
