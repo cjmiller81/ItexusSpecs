@@ -150,7 +150,17 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   const generateErrorMessage = () => {
     const errors: string[] = [];
   
-    if (!symbolOptionSwap) errors.push(t("TokenPosition"));
+    const selectedSymbol = extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase();
+    const tokenExistsInFilteredRows = filteredRows.some(
+      token => token.tokenName?.toUpperCase() === selectedSymbol
+    );
+  
+    if (!symbolOptionSwap) {
+      errors.push(t("TokenPosition"));
+    } else if (!tokenExistsInFilteredRows) {
+      return t("SelectedError");
+    }
+  
     if (!selectedChain) errors.push(t("Chain"));
     if (!symbolOptionSwapFor) errors.push(t("SwapFor"));
     if (!newBalance || isNaN(Number(newBalance)) || Number(newBalance) <= 0) errors.push(t("Qty"));
@@ -411,7 +421,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                   <Grid container alignItems="center">
                     {errorMessage && (
                       <Grid item>
-                        <Typography sx={{ color: "red", fontSize: "0.875rem" }}>
+                        <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
                           {errorMessage}
                         </Typography>
                       </Grid>
@@ -469,7 +479,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               </TableRow>
             </TableHead>
 
-            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && tableData.length > 0 && (
+            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && tableData.length > 0 && !errorMessage && (
               <TableBody sx={{ backgroundColor: "#192132" }}>
                 {tableData.map((row, index) => (
                   <TableRow key={index}>
