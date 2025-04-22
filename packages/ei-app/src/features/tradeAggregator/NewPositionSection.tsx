@@ -23,24 +23,26 @@ import { StyledSymbolLookup } from "../MyWallets/HistoricalWalletsWorth";
 import fetchLookupPage from "../Common/fetchLookupPage";
 import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/SymbolsLookup";
 import { Wallet } from "@/models/Wallet/Wallet";
-import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { WalletBalance } from "@/models/Wallet/WalletBalance";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
-    onSelectedTokenChange?: (tokenInfo: any) => void; 
+    onSelectedTokenChange?: (tokenInfo: any) => void;
+    filteredRows: WalletBalance[]; 
   }
 
-export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange })=> {
+export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows })=> {
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [lookupLoading, setLookupLoading] = useState<boolean>(false);
-  const [symbolOptionSwap, setSymbolOptionSwap] = useState<string>("");
+  const [symbolOptionSwap, setSymbolOptionSwap] = useState<LookUpOption | null>(null);
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<LookUpOption | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
+  const [inputSearchSwap, setInputSearchSwap] = useState("");
   const [tableData, setTableData] = useState<any[]>([]); 
   const [useMax,setUseMax] = useState<boolean>(false);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
@@ -48,11 +50,14 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const LookupPageSize = 10;
+  const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
 
-  const maxBalance = selectedWallet?.chainAssets
-  .find(asset => asset.chainName.toUpperCase() === selectedChain.toUpperCase())
-  ?.walletAssets.find(token => token.tokenName.toUpperCase() === symbolOptionSwap.toUpperCase())
-  ?.balance || "";
+  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase())
+  ?.balance;
+
+const maxBalance = balanceRaw !== undefined && balanceRaw !== null
+  ? balanceRaw.toFixed(5)
+  : "0.0000";
 
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
@@ -60,20 +65,19 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       return;
     }
   
-    const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
-    const selectedSymbol = extractSymbol(symbolOptionSwap);
+    const selectedSymbol = extractSymbol(symbolOptionSwap.label);
     const selectedChainUpper = selectedChain.toUpperCase();
   
     const matchedChain = selectedWallet.chainAssets.find(
       chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper
     );
   
-    const matchedToken = matchedChain?.walletAssets.find(
-      token => token.tokenName.toUpperCase() === selectedSymbol
+    const matchedToken = filteredRows.find(
+      token => token.tokenName?.toUpperCase() === selectedSymbol
     );
   
     if (matchedToken) {
-      setSelectedToken(matchedToken.tokenName);
+      setSelectedToken(matchedToken.tokenName || null);
       onSelectedTokenChange?.(matchedToken.tokenName);
     } else {
       setSelectedToken(null);
@@ -100,6 +104,14 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   const onInputChangeSwapFor = (value: string) => {
     setInputSearchSwapFor(value); 
+  };
+
+  const onOptionChangeSwap = (value: any) => {
+    setSymbolOptionSwap(value); 
+  };
+
+  const onInputChangeSwap = (value: string) => {
+    setInputSearchSwap(value); 
   };
 
   const dexComparisons = [
@@ -138,7 +150,17 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const generateErrorMessage = () => {
     const errors: string[] = [];
   
-    if (!symbolOptionSwap) errors.push(t("TokenPosition"));
+    const selectedSymbol = extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase();
+    const tokenExistsInFilteredRows = filteredRows.some(
+      token => token.tokenName?.toUpperCase() === selectedSymbol
+    );
+  
+    if (!symbolOptionSwap) {
+      errors.push(t("TokenPosition"));
+    } else if (!tokenExistsInFilteredRows) {
+      return t("SelectedError");
+    }
+  
     if (!selectedChain) errors.push(t("Chain"));
     if (!symbolOptionSwapFor) errors.push(t("SwapFor"));
     if (!newBalance || isNaN(Number(newBalance)) || Number(newBalance) <= 0) errors.push(t("Qty"));
@@ -180,16 +202,15 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   const fetchTableData = () => {
     if (symbolOptionSwap && selectedChain && selectedWallet) {
-      const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
-      const selectedSymbol = extractSymbol(symbolOptionSwap);
+      const selectedSymbol = extractSymbol(symbolOptionSwap.label);
       const selectedChainUpper = selectedChain.toUpperCase();
   
       const hasTokenAndChain = selectedWallet.chainAssets.some(chainAsset => {
         const chainMatches = chainAsset.chainName.toUpperCase() === selectedChainUpper;
         if (!chainMatches) return false;
   
-        return chainAsset.walletAssets.some(
-          token => token.tokenName.toUpperCase() === selectedSymbol
+        return filteredRows.some(
+          token => token.tokenName?.toUpperCase() === selectedSymbol
         );
       });
   
@@ -267,45 +288,23 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       <Grid item>
         {activeTab === "swap" ? (
             <Grid container spacing={2}>
-                <Grid item xs={2}>
-                <Typography sx={{ marginBottom: "4px" }}>{t("TokenPosition")}</Typography>
-                  <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
-                    <Select
-                      value={symbolOptionSwap}
-                      onChange={(e) => setSymbolOptionSwap(e.target.value)}
-                      displayEmpty
-                      renderValue={(selected) => {
-                        if (!selected) {
-                          return (
-                            <Box sx={{ display: 'flex', alignItems: 'center', color: 'lightgray' }}>
-                              <SearchIcon fontSize="small" sx={{ marginRight: 1 }} />
-                              {t("Search")}
-                            </Box>
-                          );
-                        }
-                        return selected;
-                      }}
-                      sx={{
-                        height: "53px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <MenuItem disabled value="">
-                        {t("Search")}
-                      </MenuItem>
-
-                      {tokenSymbols.map((symbol, idx) => (
-                        <MenuItem key={idx} value={symbol}>
-                          {symbol}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                <Grid item xs={3.7}>
+                <StyledSymbolLookup
+                    pageSize={LookupPageSize}
+                    onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwap)}
+                    loading={lookupLoading}
+                    disableListWrap
+                    value={symbolOptionSwap}
+                    onChange={(_event, value) => onOptionChangeSwap(value)}
+                    autoComplete={true}
+                    onInputChange={(_event, value) => onInputChangeSwap(value)} 
+                    filterOptions={x => x}
+                    inputValue={inputSearchSwap}
+                    label={t("TokenPosition")}
+                    />
                 </Grid>
 
-                <Grid item xs={3.4}>
+                <Grid item xs={2.2}>
                     <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
                     <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
                         <Select
@@ -333,7 +332,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                     </FormControl>
                 </Grid>
 
-                <Grid item xs={2.7}>
+                <Grid item xs={2.2}>
                   <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
                     <Typography>{t("Qty")}</Typography>
 
@@ -354,21 +353,24 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                     value={formatNumberWithCommas(newBalance)}
                     onChange={(e) => {
                       const input = e.target.value.replace(/,/g, "");
-                      
                       const validInput = /^(\d+)?(\.\d*)?$/.test(input);
                       const numericValue = parseFloat(input);
                       const max = Number(maxBalance);
-
+                    
                       if (validInput) {
-                        if (!isNaN(numericValue) && numericValue <= max) {
-                          setNewBalance(input);
-                        }
-
-                        if (input === "" || input === "." || input.endsWith(".")) {
-                          setNewBalance(input);
+                        const [, decimalPart = ""] = input.split(".");
+                        
+                        if (decimalPart.length <= 5) {
+                          if (!isNaN(numericValue) && numericValue <= max) {
+                            setNewBalance(input);
+                          }
+                    
+                          if (input === "" || input === "." || input.endsWith(".")) {
+                            setNewBalance(input);
+                          }
                         }
                       }
-                    }}
+                    }}                    
                     type="text"
                     fullWidth
                     disabled={useMax}
@@ -398,7 +400,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                   />
                 </Grid>
 
-                <Grid item xs={3.9}>
+                <Grid item xs={3.7}>
                     <StyledSymbolLookup
                     pageSize={LookupPageSize}
                     onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
@@ -419,7 +421,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                   <Grid container alignItems="center">
                     {errorMessage && (
                       <Grid item>
-                        <Typography sx={{ color: "red", fontSize: "0.875rem" }}>
+                        <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
                           {errorMessage}
                         </Typography>
                       </Grid>
@@ -477,7 +479,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               </TableRow>
             </TableHead>
 
-            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && tableData.length > 0 && (
+            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && tableData.length > 0 && !errorMessage && (
               <TableBody sx={{ backgroundColor: "#192132" }}>
                 {tableData.map((row, index) => (
                   <TableRow key={index}>

@@ -276,7 +276,8 @@
     "EnterAmount": "Enter Amount",
     "SelectChain": "Select Chain",
     "SelectToken": "Select Token",
-    "LastUpdate": "Last Update"
+    "LastUpdate": "Last Update",
+    "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection."
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
