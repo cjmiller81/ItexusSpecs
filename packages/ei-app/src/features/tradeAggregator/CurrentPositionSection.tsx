@@ -35,9 +35,10 @@ import { Wallet } from "@/models/Wallet/Wallet";
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
     selectedToken: string | null;
+    onFilteredRowsChange?: (rows: WalletBalance[]) => void;
   }
 
-export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange, selectedToken }) => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
@@ -96,7 +97,16 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
+    if (onFilteredRowsChange) {
+      onFilteredRowsChange(filteredWalletData);
+    }
   }, [filteredWalletData]);
+
+  useEffect(() => {
+    if (onFilteredRowsChange) {
+      onFilteredRowsChange(filteredRows);
+    }
+  }, [filteredRows]);
 
   useEffect(() => {
     if (filteredRows.length > 0 || tableData.length > 0) {
@@ -223,7 +233,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   };
 
   return (
-
       <Grid
         mt={2}
         spacing={0}

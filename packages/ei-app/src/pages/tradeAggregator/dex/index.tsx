@@ -2,6 +2,7 @@ import { CurrentPositionSection } from "@/features/tradeAggregator/CurrentPositi
 import { NewPositionSection } from "@/features/tradeAggregator/NewPositionSection";
 import { ChainAsset } from "@/models/Wallet/ChainAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
+import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { Box, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import React from "react";
@@ -12,6 +13,7 @@ export default function Dex() {
     const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
     const { t } = useTranslation("IndexModelingSection");
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
+    const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
 
     const handleSelectedTokenChange = (tokenInfo: any) => {
       setSelectedToken(tokenInfo);
@@ -45,7 +47,8 @@ export default function Dex() {
           >
             {t("CurrentPosition")}
           </Typography>
-          <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}/>
+          <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
+            onFilteredRowsChange={setFilteredRows}/>
         </Grid>
 
         <Grid item xs={12} md={7}>
@@ -59,6 +62,7 @@ export default function Dex() {
           <NewPositionSection
             selectedWallet={selectedWallet}
             onSelectedTokenChange={handleSelectedTokenChange}
+            filteredRows={filteredRows}
           />
         </Grid>
       </Grid>
