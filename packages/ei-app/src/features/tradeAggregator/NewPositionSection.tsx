@@ -47,7 +47,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<LookUpOption | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
-  const [tableData, setTableData] = useState<any[]>([]); 
   const [useMax,setUseMax] = useState<boolean>(false);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -180,7 +179,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     const err = generateErrorMessage();      
   
     if (err) {
-      setTableData([]);
+      setQuoteData([]);
       setErrorMessage(err);
       setLastUpdated(null);
     } else {
@@ -441,7 +440,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                       {t("RefreshQuotes")}
                     </Button>
                     </Box>
-                    {tableData.length > 0 && lastUpdated && (
+                    {quoteData.length > 0 && lastUpdated && (
                   <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1 }}>
                     {t("LastUpdate")}: {lastUpdated}
                   </Typography>
