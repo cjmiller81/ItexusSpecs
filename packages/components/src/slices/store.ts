@@ -4,12 +4,14 @@ import { uiSlice } from "./uiSlice"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
 import { krakenSlice } from "./krakenSlice"
 import { billingSlice } from "./billingSlice"
+import {dexSlice} from "./dexSlice"
 
 const reducers = {
   ui: uiSlice.reducer,
   wallets: walletsSlice.reducer,
   kraken: krakenSlice.reducer,
-  billing: billingSlice.reducer
+  billing: billingSlice.reducer,
+  dex: dexSlice,
 }
 const rootReducer = combineReducers(reducers)
 

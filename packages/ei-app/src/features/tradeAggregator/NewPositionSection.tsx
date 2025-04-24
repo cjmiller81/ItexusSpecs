@@ -25,6 +25,10 @@ import { LookUpOption } from "components/src/components/common/inputs/AppSymbolL
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import { useSelector } from "react-redux";
+import { RootState } from "@/libs/redux/RootReducer";
+import { useAppDispatch } from "@/libs/redux/Store";
+import { fetchQuote, fetchQuoteParameters } from "../../../../components/src/slices/dexSlice";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -51,6 +55,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const LookupPageSize = 10;
   const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
+  const [quoteData, setQuoteData] = useState<any[]>([]);
+  const dispatch = useAppDispatch();
+  const { data, loading, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
 
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase())
   ?.balance;
@@ -58,6 +65,38 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
   : "0.0000";
+
+  useEffect(() => {
+    if (quote) {
+      const processedData = quote.protocols.map((protocolGroup: any[][]) => {
+        const firstProtocol = protocolGroup[0];
+        const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+        return {
+          name: names[0],
+          gas: quote.gas,
+          volume: "",
+          price: "",
+        };
+      });
+      setQuoteData(processedData);
+    }
+  }, [quote]);  
+
+  useEffect(() => {
+    if (
+      data &&
+      data.fromTokenAddress &&
+      data.toTokenAddress &&
+      data.amount > 0
+    ) {
+      dispatch(fetchQuote({
+        chainName: data.chainName,
+        fromTokenAddress: data.fromTokenAddress,
+        toTokenAddress: data.toTokenAddress,
+        amount: data.amount,
+      }));
+    }
+  }, [data, dispatch]);
 
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
@@ -68,23 +107,18 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     const selectedSymbol = extractSymbol(symbolOptionSwap.label);
     const selectedChainUpper = selectedChain.toUpperCase();
   
-    const matchedChain = selectedWallet.chainAssets.find(
-      chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper
-    );
-  
-    const matchedToken = filteredRows.find(
-      token => token.tokenName?.toUpperCase() === selectedSymbol
-    );
+    const matchedToken = selectedWallet.chainAssets
+      .find(chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper)
+      ?.tokenDetails.find(token => token.sym.toUpperCase() === selectedSymbol);
   
     if (matchedToken) {
-      setSelectedToken(matchedToken.tokenName || null);
-      onSelectedTokenChange?.(matchedToken.tokenName);
+      setSelectedToken(matchedToken.sym || null);
+      onSelectedTokenChange?.(matchedToken.sym);
     } else {
       setSelectedToken(null);
       onSelectedTokenChange?.(null);
     }
   }, [symbolOptionSwap, selectedChain, selectedWallet]);
-  
 
   useEffect(() => {
     if (useMax) {
@@ -113,39 +147,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   const onInputChangeSwap = (value: string) => {
     setInputSearchSwap(value); 
   };
-
-  const dexComparisons = [
-    {
-      dex: 'Uniswap V3',
-      volume: '$1.7B',
-      price: '1.0033',
-      gasFee: '$16.57'
-    },
-    {
-      dex: 'SushiSwap',
-      volume: '$532.8M',
-      price: '0.9992',
-      gasFee: '$15.74'
-    },
-    {
-      dex: 'PancakeSwap',
-      volume: '$712.1M',
-      price: '1.0015',
-      gasFee: '$14.91'
-    },
-    {
-      dex: 'Curve',
-      volume: '$426.2M',
-      price: '0.9975',
-      gasFee: '$19.88'
-    },
-    {
-      dex: 'Balancer V2',
-      volume: '$655.7M',
-      price: '1.0062',
-      gasFee: '$18.23'
-    }
-  ];
 
   const generateErrorMessage = () => {
     const errors: string[] = [];
@@ -176,7 +177,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
   const handleFetchQuotes = () => {
     setHasAttemptedSubmit(true);
-    const err = generateErrorMessage();
+    const err = generateErrorMessage();      
   
     if (err) {
       setTableData([]);
@@ -184,7 +185,18 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       setLastUpdated(null);
     } else {
       setErrorMessage(null);
-      fetchTableData();
+  
+      if (symbolOptionSwap && symbolOptionSwapFor && selectedChain && newBalance) {
+        
+        dispatch(fetchQuoteParameters({
+          tokenPositionSymbol: extractSymbol(symbolOptionSwap.label),
+          chainName: selectedChain,
+          qty: Number(newBalance),
+          swapForSymbol: extractSymbol(symbolOptionSwapFor.label),
+          tokenPositionId: symbolOptionSwap.id,
+          swapForId: symbolOptionSwapFor.id,
+        }));
+      }
   
       const now = new Date();
       const formatted = now.toLocaleString(undefined, {
@@ -193,32 +205,12 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: false,
       });
   
       setLastUpdated(formatted);
     }
-  };  
-
-  const fetchTableData = () => {
-    if (symbolOptionSwap && selectedChain && selectedWallet) {
-      const selectedSymbol = extractSymbol(symbolOptionSwap.label);
-      const selectedChainUpper = selectedChain.toUpperCase();
-  
-      const hasTokenAndChain = selectedWallet.chainAssets.some(chainAsset => {
-        const chainMatches = chainAsset.chainName.toUpperCase() === selectedChainUpper;
-        if (!chainMatches) return false;
-  
-        return filteredRows.some(
-          token => token.tokenName?.toUpperCase() === selectedSymbol
-        );
-      });
-  
-      setTableData(hasTokenAndChain ? dexComparisons : []);
-    } else {
-      setTableData([]);
-    }
-  };  
+  };
 
   const tokenSymbols = Array.from(
     new Set(
@@ -419,12 +411,14 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
                 <Grid item xs={12}>
                   <Grid container alignItems="center">
-                    {errorMessage && (
-                      <Grid item>
-                        <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
-                          {errorMessage}
-                        </Typography>
-                      </Grid>
+                  {(errorMessage || error || quoteError) && (
+                    <Grid item>
+                      <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
+                        {errorMessage}
+                        { !errorMessage && error && (errorMessage ? `\n${error}` : error)}
+                        {!errorMessage && error === null && quoteError && t("SwapSearchError")}
+                      </Typography>
+                    </Grid>
                     )}
                 <Grid item xs />
                   <Grid item>
@@ -479,14 +473,20 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               </TableRow>
             </TableHead>
 
-            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && tableData.length > 0 && !errorMessage && (
+            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && quoteData && !errorMessage && !quoteError && (
               <TableBody sx={{ backgroundColor: "#192132" }}>
-                {tableData.map((row, index) => (
+                {quoteData.map((row, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={{ color: "#539eec" }}>{row.dex}</TableCell>
+                    <TableCell sx={{ color: "#539eec" }}>
+                      {Array.isArray(row.name) ? (
+                        row.name[0]
+                      ) : (
+                        row.name
+                      )}
+                    </TableCell>
                     <TableCell>{row.volume}</TableCell>
                     <TableCell>{row.price}</TableCell>
-                    <TableCell>{row.gasFee}</TableCell>
+                    <TableCell>{row.gas}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

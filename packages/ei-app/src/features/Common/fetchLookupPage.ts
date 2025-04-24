@@ -10,6 +10,7 @@ const fetchLookupPage = async (pageNumber: number, searchQuery: string): Promise
       label: `${item.sym.toUpperCase()} - ${item.name}`,
       iconUrl: item.lURI,
       id: item.id,
+      sym: item.sym
     })),
   };
 };

@@ -277,7 +277,8 @@
     "SelectChain": "Select Chain",
     "SelectToken": "Select Token",
     "LastUpdate": "Last Update",
-    "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection."
+    "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
+    "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
