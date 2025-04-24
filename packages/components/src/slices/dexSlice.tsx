@@ -19,7 +19,7 @@ interface OneInchQuoteRequest {
   amount: number;
 }
 
-interface QuoteParametersState {
+export interface DexState {
   data: QuoteParametersResponse | null;
   quote: OneInchQuoteResponse | null;
   loading: boolean;
@@ -28,7 +28,7 @@ interface QuoteParametersState {
   quoteError: string | null;
 }
 
-const initialState: QuoteParametersState = {
+const initialState: DexState = {
   data: null,
   quote: null,
   loading: false,

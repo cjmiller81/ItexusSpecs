@@ -11,7 +11,7 @@ const reducers = {
   wallets: walletsSlice.reducer,
   kraken: krakenSlice.reducer,
   billing: billingSlice.reducer,
-  dex: dexSlice,
+  dex: dexSlice.reducer,
 }
 const rootReducer = combineReducers(reducers)
 
