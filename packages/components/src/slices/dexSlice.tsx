@@ -22,7 +22,6 @@ interface OneInchQuoteRequest {
 export interface DexState {
   data: QuoteParametersResponse | null;
   quote: OneInchQuoteResponse | null;
-  loading: boolean;
   quoteLoading: boolean;
   error: string | null;
   quoteError: string | null;
@@ -31,7 +30,6 @@ export interface DexState {
 const initialState: DexState = {
   data: null,
   quote: null,
-  loading: false,
   quoteLoading: false,
   error: null,
   quoteError: null,
@@ -89,16 +87,13 @@ export const dexSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchQuoteParameters.pending, (state) => {
-        state.loading = true;
         state.error = null;
       })
       .addCase(fetchQuoteParameters.fulfilled, (state, action) => {
-        state.loading = false;
         state.error = null;
         state.data = action.payload;
       })
       .addCase(fetchQuoteParameters.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload || "Unknown error";
       })
       .addCase(fetchQuote.pending, (state) => {

@@ -56,7 +56,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
-  const { data, loading, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
+  const { data, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
 
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase())
   ?.balance;
@@ -128,6 +128,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   useEffect(() => {
     if (hasAttemptedSubmit) {
       setErrorMessage(generateErrorMessage());
+      setQuoteData([]);
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
 
