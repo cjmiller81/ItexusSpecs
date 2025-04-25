@@ -57,6 +57,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
+  const [errorQuote, setErrorQuote] = useState<string | null>(null);
+  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
 
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase())
   ?.balance;
@@ -64,6 +66,11 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
   : "0.0000";
+
+  useEffect(() => {
+    setErrorQuote(quoteError);
+    setErrorQuoteParametrs(error)
+  },[error,quoteError])
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
@@ -92,8 +99,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     };
   
     fetchProtocolsAndTokens();
-  }, [quote, symbolOptionSwap, symbolOptionSwapFor, dispatch]);
-  
+  }, [quote]);
 
   useEffect(() => {
     if (
@@ -140,9 +146,12 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   }, [useMax, maxBalance]);
 
   useEffect(() => {
+    console.log(hasAttemptedSubmit)
     if (hasAttemptedSubmit) {
       setErrorMessage(generateErrorMessage());
       setQuoteData([]);
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
 
@@ -410,7 +419,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     <StyledSymbolLookup
                     pageSize={LookupPageSize}
                     onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
-                    tooltip={t("SwapFor")}
                     loading={lookupLoading}
                     disableListWrap
                     value={symbolOptionSwapFor}
@@ -429,8 +437,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     <Grid item>
                       <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
                         {errorMessage}
-                        { !errorMessage && error && (errorMessage ? `\n${error}` : error)}
-                        {!errorMessage && error === null && quoteError && t("SwapSearchError")}
+                        { !errorMessage && errorQuoteParametrs && (errorMessage ? `\n${errorQuoteParametrs}` : errorQuoteParametrs)}
+                        {!errorMessage && errorQuoteParametrs === null && errorQuote && t("SwapSearchError")}
                       </Typography>
                     </Grid>
                     )}
@@ -481,7 +489,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
             <TableHead>
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>
-                <TableCell>{t("Volume")}</TableCell>
                 <TableCell>{t("Price")}</TableCell>
                 <TableCell>{t("EstGasFees")}</TableCell>
               </TableRow>
@@ -498,7 +505,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         row.name
                       )}
                     </TableCell>
-                    <TableCell>{row.volume}</TableCell>
                     <TableCell>{row.price}</TableCell>
                     <TableCell>{row.gas}</TableCell>
                   </TableRow>
