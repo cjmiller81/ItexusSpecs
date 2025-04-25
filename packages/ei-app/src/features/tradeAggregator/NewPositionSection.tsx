@@ -146,7 +146,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   }, [useMax, maxBalance]);
 
   useEffect(() => {
-    console.log(hasAttemptedSubmit)
     if (hasAttemptedSubmit) {
       setErrorMessage(generateErrorMessage());
       setQuoteData([]);
