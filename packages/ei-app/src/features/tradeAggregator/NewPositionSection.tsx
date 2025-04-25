@@ -57,6 +57,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
+  const [errorQuote, setErrorQuote] = useState<string | null>(null);
+  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
 
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase())
   ?.balance;
@@ -64,6 +66,11 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
   : "0.0000";
+
+  useEffect(() => {
+    setErrorQuote(quoteError);
+    setErrorQuoteParametrs(error)
+  },[error,quoteError])
 
   useEffect(() => {
     if (quote) {
@@ -129,6 +136,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     if (hasAttemptedSubmit) {
       setErrorMessage(generateErrorMessage());
       setQuoteData([]);
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
 
@@ -415,8 +424,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     <Grid item>
                       <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
                         {errorMessage}
-                        { !errorMessage && error && (errorMessage ? `\n${error}` : error)}
-                        {!errorMessage && error === null && quoteError && t("SwapSearchError")}
+                        { !errorMessage && errorQuoteParametrs && (errorMessage ? `\n${errorQuoteParametrs}` : errorQuoteParametrs)}
+                        {!errorMessage && errorQuoteParametrs === null && errorQuote && t("SwapSearchError")}
                       </Typography>
                     </Grid>
                     )}
