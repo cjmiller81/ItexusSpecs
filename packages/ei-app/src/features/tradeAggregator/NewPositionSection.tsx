@@ -396,7 +396,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     <StyledSymbolLookup
                     pageSize={LookupPageSize}
                     onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
-                    tooltip={t("SwapFor")}
                     loading={lookupLoading}
                     disableListWrap
                     value={symbolOptionSwapFor}
@@ -467,7 +466,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
             <TableHead>
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>
-                <TableCell>{t("Volume")}</TableCell>
                 <TableCell>{t("Price")}</TableCell>
                 <TableCell>{t("EstGasFees")}</TableCell>
               </TableRow>
@@ -484,7 +482,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         row.name
                       )}
                     </TableCell>
-                    <TableCell>{row.volume}</TableCell>
                     <TableCell>{row.price}</TableCell>
                     <TableCell>{row.gas}</TableCell>
                   </TableRow>
