@@ -74,8 +74,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           const swapForToken = await dispatch(fetchToken({ id: symbolOptionSwapFor.id })).unwrap();
           
           result = parseFloat(tokenPosition.price.toString()) / parseFloat(swapForToken.price.toString());
-
-          console.log(result);
           
         } catch (err) {
           console.error("Error fetching tokens:", err);
