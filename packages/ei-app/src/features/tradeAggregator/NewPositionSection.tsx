@@ -91,7 +91,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           return {
             name: names[0],
             gas: quote.gas,
-            price: result,
+            price: result.toFixed(4),
           };
         });
         setQuoteData(processedData);        
