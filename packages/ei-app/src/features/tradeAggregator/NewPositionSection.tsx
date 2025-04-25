@@ -28,7 +28,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { fetchQuote, fetchQuoteParameters } from "../../../../components/src/slices/dexSlice";
+import { fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -73,20 +73,33 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   },[error,quoteError])
 
   useEffect(() => {
-    if (quote) {
-      const processedData = quote.protocols.map((protocolGroup: any[][]) => {
-        const firstProtocol = protocolGroup[0];
-        const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
-        return {
-          name: names[0],
-          gas: quote.gas,
-          volume: "",
-          price: "",
-        };
-      });
-      setQuoteData(processedData);
-    }
-  }, [quote]);  
+    const fetchProtocolsAndTokens = async () => {
+      if (quote && symbolOptionSwap && symbolOptionSwapFor) {
+        let result = 0;
+        try {
+          const tokenPosition = await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
+          const swapForToken = await dispatch(fetchToken({ id: symbolOptionSwapFor.id })).unwrap();
+          
+          result = parseFloat(tokenPosition.price.toString()) / parseFloat(swapForToken.price.toString());
+          
+        } catch (err) {
+          console.error("Error fetching tokens:", err);
+        }
+        const processedData = quote.protocols.map((protocolGroup: any[][]) => {
+          const firstProtocol = protocolGroup[0];
+          const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+          return {
+            name: names[0],
+            gas: quote.gas,
+            price: result,
+          };
+        });
+        setQuoteData(processedData);        
+      }
+    };
+  
+    fetchProtocolsAndTokens();
+  }, [quote]);
 
   useEffect(() => {
     if (

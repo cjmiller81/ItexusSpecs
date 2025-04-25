@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { QuoteParametersResponse } from "../models/QuoteParametersResponse";
 import { dexService } from "../services/dexService";
 import { OneInchQuoteResponse } from "../models/oneInchQuoteResponse";
+import { TokenResponse } from "../models/token/TokenResponse";
 
 interface QuoteRequest {
   tokenPositionSymbol: string;
@@ -78,7 +79,26 @@ export const fetchQuote = createAsyncThunk<
   }
 );
 
+export const fetchToken = createAsyncThunk<
+  TokenResponse,
+  { id: string },
+  { rejectValue: string }
+>(
+  "token/fetchToken",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const data = await dexService.getToken({ id });
+      return data;
+    } catch (error: any) {
+      const message =
+        typeof error?.response?.data === "string"
+          ? error.response.data
+          : error?.response?.data?.message || error?.message;
 
+      return rejectWithValue(message);
+    }
+  }
+);
 
 export const dexSlice = createSlice({
   name: "dex",
@@ -107,6 +127,12 @@ export const dexSlice = createSlice({
       .addCase(fetchQuote.rejected, (state, action) => {
         state.quoteLoading = false;
         state.quoteError = action.payload ?? "";
+      })
+      .addCase(fetchToken.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(fetchToken.rejected, (state, action) => {
+        state.error = action.payload ?? "";
       });
   },
 });
