@@ -36,9 +36,10 @@ interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
     selectedToken: string | null;
     onFilteredRowsChange?: (rows: WalletBalance[]) => void;
+    selectedChainNewPosition: string | null;
   }
 
-export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken }) => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
@@ -69,15 +70,17 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const { wallets } = useAppSelector(state => state.wallets);
 
   useEffect(() => {
-    if (selectedToken) {
+    if (selectedToken && selectedChainNewPosition) {
       const matchingRow = filteredRows.find(
-        row => row.tokenName?.toLowerCase() === selectedToken.toLowerCase()
+        row => row.tokenName?.toLowerCase() === selectedToken.toLowerCase() && 
+        row.chain?.toLowerCase() === selectedChainNewPosition.toLowerCase()
       );
+
       setSelectedRows(matchingRow?.tokenName ?? null);
     } else {
       setSelectedRows(null);
     }
-  }, [selectedToken, filteredRows]);  
+  }, [selectedToken,selectedChainNewPosition, filteredRows]);  
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
