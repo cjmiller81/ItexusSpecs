@@ -1,5 +1,4 @@
 import Logout from "@mui/icons-material/Logout"
-import Settings from "@mui/icons-material/Settings"
 import { Avatar } from "@mui/material"
 import Divider from "@mui/material/Divider"
 import IconButton from "@mui/material/IconButton"
@@ -89,12 +88,6 @@ export const UserMenu: React.FC<Props> = ({ defaultAvatar, avatarUrl, logOut }) 
           </MenuItem>
         </AppLink>
         <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          {t("Settings")}
-        </MenuItem>
         <MenuItem onClick={onLogOut}>
           <ListItemIcon>
             <Logout fontSize="small" />
