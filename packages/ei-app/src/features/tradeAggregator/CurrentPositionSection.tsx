@@ -96,7 +96,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
           }))
         : [],
     );
-  }, [wallets, selectedWallet]);
+  }, [ selectedWallet]);
 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
@@ -344,7 +344,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                 rowSelectionModel={selectedRows ? [selectedRows] : []}
                 checkboxSelection={false}
                 apiRef={apiRef}
-                getRowId={(x) => String(x.tokenName)}
+                getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
 
                 columns={getIndexResultWalletTableColumns()}
                 rows={filteredRows}
