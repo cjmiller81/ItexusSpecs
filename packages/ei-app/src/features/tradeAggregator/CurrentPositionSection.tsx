@@ -53,7 +53,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedRows, setSelectedRows] = useState<string | null>(null);
   const [selectedChain, setSelectedChain] = useState("");
-
+  const [addPositionError, setAddPositionError] = useState<string>("");
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
   const { tableData } = useAppSelector(
       state => state.marketCapWeightedModeling,
@@ -110,6 +110,27 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
       onFilteredRowsChange(filteredRows);
     }
   }, [filteredRows]);
+
+  useEffect(() => {
+    if (newToken && newBalance && selectedChain) {
+      const tokenNameLower = newToken.toLowerCase();
+      const selectedChainLower = selectedChain.toLowerCase();
+  
+      const isDuplicate = filteredRows.some(
+        row =>
+          row.tokenName?.toLowerCase() === tokenNameLower &&
+          row.chain?.toLowerCase() === selectedChainLower
+      );
+  
+      if (isDuplicate) {
+        setAddPositionError(t("TokenAlreadyExists"));
+      } else {
+        setAddPositionError("");
+      }
+    } else {
+      setAddPositionError("");
+    }
+  }, [newToken, newBalance, selectedChain, filteredRows]);
 
   useEffect(() => {
     if (filteredRows.length > 0 || tableData.length > 0) {
@@ -213,24 +234,14 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
 
   const handleSaveManualPosition = () => {
     if (newToken && newBalance) {
-      const tokenNameLower = newToken.toLowerCase();
-      const existingRowIndex = filteredRows.findIndex(row => row.tokenName?.toLowerCase() === tokenNameLower);
 
-      if (existingRowIndex >= 0) {
-        const updatedRows = [...filteredRows];
-        updatedRows[existingRowIndex].balance += parseFloat(newBalance);
-        setFilteredRows(updatedRows);
-      } else {
-        const newRow: WalletBalance = {
-          tokenName: newToken,
-          balance: parseFloat(newBalance),
-          chain: selectedChain,
-        };
-        setFilteredRows(prevRows => [newRow, ...prevRows]);
-      }
-
-      setNewToken("");
-      setNewBalance("");
+      const newRow: WalletBalance = {
+        tokenName: newToken,
+        balance: parseFloat(newBalance),
+        chain: selectedChain,
+      };
+  
+      setFilteredRows(prevRows => [newRow, ...prevRows]);
       setIsAddingManualPosition(false);
     }
   };
@@ -362,28 +373,43 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                     fullWidth
                     sx={{ marginBottom: 2 }}
                   />
-                <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
-                    <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
-                    <Select
-                        labelId="chain-select-label"
-                        value={selectedChain}
-                        label={t("Chain")}
-                        onChange={e => setSelectedChain(e.target.value)}
-                    >
-                        <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
-                        <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
-                        <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
-                        <MenuItem value="POLYGON">POLYGON</MenuItem>
-                        <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
-                        <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                        <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
-                    </Select>
+                <FormControl fullWidth size="small" sx={{ marginBottom: 2 }} error={!!addPositionError}>
+                  <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
+                  <Select
+                    labelId="chain-select-label"
+                    value={selectedChain}
+                    label={t("Chain")}
+                    onChange={e => {
+                      setSelectedChain(e.target.value);
+                      setAddPositionError("");
+                    }}
+                  >
+                    <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
+                    <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
+                    <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
+                    <MenuItem value="POLYGON">POLYGON</MenuItem>
+                    <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
+                    <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                    <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
+                  </Select>
+                  {addPositionError && (
+                    <Box sx={(theme) => ({
+                      color: theme.palette.error.main,
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      marginTop: '4px',
+                    })}>
+                      {addPositionError}
+                    </Box>
+                  )}
                 </FormControl>
                 </DialogContent>
                 <DialogActions>
                   <Button
                     variant="outlined"
-                    onClick={handleSaveManualPosition}>
+                    onClick={handleSaveManualPosition}
+                    disabled={Boolean(addPositionError) || !newToken || !newBalance || !selectedChain}
+                  >
                     {t("Add")}
                   </Button>
                   <Button
