@@ -32,7 +32,7 @@ import { fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../compon
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
-    onSelectedTokenChange?: (tokenInfo: any) => void;
+    onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
     filteredRows: WalletBalance[]; 
   }
 
@@ -60,8 +60,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [errorQuote, setErrorQuote] = useState<string | null>(null);
   const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
 
-  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase())
-  ?.balance;
+  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
+  .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
+
 
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
@@ -132,10 +133,10 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   
     if (matchedToken) {
       setSelectedToken(matchedToken.sym || null);
-      onSelectedTokenChange?.(matchedToken.sym);
+      onSelectedTokenChange?.(matchedToken.sym, selectedChain);
     } else {
       setSelectedToken(null);
-      onSelectedTokenChange?.(null);
+      onSelectedTokenChange?.(null,null);
     }
   }, [symbolOptionSwap, selectedChain, selectedWallet]);
 
