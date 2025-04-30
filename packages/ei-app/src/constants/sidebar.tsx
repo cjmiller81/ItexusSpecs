@@ -30,10 +30,7 @@ function getHomeItems(): SidebarListItem[] {
   ];
 }
 
-function getPlatformsItems(product: Product | null): SidebarListItem[] {
-  const pageAccess = product?.metadata?.page_access ? JSON.parse(product.metadata.page_access) : [];
-  const isChartsAvailable = pageAccess.includes("/charts");
-  
+function getPlatformsItems(): SidebarListItem[] {
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -53,14 +50,10 @@ function getPlatformsItems(product: Product | null): SidebarListItem[] {
       title: "Trading",
       icon: <SyncAltIcon />,
       children: [
-        ...(isChartsAvailable
-          ? [
-              {
-                title: t("TradingSubpage", { ns: "SideBar" }),
-                href: "/charts",
-              },
-            ]
-          : []),
+        {
+          title: t("TradingSubpage", { ns: "SideBar" }),
+          href: "/charts",
+        },  
         {
           title: t("Derivatives", { ns: "SideBar" }),
           href: "/derivatives",
@@ -208,7 +201,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
   ];
 }
 
-export function getSidebarMenuItems(theme: Theme, product: Product | null): SidebarItems[] {
+export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
@@ -216,7 +209,7 @@ export function getSidebarMenuItems(theme: Theme, product: Product | null): Side
     },
     {
       title: t("Platform", { ns: "SideBar" }),
-      sidebarListItems: getPlatformsItems(product),
+      sidebarListItems: getPlatformsItems(),
     },
 
     {
