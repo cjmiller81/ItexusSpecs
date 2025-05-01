@@ -20,6 +20,8 @@ import {
   InputBase,
   Switch,
   DialogTitle,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import {
   AppAccordionSection,
@@ -96,6 +98,8 @@ export const IndexResultsSection = ({
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
+  const [selectedChain, setSelectedChain] = useState("");
+  const [addPositionError, setAddPositionError] = useState<string>("");
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -145,6 +149,27 @@ export const IndexResultsSection = ({
     const allRowIds = filteredRows.map(row => row.tokenName).filter((id): id is string => id !== undefined);
     setSelectedRows(allRowIds);
   }, [filteredRows]);
+
+    useEffect(() => {
+      if (newToken && newBalance && selectedChain) {
+        const tokenNameLower = newToken.toLowerCase();
+        const selectedChainLower = selectedChain.toLowerCase();
+    
+        const isDuplicate = filteredRows.some(
+          row =>
+            row.tokenName?.toLowerCase() === tokenNameLower &&
+            row.chain?.toLowerCase() === selectedChainLower
+        );
+    
+        if (isDuplicate) {
+          setAddPositionError(t("TokenAlreadyExists"));
+        } else {
+          setAddPositionError("");
+        }
+      } else {
+        setAddPositionError("");
+      }
+    }, [newToken, newBalance, selectedChain, filteredRows]);
 
   useEffect(() => {
     if (filteredRows.length > 0 || tableAssets.length > 0) {
@@ -287,28 +312,19 @@ export const IndexResultsSection = ({
     setIsAddingManualPosition(false);
   };
 
-  const handleSaveManualPosition = () => {
-    if (newToken && newBalance) {
-      const tokenNameLower = newToken.toLowerCase();
-      const existingRowIndex = filteredRows.findIndex(row => row.tokenName?.toLowerCase() === tokenNameLower);
+   const handleSaveManualPosition = () => {
+      if (newToken && newBalance) {
 
-      if (existingRowIndex >= 0) {
-        const updatedRows = [...filteredRows];
-        updatedRows[existingRowIndex].balance += parseFloat(newBalance);
-        setFilteredRows(updatedRows);
-      } else {
         const newRow: WalletBalance = {
           tokenName: newToken,
           balance: parseFloat(newBalance),
+          chain: selectedChain,
         };
+    
         setFilteredRows(prevRows => [newRow, ...prevRows]);
+        setIsAddingManualPosition(false);
       }
-
-      setNewToken("");
-      setNewBalance("");
-      setIsAddingManualPosition(false);
-    }
-  };
+    };
   const handleConfirm = () => {
     setOpen(false);
   };
@@ -392,10 +408,10 @@ export const IndexResultsSection = ({
                   backgroundColor: "white",
                   width: "98%",
                   height: "40px",
-                  color: "black",
+                  color: "#1e90ff",
                   justifyContent: "flex-start",
                   paddingLeft: "15px",
-                  fontSize: "11px",
+                  fontSize: "11px bold",
                 }}
                 variant="outlined"
                 onClick={() => setIsAddingManualPosition(true)}>
@@ -457,11 +473,41 @@ export const IndexResultsSection = ({
                     fullWidth
                     sx={{ marginBottom: 2 }}
                   />
+
+                  <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
+                      <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
+                      <Select
+                        labelId="chain-select-label"
+                        value={selectedChain}
+                        label={t("Chain")}
+                        onChange={e => setSelectedChain(e.target.value)}
+                      >
+                        <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
+                        <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
+                        <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
+                        <MenuItem value="POLYGON">POLYGON</MenuItem>
+                        <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
+                        <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                        <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
+                      </Select>
+                      {addPositionError && (
+                        <Box sx={(theme) => ({
+                          color: theme.palette.error.main,
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          marginTop: '4px',
+                        })}>
+                          {addPositionError}
+                        </Box>
+                      )}
+                    </FormControl>
                 </DialogContent>
                 <DialogActions>
                   <Button
                     variant="outlined"
-                    onClick={handleSaveManualPosition}>
+                    onClick={handleSaveManualPosition}
+                    disabled={Boolean(addPositionError) || !newToken || !newBalance || !selectedChain}
+                  >
                     {t("Add")}
                   </Button>
                   <Button
@@ -824,5 +870,5 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   ".MuiDataGrid-withBorderColor": {
     bgColor: "transparent",
-  },
+  }, 
 }));

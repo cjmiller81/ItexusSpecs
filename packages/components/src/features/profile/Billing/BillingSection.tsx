@@ -28,7 +28,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const [cards, setCards] = useState<PaymentCardModel[]>([]);
   const [cardToDeleteIndex, setCardToDeleteIndex] = useState<number | undefined>(undefined);
   const [cardToEditIndex, setCardToEditIndex] = useState<number | undefined>(undefined);
-  const { plans, loading, error, subscriptions,billing  } = useSelector((state: RootState) => state.billing);
+  const { plans, error, subscriptions,billing  } = useSelector((state: RootState) => state.billing);
   const paymentMethods = useSelector((state: RootState) => state.billing.paymentMethods);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[] | null>(null);

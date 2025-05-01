@@ -58,6 +58,14 @@ function getOptionTraderPageItems(): SidebarListItem[] {
           title: t("Calls", { ns: "SideBar" }),
           href: "/optionTrade_calls",
         },
+        {
+          title: t("Puts", { ns: "SideBar" }),
+          href: "/optionTrade_puts",
+        },
+        {
+          title: t("Straddle", { ns: "SideBar" }),
+          href: "/optionTrade_straddle",
+        },
       ],
     },
   ];

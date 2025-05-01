@@ -106,12 +106,16 @@ export function ManagedOrderRow(props: { row: IManagedOrder }) {
   });
 
   const legsCheckout = () => {
-    return row.legs &&
-      row.legs.length > 0 &&
-      (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption")
-      ? "Option Legs"
-      : row.legs[0].marketSymbol;
+    if (row.legs && row.legs.length > 0) {
+      if (row.legs[0].marketAssetType === "Option" || row.legs[0].marketAssetType === "FutureOption") {
+        return "Option Legs";
+      }
+      return row.legs[0].marketSymbol;
+    }
+
+    return "";
   };
+  
 
   return (
     <ThemeProvider theme={themeConfig}>

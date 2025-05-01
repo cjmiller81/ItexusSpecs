@@ -16,6 +16,7 @@ type OryContextType = {
   session: Session | undefined
   settingsFlow?: SettingsFlow
   logOut: () => Promise<void>
+  renewSession: () => Promise<void>
   onUpdateProfile: (firstName: string, lastName: string) => Promise<void>
   createSettingsFow: () => Promise<SettingsFlow>
   onChangePassword: (password: string) => Promise<void>
@@ -168,6 +169,22 @@ export function OryAuthGateway({
     } catch (error) {}
   }
 
+  const renewSession = async () => {
+    try {
+      const { data: flow } = await ory.createBrowserLogoutFlow();
+    
+      const currentUrl = window.location.href;
+      localStorage.setItem("return_to", currentUrl);
+      await ory.updateLogoutFlow({ token: flow.logout_token, returnTo: currentUrl});
+    
+      setSession(undefined);
+      router.push(LoginPath)
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+  
+
   useEffect(() => {
     // If the router is not ready yet, or we already have a session, do nothing.
     if ([ErrorPath, LogoutPath, LoginPath, RecoveryPath, RegistrationPath].indexOf(pathname) > -1) {
@@ -194,6 +211,7 @@ export function OryAuthGateway({
       session,
       settingsFlow: currentSettingsFlow,
       logOut: handleLogout,
+      renewSession,
       onChangePassword,
       createSettingsFow,
       onUpdateProfile,
@@ -206,6 +224,7 @@ export function OryAuthGateway({
       currentSettingsFlow,
       onChangePassword,
       handleLogout,
+      renewSession,
       onUpdateProfile,
       createSettingsFow,
       onTotpSubmit,

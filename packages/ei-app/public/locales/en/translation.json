@@ -22,7 +22,20 @@
     "SelectFilter": "Select pre-built filter:",
     "SaveFilterAs": "Save filter as:",
     "FilterTokens": "Filter Tokens",
-    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?"
+    "DeleteDialogContent": "This will fully delete your pre-built filter, are you sure you want to proceed?",
+    "FilterBuilderTrainingVideos": "Filter Builder Training Videos",
+    "IntroductionVideo": "Introduction Video",
+    "HowBuildFilter": "How to Build a Filter",
+    "HowBuildLogicGate": "About Each Logic Gate",
+    "FilterBuilderIntroGuide": "Filter Builder Intro",
+    "BuildingNORGate" :"Building the NOR Gate",
+    "BuildingNANDGate": "Building the NAND Gate",
+    "BuildingORGate": "Building the OR Gate",
+    "BuildingANDGate": "Building the AND Gate",
+    "LogicGateDiagramAND": "About the AND Gate",
+    "LogicGateDiagramNOTAND": "About the NOT And (NAND) Gate",
+    "LogicGateDiagramNORGate": "About the OR Gate",
+    "LogicGateDiagramOR": "About the Not Or (NOR)"
   },
   "CalendarEventTile": {
     "Proof": "Proof",
@@ -49,7 +62,8 @@
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
-    "Personal": "Personal"
+    "Personal": "Personal",
+    "WalletAddressAlreadyInTheList": "Wallet Address is already in the List"
   },
   "MyWalletsSection": {
     "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
@@ -115,12 +129,15 @@
     "ApplicationUnlinked": "Application unlinked.",
     "ApplicationLinked": "Application linked.",
     "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
-    "AndGoogleApp": "and Google Authenticator"
+    "AndGoogleApp": "and Google Authenticator",
+    "AddAuthenticatorApp": "Add Authenticator App",
+    "ElanInsightsRequires": "Elan Insights requires adding an Authenticator App when any wallet or exchange connections are saved. Please add an app of your choosing, recommended apps are"
   },
   "IndexModelingSection": {
     "AddSavedWallet": "+ADD SAVED WALLET",
     "AddSavedPosition": "+ADD SAVED POSITION",
     "CurrentPosition": "Current Position",
+    "NewPosition": "New Position",
     "RebalancedIndexQuantities": "Rebalanced Index Quantities",
     "PositionAllocationUpdates": "Position Allocation Updates",
     "Clear": "Clear",
@@ -128,6 +145,7 @@
     "Save": "Save",
     "AddManualPosition": "+ADD MANUAL POSITION",
     "TokenName": "Token name",
+    "Chain": "Chain",
     "Qty": "Qty",
     "Add": "Add",
     "Cancel": "Cancel",
@@ -180,7 +198,8 @@
     "NextFillInTheForm": "3.Next, fill in the form as shown below, and click 'Generate Key'.",
     "BeSureToCopyPasteEachAPIKeys":"Be sure to copy and paste each of the API keys, one dithered gray (API Key), and one white (Private Key), and paste them each one-at-a-time to the appropriate fields above.",
     "IMPORTANTBeSure": "IMPORTANT: Be sure to do this before closing the Kraken add API Key window; you will immediately lose visibility to these keys as soon as you do so.",
-    "TokensToTrade":"Tokens To Trade"
+    "TokensToTrade":"Tokens To Trade",
+    "TokenAlreadyExists": "Token already exists on the selected chain!"
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
@@ -238,6 +257,29 @@
     "CardNumber": "Card Number",
     "CVC": "CVC",
     "ExpirationDate": "Expiration Date"
+  },
+  "NewPositionSection": {
+    "Bridge": "Bridge",
+    "Token": "Token",
+    "TokenPosition": "Token Position",
+    "Swap": "Swap",
+    "Qty": "Qty",
+    "Chain": "Chain",
+    "SwapFor": "Swap For",
+    "DEX": "DEX",
+    "Volume": "Volume",
+    "Price": "Price",
+    "EstGasFees": "Est. Gas Fees",
+    "Search": "Search",
+    "UseMax": "Use Max",
+    "RefreshQuotes": "Get Quotes",
+    "MissingInputs": "Please provide the following inputs",
+    "EnterAmount": "Enter Amount",
+    "SelectChain": "Select Chain",
+    "SelectToken": "Select Token",
+    "LastUpdate": "Last Update",
+    "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
+    "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",

@@ -6,6 +6,7 @@ import { configureAxiosTIMocks } from "@/mocks/mockAxiosTradeInstruments"
 import { configureFifoUsersMock } from "@/mocks/configureFifoUsersMock"
 import { configureDteUsersMock } from "./configureDteUsersMock"
 import { configureAdminUsersMock } from "./configureAdminUsersMock"
+import { configureMachanical0DteSpxMock } from "./configureDteMechanicalUsersMock"
 
 export const configureAxiosMockHandlers = (axiosInstance: AxiosInstance) => {
     const mock = new MockAdapter(axiosInstance)
@@ -15,4 +16,5 @@ export const configureAxiosMockHandlers = (axiosInstance: AxiosInstance) => {
     configureAxiosTIMocks(mock)
     configureFifoUsersMock(mock)
     configureDteUsersMock(mock)
+    configureMachanical0DteSpxMock(mock)
 }

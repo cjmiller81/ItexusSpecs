@@ -434,9 +434,10 @@ export function TradeTable() {
                     textTransform: "none",
                     borderBottom: `1px solid ${borderColor}`,
                     borderRadius: "8px",
-                    padding: "0 0 5px 0",
                     minWidth: "130px",
                     color: textColor,
+                    display: "flex",    
+                    alignItems: "center",
                   }}
                 >
                   {tradeData.mkt || "Select Market"}

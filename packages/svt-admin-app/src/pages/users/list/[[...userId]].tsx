@@ -62,7 +62,6 @@ export default function Reports() {
     });
 
     handleSetSelection(currentUser.userId);
-    dispatch(fetchUserDetails({ userId: currentUser.userId }));
   }, [currentUser, dispatch]);
 
   useEffect(() => {

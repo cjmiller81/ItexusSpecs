@@ -17,36 +17,11 @@ export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
   const theme = useTheme()
   const dispatch = useAppDispatch()
-
   const billing = useSelector((state: RootState) => state.billing)
+  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme))
 
   useEffect(() => {
-    const fetchBillingData = async () => {
-      try {
-        const billingData = await dispatch(getBillingAsync()).unwrap();
-        if (billingData?.id) {
-          const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
-          const activeSubscription = subscriptionsData
-            ?.filter((sub) => sub.status === "active")
-            ?.sort((a, b) => b.created - a.created)[0];
-
-          if (activeSubscription?.items[0]?.price?.productId) {
-            const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
-            dispatch(setProduct(productData));
-          }
-        }
-      } catch (error) {
-        console.error("Billing initialization error:", error);
-      }
-    };
-
-    fetchBillingData();
-  }, [dispatch]);
-
-  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme, billing.product))
-
-  useEffect(() => {
-    setSideBarOptions(getSidebarMenuItems(theme, billing.product))
+    setSideBarOptions(getSidebarMenuItems(theme))
   }, [billing.product?.metadata])
 
   const { session, logOut } = useOry()

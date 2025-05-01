@@ -4,6 +4,7 @@ import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import PeopleIcon from "@mui/icons-material/People";
 import React from "react";
+import SettingsIcon from '@mui/icons-material/Settings';
 
 function getUsersItems(): SidebarListItem[] {
   return [
@@ -39,13 +40,25 @@ function getStrategiesItems(): SidebarListItem[] {
       open: false,
       children: [
         {
-          title: t("ZeroDteUsers", { ns: "SideBar" }),
-          href: "/strategies/zero-dte/users",
+          title: t("0DTEIronFlies", { ns: "SideBar" }),
+          href: "/strategies/0dte-iron-flies/users",
         },
         // {
         //   title: t("ZeroDteReports", { ns: "SideBar" }),
         //   href: "/strategies/zero-dte/reports",
         // },
+      ],
+    },
+    {
+      title: i18next.t("ZeroDteMechanical", { ns: "SideBar" }),
+      icon: <SettingsIcon />,
+      open: false,
+      children: [
+        {
+          title: t("ZeroDteUsers", { ns: "SideBar" }),
+          href: "/strategies/0dte-mechanical/users",
+        },
+
       ],
     },
   ];

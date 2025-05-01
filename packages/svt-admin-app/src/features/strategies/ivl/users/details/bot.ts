@@ -1,4 +1,4 @@
-import { ITradeQuantity } from "@/features/strategies/dte/users/types";
+import { ITradeQuantity } from "@/features/strategies/0dte-iron-flies/users/types";
 
 export interface Bot {
   isStarted: boolean;

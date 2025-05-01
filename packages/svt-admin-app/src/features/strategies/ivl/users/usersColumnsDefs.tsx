@@ -6,7 +6,7 @@ import { GridActionsCellItem, GridCellParams, GridColDef, GridRenderCellParams, 
 import { IvlUser } from "./IvlUser"
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Theme, lighten } from "@mui/system"
-import { ITradeQuantity } from "../../dte/users/types"
+import { ITradeQuantity } from "../../0dte-iron-flies/users/types"
 import CheckIcon from '@mui/icons-material/Check';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { Chip } from "@mui/material"

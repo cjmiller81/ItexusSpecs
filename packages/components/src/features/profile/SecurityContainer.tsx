@@ -152,7 +152,10 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
                 sx={{ mt: 1, width: "30%", marginTop: 2 }}
                 label={t("VerificationCode")}
                 name="code"
-                inputProps={{ size: "small" }}
+                inputProps={{
+                  size: "small",
+                  autoComplete: "off",
+                }}
               />
               <LoadingButton
                 disabled={settingsFlowCreating}
@@ -231,7 +234,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     <Typography
       textAlign="center"
       variant="body1">
-      {t("AddAuthApp")}{" "}
+      {t("ElanInsightsRequires")}{" "}
       <Link
         href="https://www.lastpass.com"
         rel="noreferrer"
@@ -326,19 +329,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         </Box>
         <Box sx={{ width: "100%" }}>
           <ProfileContainer
-            title={t("MultiFactorAuthenticationTitle")}
+            title={t("AddAuthenticatorApp")}
             sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-            <Formik<SmsMfaModel>
-              initialValues={{
-                enabled: false,
-                phoneNumber: "",
-              }}
-              validateOnChange={false}
-              validationSchema={SmsMfaModelSchema}
-              onSubmit={() => {}}>
-              {renderMFARow(t("EnableSMSMFA"), t("PhoneNumber"), "enabled", "phoneNumber")}
-            </Formik>
-            <Divider sx={{ marginBlock: 2 }} />
             <Formik<TotpAuthenticatorModel>
               initialValues={{
                 code: "",

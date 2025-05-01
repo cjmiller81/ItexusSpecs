@@ -112,7 +112,7 @@
   },
   "BrokerageConnectionContainer": {
     "AuthorizedForTrading": "Authorized for Trading",
-    "AuthorizationExpires": "Authorization expires: Feb 27, 2025 9:58AM",
+    "AuthorizationExpires": "Authorization expires", 
     "Disconnect": "Disconnect",
     "Status": "Status",
     "AccountNumber": "Account Number",
@@ -148,7 +148,9 @@
     "OptionTrader": "Option Trader",
     "TradingSets": "Trading Sets",
     "Calls": "Calls",
-    "SetList": "Set List"
+    "SetList": "Set List",
+    "Puts": "Puts",
+    "Straddle": "Straddle"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
@@ -258,6 +260,8 @@
     "CreateNewSub-Profile": "+ Create New Sub-Profile",
     "SelectSub-Profile": "Select Sub-Profile",
     "CallOptionSet": "Call Option Set",
+    "PutOptionSet": "Put Option Set",
+    "StraddleOptionSet": "Straddle Option Set",
     "Account": "Account",
     "Save": "Save",
     "SendOrder": "+Send Order",
@@ -293,6 +297,12 @@
     "AddTier": "Add Tier",
     "Limit": "Limit",
     "OCO": "OCO",
-    "SaveSubProfileName": "Save Sub-Profile Name As:"
+    "SaveSubProfileName": "Save Sub-Profile Name As:",
+    "Cancel": "Cancel",
+    "Delete": "Delete",
+    "PleaseConfirmDelete": "Please confirm you want to delete \"{{name}}\"?",
+    "Confirm": "Confirm",
+    "PleaseConfirmUpdate": "Please confirm you want to save changes to \"{{name}}\"?",
+    "UpdatingError": "Sub-profile changes can't be saved"
   }
 }

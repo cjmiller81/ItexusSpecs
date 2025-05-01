@@ -20,7 +20,7 @@ import { ICurrentDayFills } from "./currentDayFillsInterface";
 import { getCurrentDayFillsColumns } from "./currentDayFillsColumnsDefs";
 import { IWorkingOrder } from "./workingOrderInterface";
 import { getWorkingOrdersColumns } from "./workingOrdersColumnsDefs";
-import { StrategyBot } from "@/features/strategies/dte/users/types";
+import { StrategyBot } from "@/features/strategies/0dte-iron-flies/users/types";
 
 type Props = BoxProps & {
   user: IvlUser;
