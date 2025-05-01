@@ -54,6 +54,21 @@ export const dexService = {
     };
   },
 
+  getGas: async ({ chainName }: {
+    chainName: string;
+  }) => {
+    const response = await appAxios.get(
+      `/api/1inch/gas/${chainName}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return {
+      ...response.data,
+    };
+  },
+
   getToken: async ({id}: {id:string}): Promise<TokenResponse> => {
     const response = await appAxios.get<TokenResponse>(`/tokens/${id}`,
       {

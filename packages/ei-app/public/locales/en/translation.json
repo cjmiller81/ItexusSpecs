@@ -269,7 +269,7 @@
     "DEX": "DEX",
     "Volume": "Volume",
     "Price": "Price",
-    "EstGasFees": "Est. Gas Fees",
+    "EstGasFees": "Est. Gas Fees ({{value}})",
     "Search": "Search",
     "UseMax": "Use Max",
     "RefreshQuotes": "Get Quotes",
@@ -279,7 +279,8 @@
     "SelectToken": "Select Token",
     "LastUpdate": "Last Update",
     "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
-    "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again"
+    "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again",
+    "EstGasFeesUSD": "Est Gas Fees (USD)"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
