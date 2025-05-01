@@ -269,7 +269,7 @@
     "DEX": "DEX",
     "Volume": "Volume",
     "Price": "Price",
-    "EstGasFees": "Est. Gas Fees ({{value}})",
+    "EstGasFees": "Est. Gas Fees {{value}}",
     "Search": "Search",
     "UseMax": "Use Max",
     "RefreshQuotes": "Get Quotes",
