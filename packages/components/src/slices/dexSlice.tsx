@@ -13,6 +13,10 @@ interface QuoteRequest {
   swapForId: string;
 }
 
+interface GetGasArgs {
+  chainName: string;
+}
+
 interface OneInchQuoteRequest {
   chainName: string;
   fromTokenAddress: string;
@@ -74,6 +78,27 @@ export const fetchQuote = createAsyncThunk<
           ? error.response.data
           : error?.response?.data?.message || error?.message;
       
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const fetchGas = createAsyncThunk<
+  any,
+  { chainName: string },
+  { rejectValue: string }
+>(
+  "quote/fetchGas",
+  async ({ chainName }, { rejectWithValue }) => {
+    try {
+      const data = await dexService.getGas({ chainName });
+      return data;
+    } catch (error: any) {
+      const message =
+        typeof error?.response?.data === "string"
+          ? error.response.data
+          : error?.response?.data?.message || error?.message;
+
       return rejectWithValue(message);
     }
   }

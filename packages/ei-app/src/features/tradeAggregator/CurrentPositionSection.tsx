@@ -76,7 +76,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
         row.chain?.toLowerCase() === selectedChainNewPosition.toLowerCase()
       );
 
-      setSelectedRows(matchingRow?.tokenName ?? null);
+       setSelectedRows(`${matchingRow?.tokenName?.toLowerCase()}-${matchingRow?.chain?.toLowerCase()}`);
     } else {
       setSelectedRows(null);
     }

@@ -28,7 +28,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -77,15 +77,17 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     const fetchProtocolsAndTokens = async () => {
       if (quote && symbolOptionSwap && symbolOptionSwapFor) {
         let result = 0;
+        let chainPrice = 0;
+
         try {
 
-          const сoinGeckoChainId = (chain: string) => {
+          const coinGeckoChainId = (chain: string) => {
             switch (chain.toLowerCase()) {
               case "ethereum":
               case "optimism":
               case "arbitrum":
                 return "ethereum";
-              case "bnb":
+              case "bnb chain":
                 return "binancecoin";
               case "polygon":
                 return "matic-network";
@@ -95,6 +97,9 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                 return "ethereum"; 
             }
           };
+
+          const chainPosition = await dispatch(fetchToken({ id: coinGeckoChainId(selectedChain) })).unwrap();
+          chainPrice = Number(chainPosition.price.toString());
           const tokenPosition = await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
           const swapForToken = await dispatch(fetchToken({ id: symbolOptionSwapFor.id })).unwrap();
           
@@ -103,13 +108,31 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         } catch (err) {
           console.error("Error fetching tokens:", err);
         }
+
+        let baseFee: any = 0;
+
+        try{
+          const response = await dispatch(fetchGas({chainName: selectedChain}));
+          if(selectedChain.toUpperCase() !== "BNB CHAIN")
+          {
+            baseFee = response.payload.baseFee;
+          }
+          else{
+            baseFee = response.payload.standard;
+          }
+        }
+        catch(err){
+          console.error("Error fetching gas:", err)
+        }
+        
         const processedData = quote.protocols.map((protocolGroup: any[][]) => {
           const firstProtocol = protocolGroup[0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
           return {
             name: names[0],
-            gas: quote.gas,
+            gas: parseFloat(((quote.gas * baseFee) / 1e18).toFixed(6)),
             price: result.toFixed(4),
+            gasUSD: parseFloat((((quote.gas * baseFee) / 1e18) * chainPrice).toFixed(3))
           };
         });
         setQuoteData(processedData);        
@@ -537,6 +560,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     </TableCell>
                     <TableCell>{row.price}</TableCell>
                     <TableCell>{row.gas}</TableCell>
+                    <TableCell>{row.gasUSD}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
