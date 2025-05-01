@@ -45,24 +45,16 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
      ? Math.floor((monthlyPlan.unitAmount ?? 0)) / 100
      : Math.floor((yearlyPlan.unitAmount ?? 0)) / 100;
 
-  const plansInfo: PermissionItem[] = products
-    ? products
-        .filter((product) => product.id === plan.productId && product.active === true)
-        .flatMap((product) => [
-          {
-            permissionValue: product.marketingFeatures[0]?.name || "N/A",
-            isEnabled: active,
-          },
-          {
-            permissionValue: product.marketingFeatures[1]?.name || "N/A",
-            isEnabled: active,
-          },
-          {
-            permissionValue: product.marketingFeatures[2]?.name || "N/A",
-            isEnabled: active,
-          },
-        ])
-    : [];
+     const plansInfo: PermissionItem[] = products
+     ? products
+         .filter((product) => product.id === plan.productId && product.active === true)
+         .flatMap((product) =>
+           product.marketingFeatures.map((feature) => ({
+             permissionValue: `${feature?.name || "N/A"}`,
+             isEnabled: active,
+           }))
+         )
+     : [];
 
     const productName = products?.find((product) => product.id === plan.productId && product.active === true)?.name || "Unknown Plan";
     const firstWord = productName.split(" ")[0];
