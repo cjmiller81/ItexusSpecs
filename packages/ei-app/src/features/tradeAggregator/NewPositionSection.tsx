@@ -78,6 +78,23 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       if (quote && symbolOptionSwap && symbolOptionSwapFor) {
         let result = 0;
         try {
+
+          const сoinGeckoChainId = (chain: string) => {
+            switch (chain.toLowerCase()) {
+              case "ethereum":
+              case "optimism":
+              case "arbitrum":
+                return "ethereum";
+              case "bnb":
+                return "binancecoin";
+              case "polygon":
+                return "matic-network";
+              case "avalanche":
+                return "avalanche-2";
+              default:
+                return "ethereum"; 
+            }
+          };
           const tokenPosition = await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
           const swapForToken = await dispatch(fetchToken({ id: symbolOptionSwapFor.id })).unwrap();
           
@@ -170,6 +187,18 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   const onInputChangeSwap = (value: string) => {
     setInputSearchSwap(value); 
   };
+
+  const getGasTokenSymbol = (chain: string): string => {
+    const chainMap: Record<string, string> = {
+      "ETHEREUM": "ETH",
+      "OPTIMISM": "ETH",
+      "ARBITRUM": "ETH",
+      "BNB CHAIN": "BNB",
+      "POLYGON": "MATIC",
+      "AVALANCHE": "AVAX",
+    };
+    return chainMap[chain.toUpperCase()] || "";
+  };  
 
   const generateErrorMessage = () => {
     const errors: string[] = [];
@@ -490,7 +519,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>
                 <TableCell>{t("Price")}</TableCell>
-                <TableCell>{t("EstGasFees")}</TableCell>
+                <TableCell>{t("EstGasFees", { value: getGasTokenSymbol(selectedChain) })}</TableCell>
+                <TableCell>{t("EstGasFeesUSD")}</TableCell>
               </TableRow>
             </TableHead>
 
