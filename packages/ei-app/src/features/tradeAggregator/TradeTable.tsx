@@ -122,7 +122,7 @@ export function TradeTable() {
       return;
     }
 
-    dispatch(getTradablePairs(debouncedSymbol));
+    dispatch(getTradablePairs(debouncedSymbol.toUpperCase()));
     setShowMarketSelector(true);
   }, [debouncedSymbol, dispatch]);
 
@@ -134,8 +134,8 @@ export function TradeTable() {
     }
 
     const crossPair = getCrossPair(tradeData.mkt);
-    const matchingPosition = balanceData.find(position => position.asset === crossPair);
-
+    const matchingPosition = balanceData.find(position => position.asset.toLowerCase() === crossPair.toLowerCase());
+    
     if (matchingPosition) {
       setSelectedPositions([matchingPosition.asset]);
       setCrossPairWarning(null);
