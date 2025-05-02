@@ -100,6 +100,7 @@ export const IndexResultsSection = ({
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [selectedChain, setSelectedChain] = useState("");
   const [addPositionError, setAddPositionError] = useState<string>("");
+  const [shouldShowGrid, setShouldShowGrid] = useState<boolean>(false);
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -700,6 +701,7 @@ export const IndexResultsSection = ({
           </Grid>
         </Grid>
 
+        {shouldShowGrid && (
         <Grid
           container
           direction="row"
@@ -821,7 +823,7 @@ export const IndexResultsSection = ({
         </DialogActions>
       </Dialog>
           </Box>
-        </Grid>
+        </Grid>)}
       </Grid>
     </AppAccordionSection>
   );
