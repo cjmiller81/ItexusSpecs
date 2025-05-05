@@ -16,8 +16,12 @@ import {
   TableBody,
   Paper,
   Box,
-  Checkbox
+  Checkbox,
+  Tooltip,
+  InputAdornment,
+  IconButton
 } from "@mui/material";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
 import { StyledSymbolLookup } from "../MyWallets/HistoricalWalletsWorth";
 import fetchLookupPage from "../Common/fetchLookupPage";
@@ -59,10 +63,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const { data, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
   const [errorQuote, setErrorQuote] = useState<string | null>(null);
   const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
-
+  const [tokenAddress,setTokenAddress] = useState<string | null>(null);
+  const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
   .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
-
 
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
@@ -192,6 +196,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       setQuoteData([]);
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
 
@@ -258,21 +264,48 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       setQuoteData([]);
       setErrorMessage(err);
       setLastUpdated(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
     } else {
       setErrorMessage(null);
   
-      if (symbolOptionSwap && symbolOptionSwapFor && selectedChain && newBalance) {
-        
-        dispatch(fetchQuoteParameters({
-          tokenPositionSymbol: extractSymbol(symbolOptionSwap.label),
-          chainName: selectedChain,
-          qty: Number(newBalance),
-          swapForSymbol: extractSymbol(symbolOptionSwapFor.label),
-          tokenPositionId: symbolOptionSwap.id,
-          swapForId: symbolOptionSwapFor.id,
-        }));
-      }
-  
+      const fetchAndSetAddresses = async () => {
+        if (
+          symbolOptionSwap &&
+          symbolOptionSwapFor &&
+          selectedChain &&
+          newBalance
+        ) {
+          const result = await dispatch(
+            fetchQuoteParameters({
+              tokenPositionSymbol: extractSymbol(symbolOptionSwap.label),
+              chainName: selectedChain,
+              qty: Number(newBalance),
+              swapForSymbol: extractSymbol(symbolOptionSwapFor.label),
+              tokenPositionId: symbolOptionSwap.id,
+              swapForId: symbolOptionSwapFor.id,
+            })
+          );
+    
+          if (fetchQuoteParameters.fulfilled.match(result)) {
+            const data = result.payload;
+            if (data?.fromTokenAddress && data?.toTokenAddress) {
+              setTokenAddress(data.fromTokenAddress);
+              setTokenAddressSwapFor(data.toTokenAddress);
+            } else {
+              setTokenAddress(null);
+              setTokenAddressSwapFor(null);
+            }
+          } else {
+            setTokenAddress(null);
+            setTokenAddressSwapFor(null);
+            console.error("Ошибка API:", result);
+          }
+        }
+      };
+    
+      fetchAndSetAddresses();
+      
       const now = new Date();
       const formatted = now.toLocaleString(undefined, {
         year: 'numeric',
@@ -356,19 +389,50 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         {activeTab === "swap" ? (
             <Grid container spacing={2}>
                 <Grid item xs={3.7}>
-                <StyledSymbolLookup
-                    pageSize={LookupPageSize}
-                    onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwap)}
-                    loading={lookupLoading}
-                    disableListWrap
-                    value={symbolOptionSwap}
-                    onChange={(_event, value) => onOptionChangeSwap(value)}
-                    autoComplete={true}
-                    onInputChange={(_event, value) => onInputChangeSwap(value)} 
-                    filterOptions={x => x}
-                    inputValue={inputSearchSwap}
-                    label={t("TokenPosition")}
-                    />
+                  <Box>
+                    <StyledSymbolLookup
+                        pageSize={LookupPageSize}
+                        onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwap)}
+                        loading={lookupLoading}
+                        disableListWrap
+                        value={symbolOptionSwap}
+                        onChange={(_event, value) => onOptionChangeSwap(value)}
+                        autoComplete={true}
+                        onInputChange={(_event, value) => onInputChangeSwap(value)} 
+                        filterOptions={x => x}
+                        inputValue={inputSearchSwap}
+                        label={t("TokenPosition")}
+                        />
+                    {tokenAddress && tokenAddressSwapFor && (
+                    <>
+                      <Typography sx={{ marginTop: "15px" }}>{t("TokensAddress")}</Typography>
+                      <TextField
+                        value={tokenAddress}
+                        variant="outlined"
+                        fullWidth
+                        InputProps={{
+                          sx: { fontSize: '0.6rem' },
+                          readOnly: true,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("Copy")}>
+                                <IconButton
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(tokenAddress);
+                                  }}
+                                  edge="end"
+                                >
+                                  <ContentCopyIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{ marginTop: "15px" }}
+                      />
+                    </>
+                  )}
+                  </Box>
                 </Grid>
 
                 <Grid item xs={2.2}>
@@ -468,6 +532,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                 </Grid>
 
                 <Grid item xs={3.7}>
+                  <Box>
                     <StyledSymbolLookup
                     pageSize={LookupPageSize}
                     onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
@@ -481,6 +546,36 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     inputValue={inputSearchSwapFor}
                     label={t("SwapFor")}
                     />
+                    {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
+                    <>
+                      <Typography sx={{ marginTop: "15px" }}>{t("TokensAddress")}</Typography>
+                      <TextField
+                        value={tokenAddressSwapFor}
+                        variant="outlined"
+                        fullWidth
+                        InputProps={{
+                          sx: { fontSize: '0.6rem' },
+                          readOnly: true,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("Copy")}>
+                                <IconButton
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(tokenAddressSwapFor);
+                                  }}
+                                  edge="end"
+                                >
+                                  <ContentCopyIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{ marginTop: "15px" }}
+                      />
+                    </>
+                  )}
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>

@@ -280,7 +280,8 @@
     "LastUpdate": "Last Update",
     "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
     "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again",
-    "EstGasFeesUSD": "Est Gas Fees (USD)"
+    "EstGasFeesUSD": "Est Gas Fees (USD)",
+    "TokensAddress": "Tokens Address"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
