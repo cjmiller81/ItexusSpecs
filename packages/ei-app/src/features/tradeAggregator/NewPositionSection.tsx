@@ -33,6 +33,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
 import { fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { dexWebsites } from "@/constants/dexWebsites";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -642,24 +643,41 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               </TableRow>
             </TableHead>
 
-            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && quoteData && !errorMessage && !quoteError && (
-              <TableBody sx={{ backgroundColor: "#192132" }}>
-                {quoteData.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ color: "#539eec" }}>
-                      {Array.isArray(row.name) ? (
-                        row.name[0]
-                      ) : (
-                        row.name
-                      )}
-                    </TableCell>
-                    <TableCell>{row.price}</TableCell>
-                    <TableCell>{row.gas}</TableCell>
-                    <TableCell>{row.gasUSD}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
+            {symbolOptionSwap &&
+              symbolOptionSwapFor &&
+              selectedChain &&
+              quoteData &&
+              !errorMessage &&
+              !quoteError && (
+                <TableBody sx={{ backgroundColor: "#192132" }}>
+                  {quoteData.map((row, index) => {
+                    const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
+                    const dexUrl = dexWebsites[dexKey];
+
+                    return (
+                      <TableRow key={index}>
+                        <TableCell sx={{ color: "#539eec" }}>
+                          {dexUrl ? (
+                            <a
+                              href={dexUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#539eec", textDecoration: "underline" }}
+                            >
+                              {dexKey}
+                            </a>
+                          ) : (
+                            dexKey
+                          )}
+                        </TableCell>
+                        <TableCell>{row.price}</TableCell>
+                        <TableCell>{row.gas}</TableCell>
+                        <TableCell>{row.gasUSD}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              )}
           </Table>
         </TableContainer>
       </Grid>
