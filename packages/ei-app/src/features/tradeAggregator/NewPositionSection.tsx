@@ -333,7 +333,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       container
       direction="column"
       sx={{
-        minHeight: "377px",
+        minHeight: "475px",
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor:
@@ -403,17 +403,16 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         inputValue={inputSearchSwap}
                         label={t("TokenPosition")}
                         />
-                    {tokenAddress && tokenAddressSwapFor && (
-                    <>
+
                       <Typography sx={{ marginTop: "15px" }}>{t("TokensAddress")}</Typography>
                       <TextField
-                        value={tokenAddress}
+                        value={tokenAddress ?? ''}
                         variant="outlined"
                         fullWidth
                         InputProps={{
                           sx: { fontSize: '0.6rem' },
                           readOnly: true,
-                          endAdornment: (
+                          endAdornment: tokenAddress && tokenAddressSwapFor && errorMessage === null ? (
                             <InputAdornment position="end">
                               <Tooltip title={t("Copy")}>
                                 <IconButton
@@ -426,12 +425,11 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                                 </IconButton>
                               </Tooltip>
                             </InputAdornment>
-                          ),
+                          ) : null,
                         }}
                         sx={{ marginTop: "15px" }}
                       />
-                    </>
-                  )}
+
                   </Box>
                 </Grid>
 
@@ -546,17 +544,15 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     inputValue={inputSearchSwapFor}
                     label={t("SwapFor")}
                     />
-                    {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
-                    <>
-                      <Typography sx={{ marginTop: "15px" }}>{t("TokensAddress")}</Typography>
-                      <TextField
-                        value={tokenAddressSwapFor}
+                    <Typography sx={{ marginTop: "15px" }}>{t("SwapForPositionAddress")}</Typography>
+                    <TextField
+                        value={tokenAddressSwapFor ?? ''}
                         variant="outlined"
                         fullWidth
                         InputProps={{
                           sx: { fontSize: '0.6rem' },
                           readOnly: true,
-                          endAdornment: (
+                          endAdornment: tokenAddress && tokenAddressSwapFor && errorMessage === null ? (
                             <InputAdornment position="end">
                               <Tooltip title={t("Copy")}>
                                 <IconButton
@@ -569,12 +565,10 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                                 </IconButton>
                               </Tooltip>
                             </InputAdornment>
-                          ),
+                          ) : null,
                         }}
                         sx={{ marginTop: "15px" }}
-                      />
-                    </>
-                  )}
+                    />
                   </Box>
                 </Grid>
 

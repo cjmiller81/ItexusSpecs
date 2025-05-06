@@ -434,7 +434,7 @@ const tableScrollSx = {
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
-  minHeight: 300,
+  minHeight: "400px",
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
@@ -442,7 +442,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    maxHeight: "300px",
+    maxHeight: "395px",
   },
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
