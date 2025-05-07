@@ -116,18 +116,18 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
         let baseFee: any = 0;
 
-        try{
-          const response = await dispatch(fetchGas({chainName: selectedChain}));
-          if(selectedChain.toUpperCase() !== "BNB CHAIN")
-          {
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        
+          const response = await dispatch(fetchGas({ chainName: selectedChain }));
+          
+          if (selectedChain.toUpperCase() !== "BNB CHAIN") {
             baseFee = response.payload.baseFee;
-          }
-          else{
+          } else {
             baseFee = response.payload.standard;
           }
-        }
-        catch(err){
-          console.error("Error fetching gas:", err)
+        } catch (err) {
+          console.error("Error fetching gas:", err);
         }
         
         const processedData = quote.protocols.map((protocolGroup: any[][]) => {
@@ -154,14 +154,19 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       data.toTokenAddress &&
       data.amount > 0
     ) {
-      dispatch(fetchQuote({
-        chainName: data.chainName,
-        fromTokenAddress: data.fromTokenAddress,
-        toTokenAddress: data.toTokenAddress,
-        amount: data.amount,
-      }));
+      const timer = setTimeout(() => {
+        dispatch(fetchQuote({
+          chainName: data.chainName,
+          fromTokenAddress: data.fromTokenAddress,
+          toTokenAddress: data.toTokenAddress,
+          amount: data.amount,
+        }));
+      }, 1000); 
+  
+      return () => clearTimeout(timer);
     }
   }, [data, dispatch]);
+  
 
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
@@ -291,8 +296,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           if (fetchQuoteParameters.fulfilled.match(result)) {
             const data = result.payload;
             if (data?.fromTokenAddress && data?.toTokenAddress) {
-              setTokenAddress(data.fromTokenAddress);
-              setTokenAddressSwapFor(data.toTokenAddress);
+              setTokenAddress(data.toTokenAddress);
+              setTokenAddressSwapFor(data.fromTokenAddress);
             } else {
               setTokenAddress(null);
               setTokenAddressSwapFor(null);
