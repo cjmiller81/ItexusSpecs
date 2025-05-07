@@ -68,6 +68,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
   .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
+  const [estAmount,setEstAmount] = useState<number>();
 
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
@@ -135,7 +136,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
             name: names[0],
             gas: parseFloat(((quote.gas * baseFee) / 1e18).toFixed(6)),
             price: result.toFixed(4),
-            gasUSD: parseFloat((((quote.gas * baseFee) / 1e18) * chainPrice).toFixed(3))
+            gasUSD: parseFloat((((quote.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
+            estAmount: (result * Number(newBalance)).toFixed(3)
           };
         });
         setQuoteData(processedData);        
@@ -672,6 +674,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         <TableCell>{row.price}</TableCell>
                         <TableCell>{row.gas}</TableCell>
                         <TableCell>{row.gasUSD}</TableCell>
+                        <TableCell>{row.estAmount}</TableCell>
                       </TableRow>
                     );
                   })}
