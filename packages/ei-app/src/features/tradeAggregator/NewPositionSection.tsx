@@ -116,9 +116,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
         let baseFee: any = 0;
 
-        try {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        try {        
           const response = await dispatch(fetchGas({ chainName: selectedChain }));
           
           if (selectedChain.toUpperCase() !== "BNB CHAIN") {
@@ -154,16 +152,12 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       data.toTokenAddress &&
       data.amount > 0
     ) {
-      const timer = setTimeout(() => {
         dispatch(fetchQuote({
           chainName: data.chainName,
           fromTokenAddress: data.fromTokenAddress,
           toTokenAddress: data.toTokenAddress,
           amount: data.amount,
-        }));
-      }, 1000); 
-  
-      return () => clearTimeout(timer);
+        }));  
     }
   }, [data, dispatch]);
   
