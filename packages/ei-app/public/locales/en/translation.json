@@ -282,7 +282,8 @@
     "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again",
     "EstGasFeesUSD": "Est Gas Fees (USD)",
     "TokensAddress": "Token Position Address",
-    "SwapForPositionAddress": "Swap For Position Address"
+    "SwapForPositionAddress": "Swap For Position Address",
+    "EstAmount": "Est Amount"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
