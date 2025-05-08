@@ -283,7 +283,7 @@
     "EstGasFeesUSD": "Est Gas Fees (USD)",
     "TokensAddress": "Token Position Address",
     "SwapForPositionAddress": "Swap For Position Address",
-    "EstAmount": "Est Amount",
+    "EstAmount": "Est. Amount",
     "MarketDataUpdatedAs": "Market data updated as of: {{value}}. Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions. DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX."
   },
   "PaymentMethodSelector": {
