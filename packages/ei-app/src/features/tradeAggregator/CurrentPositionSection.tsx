@@ -439,6 +439,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
     overflowY: "auto !important",
+    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "transparent",
   },
   "& .MuiDataGrid-main": {
     height: "auto",

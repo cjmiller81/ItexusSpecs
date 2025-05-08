@@ -628,7 +628,10 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           }}
         >
           <Table sx={{ color: "blue" }}>
-            <TableHead>
+            <TableHead  sx={{
+          backgroundColor:
+            theme.palette.mode === "light" ? "#9E9E9E" : "inherit",
+        }}>
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>
                 <TableCell>{t("Price")}</TableCell>
@@ -650,7 +653,10 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               quoteData &&
               !errorMessage &&
               !quoteError && (
-                <TableBody sx={{ backgroundColor: "#192132" }}>
+                <TableBody sx={{
+                  backgroundColor:
+                    theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                }}>
                   {quoteData.map((row, index) => {
                     const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
                     const dexUrl = dexWebsites[dexKey];
