@@ -283,7 +283,7 @@
     "EstGasFeesUSD": "Est Gas Fees (USD)",
     "TokensAddress": "Token Position Address",
     "SwapForPositionAddress": "Swap For Position Address",
-    "EstAmount": "Est Amount"
+    "EstAmount": "Est. Amount"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
