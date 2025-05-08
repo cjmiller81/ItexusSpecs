@@ -334,7 +334,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       container
       direction="column"
       sx={{
-        minHeight: "475px",
+        minHeight: "500px",
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor:
@@ -682,6 +682,11 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               )}
           </Table>
         </TableContainer>
+        {quoteData.length > 0 && lastUpdated && (
+          <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
+            {t("MarketDataUpdatedAs", { value: lastUpdated })}
+          </Typography>
+        )}
       </Grid>
     </Grid>
   );
