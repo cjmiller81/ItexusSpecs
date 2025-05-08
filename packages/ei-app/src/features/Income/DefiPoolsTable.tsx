@@ -281,21 +281,23 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           dataField={DefiField.ApyBase}
           caption={DefiLabel.ApyBase}
           alignment="left"
-          visible={false}
+          visible={true}
           dataType="number"
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          width="auto"
         />
         <Column
           dataField={DefiField.APYReward}
           caption={DefiLabel.APYReward}
           alignment="left"
-          visible={false}
+          visible={true}
           dataType="number"
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          width="auto"
         />
 
         <Column
