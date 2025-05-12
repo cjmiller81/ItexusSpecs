@@ -291,8 +291,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           if (fetchQuoteParameters.fulfilled.match(result)) {
             const data = result.payload;
             if (data?.fromTokenAddress && data?.toTokenAddress) {
-              setTokenAddress(data.toTokenAddress);
-              setTokenAddressSwapFor(data.fromTokenAddress);
+              setTokenAddress(data.fromTokenAddress);
+              setTokenAddressSwapFor(data.toTokenAddress);
             } else {
               setTokenAddress(null);
               setTokenAddressSwapFor(null);
