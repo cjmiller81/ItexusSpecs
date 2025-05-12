@@ -268,7 +268,7 @@
     "SwapFor": "Swap For",
     "DEX": "DEX",
     "Volume": "Volume",
-    "Price": "Price",
+    "Est. Price": "Est. Price",
     "EstGasFees": "Est. Gas Fees {{value}}",
     "Search": "Search",
     "UseMax": "Use Max",

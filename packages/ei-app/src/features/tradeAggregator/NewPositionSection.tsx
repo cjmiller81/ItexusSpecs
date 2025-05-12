@@ -634,7 +634,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         }}>
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>
-                <TableCell>{t("Price")}</TableCell>
+                <TableCell>{t("Est. Price")}</TableCell>
                 <TableCell>
                   {t("EstGasFees", {
                     value: getGasTokenSymbol(selectedChain)
