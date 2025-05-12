@@ -69,6 +69,36 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
   .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
 
+  const generateUniswapV1Link = ({
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField,
+}: {
+  inputCurrency: string;
+  outputCurrency: string;
+  exactAmount: number;
+  exactField: "input" | "output";
+}) => {
+  const slippage = (exactAmount * 0.05).toFixed(6);
+  return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
+};
+
+const generateUniswapV2Link = ({
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField,
+}: {
+  inputCurrency: string;
+  outputCurrency: string;
+  exactAmount: number;
+  exactField: "input" | "output";
+}) => {
+  return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
+};
+
+
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
   : "0.0000";
@@ -129,16 +159,36 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         }
         
         const processedData = quote.protocols.map((protocolGroup: any[][]) => {
-          const firstProtocol = protocolGroup[0];
-          const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
-          return {
-            name: names[0],
-            gas: parseFloat(((quote.gas * baseFee) / 1e18).toFixed(6)),
-            price: result.toFixed(4),
-            gasUSD: parseFloat((((quote.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
-            estAmount: (result * Number(newBalance)).toFixed(4)
+        const firstProtocol = protocolGroup[0];
+        const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+        const name = names[0];
+
+        let deepLink: string | null = null;
+
+        if ((name === "UNISWAP_V1" || name === "UNISWAP_V2") && tokenAddress && tokenAddressSwapFor) {
+          const linkParams = {
+            inputCurrency: tokenAddress,
+            outputCurrency:  tokenAddressSwapFor,
+            exactAmount: Number(newBalance),
+            exactField: "input" as const,
           };
-        });
+
+          deepLink =
+            name === "UNISWAP_V1"
+              ? generateUniswapV1Link(linkParams)
+              : generateUniswapV2Link(linkParams);
+        }
+
+        return {
+          name,
+          gas: parseFloat(((quote.gas * baseFee) / 1e18).toFixed(6)),
+          price: result.toFixed(4),
+          gasUSD: parseFloat((((quote.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
+          estAmount: (result * Number(newBalance)).toFixed(4),
+          deepLink,
+        };
+      });
+
         setQuoteData(processedData);        
       }
     };
@@ -666,7 +716,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         <TableCell sx={{ color: "#539eec" }}>
                           {dexUrl ? (
                             <a
-                              href={dexUrl}
+                              href={row.deepLink ?? dexUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               style={{ color: "#539eec", textDecoration: "underline" }}
