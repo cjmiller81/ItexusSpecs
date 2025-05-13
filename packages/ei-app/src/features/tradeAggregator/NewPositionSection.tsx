@@ -110,12 +110,11 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
-      if (quote && symbolOptionSwap && symbolOptionSwapFor) {
+      if (quoteData.length && symbolOptionSwap && symbolOptionSwapFor) {
         let result = 0;
         let chainPrice = 0;
 
         try {
-
           const coinGeckoChainId = (chain: string) => {
             switch (chain.toLowerCase()) {
               case "ethereum":
@@ -129,26 +128,35 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
               case "avalanche":
                 return "avalanche-2";
               default:
-                return "ethereum"; 
+                return "ethereum";
             }
           };
 
-          const chainPosition = await dispatch(fetchToken({ id: coinGeckoChainId(selectedChain) })).unwrap();
+          const chainPosition = await dispatch(
+            fetchToken({ id: coinGeckoChainId(selectedChain) })
+          ).unwrap();
           chainPrice = Number(chainPosition.price.toString());
-          const tokenPosition = await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
-          const swapForToken = await dispatch(fetchToken({ id: symbolOptionSwapFor.id })).unwrap();
-          
-          result = parseFloat(tokenPosition.price.toString()) / parseFloat(swapForToken.price.toString());
-          
+
+          const tokenPosition = await dispatch(
+            fetchToken({ id: symbolOptionSwap.id })
+          ).unwrap();
+
+          const swapForToken = await dispatch(
+            fetchToken({ id: symbolOptionSwapFor.id })
+          ).unwrap();
+
+          result =
+            parseFloat(tokenPosition.price.toString()) /
+            parseFloat(swapForToken.price.toString());
         } catch (err) {
           console.error("Error fetching tokens:", err);
         }
 
-        let baseFee: any = 0;
+        let baseFee = 0;
 
-        try {        
+        try {
           const response = await dispatch(fetchGas({ chainName: selectedChain }));
-          
+
           if (selectedChain.toUpperCase() !== "BNB CHAIN") {
             baseFee = response.payload.baseFee;
           } else {
@@ -157,44 +165,26 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         } catch (err) {
           console.error("Error fetching gas:", err);
         }
-        
-        const processedData = quote.protocols.map((protocolGroup: any[][]) => {
-        const firstProtocol = protocolGroup[0];
-        const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
-        const name = names[0];
 
-        let deepLink: string | null = null;
+        const processedData = quoteData.map((q) => {
+          const firstProtocol = q.protocols[0][0];
+          const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
 
-        if ((name === "UNISWAP_V1" || name === "UNISWAP_V2") && tokenAddress && tokenAddressSwapFor) {
-          const linkParams = {
-            inputCurrency: tokenAddress,
-            outputCurrency:  tokenAddressSwapFor,
-            exactAmount: Number(newBalance),
-            exactField: "input" as const,
+          return {
+            name: names[0],
+            gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
+            price: result.toFixed(4),
+            gasUSD: parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
+            estAmount: (result * Number(newBalance)).toFixed(4),
           };
+        });
 
-          deepLink =
-            name === "UNISWAP_V1"
-              ? generateUniswapV1Link(linkParams)
-              : generateUniswapV2Link(linkParams);
-        }
-
-        return {
-          name,
-          gas: parseFloat(((quote.gas * baseFee) / 1e18).toFixed(6)),
-          price: result.toFixed(4),
-          gasUSD: parseFloat((((quote.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
-          estAmount: (result * Number(newBalance)).toFixed(4),
-          deepLink,
-        };
-      });
-
-        setQuoteData(processedData);        
+        setQuoteData(processedData);
       }
     };
-  
+
     fetchProtocolsAndTokens();
-  }, [quote]);
+  }, [quote, symbolOptionSwap, symbolOptionSwapFor, selectedChain, newBalance]);
 
   useEffect(() => {
     if (
