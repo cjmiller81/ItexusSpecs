@@ -110,7 +110,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
-      if (quoteData.length && symbolOptionSwap && symbolOptionSwapFor) {
+      if (quote.length && symbolOptionSwap && symbolOptionSwapFor) {
         let result = 0;
         let chainPrice = 0;
 
@@ -166,7 +166,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           console.error("Error fetching gas:", err);
         }
 
-        const processedData = quoteData.map((q) => {
+        const processedData = quote.map((q) => {
           const firstProtocol = q.protocols[0][0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
 
