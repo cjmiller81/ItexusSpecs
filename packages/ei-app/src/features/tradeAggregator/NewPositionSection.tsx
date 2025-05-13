@@ -68,45 +68,50 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
   .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
+  const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
 
   const generateUniswapV1Link = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-}: {
-  inputCurrency: string;
-  outputCurrency: string;
-  exactAmount: number;
-  exactField: "input" | "output";
-}) => {
-  const slippage = (exactAmount * 0.05).toFixed(6);
-  return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
-};
+    inputCurrency,
+    outputCurrency,
+    exactAmount,
+    exactField,
+  }: {
+    inputCurrency: string;
+    outputCurrency: string;
+    exactAmount: number;
+    exactField: "input" | "output";
+  }) => {
+    const slippage = (exactAmount * 0.05).toFixed(6);
+    return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
+  };
 
-const generateUniswapV2Link = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-}: {
-  inputCurrency: string;
-  outputCurrency: string;
-  exactAmount: number;
-  exactField: "input" | "output";
-}) => {
-  return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
-};
+  const generateUniswapV2Link = ({
+    inputCurrency,
+    outputCurrency,
+    exactAmount,
+    exactField,
+  }: {
+    inputCurrency: string;
+    outputCurrency: string;
+    exactAmount: number;
+    exactField: "input" | "output";
+  }) => {
+    return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
+  };
 
-
-const maxBalance = balanceRaw !== undefined && balanceRaw !== null
-  ? balanceRaw.toFixed(5)
-  : "0.0000";
+  const maxBalance = balanceRaw !== undefined && balanceRaw !== null
+    ? balanceRaw.toFixed(5)
+    : "0.0000";
 
   useEffect(() => {
-    setErrorQuote(quoteError);
-    setErrorQuoteParametrs(error)
-  },[error,quoteError])
+    if (hasAttemptedSubmit) {
+      setErrorQuote(quoteError);
+      setErrorQuoteParametrs(error);
+    } else {
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
+    }
+  }, [quoteError, error, hasAttemptedSubmit]);
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
@@ -115,7 +120,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         let chainPrice = 0;
 
         try {
-
           const coinGeckoChainId = (chain: string) => {
             switch (chain.toLowerCase()) {
               case "ethereum":
@@ -198,19 +202,22 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
   useEffect(() => {
     if (
+      shouldFetchQuote &&
       data &&
       data.fromTokenAddress &&
       data.toTokenAddress &&
       data.amount > 0
     ) {
-        dispatch(fetchQuote({
-          chainName: data.chainName,
-          fromTokenAddress: data.fromTokenAddress,
-          toTokenAddress: data.toTokenAddress,
-          amount: data.amount,
-        }));  
+      dispatch(fetchQuote({
+        chainName: data.chainName,
+        fromTokenAddress: data.fromTokenAddress,
+        toTokenAddress: data.toTokenAddress,
+        amount: data.amount,
+      }));
+
+      setShouldFetchQuote(false);
     }
-  }, [data, dispatch]);
+  }, [shouldFetchQuote, data, dispatch]);
   
 
   useEffect(() => {
@@ -250,7 +257,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       setTokenAddress(null);
       setTokenAddressSwapFor(null);
     }
-  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
 
   const onOptionChangeSwapFor = (value: any) => {
     setSymbolOptionSwapFor(value); 
@@ -343,6 +350,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
             if (data?.fromTokenAddress && data?.toTokenAddress) {
               setTokenAddress(data.fromTokenAddress);
               setTokenAddressSwapFor(data.toTokenAddress);
+              setShouldFetchQuote(true);
             } else {
               setTokenAddress(null);
               setTokenAddressSwapFor(null);
