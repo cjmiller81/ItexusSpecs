@@ -98,6 +98,33 @@ const generateUniswapV2Link = ({
   return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
 };
 
+const generateUniswapV3Link = ({
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField,
+}: {
+  inputCurrency: string;
+  outputCurrency: string;
+  exactAmount: number;
+  exactField: "input" | "output";
+}) => {
+  return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+};
+
+const generateUniswapV4Link = ({
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField,
+}: {
+  inputCurrency: string;
+  outputCurrency: string;
+  exactAmount: number;
+  exactField: "input" | "output";
+}) => {
+  return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+};
 
 const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   ? balanceRaw.toFixed(5)
@@ -110,7 +137,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
-      if (quoteData.length && symbolOptionSwap && symbolOptionSwapFor) {
+      if (quote.length && symbolOptionSwap && symbolOptionSwapFor) {
         let result = 0;
         let chainPrice = 0;
 
@@ -166,9 +193,40 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           console.error("Error fetching gas:", err);
         }
 
-        const processedData = quoteData.map((q) => {
+        const processedData = quote.map((q) => {
           const firstProtocol = q.protocols[0][0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+          const name = names[0];
+
+          let deepLink: string | null = null;
+
+          const isUniswap =
+            ["UNISWAP_V1", "UNISWAP_V2", "UNISWAP_V3", "UNISWAP_V4"].includes(name);
+            
+
+          if (isUniswap && tokenAddress && tokenAddressSwapFor && newBalance) {
+            const linkParams = {
+              inputCurrency: tokenAddress,
+              outputCurrency: tokenAddressSwapFor,
+              exactAmount: Number(newBalance),
+              exactField: "input" as const,
+            };
+console.log(linkParams)
+            switch (name) {
+              case "UNISWAP_V1":
+                deepLink = generateUniswapV1Link(linkParams);
+                break;
+              case "UNISWAP_V2":
+                deepLink = generateUniswapV2Link(linkParams);
+                break;
+              case "UNISWAP_V3":
+                deepLink = generateUniswapV3Link(linkParams);
+                break;
+              case "UNISWAP_V4":
+                deepLink = generateUniswapV4Link(linkParams);
+                break;
+            }
+          }
 
           return {
             name: names[0],
@@ -176,6 +234,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
             price: result.toFixed(4),
             gasUSD: parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
             estAmount: (result * Number(newBalance)).toFixed(4),
+            deepLink,
           };
         });
 
@@ -184,7 +243,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     };
 
     fetchProtocolsAndTokens();
-  }, [quote, symbolOptionSwap, symbolOptionSwapFor, selectedChain, newBalance]);
+  }, [quote]);
 
   useEffect(() => {
     if (
