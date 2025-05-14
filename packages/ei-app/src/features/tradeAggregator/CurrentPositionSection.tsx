@@ -443,8 +443,11 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    maxHeight: "395px",
+    maxHeight: "425px",
   },
+  "& .MuiDataGrid-columnHeaders": {
+  backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",
+},
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
   },
