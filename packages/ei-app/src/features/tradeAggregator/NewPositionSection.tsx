@@ -19,7 +19,8 @@ import {
   Checkbox,
   Tooltip,
   InputAdornment,
-  IconButton
+  IconButton,
+  CircularProgress
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
@@ -61,7 +62,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
-  const { data, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
+  const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
   const [errorQuote, setErrorQuote] = useState<string | null>(null);
   const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
   const [tokenAddress,setTokenAddress] = useState<string | null>(null);
@@ -698,7 +699,6 @@ const generateUniswapV4Link = ({
                   <Box display="flex" flexDirection="column" alignItems="flex-end">
                     <Button
                       variant="contained"
-                      startIcon={<RefreshIcon />}
                       onClick={handleFetchQuotes}
                       sx={{
                         backgroundColor: "#1e88e5",
@@ -710,6 +710,21 @@ const generateUniswapV4Link = ({
                           backgroundColor: "#1565c0",
                         },
                       }}
+                      startIcon={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            animation: quoteLoading ? "spin 1s linear infinite" : "none",
+                            "@keyframes spin": {
+                              "0%": { transform: "rotate(0deg)" },
+                              "100%": { transform: "rotate(360deg)" },
+                            },
+                          }}
+                        >
+                          <RefreshIcon />
+                        </Box>
+                      }
                     >
                       {t("RefreshQuotes")}
                     </Button>
