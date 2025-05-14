@@ -310,17 +310,33 @@ const generateUniswapV4Link = ({
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
 
-  const onOptionChangeSwapFor = (value: any) => {
-    setSymbolOptionSwapFor(value); 
-  };
+  
+const onOptionChangeSwapFor = (value: LookUpOption | null) => {
+  if (value && value.id === symbolOptionSwap?.id) {
+    setSymbolOptionSwapFor(value);
+    setErrorMessage(t("SameTokenError"));
+    return;
+  }
+
+  setSymbolOptionSwapFor(value);
+  setErrorMessage(null);
+};
 
   const onInputChangeSwapFor = (value: string) => {
     setInputSearchSwapFor(value); 
   };
 
-  const onOptionChangeSwap = (value: any) => {
-    setSymbolOptionSwap(value); 
-  };
+  const onOptionChangeSwap = (value: LookUpOption | null) => {
+    console.log(value)
+  if (value && value.id === symbolOptionSwapFor?.id) {
+    setSymbolOptionSwap(value);
+    setErrorMessage(t("SameTokenError"));
+    return;
+  }
+
+  setSymbolOptionSwap(value);
+  setErrorMessage(null);
+};
 
   const onInputChangeSwap = (value: string) => {
     setInputSearchSwap(value); 
@@ -700,6 +716,7 @@ const generateUniswapV4Link = ({
                       variant="contained"
                       startIcon={<RefreshIcon />}
                       onClick={handleFetchQuotes}
+                      disabled= {errorMessage !== null? true : false}
                       sx={{
                         backgroundColor: "#1e88e5",
                         color: "#fff",
