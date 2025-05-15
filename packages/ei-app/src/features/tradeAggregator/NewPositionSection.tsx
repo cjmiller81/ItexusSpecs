@@ -70,6 +70,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
   .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
+  const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
 
   const generateUniswapV1Link = ({
     inputCurrency,
@@ -199,7 +200,6 @@ const generateUniswapV4Link = ({
         } catch (err) {
           console.error("Error fetching gas:", err);
         }
-
         const processedData = quote.map((q) => {
           const firstProtocol = q.protocols[0][0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
@@ -245,6 +245,11 @@ const generateUniswapV4Link = ({
           };
         });
 
+        if (processedData.length === 0 && quoteLoading === false) {
+          setShowNoQuotesMessage(true);
+        } else {
+          setShowNoQuotesMessage(false);
+        }
         setQuoteData(processedData);
       }
     };
@@ -270,8 +275,17 @@ const generateUniswapV4Link = ({
       setShouldFetchQuote(false);
     }
   }, [shouldFetchQuote, data, dispatch]);
-  
 
+  useEffect(() => {
+    if (!quoteLoading) {
+      if (quote.length === 0) {
+        setShowNoQuotesMessage(true);
+      } else {
+        setShowNoQuotesMessage(false);
+      }
+    }
+  }, [quote, quoteLoading]);
+  
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
       setSelectedToken(null);
@@ -313,6 +327,7 @@ const generateUniswapV4Link = ({
 
   
 const onOptionChangeSwapFor = (value: LookUpOption | null) => {
+  setShowNoQuotesMessage(false);
   if (value && value.id === symbolOptionSwap?.id) {
     setSymbolOptionSwapFor(value);
     setErrorMessage(t("SameTokenError"));
@@ -328,16 +343,16 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
   };
 
   const onOptionChangeSwap = (value: LookUpOption | null) => {
-    console.log(value)
-  if (value && value.id === symbolOptionSwapFor?.id) {
-    setSymbolOptionSwap(value);
-    setErrorMessage(t("SameTokenError"));
-    return;
-  }
+    setShowNoQuotesMessage(false);
+    if (value && value.id === symbolOptionSwapFor?.id) {
+      setSymbolOptionSwap(value);
+      setErrorMessage(t("SameTokenError"));
+      return;
+    }
 
-  setSymbolOptionSwap(value);
-  setErrorMessage(null);
-};
+    setSymbolOptionSwap(value);
+    setErrorMessage(null);
+  };
 
   const onInputChangeSwap = (value: string) => {
     setInputSearchSwap(value); 
@@ -426,7 +441,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
           } else {
             setTokenAddress(null);
             setTokenAddressSwapFor(null);
-            console.error("Ошибка API:", result);
+            console.error("Error API:", result);
           }
         }
       };
@@ -566,7 +581,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
                         <Select
                             labelId="chain-select-label"
                             value={selectedChain}
-                            onChange={e => setSelectedChain(e.target.value)}
+                            onChange={e => {setShowNoQuotesMessage(false);setSelectedChain(e.target.value)}}
                             sx={{
                                 height: "53px",
                                 display: "flex",
@@ -597,7 +612,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
                         size="small"
                         sx={{ padding: 0, marginRight: 1 }}
                         checked={useMax} 
-                        onChange={() => setUseMax(prev => !prev)}
+                        onChange={() => {setUseMax(prev => !prev);setShowNoQuotesMessage(false);}}
                       />
                       <Typography>{t("UseMax")}</Typography>
                     </Box>
@@ -618,10 +633,12 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
                         
                         if (decimalPart.length <= 5) {
                           if (!isNaN(numericValue) && numericValue <= max) {
+                            setShowNoQuotesMessage(false);
                             setNewBalance(input);
                           }
                     
                           if (input === "" || input === "." || input.endsWith(".")) {
+                            setShowNoQuotesMessage(false);
                             setNewBalance(input);
                           }
                         }
@@ -832,6 +849,11 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
         {quoteData.length > 0 && lastUpdated && (
           <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
             {t("MarketDataUpdatedAs", { value: lastUpdated })}
+          </Typography>
+        )}
+        {showNoQuotesMessage && (
+          <Typography sx={{ color: "#f44336", fontSize: "0.875rem", marginTop: 2 }}>
+            {t("NoQuotesFound")}
           </Typography>
         )}
       </Grid>
