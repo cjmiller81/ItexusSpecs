@@ -37,9 +37,10 @@ interface CurrentPositionSectionProps {
     selectedToken: string | null;
     onFilteredRowsChange?: (rows: WalletBalance[]) => void;
     selectedChainNewPosition: string | null;
+    onTokenChange?: (token: WalletBalance | null) => void;
   }
 
-export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition }) => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition,onTokenChange }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
@@ -211,16 +212,37 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     }
   }, [filteredRows, tableData, selectedWallet, selectedRows, tokensToTrade]);
 
-
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-    const selected = newSelection.length > 0 ? String(newSelection[0]) : null;
-    setSelectedRows(selected);
-  };
+    const selectedId = newSelection.length > 0 ? String(newSelection[0]) : null;
+    
+    if (selectedId) {
+      const selectedToken = filteredRows.find(row => {
+    if (!row.tokenName || !row.chain) return false;
+      const id = `${row.tokenName.toLowerCase()}-${row.chain.toLowerCase()}`;
+      return id === selectedId;
+    }) ?? null;
+
+      if (onTokenChange) {
+        onTokenChange(selectedToken);
+      }
+    } else {
+      if (onTokenChange) {
+        onTokenChange(null);
+      }
+    }
+    
+    setSelectedRows(selectedId);
+};
 
   const handleWalletSelect = (event: SelectChangeEvent) => {
     const selectedWalletId = event.target.value as string;
     const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
     setSelectedWallet(selectedWallet);
+
+    setSelectedRows(null)
+    if (onTokenChange) {
+      onTokenChange(null);
+    }
     if (onWalletChange) {
       onWalletChange(selectedWallet);
     }

@@ -20,7 +20,9 @@ import {
   Tooltip,
   InputAdornment,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Autocomplete,
+  Avatar
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
@@ -35,21 +37,26 @@ import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
 import { fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
 import { dexWebsites } from "@/constants/dexWebsites";
+import { iconsApi } from "@/services/iconsService";
+import { PaginatedList } from "components/src/models/paginatedList";
+import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
+import SearchIcon from '@mui/icons-material/Search';
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
     onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
     filteredRows: WalletBalance[]; 
+    selectedTokenRow: WalletBalance | null;
   }
 
-export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows })=> {
+export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow})=> {
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [lookupLoading, setLookupLoading] = useState<boolean>(false);
-  const [symbolOptionSwap, setSymbolOptionSwap] = useState<LookUpOption | null>(null);
+  const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<LookUpOption | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
@@ -67,10 +74,55 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
   const [tokenAddress,setTokenAddress] = useState<string | null>(null);
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
-  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
+  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "")
   .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
   const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
+  const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
+  const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
+
+  useEffect(() => {
+    if (!selectedWallet) {
+      setTokenAddresses([]);
+      return;
+    }
+    
+    setTokenIcons(null);
+    setSymbolOptionSwap(null);
+    setSymbolOptionSwapFor(null);
+    setSelectedChain("");
+    setNewBalance("");
+
+    const addresses: string[] = Array.from(
+      new Set(
+        selectedWallet.chainAssets.flatMap((chainAsset) =>
+          chainAsset.walletAssets.map((token) => token.tokenAddress)
+        )
+      )
+    ).filter((address): address is string => typeof address === 'string' && address !== '');
+
+    setTokenAddresses(addresses);
+  }, [selectedWallet]);
+
+  useEffect(() => {
+    const fetchIcons = async () => {
+      if (tokenAddresses.length === 0) return;
+
+      try {
+        const result = await iconsApi.getIconsV2(
+          undefined,
+          0,
+          tokenAddresses.length,
+          tokenAddresses
+        );
+        setTokenIcons(result);
+      } catch (error) {
+        console.error('Error loading icons:', error);
+      }
+    };
+
+    fetchIcons();
+  }, [tokenAddresses]);
 
   const generateUniswapV1Link = ({
     inputCurrency,
@@ -285,6 +337,21 @@ const generateUniswapV4Link = ({
       }
     }
   }, [quote, quoteLoading]);
+
+  useEffect(() => {
+    if (selectedTokenRow && tokenIcons?.items) {
+      setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
+
+      const matchedToken = tokenIcons.items.find(token =>
+        token.sym?.toUpperCase() === selectedTokenRow.tokenName?.toUpperCase()
+      );
+
+      if (matchedToken) {
+        setSymbolOptionSwap(matchedToken);
+        setSelectedToken(matchedToken.sym);
+      }
+    } 
+  }, [selectedTokenRow, tokenIcons]);
   
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
@@ -292,12 +359,11 @@ const generateUniswapV4Link = ({
       return;
     }
   
-    const selectedSymbol = extractSymbol(symbolOptionSwap.label);
     const selectedChainUpper = selectedChain.toUpperCase();
   
     const matchedToken = selectedWallet.chainAssets
       .find(chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper)
-      ?.tokenDetails.find(token => token.sym.toUpperCase() === selectedSymbol);
+      ?.tokenDetails.find(token => token.sym.toUpperCase() === symbolOptionSwap.sym.toUpperCase());
   
     if (matchedToken) {
       setSelectedToken(matchedToken.sym || null);
@@ -325,7 +391,6 @@ const generateUniswapV4Link = ({
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
 
-  
 const onOptionChangeSwapFor = (value: LookUpOption | null) => {
   setShowNoQuotesMessage(false);
   if (value && value.id === symbolOptionSwap?.id) {
@@ -342,7 +407,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
     setInputSearchSwapFor(value); 
   };
 
-  const onOptionChangeSwap = (value: LookUpOption | null) => {
+  const onOptionChangeSwap = (value: TokenSearchItem  | null) => {
     setShowNoQuotesMessage(false);
     if (value && value.id === symbolOptionSwapFor?.id) {
       setSymbolOptionSwap(value);
@@ -352,10 +417,6 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
 
     setSymbolOptionSwap(value);
     setErrorMessage(null);
-  };
-
-  const onInputChangeSwap = (value: string) => {
-    setInputSearchSwap(value); 
   };
 
   const getGasTokenSymbol = (chain: string): string => {
@@ -373,7 +434,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
   const generateErrorMessage = () => {
     const errors: string[] = [];
   
-    const selectedSymbol = extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase();
+    const selectedSymbol = extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase();
     const tokenExistsInFilteredRows = filteredRows.some(
       token => token.tokenName?.toUpperCase() === selectedSymbol
     );
@@ -419,7 +480,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
         ) {
           const result = await dispatch(
             fetchQuoteParameters({
-              tokenPositionSymbol: extractSymbol(symbolOptionSwap.label),
+              tokenPositionSymbol: extractSymbol(symbolOptionSwap.sym),
               chainName: selectedChain,
               qty: Number(newBalance),
               swapForSymbol: extractSymbol(symbolOptionSwapFor.label),
@@ -461,14 +522,6 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
       setLastUpdated(formatted);
     }
   };
-
-  const tokenSymbols = Array.from(
-    new Set(
-      selectedWallet?.chainAssets.flatMap((chainAsset) =>
-        chainAsset.tokenDetails.map((token) => token.sym.toUpperCase())
-      )
-    )
-  ) || [];  
 
   return (
     <Grid
@@ -532,19 +585,67 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
             <Grid container spacing={2}>
                 <Grid item xs={3.7}>
                   <Box>
-                    <StyledSymbolLookup
-                        pageSize={LookupPageSize}
-                        onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwap)}
-                        loading={lookupLoading}
-                        disableListWrap
+                    <Typography sx={{paddingBottom:"4.7px"}}>{t("TokenPosition")}</Typography>
+                     <Autocomplete
+                        options={tokenIcons?.items ?? []}
+                        getOptionLabel={(option) => option.sym}
                         value={symbolOptionSwap}
-                        onChange={(_event, value) => onOptionChangeSwap(value)}
-                        autoComplete={true}
-                        onInputChange={(_event, value) => onInputChangeSwap(value)} 
-                        filterOptions={x => x}
-                        inputValue={inputSearchSwap}
-                        label={t("TokenPosition")}
-                        />
+                        onChange={(_e, newValue) => onOptionChangeSwap(newValue)}
+                        isOptionEqualToValue={(option, value) => option.id === value?.id}
+                        disableClearable={false}
+                        inputValue={symbolOptionSwap ? symbolOptionSwap.name ?
+                          `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` :
+                          symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
+                        onInputChange={(_event, newInputValue, reason) => {
+                          if (reason === 'input') {
+                            onOptionChangeSwap(null); 
+                            setInputSearchSwap(newInputValue);
+                          }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("Search")}
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  {symbolOptionSwap?.lURI ? (
+                                    <InputAdornment position="start">
+                                      <Avatar
+                                        src={symbolOptionSwap.lURI}
+                                        alt={symbolOptionSwap.sym} 
+                                        sx={{ width: 22, height: 22, mr: 1 }}
+                                      />
+                                    </InputAdornment>
+                                  ) : (
+                                    <InputAdornment position="start">
+                                      <SearchIcon />
+                                    </InputAdornment>
+                                  )}
+                                </>
+                              ),
+                              sx: {
+                                input: {
+                                  textTransform: symbolOptionSwap ? 'uppercase' : 'none',
+                                },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Avatar
+                              src={option.lURI ?? undefined}
+                              alt={option.sym}
+                              sx={{ width: 24, height: 24 }}
+                            />
+                            <Typography variant="body1">
+                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                            </Typography>
+                          </Box>
+                        )}
+                      />
 
                       <Typography sx={{ marginTop: "15px" }}>{t("TokensAddress")}</Typography>
                       <TextField
@@ -571,7 +672,6 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
                         }}
                         sx={{ marginTop: "15px" }}
                       />
-
                   </Box>
                 </Grid>
 
@@ -851,7 +951,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
             {t("MarketDataUpdatedAs", { value: lastUpdated })}
           </Typography>
         )}
-        {showNoQuotesMessage && (
+        {showNoQuotesMessage && hasAttemptedSubmit !== false && (
           <Typography sx={{ color: "#f44336", fontSize: "0.875rem", marginTop: 2 }}>
             {t("NoQuotesFound")}
           </Typography>

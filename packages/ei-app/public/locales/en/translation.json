@@ -261,7 +261,7 @@
   "NewPositionSection": {
     "Bridge": "Bridge",
     "Token": "Token",
-    "TokenPosition": "Token Position",
+    "TokenPosition": "Current Position",
     "Swap": "Swap",
     "Qty": "Qty",
     "Chain": "Chain",

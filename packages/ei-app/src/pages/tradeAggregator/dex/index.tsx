@@ -15,12 +15,17 @@ export default function Dex() {
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
     const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
+    const [selectedTokenRow, setSelectedTokenRow] = useState<WalletBalance | null>(null);
 
     const handleSelectedTokenChange = (tokenInfo: any, chainInfo: any) => {
       setSelectedToken(tokenInfo);
       setSelectedChain(chainInfo);
     };
-    
+
+    const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
+      setSelectedTokenRow(tokenRow);
+    };
+
     const handleWalletChange = (newWallet: Wallet | null) => {
         setSelectedWallet(newWallet);
       };
@@ -51,7 +56,8 @@ export default function Dex() {
           </Typography>
           <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
             selectedChainNewPosition={selectedChain}
-            onFilteredRowsChange={setFilteredRows}/>
+            onFilteredRowsChange={setFilteredRows}
+            onTokenChange={handleSelectedTokenRowChange}/>
         </Grid>
 
         <Grid item xs={12} md={7}>
@@ -66,6 +72,7 @@ export default function Dex() {
             selectedWallet={selectedWallet}
             onSelectedTokenChange={handleSelectedTokenChange}
             filteredRows={filteredRows}
+            selectedTokenRow={selectedTokenRow}
           />
         </Grid>
       </Grid>
