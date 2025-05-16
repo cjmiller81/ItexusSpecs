@@ -60,6 +60,29 @@ export const iconsApi = {
 
     return response.data
   },
+
+  getIconsV2: async (
+  searchQuery?: string,
+  pageNumber?: number,
+  pageSize?: number,
+  anyOfAddresses?: string[],
+  signal?: AbortSignal
+  ): Promise<PaginatedList<TokenSearchItem>> => {
+    const response = await appAxios.post<PaginatedList<TokenSearchItem>>(
+      `/tokens-searchV2`,
+      anyOfAddresses ?? [],
+      {
+        signal,
+        params: {
+          query: searchQuery,
+          pageSize: pageSize ?? 10,
+          pageNumber: pageNumber ?? 0,
+        },
+      }
+    )
+
+    return response.data
+  },
 }
 
 export const iconsDelayedApi = {
