@@ -287,7 +287,6 @@ const generateUniswapV4Link = ({
 
           const estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
           const price =  estAmount / parseFloat(newBalance)
-            console.log(parseFloat(newBalance))
 
           return {
             name: names[0],
