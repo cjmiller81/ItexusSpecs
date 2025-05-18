@@ -198,8 +198,9 @@ const generateUniswapV4Link = ({
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
       if (quote.length && symbolOptionSwap && symbolOptionSwapFor) {
-        let result = 0;
+
         let chainPrice = 0;
+        let swapForToken: any = null;
 
         try {
           const coinGeckoChainId = (chain: string) => {
@@ -228,13 +229,10 @@ const generateUniswapV4Link = ({
             fetchToken({ id: symbolOptionSwap.id })
           ).unwrap();
 
-          const swapForToken = await dispatch(
+          swapForToken = await dispatch(
             fetchToken({ id: symbolOptionSwapFor.id })
           ).unwrap();
 
-          result =
-            parseFloat(tokenPosition.price.toString()) /
-            parseFloat(swapForToken.price.toString());
         } catch (err) {
           console.error("Error fetching tokens:", err);
         }
@@ -287,12 +285,16 @@ const generateUniswapV4Link = ({
             }
           }
 
+          const estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
+          const price =  estAmount / parseFloat(newBalance)
+            console.log(parseFloat(newBalance))
+
           return {
             name: names[0],
             gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
-            price: result.toFixed(4),
+            price: price.toFixed(4),
             gasUSD: parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
-            estAmount: (result * Number(newBalance)).toFixed(4),
+            estAmount: estAmount.toFixed(4),
             deepLink,
           };
         });
