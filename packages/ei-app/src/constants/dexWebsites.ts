@@ -71,7 +71,7 @@ export const dexWebsites = {
   "ARBITRUM_UNISWAP_V4": "https://uniswap.org/",
   "ARBITRUM_FLUID_DEX_T1": "https://fluid.io/swap/1",
   "ARBITRUM_SPARK_PSM": "https://sparkprotocol.io/",
-  "ARBITRUM_BALANCER_V3": "https://arbitrum.balancer.fi/",
+  "ARBITRUM_BALANCER_V3": "https://arbitrum.balancer.fi/", 
 
  // Avalanche Chain DEXes
   "AVALANCHE_AAVE_V2": "https://aave.com/",
