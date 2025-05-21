@@ -1,4 +1,5 @@
 export interface TokenSearchItem {
+  address:string[]
   id: string
   lURI?: string | null
   mCap: number

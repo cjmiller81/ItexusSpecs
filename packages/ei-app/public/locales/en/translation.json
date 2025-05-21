@@ -137,6 +137,7 @@
     "AddSavedWallet": "+ADD SAVED WALLET",
     "AddSavedPosition": "+ADD SAVED POSITION",
     "CurrentPosition": "Current Position",
+    "TokenSearch": "Token Search",
     "NewPosition": "New Position",
     "RebalancedIndexQuantities": "Rebalanced Index Quantities",
     "PositionAllocationUpdates": "Position Allocation Updates",
