@@ -26,9 +26,6 @@ import {
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
-import { StyledSymbolLookup } from "../MyWallets/HistoricalWalletsWorth";
-import fetchLookupPage from "../Common/fetchLookupPage";
-import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/SymbolsLookup";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
@@ -57,7 +54,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [newBalance, setNewBalance] = useState<string>("");
   const [lookupLoading, setLookupLoading] = useState<boolean>(false);
   const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
-  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<LookUpOption | null>(null);
+  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
   const [useMax,setUseMax] = useState<boolean>(false);
@@ -65,7 +62,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
-  const LookupPageSize = 10;
   const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
@@ -80,6 +76,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
   const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
+  const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
 
   useEffect(() => {
     if (!selectedWallet) {
@@ -103,6 +100,45 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
     setTokenAddresses(addresses);
   }, [selectedWallet]);
+
+  useEffect(() => {
+    const fetchIconsForSwapFor = async () => {
+      
+      if ( !selectedChain) return;
+
+      const coinGeckoChainId = (chain: string) => {
+              switch (chain.toLowerCase()) {
+                case "ethereum":
+                  return 1;
+                case "optimism":
+                  return 10;
+                case "arbitrum":
+                  return 42161;
+                case "bnb chain":
+                  return 56;
+                case "polygon":
+                  return 137;
+                case "avalanche":
+                  return 43114;
+              }
+            };
+
+      const chainId = coinGeckoChainId(selectedChain);
+
+      try {
+        const result = await iconsApi.getIcons(
+          inputSearchSwapFor,
+          0,
+          chainId,
+          0
+        );
+        setTokenIconsSwapFor(result);
+      } catch (error) {
+        console.error('Error loading icons for swap for:', error);
+      }
+    };
+      fetchIconsForSwapFor();
+    }, [selectedChain, symbolOptionSwapFor]);
 
   useEffect(() => {
     const fetchIcons = async () => {
@@ -139,47 +175,47 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
   };
 
-const generateUniswapV2Link = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-}: {
-  inputCurrency: string;
-  outputCurrency: string;
-  exactAmount: number;
-  exactField: "input" | "output";
-}) => {
-  return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
-};
+  const generateUniswapV2Link = ({
+    inputCurrency,
+    outputCurrency,
+    exactAmount,
+    exactField,
+  }: {
+    inputCurrency: string;
+    outputCurrency: string;
+    exactAmount: number;
+    exactField: "input" | "output";
+  }) => {
+    return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
+  };
 
-const generateUniswapV3Link = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-}: {
-  inputCurrency: string;
-  outputCurrency: string;
-  exactAmount: number;
-  exactField: "input" | "output";
-}) => {
-  return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-};
+  const generateUniswapV3Link = ({
+    inputCurrency,
+    outputCurrency,
+    exactAmount,
+    exactField,
+  }: {
+    inputCurrency: string;
+    outputCurrency: string;
+    exactAmount: number;
+    exactField: "input" | "output";
+  }) => {
+    return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+  };
 
-const generateUniswapV4Link = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-}: {
-  inputCurrency: string;
-  outputCurrency: string;
-  exactAmount: number;
-  exactField: "input" | "output";
-}) => {
-  return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-};
+  const generateUniswapV4Link = ({
+    inputCurrency,
+    outputCurrency,
+    exactAmount,
+    exactField,
+  }: {
+    inputCurrency: string;
+    outputCurrency: string;
+    exactAmount: number;
+    exactField: "input" | "output";
+  }) => {
+    return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+  };
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -392,7 +428,7 @@ const generateUniswapV4Link = ({
     }
   }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
 
-const onOptionChangeSwapFor = (value: LookUpOption | null) => {
+const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
   setShowNoQuotesMessage(false);
   if (value && value.id === symbolOptionSwap?.id) {
     setSymbolOptionSwapFor(value);
@@ -403,10 +439,6 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
   setSymbolOptionSwapFor(value);
   setErrorMessage(null);
 };
-
-  const onInputChangeSwapFor = (value: string) => {
-    setInputSearchSwapFor(value); 
-  };
 
   const onOptionChangeSwap = (value: TokenSearchItem  | null) => {
     setShowNoQuotesMessage(false);
@@ -484,7 +516,7 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
               tokenPositionSymbol: extractSymbol(symbolOptionSwap.sym),
               chainName: selectedChain,
               qty: Number(newBalance),
-              swapForSymbol: extractSymbol(symbolOptionSwapFor.label),
+              swapForSymbol: extractSymbol(symbolOptionSwapFor.sym),
               tokenPositionId: symbolOptionSwap.id,
               swapForId: symbolOptionSwapFor.id,
             })
@@ -776,19 +808,68 @@ const onOptionChangeSwapFor = (value: LookUpOption | null) => {
 
                 <Grid item xs={3.7}>
                   <Box>
-                    <StyledSymbolLookup
-                    pageSize={LookupPageSize}
-                    onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
-                    loading={lookupLoading}
-                    disableListWrap
-                    value={symbolOptionSwapFor}
-                    onChange={(_event, value) => onOptionChangeSwapFor(value)}
-                    autoComplete={true}
-                    onInputChange={(_event, value) => onInputChangeSwapFor(value)} 
-                    filterOptions={x => x}
-                    inputValue={inputSearchSwapFor}
-                    label={t("SwapFor")}
-                    />
+                    <Typography sx={{paddingBottom:"4.7px"}}>{t("SwapFor")}</Typography>
+                  <Autocomplete
+                        options={tokenIconsSwapFor?.items ?? []}
+                        getOptionLabel={(option) => option.sym}
+                        value={symbolOptionSwapFor}
+                        onChange={(_e, newValue) => onOptionChangeSwapFor(newValue)}
+                        isOptionEqualToValue={(option, value) => option.id === value?.id}
+                        disableClearable={false}
+                        inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ?
+                          `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` :
+                          symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
+                        onInputChange={(_event, newInputValue, reason) => {
+                          if (reason === 'input') {
+                            onOptionChangeSwapFor(null); 
+                            setInputSearchSwapFor(newInputValue);
+                          }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("Search")}
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  {symbolOptionSwapFor?.lURI ? (
+                                    <InputAdornment position="start">
+                                      <Avatar
+                                        src={symbolOptionSwapFor.lURI}
+                                        alt={symbolOptionSwapFor.sym} 
+                                        sx={{ width: 22, height: 22, mr: 1 }}
+                                      />
+                                    </InputAdornment>
+                                  ) : (
+                                    <InputAdornment position="start">
+                                      <SearchIcon />
+                                    </InputAdornment>
+                                  )}
+                                </>
+                              ),
+                              sx: {
+                                input: {
+                                  textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                                },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Avatar
+                              src={option.lURI ?? undefined}
+                              alt={option.sym}
+                              sx={{ width: 24, height: 24 }}
+                            />
+                            <Typography variant="body1">
+                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                            </Typography>
+                          </Box>
+                        )}
+                      />
+
                     <Typography sx={{ marginTop: "15px" }}>{t("SwapForPositionAddress")}</Typography>
                     <TextField
                         value={tokenAddressSwapFor ?? ''}

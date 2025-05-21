@@ -16,10 +16,15 @@ import {
   useTheme,
   FormControl,
   InputLabel,
+  Autocomplete,
+  Avatar,
+  InputAdornment,
+  Typography,
 } from "@mui/material";
 import {
   BasicTable,
   nativeBarSx,
+  PaginatedList,
   toTableTokensModels,
 } from "components";
 import { useTranslation } from "react-i18next";
@@ -30,7 +35,9 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { Wallet } from "@/models/Wallet/Wallet";
-
+import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
+import { iconsApi } from "@/services/iconsService";
+import SearchIcon from '@mui/icons-material/Search';
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -56,6 +63,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const [selectedChain, setSelectedChain] = useState("");
   const [addPositionError, setAddPositionError] = useState<string>("");
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
+  const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
+  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
+  const [inputSearch, setInputSearch] = useState("");
   const { tableData } = useAppSelector(
       state => state.marketCapWeightedModeling,
     );
@@ -67,6 +77,23 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
       }
     setFilteredRows([]);
   };
+
+  const coinGeckoChainId = (chain: string) => {
+              switch (chain.toLowerCase()) {
+                case "ethereum":
+                  return 1;
+                case "optimism":
+                  return 10;
+                case "arbitrum":
+                  return 42161;
+                case "bnb chain":
+                  return 56;
+                case "polygon":
+                  return 137;
+                case "avalanche":
+                  return 43114;
+              }
+            };
 
   const { wallets } = useAppSelector(state => state.wallets);
 
@@ -82,6 +109,28 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
       setSelectedRows(null);
     }
   }, [selectedToken,selectedChainNewPosition, filteredRows]);  
+
+  useEffect(() => {
+    const fetchIconsForSwapFor = async () => {
+        
+      if ( !selectedChain) return;
+  
+      const chainId = coinGeckoChainId(selectedChain);
+  
+      try {
+        const result = await iconsApi.getIcons(
+          inputSearch,
+          0,
+          chainId,
+          0
+        );
+        setTokenIcons(result);
+      } catch (error) {
+        console.error('Error loading icons for swap for:', error);
+      }
+    };
+      fetchIconsForSwapFor();
+    }, [selectedChain]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -249,16 +298,17 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   };
 
   const handleCancelManualPosition = () => {
-    setNewToken("");
+    setSelectedChain("");
+    setSymbolOptionSwapFor(null);
     setNewBalance("");
     setIsAddingManualPosition(false);
   };
 
-  const handleSaveManualPosition = () => {
-    if (newToken && newBalance) {
+const handleSaveManualPosition = () => {
+    if (symbolOptionSwapFor && newBalance) {
 
       const newRow: WalletBalance = {
-        tokenName: newToken,
+        tokenName: symbolOptionSwapFor.sym,
         balance: parseFloat(newBalance),
         chain: selectedChain,
       };
@@ -266,6 +316,15 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
       setFilteredRows(prevRows => [newRow, ...prevRows]);
       setIsAddingManualPosition(false);
     }
+  };
+
+  const onOptionChange = (value: TokenSearchItem  | null) => {
+    if (value && value.id === symbolOptionSwapFor?.id) {
+      setSymbolOptionSwapFor(value);
+      return;
+    }
+  
+    setSymbolOptionSwapFor(value);
   };
 
   return (
@@ -375,27 +434,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
               <Dialog
                 open={isAddingManualPosition}
                 onClose={handleCancelManualPosition}>
-                <DialogContent>
-                  <TextField
-                    label={t("TokenName")}
-                    variant="outlined"
-                    size="small"
-                    value={newToken}
-                    onChange={e => setNewToken(e.target.value)}
-                    fullWidth
-                    sx={{ marginBottom: 2 }}
-                  />
-                  <TextField
-                    label={t("Qty")}
-                    variant="outlined"
-                    size="small"
-                    value={newBalance}
-                    onChange={e => setNewBalance(e.target.value)}
-                    type="number"
-                    fullWidth
-                    sx={{ marginBottom: 2 }}
-                  />
-                <FormControl fullWidth size="small" sx={{ marginBottom: 2 }} error={!!addPositionError}>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 450 }}>
+                <FormControl fullWidth size="medium" error={!!addPositionError}>
                   <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
                   <Select
                     labelId="chain-select-label"
@@ -425,12 +465,84 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                     </Box>
                   )}
                 </FormControl>
+                <TextField
+                    label={t("Qty")}
+                    variant="outlined"
+                    size="medium"
+                    value={newBalance}
+                    onChange={e => setNewBalance(e.target.value)}
+                    type="number"
+                    fullWidth 
+                    sx={{}}
+                  />
+                <Autocomplete
+                  options={tokenIcons?.items ?? []}
+                  getOptionLabel={(option) => option.sym}
+                  value={symbolOptionSwapFor}
+                  onChange={(_e, newValue) => onOptionChange(newValue)}
+                  isOptionEqualToValue={(option, value) => option.id === value?.id}
+                  disableClearable={false}
+                  inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ?
+                    `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` :
+                    symbolOptionSwapFor.sym.toUpperCase() : inputSearch}
+                  onInputChange={(_event, newInputValue, reason) => {
+                    if (reason === 'input') {
+                      onOptionChange(null); 
+                      setInputSearch(newInputValue);
+                    }
+                    }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      fullWidth
+                      size="medium"
+                      placeholder={t("TokenSearch")}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <>
+                            {symbolOptionSwapFor?.lURI ? (
+                              <InputAdornment position="start">
+                                <Avatar
+                                  src={symbolOptionSwapFor.lURI}
+                                  alt={symbolOptionSwapFor.sym} 
+                                  sx={{ width: 22, height: 22, mr: 1 }}
+                                />
+                              </InputAdornment>
+                            ) : (
+                              <InputAdornment position="start">
+                                <SearchIcon />
+                              </InputAdornment>
+                            )}
+                          </>
+                        ),
+                        sx: {
+                          input: {
+                            textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                          },
+                        },
+                      }}
+                    />
+                  )}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar
+                        src={option.lURI ?? undefined}
+                        alt={option.sym}
+                        sx={{ width: 24, height: 24 }}
+                      />
+                      <Typography variant="body1">
+                        {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                      </Typography>
+                    </Box>
+                  )}
+                />
                 </DialogContent>
                 <DialogActions>
                   <Button
                     variant="outlined"
                     onClick={handleSaveManualPosition}
-                    disabled={Boolean(addPositionError) || !newToken || !newBalance || !selectedChain}
+                    disabled={Boolean(addPositionError) || !symbolOptionSwapFor || !newBalance || !selectedChain}
                   >
                     {t("Add")}
                   </Button>
