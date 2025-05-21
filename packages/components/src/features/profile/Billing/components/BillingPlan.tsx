@@ -59,6 +59,36 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
     const productName = products?.find((product) => product.id === plan.productId && product.active === true)?.name || "Unknown Plan";
     const firstWord = productName.split(" ")[0];
 
+    const selectedPlan = plans.find(p => p.id === selectedPlanId);
+    const selectedPrice =
+    pricingPeriod === "month"
+      ? Math.floor(
+          duplicatePlans?.find(p =>
+            p.productId === selectedPlan?.productId && p.recurring?.interval === "month"
+          )?.unitAmount ?? selectedPlan?.unitAmount ?? 0
+        ) / 100
+      : Math.floor(
+          duplicatePlans?.find(p =>
+            p.productId === selectedPlan?.productId && p.recurring?.interval === "year"
+          )?.unitAmount ?? selectedPlan?.unitAmount ?? 0
+        ) / 100;
+          
+    let buttonLabel = t("SelectThisPlan");
+
+    if (selectedPlanId) {
+      if (isSelected) {
+        buttonLabel = t("CurrentPlan");
+      } else {
+        if (price > selectedPrice) {
+          buttonLabel = t("Upgrade");
+        } else if (price < selectedPrice) {
+          buttonLabel = t("SwitchToPlan");
+        } else {
+          buttonLabel = t("SwitchToPlan");
+        }
+      }
+    }
+
   return (
     <Grid item xs={12} sm={6} md={3}>
       <Card sx={{ height: "100%", py: 3, px: 2, borderRadius: theme.shape.borderRadius }}>
@@ -125,11 +155,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             fullWidth
             disabled={isSelected}
           >
-            {selectedPlanId !== null
-              ? isSelected
-                ? t("CurrentPlan")
-                : t("SwitchToPlan")
-              : t("SelectThisPlan")}
+            {buttonLabel}
           </Button>         
           )}
 
