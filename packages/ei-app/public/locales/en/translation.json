@@ -340,7 +340,8 @@
     "BilledMonthly": "Billed monthly",
     "SwitchToPlan": "Switch to plan",
     "CurrentPlan": "Current plan",
-    "SelectThisPlan": "Select this plan"
+    "SelectThisPlan": "Select this plan",
+    "Upgrade": "Upgrade"
   },
   "SideBar": {
     "Home": "Home",
