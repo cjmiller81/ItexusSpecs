@@ -112,6 +112,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   }, [selectedToken,selectedChainNewPosition, filteredRows]);  
 
   useEffect(() => {
+    dispatch(fetchWallets(null));
+  }, []);
+
+  useEffect(() => {
     if (!selectedChain) return;
 
     const delayDebounce = setTimeout(() => {
