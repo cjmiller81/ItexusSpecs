@@ -66,6 +66,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearch, setInputSearch] = useState("");
+  const [isManualUpdate, setIsManualUpdate] = useState(false);
   const { tableData } = useAppSelector(
       state => state.marketCapWeightedModeling,
     );
@@ -104,49 +105,66 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
         row.chain?.toLowerCase() === selectedChainNewPosition.toLowerCase()
       );
 
-       setSelectedRows(`${matchingRow?.tokenName?.toLowerCase()}-${matchingRow?.chain?.toLowerCase()}`);
+      setSelectedRows(`${matchingRow?.tokenName?.toLowerCase()}-${matchingRow?.chain?.toLowerCase()}`);
     } else {
       setSelectedRows(null);
     }
   }, [selectedToken,selectedChainNewPosition, filteredRows]);  
 
   useEffect(() => {
-    const fetchIconsForSwapFor = async () => {
-        
-      if ( !selectedChain) return;
-  
-      const chainId = coinGeckoChainId(selectedChain);
-  
-      try {
-        const result = await iconsApi.getIcons(
-          inputSearch,
-          0,
-          chainId,
-          0
-        );
-        setTokenIcons(result);
-      } catch (error) {
-        console.error('Error loading icons for swap for:', error);
-      }
-    };
-      fetchIconsForSwapFor();
-    }, [selectedChain]);
+    if (!selectedChain) return;
 
-  useEffect(() => {
-    if (wallets === null) dispatch(fetchWallets(null));
-    setFilteredWalletData(
-      selectedWallet
-        ? toTableTokensModels(
-            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ??
-              [],
-          ).map(({ tokenName, chainName, balance }) => ({
-            tokenName,
-            chain: chainName,
-            balance: balance,
-          }))
-        : [],
-    );
-  }, [ selectedWallet]);
+    const delayDebounce = setTimeout(() => {
+      const fetchIconsForSwapFor = async () => {
+        const chainId = coinGeckoChainId(selectedChain);
+
+        try {
+          const result = await iconsApi.getIcons(
+            inputSearch,
+            0,
+            chainId,
+            500
+          );
+          setTokenIcons(result);
+        } catch (error) {
+          console.error('Error loading icons for swap for:', error);
+        }
+      };
+
+      fetchIconsForSwapFor();
+    }, 600);
+
+    return () => clearTimeout(delayDebounce);
+  }, [selectedChain, inputSearch]);
+
+
+    useEffect(() => {
+    if (!selectedWallet || isManualUpdate) {
+      if (isManualUpdate) {
+        setIsManualUpdate(false);
+      } else {
+        setFilteredRows([]);
+        if (onFilteredRowsChange) {
+          onFilteredRowsChange([]);
+        }
+      }
+      return;
+    }
+
+    const data = toTableTokensModels(
+      wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ?? []
+    ).map(({ tokenName, chainName, balance }) => ({
+      tokenName,
+      chain: chainName,
+      balance: balance,
+    }));
+
+    setFilteredRows(data);
+    if (onFilteredRowsChange) {
+      onFilteredRowsChange(data);
+    }
+  }, [selectedWallet]);
+
 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
@@ -304,17 +322,49 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     setIsAddingManualPosition(false);
   };
 
-const handleSaveManualPosition = () => {
+  const handleSaveManualPosition = () => {
     if (symbolOptionSwapFor && newBalance) {
+      const tokenName = symbolOptionSwapFor.sym.toUpperCase();
+      const balance = parseFloat(newBalance);
+      const chainId = coinGeckoChainId(selectedChain);
+
+      if (!chainId || !selectedWallet) return;
+
+      const newAsset = {
+        tokenName: symbolOptionSwapFor.sym.toUpperCase(),
+        balance: parseFloat(newBalance),
+        tokenAddress: symbolOptionSwapFor?.address?.[0],
+      };
+
+      const updatedChainAssets = selectedWallet.chainAssets.map(chainAsset => {
+        if (chainAsset.chainId === chainId) {
+          return {
+            ...chainAsset,
+            walletAssets: [newAsset, ...chainAsset.walletAssets],
+          };
+        }
+        return chainAsset;
+      });
+
+      const updatedWallet = {
+        ...selectedWallet,
+        chainAssets: updatedChainAssets,
+      };
+
+      setSelectedWallet(updatedWallet);
+
+      if (onWalletChange) {
+        onWalletChange(updatedWallet);
+      }
 
       const newRow: WalletBalance = {
         tokenName: symbolOptionSwapFor.sym,
-        balance: parseFloat(newBalance),
         chain: selectedChain,
+        balance: parseFloat(newBalance),
       };
-  
       setFilteredRows(prevRows => [newRow, ...prevRows]);
       setIsAddingManualPosition(false);
+      setIsManualUpdate(true);
     }
   };
 
@@ -443,6 +493,7 @@ const handleSaveManualPosition = () => {
                     label={t("Chain")}
                     onChange={e => {
                       setSelectedChain(e.target.value);
+                      setSymbolOptionSwapFor(null)
                       setAddPositionError("");
                     }}
                   >

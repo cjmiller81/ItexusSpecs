@@ -70,13 +70,35 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
   const [tokenAddress,setTokenAddress] = useState<string | null>(null);
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
-  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "")
-  .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
   const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
   const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
+  const[balanceRaw, setBalanceRaw] = useState<number | undefined>();
+
+  const coinGeckoChainId = (chain: string) => {
+          switch (chain.toLowerCase()) {
+            case "ethereum": return 1;
+            case "optimism": return 10;
+            case "arbitrum": return 42161;
+            case "bnb chain": return 56;
+            case "polygon": return 137;
+            case "avalanche": return 43114;
+          }
+        };
+
+  useEffect(()=> {
+    const chainId = coinGeckoChainId(selectedChain);
+      if (!chainId) return;
+
+    setBalanceRaw( selectedWallet?.chainAssets
+      ?.find(chain => chain.chainId === chainId)
+      ?.walletAssets
+      ?.find(token =>
+        token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase()
+      )?.balance)
+  },[symbolOptionSwap, selectedChain])
 
   useEffect(() => {
     if (!selectedWallet) {
@@ -102,63 +124,68 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [selectedWallet]);
 
   useEffect(() => {
-    const fetchIconsForSwapFor = async () => {
-      
-      if ( !selectedChain) return;
+    if (!selectedChain) return;
 
-      const coinGeckoChainId = (chain: string) => {
-              switch (chain.toLowerCase()) {
-                case "ethereum":
-                  return 1;
-                case "optimism":
-                  return 10;
-                case "arbitrum":
-                  return 42161;
-                case "bnb chain":
-                  return 56;
-                case "polygon":
-                  return 137;
-                case "avalanche":
-                  return 43114;
-              }
-            };
+    const timeoutId = setTimeout(() => {
+      const fetchIconsForSwapFor = async () => {
+        const chainId = coinGeckoChainId(selectedChain);
+        if (!chainId) return;
 
-      const chainId = coinGeckoChainId(selectedChain);
+        try {
+          const result = await iconsApi.getIcons(
+            inputSearchSwapFor,
+            0,
+            chainId,
+            500
+          );
+          setTokenIconsSwapFor(result);
+        } catch (error) {
+          console.error('Error loading icons for swap for:', error);
+        }
+      };
 
-      try {
-        const result = await iconsApi.getIcons(
-          inputSearchSwapFor,
-          0,
-          chainId,
-          0
-        );
-        setTokenIconsSwapFor(result);
-      } catch (error) {
-        console.error('Error loading icons for swap for:', error);
-      }
-    };
       fetchIconsForSwapFor();
-    }, [selectedChain, symbolOptionSwapFor]);
+    }, 600);
+
+    return () => clearTimeout(timeoutId);
+  }, [selectedChain, inputSearchSwapFor]);
+
 
   useEffect(() => {
-    const fetchIcons = async () => {
-      if (tokenAddresses.length === 0) return;
+  const fetchIcons = async () => {
+    if (tokenAddresses.length === 0) return;
 
-      try {
-        const result = await iconsApi.getIconsV2(
-          undefined,
-          0,
-          tokenAddresses.length,
-          tokenAddresses
-        );
-        setTokenIcons(result);
-      } catch (error) {
-        console.error('Error loading icons:', error);
-      }
-    };
+    try {
+      const result = await iconsApi.getIconsV2(
+        undefined,
+        0,
+        tokenAddresses.length,
+        tokenAddresses
+      );
 
-    fetchIcons();
-  }, [tokenAddresses]);
+      const walletTokenNamesLower = new Set(
+        filteredRows.map(row => row?.tokenName?.toLowerCase())
+      );
+
+      const filteredItems = result.items.filter(item => {
+        const isNativeToken = item.address.includes('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+        if (!isNativeToken) return true; 
+
+        return walletTokenNamesLower.has(item.sym.toLowerCase());
+      });
+
+      setTokenIcons({
+        ...result,
+        items: filteredItems,
+      });
+
+    } catch (error) {
+      console.error('Error loading icons:', error);
+    }
+  };
+
+  fetchIcons();
+}, [tokenAddresses, filteredRows]);
 
   const generateUniswapV1Link = ({
     inputCurrency,
@@ -821,7 +848,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
                         onInputChange={(_event, newInputValue, reason) => {
                           if (reason === 'input') {
-                            onOptionChangeSwapFor(null); 
+                            onOptionChangeSwapFor(null);
                             setInputSearchSwapFor(newInputValue);
                           }
                         }}
