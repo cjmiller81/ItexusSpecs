@@ -5,6 +5,7 @@ export const dexWebsites = {
   "POLYGON_PMM11": "https://1inch.io/liquidity-protocol/",
   "BSC_PMM11": "https://1inch.io/liquidity-protocol/",
   "AVALANCHE_PMM11": "https://1inch.io/liquidity-protocol/",
+  "EKUBO": "https://app.ekubo.org/",
   
  // Arbitrum DEXes
   "ARBITRUM_BALANCER_V2": "https://arbitrum.balancer.fi/",
