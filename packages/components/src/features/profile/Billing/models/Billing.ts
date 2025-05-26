@@ -1,7 +1,7 @@
 interface InvoiceSettings {
     customFields: any[] | null;
     defaultPaymentMethodId: string | null;
-    defaultPaymentMethod: any | null;
+    default_payment_method: any | null;
     footer: any | null;
     renderingOptions: any | null;
     rawJObject: {
@@ -59,7 +59,7 @@ export interface Billing {
     email: string;
     invoiceCreditBalance: any | null;
     invoicePrefix: string;
-    invoiceSettings: InvoiceSettings;
+    invoice_settings: InvoiceSettings;
     livemode: boolean;
     metadata: Metadata;
     name: string | null;

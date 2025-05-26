@@ -7,22 +7,18 @@ const T = getTranslator("BillingPlans");
 const getDefaultPlans = (wallets: string, chains: string, priceUpdates: string, apiCalls: string): PermissionItem[] => {
   return [
     {
-      permission: T("WalletConnections"),
       permissionValue: wallets,
       isEnabled: true,
     },
     {
-      permission: T("WalletChainsSupported"),
       permissionValue: chains?.toString(),
       isEnabled: true,
     },
     {
-      permission: T("PriceUpdates"),
       permissionValue: priceUpdates,
       isEnabled: true,
     },
     {
-      permission: T("ApiCalls"),
       permissionValue: apiCalls,
       isEnabled: true,
     },
@@ -43,8 +39,7 @@ export const billingPlans: PlanModel[] = [
     lookupKey: null,
     metadata: {},
     nickname: T("Basic"),
-    productId: "prod_basic_001",
-    product: null,
+    product: "prod_basic_001",
     recurring: {
       aggregateUsage: null,
       interval: "month",
@@ -58,7 +53,7 @@ export const billingPlans: PlanModel[] = [
     tiersMode: null,
     transformQuantity: null,
     type: "recurring",
-    unitAmount: 1900,
+    unit_amount: 1900,
     unitAmountDecimal: 1900,
   },
   {
@@ -74,8 +69,7 @@ export const billingPlans: PlanModel[] = [
     lookupKey: null,
     metadata: {},
     nickname: T("Standard"),
-    productId: "prod_standard_002",
-    product: null,
+    product: "prod_standard_002",
     recurring: {
       aggregateUsage: null,
       interval: "month",
@@ -89,7 +83,7 @@ export const billingPlans: PlanModel[] = [
     tiersMode: null,
     transformQuantity: null,
     type: "recurring",
-    unitAmount: 4900,
+    unit_amount: 4900,
     unitAmountDecimal: 4900,
   },
   {
@@ -105,8 +99,7 @@ export const billingPlans: PlanModel[] = [
     lookupKey: null,
     metadata: {},
     nickname: T("Premium"),
-    productId: "prod_premium_003",
-    product: null,
+    product: "prod_premium_003",
     recurring: {
       aggregateUsage: null,
       interval: "month",
@@ -120,7 +113,7 @@ export const billingPlans: PlanModel[] = [
     tiersMode: null,
     transformQuantity: null,
     type: "recurring",
-    unitAmount: 9900,
+    unit_amount: 9900,
     unitAmountDecimal: 9900,
   },
   {
@@ -136,8 +129,7 @@ export const billingPlans: PlanModel[] = [
     lookupKey: null,
     metadata: {},
     nickname: T("Enterprise"),
-    productId: "prod_enterprise_004",
-    product: null,
+    product: "prod_enterprise_004",
     recurring: {
       aggregateUsage: null,
       interval: "month",
@@ -151,7 +143,7 @@ export const billingPlans: PlanModel[] = [
     tiersMode: null,
     transformQuantity: null,
     type: "recurring",
-    unitAmount: 0,
+    unit_amount: 0,
     unitAmountDecimal: 0,
 
   },

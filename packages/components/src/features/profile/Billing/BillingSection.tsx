@@ -58,12 +58,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           const activeSubscription = subscriptionsData
             ?.filter((sub) => sub.status === "active")
             ?.sort((a, b) => b.created - a.created)[0];
-  
-          if (activeSubscription?.items[0]?.price?.id) {
-            setSelectedPlanId(activeSubscription.items[0].price.id);
+
+          if (activeSubscription?.items.data[0]?.price?.id) {
+            setSelectedPlanId(activeSubscription.items.data[0].price.id);
           }
-          if (activeSubscription.items[0]?.price?.productId) {
-            const productData = await dispatch(fetchProductAsync(activeSubscription.items[0].price.productId)).unwrap();
+          if (activeSubscription.items.data[0]?.price?.product) {
+            const productData = await dispatch(fetchProductAsync(activeSubscription.items.data[0].price.product)).unwrap();
             dispatch(setProduct(productData));
           }
         }
@@ -88,28 +88,28 @@ export const BillingContainer = ({ ...props }: StackProps) => {
               ? `${method.card.exp_month}/${method.card.exp_year}`
               : "00/00",
           cvc: "•••",
-          isDefault: method.id === billing?.invoiceSettings?.defaultPaymentMethodId,
+          isDefault: method.id === billing?.invoice_settings?.default_payment_method,
         }));
   
       setCards(allCards);
     }
-  }, [paymentMethods, billing?.invoiceSettings?.defaultPaymentMethodId]);
+  }, [paymentMethods, billing?.invoice_settings?.default_payment_method]);
   
   
   const handleCreatePaymentIntent = async (plan: any) => {
     if (!stripe || !elements) return;
   
-    if (!billing?.invoiceSettings?.defaultPaymentMethodId) {
+    if (!billing?.invoice_settings?.default_payment_method) {
       dispatch(addMessage(t("NoDefaultCardError")));
       return;
     }
-  
+ 
     setSelectedPlanId(plan.id); 
 
     try {
       const paymentIntent: any = await dispatch(
         createPaymentIntentAsync({
-          amount: plan.unitAmountDecimal / 100,
+          amount: plan.unit_amount / 100,
           currency: "usd",
           customerId: billing?.id || "",
           description: `Subscription for plan ${plan.id}`,
@@ -153,43 +153,56 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
 
         if (!currentPlan) return;
-  
-        if (newPlan.unitAmountDecimal < currentPlan.unitAmountDecimal) {
+
+        if (newPlan.unit_amount < currentPlan.unit_amount) {
           const activeSubscription = subscriptionsData?.[0];
-  
+
           if (activeSubscription) {
+            const existingItem = activeSubscription.items.data.find(
+              item => item.price.id === newPlan.id
+            );
+
             await dispatch(
               updateSubscriptionAsync({
                 SubscriptionId: activeSubscription.id,
-                SubscriptionItemId: activeSubscription.items[0]?.id,
-                NewPriceId: newPlan.id,
-              })
-            ).unwrap();
-  
-            dispatch(addMessage(t("PlanDowngraded")));
-            setSelectedPlanId(newPlan.id);
-          }
-        } else {
-          const activeSubscription = subscriptionsData?.[0];
-        
-          if (activeSubscription) {
-            await handleCreatePaymentIntentWithProrations(newPlan,activeSubscription);
-    
-            await dispatch(
-              updateSubscriptionAsync({
-                SubscriptionId: activeSubscription.id,
-                SubscriptionItemId: activeSubscription.items[0]?.id,
+                SubscriptionItemId: existingItem?.id || activeSubscription.items.data[0]?.id,
                 NewPriceId: newPlan.id,
               })
             ).unwrap();
 
-            dispatch(addMessage(t("PlanUpgraded")));
+            dispatch(addMessage(t("PlanDowngraded")));
             setSelectedPlanId(newPlan.id);
           }
         }
+        else {
+          const activeSubscription = subscriptionsData?.[0];
+
+          if (activeSubscription) {
+            await handleCreatePaymentIntentWithProrations(newPlan, activeSubscription);
+
+            const existingItem = activeSubscription.items.data.find(
+            item => item.price.id === newPlan.id
+          );
+
+          if (existingItem) {
+            dispatch(addMessage(t("PlanAlreadyActive")));
+          } else {
+            await dispatch(
+              updateSubscriptionAsync({
+                SubscriptionId: activeSubscription.id,
+                SubscriptionItemId: activeSubscription.items.data[0]?.id,
+                NewPriceId: newPlan.id,
+              })
+            ).unwrap();
+
+              dispatch(addMessage(t("PlanUpgraded")));
+              setSelectedPlanId(newPlan.id);
+            }
+          }
+        }
       }
-      if (newPlan.productId) {
-        const productData = await dispatch(fetchProductAsync(newPlan.productId)).unwrap();
+      if (newPlan.product) {
+        const productData = await dispatch(fetchProductAsync(newPlan.product)).unwrap();
         dispatch(setProduct(productData));
       }
     } catch (err) {
@@ -201,7 +214,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const handleCreatePaymentIntentWithProrations = async (newPlan: any, activeSubscription: any) => {
     try {
       const prorationAmount = await calculateProrationAmount(activeSubscription, newPlan);
-  
+
       if (!prorationAmount) {
         throw new Error("Failed to calculate proration amount");
       }
@@ -237,20 +250,22 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const calculateProrationAmount = (activeSubscription: any, newPlan: any) => {
     try {
   
-      const currentPlanAmount = activeSubscription.items[0]?.price?.unitAmount;
-      const newPlanAmount = newPlan?.unitAmount;
+      const currentPlanAmount = activeSubscription.items.data?.[0]?.price?.unit_amount;
+      const newPlanAmount = newPlan?.unit_amount;
 
       if (!currentPlanAmount || !newPlanAmount) {
         throw new Error('Invalid current plan or new plan amount');
       }
   
-      const currentPeriodEnd = new Date(activeSubscription.currentPeriodEnd).getTime();
+      const currentPeriodEnd = new Date(activeSubscription.items.data?.[0].current_period_end).getTime();
 
       const currentDate = Date.now();
-      const daysLeft = Math.max((currentPeriodEnd - currentDate) / (1000 * 60 * 60 * 24), 0);
+      const currentPeriodEndMs = currentPeriodEnd * 1000;
 
-      const currentPeriodStart = new Date(activeSubscription.currentPeriodStart).getTime(); ;
-      const countOfDayInMonth = Math.max((currentPeriodEnd - currentPeriodStart) / (1000 * 60 * 60 * 24), 0);
+      const daysLeft = Math.max((currentPeriodEndMs - currentDate) / (1000 * 60 * 60 * 24), 0);
+
+      const currentPeriodStart = new Date(activeSubscription.items.data?.[0].current_period_start).getTime(); ;
+      const countOfDayInMonth = Math.max((currentPeriodEndMs - currentPeriodStart) / (1000 * 60 * 60 * 24), 0);
       const dailyRate = newPlanAmount / countOfDayInMonth;
 
       const oldSubscriptionRate = currentPlanAmount /countOfDayInMonth;
@@ -272,7 +287,9 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       await dispatch(setDefaultPaymentMethodAsync({ customerId: billing.id, paymentMethodId: cardId })).unwrap();
   
       const updatedBilling = await dispatch(getBillingAsync()).unwrap();
-      const newDefaultId = updatedBilling?.invoiceSettings?.defaultPaymentMethodId;
+                        
+      const newDefaultId = updatedBilling?.invoice_settings?.default_payment_method;
+
       if (!newDefaultId) {
         throw new Error("Failed to update default payment method");
       }
@@ -345,12 +362,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
   const plansToDisplay = plans.reduce<PlanModel[]>((acc, plan) => {
 
-    const product = products?.find(product => product.id === plan.productId);
+    const product = products?.find(product => product.id === plan.product);
     if (!product || !product.active) return acc;
   
     const matchingPlans = plans
-      .filter(p => p.productId === plan.productId && p.active === true)
-      .sort((a, b) => a.unitAmount - b.unitAmount);
+      .filter(p => p.product === plan.product && p.active === true)
+      .sort((a, b) => a.unit_amount - b.unit_amount);
   
     if (matchingPlans.length > 1) {
       const selectedPlan = matchingPlans.find(p => p.id === selectedPlanId);
@@ -374,12 +391,12 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   }, []);  
 
   const planCounts = plans.reduce((acc, plan) => {
-    acc[plan.productId] = (acc[plan.productId] || 0) + 1;
+    acc[plan.product] = (acc[plan.product] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
   
-  const duplicatePlans = plans.filter(plan => planCounts[plan.productId] > 1 && plan.active === true);
-  
+  const duplicatePlans = plans.filter(plan => planCounts[plan.product] > 1 && plan.active === true);
+
   return (
     <>
       <YesNoDialog
@@ -415,7 +432,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           <Grid item container spacing={3}>
             {plansToDisplay
               .slice()
-              .sort((a, b) => a.unitAmountDecimal - b.unitAmountDecimal)
+              .sort((a, b) => a.unit_amount - b.unit_amount)
               .map((plan, index) => (
                 <BillingPlan
                   onSelectPlan={(selectedPlan) => handlePlanChange(selectedPlan)} 
