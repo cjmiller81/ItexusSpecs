@@ -21,7 +21,7 @@ export interface MarketingFeature {
     description: string;
     images: string[];
     livemode: boolean;
-    marketingFeatures: MarketingFeature[];
+    marketing_features: MarketingFeature[];
     metadata: Metadata;
     name: string;
     packageDimensions: any | null;

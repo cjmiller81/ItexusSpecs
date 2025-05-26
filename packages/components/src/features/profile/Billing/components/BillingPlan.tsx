@@ -30,47 +30,48 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.recurring?.interval === "month" ? "month" : "year");
   const { nickname, active } = plan;
   const { plans } = useSelector((state: RootState) => state.billing);
-  const isToggleDisabled = plans.filter(p => p.productId === plan.productId).length === 1;
-  const hasMatchingDuplicates = duplicatePlans?.some(p => p.productId === plan.productId) ?? false;
+  const isToggleDisabled = plans.filter(p => p.product === plan.product).length === 1;
+  const hasMatchingDuplicates = duplicatePlans?.some(p => p.product === plan.product) ?? false;
 
   const monthlyPlan = hasMatchingDuplicates
-    ? duplicatePlans?.find(p => p.recurring?.interval === "month" && p.productId === plan.productId) || plan
+    ? duplicatePlans?.find(p => p.recurring?.interval === "month" && p.product === plan.product) || plan
     : plan;
 
   const yearlyPlan = hasMatchingDuplicates
-    ? duplicatePlans?.find(p => p.recurring?.interval === "year" &&  p.productId === plan.productId) || plan
+    ? duplicatePlans?.find(p => p.recurring?.interval === "year" &&  p.product === plan.product) || plan
     : plan;
 
      const price = pricingPeriod === "month"
-     ? Math.floor((monthlyPlan.unitAmount ?? 0)) / 100
-     : Math.floor((yearlyPlan.unitAmount ?? 0)) / 100;
+     ? Math.floor((monthlyPlan.unit_amount ?? 0)) / 100
+     : Math.floor((yearlyPlan.unit_amount ?? 0)) / 100;
 
      const plansInfo: PermissionItem[] = products
      ? products
-         .filter((product) => product.id === plan.productId && product.active === true)
+         .filter((product) => product.id === plan.product && product.active === true)
          .flatMap((product) =>
-           product.marketingFeatures.map((feature) => ({
+           product.marketing_features.map((feature) => ({
              permissionValue: `${feature?.name || "N/A"}`,
              isEnabled: active,
            }))
          )
      : [];
 
-    const productName = products?.find((product) => product.id === plan.productId && product.active === true)?.name || "Unknown Plan";
+    const productName = products?.find((product) => product.id === plan.product && product.active === true)?.name || "Unknown Plan";
     const firstWord = productName.split(" ")[0];
 
     const selectedPlan = plans.find(p => p.id === selectedPlanId);
+    
     const selectedPrice =
     pricingPeriod === "month"
       ? Math.floor(
           duplicatePlans?.find(p =>
-            p.productId === selectedPlan?.productId && p.recurring?.interval === "month"
-          )?.unitAmount ?? selectedPlan?.unitAmount ?? 0
+            p.product === selectedPlan?.product && p.recurring?.interval === "month"
+          )?.unit_amount ?? selectedPlan?.unit_amount ?? 0
         ) / 100
       : Math.floor(
           duplicatePlans?.find(p =>
-            p.productId === selectedPlan?.productId && p.recurring?.interval === "year"
-          )?.unitAmount ?? selectedPlan?.unitAmount ?? 0
+            p.product === selectedPlan?.product && p.recurring?.interval === "year"
+          )?.unit_amount ?? selectedPlan?.unit_amount ?? 0
         ) / 100;
           
     let buttonLabel = t("SelectThisPlan");

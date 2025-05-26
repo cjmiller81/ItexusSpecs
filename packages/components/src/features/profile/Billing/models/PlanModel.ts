@@ -20,14 +20,13 @@ export interface PlanModel {
     lookupKey: string | null;
     metadata: Record<string, any>;
     nickname: string | null;
-    productId: string;
-    product: string | null;
+    product: string
     recurring: Recurring | null;
     taxBehavior: string;
     tiers: any[] | null;
     tiersMode: string | null;
     transformQuantity: any | null;
     type: string;
-    unitAmount: number;
+    unit_amount: number;
     unitAmountDecimal: number;
 }
