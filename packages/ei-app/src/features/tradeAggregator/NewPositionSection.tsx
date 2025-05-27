@@ -115,13 +115,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setSymbolOptionSwapFor(null);
       setSelectedChain("");
       setNewBalance("");
-    const addresses: string[] = Array.from(
-      new Set(
-        selectedWallet.chainAssets.flatMap((chainAsset) =>
-          chainAsset.walletAssets.map((token) => token.tokenAddress)
-        )
-      )
-    ).filter((address): address is string => typeof address === 'string' && address !== '');
+    const addresses: string[] = selectedWallet.chainAssets.flatMap(
+  (chainAsset) => chainAsset.walletAssets.map((token) => token.tokenAddress)
+).filter((address): address is string => typeof address === 'string' && address !== '');
+
 
     setTokenAddresses(addresses);
   }, [selectedWallet]);
@@ -158,11 +155,17 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const fetchIcons = async () => {
     if (tokenAddresses.length === 0) return;
 
+    const nonEmptyChainsCount = selectedWallet?.chainAssets?.filter(
+      chain => chain.walletAssets && chain.walletAssets.length > 0
+    ).length ?? 0;
+
+    let pageSize = tokenAddresses?.length + nonEmptyChainsCount;
+
     try {
       const result = await iconsApi.getIconsV2(
         undefined,
         0,
-        tokenAddresses.length,
+        pageSize,
         tokenAddresses
       );
 
