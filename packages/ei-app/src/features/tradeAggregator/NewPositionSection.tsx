@@ -103,15 +103,18 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   useEffect(() => {
     if (!selectedWallet) {
       setTokenAddresses([]);
+      setTokenIcons(null);
+      setSymbolOptionSwap(null);
+      setSymbolOptionSwapFor(null);
+      setSelectedChain("");
+      setNewBalance("");
       return;
     }
-    
-    setTokenIcons(null);
-    setSymbolOptionSwap(null);
-    setSymbolOptionSwapFor(null);
-    setSelectedChain("");
-    setNewBalance("");
-
+      setTokenIcons(null);
+      setSymbolOptionSwap(null);
+      setSymbolOptionSwapFor(null);
+      setSelectedChain("");
+      setNewBalance("");
     const addresses: string[] = Array.from(
       new Set(
         selectedWallet.chainAssets.flatMap((chainAsset) =>

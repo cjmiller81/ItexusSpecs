@@ -67,12 +67,16 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearch, setInputSearch] = useState("");
   const [isManualUpdate, setIsManualUpdate] = useState(false);
+  const [wasManualSelection, setWasManualSelection] = useState(false);
   const { tableData } = useAppSelector(
       state => state.marketCapWeightedModeling,
     );
 
   const handleClearTable = () => {
+    setSelectedChain("");
+    setSelectedRows(null);
     setSelectedWallet(null);
+
       if (onWalletChange) {
         onWalletChange(null);
       }
@@ -99,6 +103,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const { wallets } = useAppSelector(state => state.wallets);
 
   useEffect(() => {
+    if (wasManualSelection) return;
+
     if (selectedToken && selectedChainNewPosition) {
       const matchingRow = filteredRows.find(
         row => row.tokenName?.toLowerCase() === selectedToken.toLowerCase() && 
@@ -284,6 +290,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   }, [filteredRows, tableData, selectedWallet, selectedRows, tokensToTrade]);
 
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
+    setWasManualSelection(true);
     const selectedId = newSelection.length > 0 ? String(newSelection[0]) : null;
     
     if (selectedId) {
@@ -310,7 +317,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
     setSelectedWallet(selectedWallet);
 
-    setSelectedRows(null)
+    setSelectedRows(null);
+    setSelectedChain(""); 
+    
     if (onTokenChange) {
       onTokenChange(null);
     }
@@ -480,10 +489,20 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                 checkboxSelection={false}
                 apiRef={apiRef}
                 getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
-
                 columns={getIndexResultWalletTableColumns()}
                 rows={filteredRows}
                 onRowSelectionModelChange={handleSelectionChange}
+                getRowClassName={(params) =>
+                selectedRows &&
+                `${params.row.tokenName.toLowerCase()}-${params.row.chain.toLowerCase()}` === selectedRows
+                  ? 'selected-row'
+                  : ''
+              }
+              componentsProps={{
+                row: {
+                  title: t("ClickToLoadCurrentPosition")
+                }
+              }}
               />
               <Dialog
                 open={isAddingManualPosition}
@@ -663,4 +682,22 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   ".MuiDataGrid-withBorderColor": {
     bgColor: "transparent",
   }, 
+  "& .MuiDataGrid-row:hover": {
+    cursor: "pointer",
+    backgroundColor: theme.palette.mode === "light" ? "#e3f2fd" : "#1a237e",
+    border: theme.palette.mode === "light" ?"1px solid black": "1px solid white",
+  },
+  "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+    backgroundColor: theme.palette.mode === "light" ? "#109EEF" : darken(theme.palette.primary.main, 0.2),
+  },
+  "& .selected-row .MuiDataGrid-cell": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cell:focus": {
+    outline: "none",
+  },
+  "& .MuiDataGrid-cell": {
+    cursor: "pointer",
+    userSelect: "none",
+  },
 }));
