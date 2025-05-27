@@ -1,4 +1,5 @@
-import { CssBaseline } from "@mui/material"
+import { getSidebarMenuItems } from "@/constants/sidebar"
+import { CssBaseline, useTheme } from "@mui/material"
 import Box from "@mui/material/Box"
 import { styled } from "@mui/material/styles"
 import {
@@ -11,6 +12,7 @@ import {
   useAppSelector,
   useOry,
 } from "components"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import "react-toastify/dist/ReactToastify.css"
 interface Props {
@@ -19,9 +21,15 @@ interface Props {
 
 export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
+   const theme = useTheme()
   const dispatch = useAppDispatch()
   const { session, logOut } = useOry()
   const { t } = useTranslation("Header")
+  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme))
+
+   useEffect(() => {
+      setSideBarOptions(getSidebarMenuItems(theme)) 
+    },[session])
 
   return (
     <StyledRoot sx={{ width: "100%" }}>
@@ -33,11 +41,11 @@ export default function Layout({ children }: Props) {
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
-        title={t("ElanInsights")}
+        title={t("ECOSTrading")}
       />
       <Sidebar
         // TODO Add sidebar menu items here.
-        sidebarItems={[]}
+        sidebarItems={sideBarOptions}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}
       />
