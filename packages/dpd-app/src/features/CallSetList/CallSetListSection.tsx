@@ -1,12 +1,12 @@
 import React from 'react';
-import { Box, darken, lighten, styled, Typography } from '@mui/material';
+import { Box, darken, lighten, styled, Typography, useTheme } from '@mui/material';
 import { getCallSetListTableColumns } from './CallSetListTable';
 import { BasicTable } from 'components';
 import { mockTrdaePositions } from '@/mocks/mockTradePositions';
 
 const CallSetListSection = () => {
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
-
+  const theme = useTheme();
   const handleSelectionChange = (newSelection: string[]) => {
     setSelectedRows(newSelection);
   };
@@ -89,7 +89,7 @@ const CallSetListSection = () => {
         hideFooter
         rowSelection
         getRowId={(row) => row.id}
-        columns={getCallSetListTableColumns()}
+        columns={getCallSetListTableColumns(theme)}
         rows={mockTrdaePositions} 
         rowSelectionModel={selectedRows}
       />

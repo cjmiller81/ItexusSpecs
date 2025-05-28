@@ -1,14 +1,14 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import i18next, { t } from "i18next";
-import { Box, Typography } from "@mui/material";
+import { Box, Theme, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { green, red, blue } from '@mui/material/colors';
 import CloseIcon from '@mui/icons-material/Close';
 
 i18next.setDefaultNamespace("ColumnsDefs");
 
-export const getCallSetListTableColumns = (): GridColDef[] => {
-   const theme = useTheme();
+export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
+
   return [
     {
       field: "account",
@@ -47,7 +47,6 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => {
-        const theme = useTheme();
         const isDark = theme.palette.mode === "dark";
         const position = params.row;
         const isWorking = position.entryStatus === 'Working';
@@ -131,7 +130,6 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => {
-        const theme = useTheme();
         const isDark = theme.palette.mode === "dark";
         const value = params.row.optionType as 'CALL' | 'PUT' | 'SHARES' | undefined;
 
@@ -287,7 +285,6 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => {
         const status = params.row?.entryStatus;
-        const theme = useTheme();
         const isDark = theme.palette.mode === 'dark';
 
       if (status === "Working") {
@@ -498,7 +495,6 @@ export const getCallSetListTableColumns = (): GridColDef[] => {
         const percentage = params.row.tierPercentage;
         const price = params.row.stopPrice;
 
-        const theme = useTheme();
         const isDark = theme.palette.mode === "dark";
 
         if (!percentage || !price) {
