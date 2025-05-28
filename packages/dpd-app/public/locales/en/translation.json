@@ -185,7 +185,12 @@
     "TargetPrice": "Target Price",
     "StopOrder": "Stop Order",
     "StopPrice": "Stop Price",
-    "Speed": "Speed"
+    "Speed": "Speed",
+    "Type": "Type",
+    "DTERange": "DTE RANGE",
+    "EntryStatus": "Entry Status",
+    "ClosePosition": "Close Position",
+    "CancelOrder": "Cancel Order"
   },
   "SymbolLookup": {
     "Search": "Search"
