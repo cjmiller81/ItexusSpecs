@@ -144,7 +144,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       };
 
       fetchIconsForSwapFor();
-    }, 600);
+    }, 450);
 
     return () => clearTimeout(timeoutId);
   }, [selectedChain, inputSearchSwapFor]);
