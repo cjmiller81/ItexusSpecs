@@ -45,9 +45,11 @@ interface CurrentPositionSectionProps {
     onFilteredRowsChange?: (rows: WalletBalance[]) => void;
     selectedChainNewPosition: string | null;
     onTokenChange?: (token: WalletBalance | null) => void;
+    onClearTokenAndChain?: () => void;
   }
 
-export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition,onTokenChange }) => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = 
+({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition,onTokenChange,onClearTokenAndChain }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
@@ -76,10 +78,13 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     setSelectedChain("");
     setSelectedRows(null);
     setSelectedWallet(null);
+     if (onClearTokenAndChain) {
+    onClearTokenAndChain();
+  }
 
-      if (onWalletChange) {
-        onWalletChange(null);
-      }
+    if (onWalletChange) {
+      onWalletChange(null);
+    }
     setFilteredRows([]);
   };
 
@@ -115,7 +120,17 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     } else {
       setSelectedRows(null);
     }
-  }, [selectedToken,selectedChainNewPosition, filteredRows]);  
+  }, [selectedToken,selectedChainNewPosition, filteredRows]); 
+
+  useEffect(() => {
+    if (wasManualSelection) {
+      const timeout = setTimeout(() => {
+        setWasManualSelection(false);
+      }, 300);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [wasManualSelection]); 
 
   useEffect(() => {
     dispatch(fetchWallets(null));
@@ -381,12 +396,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     }
   };
 
-  const onOptionChange = (value: TokenSearchItem  | null) => {
-    if (value && value.id === symbolOptionSwapFor?.id) {
-      setSymbolOptionSwapFor(value);
-      return;
-    }
-  
+  const onOptionChange = (value: TokenSearchItem | null) => {
     setSymbolOptionSwapFor(value);
   };
 

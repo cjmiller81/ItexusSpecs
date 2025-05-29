@@ -22,6 +22,11 @@ export default function Dex() {
       setSelectedChain(chainInfo);
     };
 
+    const clearSelectedTokenAndChain = () => {
+      setSelectedToken(null);
+      setSelectedChain(null);
+    };
+
     const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
       setSelectedTokenRow(tokenRow);
     };
@@ -57,7 +62,8 @@ export default function Dex() {
           <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
             selectedChainNewPosition={selectedChain}
             onFilteredRowsChange={setFilteredRows}
-            onTokenChange={handleSelectedTokenRowChange}/>
+            onTokenChange={handleSelectedTokenRowChange}
+            onClearTokenAndChain={clearSelectedTokenAndChain}/>
         </Grid>
 
         <Grid item xs={12} md={7}>

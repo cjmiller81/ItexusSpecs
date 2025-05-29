@@ -481,6 +481,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
       return;
     }
 
+    if(value === null)
+    {
+      onSelectedTokenChange?.(null,null);
+      setSelectedChain("")
+    }
+    
     setSymbolOptionSwap(value);
     setErrorMessage(null);
   };
@@ -663,10 +669,10 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` :
                           symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
                         onInputChange={(_event, newInputValue, reason) => {
-                          if (reason === 'input') {
-                            onOptionChangeSwap(null); 
-                            setInputSearchSwap(newInputValue);
+                          if (reason === 'clear') {
+                            onOptionChangeSwap(null);
                           }
+                          setInputSearchSwap(newInputValue);
                         }}
                         renderInput={(params) => (
                           <TextField
