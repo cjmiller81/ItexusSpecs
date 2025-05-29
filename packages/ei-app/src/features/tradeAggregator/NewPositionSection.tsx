@@ -159,7 +159,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       chain => chain.walletAssets && chain.walletAssets.length > 0
     ).length ?? 0;
 
-    let pageSize = tokenAddresses?.length + nonEmptyChainsCount;
+    let pageSize = tokenAddresses?.length + nonEmptyChainsCount + 50;
 
     try {
       const result = await iconsApi.getIconsV2(
