@@ -20,6 +20,11 @@ export default function Dex() {
     const handleSelectedTokenChange = (tokenInfo: any, chainInfo: any) => {
       setSelectedToken(tokenInfo);
       setSelectedChain(chainInfo);
+      
+      if(tokenInfo === null)
+      {
+        setSelectedTokenRow(null)
+      }
     };
 
     const clearSelectedTokenAndChain = () => {

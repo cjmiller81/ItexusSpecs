@@ -20,7 +20,6 @@ import {
   Tooltip,
   InputAdornment,
   IconButton,
-  CircularProgress,
   Autocomplete,
   Avatar
 } from "@mui/material";
@@ -145,7 +144,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       };
 
       fetchIconsForSwapFor();
-    }, 600);
+    }, 450);
 
     return () => clearTimeout(timeoutId);
   }, [selectedChain, inputSearchSwapFor]);
@@ -848,67 +847,88 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 <Grid item xs={3.7}>
                   <Box>
                     <Typography sx={{paddingBottom:"4.7px"}}>{t("SwapFor")}</Typography>
-                  <Autocomplete
-                        options={tokenIconsSwapFor?.items ?? []}
-                        getOptionLabel={(option) => option.sym}
-                        value={symbolOptionSwapFor}
-                        onChange={(_e, newValue) => onOptionChangeSwapFor(newValue)}
-                        isOptionEqualToValue={(option, value) => option.id === value?.id}
-                        disableClearable={false}
-                        inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ?
-                          `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` :
-                          symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
-                        onInputChange={(_event, newInputValue, reason) => {
-                          if (reason === 'input') {
-                            onOptionChangeSwapFor(null);
-                            setInputSearchSwapFor(newInputValue);
-                          }
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t("Search")}
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  {symbolOptionSwapFor?.lURI ? (
-                                    <InputAdornment position="start">
-                                      <Avatar
-                                        src={symbolOptionSwapFor.lURI}
-                                        alt={symbolOptionSwapFor.sym} 
-                                        sx={{ width: 22, height: 22, mr: 1 }}
-                                      />
-                                    </InputAdornment>
-                                  ) : (
-                                    <InputAdornment position="start">
-                                      <SearchIcon />
-                                    </InputAdornment>
-                                  )}
-                                </>
-                              ),
-                              sx: {
-                                input: {
-                                  textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
-                                },
+                    <Autocomplete
+                      options={tokenIconsSwapFor?.items ?? []}
+                      getOptionLabel={(option) =>
+                        option.name
+                          ? `${option.sym.toUpperCase()} - ${option.name}`
+                          : option.sym.toUpperCase()
+                      }
+                      value={symbolOptionSwapFor}
+                      onChange={(_e, newValue) => {
+                        onOptionChangeSwapFor(newValue);
+                        if (newValue) {
+                          setInputSearchSwapFor(
+                            newValue.name
+                              ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
+                              : newValue.sym.toUpperCase()
+                          );
+                        }
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value?.id}
+                      disableClearable={false}
+                      inputValue={
+                        symbolOptionSwapFor
+                          ? symbolOptionSwapFor.name
+                            ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
+                            : symbolOptionSwapFor.sym.toUpperCase()
+                          : inputSearchSwapFor
+                      }
+                      onInputChange={(_event, newInputValue, reason) => {
+                        if (reason === 'input') {
+                          onOptionChangeSwapFor(null);
+                          setInputSearchSwapFor(newInputValue);
+                        } else if (reason === 'clear') {
+                          onOptionChangeSwapFor(null);
+                          setInputSearchSwapFor('');
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={t("Search")}
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                {symbolOptionSwapFor?.lURI ? (
+                                  <InputAdornment position="start">
+                                    <Avatar
+                                      src={symbolOptionSwapFor.lURI}
+                                      alt={symbolOptionSwapFor.sym}
+                                      sx={{ width: 22, height: 22, mr: 1 }}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="start">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                )}
+                              </>
+                            ),
+                            sx: {
+                              input: {
+                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
                               },
-                            }}
+                            },
+                          }}
+                        />
+                      )}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar
+                            src={option.lURI ?? undefined}
+                            alt={option.sym}
+                            sx={{ width: 24, height: 24 }}
                           />
-                        )}
-                        renderOption={(props, option) => (
-                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar
-                              src={option.lURI ?? undefined}
-                              alt={option.sym}
-                              sx={{ width: 24, height: 24 }}
-                            />
-                            <Typography variant="body1">
-                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
-                            </Typography>
-                          </Box>
-                        )}
-                      />
-
+                          <Typography variant="body1">
+                            {option.name
+                              ? `${option.sym.toUpperCase()} - ${option.name}`
+                              : option.sym.toUpperCase()}
+                          </Typography>
+                        </Box>
+                      )}
+                    />
                     <Typography sx={{ marginTop: "15px" }}>{t("SwapForPositionAddress")}</Typography>
                     <TextField
                         value={tokenAddressSwapFor ?? ''}
