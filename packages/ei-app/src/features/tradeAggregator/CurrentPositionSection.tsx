@@ -559,68 +559,88 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     fullWidth 
                     sx={{}}
                   />
-                <Autocomplete
-                  options={tokenIcons?.items ?? []}
-                  getOptionLabel={(option) => option.sym}
-                  value={symbolOptionSwapFor}
-                  onChange={(_e, newValue) => onOptionChange(newValue)}
-                  isOptionEqualToValue={(option, value) => option.id === value?.id}
-                  disableClearable={false}
-                  inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ?
-                    `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` :
-                    symbolOptionSwapFor.sym.toUpperCase() : inputSearch}
-                  onInputChange={(_event, newInputValue, reason) => {
-                    if (reason === 'input') {
-                      onOptionChange(null); 
-                      setInputSearch(newInputValue);
-                    }
-                    }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      fullWidth
-                      size="medium"
-                      placeholder={t("TokenSearch")}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <>
-                            {symbolOptionSwapFor?.lURI ? (
-                              <InputAdornment position="start">
-                                <Avatar
-                                  src={symbolOptionSwapFor.lURI}
-                                  alt={symbolOptionSwapFor.sym} 
-                                  sx={{ width: 22, height: 22, mr: 1 }}
-                                />
-                              </InputAdornment>
-                            ) : (
-                              <InputAdornment position="start">
-                                <SearchIcon />
-                              </InputAdornment>
-                            )}
-                          </>
-                        ),
-                        sx: {
-                          input: {
-                            textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
-                          },
-                        },
+                  <Autocomplete
+                      options={tokenIcons?.items ?? []}
+                      getOptionLabel={(option) =>
+                        option.name
+                          ? `${option.sym.toUpperCase()} - ${option.name}`
+                          : option.sym.toUpperCase()
+                      }
+                      value={symbolOptionSwapFor}
+                      onChange={(_e, newValue) => {
+                        onOptionChange(newValue);
+                        if (newValue) {
+                          setInputSearch(
+                            newValue.name
+                              ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
+                              : newValue.sym.toUpperCase()
+                          );
+                        }
                       }}
+                      isOptionEqualToValue={(option, value) => option.id === value?.id}
+                      disableClearable={false}
+                      inputValue={
+                        symbolOptionSwapFor
+                          ? symbolOptionSwapFor.name
+                            ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
+                            : symbolOptionSwapFor.sym.toUpperCase()
+                          : inputSearch
+                      }
+                      onInputChange={(_event, newInputValue, reason) => {
+                        if (reason === 'input') {
+                          onOptionChange(null);
+                          setInputSearch(newInputValue);
+                        } else if (reason === 'clear') {
+                          onOptionChange(null);
+                          setInputSearch('');
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={t("Search")}
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                {symbolOptionSwapFor?.lURI ? (
+                                  <InputAdornment position="start">
+                                    <Avatar
+                                      src={symbolOptionSwapFor.lURI}
+                                      alt={symbolOptionSwapFor.sym}
+                                      sx={{ width: 22, height: 22, mr: 1 }}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="start">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                )}
+                              </>
+                            ),
+                            sx: {
+                              input: {
+                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                              },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                        <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar
+                            src={option.lURI ?? undefined}
+                            alt={option.sym}
+                            sx={{ width: 24, height: 24 }}
+                            />
+                            <Typography variant="body1">
+                            {option.name
+                              ? `${option.sym.toUpperCase()} - ${option.name}`
+                              : option.sym.toUpperCase()}
+                          </Typography>
+                        </Box>
+                      )}
                     />
-                  )}
-                  renderOption={(props, option) => (
-                    <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Avatar
-                        src={option.lURI ?? undefined}
-                        alt={option.sym}
-                        sx={{ width: 24, height: 24 }}
-                      />
-                      <Typography variant="body1">
-                        {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
-                      </Typography>
-                    </Box>
-                  )}
-                />
                 </DialogContent>
                 <DialogActions>
                   <Button
