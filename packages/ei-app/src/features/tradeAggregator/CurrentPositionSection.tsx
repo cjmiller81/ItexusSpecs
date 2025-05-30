@@ -549,16 +549,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     </Box>
                   )}
                 </FormControl>
-                <TextField
-                    label={t("Qty")}
-                    variant="outlined"
-                    size="medium"
-                    value={newBalance}
-                    onChange={e => setNewBalance(e.target.value)}
-                    type="number"
-                    fullWidth 
-                    sx={{}}
-                  />
+                
                   <Autocomplete
                       options={tokenIcons?.items ?? []}
                       getOptionLabel={(option) =>
@@ -641,6 +632,16 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                         </Box>
                       )}
                     />
+                    <TextField
+                    label={t("Qty")}
+                    variant="outlined"
+                    size="medium"
+                    value={newBalance}
+                    onChange={e => setNewBalance(e.target.value)}
+                    type="number"
+                    fullWidth 
+                    sx={{}}
+                  />
                 </DialogContent>
                 <DialogActions>
                   <Button
