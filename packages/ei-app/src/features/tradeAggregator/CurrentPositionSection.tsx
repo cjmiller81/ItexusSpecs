@@ -205,10 +205,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   }, [filteredRows]);
 
   useEffect(() => {
-    if (newToken && newBalance && selectedChain) {
-      const tokenNameLower = newToken.toLowerCase();
+    if (symbolOptionSwapFor && newBalance && selectedChain) {
+      const tokenNameLower = symbolOptionSwapFor.sym.toLowerCase();
       const selectedChainLower = selectedChain.toLowerCase();
-  
       const isDuplicate = filteredRows.some(
         row =>
           row.tokenName?.toLowerCase() === tokenNameLower &&
@@ -223,7 +222,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     } else {
       setAddPositionError("");
     }
-  }, [newToken, newBalance, selectedChain, filteredRows]);
+  }, [symbolOptionSwapFor
+    , newBalance, selectedChain, filteredRows]);
 
   useEffect(() => {
     if (filteredRows.length > 0 || tableData.length > 0) {
@@ -549,16 +549,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     </Box>
                   )}
                 </FormControl>
-                <TextField
-                    label={t("Qty")}
-                    variant="outlined"
-                    size="medium"
-                    value={newBalance}
-                    onChange={e => setNewBalance(e.target.value)}
-                    type="number"
-                    fullWidth 
-                    sx={{}}
-                  />
+                
                   <Autocomplete
                       options={tokenIcons?.items ?? []}
                       getOptionLabel={(option) =>
@@ -641,6 +632,16 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                         </Box>
                       )}
                     />
+                    <TextField
+                    label={t("Qty")}
+                    variant="outlined"
+                    size="medium"
+                    value={newBalance}
+                    onChange={e => setNewBalance(e.target.value)}
+                    type="number"
+                    fullWidth 
+                    sx={{}}
+                  />
                 </DialogContent>
                 <DialogActions>
                   <Button
