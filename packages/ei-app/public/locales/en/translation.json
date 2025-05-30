@@ -264,6 +264,7 @@
     "Bridge": "Bridge",
     "Token": "Token",
     "TokenPosition": "Current Position",
+    "AutoFilled": "Auto-filled after quotes",
     "Swap": "Swap",
     "Qty": "Qty",
     "Chain": "Chain",
