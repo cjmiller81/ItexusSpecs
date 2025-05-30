@@ -15,7 +15,6 @@ import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
-import { Product } from "components/src/features/profile/Billing/models/Product";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -30,7 +29,8 @@ function getHomeItems(): SidebarListItem[] {
   ];
 }
 
-function getPlatformsItems(): SidebarListItem[] {
+function getPlatformsItems(currentPlan: string | null): SidebarListItem[] {
+  const isBasic = currentPlan?.toLowerCase() === "basic";
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -53,10 +53,12 @@ function getPlatformsItems(): SidebarListItem[] {
         {
           title: t("TradingSubpage", { ns: "SideBar" }),
           href: "/charts",
+          disabled: isBasic,
         },  
         {
           title: t("Derivatives", { ns: "SideBar" }),
           href: "/derivatives",
+          disabled: isBasic,
         },
       ],
     },
@@ -67,17 +69,20 @@ function getPlatformsItems(): SidebarListItem[] {
         {
           title: t("LiquidityPools", { ns: "IncomeSection" }),
           href: "/liquidity_pools",
+          disabled: isBasic,
         },
         {
           title: t("Vaults", { ns: "IncomeSection" }),
           href: "/vaults",
+          disabled: isBasic,
         },
       ],
     },
   ];
 }
 
-function getToolsItems(): SidebarListItem[] {
+function getToolsItems(currentPlan: string | null): SidebarListItem[] {
+  const isBasic = currentPlan?.toLowerCase() === "basic";
   return [
     {
       title: t("Wallets", { ns: "SideBar" }),
@@ -106,6 +111,7 @@ function getToolsItems(): SidebarListItem[] {
         {
           title: t("DEX", { ns: "SideBar" }),
           href: "/tradeAggregator/dex",
+          disabled: isBasic,
         },
       ],
     }
@@ -201,7 +207,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
   ];
 }
 
-export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
+export function getSidebarMenuItems(theme: Theme, currentPlan: string | null): SidebarItems[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
@@ -209,12 +215,12 @@ export function getSidebarMenuItems(theme: Theme): SidebarItems[] {
     },
     {
       title: t("Platform", { ns: "SideBar" }),
-      sidebarListItems: getPlatformsItems(),
+      sidebarListItems: getPlatformsItems(currentPlan),
     },
 
     {
       title: t("Tools", { ns: "SideBar" }),
-      sidebarListItems: getToolsItems(),
+      sidebarListItems: getToolsItems(currentPlan),
     },
     {
       title: t("Community", { ns: "SideBar" }),
