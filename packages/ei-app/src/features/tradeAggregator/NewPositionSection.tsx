@@ -28,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import CreateIcon from '@mui/icons-material/Create';
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
@@ -717,32 +718,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           </Box>
                         )}
                       />
-
-                      <Typography sx={{ marginTop: "15px" }}>{t("TokensAddress")}</Typography>
-                      <TextField
-                        value={tokenAddress ?? ''}
-                        variant="outlined"
-                        fullWidth
-                        InputProps={{
-                          sx: { fontSize: '0.6rem' },
-                          readOnly: true,
-                          endAdornment: tokenAddress && tokenAddressSwapFor && errorMessage === null ? (
-                            <InputAdornment position="end">
-                              <Tooltip title={t("Copy")}>
-                                <IconButton
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(tokenAddress);
-                                  }}
-                                  edge="end"
-                                >
-                                  <ContentCopyIcon />
-                                </IconButton>
-                              </Tooltip>
-                            </InputAdornment>
-                          ) : null,
-                        }}
-                        sx={{ marginTop: "15px" }}
-                      />
                   </Box>
                 </Grid>
 
@@ -929,31 +904,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         </Box>
                       )}
                     />
-                    <Typography sx={{ marginTop: "15px" }}>{t("SwapForPositionAddress")}</Typography>
-                    <TextField
-                        value={tokenAddressSwapFor ?? ''}
-                        variant="outlined"
-                        fullWidth
-                        InputProps={{
-                          sx: { fontSize: '0.6rem' },
-                          readOnly: true,
-                          endAdornment: tokenAddress && tokenAddressSwapFor && errorMessage === null ? (
-                            <InputAdornment position="end">
-                              <Tooltip title={t("Copy")}>
-                                <IconButton
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(tokenAddressSwapFor);
-                                  }}
-                                  edge="end"
-                                >
-                                  <ContentCopyIcon />
-                                </IconButton>
-                              </Tooltip>
-                            </InputAdornment>
-                          ) : null,
-                        }}
-                        sx={{ marginTop: "15px" }}
-                    />
                   </Box>
                 </Grid>
 
@@ -1010,7 +960,119 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   </Typography>
                 )}
                   </Grid>
-                </Grid>       
+                </Grid>
+                <Grid item xs={11.8} sx={{ marginTop: 2 }}>
+                  <Grid container justifyContent="space-between" spacing={2}>
+                    <Grid item xs={3.7}>
+                      <Typography sx={{ marginBottom: "6px" }}>{t("TokensAddress")}</Typography>
+                      <TextField
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                          },
+                        }}
+                        value={tokenAddress ?? ''}
+                        placeholder={t("AutoFilled")}
+                        variant="outlined"
+                        fullWidth
+                        inputProps={{
+                          readOnly: true,
+                          onFocus: (e) => e.target.blur(),
+                          style: { cursor: 'not-allowed' },
+                        }}
+                        InputProps={{
+                          sx: {
+                            fontSize: '0.6rem',
+                            cursor: 'not-allowed',
+                          },
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("Auto-filled field")}>
+                                <CreateIcon fontSize="small" sx={{ opacity: 0.5, mr: 1 }} />
+                              </Tooltip>
+                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
+                                <Tooltip title={t("Copy")}>
+                                  <IconButton
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(tokenAddress);
+                                    }}
+                                    edge="end"
+                                  >
+                                    <ContentCopyIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={3.7}>
+                      <Typography sx={{ marginBottom: "6px" }}>{t("SwapForPositionAddress")}</Typography>
+                      <TextField
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                          },
+                        }}
+                        value={tokenAddressSwapFor ?? ''}
+                        placeholder={t("AutoFilled")}
+                        variant="outlined"
+                        fullWidth
+                        inputProps={{
+                          readOnly: true,
+                          onFocus: (e) => e.target.blur(),
+                          style: { cursor: 'not-allowed' },
+                        }}
+                        InputProps={{
+                          sx: {
+                            fontSize: '0.6rem',
+                            cursor: 'not-allowed',
+                          },
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("Auto-filled field")}>
+                                <CreateIcon fontSize="small" sx={{ opacity: 0.5 }} />
+                              </Tooltip>
+                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
+                                <Tooltip title={t("Copy")}>
+                                  <IconButton
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(tokenAddressSwapFor);
+                                    }}
+                                    edge="end"
+                                  >
+                                    <ContentCopyIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+              </Grid>
+       
               </Grid>
             </Grid>
         ) : (
