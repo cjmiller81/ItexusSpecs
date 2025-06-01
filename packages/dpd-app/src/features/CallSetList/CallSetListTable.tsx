@@ -219,6 +219,7 @@ export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
       sortable: false,
       editable: false,
       filterable: false,
+      maxWidth: 100,
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => (
@@ -270,7 +271,6 @@ export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
                 {renderNumberBox(max)}
               </>
             )}
-            <Typography variant="body1" sx={{ fontSize: "0.75rem", ml: 1 }}>DTE</Typography>
           </Box>
         );
       },
