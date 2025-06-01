@@ -89,12 +89,12 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
       icon: <AccountBalanceWalletIcon />,
       children: [
         {
-          title: t("Web3DeFi", { ns: "SideBar" }),
-          href: "/myWallets"
+          title: t("Decentralized", { ns: "SideBar" }),
+          href: "/myWallets/decentralized"
         },
         {
-          title: t("CEXWallets", { ns: "SideBar" }),
-          href: "/myWallets/cexWallets",
+          title: t("Centralized", { ns: "SideBar" }),
+          href: "/myWallets/centralized",
         },
       ],
     },
