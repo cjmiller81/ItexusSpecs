@@ -246,9 +246,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={false}
           allowHeaderFiltering={false}
           calculateCellValue={data => {
-            const apyValue = data.totalApy !== undefined ? data.totalApy : data.apy || 0;
-            const apyStr = apyValue.toString();
-            return apyStr.length > 8 ? apyStr.slice(0, 8) : apyStr;
+            const totalApy = data.breakdowns?.totalApy ?? 0;
+            return (totalApy * 100).toFixed(2);
           }}
           customizeText={toPercentageField}
         />
