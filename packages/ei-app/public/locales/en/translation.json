@@ -371,7 +371,9 @@
     "Education": "Education",
     "Web3DeFi": "Web3 DeFi",
     "CEX": "CEX",
-    "CEXWallets": "CEX Wallets"
+    "CEXWallets": "CEX Wallets",
+    "Centralized": "Centralized",
+    "Decentralized": "Decentralized"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
