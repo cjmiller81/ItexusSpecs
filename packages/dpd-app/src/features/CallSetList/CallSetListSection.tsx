@@ -73,28 +73,32 @@ const CallSetListSection = () => {
   }));
 
   return (
-    <Box sx={{ width: '100%', height: "100%" }}>
-      <Typography
-        variant="h6"
-        sx={{ mb: 2, fontWeight: 600 }}
-      >
-        Set List
-      </Typography>
+  <Box sx={{ width: '100%', height: "100%" }}>
+    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+      Set List
+    </Typography>
+
+    <Box
+      sx={{
+        overflowX: 'auto',
+        maxWidth: '100%',
+      }}
+    >
       <CallListTable
         sx={{
-          ...tableScrollSx,
-          width: "100%",
-          height: "100%"
+          minWidth: 1750,
+          overflowY: 'auto',
         }}
         hideFooter
         rowSelection
         getRowId={(row) => row.id}
         columns={getCallSetListTableColumns(theme)}
-        rows={mockTrdaePositions} 
+        rows={mockTrdaePositions}
         rowSelectionModel={selectedRows}
       />
     </Box>
-  );
-};
+  </Box>
+);
+}
 
 export default CallSetListSection;
