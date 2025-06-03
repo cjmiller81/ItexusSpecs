@@ -53,7 +53,7 @@ export function TradeTable() {
     mkt: '',
     qty: '0',
     value: '',
-    action: '',
+    action: 'buy',
   });
   const [showMarketSelector, setShowMarketSelector] = useState(false);
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
@@ -408,17 +408,17 @@ export function TradeTable() {
                     fontWeight: "bold",
                   }}
                 >
-                  {tradeData.symbol && tradeData.action
-                    ? `${tradeData.symbol.toUpperCase()} to ${tradeData.action.charAt(0).toUpperCase() + tradeData.action.slice(1)}`
-                    : t("Qty")}
+                  {`${tradeData.symbol ? tradeData.symbol.toUpperCase() + " to" : ""} ${tradeData.action === "buy" ? "Buy" : "Sell"}`}
                 </TableCell>
 
                 <TableCell
-                  sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, fontWeight: "bold" }}
+                  sx={{
+                    borderBottom: `1px solid ${borderColor}`,
+                    color: textColor,
+                    fontWeight: "bold",
+                  }}
                 >
-                  {tradeData.action && tradeData.mkt
-                    ? `${tradeData.mkt.split("/")[1]} to ${tradeData.action === "buy" ? "Spend" : "Receive"}`
-                    : t("Value")}
+                  {`${tradeData.mkt ? tradeData.mkt.split("/")[1] + " to" : ""} ${tradeData.action === "buy" ? "Spend" : "Receive"}`}
                 </TableCell>
                 
                 {/* <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
