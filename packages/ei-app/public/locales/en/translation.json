@@ -213,6 +213,7 @@
     "MKT": "MKT",
     "Value": "Value",
     "Trade": "Trade",
+    "TradeType": "Trade Type",
     "Action": "Action",
     "SEND": "SEND",
     "Select": "Select",
