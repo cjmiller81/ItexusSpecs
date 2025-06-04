@@ -263,6 +263,7 @@
   },
   "NewPositionSection": {
     "Bridge": "Bridge",
+    "NoOptionsOnThisChain": "No Options on this Chain",
     "Token": "Token",
     "TokenPosition": "Current Position",
     "AutoFilled": "Auto-filled after quotes",

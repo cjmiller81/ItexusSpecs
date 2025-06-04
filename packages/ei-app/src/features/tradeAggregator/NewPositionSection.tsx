@@ -57,7 +57,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
-  const [useMax,setUseMax] = useState<boolean>(false);
+  const [useMax,setUseMax] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
@@ -445,7 +445,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [symbolOptionSwap, selectedChain, selectedWallet]);
 
   useEffect(() => {
-    if (useMax) {
+    if (useMax && symbolOptionSwap) {
       setNewBalance(maxBalance.toString());
     }
   }, [useMax, maxBalance]);
@@ -752,16 +752,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 <Grid item xs={2.2}>
                   <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
                     <Typography>{t("Qty")}</Typography>
-
-                    <Box display="flex" alignItems="center">
-                      <Checkbox
-                        size="small"
-                        sx={{ padding: 0, marginRight: 1 }}
-                        checked={useMax} 
-                        onChange={() => {setUseMax(prev => !prev);setShowNoQuotesMessage(false);}}
-                      />
-                      <Typography>{t("UseMax")}</Typography>
-                    </Box>
                   </Box>
 
                   <TextField
@@ -778,7 +768,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         const [, decimalPart = ""] = input.split(".");
                         
                         if (decimalPart.length <= 5) {
-                          if (!isNaN(numericValue) && numericValue <= max) {
+                          if (!isNaN(numericValue)) {
                             setShowNoQuotesMessage(false);
                             setNewBalance(input);
                           }
@@ -792,7 +782,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     }}                    
                     type="text"
                     fullWidth
-                    disabled={useMax}
                     inputProps={{
                       inputMode: "decimal",
                       min: 0,
@@ -858,6 +847,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           setInputSearchSwapFor('');
                         }
                       }}
+                      noOptionsText={t("NoOptionsOnThisChain")}
                       renderInput={(params) => (
                         <TextField
                           {...params}
