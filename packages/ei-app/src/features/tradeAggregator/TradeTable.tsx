@@ -389,10 +389,10 @@ export function TradeTable() {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "17%", color: textColor }}>
-                  {t("Symbol")}
+                  {t("SearchForSymol")}
                 </TableCell>
                 <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "15%", color: textColor }}>
-                  {t("MKT")}
+                  {t("TradingPair")}
                 </TableCell>
 
                 <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
@@ -533,25 +533,26 @@ export function TradeTable() {
               </TableCell>
 
               <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
-                <TextField
-                  value={tradeData.value ? tradeData.value : ""}
-                  variant="outlined"
+                <Box
+                tabIndex={-1}
                   sx={{
-                    input: {
-                      height: "20px",
-                      padding: "8px",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "#fff",
-                      backgroundColor: "#373737",
-                      borderRadius: "8px",
-                    },
-                    fieldset: {
-                      borderRadius: "8px",
-                      borderColor: borderColor,
-                    },
+                    height: "36px",
+                    padding: "8px",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    color: "#fff",
+                    backgroundColor: "#373737",
+                    borderRadius: "8px",
+                    border: `1px solid ${borderColor}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    userSelect: "none",
+                    cursor: "default",
                   }}
-                />
+                >
+                  {tradeData.value || ""}
+                </Box>
               </TableCell>
 
               {shouldShowSendButton && (
@@ -583,6 +584,7 @@ export function TradeTable() {
             <TableCell colSpan={6} sx={{ padding: "16px 24px" }}>
               {tradeData.qty && tradeData.value && tradeData.symbol && tradeData.mkt && tradeData.action && (
                 <Box
+                tabIndex={-1}
                   sx={{
                     display: "flex",
                     alignItems: "center",
@@ -591,9 +593,12 @@ export function TradeTable() {
                     fontWeight: "bold",
                     backgroundColor: "#0a1e2c",
                     position: "relative",
+                    userSelect: "none",
+                    cursor: "default",
                   }}
                 >
                   <Box
+                  tabIndex={-1}
                     sx={{
                       width: "6px",
                       height: "100%",
@@ -602,6 +607,8 @@ export function TradeTable() {
                       position: "absolute",
                       left: 0,
                       top: 0,
+                      userSelect: "none",
+                      cursor: "default",
                     }}
                   />
 
@@ -609,7 +616,7 @@ export function TradeTable() {
                     <div style={{ marginBottom: "4px", color: tradeData.action === "buy" ? "#4caf50" : "#f44336" }}>
                       {t("Transaction")}:
                     </div>
-                    <div>
+                    <div style={{ color: "#fff" }}>
                       {tradeData.action === "buy"
                         ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
                         : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`}
