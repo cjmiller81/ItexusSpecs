@@ -17,6 +17,7 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
   const theme = useTheme();
   const defaultOptions: ApexOptions = {
     chart: {
+      background: theme.palette.mode === "dark" ? "transparent" : "#fff",
       foreColor: theme.palette.text.primary,
       toolbar: {
         tools: {
@@ -51,7 +52,7 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
   const options = optionsOverrides ? merge(defaultOptions, optionsOverrides) : defaultOptions;
 
   return (
-    <Box {...props}>
+    <Box {...props} >
       {typeof window !== "undefined" && (
         <StyledReactAppxChart
           width={"100%"}
@@ -82,5 +83,8 @@ const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
   },
   "& .apexcharts-xaxistooltip": {
     display: "none",
+  },
+  "& .apexcharts-inner, .apexcharts-grid, .apexcharts-plot-area": {
+    backgroundColor: theme.palette.mode === "dark" ? "transparent" : "#fff",
   },
 }));

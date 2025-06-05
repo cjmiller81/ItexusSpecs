@@ -116,8 +116,11 @@ const CryptoCalendar: React.FC<Props> = ({
       icon={icon}
       loading={loading}
       sx={sx}>
-      <Box sx={{ backgroundColor: backgroundColor }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+      <Box sx={{ backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important", }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1,  }}>
           <FormControl sx={{ width: "50%" }}>
             <CoinsLookupVirtualized
               pageSize={50}
@@ -178,7 +181,10 @@ const CryptoCalendar: React.FC<Props> = ({
 
         <SimpleBarStyled
           sx={{
-            backgroundColor: backgroundColor,
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important",
             height: "519px",
             "@media (min-width: 1200px) and (max-width: 1800px)": {
               height: "483px",
@@ -235,7 +241,10 @@ const CryptoCalendar: React.FC<Props> = ({
             justifyContent: "center",
             padding: "3px 1px",
             width: "100%",
-            backgroundColor: backgroundColor,
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important",
           }}>
           <CustomDateSelector
             setSelectedDate={setSelectedDate}

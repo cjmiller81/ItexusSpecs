@@ -3,6 +3,7 @@ import { IndexModelingSection } from "@/features/Investing/IndexModelingSection"
 import { IndexResultsSection } from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
+import { HistoricalWalletsWorthMarketCap } from "@/features/MyWallets/HistoricalWalletsWorthMarketCap";
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -162,7 +163,7 @@ export default function MarketCapEqualWeightedPage() {
         defaultExpanded
         title={t("EqualWeightedChartTitle")}
         tooltip={t("ToggleView", { ns: "Common" })}>
-        <HistoricalWalletsWorth
+        <HistoricalWalletsWorthMarketCap
           sx={{ mt: 4, width: "100%" }}
           onFetchPage={fetchLookupPage}
           sumbitButtonText={t("RunTest")}

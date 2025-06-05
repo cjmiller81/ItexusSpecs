@@ -540,8 +540,9 @@ export function TradeTable() {
                     padding: "8px",
                     textAlign: "center",
                     fontWeight: "bold",
-                    color: "#fff",
-                    backgroundColor: "#373737",
+                    backgroundColor: isDarkMode
+                            ? "#373737"
+                            : "#e0e0e0", 
                     borderRadius: "8px",
                     border: `1px solid ${borderColor}`,
                     display: "flex",
@@ -591,7 +592,9 @@ export function TradeTable() {
                     borderRadius: "8px",
                     padding: "10px 16px",
                     fontWeight: "bold",
-                    backgroundColor: "#0a1e2c",
+                    backgroundColor: isDarkMode
+                            ? "#0a1e2c"
+                            : "#e0e0e0", 
                     position: "relative",
                     userSelect: "none",
                     cursor: "default",
@@ -616,7 +619,7 @@ export function TradeTable() {
                     <div style={{ marginBottom: "4px", color: tradeData.action === "buy" ? "#4caf50" : "#f44336" }}>
                       {t("Transaction")}:
                     </div>
-                    <div style={{ color: "#fff" }}>
+                    <div>
                       {tradeData.action === "buy"
                         ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
                         : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`}

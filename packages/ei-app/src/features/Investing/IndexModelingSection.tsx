@@ -9,6 +9,7 @@ import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, S
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
+import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -152,7 +153,7 @@ export const IndexModelingSection = ({
           )}
         </LeftContainer>
         <RightContainer>
-          <StyledWalletsTable
+          <MarketCapWallet
             sx={{
               ...tableScrollSx,
             }}
