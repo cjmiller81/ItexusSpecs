@@ -106,6 +106,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setTokenIcons(null);
       setSymbolOptionSwap(null);
       setSymbolOptionSwapFor(null);
+      setInputSearchSwapFor("");
       setSelectedChain("");
       setNewBalance("");
       return;
@@ -113,6 +114,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setTokenIcons(null);
       setSymbolOptionSwap(null);
       setSymbolOptionSwapFor(null);
+      setInputSearchSwapFor("");
       setSelectedChain("");
       setNewBalance("");
     const addresses: string[] = selectedWallet.chainAssets.flatMap(
@@ -426,11 +428,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
       setSelectedToken(null);
+      setNewBalance("")
       return;
     }
   
     const selectedChainUpper = selectedChain.toUpperCase();
-  
+    setNewBalance(maxBalance.toString());
     const matchedToken = selectedWallet.chainAssets
       .find(chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper)
       ?.tokenDetails.find(token => token.sym.toUpperCase() === symbolOptionSwap.sym.toUpperCase());
