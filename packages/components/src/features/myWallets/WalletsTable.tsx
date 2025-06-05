@@ -12,7 +12,17 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   "& .MuiDataGrid-main": {
     height: "auto",
     maxHeight: "300px",
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent"
+        : "#fff",
   },
+  "&.MuiDataGrid-withBorderColor": {  
+   backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent !important"
+        : "#fff !important",
+},
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
   },

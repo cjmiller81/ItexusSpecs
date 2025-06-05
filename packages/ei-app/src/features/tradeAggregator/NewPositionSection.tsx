@@ -1081,7 +1081,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
           <Table sx={{ color: "blue" }}>
             <TableHead  sx={{
           backgroundColor:
-            theme.palette.mode === "light" ? "#9E9E9E" : "inherit",
+            theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
         }}>
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>

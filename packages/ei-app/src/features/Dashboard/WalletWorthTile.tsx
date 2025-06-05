@@ -18,7 +18,7 @@ enum ThemeMode {
 export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props }) => {
   const { t } = useTranslation("WalletWorthTile");
   const theme = useTheme();
-  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa";
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#fff";
   const percentageFormatter = (value?: number) => {
     return `${(value ?? 0).toLocaleString("en-US", {
       minimumFractionDigits: 0,

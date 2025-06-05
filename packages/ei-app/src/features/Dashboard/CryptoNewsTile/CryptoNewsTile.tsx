@@ -51,7 +51,10 @@ export const CryptoNewsTile: FC<Props> = ({
       <>
         <Select
           sx={{
-            backgroundColor: backgroundColor,
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important",
             borderRadius: "0px",
             ":hover": {
               borderColor: theme => theme.palette.primary.main,
@@ -83,7 +86,10 @@ export const CryptoNewsTile: FC<Props> = ({
             borderColor: theme => theme.palette.divider,
             borderWidth: "1px",
             borderStyle: "solid",
-            backgroundColor: backgroundColor,
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important",
           }}>
           <SimpleBarStyled
             style={{ maxHeight: "359px" }}
