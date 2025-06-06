@@ -247,6 +247,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHeaderFiltering={false}
           calculateCellValue={data => {
             const totalApy = data.breakdowns?.totalApy ?? 0;
+            if (totalApy === "Infinity" || totalApy === Infinity) {
+              return "∞";
+            }
             return (totalApy * 100).toFixed(2);
           }}
           customizeText={toPercentageField}

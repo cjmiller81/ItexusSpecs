@@ -1,6 +1,6 @@
 export type VaultsData = {
   breakdowns?: {
-    totalApy: number;
+    totalApy: number | string;
   };
   status: string;
   id: string;

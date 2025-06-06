@@ -44,7 +44,8 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const processedVaults = useMemo(() => {
     return vaults.map(pool => ({
       ...pool,
-      apy: pool.breakdowns && pool.breakdowns.totalApy != null ? pool.breakdowns.totalApy.toFixed(2) : null,
+      apy: pool.breakdowns && pool.breakdowns.totalApy != null && pool.breakdowns.totalApy !== "Infinity" ?
+        (typeof pool.breakdowns.totalApy === 'number' ? pool.breakdowns.totalApy.toFixed(2) : pool.breakdowns.totalApy) : null,
       tvl: pool.tvls ? pool.tvls?.value : null,
       platformId: pool.platform_id || null,
       isRetired: pool.status === "eol",
