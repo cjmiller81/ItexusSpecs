@@ -49,7 +49,7 @@ export default function HomePage() {
     toDate: moment(selectedDate[1]).utc().toDate(),
   })
   const newsRef = useRef(news);
-  const retryNewsRef = useRef<NodeJS.Timeout | null>(null);
+  const retryNewsRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
   newsRef.current = news;
@@ -78,15 +78,15 @@ useEffect(() => {
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
-  }, [wallets]);
+  }, [wallets,dispatch]);
 
   useEffect(() => {
     if (!wallets?.length) return;
 
     dispatch(fetchHistoricalWalletData());
-  }, [wallets]);
+  }, [wallets,dispatch]);
 
- const retryRef = useRef<NodeJS.Timeout | null>(null);
+const retryRef = useRef<ReturnType<typeof setInterval> | null>(null);
 const topTokensRef = useRef<TopTokenData[] | null>(null);
 
 useEffect(() => {
