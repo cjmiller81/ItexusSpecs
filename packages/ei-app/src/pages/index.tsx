@@ -20,7 +20,7 @@ import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import { fetchWallets, useOry } from "components";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
@@ -48,6 +48,33 @@ export default function HomePage() {
     fromDate: moment(selectedDate[0]).utc().toDate(),
     toDate: moment(selectedDate[1]).utc().toDate(),
   })
+  const newsRef = useRef(news);
+  const retryNewsRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+  newsRef.current = news;
+}, [news]);
+
+useEffect(() => {
+  const retryNewsFetch = () => {
+    const currentNews = newsRef.current;
+    const isNewsEmpty = !currentNews || currentNews.length === 0;
+
+    if (isNewsEmpty && !isLoading) {
+      loadMore();
+    }
+  };
+
+  retryNewsFetch();
+
+  retryNewsRef.current = setInterval(() => {
+    retryNewsFetch();
+  }, 3000)
+
+  return () => {
+    if (retryNewsRef.current) clearInterval(retryNewsRef.current);
+  };
+}, [loadMore, isLoading]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -59,27 +86,44 @@ export default function HomePage() {
     dispatch(fetchHistoricalWalletData());
   }, [wallets]);
 
-  useEffect(() => {
+ const retryRef = useRef<NodeJS.Timeout | null>(null);
+const topTokensRef = useRef<TopTokenData[] | null>(null);
+
+useEffect(() => {
+  const fetchTopTokens = () => {
     setIsFetchingTopTokens(true);
     filteredTokensApi
       .getTopTokens(10)
       .then(response => {
-        const calculatedData = response.data.map<TopTokenData>(data => {
-          return {
-            tokenId: data.id,
-            iconUrl: data.lURI,
-            id: data.id,
-            marketCap: data.mCap,
-            symbol: data.sym,
-            price: data.price,
-            fulDilVal: data.fulDilVal,
-          };
-        });
-
+        const calculatedData = response.data.map<TopTokenData>(data => ({
+          tokenId: data.id,
+          iconUrl: data.lURI,
+          id: data.id,
+          marketCap: data.mCap,
+          symbol: data.sym,
+          price: data.price,
+          fulDilVal: data.fulDilVal,
+        }));
         setTopTokens(calculatedData);
+        topTokensRef.current = calculatedData;
       })
+      .catch(console.error)
       .finally(() => setIsFetchingTopTokens(false));
-  }, []);
+  };
+
+  fetchTopTokens();
+
+  retryRef.current = setInterval(() => {
+    const tokens = topTokensRef.current;
+    if (!tokens || tokens.length === 0) {
+      fetchTopTokens();
+    }
+  }, 3000);
+
+  return () => {
+    if (retryRef.current) clearInterval(retryRef.current);
+  };
+}, []);
 
   return (
     <>
