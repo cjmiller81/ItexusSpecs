@@ -44,7 +44,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const processedVaults = useMemo(() => {
     return vaults.map(pool => ({
       ...pool,
-      apy: pool.breakdowns ? pool.breakdowns.totalApy.toFixed(2) : null,
+      apy: pool.breakdowns && pool.breakdowns.totalApy != null ? pool.breakdowns.totalApy.toFixed(2) : null,
       tvl: pool.tvls ? pool.tvls?.value : null,
       platformId: pool.platform_id || null,
       isRetired: pool.status === "eol",
@@ -146,7 +146,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
     -6.5px 0px 8px rgba(0, 0, 0, 0.9),
      6.5px 0px 8px rgba(0, 0, 0, 0.9),
      0px 0.05px 0.05px rgba(0, 0, 0, 0.1),
-     0px -0.05px 0.05px rgba(0, 0, 0, 0.1) 
+     0px -0.05px 0.05px rgba(0, 0, 0, 0.1)
   `,
     backgroundColor: "#9e9e9e",
     border: "1.6px solid #5e5e5e",
