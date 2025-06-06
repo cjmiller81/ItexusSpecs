@@ -195,62 +195,66 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   fetchIcons();
 }, [tokenAddresses, filteredRows]);
 
-  const generateUniswapV1Link = ({
-    inputCurrency,
-    outputCurrency,
-    exactAmount,
-    exactField,
-  }: {
-    inputCurrency: string;
+  const generateUniswapLink = ({
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField,
+  version,
+}:{inputCurrency: string;
     outputCurrency: string;
     exactAmount: number;
     exactField: "input" | "output";
+    version: string;
   }) => {
-    const slippage = (exactAmount * 0.05).toFixed(6);
-    return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
-  };
-
-  const generateUniswapV2Link = ({
-    inputCurrency,
-    outputCurrency,
-    exactAmount,
-    exactField,
-  }: {
-    inputCurrency: string;
-    outputCurrency: string;
-    exactAmount: number;
-    exactField: "input" | "output";
-  }) => {
-    return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
-  };
-
-  const generateUniswapV3Link = ({
-    inputCurrency,
-    outputCurrency,
-    exactAmount,
-    exactField,
-  }: {
-    inputCurrency: string;
-    outputCurrency: string;
-    exactAmount: number;
-    exactField: "input" | "output";
-  }) => {
-    return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-  };
-
-  const generateUniswapV4Link = ({
-    inputCurrency,
-    outputCurrency,
-    exactAmount,
-    exactField,
-  }: {
-    inputCurrency: string;
-    outputCurrency: string;
-    exactAmount: number;
-    exactField: "input" | "output";
-  }) => {
-    return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-  };
+  switch (version) {
+    case "UNISWAP_V1": {
+      const slippage = (exactAmount * 0.05).toFixed(6);
+      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
+    }
+    case "UNISWAP_V2": {
+      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
+    }
+    case "UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+    }
+    case "UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+    }
+    case "BSC_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "BSC_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "OPTIMISM_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "OPTIMISM_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "POLYGON_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "POLYGON_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "AVALANCHE_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "AVALANCHE_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "ARBITRUM_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "ARBITRUM_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    default:
+      throw new Error(`Unsupported Uniswap version: ${version}`);
+  }
+};
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -329,31 +333,19 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           let deepLink: string | null = null;
 
           const isUniswap =
-            ["UNISWAP_V1", "UNISWAP_V2", "UNISWAP_V3", "UNISWAP_V4"].includes(name);
-            
+            ["UNISWAP_V1", "UNISWAP_V2", "UNISWAP_V3", "UNISWAP_V4","BSC_UNISWAP_V3","BSC_UNISWAP_V4","OPTIMISM_UNISWAP_V3",
+              "OPTIMISM_UNISWAP_V4","POLYGON_UNISWAP_V3","POLYGON_UNISWAP_V4","AVALANCHE_UNISWAP_V3","AVALANCHE_UNISWAP_V4",
+              "ARBITRUM_UNISWAP_V3","ARBITRUM_UNISWAP_V4"].includes(name);
 
           if (isUniswap && tokenAddress && tokenAddressSwapFor && newBalance) {
-            const linkParams = {
+            
+            deepLink = generateUniswapLink({
               inputCurrency: tokenAddress,
               outputCurrency: tokenAddressSwapFor,
               exactAmount: Number(newBalance),
-              exactField: "input" as const,
-            };
-            
-            switch (name) {
-              case "UNISWAP_V1":
-                deepLink = generateUniswapV1Link(linkParams);
-                break;
-              case "UNISWAP_V2":
-                deepLink = generateUniswapV2Link(linkParams);
-                break;
-              case "UNISWAP_V3":
-                deepLink = generateUniswapV3Link(linkParams);
-                break;
-              case "UNISWAP_V4":
-                deepLink = generateUniswapV4Link(linkParams);
-                break;
-            }
+              exactField: "input",
+              version: name,
+            });
           }
 
           const estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
