@@ -15,13 +15,18 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
     backgroundColor:
       theme.palette.mode === "dark"
         ? "transparent"
-        : "#fff",
+        : "transparent",
+  }, 
+  "&.MuiDataGrid-root.MuiDataGrid-withBorderColor": {
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: theme.palette.mode === "light" ? "rgb(181 177 177)" : "rgba(81, 81, 81, 1)",
   },
   "&.MuiDataGrid-withBorderColor": {  
    backgroundColor:
       theme.palette.mode === "dark"
         ? "transparent !important"
-        : "#fff !important",
+        : "transparent !important",
 },
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
