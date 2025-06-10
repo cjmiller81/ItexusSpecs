@@ -19,6 +19,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import NorthEastIcon from "@mui/icons-material/NorthEast";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector, postPlaceOrder, resetPlaceOrderResponseError } from 'components';
@@ -424,6 +426,9 @@ export function TradeTable() {
                 {/* <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
                   {t("Action")}
                 </TableCell> */}
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
+                  {t("Exchange")}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -579,6 +584,29 @@ export function TradeTable() {
                   </Tooltip>
                 </TableCell>
               )}
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
+                <Tooltip title={`${t("Trade")} on Kraken`} arrow>
+                  <Button
+                    variant="outlined"
+                    onClick={() => window.open("https://www.kraken.com", "_blank")}
+                    sx={{
+                      textTransform: "none",
+                      fontWeight: "bold",
+                      borderRadius: "4px",
+                      backgroundColor:"rgb(3, 169, 244)",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "rgb(6, 120, 172)",
+                        borderColor: "#45a049",
+                      },
+                    }}
+                    endIcon={<NorthEastIcon />}
+                  >
+                    {t("TradeOn")} Kraken
+                  </Button>
+                </Tooltip>
+              </TableCell>
+
             </TableRow>
           </TableBody>
           <TableRow>

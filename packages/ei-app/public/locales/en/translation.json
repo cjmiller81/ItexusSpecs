@@ -233,7 +233,9 @@
     "Bought": "Bought",
     "Sold": "Sold",
     "EstTotal": "Est Total",
-    "EnteredSymbolNotExist": "Entered symbol does not exist"
+    "EnteredSymbolNotExist": "Entered symbol does not exist",
+    "Exchange": "Exchange",
+    "TradeOn": "Trade on"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
