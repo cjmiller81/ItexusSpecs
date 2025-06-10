@@ -586,9 +586,14 @@ export function TradeTable() {
               )}
               <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
                 <Tooltip title={`${t("Trade")} on Kraken`} arrow>
+                  <a
+                    href="https://id.kraken.com/sign-in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
                   <Button
                     variant="outlined"
-                    onClick={() => window.open("https://www.kraken.com", "_blank")}
                     sx={{
                       textTransform: "none",
                       fontWeight: "bold",
@@ -604,6 +609,7 @@ export function TradeTable() {
                   >
                     {t("TradeOn")} Kraken
                   </Button>
+                  </a>
                 </Tooltip>
               </TableCell>
 
