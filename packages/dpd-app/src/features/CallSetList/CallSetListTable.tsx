@@ -50,8 +50,8 @@ export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
         const isDark = theme.palette.mode === "dark";
         const position = params.row;
         const isWorking = position.entryStatus === 'Working';
-        const buttonText = isWorking ? t("CancelOrder", { ns: "ColumnsDefs" }) 
-  : t("ClosePosition", { ns: "ColumnsDefs" });
+        if (!isWorking) return null;
+        const buttonText = t("CancelOrder", { ns: "ColumnsDefs" });
 
         const handleClick = () => {
           console.log('Clicked:', position.id, position.ticker, buttonText);

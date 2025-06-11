@@ -46,9 +46,9 @@ function getDIShortSaleVolumePageItems(): SidebarListItem[] {
 function getOptionTraderPageItems(): SidebarListItem[] {
   return [
     {
-      title: t("SetList", { ns: "SideBar" }),
+      title: t("Orders", { ns: "SideBar" }),
       icon: <ListIcon />,
-      href: "/SetList",
+      href: "/orders",
     },
     {
       title: t("TradingSets", { ns: "SideBar" }),
