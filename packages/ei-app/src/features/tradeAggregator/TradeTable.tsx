@@ -19,13 +19,15 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import NorthEastIcon from "@mui/icons-material/NorthEast";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { MarketData, fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, nativeBarSx, useAppDispatch, useAppSelector, postPlaceOrder, resetPlaceOrderResponseError } from 'components';
 import { makeId } from '@/utils/utils';
 import { PlaceOrderResponseDialog } from './PlaceOrderResponseDialog';
+import EditIcon from "@mui/icons-material/Edit";
+import LockIcon from "@mui/icons-material/Lock";
 
 interface TradeData {
   symbol: string;
@@ -51,13 +53,13 @@ interface OrderRequest {
 
 export function TradeTable() {
   const [tradeData, setTradeData] = useState<TradeData>({
-    symbol: '',
-    mkt: '',
+    symbol: 'ETH',
+    mkt: 'ETH/USDC',
     qty: '0',
     value: '',
     action: 'buy',
   });
-  const [showMarketSelector, setShowMarketSelector] = useState(false);
+  const [showMarketSelector, setShowMarketSelector] = useState(true);
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
   const [crossPairWarning, setCrossPairWarning] = useState<string | null>(null);
   const [selectedCEX, setSelectedCEX] = useState('');
@@ -80,6 +82,8 @@ export function TradeTable() {
   const isDarkMode = theme.palette.mode === "dark";
   const borderColor = theme.palette.divider;
   const hoverColor = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)";
+  const [isSwitchIncluded, setIsSwitchIncluded] = useState<boolean>(false);
+  const [manualValueInput, setManualValueInput] = useState('');
 
   const getCrossPair = (marketPair: string): string => {
     if (!marketPair) return '';
@@ -89,6 +93,16 @@ export function TradeTable() {
 
   const handleSendClick = () => {
     setConfirmDialogOpen(true);
+  };
+
+  const handleSwitchClick = () => {
+    setManualValueInput('');
+    setTradeData((prev) => ({
+      ...prev,
+      qty: "",      
+      value: "", 
+    }));
+    setIsSwitchIncluded(prev => !prev);
   };
 
   useEffect(() => {
@@ -115,7 +129,6 @@ export function TradeTable() {
     }, 150);
     setTradeData((prev) => ({
       ...prev,
-      mkt: '',
     }));
     return () => clearTimeout(timer);
   }, [tradeData.symbol]);
@@ -151,57 +164,122 @@ export function TradeTable() {
   }, [tradeData.mkt]);
 
   useEffect(() => {
-    if (!tradeData.mkt || !tradeData.qty) {
-      setTradeData((prev) => ({ ...prev, value: '' }));
+    if (!tradeData.mkt) {
       setInsufficientFunds(false);
       return;
     }
-
-    const selectedMarket = marketData.find((market) => market.displayName === tradeData.mkt);
+console.log(tradeData.mkt)
+    const selectedMarket = marketData.find(m => m.displayName === tradeData.mkt);
     if (!selectedMarket) {
-      setTradeData((prev) => ({ ...prev, value: '' }));
+      setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
       setInsufficientFunds(false);
       return;
     }
 
     const price = parseFloat(selectedMarket.price);
-    const qty = parseFloat(tradeData.qty.replace(/,/g, ''));
-
-    if (isNaN(price) || isNaN(qty)) {
-      setTradeData((prev) => ({ ...prev, value: '' }));
+    if (isNaN(price) || price <= 0) {
+      setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
       setInsufficientFunds(false);
       return;
     }
 
-    const calculatedValue = price * qty;
-    const formattedValue = calculatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 });
-    setTradeData((prev) => ({ ...prev, value: formattedValue }));
+    const crossAsset = getCrossPair(tradeData.mkt).toLowerCase();
+    const baseAsset = tradeData.symbol.toLowerCase();
 
-    const crossPair = getCrossPair(tradeData.mkt);
+    const crossPos = balanceData.find(pos => pos.asset.toLowerCase() === crossAsset);
+    const basePos = balanceData.find(pos => pos.asset.toLowerCase() === baseAsset);
 
-    const position = balanceData.find((pos) => pos.asset?.toLowerCase() === crossPair?.toLowerCase());
+    const crossBalance = crossPos ? parseFloat(crossPos.balance.replace(/,/g, '')) : 0;
+    const baseBalance = basePos ? parseFloat(basePos.balance.replace(/,/g, '')) : 0;
 
-    const positionSell = balanceData.find(
-      (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
-    );
-
-    if (tradeData.action === 'sell') {
-      if (positionSell === undefined) {
-        setInsufficientFunds(true);
-      } else {
-        setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.balance.replace(/,/g, '')));
+    if (isSwitchIncluded) {
+      if(tradeData.action === 'buy')
+      {
+        const val = parseFloat(tradeData.value.replace(/,/g, '')) || 0;
+          if (val > 0) {
+            const computedQty = val / price;
+            const formattedQty = computedQty.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            });
+          setTradeData(prev => ({ ...prev, qty: formattedQty }));
+        
+        }
+        setInsufficientFunds(val > crossBalance);
       }
-    }
-    else if (tradeData.action === 'buy') {
-      if (!position) {
-        setInsufficientFunds(true);
-      } else {
-        setInsufficientFunds(calculatedValue > parseFloat(position.balance.replace(/,/g, '')));
+      else{
+        const val = parseFloat(tradeData.value.replace(/,/g, '')) || 0;
+        const computedQty = val / price;
+        if (val > 0) {
+            const formattedQty = computedQty.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 8,
+            });
+          setTradeData(prev => ({ ...prev, qty: formattedQty }));
+        }
+        
+        const positionSell = balanceData.find(
+            (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
+          );
+          if (positionSell === undefined) {
+            setInsufficientFunds(true);
+          } else {
+            setInsufficientFunds(computedQty > positionSell.balance);
+          }
       }
     } else {
-      setInsufficientFunds(false);
-    }
-  }, [tradeData.mkt, tradeData.qty, tradeData.action, tradeData.symbol]);
+        if(tradeData.action === 'buy')
+        {
+          const qtyParse = parseFloat(tradeData.qty.replace(/,/g, '')) || 0;
+          
+          const valueNeeded = qtyParse * price;
+          
+          const formattedValue = (!isNaN(qtyParse) && qtyParse > 0)
+            ? valueNeeded.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+            : '';
+          const positionSell = balanceData.find(
+                      (pos) => pos.asset?.toLowerCase() === tradeData.mkt.split("/")[1].toLowerCase()
+                    );
+
+          if (positionSell === undefined) {
+            setInsufficientFunds(true);
+          } else {
+            setInsufficientFunds(valueNeeded  > positionSell.balance);
+          }
+          setTradeData(prev => ({ ...prev, value: formattedValue }));
+        }
+        else{  
+          const val = parseFloat(tradeData.qty.replace(/,/g, '')) || 0;
+          const computedQty = val * price;
+          if (val > 0) {
+              const formattedQty = computedQty.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 8,
+              });
+            setTradeData(prev => ({ ...prev, value: formattedQty }));
+          }
+
+          const positionSell = balanceData.find(
+            (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
+          );
+
+          if (positionSell === undefined) {
+            setInsufficientFunds(true);
+          } else {
+            setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.balance.replace(/,/g, '')));
+          }
+        }
+      }
+  }, [
+    tradeData.mkt,
+    tradeData.value,
+    tradeData.qty,
+    tradeData.symbol,
+    isSwitchIncluded,
+    tradeData.action,
+    balanceData,
+    marketData,
+  ]);
 
   const handleCEXSelect = (event: SelectChangeEvent<string>) => {
     const selectedCEXValue = event.target.value;
@@ -390,37 +468,110 @@ export function TradeTable() {
           <Table sx={{ tableLayout: "fixed" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "17%", color: textColor }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "11%", color: textColor }}>
                   {t("SearchForSymol")}
                 </TableCell>
                 <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "15%", color: textColor }}>
                   {t("TradingPair")}
                 </TableCell>
 
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`,width: "12%", color: textColor }}>
                   {t("TradeType")}
                 </TableCell>
 
                 <TableCell
                   sx={{
                     borderBottom: `1px solid ${borderColor}`,
-                    width: "21%",
+                    width: "12%",
                     paddingLeft: "40px",
                     color: textColor,
                     fontWeight: "bold",
                   }}
                 >
-                  {`${tradeData.symbol ? tradeData.symbol.toUpperCase() + " to" : ""} ${tradeData.action === "buy" ? "Buy" : "Sell"}`}
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    {`${tradeData.symbol ? tradeData.symbol.toUpperCase() + " to" : ""} ${tradeData.action === "buy" ? "Buy" : "Sell"}`}
+                    
+                    {isSwitchIncluded ? (
+                      <Box
+                        sx={{
+                          ml: 1,
+                          width: 20,
+                          height: 20,
+                          backgroundColor: "#666666",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <LockIcon sx={{ color: "#ffa600", fontSize: 14 }} />
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          ml: 1,
+                          width: 20,
+                          height: 20,
+                          backgroundColor: "#1976d2",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <EditIcon sx={{ color: "white", fontSize: 14 }} />
+                      </Box>
+                    )}
+                  </Box>
+                </TableCell>
+
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, width: "12%" }}>
+                  {t("SwitchCryptoInput")}
                 </TableCell>
 
                 <TableCell
                   sx={{
                     borderBottom: `1px solid ${borderColor}`,
+                    width: "11%",
                     color: textColor,
                     fontWeight: "bold",
                   }}
                 >
-                  {`${tradeData.mkt ? tradeData.mkt.split("/")[1] + " to" : ""} ${tradeData.action === "buy" ? "Spend" : "Receive"}`}
+                  <Box sx={{ display: "flex", alignItems: "center", marginLeft: "4px" }}>
+                    {`${tradeData.mkt ? tradeData.mkt.split("/")[1] + " to" : ""} ${tradeData.action === "buy" ? "Spend" : "Receive"}`}
+
+                    {!isSwitchIncluded ? (
+                      <Box
+                        sx={{
+                          ml: 1,
+                          width: 20,
+                          height: 20,
+                          backgroundColor: "#666666",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <LockIcon sx={{ color: "#ffa600", fontSize: 14 }} />
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          ml: 1,
+                          width: 20,
+                          height: 20,
+                          backgroundColor: "#1976d2",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <EditIcon sx={{ color: "white", fontSize: 14 }} />
+                      </Box>
+                    )}
+                  </Box>
                 </TableCell>
                 
                 {/* <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
@@ -520,34 +671,15 @@ export function TradeTable() {
               </TableCell>
 
               <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, paddingLeft: "40px" }}>
-                <TextField
-                  value={tradeData.qty}
-                  onChange={(e) => {
-                    let rawValue = e.target.value.replace(/,/g, "");
-                    if (/^\d*\.?\d*$/.test(rawValue)) {
-                      setTradeData((prev) => ({ ...prev, qty: rawValue }));
-                    }
-                  }}
-                  variant="outlined"
-                  
-                  sx={{
-                    input: { height: "20px", padding: "8px" },
-                    fieldset: { borderRadius: "8px" },
-                  }}
-                />
-              </TableCell>
-
-              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
+                {isSwitchIncluded ? (
                 <Box
-                tabIndex={-1}
                   sx={{
                     height: "36px",
                     padding: "8px",
+                    color: "gray",
                     textAlign: "center",
                     fontWeight: "bold",
-                    backgroundColor: isDarkMode
-                            ? "#373737"
-                            : "#e0e0e0", 
+                    backgroundColor: isDarkMode ? "#373737" : "#e0e0e0",
                     borderRadius: "8px",
                     border: `1px solid ${borderColor}`,
                     display: "flex",
@@ -557,8 +689,114 @@ export function TradeTable() {
                     cursor: "default",
                   }}
                 >
-                  {tradeData.value || ""}
+                  {tradeData.qty || ""}
                 </Box>
+              ) : (
+                <TextField
+                  value={
+                    tradeData.qty === "0" || tradeData.qty === "" 
+                      ? "" 
+                      : tradeData.qty.startsWith(".") 
+                        ? `0${tradeData.qty}` 
+                        : tradeData.qty
+                  }
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/,/g, "");
+                    if (/^(\d+)?(\.\d*)?$/.test(rawValue) || rawValue === "") {
+                      setTradeData((prev) => ({ ...prev, qty: rawValue }));
+                    }
+                  }}
+                  placeholder={`Input ${tradeData.symbol?.toUpperCase() || ""} Qty`}
+                  variant="outlined"
+                  sx={{
+                    input: { height: "20px", padding: "8px" },
+                    fieldset: { borderRadius: "8px" },
+                  }}
+                  autoComplete="off"
+                />
+              )}
+              </TableCell>
+
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
+                  <Button
+                      variant="contained"
+                      onClick={handleSwitchClick}
+                      sx={{
+                        width:"100%",
+                        backgroundColor: "#f59e0b",
+                        fontWeight: "bold",
+                        "&:hover": { backgroundColor: "#d97706" },
+                      }}
+                    >
+                      <SwapHorizIcon />
+                  </Button>
+              </TableCell>
+
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
+                {!isSwitchIncluded ? (
+                  <Box
+                    tabIndex={-1}
+                    sx={{
+                      height: "36px",
+                      padding: "8px",
+                      color: "gray",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      backgroundColor: isDarkMode ? "#373737" : "#e0e0e0",
+                      borderRadius: "8px",
+                      border: `1px solid ${borderColor}`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      userSelect: "none",
+                      cursor: "default",
+                    }}
+                  >
+                    {tradeData.value || ""}
+                  </Box>
+                ) : (
+                  <TextField
+                    value={isSwitchIncluded
+                      ? (manualValueInput === "0" || manualValueInput === ""
+                          ? ""
+                          : manualValueInput.startsWith(".")
+                          ? `0${manualValueInput}`
+                          : manualValueInput)
+                      : (tradeData.value === "0" || tradeData.value === ""
+                          ? ""
+                          : tradeData.value.startsWith(".")
+                          ? `0${tradeData.value}`
+                          : tradeData.value)
+                    }
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/,/g, "");
+                      if (/^(\d+)?(\.\d*)?$/.test(raw) || raw === "") {
+                        if (isSwitchIncluded) {
+                          setManualValueInput(raw);
+                          setTradeData(prev => ({ ...prev, value: raw }));
+                        }
+                      }
+                    }}
+                    onBlur={() => {
+                      if (isSwitchIncluded) {
+                        setTradeData(prev => ({ ...prev, value: manualValueInput }));
+                      }
+                    }}
+                    placeholder={
+                      isSwitchIncluded
+                        ? `Input ${tradeData.mkt?.split("/")[1]?.toUpperCase() || ""} Qty`
+                        : ""
+                    }
+                    variant="outlined"
+                    disabled={!isSwitchIncluded}
+                    sx={{
+                      input: { height: "20px", padding: "8px" },
+                      fieldset: { borderRadius: "8px" },
+                      textAlign: "center",
+                    }}
+                    autoComplete="off"
+                  />
+                )}
               </TableCell>
 
               {shouldShowSendButton && (

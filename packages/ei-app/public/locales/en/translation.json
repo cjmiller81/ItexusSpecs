@@ -235,7 +235,8 @@
     "EstTotal": "Est Total",
     "EnteredSymbolNotExist": "Entered symbol does not exist",
     "Exchange": "Exchange",
-    "TradeOn": "Trade on"
+    "TradeOn": "Trade on",
+    "SwitchCryptoInput": "Switch Crypto Input"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
