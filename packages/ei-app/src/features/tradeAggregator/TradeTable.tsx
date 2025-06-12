@@ -53,8 +53,8 @@ interface OrderRequest {
 
 export function TradeTable() {
   const [tradeData, setTradeData] = useState<TradeData>({
-    symbol: 'ETH',
-    mkt: 'ETH/USDC',
+    symbol: '',
+    mkt: '',
     qty: '0',
     value: '',
     action: 'buy',
@@ -168,7 +168,6 @@ export function TradeTable() {
       setInsufficientFunds(false);
       return;
     }
-console.log(tradeData.mkt)
     const selectedMarket = marketData.find(m => m.displayName === tradeData.mkt);
     if (!selectedMarket) {
       setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
@@ -451,7 +450,7 @@ console.log(tradeData.mkt)
           </Box>
         </Box>
 
-      <Box flex="1.6" sx={{marginTop:"65px"}}>
+      <Box flex="1.6" sx={{marginTop:"65px", maxWidth:"75%"}}>
         <Typography
           variant="h6"
           sx={{
@@ -468,22 +467,22 @@ console.log(tradeData.mkt)
           <Table sx={{ tableLayout: "fixed" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "11%", color: textColor }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "12%", color: textColor }}>
                   {t("SearchForSymol")}
                 </TableCell>
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "15%", color: textColor }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "15%", color: textColor, }}>
                   {t("TradingPair")}
                 </TableCell>
 
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`,width: "12%", color: textColor }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`,width: "13%", color: textColor }}>
                   {t("TradeType")}
                 </TableCell>
 
                 <TableCell
                   sx={{
                     borderBottom: `1px solid ${borderColor}`,
-                    width: "12%",
-                    paddingLeft: "40px",
+                    width: "16%",
+                    paddingLeft: "45px",
                     color: textColor,
                     fontWeight: "bold",
                   }}
@@ -492,47 +491,25 @@ console.log(tradeData.mkt)
                     {`${tradeData.symbol ? tradeData.symbol.toUpperCase() + " to" : ""} ${tradeData.action === "buy" ? "Buy" : "Sell"}`}
                     
                     {isSwitchIncluded ? (
-                      <Box
-                        sx={{
-                          ml: 1,
-                          width: 20,
-                          height: 20,
-                          backgroundColor: "#666666",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <LockIcon sx={{ color: "#ffa600", fontSize: 14 }} />
-                      </Box>
-                    ) : (
-                      <Box
-                        sx={{
-                          ml: 1,
-                          width: 20,
-                          height: 20,
-                          backgroundColor: "#1976d2",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <EditIcon sx={{ color: "white", fontSize: 14 }} />
-                      </Box>
+                        <Box sx={{ ml: 1, marginTop:"5px" }}>
+                          <LockIcon sx={{ color: "#ffa600", fontSize: 16 }} />
+                        </Box>
+                      ) : (
+                        <Box sx={{ ml: 1, marginTop:"5px" }}>
+                          <EditIcon sx={{ color: "blue", fontSize: 16 }} />
+                        </Box>
                     )}
                   </Box>
                 </TableCell>
 
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, width: "12%" }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`,fontWeight: "bold", color: textColor, width: "10%" }}>
                   {t("SwitchCryptoInput")}
                 </TableCell>
 
                 <TableCell
                   sx={{
                     borderBottom: `1px solid ${borderColor}`,
-                    width: "11%",
+                    width: "13%",
                     color: textColor,
                     fontWeight: "bold",
                   }}
@@ -541,35 +518,14 @@ console.log(tradeData.mkt)
                     {`${tradeData.mkt ? tradeData.mkt.split("/")[1] + " to" : ""} ${tradeData.action === "buy" ? "Spend" : "Receive"}`}
 
                     {!isSwitchIncluded ? (
-                      <Box
-                        sx={{
-                          ml: 1,
-                          width: 20,
-                          height: 20,
-                          backgroundColor: "#666666",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <LockIcon sx={{ color: "#ffa600", fontSize: 14 }} />
-                      </Box>
-                    ) : (
-                      <Box
-                        sx={{
-                          ml: 1,
-                          width: 20,
-                          height: 20,
-                          backgroundColor: "#1976d2",
-                          borderRadius: "50%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <EditIcon sx={{ color: "white", fontSize: 14 }} />
-                      </Box>
+                      
+                       <Box sx={{ ml: 1, marginTop:"5px" }}>
+                          <LockIcon sx={{ color: "#ffa600", fontSize: 16 }} />
+                        </Box>
+                      ) : (
+                        <Box sx={{ ml: 1, marginTop:"5px" }}>
+                          <EditIcon sx={{ color: "blue", fontSize: 16 }} />
+                        </Box>
                     )}
                   </Box>
                 </TableCell>
@@ -577,7 +533,7 @@ console.log(tradeData.mkt)
                 {/* <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
                   {t("Action")}
                 </TableCell> */}
-                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor }}>
+                <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, width:"12%"}}>
                   {t("Exchange")}
                 </TableCell>
               </TableRow>
@@ -587,6 +543,7 @@ console.log(tradeData.mkt)
                 <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor}}>
                   <TextField
                     value={tradeData.symbol}
+                    placeholder='Input Symbol'
                     onChange={(e) => setTradeData({ ...tradeData, symbol: e.target.value })}
                     variant="outlined"
                     fullWidth
@@ -598,7 +555,7 @@ console.log(tradeData.mkt)
                   />
                 </TableCell>
 
-              <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, paddingRight: "20px" }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor}}>
                 <Tooltip title={t("ExchangeTradePairs")} arrow>
                 <Button
                   onClick={() => setShowMarketSelector(!showMarketSelector)}
@@ -621,7 +578,7 @@ console.log(tradeData.mkt)
               <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
                 <Box
                   sx={{
-                    width: 130,
+                    width: "90%",
                     height: 30,
                     borderRadius: "4px",
                     overflow: "hidden",
@@ -720,6 +677,7 @@ console.log(tradeData.mkt)
               <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
                   <Button
                       variant="contained"
+                      disabled={!tradeData.symbol}
                       onClick={handleSwitchClick}
                       sx={{
                         width:"100%",
@@ -822,26 +780,26 @@ console.log(tradeData.mkt)
                   </Tooltip>
                 </TableCell>
               )}
-              <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
+              <TableCell sx={{ borderBottom: `1px solid ${borderColor}`}}>
                 <Tooltip title={`${t("Trade")} on Kraken`} arrow>
                   <a
                     href="https://id.kraken.com/sign-in"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ textDecoration: "none" }}
+                    style={{ textDecoration: "none", pointerEvents: !tradeData.symbol ? "none" : "auto", }}
                   >
                   <Button
                     variant="outlined"
+                    disabled={!tradeData.symbol}
                     sx={{
                       textTransform: "none",
                       fontWeight: "bold",
                       borderRadius: "4px",
-                      backgroundColor:"rgb(3, 169, 244)",
+                       ...(tradeData.symbol && {
+                        backgroundColor: "rgb(3, 169, 244)",
+                        "&:hover": { backgroundColor: "rgb(6, 120, 172)", borderColor: "#45a049" },
+                      }),
                       color: "white",
-                      "&:hover": {
-                        backgroundColor: "rgb(6, 120, 172)",
-                        borderColor: "#45a049",
-                      },
                     }}
                     endIcon={<NorthEastIcon />}
                   >
@@ -850,7 +808,6 @@ console.log(tradeData.mkt)
                   </a>
                 </Tooltip>
               </TableCell>
-
             </TableRow>
           </TableBody>
           <TableRow>
