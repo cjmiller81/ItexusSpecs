@@ -1,10 +1,10 @@
-import { AppChart } from "@/components/Charts/AppChart";
 import { CompareToValues } from "@/libs/redux/Slices/Shared";
 import { chartDateFormatString } from "components";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardTile, DashboardTileProps } from "./DashboardTile";
 import { useTheme } from "@mui/material";
+import { AppChartHome } from "@/components/Charts/AppChartHome";
 
 type Props = Omit<DashboardTileProps, "children"> & {
   chartData: CompareToValues | null;
@@ -18,7 +18,7 @@ enum ThemeMode {
 export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props }) => {
   const { t } = useTranslation("WalletWorthTile");
   const theme = useTheme();
-  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa";
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#fff";
   const percentageFormatter = (value?: number) => {
     return `${(value ?? 0).toLocaleString("en-US", {
       minimumFractionDigits: 0,
@@ -38,7 +38,7 @@ export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props })
       title={title}
       icon={icon}
       {...props}>
-      <AppChart
+      <AppChartHome
         sx={{ backgroundColor: backgroundColor }}
         series={series}
         height={398}

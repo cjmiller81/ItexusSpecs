@@ -4,6 +4,7 @@ export type SidebarItemChild = {
   icon?: ReactNode;
   title: string;
   href: string;
+  disabled?: boolean;
 };
 
 export type SidebarItems = {

@@ -57,7 +57,7 @@
     "Logout": "Logout"
   },
   "Header": {
-    "ElanInsights": "Elan Insights"
+    "ECOSTrading": "EECOS Trading"
   },
   "HistoricalWalletsWorth": {
     "Daily": "Daily",
@@ -130,7 +130,9 @@
     "Tools": "Tools",
     "Web3DeFi": "Web3 DeFi",
     "CEX": "CEX",
-    "CEXWallets": "CEX Wallets"
+    "CEXWallets": "CEX Wallets",
+    "EquityOptions": "Equity Options",
+    "ConversionPositions": "Conversion Positions"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",

@@ -16,10 +16,15 @@ import {
   useTheme,
   FormControl,
   InputLabel,
+  Autocomplete,
+  Avatar,
+  InputAdornment,
+  Typography,
 } from "@mui/material";
 import {
   BasicTable,
   nativeBarSx,
+  PaginatedList,
   toTableTokensModels,
 } from "components";
 import { useTranslation } from "react-i18next";
@@ -30,16 +35,21 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { Wallet } from "@/models/Wallet/Wallet";
-
+import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
+import { iconsApi } from "@/services/iconsService";
+import SearchIcon from '@mui/icons-material/Search';
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
     selectedToken: string | null;
     onFilteredRowsChange?: (rows: WalletBalance[]) => void;
     selectedChainNewPosition: string | null;
+    onTokenChange?: (token: WalletBalance | null) => void;
+    onClearTokenAndChain?: () => void;
   }
 
-export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition }) => {
+export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = 
+({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition,onTokenChange,onClearTokenAndChain }) => {
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
@@ -55,48 +65,131 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   const [selectedChain, setSelectedChain] = useState("");
   const [addPositionError, setAddPositionError] = useState<string>("");
   const [tokensToTrade, settokensToTrade] = useState<number>(5);
+  const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
+  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
+  const [inputSearch, setInputSearch] = useState("");
+  const [isManualUpdate, setIsManualUpdate] = useState(false);
+  const [wasManualSelection, setWasManualSelection] = useState(false);
   const { tableData } = useAppSelector(
       state => state.marketCapWeightedModeling,
     );
 
   const handleClearTable = () => {
+    setSelectedChain("");
+    setSelectedRows(null);
     setSelectedWallet(null);
-      if (onWalletChange) {
-        onWalletChange(null);
-      }
+     if (onClearTokenAndChain) {
+    onClearTokenAndChain();
+  }
+
+    if (onWalletChange) {
+      onWalletChange(null);
+    }
     setFilteredRows([]);
   };
+
+  const coinGeckoChainId = (chain: string) => {
+              switch (chain.toLowerCase()) {
+                case "ethereum":
+                  return 1;
+                case "optimism":
+                  return 10;
+                case "arbitrum":
+                  return 42161;
+                case "bnb chain":
+                  return 56;
+                case "polygon":
+                  return 137;
+                case "avalanche":
+                  return 43114;
+              }
+            };
 
   const { wallets } = useAppSelector(state => state.wallets);
 
   useEffect(() => {
+    if (wasManualSelection) return;
+
     if (selectedToken && selectedChainNewPosition) {
       const matchingRow = filteredRows.find(
         row => row.tokenName?.toLowerCase() === selectedToken.toLowerCase() && 
         row.chain?.toLowerCase() === selectedChainNewPosition.toLowerCase()
       );
 
-      setSelectedRows(matchingRow?.tokenName ?? null);
+      setSelectedRows(`${matchingRow?.tokenName?.toLowerCase()}-${matchingRow?.chain?.toLowerCase()}`);
     } else {
       setSelectedRows(null);
     }
-  }, [selectedToken,selectedChainNewPosition, filteredRows]);  
+  }, [selectedToken,selectedChainNewPosition, filteredRows]); 
 
   useEffect(() => {
-    if (wallets === null) dispatch(fetchWallets(null));
-    setFilteredWalletData(
-      selectedWallet
-        ? toTableTokensModels(
-            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ??
-              [],
-          ).map(({ tokenName, chainName, balance }) => ({
-            tokenName,
-            chain: chainName,
-            balance: balance,
-          }))
-        : [],
-    );
-  }, [ selectedWallet]);
+    if (wasManualSelection) {
+      const timeout = setTimeout(() => {
+        setWasManualSelection(false);
+      }, 300);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [wasManualSelection]); 
+
+  useEffect(() => {
+    dispatch(fetchWallets(null));
+  }, []);
+
+  useEffect(() => {
+    if (!selectedChain) return;
+
+    const delayDebounce = setTimeout(() => {
+      const fetchIconsForSwapFor = async () => {
+        const chainId = coinGeckoChainId(selectedChain);
+
+        try {
+          const result = await iconsApi.getIcons(
+            inputSearch,
+            0,
+            chainId,
+            500
+          );
+          setTokenIcons(result);
+        } catch (error) {
+          console.error('Error loading icons for swap for:', error);
+        }
+      };
+
+      fetchIconsForSwapFor();
+    }, 600);
+
+    return () => clearTimeout(delayDebounce);
+  }, [selectedChain, inputSearch]);
+
+
+    useEffect(() => {
+    if (!selectedWallet || isManualUpdate) {
+      if (isManualUpdate) {
+        setIsManualUpdate(false);
+      } else {
+        setFilteredRows([]);
+        if (onFilteredRowsChange) {
+          onFilteredRowsChange([]);
+        }
+      }
+      return;
+    }
+
+    const data = toTableTokensModels(
+      wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ?? []
+    ).map(({ tokenName, chainName, balance }) => ({
+      tokenName,
+      chain: chainName,
+      balance: balance,
+    }));
+
+    setFilteredRows(data);
+    if (onFilteredRowsChange) {
+      onFilteredRowsChange(data);
+    }
+  }, [selectedWallet]);
+
 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
@@ -112,10 +205,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
   }, [filteredRows]);
 
   useEffect(() => {
-    if (newToken && newBalance && selectedChain) {
-      const tokenNameLower = newToken.toLowerCase();
+    if (symbolOptionSwapFor && newBalance && selectedChain) {
+      const tokenNameLower = symbolOptionSwapFor.sym.toLowerCase();
       const selectedChainLower = selectedChain.toLowerCase();
-  
       const isDuplicate = filteredRows.some(
         row =>
           row.tokenName?.toLowerCase() === tokenNameLower &&
@@ -130,7 +222,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     } else {
       setAddPositionError("");
     }
-  }, [newToken, newBalance, selectedChain, filteredRows]);
+  }, [symbolOptionSwapFor
+    , newBalance, selectedChain, filteredRows]);
 
   useEffect(() => {
     if (filteredRows.length > 0 || tableData.length > 0) {
@@ -211,39 +304,100 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
     }
   }, [filteredRows, tableData, selectedWallet, selectedRows, tokensToTrade]);
 
-
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-    const selected = newSelection.length > 0 ? String(newSelection[0]) : null;
-    setSelectedRows(selected);
-  };
+    setWasManualSelection(true);
+    const selectedId = newSelection.length > 0 ? String(newSelection[0]) : null;
+    
+    if (selectedId) {
+      const selectedToken = filteredRows.find(row => {
+    if (!row.tokenName || !row.chain) return false;
+      const id = `${row.tokenName.toLowerCase()}-${row.chain.toLowerCase()}`;
+      return id === selectedId;
+    }) ?? null;
+
+      if (onTokenChange) {
+        onTokenChange(selectedToken);
+      }
+    } else {
+      if (onTokenChange) {
+        onTokenChange(null);
+      }
+    }
+    
+    setSelectedRows(selectedId);
+};
 
   const handleWalletSelect = (event: SelectChangeEvent) => {
     const selectedWalletId = event.target.value as string;
     const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
     setSelectedWallet(selectedWallet);
+
+    setSelectedRows(null);
+    setSelectedChain(""); 
+    
+    if (onTokenChange) {
+      onTokenChange(null);
+    }
     if (onWalletChange) {
       onWalletChange(selectedWallet);
     }
   };
 
   const handleCancelManualPosition = () => {
-    setNewToken("");
+    setSelectedChain("");
+    setSymbolOptionSwapFor(null);
     setNewBalance("");
     setIsAddingManualPosition(false);
   };
 
   const handleSaveManualPosition = () => {
-    if (newToken && newBalance) {
+    if (symbolOptionSwapFor && newBalance) {
+      const tokenName = symbolOptionSwapFor.sym.toUpperCase();
+      const balance = parseFloat(newBalance);
+      const chainId = coinGeckoChainId(selectedChain);
+
+      if (!chainId || !selectedWallet) return;
+
+      const newAsset = {
+        tokenName: symbolOptionSwapFor.sym.toUpperCase(),
+        balance: parseFloat(newBalance),
+        tokenAddress: symbolOptionSwapFor?.address?.[0],
+      };
+
+      const updatedChainAssets = selectedWallet.chainAssets.map(chainAsset => {
+        if (chainAsset.chainId === chainId) {
+          return {
+            ...chainAsset,
+            walletAssets: [newAsset, ...chainAsset.walletAssets],
+          };
+        }
+        return chainAsset;
+      });
+
+      const updatedWallet = {
+        ...selectedWallet,
+        chainAssets: updatedChainAssets,
+      };
+
+      setSelectedWallet(updatedWallet);
+
+      if (onWalletChange) {
+        onWalletChange(updatedWallet);
+      }
 
       const newRow: WalletBalance = {
-        tokenName: newToken,
-        balance: parseFloat(newBalance),
+        tokenName: symbolOptionSwapFor.sym,
         chain: selectedChain,
+        balance: parseFloat(newBalance),
       };
-  
       setFilteredRows(prevRows => [newRow, ...prevRows]);
       setIsAddingManualPosition(false);
+      setIsManualUpdate(true);
     }
+  };
+
+  const onOptionChange = (value: TokenSearchItem | null) => {
+    setSymbolOptionSwapFor(value);
   };
 
   return (
@@ -345,35 +499,26 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                 checkboxSelection={false}
                 apiRef={apiRef}
                 getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
-
                 columns={getIndexResultWalletTableColumns()}
                 rows={filteredRows}
                 onRowSelectionModelChange={handleSelectionChange}
+                getRowClassName={(params) =>
+                selectedRows &&
+                `${params.row.tokenName.toLowerCase()}-${params.row.chain.toLowerCase()}` === selectedRows
+                  ? 'selected-row'
+                  : ''
+              }
+              componentsProps={{
+                row: {
+                  title: t("ClickToLoadCurrentPosition")
+                }
+              }}
               />
               <Dialog
                 open={isAddingManualPosition}
                 onClose={handleCancelManualPosition}>
-                <DialogContent>
-                  <TextField
-                    label={t("TokenName")}
-                    variant="outlined"
-                    size="small"
-                    value={newToken}
-                    onChange={e => setNewToken(e.target.value)}
-                    fullWidth
-                    sx={{ marginBottom: 2 }}
-                  />
-                  <TextField
-                    label={t("Qty")}
-                    variant="outlined"
-                    size="small"
-                    value={newBalance}
-                    onChange={e => setNewBalance(e.target.value)}
-                    type="number"
-                    fullWidth
-                    sx={{ marginBottom: 2 }}
-                  />
-                <FormControl fullWidth size="small" sx={{ marginBottom: 2 }} error={!!addPositionError}>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 450 }}>
+                <FormControl fullWidth size="medium" error={!!addPositionError}>
                   <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
                   <Select
                     labelId="chain-select-label"
@@ -381,6 +526,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                     label={t("Chain")}
                     onChange={e => {
                       setSelectedChain(e.target.value);
+                      setSymbolOptionSwapFor(null)
                       setAddPositionError("");
                     }}
                   >
@@ -403,12 +549,105 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = ({
                     </Box>
                   )}
                 </FormControl>
+                
+                  <Autocomplete
+                      options={tokenIcons?.items ?? []}
+                      getOptionLabel={(option) =>
+                        option.name
+                          ? `${option.sym.toUpperCase()} - ${option.name}`
+                          : option.sym.toUpperCase()
+                      }
+                      value={symbolOptionSwapFor}
+                      onChange={(_e, newValue) => {
+                        onOptionChange(newValue);
+                        if (newValue) {
+                          setInputSearch(
+                            newValue.name
+                              ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
+                              : newValue.sym.toUpperCase()
+                          );
+                        }
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value?.id}
+                      disableClearable={false}
+                      inputValue={
+                        symbolOptionSwapFor
+                          ? symbolOptionSwapFor.name
+                            ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
+                            : symbolOptionSwapFor.sym.toUpperCase()
+                          : inputSearch
+                      }
+                      onInputChange={(_event, newInputValue, reason) => {
+                        if (reason === 'input') {
+                          onOptionChange(null);
+                          setInputSearch(newInputValue);
+                        } else if (reason === 'clear') {
+                          onOptionChange(null);
+                          setInputSearch('');
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={t("Search")}
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                {symbolOptionSwapFor?.lURI ? (
+                                  <InputAdornment position="start">
+                                    <Avatar
+                                      src={symbolOptionSwapFor.lURI}
+                                      alt={symbolOptionSwapFor.sym}
+                                      sx={{ width: 22, height: 22, mr: 1 }}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="start">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                )}
+                              </>
+                            ),
+                            sx: {
+                              input: {
+                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                              },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                        <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar
+                            src={option.lURI ?? undefined}
+                            alt={option.sym}
+                            sx={{ width: 24, height: 24 }}
+                            />
+                            <Typography variant="body1">
+                            {option.name
+                              ? `${option.sym.toUpperCase()} - ${option.name}`
+                              : option.sym.toUpperCase()}
+                          </Typography>
+                        </Box>
+                      )}
+                    />
+                    <TextField
+                    label={t("Qty")}
+                    variant="outlined"
+                    size="medium"
+                    value={newBalance}
+                    onChange={e => setNewBalance(e.target.value)}
+                    type="number"
+                    fullWidth 
+                    sx={{}}
+                  />
                 </DialogContent>
                 <DialogActions>
                   <Button
                     variant="outlined"
                     onClick={handleSaveManualPosition}
-                    disabled={Boolean(addPositionError) || !newToken || !newBalance || !selectedChain}
+                    disabled={Boolean(addPositionError) || !symbolOptionSwapFor || !newBalance || !selectedChain}
                   >
                     {t("Add")}
                   </Button>
@@ -434,16 +673,20 @@ const tableScrollSx = {
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
-  minHeight: 300,
+  minHeight: "426px",
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
     overflowY: "auto !important",
+    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "transparent",
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    maxHeight: "300px",
+    maxHeight: "425px",
   },
+  "& .MuiDataGrid-columnHeaders": {
+  backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",
+},
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
   },
@@ -470,4 +713,22 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   ".MuiDataGrid-withBorderColor": {
     bgColor: "transparent",
   }, 
+  "& .MuiDataGrid-row:hover": {
+    cursor: "pointer",
+    backgroundColor: theme.palette.mode === "light" ? "#e3f2fd" : "#1a237e",
+    border: theme.palette.mode === "light" ?"1px solid black": "1px solid white",
+  },
+  "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+    backgroundColor: theme.palette.mode === "light" ? "#109EEF" : darken(theme.palette.primary.main, 0.2),
+  },
+  "& .selected-row .MuiDataGrid-cell": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cell:focus": {
+    outline: "none",
+  },
+  "& .MuiDataGrid-cell": {
+    cursor: "pointer",
+    userSelect: "none",
+  },
 }));

@@ -16,94 +16,366 @@ import {
   TableBody,
   Paper,
   Box,
-  Checkbox
+  Checkbox,
+  Tooltip,
+  InputAdornment,
+  IconButton,
+  Autocomplete,
+  Avatar
 } from "@mui/material";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
-import { StyledSymbolLookup } from "../MyWallets/HistoricalWalletsWorth";
-import fetchLookupPage from "../Common/fetchLookupPage";
-import { LookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/SymbolsLookup";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import CreateIcon from '@mui/icons-material/Create';
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { dexWebsites } from "@/constants/dexWebsites";
+import { iconsApi } from "@/services/iconsService";
+import { PaginatedList } from "components/src/models/paginatedList";
+import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
+import SearchIcon from '@mui/icons-material/Search';
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
     onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
     filteredRows: WalletBalance[]; 
+    selectedTokenRow: WalletBalance | null;
   }
 
-export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows })=> {
+export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow})=> {
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [lookupLoading, setLookupLoading] = useState<boolean>(false);
-  const [symbolOptionSwap, setSymbolOptionSwap] = useState<LookUpOption | null>(null);
-  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<LookUpOption | null>(null);
+  const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
+  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
-  const [useMax,setUseMax] = useState<boolean>(false);
+  const [useMax,setUseMax] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
-  const LookupPageSize = 10;
   const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
-  const { data, error, quote, quoteError} = useSelector((state: RootState) => state.dex);
+  const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
   const [errorQuote, setErrorQuote] = useState<string | null>(null);
   const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
+  const [tokenAddress,setTokenAddress] = useState<string | null>(null);
+  const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
+  const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
+  const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
+  const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
+  const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
+  const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
+  const[balanceRaw, setBalanceRaw] = useState<number | undefined>();
 
-  const balanceRaw = filteredRows.find(token => token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.label ?? "")
-  .toUpperCase()&& token.chain?.toUpperCase() === selectedChain.toUpperCase())?.balance;
+  const coinGeckoChainId = (chain: string) => {
+          switch (chain.toLowerCase()) {
+            case "ethereum": return 1;
+            case "optimism": return 10;
+            case "arbitrum": return 42161;
+            case "bnb chain": return 56;
+            case "polygon": return 137;
+            case "avalanche": return 43114;
+          }
+        };
 
+  useEffect(()=> {
+    const chainId = coinGeckoChainId(selectedChain);
+      if (!chainId) return;
 
-const maxBalance = balanceRaw !== undefined && balanceRaw !== null
-  ? balanceRaw.toFixed(5)
-  : "0.0000";
+    setBalanceRaw( selectedWallet?.chainAssets
+      ?.find(chain => chain.chainId === chainId)
+      ?.walletAssets
+      ?.find(token =>
+        token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase()
+      )?.balance)
+  },[symbolOptionSwap, selectedChain])
 
   useEffect(() => {
-    setErrorQuote(quoteError);
-    setErrorQuoteParametrs(error)
-  },[error,quoteError])
+    if (!selectedWallet) {
+      setTokenAddresses([]);
+      setTokenIcons(null);
+      setSymbolOptionSwap(null);
+      setSymbolOptionSwapFor(null);
+      setInputSearchSwapFor("");
+      setSelectedChain("");
+      setNewBalance("");
+      return;
+    }
+      setTokenIcons(null);
+      setSymbolOptionSwap(null);
+      setSymbolOptionSwapFor(null);
+      setInputSearchSwapFor("");
+      setSelectedChain("");
+      setNewBalance("");
+    const addresses: string[] = selectedWallet.chainAssets.flatMap(
+  (chainAsset) => chainAsset.walletAssets.map((token) => token.tokenAddress)
+).filter((address): address is string => typeof address === 'string' && address !== '');
+
+
+    setTokenAddresses(addresses);
+  }, [selectedWallet]);
+
+  useEffect(() => {
+    if (!selectedChain) return;
+
+    const timeoutId = setTimeout(() => {
+      const fetchIconsForSwapFor = async () => {
+        const chainId = coinGeckoChainId(selectedChain);
+        if (!chainId) return;
+
+        try {
+          const result = await iconsApi.getIcons(
+            inputSearchSwapFor,
+            0,
+            chainId,
+            500
+          );
+          setTokenIconsSwapFor(result);
+        } catch (error) {
+          console.error('Error loading icons for swap for:', error);
+        }
+      };
+
+      fetchIconsForSwapFor();
+    }, 450);
+
+    return () => clearTimeout(timeoutId);
+  }, [selectedChain, inputSearchSwapFor]);
+
+
+  useEffect(() => {
+  const fetchIcons = async () => {
+    if (tokenAddresses.length === 0) return;
+
+    const nonEmptyChainsCount = selectedWallet?.chainAssets?.filter(
+      chain => chain.walletAssets && chain.walletAssets.length > 0
+    ).length ?? 0;
+
+    let pageSize = tokenAddresses?.length + nonEmptyChainsCount + 50;
+
+    try {
+      const result = await iconsApi.getIconsV2(
+        undefined,
+        0,
+        pageSize,
+        tokenAddresses
+      );
+
+      const walletTokenNamesLower = new Set(
+        filteredRows.map(row => row?.tokenName?.toLowerCase())
+      );
+
+      const filteredItems = result.items.filter(item => {
+        const isNativeToken = item.address.includes('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+        if (!isNativeToken) return true; 
+
+        return walletTokenNamesLower.has(item.sym.toLowerCase());
+      });
+
+      setTokenIcons({
+        ...result,
+        items: filteredItems,
+      });
+
+    } catch (error) {
+      console.error('Error loading icons:', error);
+    }
+  };
+
+  fetchIcons();
+}, [tokenAddresses, filteredRows]);
+
+  const generateUniswapLink = ({
+  inputCurrency,
+  outputCurrency,
+  exactAmount,
+  exactField,
+  version,
+}:{inputCurrency: string;
+    outputCurrency: string;
+    exactAmount: number;
+    exactField: "input" | "output";
+    version: string;
+  }) => {
+  switch (version) {
+    case "UNISWAP_V1": {
+      const slippage = (exactAmount * 0.05).toFixed(6);
+      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
+    }
+    case "UNISWAP_V2": {
+      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
+    }
+    case "UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+    }
+    case "UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
+    }
+    case "BSC_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "BSC_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "OPTIMISM_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "OPTIMISM_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "POLYGON_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "POLYGON_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "AVALANCHE_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "AVALANCHE_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "ARBITRUM_UNISWAP_V3": {
+      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    case "ARBITRUM_UNISWAP_V4": {
+      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
+    }
+    default:
+      throw new Error(`Unsupported Uniswap version: ${version}`);
+  }
+};
+
+  const maxBalance = balanceRaw !== undefined && balanceRaw !== null
+    ? balanceRaw.toFixed(5)
+    : "0.0000";
+
+  useEffect(() => {
+    if (hasAttemptedSubmit) {
+      setErrorQuote(quoteError);
+      setErrorQuoteParametrs(error);
+    } else {
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
+    }
+  }, [quoteError, error, hasAttemptedSubmit]);
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
-      if (quote && symbolOptionSwap && symbolOptionSwapFor) {
-        let result = 0;
+      if (quote.length && symbolOptionSwap && symbolOptionSwapFor) {
+
+        let chainPrice = 0;
+        let swapForToken: any = null;
+
         try {
-          const tokenPosition = await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
-          const swapForToken = await dispatch(fetchToken({ id: symbolOptionSwapFor.id })).unwrap();
-          
-          result = parseFloat(tokenPosition.price.toString()) / parseFloat(swapForToken.price.toString());
-          
+          const coinGeckoChainId = (chain: string) => {
+            switch (chain.toLowerCase()) {
+              case "ethereum":
+              case "optimism":
+              case "arbitrum":
+                return "ethereum";
+              case "bnb chain":
+                return "binancecoin";
+              case "polygon":
+                return "matic-network";
+              case "avalanche":
+                return "avalanche-2";
+              default:
+                return "ethereum";
+            }
+          };
+
+          const chainPosition = await dispatch(
+            fetchToken({ id: coinGeckoChainId(selectedChain) })
+          ).unwrap();
+          chainPrice = Number(chainPosition.price.toString());
+
+          const tokenPosition = await dispatch(
+            fetchToken({ id: symbolOptionSwap.id })
+          ).unwrap();
+
+          swapForToken = await dispatch(
+            fetchToken({ id: symbolOptionSwapFor.id })
+          ).unwrap();
+
         } catch (err) {
           console.error("Error fetching tokens:", err);
         }
-        const processedData = quote.protocols.map((protocolGroup: any[][]) => {
-          const firstProtocol = protocolGroup[0];
+
+        let baseFee = 0;
+
+        try {
+          const response = await dispatch(fetchGas({ chainName: selectedChain }));
+
+          if (selectedChain.toUpperCase() !== "BNB CHAIN") {
+            baseFee = response.payload.baseFee;
+          } else {
+            baseFee = response.payload.standard;
+          }
+        } catch (err) {
+          console.error("Error fetching gas:", err);
+        }
+        const processedData = quote.map((q) => {
+          const firstProtocol = q.protocols[0][0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+          const name = names[0];
+
+          let deepLink: string | null = null;
+
+          const isUniswap =
+            ["UNISWAP_V1", "UNISWAP_V2", "UNISWAP_V3", "UNISWAP_V4","BSC_UNISWAP_V3","BSC_UNISWAP_V4","OPTIMISM_UNISWAP_V3",
+              "OPTIMISM_UNISWAP_V4","POLYGON_UNISWAP_V3","POLYGON_UNISWAP_V4","AVALANCHE_UNISWAP_V3","AVALANCHE_UNISWAP_V4",
+              "ARBITRUM_UNISWAP_V3","ARBITRUM_UNISWAP_V4"].includes(name);
+
+          if (isUniswap && tokenAddress && tokenAddressSwapFor && newBalance) {
+            
+            deepLink = generateUniswapLink({
+              inputCurrency: tokenAddress,
+              outputCurrency: tokenAddressSwapFor,
+              exactAmount: Number(newBalance),
+              exactField: "input",
+              version: name,
+            });
+          }
+
+          const estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
+          const price =  estAmount / parseFloat(newBalance)
+
           return {
             name: names[0],
-            gas: quote.gas,
-            price: result.toFixed(4),
+            gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
+            price: price.toFixed(4),
+            gasUSD: parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
+            estAmount: estAmount.toFixed(4),
+            deepLink,
           };
         });
-        setQuoteData(processedData);        
+
+        if (processedData.length === 0 && quoteLoading === false) {
+          setShowNoQuotesMessage(true);
+        } else {
+          setShowNoQuotesMessage(false);
+        }
+        setQuoteData(processedData);
       }
     };
-  
+
     fetchProtocolsAndTokens();
   }, [quote]);
 
   useEffect(() => {
     if (
+      shouldFetchQuote &&
       data &&
       data.fromTokenAddress &&
       data.toTokenAddress &&
@@ -115,21 +387,48 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         toTokenAddress: data.toTokenAddress,
         amount: data.amount,
       }));
-    }
-  }, [data, dispatch]);
 
+      setShouldFetchQuote(false);
+    }
+  }, [shouldFetchQuote, data, dispatch]);
+
+  useEffect(() => {
+    if (!quoteLoading) {
+      if (quote.length === 0) {
+        setShowNoQuotesMessage(true);
+      } else {
+        setShowNoQuotesMessage(false);
+      }
+    }
+  }, [quote, quoteLoading]);
+
+  useEffect(() => {
+    if (selectedTokenRow && tokenIcons?.items) {
+      setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
+
+      const matchedToken = tokenIcons.items.find(token =>
+        token.sym?.toUpperCase() === selectedTokenRow.tokenName?.toUpperCase()
+      );
+
+      if (matchedToken) {
+        setSymbolOptionSwap(matchedToken);
+        setSelectedToken(matchedToken.sym);
+      }
+    } 
+  }, [selectedTokenRow, tokenIcons]);
+  
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
       setSelectedToken(null);
+      setNewBalance("")
       return;
     }
   
-    const selectedSymbol = extractSymbol(symbolOptionSwap.label);
     const selectedChainUpper = selectedChain.toUpperCase();
-  
+    setNewBalance(maxBalance.toString());
     const matchedToken = selectedWallet.chainAssets
       .find(chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper)
-      ?.tokenDetails.find(token => token.sym.toUpperCase() === selectedSymbol);
+      ?.tokenDetails.find(token => token.sym.toUpperCase() === symbolOptionSwap.sym.toUpperCase());
   
     if (matchedToken) {
       setSelectedToken(matchedToken.sym || null);
@@ -141,7 +440,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
   }, [symbolOptionSwap, selectedChain, selectedWallet]);
 
   useEffect(() => {
-    if (useMax) {
+    if (useMax && symbolOptionSwap) {
       setNewBalance(maxBalance.toString());
     }
   }, [useMax, maxBalance]);
@@ -152,29 +451,57 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       setQuoteData([]);
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
     }
-  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);  
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
 
-  const onOptionChangeSwapFor = (value: any) => {
-    setSymbolOptionSwapFor(value); 
+const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
+  setShowNoQuotesMessage(false);
+  if (value && value.id === symbolOptionSwap?.id) {
+    setSymbolOptionSwapFor(value);
+    setErrorMessage(t("SameTokenError"));
+    return;
+  }
+
+  setSymbolOptionSwapFor(value);
+  setErrorMessage(null);
+};
+
+  const onOptionChangeSwap = (value: TokenSearchItem  | null) => {
+    setShowNoQuotesMessage(false);
+    if (value && value.id === symbolOptionSwapFor?.id) {
+      setSymbolOptionSwap(value);
+      setErrorMessage(t("SameTokenError"));
+      return;
+    }
+
+    if(value === null)
+    {
+      onSelectedTokenChange?.(null,null);
+      setSelectedChain("")
+    }
+    
+    setSymbolOptionSwap(value);
+    setErrorMessage(null);
   };
 
-  const onInputChangeSwapFor = (value: string) => {
-    setInputSearchSwapFor(value); 
-  };
-
-  const onOptionChangeSwap = (value: any) => {
-    setSymbolOptionSwap(value); 
-  };
-
-  const onInputChangeSwap = (value: string) => {
-    setInputSearchSwap(value); 
-  };
+  const getGasTokenSymbol = (chain: string): string => {
+    const chainMap: Record<string, string> = {
+      "ETHEREUM": "ETH",
+      "OPTIMISM": "ETH",
+      "ARBITRUM": "ETH",
+      "BNB CHAIN": "BNB",
+      "POLYGON": "MATIC",
+      "AVALANCHE": "AVAX",
+    };
+    return chainMap[chain.toUpperCase()] || "";
+  };  
 
   const generateErrorMessage = () => {
     const errors: string[] = [];
   
-    const selectedSymbol = extractSymbol(symbolOptionSwap?.label ?? "").toUpperCase();
+    const selectedSymbol = extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase();
     const tokenExistsInFilteredRows = filteredRows.some(
       token => token.tokenName?.toUpperCase() === selectedSymbol
     );
@@ -206,21 +533,49 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
       setQuoteData([]);
       setErrorMessage(err);
       setLastUpdated(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
     } else {
       setErrorMessage(null);
   
-      if (symbolOptionSwap && symbolOptionSwapFor && selectedChain && newBalance) {
-        
-        dispatch(fetchQuoteParameters({
-          tokenPositionSymbol: extractSymbol(symbolOptionSwap.label),
-          chainName: selectedChain,
-          qty: Number(newBalance),
-          swapForSymbol: extractSymbol(symbolOptionSwapFor.label),
-          tokenPositionId: symbolOptionSwap.id,
-          swapForId: symbolOptionSwapFor.id,
-        }));
-      }
-  
+      const fetchAndSetAddresses = async () => {
+        if (
+          symbolOptionSwap &&
+          symbolOptionSwapFor &&
+          selectedChain &&
+          newBalance
+        ) {
+          const result = await dispatch(
+            fetchQuoteParameters({
+              tokenPositionSymbol: extractSymbol(symbolOptionSwap.sym),
+              chainName: selectedChain,
+              qty: Number(newBalance),
+              swapForSymbol: extractSymbol(symbolOptionSwapFor.sym),
+              tokenPositionId: symbolOptionSwap.id,
+              swapForId: symbolOptionSwapFor.id,
+            })
+          );
+    
+          if (fetchQuoteParameters.fulfilled.match(result)) {
+            const data = result.payload;
+            if (data?.fromTokenAddress && data?.toTokenAddress) {
+              setTokenAddress(data.fromTokenAddress);
+              setTokenAddressSwapFor(data.toTokenAddress);
+              setShouldFetchQuote(true);
+            } else {
+              setTokenAddress(null);
+              setTokenAddressSwapFor(null);
+            }
+          } else {
+            setTokenAddress(null);
+            setTokenAddressSwapFor(null);
+            console.error("Error API:", result);
+          }
+        }
+      };
+    
+      fetchAndSetAddresses();
+      
       const now = new Date();
       const formatted = now.toLocaleString(undefined, {
         year: 'numeric',
@@ -235,20 +590,12 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     }
   };
 
-  const tokenSymbols = Array.from(
-    new Set(
-      selectedWallet?.chainAssets.flatMap((chainAsset) =>
-        chainAsset.tokenDetails.map((token) => token.sym.toUpperCase())
-      )
-    )
-  ) || [];  
-
   return (
     <Grid
       container
       direction="column"
       sx={{
-        minHeight: "377px",
+        minHeight: "500px",
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor:
@@ -304,19 +651,69 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
         {activeTab === "swap" ? (
             <Grid container spacing={2}>
                 <Grid item xs={3.7}>
-                <StyledSymbolLookup
-                    pageSize={LookupPageSize}
-                    onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwap)}
-                    loading={lookupLoading}
-                    disableListWrap
-                    value={symbolOptionSwap}
-                    onChange={(_event, value) => onOptionChangeSwap(value)}
-                    autoComplete={true}
-                    onInputChange={(_event, value) => onInputChangeSwap(value)} 
-                    filterOptions={x => x}
-                    inputValue={inputSearchSwap}
-                    label={t("TokenPosition")}
-                    />
+                  <Box>
+                    <Typography sx={{paddingBottom:"4.7px"}}>{t("TokenPosition")}</Typography>
+                     <Autocomplete
+                        options={tokenIcons?.items ?? []}
+                        getOptionLabel={(option) => option.sym}
+                        value={symbolOptionSwap}
+                        onChange={(_e, newValue) => onOptionChangeSwap(newValue)}
+                        isOptionEqualToValue={(option, value) => option.id === value?.id}
+                        disableClearable={false}
+                        inputValue={symbolOptionSwap ? symbolOptionSwap.name ?
+                          `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` :
+                          symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
+                        onInputChange={(_event, newInputValue, reason) => {
+                          if (reason === 'clear') {
+                            onOptionChangeSwap(null);
+                          }
+                          setInputSearchSwap(newInputValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("Search")}
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  {symbolOptionSwap?.lURI ? (
+                                    <InputAdornment position="start">
+                                      <Avatar
+                                        src={symbolOptionSwap.lURI}
+                                        alt={symbolOptionSwap.sym} 
+                                        sx={{ width: 22, height: 22, mr: 1 }}
+                                      />
+                                    </InputAdornment>
+                                  ) : (
+                                    <InputAdornment position="start">
+                                      <SearchIcon />
+                                    </InputAdornment>
+                                  )}
+                                </>
+                              ),
+                              sx: {
+                                input: {
+                                  textTransform: symbolOptionSwap ? 'uppercase' : 'none',
+                                },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Avatar
+                              src={option.lURI ?? undefined}
+                              alt={option.sym}
+                              sx={{ width: 24, height: 24 }}
+                            />
+                            <Typography variant="body1">
+                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                            </Typography>
+                          </Box>
+                        )}
+                      />
+                  </Box>
                 </Grid>
 
                 <Grid item xs={2.2}>
@@ -325,7 +722,7 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         <Select
                             labelId="chain-select-label"
                             value={selectedChain}
-                            onChange={e => setSelectedChain(e.target.value)}
+                            onChange={e => {setShowNoQuotesMessage(false);setSelectedChain(e.target.value)}}
                             sx={{
                                 height: "53px",
                                 display: "flex",
@@ -350,16 +747,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                 <Grid item xs={2.2}>
                   <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
                     <Typography>{t("Qty")}</Typography>
-
-                    <Box display="flex" alignItems="center">
-                      <Checkbox
-                        size="small"
-                        sx={{ padding: 0, marginRight: 1 }}
-                        checked={useMax} 
-                        onChange={() => setUseMax(prev => !prev)}
-                      />
-                      <Typography>{t("UseMax")}</Typography>
-                    </Box>
                   </Box>
 
                   <TextField
@@ -376,11 +763,13 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                         const [, decimalPart = ""] = input.split(".");
                         
                         if (decimalPart.length <= 5) {
-                          if (!isNaN(numericValue) && numericValue <= max) {
+                          if (!isNaN(numericValue)) {
+                            setShowNoQuotesMessage(false);
                             setNewBalance(input);
                           }
                     
                           if (input === "" || input === "." || input.endsWith(".")) {
+                            setShowNoQuotesMessage(false);
                             setNewBalance(input);
                           }
                         }
@@ -388,7 +777,6 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                     }}                    
                     type="text"
                     fullWidth
-                    disabled={useMax}
                     inputProps={{
                       inputMode: "decimal",
                       min: 0,
@@ -416,19 +804,92 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                 </Grid>
 
                 <Grid item xs={3.7}>
-                    <StyledSymbolLookup
-                    pageSize={LookupPageSize}
-                    onFetchPage={pageNumber => fetchLookupPage(pageNumber, inputSearchSwapFor)}
-                    loading={lookupLoading}
-                    disableListWrap
-                    value={symbolOptionSwapFor}
-                    onChange={(_event, value) => onOptionChangeSwapFor(value)}
-                    autoComplete={true}
-                    onInputChange={(_event, value) => onInputChangeSwapFor(value)} 
-                    filterOptions={x => x}
-                    inputValue={inputSearchSwapFor}
-                    label={t("SwapFor")}
+                  <Box>
+                    <Typography sx={{paddingBottom:"4.7px"}}>{t("SwapFor")}</Typography>
+                    <Autocomplete
+                      options={tokenIconsSwapFor?.items ?? []}
+                      getOptionLabel={(option) =>
+                        option.name
+                          ? `${option.sym.toUpperCase()} - ${option.name}`
+                          : option.sym.toUpperCase()
+                      }
+                      value={symbolOptionSwapFor}
+                      onChange={(_e, newValue) => {
+                        onOptionChangeSwapFor(newValue);
+                        if (newValue) {
+                          setInputSearchSwapFor(
+                            newValue.name
+                              ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
+                              : newValue.sym.toUpperCase()
+                          );
+                        }
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value?.id}
+                      disableClearable={false}
+                      inputValue={
+                        symbolOptionSwapFor
+                          ? symbolOptionSwapFor.name
+                            ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
+                            : symbolOptionSwapFor.sym.toUpperCase()
+                          : inputSearchSwapFor
+                      }
+                      onInputChange={(_event, newInputValue, reason) => {
+                        if (reason === 'input') {
+                          onOptionChangeSwapFor(null);
+                          setInputSearchSwapFor(newInputValue);
+                        } else if (reason === 'clear') {
+                          onOptionChangeSwapFor(null);
+                          setInputSearchSwapFor('');
+                        }
+                      }}
+                      noOptionsText={t("NoOptionsOnThisChain")}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={t("Search")}
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                {symbolOptionSwapFor?.lURI ? (
+                                  <InputAdornment position="start">
+                                    <Avatar
+                                      src={symbolOptionSwapFor.lURI}
+                                      alt={symbolOptionSwapFor.sym}
+                                      sx={{ width: 22, height: 22, mr: 1 }}
+                                    />
+                                  </InputAdornment>
+                                ) : (
+                                  <InputAdornment position="start">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                )}
+                              </>
+                            ),
+                            sx: {
+                              input: {
+                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                              },
+                            },
+                          }}
+                        />
+                      )}
+                      renderOption={(props, option) => (
+                        <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar
+                            src={option.lURI ?? undefined}
+                            alt={option.sym}
+                            sx={{ width: 24, height: 24 }}
+                          />
+                          <Typography variant="body1">
+                            {option.name
+                              ? `${option.sym.toUpperCase()} - ${option.name}`
+                              : option.sym.toUpperCase()}
+                          </Typography>
+                        </Box>
+                      )}
                     />
+                  </Box>
                 </Grid>
 
                 <Grid item xs={12}>
@@ -447,8 +908,8 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                   <Box display="flex" flexDirection="column" alignItems="flex-end">
                     <Button
                       variant="contained"
-                      startIcon={<RefreshIcon />}
                       onClick={handleFetchQuotes}
+                      disabled= {errorMessage !== null? true : false}
                       sx={{
                         backgroundColor: "#1e88e5",
                         color: "#fff",
@@ -459,6 +920,21 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                           backgroundColor: "#1565c0",
                         },
                       }}
+                      startIcon={
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            animation: quoteLoading ? "spin 1s linear infinite" : "none",
+                            "@keyframes spin": {
+                              "0%": { transform: "rotate(0deg)" },
+                              "100%": { transform: "rotate(360deg)" },
+                            },
+                          }}
+                        >
+                          <RefreshIcon />
+                        </Box>
+                      }
                     >
                       {t("RefreshQuotes")}
                     </Button>
@@ -469,7 +945,119 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
                   </Typography>
                 )}
                   </Grid>
-                </Grid>       
+                </Grid>
+                <Grid item xs={11.8} sx={{ marginTop: 2 }}>
+                  <Grid container justifyContent="space-between" spacing={2}>
+                    <Grid item xs={3.7}>
+                      <Typography sx={{ marginBottom: "6px" }}>{t("TokensAddress")}</Typography>
+                      <TextField
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                          },
+                        }}
+                        value={tokenAddress ?? ''}
+                        placeholder={t("AutoFilled")}
+                        variant="outlined"
+                        fullWidth
+                        inputProps={{
+                          readOnly: true,
+                          onFocus: (e) => e.target.blur(),
+                          style: { cursor: 'not-allowed' },
+                        }}
+                        InputProps={{
+                          sx: {
+                            fontSize: '0.6rem',
+                            cursor: 'not-allowed',
+                          },
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("Auto-filled field")}>
+                                <CreateIcon fontSize="small" sx={{ opacity: 0.5, mr: 1 }} />
+                              </Tooltip>
+                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
+                                <Tooltip title={t("Copy")}>
+                                  <IconButton
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(tokenAddress);
+                                    }}
+                                    edge="end"
+                                  >
+                                    <ContentCopyIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={3.7}>
+                      <Typography sx={{ marginBottom: "6px" }}>{t("SwapForPositionAddress")}</Typography>
+                      <TextField
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                              borderColor: theme.palette.mode === 'dark'
+                                ? 'rgba(255, 255, 255, 0.23)'
+                                : 'rgba(0, 0, 0, 0.23)',
+                            },
+                          },
+                        }}
+                        value={tokenAddressSwapFor ?? ''}
+                        placeholder={t("AutoFilled")}
+                        variant="outlined"
+                        fullWidth
+                        inputProps={{
+                          readOnly: true,
+                          onFocus: (e) => e.target.blur(),
+                          style: { cursor: 'not-allowed' },
+                        }}
+                        InputProps={{
+                          sx: {
+                            fontSize: '0.6rem',
+                            cursor: 'not-allowed',
+                          },
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("Auto-filled field")}>
+                                <CreateIcon fontSize="small" sx={{ opacity: 0.5 }} />
+                              </Tooltip>
+                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
+                                <Tooltip title={t("Copy")}>
+                                  <IconButton
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(tokenAddressSwapFor);
+                                    }}
+                                    edge="end"
+                                  >
+                                    <ContentCopyIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              )}
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+              </Grid>
+       
               </Grid>
             </Grid>
         ) : (
@@ -486,33 +1074,76 @@ const maxBalance = balanceRaw !== undefined && balanceRaw !== null
           }}
         >
           <Table sx={{ color: "blue" }}>
-            <TableHead>
+            <TableHead  sx={{
+          backgroundColor:
+            theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
+        }}>
               <TableRow>
                 <TableCell>{t("DEX")}</TableCell>
-                <TableCell>{t("Price")}</TableCell>
-                <TableCell>{t("EstGasFees")}</TableCell>
+                <TableCell>{t("Est. Price")}</TableCell>
+                <TableCell>
+                  {t("EstGasFees", {
+                    value: getGasTokenSymbol(selectedChain)
+                      ? `(${getGasTokenSymbol(selectedChain)})`
+                      : "",
+                  })}
+                </TableCell>
+                <TableCell>{t("EstGasFeesUSD")}</TableCell>
+                <TableCell>{t("EstAmount")}</TableCell>
               </TableRow>
             </TableHead>
 
-            {symbolOptionSwap && symbolOptionSwapFor && selectedChain && quoteData && !errorMessage && !quoteError && (
-              <TableBody sx={{ backgroundColor: "#192132" }}>
-                {quoteData.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ color: "#539eec" }}>
-                      {Array.isArray(row.name) ? (
-                        row.name[0]
-                      ) : (
-                        row.name
-                      )}
-                    </TableCell>
-                    <TableCell>{row.price}</TableCell>
-                    <TableCell>{row.gas}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
+            {symbolOptionSwap &&
+              symbolOptionSwapFor &&
+              selectedChain &&
+              quoteData &&
+              !errorMessage &&
+              !quoteError && (
+                <TableBody sx={{
+                  backgroundColor:
+                    theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                }}>
+                  {quoteData.map((row, index) => {
+                    const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
+                    const dexUrl = dexWebsites[dexKey];
+
+                    return (
+                      <TableRow key={index}>
+                        <TableCell sx={{ color: "#539eec" }}>
+                          {dexUrl ? (
+                            <a
+                              href={row.deepLink ?? dexUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#539eec", textDecoration: "underline" }}
+                            >
+                              {dexKey}
+                            </a>
+                          ) : (
+                            dexKey
+                          )}
+                        </TableCell>
+                        <TableCell>{row.price}</TableCell>
+                        <TableCell>{row.gas}</TableCell>
+                        <TableCell>{row.gasUSD}</TableCell>
+                        <TableCell>{row.estAmount}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              )}
           </Table>
         </TableContainer>
+        {quoteData.length > 0 && lastUpdated && (
+          <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
+            {t("MarketDataUpdatedAs", { value: lastUpdated })}
+          </Typography>
+        )}
+        {showNoQuotesMessage && hasAttemptedSubmit !== false && (
+          <Typography sx={{ color: "#f44336", fontSize: "0.875rem", marginTop: 2 }}>
+            {t("NoQuotesFound")}
+          </Typography>
+        )}
       </Grid>
     </Grid>
   );

@@ -137,6 +137,7 @@
     "AddSavedWallet": "+ADD SAVED WALLET",
     "AddSavedPosition": "+ADD SAVED POSITION",
     "CurrentPosition": "Current Position",
+    "TokenSearch": "Token Search",
     "NewPosition": "New Position",
     "RebalancedIndexQuantities": "Rebalanced Index Quantities",
     "PositionAllocationUpdates": "Position Allocation Updates",
@@ -199,18 +200,22 @@
     "BeSureToCopyPasteEachAPIKeys":"Be sure to copy and paste each of the API keys, one dithered gray (API Key), and one white (Private Key), and paste them each one-at-a-time to the appropriate fields above.",
     "IMPORTANTBeSure": "IMPORTANT: Be sure to do this before closing the Kraken add API Key window; you will immediately lose visibility to these keys as soon as you do so.",
     "TokensToTrade":"Tokens To Trade",
-    "TokenAlreadyExists": "Token already exists on the selected chain!"
+    "TokenAlreadyExists": "Token already exists on the selected chain!",
+    "ClickToLoadCurrentPosition": "Click to load Current Position"
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
     "CEX": "CEX",
     "CurrentPosition": "Current Position",
     "Symbol": "Symbol",
+    "SearchForSymol": "Search for Symol",
     "Qty": "Qty",
     "NewPosition": "New Position",
     "MKT": "MKT",
+    "TradingPair": "Trading Pair",
     "Value": "Value",
     "Trade": "Trade",
+    "TradeType": "Trade Type",
     "Action": "Action",
     "SEND": "SEND",
     "Select": "Select",
@@ -228,7 +233,10 @@
     "Bought": "Bought",
     "Sold": "Sold",
     "EstTotal": "Est Total",
-    "EnteredSymbolNotExist": "Entered symbol does not exist"
+    "EnteredSymbolNotExist": "Entered symbol does not exist",
+    "Exchange": "Exchange",
+    "TradeOn": "Trade on",
+    "SwitchCryptoInput": "Switch Crypto Input"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
@@ -260,16 +268,18 @@
   },
   "NewPositionSection": {
     "Bridge": "Bridge",
+    "NoOptionsOnThisChain": "No Options on this Chain",
     "Token": "Token",
-    "TokenPosition": "Token Position",
+    "TokenPosition": "Current Position",
+    "AutoFilled": "Auto-filled after quotes",
     "Swap": "Swap",
     "Qty": "Qty",
     "Chain": "Chain",
     "SwapFor": "Swap For",
     "DEX": "DEX",
     "Volume": "Volume",
-    "Price": "Price",
-    "EstGasFees": "Est. Gas Fees",
+    "Est. Price": "Est. Price",
+    "EstGasFees": "Est. Gas Fees {{value}}",
     "Search": "Search",
     "UseMax": "Use Max",
     "RefreshQuotes": "Get Quotes",
@@ -279,7 +289,14 @@
     "SelectToken": "Select Token",
     "LastUpdate": "Last Update",
     "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
-    "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again"
+    "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again",
+    "EstGasFeesUSD": "Est Gas Fees (USD)",
+    "TokensAddress": "Token Position Address",
+    "SwapForPositionAddress": "Swap For Position Address",
+    "EstAmount": "Est. Amount",
+    "MarketDataUpdatedAs": "Market data updated as of: {{value}}. Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions. DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX.",
+    "SameTokenError": "You have selected the same Swap For Token as your Current Token Position, please your review and change your Swap selections",
+    "NoQuotesFound":"No Quotes Found"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
@@ -332,7 +349,8 @@
     "BilledMonthly": "Billed monthly",
     "SwitchToPlan": "Switch to plan",
     "CurrentPlan": "Current plan",
-    "SelectThisPlan": "Select this plan"
+    "SelectThisPlan": "Select this plan",
+    "Upgrade": "Upgrade"
   },
   "SideBar": {
     "Home": "Home",
@@ -360,7 +378,9 @@
     "Education": "Education",
     "Web3DeFi": "Web3 DeFi",
     "CEX": "CEX",
-    "CEXWallets": "CEX Wallets"
+    "CEXWallets": "CEX Wallets",
+    "Centralized": "Centralized",
+    "Decentralized": "Decentralized"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",

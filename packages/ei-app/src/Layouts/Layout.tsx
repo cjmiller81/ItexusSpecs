@@ -18,11 +18,12 @@ export default function Layout({ children }: Props) {
   const theme = useTheme()
   const dispatch = useAppDispatch()
   const billing = useSelector((state: RootState) => state.billing)
-  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme))
+  const currentPlan = (billing.product?.name?.split(" ")[0]) ?? null;
+  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme, currentPlan))
 
   useEffect(() => {
-    setSideBarOptions(getSidebarMenuItems(theme))
-  }, [billing.product?.metadata])
+    setSideBarOptions(getSidebarMenuItems(theme, currentPlan))
+  }, [billing.product?.metadata, currentPlan])
 
   const { session, logOut } = useOry()
   const { t } = useTranslation("Header")

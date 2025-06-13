@@ -48,33 +48,59 @@ export const iconsApi = {
     return response.data
   },
 
-  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, signal?: AbortSignal): Promise<PaginatedList<TokenSearchItem>> => {
+  getIcons: async (searchQuery?: string, pageNumber?: number, chainId?: number, pageSize?: number, signal?: AbortSignal): Promise<PaginatedList<TokenSearchItem>> => {
     const response = await appAxios.get<PaginatedList<TokenSearchItem>>(`/tokens-searchV2`, {
       signal: signal,
       params: {
         query: searchQuery,
         pageSize: pageSize || 100,
         pageNumber: pageNumber || 0,
+        chainId: chainId,
       },
     })
+
+    return response.data
+  },
+
+  getIconsV2: async (
+  searchQuery?: string,
+  pageNumber?: number,
+  pageSize?: number,
+  anyOfAddresses?: string[],
+  chainId?: number,
+  signal?: AbortSignal
+  ): Promise<PaginatedList<TokenSearchItem>> => {
+    const response = await appAxios.post<PaginatedList<TokenSearchItem>>(
+      `/tokens-searchV2`,
+      anyOfAddresses ?? [],
+      {
+        signal,
+        params: {
+          query: searchQuery,
+          pageSize: pageSize ?? 10,
+          pageNumber: pageNumber ?? 0,
+          chainId: chainId,
+        },
+      }
+    )
 
     return response.data
   },
 }
 
 export const iconsDelayedApi = {
-  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, signal?: AbortSignal, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
+  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, chainId?: number, signal?: AbortSignal, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
     if (delayTime) await delay(delayTime)
     signal?.throwIfAborted()
-    return await iconsApi.getIcons(searchQuery, pageNumber, pageSize, controller.signal)
+    return await iconsApi.getIcons(searchQuery, pageNumber, pageSize,chainId, controller.signal)
   },
 }
 
 let controller = new AbortController()
 export const iconsAbortableApi = {
-  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
+  getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, chainId?: number, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
     controller.abort("aborted")
     controller = new AbortController()
-    return await iconsDelayedApi.getIcons(searchQuery, pageNumber, pageSize, controller.signal, delayTime || 500)
+    return await iconsDelayedApi.getIcons(searchQuery, pageNumber, pageSize,chainId, controller.signal, delayTime || 500)
   },
 }

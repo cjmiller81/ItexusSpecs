@@ -45,6 +45,7 @@ import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResul
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { ChainAsset } from "@/models/Wallet/ChainAsset";
 import { Coins, Wallet } from "lucide-react";
+import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
 
 interface SelectedWallet {
   address: string;
@@ -100,6 +101,7 @@ export const IndexResultsSection = ({
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [selectedChain, setSelectedChain] = useState("");
   const [addPositionError, setAddPositionError] = useState<string>("");
+  const [shouldShowGrid, setShouldShowGrid] = useState<boolean>(false);
 
   const handleClearTable = () => {
     setSelectedWallet(null);
@@ -686,7 +688,7 @@ export const IndexResultsSection = ({
               lg={5.3}
               spacing={1}
               sx={{ marginTop: "25px", marginLeft: { lg: "2%", md: "2%", xs: "0%" } }}>
-              <StyledWalletsTable
+              <MarketCapWallet
                 sx={tableScrollSx}
                 hideFooter
                 rowSelection={false}
@@ -700,6 +702,7 @@ export const IndexResultsSection = ({
           </Grid>
         </Grid>
 
+        {shouldShowGrid && (
         <Grid
           container
           direction="row"
@@ -746,7 +749,7 @@ export const IndexResultsSection = ({
                 width: "100%",
                 marginRight: "10px",
               }}>
-              <StyledWalletsTable
+              <MarketCapWallet
                 sx={tableScrollSx}
                 hideFooter
                 rowSelection={false}
@@ -821,7 +824,7 @@ export const IndexResultsSection = ({
         </DialogActions>
       </Dialog>
           </Box>
-        </Grid>
+        </Grid>)}
       </Grid>
     </AppAccordionSection>
   );

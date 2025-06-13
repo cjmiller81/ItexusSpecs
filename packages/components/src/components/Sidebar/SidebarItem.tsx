@@ -52,20 +52,37 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
       {item.children && (
         <Collapse in={!isSidebarOpened ? false : open}>
           <List component="div">
-            {item.children.map(child => (
-              <AppLink
-                key={child.title}
-                passHref
-                href={child.href}
-                shallow>
-                <ListItemButton sx={{ pl: 3, justifyContent: "flex-start" }}>
-                  <ListItemText
-                    primary={child.title}
-                    sx={{ textAlign: "left" }}
-                  />
-                </ListItemButton>
-              </AppLink>
-            ))}
+            {item.children.map(child => {
+              if (child.disabled) {
+                return (
+                  <ListItemButton
+                    key={child.title}
+                    disabled
+                    sx={{ pl: 3, justifyContent: "flex-start", opacity: 0.5, cursor: "not-allowed" }}
+                  >
+                    <ListItemText
+                      primary={child.title}
+                      sx={{ textAlign: "left" }}
+                    />
+                  </ListItemButton>
+                );
+              }
+              return (
+                <AppLink
+                  key={child.title}
+                  passHref
+                  href={child.href}
+                  shallow
+                >
+                  <ListItemButton sx={{ pl: 3, justifyContent: "flex-start" }}>
+                    <ListItemText
+                      primary={child.title}
+                      sx={{ textAlign: "left" }}
+                    />
+                  </ListItemButton>
+                </AppLink>
+              );
+            })}
           </List>
         </Collapse>
       )}

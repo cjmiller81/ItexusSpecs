@@ -13,6 +13,10 @@ interface QuoteRequest {
   swapForId: string;
 }
 
+interface GetGasArgs {
+  chainName: string;
+}
+
 interface OneInchQuoteRequest {
   chainName: string;
   fromTokenAddress: string;
@@ -22,7 +26,7 @@ interface OneInchQuoteRequest {
 
 export interface DexState {
   data: QuoteParametersResponse | null;
-  quote: OneInchQuoteResponse | null;
+  quote: OneInchQuoteResponse[];
   quoteLoading: boolean;
   error: string | null;
   quoteError: string | null;
@@ -30,7 +34,7 @@ export interface DexState {
 
 const initialState: DexState = {
   data: null,
-  quote: null,
+  quote: [],
   quoteLoading: false,
   error: null,
   quoteError: null,
@@ -59,7 +63,7 @@ export const fetchQuoteParameters = createAsyncThunk<
 );
 
 export const fetchQuote = createAsyncThunk<
-  OneInchQuoteResponse,
+  OneInchQuoteResponse[],
   OneInchQuoteRequest,
   { rejectValue: string }
 >(
@@ -69,11 +73,32 @@ export const fetchQuote = createAsyncThunk<
       const data = await dexService.getQuote(params);
       return data;
     } catch (error: any) {
-      const message = 
+      const message =
         typeof error?.response?.data === "string"
           ? error.response.data
           : error?.response?.data?.message || error?.message;
-      
+
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const fetchGas = createAsyncThunk<
+  any,
+  { chainName: string },
+  { rejectValue: string }
+>(
+  "quote/fetchGas",
+  async ({ chainName }, { rejectWithValue }) => {
+    try {
+      const data = await dexService.getGas({ chainName });
+      return data;
+    } catch (error: any) {
+      const message =
+        typeof error?.response?.data === "string"
+          ? error.response.data
+          : error?.response?.data?.message || error?.message;
+
       return rejectWithValue(message);
     }
   }
@@ -120,7 +145,7 @@ export const dexSlice = createSlice({
         state.quoteLoading = true;
         state.quoteError = null;
       })
-      .addCase(fetchQuote.fulfilled, (state, action: PayloadAction<OneInchQuoteResponse>) => {
+      .addCase(fetchQuote.fulfilled, (state, action: PayloadAction<OneInchQuoteResponse[]>) => {
         state.quoteLoading = false;
         state.quote = action.payload;
       })

@@ -30,13 +30,13 @@ export const dexService = {
     return response.data;
   },
 
-  getQuote: async ({ chainName, fromTokenAddress, toTokenAddress, amount }: {
-    chainName: string;
-    fromTokenAddress: string;
-    toTokenAddress: string;
-    amount: number;
-  }): Promise<OneInchQuoteResponse> => {
-    const response = await appAxios.get<OneInchQuoteResponse>(
+ getQuote: async ({ chainName, fromTokenAddress, toTokenAddress, amount }: {
+  chainName: string;
+  fromTokenAddress: string;
+  toTokenAddress: string;
+  amount: number;
+  }): Promise<OneInchQuoteResponse[]> => {
+    const response = await appAxios.get<OneInchQuoteResponse[]>(
       `/api/1inch/quote/${chainName}`,
       {
         params: {
@@ -48,9 +48,21 @@ export const dexService = {
       }
     );
 
+    return response.data;
+  },
+
+  getGas: async ({ chainName }: {
+    chainName: string;
+  }) => {
+    const response = await appAxios.get(
+      `/api/1inch/gas/${chainName}`,
+      {
+        withCredentials: true,
+      }
+    );
+
     return {
       ...response.data,
-      protocols: response.data.protocols
     };
   },
 

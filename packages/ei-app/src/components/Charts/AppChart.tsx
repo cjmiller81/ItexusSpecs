@@ -16,7 +16,23 @@ export interface Props extends BoxProps {
 export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) => {
   const theme = useTheme();
   const defaultOptions: ApexOptions = {
+    grid: {
+      show: true,
+      borderColor: theme.palette.mode === "dark" ? "lightgray" : "#000", 
+      strokeDashArray: 0,
+      yaxis: {
+        lines: {
+          show: true,
+        },
+      },
+      xaxis: {
+        lines: {
+          show: false,
+        },
+      },
+    },
     chart: {
+      background: theme.palette.mode === "dark" ? "transparent" : "#e2e2e2",
       foreColor: theme.palette.text.primary,
       toolbar: {
         tools: {
@@ -51,7 +67,7 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
   const options = optionsOverrides ? merge(defaultOptions, optionsOverrides) : defaultOptions;
 
   return (
-    <Box {...props}>
+    <Box {...props} >
       {typeof window !== "undefined" && (
         <StyledReactAppxChart
           width={"100%"}
@@ -82,5 +98,8 @@ const StyledReactAppxChart = styled(Chart)(({ theme }) => ({
   },
   "& .apexcharts-xaxistooltip": {
     display: "none",
+  },
+  "& .apexcharts-inner, .apexcharts-grid, .apexcharts-plot-area": {
+    backgroundColor:"transparent" ,
   },
 }));

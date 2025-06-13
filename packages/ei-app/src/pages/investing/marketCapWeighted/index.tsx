@@ -3,6 +3,7 @@ import { IndexModelingSection } from "@/features/Investing/IndexModelingSection"
 import { IndexResultsSection } from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
+import { HistoricalWalletsWorthMarketCap } from "@/features/MyWallets/HistoricalWalletsWorthMarketCap";
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -166,7 +167,7 @@ export default function MarketCapWeightedPage() {
         defaultExpanded
         title={t("WeightedChartTitle")}
         tooltip={t("ToggleView", { ns: "Common" })}>
-        <HistoricalWalletsWorth
+        <HistoricalWalletsWorthMarketCap
           className="index-modeling-section-container"
           onFetchPage={fetchLookupPage}
           toDate={endDate}

@@ -245,6 +245,7 @@ export const HistoricalWalletsWorth = ({
 
 export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   flexDirection: "row",
+  backgroundColor:"transparent",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },

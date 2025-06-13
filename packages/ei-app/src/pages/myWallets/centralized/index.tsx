@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyledWalletsTable } from "@/features/MyWallets/WalletsTable";
 import { GridRowId } from "@mui/x-data-grid/models/gridRows";
-import { Box, Button, SelectChangeEvent, Stack, styled } from "@mui/material";
+import { Box, Button, SelectChangeEvent, Stack, styled, useTheme } from "@mui/material";
 import { IExchange } from "../../../../../components/src/models/token/IExchange";
 import { getExchangeAccountColumns } from "../../../../../components/src/features/myWallets/ExchangeAccountTable";
 import { ExpandableChainRow } from "../../../../../components/src/features/myWallets/ChainsRow";
@@ -24,6 +24,7 @@ export default function CEXWallets(){
     const { t } = useTranslation("MyWalletsSection");
     const [dialogState, setDialogState] = useState(["Kraken"]);
     const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
+    const theme = useTheme();
     const {  exchanges } = useAppSelector( state => state.wallets);
     const dispatch = useAppDispatch()
       
@@ -207,7 +208,13 @@ export default function CEXWallets(){
                       disableVirtualization
                       hideFooter
                       sx={{
+                        marginTop:"2px",
                         ...tableScrollSx,
+                        "&.MuiDataGrid-root.MuiDataGrid-withBorderColor": {
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                          borderColor: theme.palette.mode === "light" ? "rgb(181 177 177)" : "rgba(81, 81, 81, 1)",
+                        },
                       }}
                       editMode="row"   
                       getRowId={x => x.exchange_id}
