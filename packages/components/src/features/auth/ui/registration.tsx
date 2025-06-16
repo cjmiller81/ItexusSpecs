@@ -56,7 +56,7 @@ const Registration: FC<{}> = () => {
         .catch((error: AxiosError) => {
           const errorId = (error.response?.data as any)?.error?.id
           if (errorId === "self_service_flow_disabled") {
-            setError("Регистрация отключена администратором.")
+            setError("New user registration is currently disabled")
           } else {
             handleError(error)
           }
