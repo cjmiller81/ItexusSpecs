@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material"
+import { Button, Stack, Typography } from "@mui/material"
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
@@ -11,9 +11,14 @@ import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
 const Registration: FC<{}> = () => {
   const [flow, setFlow] = useState<RegistrationFlow>()
+  const [error, setError] = useState<string | null>(null)
 
   // Get flow information from the URL
   const router = useRouter()
+
+  const handleRedirect = () => {
+    router.push("/");
+  };
 
   const flowId = String(router.query.flow || "")
   const returnTo = String(router.query.return_to || "")
@@ -48,7 +53,14 @@ const Registration: FC<{}> = () => {
           setFlow(data)
           router.push(`/ui/registration?flow=${data.id}`)
         })
-        .catch(handleError),
+        .catch((error: AxiosError) => {
+          const errorId = (error.response?.data as any)?.error?.id
+          if (errorId === "self_service_flow_disabled") {
+            setError("Регистрация отключена администратором.")
+          } else {
+            handleError(error)
+          }
+        }),
     [handleError],
   )
 
@@ -80,6 +92,21 @@ const Registration: FC<{}> = () => {
       })
       .catch(handleError)
   }
+
+  if (error) {
+  return (
+    <StyledAuthContainer>
+      <Stack alignItems="center" gap={2} className="log">
+        <Typography variant="h5" color="error" align="center">
+          New user registration is currently disabled
+        </Typography>
+        <Button sx={{ textTransform: "capitalize" }} variant="contained" color="primary" onClick={handleRedirect}>
+          Home
+        </Button>
+      </Stack>
+    </StyledAuthContainer>
+  )
+}
 
   if (!flow) return <Loader />
   return (
