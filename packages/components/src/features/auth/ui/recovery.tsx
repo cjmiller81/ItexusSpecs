@@ -8,40 +8,35 @@ import { HandleError } from "../utils/hooks"
 import { StyledAuthContainer } from "./StyledAuthContainer"
 import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
-export const Recovery: FC<{ changePasswordRoute: string }> = ({ changePasswordRoute }) => {
+export const Recovery: FC<{ changePasswordRoute: string }> = ({
+  changePasswordRoute,
+}) => {
   const [flow, setFlow] = useState<RecoveryFlow | null>()
 
-  // Get flow information from the URL
   const router = useRouter()
-
   const flowId = String(router.query.flow || "")
 
   const getFlow = useCallback(
     (id: string) =>
       ory
         .getRecoveryFlow({ id })
-        .then(({ data }) => {
-          setFlow(data)
-        })
+        .then(({ data }) => setFlow(data))
         .catch(handleError),
     [],
   )
 
   const handleError = useCallback(
     (error: AxiosError) => {
-      const handle = HandleError(getFlow, setFlow, "/ui/registration", true)
+      const forward = HandleError(getFlow, setFlow, "/ui/registration", true)
 
-      if (error.response?.status && error.response?.status == 422) {
-        const errorData: any = error.response?.data
-
-        if (errorData?.redirect_browser_to) {
-          // TODO: Just calling `handle(error)` throws `invalid URL error when `HandleError(...)` does `new URL(responseData.redirect_browser_to)`.
-          // Set the full base path/origin so the URL is valid and will redirect to the `/profile` page to show recovery message.
-          errorData.redirect_browser_to = `${window.location.origin}${errorData.redirect_browser_to}`
+      // old Kratos versions still use 422
+      if (error.response?.status === 422) {
+        const data: any = error.response.data
+        if (data?.redirect_browser_to) {
+          data.redirect_browser_to = `${window.location.origin}${data.redirect_browser_to}`
         }
       }
-
-      return handle(error)
+      return forward(error)
     },
     [getFlow],
   )
@@ -51,67 +46,77 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({ changePasswordRo
       .createBrowserRecoveryFlow()
       .then(({ data }) => {
         setFlow(data)
-        router.push(`/ui/recovery?flow=${data.id}`)
+        router.replace(`/ui/recovery?flow=${data.id}`)
       })
-      .catch(c => {
-        void handleError(c)
-      })
+      .catch((err) => void handleError(err))
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // init
+  // ──────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!router.isReady) {
-      return
-    }
-
-    // If ?flow=.. was in the URL, we fetch it
+    if (!router.isReady) return
     if (flowId) {
       getFlow(flowId).catch(() => createFlow())
-      // if the flow is expired, we create a new one
       return
     }
-
-    // Otherwise we initialize it
     createFlow()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // submit handler
+  // ──────────────────────────────────────────────────────────────────────────
   const submitFlow = (values: UpdateRecoveryFlowBody) => {
     ory
       .updateRecoveryFlow({
         flow: String(flow?.id),
-        updateRecoveryFlowBody: values,
+        updateRecoveryFlowBody: values
       })
       .then(({ data }) => {
+        /*
+         * Kratos ≥ 0.11 returns 200 OK with a state field.
+         *  ─ "sent_email"       -> stay on page, show message / ask for code
+         *  ─ "passed_challenge" -> session cookie is set, redirect to app
+         */
+        if (data.state === "sent_email") {
+          setFlow(data) // just update UI, ask for the recovery code
+          return
+        }
+
+        if (data.state === "passed_challenge") {
+          window.location.replace(changePasswordRoute)
+          return
+        }
+
+        // fallback: still update local flow (error messages, etc.)
         setFlow(data)
       })
       .catch((error: AxiosError) => {
-        if (error.response?.status && error.response?.status == 422) {
-          const errorData: any = error.response?.data
-          // Use custom page to change password
-          if (errorData?.redirect_browser_to) {
-            window.location.href = changePasswordRoute
+        // Older Kratos (<0.11) success branch: 422 + redirect_browser_to
+        if (error.response?.status === 422) {
+          const data: any = error.response.data
+          if (data?.redirect_browser_to) {
+            window.location.replace(changePasswordRoute)
+            return
           }
         }
+        void handleError(error)
       })
   }
 
   if (!flow) return <Loader />
+
   return (
     <StyledAuthContainer>
       <div className="log">
         <StyledUserAuthCard
-          // create a recovery form that dynamically renders based on the flow data using Ory Elements
-          // This defines what kind of card we want to render.
-          flowType={"recovery"}
-          // we always need the flow data which populates the form fields and error messages dynamically
+          flowType="recovery"
           flow={flow}
-          // the registration card should allow the user to go to the registration page and the login page
-          additionalProps={{
-            loginURL: "/ui/login",
-          }}
-          // we might need webauthn support which requires additional js
-          includeScripts={true}
-          // we submit the form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
+          additionalProps={{ loginURL: "/ui/login" }}
+          includeScripts
+          onSubmit={({ body }) =>
+            submitFlow(body as UpdateRecoveryFlowBody)
+          }
           cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
         />
       </div>
