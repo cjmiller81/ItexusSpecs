@@ -32,16 +32,17 @@ export const ProfileDetails = ({ onUpdateProfile, loadingCnangeDetails, ...props
   const { t } = useTranslation("ProfileContainer")
   const { session } = useOry()
 
+  const traits = session?.identity?.traits
+  const firstName = traits?.name?.first ?? ""
+  const lastName = traits?.name?.last ?? ""
+  const email = traits?.email ?? ""
+
   return (
     <ProfileContainer
       title="Profile Details"
       {...props}>
       <Formik<ProfileModel>
-        initialValues={{
-          firstName: session?.identity?.traits.name.first,
-          lastName: session?.identity?.traits.name.last,
-          email: session?.identity?.traits.email,
-        }}
+        initialValues={{ firstName, lastName, email }}
         validateOnChange={false}
         validateOnBlur={false}
         validationSchema={ProfileFormSchema}
