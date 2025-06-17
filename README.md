@@ -9,7 +9,7 @@ Before you can use this repo, you must have the following software installed:
 - [Yarn](https://yarnpkg.com/) v1.22+
 - [Lerna](https://lerna.js.org/) v8.1+
 
-### Installing: 
+### Installing:
 
 To use/run this repo, follow these steps:
 
