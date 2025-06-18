@@ -117,7 +117,7 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
           onSubmit={({ body }) =>
             submitFlow(body as UpdateRecoveryFlowBody)
           }
-          cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
+         cardImage={process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL}
         />
       </div>
     </StyledAuthContainer>
