@@ -25,7 +25,8 @@ import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
   const { session } = useOry();
-  const firstName = session?.identity?.traits.name.first;
+  const traits = session?.identity?.traits
+  const firstName = traits?.name?.first ?? "" ;
   const { t } = useTranslation("HomePage");
   const wallets = useAppSelector(state => state.wallets.wallets);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
