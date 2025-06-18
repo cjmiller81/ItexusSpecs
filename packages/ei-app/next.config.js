@@ -59,7 +59,8 @@ const nextConfig = {
     TRADIND_VIEW_NEWS_IMAGES_API: process.env.TRADIND_VIEW_NEWS_IMAGES_API,
     NEWS_ICONS_URL: process.env.NEWS_ICONS_URL,
     APP_VERSION: process.env.APP_VERSION,
-    LAMA_PROJECT_ICONS_URL: process.env.LAMA_PROJECT_ICONS_URL
+    LAMA_PROJECT_ICONS_URL: process.env.LAMA_PROJECT_ICONS_URL,
+    NEXT_PUBLIC_ORY_CARD_IMAGE_URL: process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL,
   },
   transpilePackages: ['@mui/icons-material', 'components'],
 }
