@@ -368,11 +368,18 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             <ContentContainer>
               <Stack>
                 <FilterBuilderComponentContainer>
-                  <FilterBuilderDef
-                    value={filterValue as any[]}
-                    fields={filterBuilderFields}
-                    onValueChanged={handleFilterValueChanged}
-                  />
+                  <Box
+                    sx={{
+                      "& .dx-filterbuilder.dx-widget": {
+                        backgroundColor: theme.palette.background.paper,
+                      },
+                    }}>
+                    <FilterBuilderDef
+                      value={filterValue as any[]}
+                      fields={filterBuilderFields}
+                      onValueChanged={handleFilterValueChanged}
+                    />
+                  </Box>
                 </FilterBuilderComponentContainer>
                 <ClearButton
                   disabled={!filterValue || !filterValue.length || filterValue.length == 0}
@@ -436,7 +443,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       <Box>
                         <Box
                           sx={{
-                            backgroundColor: "#5a5a5a",
+                            backgroundColor: theme.palette.mode === "dark" ? "#5a5a5a" :"#cecece",
                             padding: "8px 16px",
                             display: "flex",
                             alignItems: "center",
@@ -445,7 +452,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         >
                           <Typography>{t("IntroductionVideo")}</Typography>
                           <IconButton onClick={handleToggle}>
-                            <ExpandMoreIcon sx={{ color: "#fff" }} />
+                            <ExpandMoreIcon sx={{ color: theme.palette.mode === "dark" ? "#fff" :"black" }} />
                           </IconButton>
                         </Box>
 
@@ -474,7 +481,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       <Box>
                         <Box
                           sx={{
-                            backgroundColor: "#5a5a5a",
+                            backgroundColor: theme.palette.mode === "dark" ? "#5a5a5a" :"#cecece",
                             padding: "8px 16px",
                             display: "flex",
                             alignItems: "center",
@@ -483,7 +490,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         >
                           <Typography>{t("HowBuildLogicGate")}</Typography>
                           <IconButton onClick={handleToggleLogicGate}>
-                            <ExpandMoreIcon sx={{ color: "#fff" }} />
+                            <ExpandMoreIcon sx={{ color: theme.palette.mode === "dark" ? "#fff" :"black" }} />
                           </IconButton>
                         </Box>
 
@@ -563,7 +570,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       <Box>
                         <Box
                           sx={{
-                            backgroundColor: "#5a5a5a",
+                            backgroundColor: theme.palette.mode === "dark" ? "#5a5a5a" :"#cecece",
                             padding: "8px 16px",
                             display: "flex",
                             alignItems: "center",
@@ -572,7 +579,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         >
                           <Typography>{t("HowBuildFilter")}</Typography>
                           <IconButton onClick={handleToggleBuildFilter}>
-                            <ExpandMoreIcon sx={{ color: "#fff" }} />
+                            <ExpandMoreIcon sx={{ color: theme.palette.mode === "dark" ? "#fff" :"black" }} />
                           </IconButton>
                         </Box>
 
