@@ -105,13 +105,13 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
         height="21px" />,
       children: [
         {
-          title: t("CEX", { ns: "SideBar" }),
-          href: "/tradeAggregator/cex"
-        },
-        {
           title: t("DEX", { ns: "SideBar" }),
           href: "/tradeAggregator/dex",
           disabled: isBasic,
+        },
+        {
+          title: t("CEX", { ns: "SideBar" }),
+          href: "/tradeAggregator/cex"
         },
       ],
     }
