@@ -20,7 +20,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, useCallback, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
@@ -49,7 +49,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
   
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const filterRef = useRef<CustomFilterBuilderRef>(null);
-  
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const filterPanelText = useRef<Element | null>(null);
@@ -114,6 +113,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         id="defi-tokens-table"
         dataSource={dataSource}
         ref={datagrid}
+        noDataText={loading ? "" : "No data"}
+        loadPanel={{
+          enabled: true,
+          visible: loading,
+          showPane: false,
+          shading: false,
+          position: { of: containerRef.current, offset: { y: 20 }, },
+        }}
         allowColumnReordering={true}
         columnHidingEnabled={false}
         keyExpr="ID"
