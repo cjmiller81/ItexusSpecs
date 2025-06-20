@@ -38,6 +38,7 @@ import { Wallet } from "@/models/Wallet/Wallet";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { iconsApi } from "@/services/iconsService";
 import SearchIcon from '@mui/icons-material/Search';
+import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -456,20 +457,46 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 ))}
               </Select>
 
-              <Button
-                sx={{
-                  backgroundColor: "white",
-                  width: "100%",
-                  height: "40px",
-                  color: "#1e90ff",
-                  justifyContent: "flex-start",
-                  paddingLeft: "15px",
-                  fontSize: "11px bold",
-                }}
-                variant="outlined"
-                onClick={() => setIsAddingManualPosition(true)}>
-                {t("AddManualPosition")}
-              </Button>
+              {selectedWallet?(<>
+                            <Button
+                              sx={{
+                                backgroundColor: "white",
+                                width: "100%",
+                                height: "40px",
+                                color: "#1e90ff",
+                                justifyContent: "flex-start",
+                                paddingLeft: "15px",
+                                fontSize: "11px bold",
+                              }}
+                              variant="outlined"
+                              onClick={() => setIsAddingManualPosition(true)}>
+                              {t("AddManualPosition")}
+                            </Button>
+                            </>
+                            ) : (
+                              <Button
+                                sx={{
+                                  backgroundColor: "white",
+                                  width: "100%",
+                                  height: "40px",
+                                  color: "#1e90ff",
+                                  justifyContent: "flex-start",
+                                  paddingLeft: "15px",
+                                  fontSize: "11px bold",
+                                  borderColor: "#1e90ff",
+                                  "&.Mui-disabled": {
+                                    backgroundColor: "transparent",
+                                    borderColor: "#1e90ff",
+                                    color: "#1e90ff",
+                                  },
+                                }}
+                                variant="outlined"
+                                disabled
+                                onClick={() => setIsAddingManualPosition(true)}
+                              >
+                              {t("AddManualPosition")}
+                            </Button>
+                            )}
 
               <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column" }}>
                 <Button
@@ -502,6 +529,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 columns={getIndexResultWalletTableColumns()}
                 rows={filteredRows}
                 onRowSelectionModelChange={handleSelectionChange}
+                slots={{
+                  noRowsOverlay: CustomNoWalletOverlay,
+                }}
                 getRowClassName={(params) =>
                 selectedRows &&
                 `${params.row.tokenName.toLowerCase()}-${params.row.chain.toLowerCase()}` === selectedRows
