@@ -38,6 +38,7 @@ import { useTranslation } from "react-i18next";
 import { GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import { getIndexResultTableColumns } from "@/constants/ColumnsDefs/IndexResultTable";
 import { fetchWallets } from "components";
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useAppDispatch } from "@/libs/redux/Store";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
@@ -46,6 +47,7 @@ import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { ChainAsset } from "@/models/Wallet/ChainAsset";
 import { Coins, Wallet } from "lucide-react";
 import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
+import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 
 interface SelectedWallet {
   address: string;
@@ -405,6 +407,7 @@ export const IndexResultsSection = ({
                 ))}
               </Select>
 
+              {selectedWallet?(<>
               <Button
                 sx={{
                   backgroundColor: "white",
@@ -419,7 +422,32 @@ export const IndexResultsSection = ({
                 onClick={() => setIsAddingManualPosition(true)}>
                 {t("AddManualPosition")}
               </Button>
-
+              </>
+              ) : (
+                <Button
+                  sx={{
+                    backgroundColor: "white",
+                    width: "98%",
+                    height: "40px",
+                    color: "#1e90ff",
+                    justifyContent: "flex-start",
+                    paddingLeft: "15px",
+                    fontSize: "11px bold",
+                    borderColor: "#1e90ff",
+                    "&.Mui-disabled": {
+                      backgroundColor: "transparent",
+                      borderColor: "#1e90ff",
+                      color: "#1e90ff",
+                    },
+                  }}
+                  variant="outlined"
+                  disabled
+                  onClick={() => setIsAddingManualPosition(true)}
+                >
+                {t("AddManualPosition")}
+              </Button>
+              )}
+              
               <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column" }}>
                 <Button
                   sx={{ width: "70px", height: "35px", fontSize: "11px" }}
@@ -427,7 +455,7 @@ export const IndexResultsSection = ({
                   onClick={handleClearTable}>
                   {t("Clear")}
                 </Button>
-              </Box>
+              </Box> 
             </Grid>
 
             <Grid
@@ -437,21 +465,24 @@ export const IndexResultsSection = ({
               lg={7.1}
               spacing={1}
               sx={{ marginTop: "15px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
-              <WalletsTable
-                sx={{
-                  ...tableScrollSx,
-                  width: "100%",
-                }}
-                hideFooter
-                rowSelection={true}
-                checkboxSelection={true}
-                apiRef={apiRef}
-                getRowId={x => x.tokenName}
-                columns={getIndexResultWalletTableColumns()}
-                rows={filteredRows}
-                rowSelectionModel={selectedRows}
-                onRowSelectionModelChange={handleSelectionChange}
-              />
+                <WalletsTable
+                  sx={{
+                    ...tableScrollSx,
+                    width: "100%",
+                  }}
+                  hideFooter
+                  rowSelection={true}
+                  checkboxSelection={true}
+                  apiRef={apiRef}
+                  getRowId={x => x.tokenName}
+                  columns={getIndexResultWalletTableColumns()}
+                  rows={filteredRows}
+                  rowSelectionModel={selectedRows}
+                  onRowSelectionModelChange={handleSelectionChange}
+                  slots={{
+                    noRowsOverlay: CustomNoWalletOverlay,
+                  }}
+                />
               <Dialog
                 open={isAddingManualPosition}
                 onClose={handleCancelManualPosition}>
@@ -838,7 +869,7 @@ const tableScrollSx = {
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
-  minHeight: 300,
+  minHeight: 350,
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
@@ -846,7 +877,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    maxHeight: "300px",
+    maxHeight: "350px",
   },
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
