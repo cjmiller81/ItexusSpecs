@@ -139,7 +139,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#", 
+          href: "/#",
         },
         {
           title: t("GitHub", { ns: "SideBar" }),
