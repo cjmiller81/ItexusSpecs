@@ -49,7 +49,7 @@ export default function MarketCapWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
-
+const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   const dataSource = useMemo(
@@ -192,7 +192,8 @@ export default function MarketCapWeightedPage() {
           title={""}
         />
       </AppAccordionSection>
-
+    
+    {showPanel?
       <IndexResultsSection
         title={t("IndexResults")}
         tableAssets={tableData}
@@ -203,7 +204,7 @@ export default function MarketCapWeightedPage() {
           dispatch(setTokens(value));
         }}
         tokens={tokensCount || 0}
-      />
+      /> : ""}
     </Stack>
   );
 }

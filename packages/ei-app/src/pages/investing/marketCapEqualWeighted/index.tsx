@@ -45,7 +45,7 @@ export default function MarketCapEqualWeightedPage() {
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
-
+  const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   useEffect(() => {
@@ -187,7 +187,8 @@ export default function MarketCapEqualWeightedPage() {
           title={""}
         />
       </AppAccordionSection>
-
+    
+    {showPanel?
       <IndexResultsSection
         title={t("IndexResults")}
         tableAssets={tableData}
@@ -198,7 +199,7 @@ export default function MarketCapEqualWeightedPage() {
           dispatch(setTokens(value));
         }}
         tokens={tokensCount || 0}
-      />
+      /> :""}
     </Stack>
   );
 }
