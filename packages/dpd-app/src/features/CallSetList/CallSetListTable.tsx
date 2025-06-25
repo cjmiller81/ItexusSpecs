@@ -433,7 +433,7 @@ export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => {
-        const percentage = params.row.tierPercentage;
+        const percentage = params.row.targetTierPercentage;
         const price = params.row.targetPrice;
         const isDark = theme.palette.mode === "dark";
 
@@ -492,7 +492,7 @@ export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams) => {
-        const percentage = params.row.tierPercentage;
+        const percentage = params.row.stopTierPercentage;
         const price = params.row.stopPrice;
 
         const isDark = theme.palette.mode === "dark";
