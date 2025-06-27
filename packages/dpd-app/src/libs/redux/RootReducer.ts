@@ -1,3 +1,4 @@
+import { callSetListSlice } from "@/features/CallSetList/CallSetListSlice"
 import { highvolumescanApi } from "@/features/highVolumeScanApi"
 import { stockApi } from "@/features/stockApi"
 import { stockSlice } from "@/features/strategies/stockSlice"
@@ -18,6 +19,7 @@ export const rootReducer = combineReducers({
   [highvolumescanApi.reducerPath]: highvolumescanApi.reducer,
   userProfile: userProfileSlice.reducer,
   optionTrade: optionTradeSlice,
+  callSetList: callSetListSlice.reducer
 })
 
 const config = getPersistConfig<RootState>({

@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, darken, lighten, styled, Typography, useTheme } from '@mui/material';
 import { getCallSetListTableColumns } from './CallSetListTable';
 import { BasicTable } from 'components';
-import { mockTrdaePositions } from '@/mocks/mockTradePositions';
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { fetchStrategies } from './CallSetListSlice';
 
 const CallSetListSection = () => {
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const handleSelectionChange = (newSelection: string[]) => {
     setSelectedRows(newSelection);
   };
+
+  const { positions } = useAppSelector(state => state.callSetList);
+    useEffect(() => {
+      dispatch(fetchStrategies({}));
+    }, [dispatch]);
   
 
   const tableScrollSx = {
@@ -93,7 +100,7 @@ const CallSetListSection = () => {
         rowSelection
         getRowId={(row) => row.id}
         columns={getCallSetListTableColumns(theme)}
-        rows={mockTrdaePositions}
+        rows={positions}
         rowSelectionModel={selectedRows}
       />
     </Box>
