@@ -148,7 +148,8 @@ export default function StraddleOptionSet() {
       setBreakUp(selectedSubProfile.orderBreaks);
       setTradeAsSet(selectedSubProfile.tradeAsSet);
       setBaSpreadDiff(selectedSubProfile.baSpreadDiff);
-      setAccount(selectedSubProfile.account);
+      const account = connectedAccounts.find(s => s.accountNumber === selectedSubProfile.account);
+      setAccount(account);
       setExitTiers(selectedSubProfile.exitTiers);
     }
   }, [selectedSubProfile]);
@@ -177,7 +178,7 @@ export default function StraddleOptionSet() {
       original.orderBreaks !== breakUp ||
       original.tradeAsSet !== tradeAsSet ||
       original.baSpreadDiff !== baSpreadDiff ||
-      original.account !== account ||
+      original.account !== account?.accountNumber ||
       JSON.stringify(original.exitTiers) !== JSON.stringify(exitTiers)
     );
   };  
@@ -234,7 +235,7 @@ export default function StraddleOptionSet() {
         orderBreaks: breakUp,
         tradeAsSet: tradeAsSet,
         baSpreadDiff: baSpreadDiff,
-        account: account,
+        account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
 
@@ -319,7 +320,7 @@ export default function StraddleOptionSet() {
         orderBreaks: breakUp,
         tradeAsSet: tradeAsSet,
         baSpreadDiff: baSpreadDiff,
-        account: account,
+        account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
 
@@ -404,7 +405,7 @@ export default function StraddleOptionSet() {
         orderBreaks: breakUp,
         tradeAsSet: tradeAsSet,
         baSpreadDiff: baSpreadDiff,
-        account: account,
+        account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
 
@@ -467,7 +468,7 @@ export default function StraddleOptionSet() {
             .filter((profile) => profile.optionType === "STRADDLE")
             .map((profile) => (
               <MenuItem
-                key={profile.account?.accountNumber}
+                key={profile.account}
                 value={profile.name}
                 sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >

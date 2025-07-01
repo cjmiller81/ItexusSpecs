@@ -36,7 +36,7 @@ export interface ExitTier {
     orderBreaks: number;
     tradeAsSet: boolean;
     baSpreadDiff: number;
-    account: connectedAccount | undefined;
+    account: string;
     exitTiers: ExitTier[];
   }
   
