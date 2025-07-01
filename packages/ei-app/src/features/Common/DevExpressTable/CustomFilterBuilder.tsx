@@ -67,15 +67,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 }, ref) => {
 
   const videoLinks = {
-    introduction: "https://youtube.com/embed/8t8q5cIIY4Y",
-    buildFilter: "https://youtube.com/embed/6qPPjy_rs1c", 
-    nandGate: "https://youtube.com/embed/WbdrZvw1K_A",
-    buildingNORGate: "https://youtube.com/embed/v8tIWP8fiqc",
-    buildingORGate: "https://youtube.com/embed/SyBTdddW2bQ",    
-    logicGateDiagramAND: "https://youtube.com/embed/h6SJoqgHYcI?feature=share",
-    logicGateDiagramNOTAND: "https://youtube.com/embed/OEu8EkWLkpY?feature=share",
-    logicGateDiagramNorGate: "https://youtube.com/embed/9EboaPFmo8s?feature=share",
-    logicGateDiagramOR: "https://youtube.com/embed/k_OvR0fRRvM?feature=share", 
+    introduction: "https://www.youtube.com/embed/HMoJuK9mNtw",
+    buildFilter: "https://www.youtube.com/embed/e1tWUwDouiw", 
+    nandGate: "https://www.youtube.com/embed/wYhxPBvQL1g",
+    buildingNORGate: "https://www.youtube.com/embed/IMm88o07GLg",
+    buildingORGate: "https://www.youtube.com/embed/PW-5hBCggu8",    
+    logicGateDiagramAND: "https://youtube.com/embed/pS3erHfCcY8",
+    logicGateDiagramNOTAND: "https://youtube.com/embed/SI1gUt3xNFU",
+    logicGateDiagramNorGate: "https://youtube.com/embed/c48K1wqo5ow",
+    logicGateDiagramOR: "https://youtube.com/embed/xfSR3MgBWrc", 
 };
 
   const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
