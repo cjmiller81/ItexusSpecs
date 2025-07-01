@@ -8,9 +8,10 @@ import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
 import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
 import { scanSchwab } from "@/slices/dpdOptionsScanSlice";
+import { connectedAccount } from "../strategies/userProfileSlice";
 
 export default function CallOptionSet() {
-  const [account, setAccount] = useState("");
+  const [account, setAccount] = useState<connectedAccount>();
   const [entryType, setEntryType] = useState<string>("Buy_Ask");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
@@ -28,7 +29,7 @@ export default function CallOptionSet() {
   const [isBAMaxEnabled, setIsBAMaxEnabled] = useState(false);
   const [newSubProfileOpen, setNewSubProfileOpen] = useState(false);
   const [updateSubProfileOpen, setUpdateSubProfileOpen] = useState(false);
-  const { connectedAccounts } = useAppSelector(state => state.userProfile);
+  const {connectedAccounts } = useAppSelector(state => state.userProfile);
   const [bidAskMax, setBidAskMax] = useState<number | "">(20);
   const [loading, setLoading] = useState(false);
   const [dteMin, setDteMin] = useState<number>(0);
@@ -54,7 +55,7 @@ export default function CallOptionSet() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const resetForm = () => {
-    setAccount("");
+    setAccount(undefined);
     setEntryType("Buy_Ask");
     setOffsetPercent(0);
     setIsBreakUpEnabled(false);
@@ -418,6 +419,12 @@ export default function CallOptionSet() {
     setUpdateSubProfileOpen(true);
   }
 
+  const handleAccountChange = (event: SelectChangeEvent) => {
+    const selectedAccountNumber = event.target.value;
+    const selectedAccount = connectedAccounts.find(acc => acc.accountNumber === selectedAccountNumber);
+    setAccount(selectedAccount);
+};
+
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
       <Typography
@@ -431,8 +438,8 @@ export default function CallOptionSet() {
 
       <Box sx={{ display: "flex", gap: 1.8, alignItems: "center", marginTop: "45px" }}>
         <Select
-          value={account}
-          onChange={(event: SelectChangeEvent) => setAccount(event.target.value)}
+          value={account?.accountNumber || ""}
+          onChange={handleAccountChange}
           displayEmpty
           sx={{ width: "200px", height: "40px", bgcolor: "gray", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}
         >
@@ -465,7 +472,7 @@ export default function CallOptionSet() {
             .filter((profile) => profile.optionType === "CALL")
             .map((profile) => (
               <MenuItem
-                key={profile.account}
+                key={profile.account?.accountNumber}
                 value={profile.name}
                 sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >

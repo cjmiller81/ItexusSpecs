@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { optionTradeService } from "@/services/optionTradeService";
 import { SubProfile } from "@/models/SubProfile";
+import { connectedAccount } from "@/features/strategies/userProfileSlice";
 
 interface ExitTier {
   exitTierPositionPercent: number;
@@ -38,7 +39,7 @@ interface TradeRequest {
   orderBreaks: number;
   tradeAsSet: boolean;
   baSpreadDiff: number;
-  account: string;
+  account: connectedAccount | undefined;
   exitTiers: ExitTier[];
 }
 

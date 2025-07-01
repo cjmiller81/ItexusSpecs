@@ -1,3 +1,5 @@
+import { connectedAccount } from "@/features/strategies/userProfileSlice";
+
 export interface ExitTier {
     exitTierPositionPercent: number;
     exitType: string;
@@ -34,7 +36,7 @@ export interface ExitTier {
     orderBreaks: number;
     tradeAsSet: boolean;
     baSpreadDiff: number;
-    account: string;
+    account: connectedAccount | undefined;
     exitTiers: ExitTier[];
   }
   
