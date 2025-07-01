@@ -7,7 +7,7 @@ import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
 import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
 import ExitTierTable from "../Calls/ExitTierTable";
-import { scanSchwab } from "@/slices/dpdOptionsScanSlice";
+import { scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlice";
 import { connectedAccount } from "../strategies/userProfileSlice";
 
 export default function PutOptionSet() {
@@ -352,36 +352,61 @@ export default function PutOptionSet() {
     setTradeUnderlyingFound(!tradeUnderlyingFound);
   };
 
-   const handleSendOrder = async () => {
+  enum EntryTypeProto {
+  ENTRY_BUY_ASK = 0,
+  ENTRY_BUY_BID = 1,
+  ENTRY_BUY_MID = 2,
+  ENTRY_MARKET = 3,
+}
+
+function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
+  const key = entryTypeStr.toUpperCase();
+  switch (key) {
+    case "BUY_ASK":
+      return EntryTypeProto.ENTRY_BUY_ASK;
+    case "BUY_BID":
+      return EntryTypeProto.ENTRY_BUY_BID;
+    case "BUY_MID":
+      return EntryTypeProto.ENTRY_BUY_MID;
+    case "ENTRY_MARKET":
+      return EntryTypeProto.ENTRY_MARKET;
+    default:
+      return EntryTypeProto.ENTRY_MARKET;
+  }
+}
+
+
+  const handleSendOrder = async () => {
       try {
-        const subProfileRequest: SubProfile = {
-          name: subProfile,
-          cancelAndResubmitOnPartial: cancelAndResubmitOnPartial, 
-          dteMax: dteMax, 
-          dteMin: dteMin, 
-          entryOffsetPercent: offsetPercent,
-          entryType: entryType,
-          useLaddering: useLaddering, 
-          maxDelta: 0,
-          minContractAsk: minContractAsk,
-          minDelta: 0, 
-          minOpenInterest: minOpenInterest,
-          minVolume: minVolume, 
-          oiCapPercent: oiCapPercent,
-          onlyTradeUnderlying: onlyTradeUnderlying,
-          optionType: "PUT",
-          requireActiveBid: requireActiveBid,
-          useBidAskMax: isBAMaxEnabled,
-          bidAskMax: bidAskMax ? bidAskMax : 0,
-          ticker: ticker,
-          totalDollarAmount: amount,
-          tradeUnderlying: tradeUnderlyingFound,
-          breakUpOrder: isBreakUpEnabled,
-          orderBreaks: breakUp,
-          tradeAsSet: tradeAsSet,
-          baSpreadDiff: baSpreadDiff,
-          account: account?.accountNumber || "",
-          exitTiers: isSendTriggerChecked ? exitTiers : [],
+        const entryTypeEnum = mapEntryTypeStringToEnum(entryType);
+  
+        const subProfileRequest: SubProfiles = {
+          accountNumber: account?.accountNumber || "",
+          state: 0,
+          strategySettings: {
+            cancelAndResubmitOnPartial,
+            dteMin,
+            dteMax,
+            entryOffsetPercent: offsetPercent,
+            entryType: entryTypeEnum,
+            exitTiers: isSendTriggerChecked ? exitTiers : [],
+            maxDelta: 0,
+            minContractAsk,
+            minDelta: 0,
+            minOpenInterest,
+            minVolume,
+            baSpreadDiff,
+            oiCapPercent,
+            optionType: "PUT",
+            requireActiveBid,
+            ticker,
+            totalDollarAmount: amount,
+            tradeUnderlying: tradeUnderlyingFound,
+            onlyTradeUnderlying,
+            breakUpOrder: isBreakUpEnabled,
+            orderBreaks: breakUp,
+            tradeAsSet,
+          },
         };
   
         const response = await dispatch(scanSchwab(subProfileRequest)).unwrap();
