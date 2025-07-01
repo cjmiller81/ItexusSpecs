@@ -1,16 +1,15 @@
-import { SubProfile } from "@/models/SubProfile";
 import axios from "axios";
 
 const API_BASE_URL = "https://api.dpd-dev.emergentcybernetics.net/api/dpdOptionsScan";
 
 export interface ExitTier {
   exitTierPositionPercent: number;
-  exitType: "LIMIT" | "STOP" | string;
-  exitTypeValue: number;
-  optionTargetOffsetPercent: number;
+  exitType: string;
+  exitTypeValue: number | string;
   optionStopOffsetPercent: number;
-  stockTargetOffsetPercent: number;
+  optionTargetOffsetPercent: number;
   stockStopOffsetPercent: number;
+  stockTargetOffsetPercent: number;
 }
 
 export interface StrategySettings {
@@ -20,14 +19,14 @@ export interface StrategySettings {
   entryOffsetPercent: number;
   entryType: number;
   exitTiers: ExitTier[];
-  maxDelta: number;
+  maxDelta: number | null;
   minContractAsk: number;
-  minDelta: number;
+  minDelta: number | null;
   minOpenInterest: number;
   minVolume: number;
   baSpreadDiff: number;
   oiCapPercent: number;
-  optionType: "CALL" | "PUT" | string;
+  optionType: string;
   requireActiveBid: boolean;
   ticker: string;
   totalDollarAmount: number;
@@ -38,7 +37,7 @@ export interface StrategySettings {
   tradeAsSet: boolean;
 }
 
-export interface SchwabScanRequest {
+export interface SubProfiles {
   accountNumber: string;
   state: number;
   strategySettings: StrategySettings;
@@ -46,7 +45,7 @@ export interface SchwabScanRequest {
 
 export class dpdOptionsScanService {
   
-  static async scanSchwab(request: SubProfile): Promise<any> {
+  static async scanSchwab(request: SubProfiles): Promise<any> {
     try {
       const response = await axios.post(`${API_BASE_URL}/schwab`, request, { withCredentials: true });
       return response.data;
