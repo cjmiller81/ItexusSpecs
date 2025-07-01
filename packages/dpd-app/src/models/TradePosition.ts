@@ -10,7 +10,8 @@ export interface TradePosition {
   entryType: string;
   entryPrice: number;
   exitType?: string;
-  tierPercentage?: number;
+  targetTierPercentage?: number;
+  stopTierPercentage?: number;
   targetPrice?: number;
   stopPrice?: number;
 }

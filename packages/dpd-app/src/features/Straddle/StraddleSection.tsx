@@ -7,9 +7,11 @@ import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
 import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
 import ExitTierTable from "../Calls/ExitTierTable";
+import { scanSchwab } from "@/slices/dpdOptionsScanSlice";
+import { connectedAccount } from "../strategies/userProfileSlice";
 
 export default function StraddleOptionSet() {
-  const [account, setAccount] = useState("");
+  const [account, setAccount] = useState<connectedAccount>();
   const [entryType, setEntryType] = useState<string>("Buy_Ask");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
@@ -53,7 +55,7 @@ export default function StraddleOptionSet() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const resetForm = () => {
-    setAccount("");
+    setAccount(undefined);
     setEntryType("Buy_Ask");
     setOffsetPercent(0);
     setIsBreakUpEnabled(false);
@@ -146,7 +148,8 @@ export default function StraddleOptionSet() {
       setBreakUp(selectedSubProfile.orderBreaks);
       setTradeAsSet(selectedSubProfile.tradeAsSet);
       setBaSpreadDiff(selectedSubProfile.baSpreadDiff);
-      setAccount(selectedSubProfile.account);
+      const account = connectedAccounts.find(s => s.accountNumber === selectedSubProfile.account);
+      setAccount(account);
       setExitTiers(selectedSubProfile.exitTiers);
     }
   }, [selectedSubProfile]);
@@ -175,7 +178,7 @@ export default function StraddleOptionSet() {
       original.orderBreaks !== breakUp ||
       original.tradeAsSet !== tradeAsSet ||
       original.baSpreadDiff !== baSpreadDiff ||
-      original.account !== account ||
+      original.account !== account?.accountNumber ||
       JSON.stringify(original.exitTiers) !== JSON.stringify(exitTiers)
     );
   };  
@@ -232,7 +235,7 @@ export default function StraddleOptionSet() {
         orderBreaks: breakUp,
         tradeAsSet: tradeAsSet,
         baSpreadDiff: baSpreadDiff,
-        account: account,
+        account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
 
@@ -317,7 +320,7 @@ export default function StraddleOptionSet() {
         orderBreaks: breakUp,
         tradeAsSet: tradeAsSet,
         baSpreadDiff: baSpreadDiff,
-        account: account,
+        account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
 
@@ -374,6 +377,50 @@ export default function StraddleOptionSet() {
     setUpdateSubProfileOpen(true);
   }
 
+  const handleSendOrder = async () => {
+    try {
+      const subProfileRequest: SubProfile = {
+        name: subProfile,
+        cancelAndResubmitOnPartial: cancelAndResubmitOnPartial, 
+        dteMax: dteMax, 
+        dteMin: dteMin, 
+        entryOffsetPercent: offsetPercent,
+        entryType: entryType,
+        useLaddering: useLaddering, 
+        maxDelta: 0,
+        minContractAsk: minContractAsk,
+        minDelta: 0, 
+        minOpenInterest: minOpenInterest,
+        minVolume: minVolume, 
+        oiCapPercent: oiCapPercent,
+        onlyTradeUnderlying: onlyTradeUnderlying,
+        optionType: "PUT",
+        requireActiveBid: requireActiveBid,
+        useBidAskMax: isBAMaxEnabled,
+        bidAskMax: bidAskMax ? bidAskMax : 0,
+        ticker: ticker,
+        totalDollarAmount: amount,
+        tradeUnderlying: tradeUnderlyingFound,
+        breakUpOrder: isBreakUpEnabled,
+        orderBreaks: breakUp,
+        tradeAsSet: tradeAsSet,
+        baSpreadDiff: baSpreadDiff,
+        account: account?.accountNumber || "",
+        exitTiers: isSendTriggerChecked ? exitTiers : [],
+      };
+
+      const response = await dispatch(scanSchwab(subProfileRequest)).unwrap();
+    } catch (error) {
+        console.error("Error sending order:", error);
+      }
+  };
+
+  const handleAccountChange = (event: SelectChangeEvent) => {
+        const selectedAccountNumber = event.target.value;
+        const selectedAccount = connectedAccounts.find(acc => acc.accountNumber === selectedAccountNumber);
+        setAccount(selectedAccount);
+    };
+
   return (
     <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
       <Typography
@@ -387,8 +434,8 @@ export default function StraddleOptionSet() {
 
       <Box sx={{ display: "flex", gap: 1.8, alignItems: "center", marginTop: "45px" }}>
         <Select
-          value={account}
-          onChange={(event: SelectChangeEvent) => setAccount(event.target.value)}
+          value={account?.accountNumber || ""}
+          onChange={handleAccountChange}
           displayEmpty
           sx={{ width: "200px", height: "40px", bgcolor: "gray", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)" }}
         >
@@ -532,7 +579,8 @@ export default function StraddleOptionSet() {
         <Button variant="outlined"
           sx={{
             height: "40px", bgcolor: "#b8860b", color: "white", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
-          }}>
+          }}
+          onClick={handleSendOrder}>
           {t("SendOrder")}
         </Button>
       </Box>

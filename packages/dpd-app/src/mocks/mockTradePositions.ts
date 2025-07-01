@@ -13,7 +13,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_ASK',
     entryPrice: 1.52,
     exitType: 'LIMIT',
-    tierPercentage: 80,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 1.85,
     stopPrice: 1.65
   },
@@ -29,7 +30,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_ASK',
     entryPrice: 1.52,
     exitType: 'LIMIT',
-    tierPercentage: 10,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 2.45,
     stopPrice: 2.25
   },
@@ -45,7 +47,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_ASK',
     entryPrice: 1.52,
     exitType: 'LIMIT',
-    tierPercentage: 5,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 3.25,
     stopPrice: 3.05
   },
@@ -61,7 +64,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_ASK',
     entryPrice: 1.52,
     exitType: 'LIMIT',
-    tierPercentage: 5,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 4.50,
     stopPrice: 4.30
   },
@@ -89,7 +93,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_MID',
     entryPrice: 3.25,
     exitType: 'OCO',
-    tierPercentage: 50,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 4.20,
     stopPrice: 2.80
   },
@@ -105,7 +110,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_MID',
     entryPrice: 3.25,
     exitType: 'OCO',
-    tierPercentage: 30,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 5.10,
     stopPrice: 2.90
   },
@@ -121,7 +127,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_MID',
     entryPrice: 3.25,
     exitType: 'OCO',
-    tierPercentage: 20,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 6.50,
     stopPrice: 3.00
   },
@@ -137,7 +144,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_BID',
     entryPrice: 12.50,
     exitType: 'OCO',
-    tierPercentage: 60,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 15.20,
     stopPrice: 10.00
   },
@@ -153,7 +161,8 @@ export const mockTrdaePositions: TradePosition[] = [
     entryType: 'BUY_BID',
     entryPrice: 12.50,
     exitType: 'OCO',
-    tierPercentage: 40,
+    targetTierPercentage: 80,
+    stopTierPercentage: 80,
     targetPrice: 18.75,
     stopPrice: 9.50
   }

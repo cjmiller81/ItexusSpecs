@@ -3,7 +3,6 @@ import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import HomeIcon from "@mui/icons-material/Home";
-import PeopleIcon from "@mui/icons-material/People";
 import React from "react";
 import i18next, { t } from "i18next";
 import DiscordIcon from "../../public/discord.svg";
@@ -15,6 +14,8 @@ import { Theme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
+import SourceIcon from '@mui/icons-material/Source';
+import TagIcon from '@mui/icons-material/Tag';
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -120,17 +121,18 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
 
 function getCommunityItems(theme: Theme): SidebarListItem[] {
   const fillColor = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
+
   return [
     {
-      title: t("CommunitySubMenu", { ns: "SideBar" }),
-      icon: <PeopleIcon />,
+      title: t("OpenSourceCommunity", { ns: "SideBar" }),
+      icon: <SourceIcon />,
       href: "/community",
       open: false,
       children: [
         {
-          title: t("Telegram", { ns: "SideBar" }),
+          title: t("Discord", { ns: "SideBar" }),
           icon: (
-            <TelegramIcon
+            <DiscordIcon
               width="21px"
               height="21px"
               fill={fillColor}
@@ -140,9 +142,29 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
           href: "/#",
         },
         {
-          title: t("Discord", { ns: "SideBar" }),
+          title: t("GitHub", { ns: "SideBar" }),
           icon: (
-            <DiscordIcon
+            <GitHubIcon
+              width="23px"
+              height="23px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
+        },
+      ],
+    },
+    {
+      title: t("Social", { ns: "SideBar" }),
+      icon: <TagIcon />, 
+      href: "/social",
+      open: false,
+      children: [
+        {
+          title: t("Telegram", { ns: "SideBar" }),
+          icon: (
+            <TelegramIcon
               width="21px"
               height="21px"
               fill={fillColor}
@@ -169,18 +191,6 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
             <RedditIcon
               width="24px"
               height="24px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
-        },
-        {
-          title: t("GitHub", { ns: "SideBar" }),
-          icon: (
-            <GitHubIcon
-              width="23px"
-              height="23px"
               fill={fillColor}
               stroke={fillColor}
             />

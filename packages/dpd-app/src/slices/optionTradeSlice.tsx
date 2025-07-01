@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { optionTradeService } from "@/services/optionTradeService";
 import { SubProfile } from "@/models/SubProfile";
+import { connectedAccount } from "@/features/strategies/userProfileSlice";
 
 interface ExitTier {
   exitTierPositionPercent: number;
@@ -12,38 +13,8 @@ interface ExitTier {
   stockTargetOffsetPercent: number;
 }
 
-interface TradeRequest {
-  name: string;
-  cancelAndResubmitOnPartial: boolean;
-  dteMax: number;
-  dteMin: number;
-  entryOffsetPercent: number;
-  entryType: string;
-  useLaddering: boolean;
-  maxDelta: number | null;
-  minContractAsk: number;
-  minDelta: number | null;
-  minOpenInterest: number;
-  minVolume: number;
-  oiCapPercent: number;
-  onlyTradeUnderlying: boolean;
-  optionType: string;
-  requireActiveBid: boolean;
-  useBidAskMax: boolean;
-  bidAskMax: number;
-  ticker: string;
-  totalDollarAmount: number;
-  tradeUnderlying: boolean;
-  breakUpOrder: boolean;
-  orderBreaks: number;
-  tradeAsSet: boolean;
-  baSpreadDiff: number;
-  account: string;
-  exitTiers: ExitTier[];
-}
-
 interface OptionTradeState {
-  subProfiles: TradeRequest[];
+  subProfiles: SubProfile[];
   loading: boolean;
   error: string | null;
 }
@@ -112,7 +83,7 @@ const optionTradeSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createSubProfile.fulfilled, (state, action: PayloadAction<TradeRequest>) => {
+      .addCase(createSubProfile.fulfilled, (state, action: PayloadAction<SubProfile>) => {
         state.loading = false;
         state.subProfiles.push(action.payload);
       })
@@ -150,7 +121,7 @@ const optionTradeSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateSubProfile.fulfilled, (state, action: PayloadAction<TradeRequest>) => {
+      .addCase(updateSubProfile.fulfilled, (state, action: PayloadAction<SubProfile>) => {
         state.loading = false;
         const index = state.subProfiles.findIndex(profile => profile.name === action.payload.name);
         if (index !== -1) {

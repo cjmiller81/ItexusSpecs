@@ -1,3 +1,5 @@
+import { connectedAccount } from "@/features/strategies/userProfileSlice";
+
 export interface ExitTier {
     exitTierPositionPercent: number;
     exitType: string;
