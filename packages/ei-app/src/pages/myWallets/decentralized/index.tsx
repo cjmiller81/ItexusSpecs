@@ -17,12 +17,14 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
+import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData";
+import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
     state => state.wallets,
   );
-  const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
+  const { chartData, chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
     useAppSelector(state => state.walletWorthChart);
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, "day").toDate());
@@ -30,6 +32,7 @@ export default function MyWalletsPage() {
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
   const [totalAmount,setTotalAmount] = useState<number>(0);
+  const [valueChartSeries, setValueChartSeries] = useState<ChartSeries[]>([]);
 
   const { t } = useTranslation("MyWalletsPage");
 
@@ -45,6 +48,23 @@ export default function MyWalletsPage() {
       );
     }
   };
+
+  useEffect(() => {
+    if (chartData?.seriesData) {
+      const valueSeries: ChartSeries = {
+        name: "Value",
+        data: chartData.seriesData.map(point => ({
+          x: point.historyDate,
+          y: point.walletValue,
+        })),
+      };
+
+      setValueChartSeries([valueSeries]);
+    } else {
+      setValueChartSeries([]);
+    }
+  }, [chartData]);
+
 
   const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
     let totalUsdAmount = 0;
@@ -113,6 +133,7 @@ export default function MyWalletsPage() {
         lookupOption={symbolOption}
         chartAxisTicks={yAxisTicks}
         chartSeries={chartSeries}
+        valueSeries={valueChartSeries}
         fromDate={fromDate}
         toDate={toDate}
         onDatesValidChanged={setIsDatesValid}

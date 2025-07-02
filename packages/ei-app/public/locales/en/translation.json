@@ -73,7 +73,7 @@
     "SelectService": "Select Service"
   },
   "MyWalletsPage": {
-    "HistoricalWalletsWorth": "Historical Wallets Worth",
+    "HistoricalWalletsWorth": "Wallets Performance",
     "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
   },
   "UserMenu": {
@@ -91,7 +91,9 @@
     "CompareToSymbol": "Compare to Symbol",
     "Period": "Period",
     "FromDate": "From Date",
-    "ToDate": "To Date"
+    "ToDate": "To Date",
+    "Value": "Value $",
+    "Growth": "Growth % "
   },
   "WalletWorthTile": {
     "ChartSeriesTitle": "Total Wallet Worth"
@@ -323,7 +325,7 @@
     "UploadChangeImage": "Upload/Change Your Profile Image"
   },
   "TotalWalletsWorthCard": {
-    "TotalWalletWorth": "Total Wallet Worth"
+    "TotalWalletWorth": "Total Wallet Value"
   },
   "IncomeSection": {
     "LiquidityPools": "Liquidity Pools",
