@@ -43,6 +43,7 @@ interface Props extends BoxProps {
   onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
   // eslint-disable-next-line no-undef
   chartSeries?: ApexAxisChartSeries | null;
+  // eslint-disable-next-line no-undef
   valueSeries?: ApexAxisChartSeries | null;
   className?: string;
 }
