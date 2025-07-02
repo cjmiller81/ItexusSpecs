@@ -150,9 +150,11 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
               },
             }}
             onClick={handleEventTitleClick}
-            color={
-              theme.palette.primary.main
-            }>{`${event.coins[0].name}${event.coins.length > 1 && ` and ${event.coins.length - 1} others`}`}</Typography>
+            color={theme.palette.primary.main}
+          >
+            {event.coins[0].name}
+            {event.coins.length > 1 ? ` and ${event.coins.length - 1} others` : ""}
+          </Typography>
         </HtmlTooltip>
         <Stack
           direction={"row"}
