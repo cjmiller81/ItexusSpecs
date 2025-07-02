@@ -18,7 +18,7 @@ export const Login: FC<{}> = () => {
   // Refresh means we want to refresh the session. This is needed, for example, when we want to update the password
   // of a user.
   const refresh = Boolean(router.query.refresh)
-
+  
   // AAL = Authorization Assurance Level. This implies that we want to upgrade the AAL, meaning that we want
   // to perform two-factor authentication/verification.
   const aal = String(router.query.aal || "")
@@ -34,6 +34,7 @@ export const Login: FC<{}> = () => {
         .catch(handleError),
     [],
   )
+
   const handleError = useCallback(
     (error: AxiosError) => {
       const handle = HandleError(getFlow, setFlow, "/ui/login", true)
@@ -56,20 +57,26 @@ export const Login: FC<{}> = () => {
   }
 
   useEffect(() => {
-    const queryString = typeof window !== "undefined" ? window.location.search : ""
-    const searchParams = new URLSearchParams(queryString)
-    const hasFlowId = searchParams.has("flow")
-
     if (!router.isReady) {
       return
     }
 
-    if (hasFlowId && flowId) {
-      getFlow(flowId).catch(_err => {
-        createFlow(refresh, aal, returnTo)
-      })
-      return
-    }
+    const queryString = typeof window !== "undefined" ? window.location.search : ""
+    const searchParams = new URLSearchParams(queryString)
+    const hasFlowId = searchParams.has("flow")
+
+    ory.toSession().then(
+      () => {
+        router.replace("/")
+      },
+      () => {
+        if (hasFlowId && flowId) {
+          getFlow(flowId).catch(_err => {
+            createFlow(refresh, aal, returnTo)
+          })
+        }
+      }
+    )
   }, [router.isReady, flowId, returnTo])
 
   useEffect(() => {
@@ -82,7 +89,16 @@ export const Login: FC<{}> = () => {
     }
 
     // Otherwise we initialize it
-    createFlow(refresh, aal, returnTo)
+    ory.toSession().then(
+      () => {
+        router.replace("/")
+      },
+      () => {
+        if (!hasFlowId) {
+          createFlow(refresh, aal, returnTo)
+        }
+      }
+    )
   }, [router.isReady])
 
   const submitFlow = (values: UpdateLoginFlowBody) => {
@@ -101,6 +117,7 @@ export const Login: FC<{}> = () => {
   }
 
   if (!flow) return <Loader />
+
   return (
     <StyledAuthContainer>
       <Stack
