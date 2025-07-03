@@ -1,6 +1,47 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { dpdOptionsScanService, SchwabScanRequest } from "@/services/dpdOptionsScanService";
-import { SubProfile } from "@/models/SubProfile";
+import { dpdOptionsScanService } from "@/services/dpdOptionsScanService";
+
+export interface ExitTier {
+  exitTierPositionPercent: number;
+  exitType: string;
+  exitTypeValue: number | string;
+  optionStopOffsetPercent: number;
+  optionTargetOffsetPercent: number;
+  stockStopOffsetPercent: number;
+  stockTargetOffsetPercent: number;
+}
+
+export interface StrategySettings {
+  cancelAndResubmitOnPartial: boolean;
+  dteMin: number;
+  dteMax: number;
+  entryOffsetPercent: number;
+  entryType: number;
+  exitTiers: ExitTier[];
+  maxDelta: number | null;
+  minContractAsk: number;
+  minDelta: number | null;
+  minOpenInterest: number;
+  minVolume: number;
+  baSpreadDiff: number;
+  oiCapPercent: number;
+  optionType: string;
+  requireActiveBid: boolean;
+  ticker: string;
+  totalDollarAmount: number;
+  tradeUnderlying: boolean;
+  onlyTradeUnderlying: boolean;
+  breakUpOrder: boolean;
+  orderBreaks: number;
+  tradeAsSet: boolean;
+}
+
+export interface SubProfiles {
+  accountNumber: string;
+  state: number;
+  strategySettings: StrategySettings;
+}
+
 
 interface dpdOptionsScanState {
   loading: boolean;
@@ -16,7 +57,7 @@ const initialState: dpdOptionsScanState = {
 
 export const scanSchwab = createAsyncThunk(
   "dpdOptionsScan/scanSchwab",
-  async (scanRequest: SubProfile, { rejectWithValue }) => {
+  async (scanRequest: SubProfiles, { rejectWithValue }) => {
     try {
       const data = await dpdOptionsScanService.scanSchwab(scanRequest);
       return data;

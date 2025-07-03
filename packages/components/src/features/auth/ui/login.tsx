@@ -15,6 +15,7 @@ export const Login: FC<{}> = () => {
   const router = useRouter()
   const returnTo = String(router.query.return_to || window.location.origin)
   const flowId = String(router.query.flow || "")
+
   // Refresh means we want to refresh the session. This is needed, for example, when we want to update the password
   // of a user.
   const refresh = Boolean(router.query.refresh)
@@ -22,6 +23,8 @@ export const Login: FC<{}> = () => {
   // AAL = Authorization Assurance Level. This implies that we want to upgrade the AAL, meaning that we want
   // to perform two-factor authentication/verification.
   const aal = String(router.query.aal || "")
+  const isAal2 = router.query.aal2 === "true"  // front-end trigger for MFA step-up
+  const aalParam = isAal2 ? "aal2" : aal  // if front-end asks for aal2, override the param
 
   const getFlow = useCallback(
     (id: string) =>
@@ -34,6 +37,7 @@ export const Login: FC<{}> = () => {
         .catch(handleError),
     [],
   )
+
   const handleError = useCallback(
     (error: AxiosError) => {
       const handle = HandleError(getFlow, setFlow, "/ui/login", true)
@@ -42,34 +46,55 @@ export const Login: FC<{}> = () => {
     [getFlow],
   )
 
-  const createFlow = (refreshs: boolean, aaal: string, returnTos: string) => {
-    ory
+  // Create a new login flow, preserving aal2 if requested.
+  const createFlow = useCallback(() => {
+    return ory
       .createBrowserLoginFlow({
-        refresh: refreshs,
-        // Check for two-factor authentication
-        aal: aaal,
-        returnTo: returnTos,
+        refresh,
+        aal: aalParam,
+        returnTo,
       })
       .then(({ data }) => {
-        router.push(`/ui/login?flow=${data.id}`)
+        // keep aal2 flag in URL so UI shows MFA prompt
+        const qs = [`flow=${data.id}`]
+        if (isAal2) qs.push("aal2=true")
+        router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true })
       })
-  }
+      .catch(err => {
+        // fallback for older Kratos versions that don't support aal
+        if (isAal2) {
+          return ory
+            .createBrowserLoginFlow({ refresh, returnTo })
+            .then(({ data }) => {
+              router.replace(`/ui/login?flow=${data.id}`, undefined, { shallow: true })
+            })
+        }
+        throw err
+      })
+  }, [refresh, aalParam, returnTo, isAal2, router])
+
 
   useEffect(() => {
-    const queryString = typeof window !== "undefined" ? window.location.search : ""
-    const searchParams = new URLSearchParams(queryString)
-    const hasFlowId = searchParams.has("flow")
-
     if (!router.isReady) {
       return
     }
 
-    if (hasFlowId && flowId) {
-      getFlow(flowId).catch(_err => {
-        createFlow(refresh, aal, returnTo)
-      })
-      return
-    }
+    const queryString = typeof window !== "undefined" ? window.location.search : ""
+    const searchParams = new URLSearchParams(queryString)
+    const hasFlowId = searchParams.has("flow")
+
+    ory.toSession().then(
+      () => {
+        router.replace("/")
+      },
+      () => {
+        if (hasFlowId && flowId) {
+          getFlow(flowId).catch(_err => {
+            createFlow()
+          })
+        }
+      }
+    )
   }, [router.isReady, flowId, returnTo])
 
   useEffect(() => {
@@ -82,7 +107,16 @@ export const Login: FC<{}> = () => {
     }
 
     // Otherwise we initialize it
-    createFlow(refresh, aal, returnTo)
+    ory.toSession().then(
+      () => {
+        router.replace("/")
+      },
+      () => {
+        if (!hasFlowId) {
+          createFlow()
+        }
+      }
+    )
   }, [router.isReady])
 
   const submitFlow = (values: UpdateLoginFlowBody) => {
@@ -101,26 +135,23 @@ export const Login: FC<{}> = () => {
   }
 
   if (!flow) return <Loader />
+
   return (
     <StyledAuthContainer>
-      <Stack
-        alignItems="center"
-        gap={1}
-        className="log">
+      <Stack alignItems="center" gap={1} className="log">
         <StyledUserAuthCard
-          // cardImage="/ory.svg"
           // This defines what kind of card we want to render.
           flowType={"login"}
-          // we always need the flow data which populates the form fields and error messages dynamically
+          // We always need the flow data which populates the form fields and error messages dynamically
           flow={flow}
-          // the login card should allow the user to go to the registration page and the recovery page
+          // The login card should allow the user to go to the registration page and the recovery page
           additionalProps={{
             forgotPasswordURL: "/ui/recovery",
             signupURL: "/ui/registration",
           }}
-          // we might need webauthn support which requires additional js
+          // We might need webauthn support which requires additional JS
           includeScripts={true}
-          // we submit the form data to Ory
+          // We submit the form data to Ory
           onSubmit={({ body }) => submitFlow(body as UpdateLoginFlowBody)}
           cardImage={process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL}
           title="Sign In"
