@@ -65,7 +65,6 @@ export default function MyWalletsPage() {
     }
   }, [chartData]);
 
-
   const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
     let totalUsdAmount = 0;
 
