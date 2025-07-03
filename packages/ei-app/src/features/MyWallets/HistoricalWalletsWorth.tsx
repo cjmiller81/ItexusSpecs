@@ -185,22 +185,36 @@ export const HistoricalWalletsWorth = ({
               label={t("ToDate")}
             />
           </Stack>
-          <StyledSymbolLookup
-            pageSize={LookupPageSize}
-            onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
-            tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
-            loading={lookupLoading}
-            disableListWrap
-            value={lookupOption}
-            onChange={(_event, value) => onOptionChange(value)}
-            autoComplete={true}
-            onInputChange={(_event, value) => {
-              setInputSearch(value);
+          <Box
+            sx={{
+              width: "100%",
+              cursor: selectedSection === "value" ? "not-allowed" : "auto",
             }}
-            filterOptions={x => x}
-            inputValue={inputSearch}
-            label={t("CompareToSymbol")}
-          />
+          >
+            <StyledSymbolLookup
+              pageSize={LookupPageSize}
+              onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
+              tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
+              loading={lookupLoading}
+              disableListWrap
+              disabled={selectedSection === "value"}
+              value={lookupOption}
+              onChange={(_event, value) => onOptionChange(value)}
+              autoComplete={true}
+              onInputChange={(_event, value) => setInputSearch(value)}
+              filterOptions={x => x}
+              inputValue={inputSearch}
+              label={
+              <span style={{ color: selectedSection === "value" ? "#555555" : "inherit" }}>
+                {t("CompareToSymbol")}
+              </span>
+            }
+              sx={{
+                pointerEvents: selectedSection === "value" ? "none" : "auto",
+              }}
+            />
+          </Box>
+
           <LoadingButton
             loading={chartDataLoading}
             onClick={onChartSubmit}
