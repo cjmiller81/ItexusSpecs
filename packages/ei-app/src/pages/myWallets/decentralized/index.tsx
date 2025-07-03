@@ -50,20 +50,24 @@ export default function MyWalletsPage() {
   };
 
   useEffect(() => {
-    if (chartData?.seriesData) {
-      const valueSeries: ChartSeries = {
-        name: "Value",
-        data: chartData.seriesData.map(point => ({
-          x: point.historyDate,
-          y: point.walletValue,
-        })),
-      };
+  if (chartData?.seriesData) {
+    const valueSeries: ChartSeries = {
+      name: "Value",
+      data: chartData.seriesData.map(point => ({
+        x: point.historyDate,
+        y: symbolOption?.id ? point.comparePrice : point.walletValue,
+      })),
+    };
 
-      setValueChartSeries([valueSeries]);
-    } else {
-      setValueChartSeries([]);
-    }
-  }, [chartData]);
+    setValueChartSeries([valueSeries]);
+  } else {
+    setValueChartSeries([]);
+  }
+}, [chartData, symbolOption]);
+
+
+   console.log("value",chartData)
+  // console.log("chart",chartSeries)
 
 
   const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
