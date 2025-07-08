@@ -214,6 +214,18 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
         },
       ],
     },
+    {
+          title: t("SupportAndLegal", { ns: "SideBar" }),
+          icon: (
+            <TelegramIcon
+              width="21px"
+              height="21px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/support",
+    },
   ];
 }
 
