@@ -15,10 +15,10 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import FaqSection from "@/features/Support/faq";
 import PrivacyNoticeSection from "@/features/Support/Privacy";
 import SupportCenterSection from "@/features/Support/SupportCenterSection";
 import CompliancePage from "@/features/Support/CompliancePage";
+import FaqSection from "@/features/Support/Faq";
 
 export default function Support() {
   const { t } = useTranslation("Support");
