@@ -386,12 +386,48 @@
     "CEX": "CEX",
     "CEXWallets": "CEX Wallets",
     "Centralized": "Centralized",
-    "Decentralized": "Decentralized"
+    "Decentralized": "Decentralized",
+    "SupportAndLegal": "Support and Legal"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
     "PrefilterLiquidityPools": "Prefilter Liquidity Pools"
   },
+  "Support": {
+    "SupportLegalCenter": "Support & Legal Center",
+    "WhoCanIContact": "Who can I contact for support?",
+    "Emails": "Legal: legal@elaninsights.io\nPrivacy: privacy@elaninsights.io\nWebsite: https://elaninsights.io/",
+    "HowAreUpdatesTo": "How are updates to the Agreement communicated?",
+    "NotificationsAreSentVia": "Notifications are sent via email or in-app alerts at least 30 days in advance.",
+    "WhatRisks": "What risks should I be aware of?",
+    "IsElanInsights": "Is Elan Insights available in Japan or South Korea?",
+    "NoAccessIs": "No. Access is restricted—including for users with VPNs. Violations may result in access termination.",
+    "CryptoInvestments": "Crypto investments involve risks such as volatility, smart contract bugs, API outages, and regulatory changes. Users are responsible for due diligence and compliance.",
+    "WhatAreMyPrivacyRights": "What are my privacy rights?",
+    "HowDoesElanInsightsHandle": "How does Elan Insights handle AML/KYC?",
+    "ItReliesOn": "It relies on centralized exchanges’ AML/KYC compliance. Suspicious activity monitoring is conducted to comply with AMLD5, FinCEN, etc.",
+    "UsersCanAccess": "Users can access, correct, delete, restrict, or port data. API keys can be revoked via exchange settings, and audit logs accessed. Contact: privacy@elaninsights.io.",
+    "HowIsMyDataProtected": "How is my data protected?",
+    "MinimalDataIsColleted": "Minimal data is collected (e.g., wallet addresses, view-only API keys). Data is encrypted with AES-256 and transmitted via HTTPS. Elan Insights complies with global data protection laws including GDPR, CPRA, PDPA, LGPD, etc.",
+    "WhatTokensExchangesAreSupported": "What tokens and exchanges are supported?",
+    "AllTokensListedOnCoinGecko": "All tokens listed on CoinGecko and exchanges on CoinGecko, 1inch, or DeFiLlama are available for viewing and analysis. Users must ensure compliance with local regulations.",
+    "WhatTheTradeAggregatorTool": "What is the trade aggregator tool?",
+    "ThisToolAnalyzesMarketData": "This tool analyzes market data and provides links to decentralized exchange websites where users can log in and execute trades. Elan Insights does not execute transactions.",
+    "PrefilterLiquidityPools": "Prefilter Liquidity Pools",
+    "EverythingYouNeedToKnow": "Everything you need to know about using Elan Insights",
+    "FrequentlyAskedQuestions": "Frequently Asked Questions",
+    "YesWeUseIndustryStandard": "Yes, we use industry-standard encryption and best practices to ensure your data remains safe and secure.",
+    "IsMyDataSecure": "Is my data secure?",
+    "YouCanResetYourPassword": "You can reset your password from the login page by clicking on 'Forgot Password' and following the instructions.",
+    "WhatIsElanInsights": "What is Elan Insights?",
+    "HowDoesPlatformEnsure": "How does the platform ensure my funds are safe?",
+    "NonCustodialElanInsights": "It is non-custodial—Elan Insights never controls user funds or private keys. Trades are signed directly in MetaMask or executed on exchange websites using view-only API keys.",
+    "IsElanInsightsRegulatedFinancialEntity": "Is Elan Insights a regulated financial entity?",
+    "ElanInsightsIsNonCustodialSaaS": "No. Elan Insights is not a broker-dealer, investment adviser, exchange, or money transmitter. It doesn’t hold funds, execute trades, or provide investment advice, making it exempt from regulations in numerous jurisdictions (SEC, FINRA, CFTC, etc.)..",
+
+    "ElanInsightsIs": "Elan Insights is a non-custodial SaaS platform offering cryptocurrency analytics, data mining, and decision-modeling tools. It integrates with centralized exchanges (e.g., Kraken, Coinbase) listed on CoinGecko, 1inch, or DeFiLlama via view-only API keys to display account data and provide a trade aggregator tool that generates links to exchange websites for user-initiated trades.\nThe platform is available in many countries including the U.S., EU, UK, Singapore, Australia, Canada, UAE, Saudi Arabia, Hong Kong, Switzerland, India, Brazil, Mexico, El Salvador, Panama, Chile, Argentina, Colombia, Nigeria, Turkey, Thailand, Malta, Estonia, Portugal, Liechtenstein, Georgia, and Cayman Islands, but not to residents of Japan or South Korea, including those using VPNs or anonymizing technologies."
+ },
+
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
