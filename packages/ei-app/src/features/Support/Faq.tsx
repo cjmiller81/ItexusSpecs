@@ -58,13 +58,52 @@ export default function FaqSection() {
     },
   ];
 
+  const renderAnswer = (text: string) => {
+  const lines = text.split("\n");
+
+  return lines.map((line, idx) => {
+    const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+
+    return (
+      <Typography key={idx} sx={{ color: "lightgray" }}>
+        {emailMatch ? (
+          <>
+            {line.split(emailMatch[0])[0]}
+            <a
+              href={`mailto:${emailMatch[0]}`}
+              style={{ color: "#70b3ff", textDecoration: "none" }}
+            >
+              {emailMatch[0]}
+            </a>
+          </>
+        ) : urlMatch ? (
+          <>
+            {line.split(urlMatch[0])[0]}
+            <a
+              href={urlMatch[0]}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#70b3ff", textDecoration: "none" }}
+            >
+              {urlMatch[0]}
+            </a>
+          </>
+        ) : (
+          line
+        )}
+      </Typography>
+    );
+  });
+};
+
   return (
     <Box sx={{ mb: 4 }}>
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
         {t("FrequentlyAskedQuestions")}
       </Typography>
       <Typography sx={{ color: "gray", mb: 2 }}>
-        {t("UpdatedDate", { date: "June 2, 2025" })}
+        Updated June 2, 2025
       </Typography>
 
       {faqs.map((faq, idx) => (
@@ -86,7 +125,7 @@ export default function FaqSection() {
           </AccordionSummary>
           <AccordionDetails>
             <Typography sx={{ color: "lightgray", whiteSpace: "pre-line" }}>
-                {t(faq.answerKey)}
+                {renderAnswer(t(faq.answerKey))}
             </Typography>
 
           </AccordionDetails>
