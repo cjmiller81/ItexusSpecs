@@ -424,7 +424,6 @@
     "NonCustodialElanInsights": "It is non-custodial—Elan Insights never controls user funds or private keys. Trades are signed directly in MetaMask or executed on exchange websites using view-only API keys.",
     "IsElanInsightsRegulatedFinancialEntity": "Is Elan Insights a regulated financial entity?",
     "ElanInsightsIsNonCustodialSaaS": "No. Elan Insights is not a broker-dealer, investment adviser, exchange, or money transmitter. It doesn’t hold funds, execute trades, or provide investment advice, making it exempt from regulations in numerous jurisdictions (SEC, FINRA, CFTC, etc.)..",
-
     "ElanInsightsIs": "Elan Insights is a non-custodial SaaS platform offering cryptocurrency analytics, data mining, and decision-modeling tools. It integrates with centralized exchanges (e.g., Kraken, Coinbase) listed on CoinGecko, 1inch, or DeFiLlama via view-only API keys to display account data and provide a trade aggregator tool that generates links to exchange websites for user-initiated trades.\nThe platform is available in many countries including the U.S., EU, UK, Singapore, Australia, Canada, UAE, Saudi Arabia, Hong Kong, Switzerland, India, Brazil, Mexico, El Salvador, Panama, Chile, Argentina, Colombia, Nigeria, Turkey, Thailand, Malta, Estonia, Portugal, Liechtenstein, Georgia, and Cayman Islands, but not to residents of Japan or South Korea, including those using VPNs or anonymizing technologies."
  },
 

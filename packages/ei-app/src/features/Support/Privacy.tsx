@@ -48,6 +48,48 @@ export default function PrivacyNoticeSection() {
     },
   ];
 
+  const renderContent = (text: string) => {
+  const lines = text.split("\n");
+
+  return lines.map((line, idx) => {
+    const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+
+    return (
+      <Typography key={idx} sx={{ color: "lightgray" }}>
+        {emailMatch ? (
+          <>
+            {line.split(emailMatch[0])[0]}
+            <a
+              href={`mailto:${emailMatch[0]}`}
+              style={{ color: "#70b3ff", textDecoration: "none" }}
+            >
+              {emailMatch[0]}
+            </a>
+            {line.split(emailMatch[0])[1]}
+          </>
+        ) : urlMatch ? (
+          <>
+            {line.split(urlMatch[0])[0]}
+            <a
+              href={urlMatch[0]}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#70b3ff", textDecoration: "none" }}
+            >
+              {urlMatch[0]}
+            </a>
+            {line.split(urlMatch[0])[1]}
+          </>
+        ) : (
+          line
+        )}
+      </Typography>
+    );
+  });
+};
+
+
   return (
     <Box sx={{ mb: 4 }}>
       <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
@@ -73,7 +115,7 @@ export default function PrivacyNoticeSection() {
             <Typography fontWeight="bold">{notice.title}</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography sx={{ whiteSpace: "pre-line", color: "lightgray" }}>{notice.content}</Typography>
+            <Typography sx={{ whiteSpace: "pre-line", color: "lightgray" }}>{renderContent(notice.content)}</Typography>
           </AccordionDetails>
         </Accordion>
       ))}
