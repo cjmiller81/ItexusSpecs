@@ -5,10 +5,14 @@ import {
   AccordionDetails,
   Card,
   Box,
+  useTheme,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function PrivacyNoticeSection() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  
   const notices = [
     {
       title: "1. Data We Collect",
@@ -56,7 +60,7 @@ export default function PrivacyNoticeSection() {
     const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
 
     return (
-      <Typography key={idx} sx={{ color: "lightgray" }}>
+      <Typography key={idx} sx={{ color: isDark ? "lightgray" : "#4a4a4a", }}>
         {emailMatch ? (
           <>
             {line.split(emailMatch[0])[0]}
