@@ -1,11 +1,11 @@
-// components/FaqSection.tsx
-
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
 
 export default function FaqSection() {
   const { t } = useTranslation("Support");
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const faqs = [
     {
@@ -58,7 +58,7 @@ export default function FaqSection() {
     },
   ];
 
-  const renderAnswer = (text: string) => {
+  const renderAnswer = (text: string, textColor: string) => {
   const lines = text.split("\n");
 
   return lines.map((line, idx) => {
@@ -66,7 +66,7 @@ export default function FaqSection() {
     const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
 
     return (
-      <Typography key={idx} sx={{ color: "lightgray" }}>
+      <Typography key={idx} sx={{ color: textColor }}>
         {emailMatch ? (
           <>
             {line.split(emailMatch[0])[0]}
@@ -95,7 +95,7 @@ export default function FaqSection() {
       </Typography>
     );
   });
-};
+  };
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -124,9 +124,7 @@ export default function FaqSection() {
             <Typography fontWeight="bold">{t(faq.questionKey)}</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography sx={{ color: "lightgray", whiteSpace: "pre-line" }}>
-                {renderAnswer(t(faq.answerKey))}
-            </Typography>
+            {renderAnswer(t(faq.answerKey), isDark ? "lightgray" : "#4a4a4a")}
 
           </AccordionDetails>
         </Accordion>

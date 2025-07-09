@@ -8,6 +8,7 @@ import {
   ListItemButton,
   ListItemText,
   ListItemIcon,
+  useTheme,
 } from "@mui/material";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
@@ -23,6 +24,8 @@ import FaqSection from "@/features/Support/Faq";
 export default function Support() {
   const { t } = useTranslation("Support");
   const [selectedSection, setSelectedSection] = useState<"faq" | "privacy" | "agreement" | "support">("faq");
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const sections = [
     { key: "faq", label: "User FAQ", icon: <HelpOutlineOutlinedIcon sx={{ color: "#B2BEB5" }} /> },
@@ -60,7 +63,15 @@ export default function Support() {
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
-                  sx={{ color: selectedSection === item.key ? "white" : "#B2BEB5" }}
+                  sx={{
+                    color:
+                      selectedSection === item.key
+                        ? "white"
+                        : isDark
+                        ? "#B2BEB5"
+                        : "#4a4a4a",
+                  }}
+
                   primary={item.label}
                 />
               </ListItemButton>
