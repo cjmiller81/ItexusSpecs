@@ -127,7 +127,15 @@ export const Login: FC<{}> = () => {
       })
       // We logged in successfully! Let's bring the user home.
       .then(() => {
-        router.push("/")
+        const match = document.cookie.split("; ")
+         .find(row => row.startsWith("postRecoveryRedirect="))
+ 
+        const redirect = match
+         ? decodeURIComponent(match.split("=")[1])
+         : "/"
+
+        document.cookie = `postRecoveryRedirect=; path=/; max-age=0`
+        router.push(redirect)
       })
       .catch(c => {
         void handleError(c)

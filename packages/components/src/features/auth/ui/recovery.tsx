@@ -90,12 +90,15 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
 
         // fallback: still update local flow (error messages, etc.)
         setFlow(data)
+
+        document.cookie = `postRecoveryRedirect=${encodeURIComponent(changePasswordRoute)}; path=/;`
       })
       .catch((error: AxiosError) => {
         // Older Kratos (<0.11) success branch: 422 + redirect_browser_to
         if (error.response?.status === 422) {
           const data: any = error.response.data
           if (data?.redirect_browser_to) {
+            document.cookie = `postRecoveryRedirect=${encodeURIComponent(changePasswordRoute)}; path=/;`
             window.location.replace(changePasswordRoute)
             return
           }
