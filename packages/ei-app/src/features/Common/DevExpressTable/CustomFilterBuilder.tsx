@@ -235,9 +235,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   };
 
-  const mapFilterName = (filter: string | null | undefined) => `Personal - ${filter}`;
-  const mapButtonFilterName = (filter: string | null | undefined) => {
-    return filter ? `Personal - ${filter}` : "SELECT PRE-BUILT FILTER";
+  const mapFilterName = (filter: string | null | undefined, isPublic: boolean = true) => {
+    return isPublic ? `Default - ${filter}` : `Personal - ${filter}`;
+  }
+
+  const mapButtonFilterName = (filter: string | null | undefined, isPublic: boolean = true) => {
+    if (filter) {
+      return isPublic ? `Default - ${filter}` : `Personal - ${filter}`;
+    }
+
+    return "SELECT PRE-BUILT FILTER";
   };
 
   const handleToggle = () => {
@@ -281,20 +288,22 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
               fill: theme.palette.mode === "dark" ? "#363640" : "white",
             },
           }}
-          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name)}>
+          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)}>
           {predefinedFilters.map(filter => (
             <MenuItem
               selected={false}
               key={filter.id}
               value={[filter.id, filter.name]}>
-              <ListItemText primary={mapFilterName(filter?.name)} />
+              <ListItemText primary={mapFilterName(filter?.name, filter?.isPublic)} />
+              {!filter.isPublic && (
               <LoadingButton
-                loading={filter.id === filterToDelete?.id && filterDeletingLoading}
-                onClick={event => handleDeleteFilter(filter, event)}
-                variant="contained"
-                color="error">
-                {t("Delete", { ns: "Common" })}
-              </LoadingButton>
+                  loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                  onClick={event => handleDeleteFilter(filter, event)}
+                  variant="contained"
+                  color="error">
+                  {t("Delete", { ns: "Common" })}
+                </LoadingButton>
+              )}
             </MenuItem>
           ))}
         </Select>
@@ -675,21 +684,24 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     size="small"
                     onChange={handleSavedFilterChange}
                     renderValue={_value => {
-                      return <ListItemText primary={mapFilterName(selectedSavedFilter?.name)} />;
+                      return <ListItemText primary={mapFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)} />;
                     }}>
                     {predefinedFilters.map(filter => (
                       <MenuItem
                         selected={false}
                         key={filter.id}
                         value={[filter.id, filter.name]}>
-                        <ListItemText primary={mapFilterName(filter?.name)} />
-                        <LoadingButton
-                          loading={filter.id === filterToDelete?.id && filterDeletingLoading}
-                          onClick={event => handleDeleteFilter(filter, event)}
-                          variant="contained"
-                          color="error">
-                          {t("Delete", { ns: "Common" })}
-                        </LoadingButton>
+                        <ListItemText primary={mapFilterName(filter?.name, filter?.isPublic)} />
+                        {!filter.isPublic && (
+                          <LoadingButton
+                            loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                            onClick={event => handleDeleteFilter(filter, event)}
+                            variant="contained"
+                            color="error"
+                          >
+                            {t("Delete", { ns: "Common" })}
+                          </LoadingButton>
+                        )}
                       </MenuItem>
                     ))}
                   </Select>
