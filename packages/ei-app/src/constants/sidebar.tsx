@@ -124,38 +124,6 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
 
   return [
     {
-      title: t("OpenSourceCommunity", { ns: "SideBar" }),
-      icon: <SourceIcon />,
-      href: "/community",
-      open: false,
-      children: [
-        {
-          title: t("Discord", { ns: "SideBar" }),
-          icon: (
-            <DiscordIcon
-              width="21px"
-              height="21px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
-        },
-        {
-          title: t("GitHub", { ns: "SideBar" }),
-          icon: (
-            <GitHubIcon
-              width="23px"
-              height="23px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
-        },
-      ],
-    },
-    {
       title: t("Social", { ns: "SideBar" }),
       icon: <TagIcon />, 
       href: "/social",
@@ -191,6 +159,38 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
             <RedditIcon
               width="24px"
               height="24px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
+        },
+      ],
+    },
+    {
+      title: t("OpenSourceCommunity", { ns: "SideBar" }),
+      icon: <SourceIcon />,
+      href: "/community",
+      open: false,
+      children: [
+        {
+          title: t("Discord", { ns: "SideBar" }),
+          icon: (
+            <DiscordIcon
+              width="21px"
+              height="21px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
+        },
+        {
+          title: t("GitHub", { ns: "SideBar" }),
+          icon: (
+            <GitHubIcon
+              width="23px"
+              height="23px"
               fill={fillColor}
               stroke={fillColor}
             />
