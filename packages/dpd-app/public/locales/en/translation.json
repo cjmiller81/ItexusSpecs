@@ -271,6 +271,7 @@
     "Account": "Account",
     "Save": "Save",
     "SendOrder": "+Send Order",
+    "AccountMustBeSelected": "Account must be selected!",
     "OptionDetails": "Option Details",
     "DTERange": "DTE Range",
     "to": "to",
