@@ -123,38 +123,21 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
   const darkThemeStyles = {
     cursor: "default !important",
-    mt: 2,
     pointerEvents: "none",
     position: "inherit",
-    borderRadius: "2px",
-    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     backgroundColor: "#363640",
-    border: "1.6px solid #25252AFF",
-    outline: "1.9px solid #363640",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
-    },
+    border: "1px solid #25252AFF",
   };
 
   const lightThemeStyles = {
     cursor: "default !important",
-    mt: 2,
     pointerEvents: "none",
     position: "inherit",
-    borderRadius: "2px",
-    boxShadow: `
-    0px 0px 2px 1.5px rgba(15, 15, 16, 1),
-    -6.5px 0px 8px rgba(0, 0, 0, 0.9),
-     6.5px 0px 8px rgba(0, 0, 0, 0.9),
-     0px 0.05px 0.05px rgba(0, 0, 0, 0.1),
-     0px -0.05px 0.05px rgba(0, 0, 0, 0.1)
-  `,
-    backgroundColor: "#9e9e9e",
-    border: "1.6px solid #5e5e5e",
-    outline: "1.9px solid #4a4a4a",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(200, 200, 200, 0.3) 24px, rgba(170, 170, 170, 1) 80%)`,
-    },
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    backgroundColor: "#aaaaaa !important"
   };
 
   return (
@@ -167,11 +150,24 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
         {t("VaultsPageTitle")}
       </Typography>
       <StatePersistedAccordion
-        className="index-modeling-section-container"
-        persistKey={persisKey}
-        sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
-        defaultExpanded
-        {...props}>
+              className="index-modeling-section-container"
+              persistKey={persisKey}
+              defaultExpanded
+              sx={{
+                ... (theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
+                borderRadius: "10px",
+                overflow: "hidden",
+                "&.Mui-expanded": {
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 10,
+                },
+                "&:not(.Mui-expanded)": {
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 10,
+                },
+              }}
+              {...props}
+            >
         <StyledAccordionSummary
           expandIcon={
             <CustomTooltip
