@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -600,13 +600,42 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
       <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
 
       <Box sx={{ display: "flex", marginTop: "50px" }}>
-        <Button variant="outlined"
-          sx={{
-            height: "40px", bgcolor: "#b8860b", color: "white", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
+        <Tooltip
+          title={t("AccountMustBeSelected")}
+          placement="right"
+          arrow
+          open={!account}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, 8],
+                },
+              },
+            ],
           }}
-          onClick={handleSendOrder}>
-          {t("SendOrder")}
-        </Button>
+        >
+          <span>
+            <Button
+              variant="outlined"
+              sx={{
+                height: "40px",
+                bgcolor: account ? "#2A9D8F" : "rgba(255, 255, 255, 0.3)",
+                color: "white",
+                boxShadow: account ? "0px 4px 10px rgba(0, 0, 0, 0.5)" : "none",
+                cursor: account ? "pointer" : "not-allowed",
+              }}
+              onClick={handleSendOrder}
+              disabled={!account}
+            >
+              {t("SendOrder")}
+            </Button>
+          </span>
+        </Tooltip>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
