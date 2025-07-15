@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import Menu from "@mui/icons-material/Menu";
 import MenuOpen from "@mui/icons-material/MenuOpen";
 import { Box, IconButton, PaletteMode, Toolbar, Typography, Button } from "@mui/material";
@@ -15,7 +15,7 @@ interface Props {
   toggleSide: (open: boolean) => void;
   toggleTheme: () => void;
   mode: PaletteMode;
-  title: string;
+  title: ReactNode;
   defaultAvatar: string;
   avatarUrl?: string;
   logOut?: Function;
