@@ -172,19 +172,31 @@ export function OryAuthGateway({
   const renewSession = async () => {
     try {
       const { data: flow } = await ory.createBrowserLogoutFlow();
-    
       const currentUrl = window.location.href;
       localStorage.setItem("return_to", currentUrl);
-      await ory.updateLogoutFlow({ token: flow.logout_token, returnTo: currentUrl});
-    
-      setSession(undefined);
-      router.push(LoginPath)
+
+      try {
+        await ory.updateLogoutFlow({
+          token: flow.logout_token,
+          returnTo: currentUrl,
+        });
+
+        setSession(undefined);
+        router.push(LoginPath);
+      } catch (innerError) {
+        console.warn("updateLogoutFlow failed, falling back to redirect:", innerError);
+
+        if (flow.logout_url) {
+          window.location.href = flow.logout_url;
+        } else {
+          throw new Error("No logout_url available in flow");
+        }
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
   
-
   useEffect(() => {
     // If the router is not ready yet, or we already have a session, do nothing.
     if ([ErrorPath, LogoutPath, LoginPath, RecoveryPath, RegistrationPath].indexOf(pathname) > -1) {
