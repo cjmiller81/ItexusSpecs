@@ -48,8 +48,8 @@ const StyledStatePersistedAccordion = styled(StatePersistedAccordion)(({ theme }
   },
 }));
 
-export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
-  backgroundColor: "#aaaaaa",
+export const StyledAccordionSummary = styled(AccordionSummary)(({theme}) => ({
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
   borderTopLeftRadius: 10,
   borderTopRightRadius: 10,
   borderBottomLeftRadius: 10,

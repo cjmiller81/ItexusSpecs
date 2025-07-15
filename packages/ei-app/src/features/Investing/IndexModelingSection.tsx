@@ -202,7 +202,7 @@ const StyledIndexModelingTable = styled(StyledWalletsTable)(() => ({
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   transition: "none",
-  backgroundColor: "#aaaaaa",
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
   borderTopLeftRadius: "10px",
   borderTopRightRadius: "10px",
   minHeight: "64px",
