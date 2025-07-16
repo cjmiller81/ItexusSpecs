@@ -63,7 +63,17 @@
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
     "Personal": "Personal",
-    "WalletAddressAlreadyInTheList": "Wallet Address is already in the List"
+    "WalletAddressAlreadyInTheList": "Wallet Address is already in the List",
+    "CreateWalletName": "Create Wallet Name",
+    "EnterWalletName": "Enter a name for this wallet",
+    "InputWalletAddress": "Input Public Wallet Address",
+    "ExampleWallet": "Enter wallet address here (e.g. 0x...)",
+    "WalletType": "Wallet Type",
+    "YourWallet": "Your wallet",
+    "Model": "Model",
+    "Following": "Following",
+    "AddingYourOwnWallet": "Adding your own wallet address",
+    "FollowingWallet": "Following a public wallet address"
   },
   "MyWalletsSection": {
     "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
