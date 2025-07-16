@@ -236,32 +236,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           cellComponent={ChainCell}
         />
         <Column
-          dataField={DefiField.Dex}
-          caption={DefiLabel.Dex}
-          alignment="left"
-          visible={true}
-          dataType="string"
-          allowHiding={true}
-          calculateFilterExpression={calculateFilterExpression}
-          width="320px"
-        >
-           <HeaderFilter
-            height={650}
-            visible={true}
-            dataSource={{
-            store: {
-              type: "array",
-              data: dexs.map(dex => ({ value: dex, text: dex })),
-              },
-            }}
-            search={{
-              enabled: true,
-              mode: "contains",
-            }}>
-            <Search enabled={true} />
-          </HeaderFilter>
-          </Column>
-        <Column
           dataField={DefiField.TVL}
           caption={DefiLabel.TVL}
           alignment="left"
