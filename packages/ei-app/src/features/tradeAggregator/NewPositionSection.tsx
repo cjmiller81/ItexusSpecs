@@ -89,6 +89,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [selectedDexs, setSelectedDexs] = useState<Dex[]>([]);
   const MAX_SELECTIONS = 5;
   const [allDexs, setAllDexs] = useState<Dex[]>([]);
+  const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
 
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
@@ -975,9 +976,13 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 startIcon={<FilterIcon />}
                                 onClick={toggleDexFilter}
                                 sx={{
-                                 bgcolor: isDexEnabled ? 'primary.main' : 'action.selected',
+                                  bgcolor: isDexEnabled ? '#1e88e5' : 'action.selected',
+                                  color: "#fff",
+                                  textTransform: "none",
+                                  fontWeight: 500,
+                                  fontSize: "0.875rem",
                                  '&:hover': {
-                                   bgcolor: isDexEnabled ? 'primary.dark' : 'action.hover'
+                                   bgcolor: isDexEnabled ? '#1e88e5' : 'action.hover'
                                   }
                                 }}
                               >
@@ -1039,6 +1044,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                               )}
 
                               <MultiSelectDexDropdown
+                                setIsDexDropdownOpen={setIsDexDropdownOpen}
+                                isDexDropdownOpen={isDexDropdownOpen}
                                 dexs={allDexs}
                                 selectedDexs={selectedDexs}
                                 setSelectedDexs={setSelectedDexs}
@@ -1298,7 +1305,9 @@ type Dex = { id: string; title: string };
 
 interface Props {
   dexs: Dex[];
+  isDexDropdownOpen: boolean;
   selectedDexs: Dex[];
+  setIsDexDropdownOpen: (d: boolean) => void;
   setSelectedDexs: (d: Dex[]) => void;
   maxSelections?: number;
 }
@@ -1306,12 +1315,19 @@ interface Props {
 
 export default function MultiSelectDexDropdown({
   dexs,
+  isDexDropdownOpen,
   selectedDexs,
   setSelectedDexs,
+  setIsDexDropdownOpen,
   maxSelections = 5,
 }: Props) {
   return (
     <Box>
+      {selectedDexs.length >= maxSelections && (
+        <Typography variant="caption" color="warning.main" mt={1}>
+          Maximum {maxSelections} DEXs selected. Remove one to add another.
+        </Typography>
+      )}
       <Autocomplete
         multiple
         options={dexs}
@@ -1321,6 +1337,13 @@ export default function MultiSelectDexDropdown({
             setSelectedDexs(newValue);
           }
        }}
+        open={!(selectedDexs.length >= maxSelections) && isDexDropdownOpen}
+        onOpen={() => {
+         if (!(selectedDexs.length >= maxSelections)) {
+          setIsDexDropdownOpen(true);
+         }
+       }}
+        onClose={() => setIsDexDropdownOpen(false)}
        filterSelectedOptions
        isOptionEqualToValue={(option, value) => option.id === value.id}
        getOptionLabel={(o) => o.title}
@@ -1331,15 +1354,21 @@ export default function MultiSelectDexDropdown({
           {...params}
           placeholder={selectedDexs.length >= maxSelections ? "Maximum selections reached" : "Search and select DEXs..."}
           disabled={selectedDexs.length >= maxSelections}
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+            <>
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+              {params.InputProps.startAdornment}
+            </>
+            )
+          }}
         />
         )}
       />
 
-      {selectedDexs.length >= maxSelections && (
-        <Typography variant="caption" color="warning.main" mt={1}>
-          Maximum {maxSelections} DEXs selected. Remove one to add another.
-        </Typography>
-      )}
     </Box>
   );
 }
