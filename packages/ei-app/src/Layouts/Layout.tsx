@@ -8,7 +8,6 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useSelector } from "react-redux"
 import "react-toastify/dist/ReactToastify.css"
-import logo from "../../public/ElanInsights.png"
 
 interface Props {
   children: any
@@ -29,6 +28,7 @@ export default function Layout({ children }: Props) {
   const { session, logOut } = useOry()
   const { t } = useTranslation("Header")
   const isDarkMode = mode === 'dark';
+  const logoSrc = isDarkMode ? "/ElanInsightsLight.png" : "/ElanInsights.png"
 
   return (
     <StyledRoot sx={{ width: "100%" }}>
@@ -40,11 +40,12 @@ export default function Layout({ children }: Props) {
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}  
-        title={<img
-          src="/ElanInsights.png"
-          alt="ElanInsights"
-          style={{ height: 20,marginTop:"10px", objectFit: "contain" }}
-        />}
+        title={
+          <img
+            src={logoSrc}
+            alt="ElanInsights"
+            style={{ height: 20, marginTop: "10px", objectFit: "contain" }}
+          />}
       />
       <Sidebar
         key={billing.product?.id}
