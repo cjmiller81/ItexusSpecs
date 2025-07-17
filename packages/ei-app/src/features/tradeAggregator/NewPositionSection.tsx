@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Grid,
   Button,
@@ -21,7 +21,13 @@ import {
   InputAdornment,
   IconButton,
   Autocomplete,
-  Avatar
+  Avatar,
+  ListItemText,
+  ListItem,
+  List,
+  Popover,
+  Stack,
+  ClickAwayListener
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
@@ -32,12 +38,15 @@ import CreateIcon from '@mui/icons-material/Create';
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { fetchDex, fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
 import { dexWebsites } from "@/constants/dexWebsites";
 import { iconsApi } from "@/services/iconsService";
 import { PaginatedList } from "components/src/models/paginatedList";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
+import { FilterIcon } from "lucide-react";
+import Chip from '@mui/material/Chip';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -75,7 +84,41 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
-  const[balanceRaw, setBalanceRaw] = useState<number | undefined>();
+  const [balanceRaw, setBalanceRaw] = useState<number | undefined>();
+  const [isDexEnabled, setIsDexEnabled] = useState(false);
+  const [selectedDexs, setSelectedDexs] = useState<Dex[]>([]);
+  const MAX_SELECTIONS = 5;
+  const [allDexs, setAllDexs] = useState<Dex[]>([]);
+
+  const handleRemoveDex = (dexId: string) => {
+    setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
+  };
+
+  const clearAllDexSelections = () => {
+    setSelectedDexs([]);
+  };
+
+  const toggleDexFilter = async () => {
+    const newState = !isDexEnabled;
+    setIsDexEnabled(newState);
+
+    const result = await dispatch(
+      fetchDex({
+        chainName: selectedChain,
+      })
+    );
+    
+    if (fetchDex.fulfilled.match(result)) {
+      const data = result.payload;   
+      setAllDexs(data.protocols);    
+    } else {
+      console.error("Error API:", result);
+    }
+        
+    if (!newState) {
+      setSelectedDexs([]);
+    }
+  };
 
   const coinGeckoChainId = (chain: string) => {
           switch (chain.toLowerCase()) {
@@ -88,7 +131,18 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           }
         };
 
+  useEffect(() => {
+    if (symbolOptionSwap && selectedChain && isDexEnabled) {
+      toggleDexFilter();
+    }
+  }, [selectedChain])     
+
   useEffect(()=> {
+    if (!symbolOptionSwap || !selectedChain) {
+        setSelectedDexs([]);
+        setIsDexEnabled(false);
+    }
+
     const chainId = coinGeckoChainId(selectedChain);
       if (!chainId) return;
 
@@ -98,7 +152,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       ?.find(token =>
         token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase()
       )?.balance)
-  },[symbolOptionSwap, selectedChain])
+  }, [symbolOptionSwap, selectedChain])
 
   useEffect(() => {
     if (!selectedWallet) {
@@ -904,46 +958,137 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </Grid>
                     )}
                 <Grid item xs />
-                  <Grid item>
-                  <Box display="flex" flexDirection="column" alignItems="flex-end">
-                    <Button
-                      variant="contained"
-                      onClick={handleFetchQuotes}
-                      disabled= {errorMessage !== null? true : false}
-                      sx={{
-                        backgroundColor: "#1e88e5",
-                        color: "#fff",
-                        textTransform: "none",
-                        fontWeight: 500,
-                        fontSize: "0.875rem",
-                        "&:hover": {
-                          backgroundColor: "#1565c0",
-                        },
-                      }}
-                      startIcon={
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            animation: quoteLoading ? "spin 1s linear infinite" : "none",
-                            "@keyframes spin": {
-                              "0%": { transform: "rotate(0deg)" },
-                              "100%": { transform: "rotate(360deg)" },
-                            },
-                          }}
-                        >
-                          <RefreshIcon />
+                  <Grid container spacing={2} alignItems="flex-start">
+                      <Grid item xs={9}>
+                        <Box>
+                          <Stack 
+                            direction="row" 
+                            justifyContent="space-between" 
+                            alignItems="center" 
+                            mb={2}
+                          >
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                              <Button
+                                variant="contained"
+                                disabled={!symbolOptionSwap || !selectedChain}
+                                color={isDexEnabled ? 'primary' : 'inherit'}
+                                startIcon={<FilterIcon />}
+                                onClick={toggleDexFilter}
+                                sx={{
+                                 bgcolor: isDexEnabled ? 'primary.main' : 'action.selected',
+                                 '&:hover': {
+                                   bgcolor: isDexEnabled ? 'primary.dark' : 'action.hover'
+                                  }
+                                }}
+                              >
+                                {isDexEnabled ? 'DEX Filter Active' : 'Select Specific DEXs'}
+                              </Button>
+          
+                              {isDexEnabled && (
+                                <Stack direction="row" alignItems="center" spacing={1}>
+                                  <Box display="flex" gap={0.5}>
+                                    {[...Array(MAX_SELECTIONS)].map((_, i) => (
+                                     <Box
+                                      key={i}
+                                      sx={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: '50%',
+                                        bgcolor: i < selectedDexs.length ? 'primary.main' : 'grey.500'
+                                      }}
+                                     />
+                                    ))}
+                                  </Box>
+                                 <Typography variant="body2" color="text.secondary">
+                                  {selectedDexs.length}/{MAX_SELECTIONS}
+                                 </Typography>
+                                </Stack>
+                              )}
+                            </Stack>
+
+                            {isDexEnabled && selectedDexs.length > 0 && (
+                              <Button
+                                startIcon={<ReplayIcon />}
+                                onClick={clearAllDexSelections}
+                                sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>
+                                Clear
+                              </Button>
+                            )}
+                          </Stack>
+
+                          {isDexEnabled && (
+                            <>
+                              {selectedDexs.length > 0 && (
+                                <Box mb={2}>
+                                  <Stack direction="row" flexWrap="wrap" gap={1}>
+                                    {selectedDexs.map((dex) => (
+                                      <Chip
+                                        key={dex.id}
+                                        label={dex.title}
+                                        onDelete={() => handleRemoveDex(dex.id)}
+                                        sx={{ 
+                                         bgcolor: 'background.default',
+                                         border: '1px solid',
+                                         borderColor: 'divider',
+                                        '&:hover': { borderColor: 'primary.main' }
+                                        }}
+                                      />
+                                     ))}
+                                  </Stack>
+                                </Box>
+                              )}
+
+                              <MultiSelectDexDropdown
+                                dexs={allDexs}
+                                selectedDexs={selectedDexs}
+                                setSelectedDexs={setSelectedDexs}
+                                maxSelections={5}           
+                              />
+                            </>
+                         )}
                         </Box>
-                      }
-                    >
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Box display="flex" flexDirection="column" alignItems="flex-end">
+                        <Button
+                          variant="contained"
+                          onClick={handleFetchQuotes}
+                          disabled= {errorMessage !== null? true : false}
+                          sx={{
+                            backgroundColor: "#1e88e5",
+                            color: "#fff",
+                            textTransform: "none",
+                            fontWeight: 500,
+                            fontSize: "0.875rem",
+                            "&:hover": {
+                              backgroundColor: "#1565c0",
+                          },
+                         }}
+                         startIcon={
+                           <Box
+                             sx={{
+                               display: "flex",
+                               alignItems: "center",
+                               animation: quoteLoading ? "spin 1s linear infinite" : "none",
+                               "@keyframes spin": {
+                                 "0%": { transform: "rotate(0deg)" },
+                                 "100%": { transform: "rotate(360deg)" },
+                                },
+                              }}
+                             >
+                             <RefreshIcon />
+                           </Box>
+                         }
+                        >
                       {t("RefreshQuotes")}
-                    </Button>
-                    </Box>
-                    {quoteData.length > 0 && lastUpdated && (
-                  <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1 }}>
-                    {t("LastUpdate")}: {lastUpdated}
-                  </Typography>
-                )}
+                       </Button>
+                       </Box>
+                         {quoteData.length > 0 && lastUpdated && (
+                           <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1 }}>
+                             {t("LastUpdate")}: {lastUpdated}
+                           </Typography>
+                         )}
+                      </Grid>
                   </Grid>
                 </Grid>
                 <Grid item xs={11.8} sx={{ marginTop: 2 }}>
@@ -1144,7 +1289,57 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             {t("NoQuotesFound")}
           </Typography>
         )}
-      </Grid>
+      </Grid>      
     </Grid>
   );
 };
+
+type Dex = { id: string; title: string };
+
+interface Props {
+  dexs: Dex[];
+  selectedDexs: Dex[];
+  setSelectedDexs: (d: Dex[]) => void;
+  maxSelections?: number;
+}
+
+
+export default function MultiSelectDexDropdown({
+  dexs,
+  selectedDexs,
+  setSelectedDexs,
+  maxSelections = 5,
+}: Props) {
+  return (
+    <Box>
+      <Autocomplete
+        multiple
+        options={dexs}
+        value={selectedDexs}
+        onChange={(_, newValue) => {
+          if (newValue.length <= maxSelections) {
+            setSelectedDexs(newValue);
+          }
+       }}
+       filterSelectedOptions
+       isOptionEqualToValue={(option, value) => option.id === value.id}
+       getOptionLabel={(o) => o.title}
+       limitTags={0}
+       renderTags={() => null}
+       renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={selectedDexs.length >= maxSelections ? "Maximum selections reached" : "Search and select DEXs..."}
+          disabled={selectedDexs.length >= maxSelections}
+        />
+        )}
+      />
+
+      {selectedDexs.length >= maxSelections && (
+        <Typography variant="caption" color="warning.main" mt={1}>
+          Maximum {maxSelections} DEXs selected. Remove one to add another.
+        </Typography>
+      )}
+    </Box>
+  );
+}
