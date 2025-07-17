@@ -106,7 +106,10 @@
     "Growth": "Growth % "
   },
   "WalletWorthTile": {
-    "ChartSeriesTitle": "Total Wallet Worth"
+    "ChartSeriesTitle": "Total Wallet Worth",
+    "WalletsPerformance": "Wallets Performance - Last 30 Days",
+    "Growth": "Growth %",
+    "Value": "Value $"
   },
   "ProfileContainer": {
     "ChangeDetails": "Change details",

@@ -17,7 +17,6 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
-import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 
 export default function MyWalletsPage() {

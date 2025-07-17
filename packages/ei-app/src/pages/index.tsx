@@ -32,6 +32,7 @@ export default function HomePage() {
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
+  const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData)
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
     moment().startOf("day").toDate(),
@@ -146,9 +147,9 @@ useEffect(() => {
           lg={5}>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
-            title={t("WalletsWorthTile")}
             icon={<AccountBalanceWalletIcon />}
-            chartData={totalWalletWorthChartData}
+            chartDataGrowth={totalWalletWorthChartData}
+            chartDataValue={totalWalletWorthValueChartData}
           />
         </Grid>
         <Grid
