@@ -66,6 +66,23 @@ export const dexService = {
     };
   },
 
+  getDex: async ({ chainName }: {
+    chainName: string;
+  }) => {
+    const response = await appAxios.get(
+      `/api/1inch/liquidity-sources/${chainName}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return {
+      ...response.data,
+    };
+  },
+
+  
+
   getToken: async ({id}: {id:string}): Promise<TokenResponse> => {
     const response = await appAxios.get<TokenResponse>(`/tokens/${id}`,
       {

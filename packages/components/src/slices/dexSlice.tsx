@@ -104,6 +104,27 @@ export const fetchGas = createAsyncThunk<
   }
 );
 
+export const fetchDex = createAsyncThunk<
+  any,
+  { chainName: string },
+  { rejectValue: string }
+>(
+  "quote/fetchDex",
+  async ({ chainName }, { rejectWithValue }) => {
+    try {
+      const data = await dexService.getDex({ chainName });
+      return data;
+    } catch (error: any) {
+      const message =
+        typeof error?.response?.data === "string"
+          ? error.response.data
+          : error?.response?.data?.message || error?.message;
+
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const fetchToken = createAsyncThunk<
   TokenResponse,
   { id: string },
