@@ -236,12 +236,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const mapFilterName = (filter: string | null | undefined, isPublic: boolean = true) => {
-    return isPublic ? `Default - ${filter}` : `Personal - ${filter}`;
+    return isPublic ? `Default - ${filter}` : `${filter}`;
   }
 
   const mapButtonFilterName = (filter: string | null | undefined, isPublic: boolean = true) => {
     if (filter) {
-      return isPublic ? `Default - ${filter}` : `Personal - ${filter}`;
+      return isPublic ? `Default - ${filter}` : `${filter}`;
     }
 
     return "SELECT PRE-BUILT FILTER";
