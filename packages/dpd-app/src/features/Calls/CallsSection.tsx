@@ -13,11 +13,6 @@ import SymbolSearchAutocomplete from "@/common/symbolSearchAutocomplete";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
-  const mockAccount: connectedAccount = {
-  accountNumber: "987654321",
-  status: "ACTIVE",
-};
-
   const [entryType, setEntryType] = useState<string>("Buy_Ask");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
@@ -88,20 +83,11 @@ export default function CallOptionSet() {
     setSubProfile("");
     setSelectedSubProfile(null);
   };
-  useEffect(() => {
-    const mockAccount: connectedAccount = {
-      accountNumber: "987654321",
-      status: "ACTIVE",
-    };
-
-    setAccount(mockAccount);
-  }, []);
 
   useEffect(() => {
     dispatch(fetchSubProfiles());
   }, [dispatch]);
 
-  console.log("selected sub-profile",selectedSubProfile)
 
   useEffect(() => {
     if (selectedSubProfile) {
@@ -284,7 +270,7 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
       };
-      console.log(subProfileRequest)
+
       await optionTradeService.createSubProfile(subProfileRequest );
       dispatch(fetchSubProfiles());
       handleClickNewSubProfileClose();

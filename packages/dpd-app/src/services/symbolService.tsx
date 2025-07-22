@@ -1,17 +1,16 @@
 import { Instrument } from "@/slices/dpdOptionsScanSlice";
 import axios from "axios";
 
-
 export type AssetType = "EQUITY" | "ETF" | "MUTUAL_FUND" | string;
 
 export interface MarketSymbolsSearchResponse {
   instruments: Instrument[];
 }
 
-export class symbolService {
-  static async searchMarketSymbolsRegex(
+export const symbolService = {
+  searchMarketSymbolsRegex: async (
     userInput: string
-  ): Promise<MarketSymbolsSearchResponse> {
+  ): Promise<MarketSymbolsSearchResponse> => {
     const regexPattern = `^/?(${userInput}[A-Z0-9:]*)$`;
 
     try {
@@ -31,5 +30,5 @@ export class symbolService {
       console.error("Error fetching market symbols with regex:", error);
       throw error;
     }
-  }
-}
+  },
+};
