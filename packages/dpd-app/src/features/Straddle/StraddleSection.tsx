@@ -400,12 +400,18 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
   }
 }
 
-  const handleSendOrder = async () => {
+  const handleSendOrder = async (e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+        if (e) e.preventDefault();
+    
+        if (!account) {
+          return; 
+        }
+  
       try {
         const entryTypeEnum = mapEntryTypeStringToEnum(entryType);
   
         const subProfileRequest: SubProfiles = {
-          accountNumber: account?.accountNumber || "",
+          accountNumber: account.accountNumber,
           state: 0,
           strategySettings: {
             cancelAndResubmitOnPartial,
@@ -624,7 +630,7 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
               variant="outlined"
               sx={{
                 height: "40px",
-                bgcolor: account ? "#2A9D8F" : "rgba(255, 255, 255, 0.3)",
+                bgcolor: account ? "#b8860b" : "rgba(255, 255, 255, 0.3)",
                 color: "white",
                 boxShadow: account ? "0px 4px 10px rgba(0, 0, 0, 0.5)" : "none",
                 cursor: account ? "pointer" : "not-allowed",
@@ -637,6 +643,7 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
           </span>
         </Tooltip>
       </Box>
+      <form onSubmit={handleSendOrder}>
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{
@@ -1098,6 +1105,8 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
           </Box>
         </Box>
       </Box>
+      <button type="submit" style={{ display: "none" }}></button>
+      </form>
     </Box>
   );
 }
