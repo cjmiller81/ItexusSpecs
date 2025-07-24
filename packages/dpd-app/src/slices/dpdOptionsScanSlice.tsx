@@ -34,7 +34,21 @@ export interface StrategySettings {
   breakUpOrder: boolean;
   orderBreaks: number;
   tradeAsSet: boolean;
+  instrument?: Instrument | null;
 }
+
+export interface Instrument {
+  cusip: string;
+  symbol: string;
+  description: string;
+  exchange: string;
+  assetType: string;
+}
+
+export interface InstrumentsResponse {
+  instruments: Instrument[];
+}
+
 
 export interface SubProfiles {
   accountNumber: string;

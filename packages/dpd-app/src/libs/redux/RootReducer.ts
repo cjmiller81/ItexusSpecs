@@ -4,6 +4,7 @@ import { stockApi } from "@/features/stockApi"
 import { stockSlice } from "@/features/strategies/stockSlice"
 import userProfileSlice from "@/features/strategies/userProfileSlice"
 import optionTradeSlice from "@/slices/optionTradeSlice"
+import { symbolSlice } from "@/slices/symbolSlice"
 
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
@@ -19,7 +20,8 @@ export const rootReducer = combineReducers({
   [highvolumescanApi.reducerPath]: highvolumescanApi.reducer,
   userProfile: userProfileSlice.reducer,
   optionTrade: optionTradeSlice,
-  callSetList: callSetListSlice.reducer
+  callSetList: callSetListSlice.reducer,
+  symbol: symbolSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({
