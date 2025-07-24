@@ -7,8 +7,9 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
 import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
-import { scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlice";
+import { Instrument, scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlice";
 import { connectedAccount } from "../strategies/userProfileSlice";
+import SymbolSearchAutocomplete from "@/common/symbolSearchAutocomplete";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -40,7 +41,7 @@ export default function CallOptionSet() {
   const [minVolume, setMinVolume] = useState<number>(10);
   const [oiCapPercent, setOiCapPercent] = useState<number>(500);
   const [requireActiveBid, setRequireActiveBid] = useState<boolean>(false);
-  const [ticker, setTicker] = useState<string>("");
+  const [ticker, setTicker] = useState<Instrument | null>(null);
   const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
   const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
   const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
@@ -75,7 +76,7 @@ export default function CallOptionSet() {
     setMinVolume(10);
     setOiCapPercent(500);
     setRequireActiveBid(false);
-    setTicker("");
+    setTicker(null);
     setTradeAsSet(false);
     setBaSpreadDiff(10);
     setExitTiers([]);
@@ -86,6 +87,7 @@ export default function CallOptionSet() {
   useEffect(() => {
     dispatch(fetchSubProfiles());
   }, [dispatch]);
+
 
   useEffect(() => {
     if (selectedSubProfile) {
@@ -146,7 +148,7 @@ export default function CallOptionSet() {
       setRequireActiveBid(selectedSubProfile.requireActiveBid);
       setIsBAMaxEnabled(selectedSubProfile.useBidAskMax);
       setBidAskMax(selectedSubProfile.bidAskMax || 0);
-      setTicker(selectedSubProfile.ticker);
+      setTicker(selectedSubProfile.instruments);
       setAmount(selectedSubProfile.totalDollarAmount);
       setTradeUnderlyingFound(selectedSubProfile.tradeUnderlying);
       setIsBreakUpEnabled(selectedSubProfile.breakUpOrder);
@@ -176,7 +178,8 @@ export default function CallOptionSet() {
       original.requireActiveBid !== requireActiveBid ||
       original.useBidAskMax !== isBAMaxEnabled ||
       original.bidAskMax !== bidAskMax ||
-      original.ticker !== ticker ||
+      original.ticker !== ticker?.symbol ||
+      original.instruments !== ticker ||
       original.totalDollarAmount !== amount ||
       original.tradeUnderlying !== tradeUnderlyingFound ||
       original.breakUpOrder !== isBreakUpEnabled ||
@@ -256,7 +259,8 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker,
+        ticker: ticker ? ticker.symbol : "",
+        instruments: ticker,
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -316,13 +320,14 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
           oiCapPercent,
           optionType: "CALL",
           requireActiveBid,
-          ticker,
+          ticker: ticker?.symbol || "",
           totalDollarAmount: amount,
           tradeUnderlying: tradeUnderlyingFound,
           onlyTradeUnderlying,
           breakUpOrder: isBreakUpEnabled,
           orderBreaks: breakUp,
           tradeAsSet,
+          instrument: ticker,
         },
       };
 
@@ -385,7 +390,7 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker,
+        ticker: ticker? ticker.symbol : "",
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -394,6 +399,7 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
         baSpreadDiff: baSpreadDiff,
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
+        instruments: ticker
       };
 
       await dispatch(updateSubProfile(subProfileRequest));
@@ -664,29 +670,10 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
             <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("OptionDetails")}</Typography>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <TextField
-                placeholder="Enter ticker"
-                variant="outlined"
-                name="tickerInput"
-                autoComplete="off"
+              <SymbolSearchAutocomplete
                 value={ticker}
-                onChange={(e) => setTicker(e.target.value)}
-                inputProps={{
-                  autoComplete: "off",
-                }}
-                InputLabelProps={{ shrink: false }}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: {
-                    color: "white",
-                    padding: "10px 12px"
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    height: "40px",
-                    display: "flex",
-                    alignItems: "center"
-                  }
-                }}
+                onChange={(value) => setTicker(value)}
+                placeholder="Enter ticker"
               />
                 <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
                 <TextField
