@@ -41,7 +41,7 @@ const SymbolSearchAutoComplete: React.FC<SymbolSearchProps> = ({ value, onChange
       sx={{
         bgcolor: "#1E1E1E",
         width: "100%",
-        maxWidth: "200px",
+        maxWidth: "180px",
         "& .MuiOutlinedInput-root": {
         height: "40px",
         padding: 0,
