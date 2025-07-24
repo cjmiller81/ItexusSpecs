@@ -29,7 +29,7 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { forwardRef, Ref, useEffect, useImperativeHandle, useState } from "react";
+import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 
@@ -76,7 +76,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     logicGateDiagramNOTAND: "https://youtube.com/embed/SI1gUt3xNFU",
     logicGateDiagramNorGate: "https://youtube.com/embed/c48K1wqo5ow",
     logicGateDiagramOR: "https://youtube.com/embed/xfSR3MgBWrc", 
-};
+  };
+
+  const sortedPredefinedFilters = useMemo(() => {
+    return [...predefinedFilters].sort((a, b) => {
+      return (a.isPublic ? 0 : 1) - (b.isPublic ? 0 : 1);
+    });
+  }, [predefinedFilters]);
 
   const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
@@ -99,7 +105,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         setFilterValue(filter as object[]);
       }
 
-      const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filter?.toString());
+      const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filter?.toString());
       if (isPredefinedFilter) {
         setSelectedSavedFilter(isPredefinedFilter);
         setFilterName(isPredefinedFilter.name);
@@ -120,7 +126,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setFilterValue(filterToAppply);
     }
 
-    const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
+    const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
     if (isPredefinedFilter) {
       setSelectedSavedFilter(isPredefinedFilter);
       setFilterName(isPredefinedFilter.name);
@@ -128,13 +134,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setSelectedSavedFilter(null);
       setFilterName("");
     }
-  }, [filterToAppply, open, predefinedFilters]);
+  }, [filterToAppply, open, sortedPredefinedFilters]);
 
   useEffect(() => {
     if (!selectedSavedFilter) return;
-    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
+    const updatedFilter = sortedPredefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
     if (updatedFilter) setSelectedSavedFilter(updatedFilter);
-  }, [predefinedFilters, selectedSavedFilter]);
+  }, [sortedPredefinedFilters, selectedSavedFilter]);
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
     if (isDeepEqual(event.value, filterValue)) {
@@ -153,7 +159,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
-    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
+    const predefinedFilter = sortedPredefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
       setSelectedSavedFilter(predefinedFilter);
       setFilterValue(predefinedFilter.filter);
@@ -203,7 +209,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleApplyFilterChange = (event: SelectChangeEvent<string>) => {
-    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
+    const predefinedFilter = sortedPredefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
       onApply([predefinedFilter.filter]);
       setSelectedSavedFilter(predefinedFilter);
@@ -289,7 +295,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             },
           }}
           renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)}>
-          {predefinedFilters.map(filter => (
+          {sortedPredefinedFilters.map(filter => (
             <MenuItem
               selected={false}
               key={filter.id}
@@ -686,7 +692,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     renderValue={_value => {
                       return <ListItemText primary={mapFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)} />;
                     }}>
-                    {predefinedFilters.map(filter => (
+                    {sortedPredefinedFilters.map(filter => (
                       <MenuItem
                         selected={false}
                         key={filter.id}
