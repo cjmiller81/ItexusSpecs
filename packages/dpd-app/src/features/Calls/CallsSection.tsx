@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from "@mui/material";
+import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ExitTierTable from "./ExitTierTable";
 import React from "react";
@@ -9,7 +9,9 @@ import { optionTradeService } from "@/services/optionTradeService";
 import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
 import { Instrument, scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlice";
 import { connectedAccount } from "../strategies/userProfileSlice";
-import SymbolSearchAutocomplete from "@/common/symbolSearchAutocomplete";
+import OptionSettingsForm from "../OptionSettingsForm";
+import EntryOrderPanel from "../EntryOrderPanel";
+import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -194,29 +196,6 @@ export default function CallOptionSet() {
   const handleExitTiersChange = (newExitTiers: ExitTier[]) => {
     setExitTiers(newExitTiers);
   };
-
- enum EntryTypeProto {
-  ENTRY_BUY_ASK = 0,
-  ENTRY_BUY_BID = 1,
-  ENTRY_BUY_MID = 2,
-  ENTRY_MARKET = 3,
-}
-
-function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
-  const key = entryTypeStr.toUpperCase();
-  switch (key) {
-    case "BUY_ASK":
-      return EntryTypeProto.ENTRY_BUY_ASK;
-    case "BUY_BID":
-      return EntryTypeProto.ENTRY_BUY_BID;
-    case "BUY_MID":
-      return EntryTypeProto.ENTRY_BUY_MID;
-    case "ENTRY_MARKET":
-      return EntryTypeProto.ENTRY_MARKET;
-    default:
-      return EntryTypeProto.ENTRY_MARKET;
-  }
-}
 
   const handleEntryTypeChange = (event) => {
     const newEntryType = event.target.value;
@@ -656,433 +635,63 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
       </Box>
     <form onSubmit={handleSendOrder}>
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{
-            width: "500px",
-            bgcolor: "#2A2A2A",
-            p: 3,
-            borderRadius: 2,
-            color: "white",
-            marginTop: "25px",
-            border: "2px solid green",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
-          }}>
-            <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("OptionDetails")}</Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <SymbolSearchAutocomplete
-                value={ticker}
-                onChange={(value) => setTicker(value)}
-                placeholder="Enter ticker"
-              />
-                <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={dteMin}
-                  onChange={(e) => {
-                    const newValue = Number(e.target.value);
-                    if (newValue >= 0 && newValue < dteMax) {
-                      setDteMin(newValue);
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center", padding: "10px 12px", },
-                    width: "75px",
-                    "& .MuiOutlinedInput-root": { height: "40px" },
-                  }}
-                />
+        <OptionSettingsForm
+          ticker={ticker}
+          setTicker={setTicker}
+          dteMin={dteMin}
+          setDteMin={setDteMin}
+          dteMax={dteMax}
+          setDteMax={setDteMax}
+          requireActiveBid={requireActiveBid}
+          setRequireActiveBid={setRequireActiveBid}
+          isBAMaxEnabled={isBAMaxEnabled}
+          setIsBAMaxEnabled={setIsBAMaxEnabled}
+          bidAskMax={bidAskMax}
+          handleChange={handleChange}
+          handleEnableToggle={handleEnableToggle}
+          minContractAsk={minContractAsk}
+          setMinContractAsk={setMinContractAsk}
+          tradeAsSet={tradeAsSet}
+          setTradeAsSet={setTradeAsSet}
+          minOpenInterest={minOpenInterest}
+          setMinOpenInterest={setMinOpenInterest}
+          minVolume={minVolume}
+          setMinVolume={setMinVolume}
+          baSpreadDiff={baSpreadDiff}
+          setBaSpreadDiff={setBaSpreadDiff}
+          borderColor="green"
+          t={t}
+        />
+        <EntryOrderPanel
+          t={t}
+          amount={amount}
+          formatNumber={formatNumber}
+          handleChangeAmount={handleChangeAmount}
+          oiCapPercent={oiCapPercent}
+          setOiCapPercent={setOiCapPercent}
+          entryType={entryType}
+          handleEntryTypeChange={handleEntryTypeChange}
+          useLaddering={useLaddering}
+          setUseLaddering={setUseLaddering}
+          shouldDisableLaddering={shouldDisableLaddering}
+          shouldShowHint={shouldShowHint}
+          offsetPercent={offsetPercent}
+          handleOffsetChange={handleOffsetChange}
+          tradeUnderlyingFound={tradeUnderlyingFound}
+          onlyTradeUnderlying={onlyTradeUnderlying}
+          handleTradeUnderlyingFoundChange={handleTradeUnderlyingFoundChange}
+          handleOnlyTradeUnderlyingChange={handleOnlyTradeUnderlyingChange}
+          cancelAndResubmitOnPartial={cancelAndResubmitOnPartial}
+          setCancelAndResubmitOnPartial={setCancelAndResubmitOnPartial}
+          isBreakUpEnabled={isBreakUpEnabled}
+          setIsBreakUpEnabled={setIsBreakUpEnabled}
+          breakUp={breakUp}
+          handleBreakUpChange={handleBreakUpChange}
+          isSendTriggerChecked={isSendTriggerChecked}
+          setIsSendTriggerChecked={setIsSendTriggerChecked}
+          borderColor="green"
+        />
 
-                <Typography sx={{ color: "white" }}>{t("to")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={dteMax}
-                  onChange={(e) => {
-                    const newValue = Number(e.target.value);
-                    if (newValue >= 0 && newValue > dteMin) {
-                      setDteMax(newValue);
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center", padding: "10px 12px", },
-                    width: "75px",
-                    "& .MuiOutlinedInput-root": { height: "40px" },
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                <Checkbox
-                  checked={requireActiveBid}
-                  onChange={(e) => setRequireActiveBid(e.target.checked)}
-                  sx={{ color: "gray", p: 0 }}
-                />
-                <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                    {t("RequireActiveBid")}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                  <Checkbox checked={isBAMaxEnabled}
-                    onChange={() => setIsBAMaxEnabled((prev) => !prev)}
-                    sx={{ color: "gray" }} />
-                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                    <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                      {t("B/AMaxOn/Off")}
-                    </Typography>
-
-                    <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: isBAMaxEnabled ? "white" : "gray" }}>
-                      {t("B/AMax(e.g 5 = 5%)")}
-                    </Typography>
-                  </Box>
-                  <TextField
-                    variant="outlined"
-                    type="number"
-                    value={bidAskMax}
-                    onChange={handleChange}
-                    disabled={!isBAMaxEnabled}
-                    inputProps={{ min: 1, step: 1 }}
-                    onFocus={handleEnableToggle}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      width: "67px",
-                      marginLeft: "10px",
-                      input: {
-                        color: isBAMaxEnabled ? "white" : "gray",
-                        padding: "10px 12px",
-                        textAlign: "center",  
-                      },
-                      "& .MuiOutlinedInput-root.Mui-disabled": {
-                        "& .MuiInputBase-input": {
-                          color: "gray !important",
-                          WebkitTextFillColor: "gray !important",
-                        },
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        height: "40px",
-                        display: "flex",
-                        alignItems: "center",
-                        borderColor: "gray",
-                        "&:hover": {
-                          borderColor: "white",
-                        },
-                      },
-                    }}
-                  />
-                </Box>
-              </Box>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Typography sx={{ color: "white" }}>{t("MinContractAsk")}</Typography>
-              <TextField
-                type="number"
-                variant="outlined"
-                value={minContractAsk}
-                onChange={(e) => setMinContractAsk(Number(e.target.value))}
-                inputProps={{ step: 0.01 }}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: { color: "white", textAlign: "center" },
-                  width: "70px",
-                  "& .MuiOutlinedInput-root": { height: "40px" },
-                }}
-              />
-                <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Checkbox
-                  checked={tradeAsSet}
-                  onChange={(e) => setTradeAsSet(e.target.checked)}
-                  sx={{ color: "gray", p: 0 }}
-                />
-                  <Typography sx={{ color: "white" }}>{t("TradeAsSet")}</Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box sx={{
-            width: "500px",
-            bgcolor: "#2A2A2A",
-            p: 3,
-            borderRadius: 2,
-            color: "white",
-            marginTop: "25px",
-            border: "2px solid green",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
-          }}>
-            <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("OptionFilter")}</Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography sx={{ color: "white", }}>{t("MinOpenInterest")}</Typography>
-                  <TextField
-                    type="number"
-                    variant="outlined"
-                    value={minOpenInterest}
-                    onChange={(e) => {
-                      const newValue = Number(e.target.value);
-                      if (newValue >= 0) {
-                        setMinOpenInterest(newValue);
-                      }
-                    }}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      input: { color: "white", textAlign: "center" },
-                      width: "100px",
-                      "& .MuiOutlinedInput-root": { height: "40px" }
-                    }}
-                  />
-                </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Typography sx={{ color: "white" }}>{t("MinVolume")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={minVolume}
-                  onChange={(e) => {
-                    const newValue = Number(e.target.value);
-                    if (newValue >= 0) {
-                      setMinVolume(newValue);
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center" },
-                    width: "100px",
-                    "& .MuiOutlinedInput-root": { height: "40px" }
-                  }}
-                />
-                </Box>
-              </Box>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}></Box>
-              <Typography sx={{ color: "white" }}>{t("B/ASpreadDiff")}</Typography>
-              <TextField
-                type="number"
-                variant="outlined"
-                value={baSpreadDiff}
-                onChange={(e) => setBaSpreadDiff(Number(e.target.value))}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: { color: "white", textAlign: "center" },
-                  width: "100px",
-                  "& .MuiOutlinedInput-root": { height: "40px" }
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
-        <Box>
-          <Box sx={{
-            width: "450px",
-            bgcolor: "#2A2A2A",
-            p: 3,
-            borderRadius: 2,
-            color: "white",
-            height: "670px",
-            marginTop: "25px",
-            border: "2px solid green",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
-          }}>
-            <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("EntryOrder")}</Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 4 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography sx={{ color: "white", }}>{t("TotalDollarAmount")}</Typography>
-                  <TextField
-                    variant="outlined"
-                    value={formatNumber(amount)}
-                    onChange={handleChangeAmount}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      input: { color: "white", textAlign: "center" },
-                      width: "150px",
-                      "& .MuiOutlinedInput-root": { height: "40px" }
-                    }}
-                  />
-                </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Typography sx={{ color: "white" }}>{t("OIPercentCap")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={oiCapPercent}
-                  onChange={(e) => setOiCapPercent(Number(e.target.value))}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center" },
-                    width: "110px",
-                    "& .MuiOutlinedInput-root": { height: "40px" }
-                  }}
-                />
-                </Box>
-              </Box>
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography sx={{ color: "white" }}>{t("EntryType")}</Typography>
-                  <Select
-                    value={entryType}
-                    onChange={handleEntryTypeChange}
-                    displayEmpty
-                    sx={{
-                      width: "170px",
-                      height: "40px",
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
-                      color: "white",
-                      "& .MuiSelect-icon": { color: "#fff",},
-                    }}
-                  >
-                    <MenuItem value="Buy_Bid" >{t("Buy_Bid")}</MenuItem>
-                    <MenuItem value="Buy_Mid" >{t("Buy_Mid")}</MenuItem>
-                    <MenuItem value="Buy_Ask" >{t("Buy_Ask")}</MenuItem>
-                  </Select>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", marginTop: "30px" }}>
-                  <Checkbox
-                    checked={useLaddering}
-                    onChange={() => setUseLaddering(!useLaddering)}
-                    disabled={shouldDisableLaddering}
-                    sx={{
-                      color: "gray",
-                      "&.Mui-checked": {
-                        color: "gray", 
-                      },
-                      "&.Mui-disabled": {
-                        color: "rgba(255, 255, 255, 0.33)", 
-                      },
-                    }}
-                  />
-                  <Box sx={{ display: "flex", flexDirection: "column" }}>
-                    <Typography sx={{ fontSize: "13px", color: shouldDisableLaddering ? "gray" : "white" }}>
-                      {t("UseLaddering")}
-                    </Typography>
-                    {shouldShowHint && (
-                      <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: "gray" }}>
-                        {t("OffsetMustBe")}
-                      </Typography>
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, marginTop: "20px" }}>
-              <Typography sx={{ color: "white", }}>{t("OffsetPercent")}</Typography>
-              <TextField
-                type="number"
-                value={offsetPercent}
-                onChange={handleOffsetChange}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: { color: "white", textAlign: "center" },
-                  width: "100px",
-                  "& .MuiOutlinedInput-root": { height: "40px" }
-                }}
-              />
-            </Box>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, marginTop: "20px" }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Checkbox
-                    checked={tradeUnderlyingFound}
-                    onChange={handleTradeUnderlyingFoundChange}
-                    disabled={onlyTradeUnderlying}
-                    sx={{ color: "gray", p: 0 }}
-                  />
-                  <Typography sx={{
-                    fontSize: "13px", color: onlyTradeUnderlying && tradeUnderlyingFound ? "gray" : "white", mt: 0.5
-                  }}>
-                    {t("TradeUnderlyingOptionFound")}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Checkbox
-                    checked={onlyTradeUnderlying}
-                    onChange={handleOnlyTradeUnderlyingChange}
-                    sx={{ color: "gray", p: 0 }}
-                  />
-                  <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                    {t("OnlyTradeUnderlying")}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                <Checkbox
-                  checked={cancelAndResubmitOnPartial}
-                  onChange={(e) => setCancelAndResubmitOnPartial(e.target.checked)}
-                  sx={{ color: "gray", p: 0 }}
-                />
-                  <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                    {t("CancelResubmitNoPartialFill")}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start", flexDirection: "row" }}>
-                  <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-                    <Checkbox
-                      sx={{ color: "gray", p: 0 }}
-                      checked={isBreakUpEnabled}
-                      onChange={() => setIsBreakUpEnabled((prev) => !prev)}
-                    />
-                    <Typography
-                      sx={{ fontSize: "13px", color: "white", mt: 0.5 }}
-                    >
-                      {t("BreakUpOrder")}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "15px" }}>
-                    <Typography sx={{ fontSize: "13px", color: isBreakUpEnabled ? "white" : "gray", mt: 0.5 }}>
-                      {t("OrderBreaks")}
-                    </Typography>
-                    <TextField
-                      placeholder="20"
-                      type="number"
-                      variant="outlined"
-                      value={breakUp}
-                      onChange={handleBreakUpChange}
-                      disabled={!isBreakUpEnabled}
-                      InputLabelProps={{ shrink: false }}
-                      sx={{
-                        bgcolor: "#1E1E1E",
-                        width: "70px",
-                        marginLeft: "10px",
-                        input: {
-                          color: "white",
-                          padding: "10px 12px",
-                          textAlign: "center",
-                        },
-                        "& .MuiOutlinedInput-root.Mui-disabled": {
-                          "& .MuiInputBase-input": {
-                            color: "#bbb !important",
-                            WebkitTextFillColor: "#bbb !important",
-                          },
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          height: "40px",
-                          display: "flex",
-                          alignItems: "center",
-                          opacity: isBreakUpEnabled ? 1 : 0.5
-                        }
-                      }}
-                    />
-                  </Box>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                  <Checkbox sx={{ color: "gray", p: 0 }}
-                    checked={isSendTriggerChecked}
-                    onChange={(e) => setIsSendTriggerChecked(e.target.checked)} />
-                  <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                    {t("SendTriggerExitOrder")}
-                  </Typography>
-                </Box>
-
-              </Box>
-            </Box>
-          </Box>
-        </Box>
         <Box>
           <Box sx={{
             width: "auto",
