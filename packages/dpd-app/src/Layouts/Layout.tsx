@@ -14,6 +14,8 @@ import {
 import { useTranslation } from "react-i18next";
 import "react-toastify/dist/ReactToastify.css";
 import { getSidebarMenuItems } from "@/constants/sidebar";
+import { useEffect } from "react";
+import { getSchwabAccountList } from "@/features/strategies/userProfileSlice";
 
 interface Props {
   children: any;
@@ -26,6 +28,10 @@ export default function Layout({ children }: Props) {
   const sideBarOptions = getSidebarMenuItems(theme);
   const { session, logOut } = useOry();
   const { t } = useTranslation("Header");
+
+   useEffect(() => {
+      dispatch(getSchwabAccountList());
+    }, [dispatch]);
 
   return (
     <StyledRoot sx={{ width: "100%" }}>

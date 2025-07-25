@@ -1,13 +1,6 @@
-import { getSchwabAccountList, getSchwabConnectUrl } from "@/features/strategies/userProfileSlice";
-import { PageTitle, useAppDispatch } from "components"
-import { useEffect } from "react";
+import { PageTitle } from "components"
 
 export default function HomePage() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(getSchwabAccountList());
-  }, [dispatch]);
   
   return (
     <>
