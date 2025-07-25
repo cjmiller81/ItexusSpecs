@@ -300,7 +300,7 @@
     "EstGasFees": "Est. Gas Fees {{value}}",
     "Search": "Search",
     "UseMax": "Use Max",
-    "RefreshQuotes": "Get Quotes",
+    "GetQuotes": "Get Quotes",
     "MissingInputs": "Please provide the following inputs",
     "EnterAmount": "Enter Amount",
     "SelectChain": "Select Chain",
@@ -309,12 +309,14 @@
     "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
     "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again",
     "EstGasFeesUSD": "Est Gas Fees (USD)",
-    "TokensAddress": "Token Position Address",
-    "SwapForPositionAddress": "Swap For Position Address",
+    "TokensAddress": "Current Position Address",
+    "SwapForPositionAddress": "Swap For Address",
     "EstAmount": "Est. Amount",
     "MarketDataUpdatedAs": "Market data updated as of: {{value}}. Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions. DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX.",
     "SameTokenError": "You have selected the same Swap For Token as your Current Token Position, please your review and change your Swap selections",
-    "NoQuotesFound":"No Quotes Found"
+    "NoQuotesFound":"No Quotes Found",
+    "GetBestRoutes": "Get Best Routes",
+    "DEXChooser": "DEX Chooser"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
