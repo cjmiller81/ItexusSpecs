@@ -149,7 +149,12 @@ export const fetchToken = createAsyncThunk<
 export const dexSlice = createSlice({
   name: "dex",
   initialState,
-  reducers: {},
+  reducers: {
+    clearDexErrors: (state) => {
+      state.error = null;
+      state.quoteError = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchQuoteParameters.pending, (state) => {
@@ -182,5 +187,5 @@ export const dexSlice = createSlice({
       });
   },
 });
-
+export const { clearDexErrors } = dexSlice.actions;
 export const dexReducer = dexSlice.reducer;

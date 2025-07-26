@@ -31,6 +31,8 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import MultiSelectDexDropdown, { Dex } from "./MultiSelectDexDropdown";
 import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
 import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
+import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
+import NoRouteDialog from "./NoRouteDialog";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -58,8 +60,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
-  const [errorQuote, setErrorQuote] = useState<string | null>(null);
-  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
+  const [errorQuote, setErrorQuote] = useState<string | null>("");
+  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>("");
+  const [hasShownErrorOnce, setHasShownErrorOnce] = useState(false);
   const [tokenAddress,setTokenAddress] = useState<string | null>(null);
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
@@ -73,6 +76,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const MAX_SELECTIONS = 5;
   const [allDexs, setAllDexs] = useState<Dex[]>([]);
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
+  const [noRouteOpen, setNoRouteOpen] = useState(false);
 
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
@@ -103,6 +107,20 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setSelectedDexs([]);
     }
   };
+
+useEffect(() => {
+  const hasError = Boolean(error || quoteError);
+
+  if (hasError && !hasShownErrorOnce) {
+    setNoRouteOpen(true);
+    setHasShownErrorOnce(true); // предотвратим повторное открытие
+  }
+
+  if (!hasError && hasShownErrorOnce) {
+    setHasShownErrorOnce(false); // сброс, если ошибка ушла
+  }
+}, [error, quoteError, hasShownErrorOnce]);
+
 
   const coinGeckoChainId = (chain: string) => {
           switch (chain.toLowerCase()) {
@@ -631,7 +649,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             <Grid container spacing={2}>
                 <Grid item xs={3.7}>
                   <Box>
-                    <Typography sx={{paddingBottom:"4.7px"}}>{t("TokenPosition")}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("TokenPosition")}</Typography>
+
+                      {!symbolOptionSwap && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem',}}>
+                              {t("SelectTokenToSwapFrom")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
                      <Autocomplete
                         options={tokenIcons?.items ?? []}
                         getOptionLabel={(option) => option.sym}
@@ -696,7 +733,27 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
 
                 <Grid item xs={2.2}>
-                    <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
+
+                      {!selectedChain && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem'}}>
+                              {t("Selectсhain")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
+                    
                     <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
                         <Select
                             labelId="chain-select-label"
@@ -724,8 +781,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
 
                 <Grid item xs={2.2}>
-                  <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
-                    <Typography>{t("Qty")}</Typography>
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("Qty")}</Typography>
+                      {!newBalance && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem'}}>
+                              {t("EnterSwapAmount")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
                   </Box>
 
                   <TextField
@@ -784,7 +859,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
 
                 <Grid item xs={3.7}>
                   <Box>
-                    <Typography sx={{paddingBottom:"4.7px"}}>{t("SwapFor")}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("SwapFor")}</Typography>
+                      {!symbolOptionSwapFor && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem' }}>
+                              {t("SelectTokenToSwapTo")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
+                    
                     <Autocomplete
                       options={tokenIconsSwapFor?.items ?? []}
                       getOptionLabel={(option) =>
@@ -1028,7 +1122,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         <Button
                           variant="contained"
                           onClick={handleFetchQuotes}
-                          disabled= {errorMessage !== null? true : false}
+                          disabled= {!symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
                           sx={{
                             backgroundColor: "#1e88e5",
                             color: "#fff",
@@ -1064,15 +1158,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                            </Typography>
                          )}
                       </Grid>
-                      {(errorMessage || error || quoteError) && (
-                    <Grid item>
-                      <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
-                        {errorMessage}
-                        { !errorMessage && errorQuoteParametrs && (errorMessage ? `\n${errorQuoteParametrs}` : errorQuoteParametrs)}
-                        {!errorMessage && errorQuoteParametrs === null && errorQuote && t("SwapSearchError")}
-                      </Typography>
-                    </Grid>
-                    )}
                   </Grid>
                 </Grid>
        
@@ -1157,11 +1242,10 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             {t("MarketDataUpdatedAs", { value: lastUpdated })}
           </Typography>
         )}
-        {showNoQuotesMessage && hasAttemptedSubmit !== false && (
-          <Typography sx={{ color: "#f44336", fontSize: "0.875rem", marginTop: 2 }}>
-            {t("NoQuotesFound")}
-          </Typography>
-        )}
+         <NoRouteDialog
+            open={noRouteOpen}
+            onClose={() => setNoRouteOpen(false)}
+          />
       </Grid>      
     </Grid>
   );

@@ -316,7 +316,11 @@
     "SameTokenError": "You have selected the same Swap For Token as your Current Token Position, please your review and change your Swap selections",
     "NoQuotesFound":"No Quotes Found",
     "GetBestRoutes": "Get Best Routes",
-    "DEXChooser": "DEX Chooser"
+    "DEXChooser": "DEX Chooser",
+    "SelectTokenToSwapFrom": "Select token to swap from",
+    "EnterSwapAmount": "Enter swap amount",
+    "SelectTokenToSwapTo": "Select token to swap to",
+    "Selectсhain": "Select сhain"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
@@ -555,5 +559,13 @@
   "Vaults": {
     "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",
     "VaultsTitle": "Prefilter Vaults"
+  },
+  "Modals":{
+    "SwapRouteNotFound":"Swap Route Not Found",
+    "WeCouldntFindSwapRouteForThisTokenPair": "We couldn't find a swap route for this token pair. This could be due to:",
+    "InsufficientLiquidity": "Insufficient liquidity",
+    "UnsupportedTokenPair": "Unsupported token pair",
+    "NetworkCongestion": "Network congestion",
+    "TryAgain": "Try Again"
   }
 }
