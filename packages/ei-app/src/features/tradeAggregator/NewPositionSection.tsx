@@ -1,40 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Grid,
-  Button,
-  useTheme,
-  Typography,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-  TableCell,
-  TableRow,
-  TableHead,
+import React, { useEffect, useState } from "react";
+import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextField, TableCell, TableRow, TableHead,
   Table,
   TableContainer,
   TableBody,
   Paper,
   Box,
-  Checkbox,
   Tooltip,
   InputAdornment,
   IconButton,
   Autocomplete,
   Avatar,
-  ListItemText,
-  ListItem,
-  List,
-  Popover,
   Stack,
-  ClickAwayListener
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
-import CreateIcon from '@mui/icons-material/Create';
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
@@ -44,9 +26,13 @@ import { iconsApi } from "@/services/iconsService";
 import { PaginatedList } from "components/src/models/paginatedList";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
-import { FilterIcon } from "lucide-react";
 import Chip from '@mui/material/Chip';
 import ReplayIcon from '@mui/icons-material/Replay';
+import MultiSelectDexDropdown, { Dex } from "./MultiSelectDexDropdown";
+import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
+import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
+import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
+import NoRouteDialog from "./NoRouteDialog";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -61,7 +47,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
-  const [lookupLoading, setLookupLoading] = useState<boolean>(false);
   const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
@@ -75,8 +60,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
-  const [errorQuote, setErrorQuote] = useState<string | null>(null);
-  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
+  const [errorQuote, setErrorQuote] = useState<string | null>("");
+  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>("");
+  const [hasShownErrorOnce, setHasShownErrorOnce] = useState(false);
   const [tokenAddress,setTokenAddress] = useState<string | null>(null);
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
@@ -90,6 +76,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const MAX_SELECTIONS = 5;
   const [allDexs, setAllDexs] = useState<Dex[]>([]);
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
+  const [noRouteOpen, setNoRouteOpen] = useState(false);
 
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
@@ -120,6 +107,20 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setSelectedDexs([]);
     }
   };
+
+useEffect(() => {
+  const hasError = Boolean(error || quoteError);
+
+  if (hasError && !hasShownErrorOnce) {
+    setNoRouteOpen(true);
+    setHasShownErrorOnce(true); // предотвратим повторное открытие
+  }
+
+  if (!hasError && hasShownErrorOnce) {
+    setHasShownErrorOnce(false); // сброс, если ошибка ушла
+  }
+}, [error, quoteError, hasShownErrorOnce]);
+
 
   const coinGeckoChainId = (chain: string) => {
           switch (chain.toLowerCase()) {
@@ -250,66 +251,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   fetchIcons();
 }, [tokenAddresses, filteredRows]);
 
-  const generateUniswapLink = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-  version,
-}:{inputCurrency: string;
-    outputCurrency: string;
-    exactAmount: number;
-    exactField: "input" | "output";
-    version: string;
-  }) => {
-  switch (version) {
-    case "UNISWAP_V1": {
-      const slippage = (exactAmount * 0.05).toFixed(6);
-      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
-    }
-    case "UNISWAP_V2": {
-      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
-    }
-    case "UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-    }
-    case "UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-    }
-    case "BSC_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "BSC_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "OPTIMISM_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "OPTIMISM_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "POLYGON_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "POLYGON_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "AVALANCHE_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "AVALANCHE_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "ARBITRUM_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "ARBITRUM_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    default:
-      throw new Error(`Unsupported Uniswap version: ${version}`);
-  }
-};
+ 
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -707,7 +649,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             <Grid container spacing={2}>
                 <Grid item xs={3.7}>
                   <Box>
-                    <Typography sx={{paddingBottom:"4.7px"}}>{t("TokenPosition")}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("TokenPosition")}</Typography>
+
+                      {!symbolOptionSwap && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem',}}>
+                              {t("SelectTokenToSwapFrom")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
                      <Autocomplete
                         options={tokenIcons?.items ?? []}
                         getOptionLabel={(option) => option.sym}
@@ -772,7 +733,27 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
 
                 <Grid item xs={2.2}>
-                    <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
+
+                      {!selectedChain && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem'}}>
+                              {t("Selectсhain")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
+                    
                     <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
                         <Select
                             labelId="chain-select-label"
@@ -800,8 +781,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
 
                 <Grid item xs={2.2}>
-                  <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
-                    <Typography>{t("Qty")}</Typography>
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("Qty")}</Typography>
+                      {!newBalance && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem'}}>
+                              {t("EnterSwapAmount")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
                   </Box>
 
                   <TextField
@@ -860,7 +859,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
 
                 <Grid item xs={3.7}>
                   <Box>
-                    <Typography sx={{paddingBottom:"4.7px"}}>{t("SwapFor")}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("SwapFor")}</Typography>
+                      {!symbolOptionSwapFor && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem' }}>
+                              {t("SelectTokenToSwapTo")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
+                    
                     <Autocomplete
                       options={tokenIconsSwapFor?.items ?? []}
                       getOptionLabel={(option) =>
@@ -947,17 +965,97 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   </Box>
                 </Grid>
 
+                <Grid item xs={11.8}>
+                  <Grid container justifyContent="space-between" spacing={0}>
+                    <Grid item xs={3.7}>
+                      <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            backgroundColor: "transparent" ,
+                            borderRadius: "4px",
+                            paddingLeft: "15px"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.85rem",
+                            color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            maxWidth: "calc(100% - 32px)",
+                          }}
+                        >
+                          {tokenAddress ? `${tokenAddress.slice(0, 25)}...` : t("TokensAddress")}
+                        </Typography>
+
+                        {tokenAddress && tokenAddressSwapFor && !errorMessage && (
+                          <Tooltip title={t("Copy")}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                navigator.clipboard.writeText(tokenAddress);
+                              }}
+                            >
+                              <ContentCopyIcon fontSize="small" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray" }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    </Grid>
+
+
+                    <Grid item xs={3.7}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          backgroundColor: "transparent",
+                          borderRadius: "4px",
+                          paddingLeft: "20px"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.85rem",
+                            color:theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            maxWidth: "calc(100% - 32px)",
+                          }}
+                        >
+                          {tokenAddressSwapFor
+                            ? `${tokenAddressSwapFor.slice(0, 25)}...`
+                            : t("SwapForPositionAddress")}
+                        </Typography>
+
+                        {tokenAddressSwapFor && !errorMessage && (
+                          <Tooltip title={t("Copy")}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                navigator.clipboard.writeText(tokenAddressSwapFor);
+                              }}
+                            >
+                              <ContentCopyIcon fontSize="small" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray" }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    </Grid>
+
+                  </Grid>
+              </Grid>
+
                 <Grid item xs={12}>
                   <Grid container alignItems="center">
-                  {(errorMessage || error || quoteError) && (
-                    <Grid item>
-                      <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
-                        {errorMessage}
-                        { !errorMessage && errorQuoteParametrs && (errorMessage ? `\n${errorQuoteParametrs}` : errorQuoteParametrs)}
-                        {!errorMessage && errorQuoteParametrs === null && errorQuote && t("SwapSearchError")}
-                      </Typography>
-                    </Grid>
-                    )}
+                  
+
+                    
                 <Grid item xs />
                   <Grid container spacing={2} alignItems="flex-start">
                       <Grid item xs={9}>
@@ -968,48 +1066,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             alignItems="center" 
                             mb={2}
                           >
-                            <Stack direction="row" alignItems="center" spacing={1}>
-                              <Button
-                                variant="contained"
-                                disabled={!symbolOptionSwap || !selectedChain}
-                                color={isDexEnabled ? 'primary' : 'inherit'}
-                                startIcon={<FilterIcon />}
-                                onClick={toggleDexFilter}
-                                sx={{
-                                  bgcolor: isDexEnabled ? '#1e88e5' : 'action.selected',
-                                  color: "#fff",
-                                  textTransform: "none",
-                                  fontWeight: 500,
-                                  fontSize: "0.875rem",
-                                 '&:hover': {
-                                   bgcolor: isDexEnabled ? '#1e88e5' : 'action.hover'
-                                  }
-                                }}
-                              >
-                                {isDexEnabled ? 'DEX Filter Active' : 'Select Specific DEXs'}
-                              </Button>
-          
-                              {isDexEnabled && (
-                                <Stack direction="row" alignItems="center" spacing={1}>
-                                  <Box display="flex" gap={0.5}>
-                                    {[...Array(MAX_SELECTIONS)].map((_, i) => (
-                                     <Box
-                                      key={i}
-                                      sx={{
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: '50%',
-                                        bgcolor: i < selectedDexs.length ? 'primary.main' : 'grey.500'
-                                      }}
-                                     />
-                                    ))}
-                                  </Box>
-                                 <Typography variant="body2" color="text.secondary">
-                                  {selectedDexs.length}/{MAX_SELECTIONS}
-                                 </Typography>
-                                </Stack>
-                              )}
-                            </Stack>
+                            <SegmentedDexSwitch
+                              isDexEnabled={isDexEnabled}
+                              selectedDexsCount={selectedDexs.length}
+                              maxSelections={MAX_SELECTIONS}
+                              onToggle={toggleDexFilter}
+                            />
 
                             {isDexEnabled && selectedDexs.length > 0 && (
                               <Button
@@ -1056,11 +1118,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         </Box>
                       </Grid>
                       <Grid item xs={3}>
-                        <Box display="flex" flexDirection="column" alignItems="flex-end">
+                        <Box display="flex" flexDirection="column" alignItems="flex-end" sx={{marginTop:"58px"}}>
                         <Button
                           variant="contained"
                           onClick={handleFetchQuotes}
-                          disabled= {errorMessage !== null? true : false}
+                          disabled= {!symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
                           sx={{
                             backgroundColor: "#1e88e5",
                             color: "#fff",
@@ -1087,128 +1149,17 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                            </Box>
                          }
                         >
-                      {t("RefreshQuotes")}
+                      {t("GetQuotes")}
                        </Button>
-                       </Box>
+                       </Box >
                          {quoteData.length > 0 && lastUpdated && (
-                           <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1 }}>
+                           <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1, textAlign: "right",}}>
                              {t("LastUpdate")}: {lastUpdated}
                            </Typography>
                          )}
                       </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={11.8} sx={{ marginTop: 2 }}>
-                  <Grid container justifyContent="space-between" spacing={2}>
-                    <Grid item xs={3.7}>
-                      <Typography sx={{ marginBottom: "6px" }}>{t("TokensAddress")}</Typography>
-                      <TextField
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                          },
-                        }}
-                        value={tokenAddress ?? ''}
-                        placeholder={t("AutoFilled")}
-                        variant="outlined"
-                        fullWidth
-                        inputProps={{
-                          readOnly: true,
-                          onFocus: (e) => e.target.blur(),
-                          style: { cursor: 'not-allowed' },
-                        }}
-                        InputProps={{
-                          sx: {
-                            fontSize: '0.6rem',
-                            cursor: 'not-allowed',
-                          },
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip title={t("Auto-filled field")}>
-                                <CreateIcon fontSize="small" sx={{ opacity: 0.5, mr: 1 }} />
-                              </Tooltip>
-                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
-                                <Tooltip title={t("Copy")}>
-                                  <IconButton
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(tokenAddress);
-                                    }}
-                                    edge="end"
-                                  >
-                                    <ContentCopyIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={3.7}>
-                      <Typography sx={{ marginBottom: "6px" }}>{t("SwapForPositionAddress")}</Typography>
-                      <TextField
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                          },
-                        }}
-                        value={tokenAddressSwapFor ?? ''}
-                        placeholder={t("AutoFilled")}
-                        variant="outlined"
-                        fullWidth
-                        inputProps={{
-                          readOnly: true,
-                          onFocus: (e) => e.target.blur(),
-                          style: { cursor: 'not-allowed' },
-                        }}
-                        InputProps={{
-                          sx: {
-                            fontSize: '0.6rem',
-                            cursor: 'not-allowed',
-                          },
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip title={t("Auto-filled field")}>
-                                <CreateIcon fontSize="small" sx={{ opacity: 0.5 }} />
-                              </Tooltip>
-                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
-                                <Tooltip title={t("Copy")}>
-                                  <IconButton
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(tokenAddressSwapFor);
-                                    }}
-                                    edge="end"
-                                  >
-                                    <ContentCopyIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-              </Grid>
        
               </Grid>
             </Grid>
@@ -1291,84 +1242,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             {t("MarketDataUpdatedAs", { value: lastUpdated })}
           </Typography>
         )}
-        {showNoQuotesMessage && hasAttemptedSubmit !== false && (
-          <Typography sx={{ color: "#f44336", fontSize: "0.875rem", marginTop: 2 }}>
-            {t("NoQuotesFound")}
-          </Typography>
-        )}
+         <NoRouteDialog
+            open={noRouteOpen}
+            onClose={() => setNoRouteOpen(false)}
+          />
       </Grid>      
     </Grid>
   );
 };
-
-type Dex = { id: string; title: string };
-
-interface Props {
-  dexs: Dex[];
-  isDexDropdownOpen: boolean;
-  selectedDexs: Dex[];
-  setIsDexDropdownOpen: (d: boolean) => void;
-  setSelectedDexs: (d: Dex[]) => void;
-  maxSelections?: number;
-}
-
-
-export default function MultiSelectDexDropdown({
-  dexs,
-  isDexDropdownOpen,
-  selectedDexs,
-  setSelectedDexs,
-  setIsDexDropdownOpen,
-  maxSelections = 5,
-}: Props) {
-  return (
-    <Box>
-      {selectedDexs.length >= maxSelections && (
-        <Typography variant="caption" color="warning.main" mt={1}>
-          Maximum {maxSelections} DEXs selected. Remove one to add another.
-        </Typography>
-      )}
-      <Autocomplete
-        multiple
-        options={dexs}
-        value={selectedDexs}
-        onChange={(_, newValue) => {
-          if (newValue.length <= maxSelections) {
-            setSelectedDexs(newValue);
-          }
-       }}
-        open={!(selectedDexs.length >= maxSelections) && isDexDropdownOpen}
-        onOpen={() => {
-         if (!(selectedDexs.length >= maxSelections)) {
-          setIsDexDropdownOpen(true);
-         }
-       }}
-        onClose={() => setIsDexDropdownOpen(false)}
-       filterSelectedOptions
-       isOptionEqualToValue={(option, value) => option.id === value.id}
-       getOptionLabel={(o) => o.title}
-       limitTags={0}
-       renderTags={() => null}
-       renderInput={(params) => (
-        <TextField
-          {...params}
-          placeholder={selectedDexs.length >= maxSelections ? "Maximum selections reached" : "Search and select DEXs..."}
-          disabled={selectedDexs.length >= maxSelections}
-          InputProps={{
-            ...params.InputProps,
-            startAdornment: (
-            <>
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-              {params.InputProps.startAdornment}
-            </>
-            )
-          }}
-        />
-        )}
-      />
-
-    </Box>
-  );
-}
