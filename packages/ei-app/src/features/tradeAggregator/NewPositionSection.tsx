@@ -621,7 +621,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
           </Button>
         </Grid>
 
-        {false && (
+         
         <Grid item>
           <Button
             variant={activeTab === "bridge" ? "contained" : "outlined"}
@@ -641,7 +641,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             {t("Bridge")}
           </Button>
         </Grid>
-        )}
+        
       </Grid>
 
       <Grid item>
@@ -1162,91 +1162,90 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
        
               </Grid>
-            </Grid>
-        ) : (
-            <Typography sx={{ color: "gray" }}></Typography>
-        )}
-      </Grid>
-
-      <Grid item xs={12} sx={{ marginTop: 3 }}>
-        <TableContainer
-          component={Paper}
-          sx={{
-            border: "1px solid gray",
-            borderRadius: "4px",
-          }}
-        >
-          <Table sx={{ color: "blue" }}>
-            <TableHead  sx={{
-          backgroundColor:
-            theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
-        }}>
-              <TableRow>
-                <TableCell>{t("DEX")}</TableCell>
-                <TableCell>{t("Est. Price")}</TableCell>
-                <TableCell>
-                  {t("EstGasFees", {
-                    value: getGasTokenSymbol(selectedChain)
-                      ? `(${getGasTokenSymbol(selectedChain)})`
-                      : "",
-                  })}
-                </TableCell>
-                <TableCell>{t("EstGasFeesUSD")}</TableCell>
-                <TableCell>{t("EstAmount")}</TableCell>
-              </TableRow>
-            </TableHead>
-
-            {symbolOptionSwap &&
-              symbolOptionSwapFor &&
-              selectedChain &&
-              quoteData &&
-              !errorMessage &&
-              !quoteError && (
-                <TableBody sx={{
+               <Grid item xs={12} sx={{ marginTop: 3 }}>
+                <TableContainer
+                  component={Paper}
+                  sx={{
+                    border: "1px solid gray",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <Table sx={{ color: "blue" }}>
+                    <TableHead  sx={{
                   backgroundColor:
-                    theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                    theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
                 }}>
-                  {quoteData.map((row, index) => {
-                    const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
-                    const dexUrl = dexWebsites[dexKey];
-
-                    return (
-                      <TableRow key={index}>
-                        <TableCell sx={{ color: "#539eec" }}>
-                          {dexUrl ? (
-                            <a
-                              href={row.deepLink ?? dexUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ color: "#539eec", textDecoration: "underline" }}
-                            >
-                              {dexKey}
-                            </a>
-                          ) : (
-                            dexKey
-                          )}
+                      <TableRow>
+                        <TableCell>{t("DEX")}</TableCell>
+                        <TableCell>{t("Est. Price")}</TableCell>
+                        <TableCell>
+                          {t("EstGasFees", {
+                            value: getGasTokenSymbol(selectedChain)
+                              ? `(${getGasTokenSymbol(selectedChain)})`
+                              : "",
+                          })}
                         </TableCell>
-                        <TableCell>{row.price}</TableCell>
-                        <TableCell>{row.gas}</TableCell>
-                        <TableCell>{row.gasUSD}</TableCell>
-                        <TableCell>{row.estAmount}</TableCell>
+                        <TableCell>{t("EstGasFeesUSD")}</TableCell>
+                        <TableCell>{t("EstAmount")}</TableCell>
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              )}
-          </Table>
-        </TableContainer>
-        {quoteData.length > 0 && lastUpdated && (
-          <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
-            {t("MarketDataUpdatedAs", { value: lastUpdated })}
-          </Typography>
+                    </TableHead>
+
+                    {symbolOptionSwap &&
+                      symbolOptionSwapFor &&
+                      selectedChain &&
+                      quoteData &&
+                      !errorMessage &&
+                      !quoteError && (
+                        <TableBody sx={{
+                          backgroundColor:
+                            theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                        }}>
+                          {quoteData.map((row, index) => {
+                            const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
+                            const dexUrl = dexWebsites[dexKey];
+
+                            return (
+                              <TableRow key={index}>
+                                <TableCell sx={{ color: "#539eec" }}>
+                                  {dexUrl ? (
+                                    <a
+                                      href={row.deepLink ?? dexUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: "#539eec", textDecoration: "underline" }}
+                                    >
+                                      {dexKey}
+                                    </a>
+                                  ) : (
+                                    dexKey
+                                  )}
+                                </TableCell>
+                                <TableCell>{row.price}</TableCell>
+                                <TableCell>{row.gas}</TableCell>
+                                <TableCell>{row.gasUSD}</TableCell>
+                                <TableCell>{row.estAmount}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      )}
+                  </Table>
+                </TableContainer>
+                {quoteData.length > 0 && lastUpdated && (
+                  <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
+                    {t("MarketDataUpdatedAs", { value: lastUpdated })}
+                  </Typography>
+                )}
+                <NoRouteDialog
+                    open={noRouteOpen}
+                    onClose={() => setNoRouteOpen(false)}
+                  />
+              </Grid> 
+            </Grid>            
+        ) : (
+            <Typography sx={{ fontSize: "20px" }}> Coming soon...</Typography>
         )}
-         <NoRouteDialog
-            open={noRouteOpen}
-            onClose={() => setNoRouteOpen(false)}
-          />
-      </Grid>      
+      </Grid> 
     </Grid>
   );
 };
