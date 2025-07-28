@@ -479,15 +479,15 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                                   backgroundColor: "white",
                                   width: "100%",
                                   height: "40px",
-                                  color: "#1e90ff",
+                                  color: "#1e88e5",
                                   justifyContent: "flex-start",
                                   paddingLeft: "15px",
                                   fontSize: "11px bold",
-                                  borderColor: "#1e90ff",
+                                  borderColor: "#1e88e5",
                                   "&.Mui-disabled": {
                                     backgroundColor: "transparent",
-                                    borderColor: "#1e90ff",
-                                    color: "#1e90ff",
+                                    borderColor: "#1e88e5",
+                                    color: "#1e88e5",
                                   },
                                 }}
                                 variant="outlined"

@@ -354,7 +354,7 @@ export function TradeTable() {
             displayEmpty
             renderValue={(selected) => (selected ? selected : "+ ADD SAVED CEX")}
             sx={{
-              backgroundColor: "#109EEF",
+              backgroundColor: "#1e88e5",
               fontSize: "11px",
               width: "58%",
               maxHeight: "40px",
