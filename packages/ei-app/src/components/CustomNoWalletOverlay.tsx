@@ -24,7 +24,7 @@ const CustomNoWalletOverlay = () => {
           textAlign: "center",
         }}
       >
-        <AccountBalanceWalletIcon sx={{ fontSize: 45, color: theme.palette.mode === 'dark' ? '#fff' : '#109EEF', mb: 2 }} />
+        <AccountBalanceWalletIcon sx={{ fontSize: 45, color: theme.palette.mode === 'dark' ? '#fff' : '#1e88e5', mb: 2 }} />
 
         <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, fontSize: "16px" }}>
           {t("ConnectYourWalletorAdd")}
@@ -37,7 +37,7 @@ const CustomNoWalletOverlay = () => {
         <Button
             variant="contained"
             onClick={() => router.push('/profile/wallets')}
-            sx={{ backgroundColor: "#109EEF", color: "white", fontSize: "11px" }}
+            sx={{ backgroundColor: "#1e88e5", color: "white", fontSize: "11px" }}
             >
             {t("AddYourFirstWallet")}
         </Button>
