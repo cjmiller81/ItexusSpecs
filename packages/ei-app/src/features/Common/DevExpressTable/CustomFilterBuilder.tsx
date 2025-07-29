@@ -32,6 +32,7 @@ import { ValueChangedEvent } from "devextreme/ui/filter_builder";
 import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 
 export interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
@@ -302,13 +303,18 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
               value={[filter.id, filter.name]}>
               <ListItemText primary={mapFilterName(filter?.name, filter?.isPublic)} />
               {!filter.isPublic && (
-              <LoadingButton
-                  loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                <IconButton
                   onClick={event => handleDeleteFilter(filter, event)}
-                  variant="contained"
-                  color="error">
-                  {t("Delete", { ns: "Common" })}
-                </LoadingButton>
+                  disableRipple
+                  sx={{
+                    padding: 0,
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                    },
+                  }}
+                >
+                  <CustomDeleteIcon />
+                </IconButton>
               )}
             </MenuItem>
           ))}
