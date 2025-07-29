@@ -112,6 +112,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
       <StyledDataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
+        allowColumnResizing={true}
+        columnResizingMode="widget"
         ref={datagrid}
         noDataText={loading ? "" : "No data"}
         loadPanel={{

@@ -191,6 +191,8 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         }}
         id="prefilter-tokens-table"
         dataSource={dataSource}
+        allowColumnResizing={true}
+        columnResizingMode="widget"
         showBorders={true}
         ref={datagrid}
         width="100%"
