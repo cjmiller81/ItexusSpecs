@@ -370,7 +370,6 @@ useEffect(() => {
     fetchProtocolsAndTokens();
   }, [quote]);
 
-  console.log(selectedDexs)
   useEffect(() => {
     if (
       shouldFetchQuote &&
