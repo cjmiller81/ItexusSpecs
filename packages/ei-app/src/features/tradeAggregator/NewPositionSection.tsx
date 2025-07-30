@@ -1232,7 +1232,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   </Table>
                 </TableContainer>
                 {quoteData.length > 0 && lastUpdated && (
-                  <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
+                  <Typography sx={{ color: theme.palette.mode === "dark" ? "#f1b036ff" : "#be7d04ff", fontSize: "0.75rem", marginTop: 1 }}>
                     {t("MarketDataUpdatedAs", { value: lastUpdated })}
                   </Typography>
                 )}
