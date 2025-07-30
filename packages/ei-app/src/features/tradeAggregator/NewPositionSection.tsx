@@ -73,7 +73,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [balanceRaw, setBalanceRaw] = useState<number | undefined>();
   const [isDexEnabled, setIsDexEnabled] = useState(false);
   const [selectedDexs, setSelectedDexs] = useState<Dex[]>([]);
-  const MAX_SELECTIONS = 5;
+  const MAX_SELECTIONS = 4;
   const [allDexs, setAllDexs] = useState<Dex[]>([]);
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
   const [noRouteOpen, setNoRouteOpen] = useState(false);
@@ -113,11 +113,11 @@ useEffect(() => {
 
   if (hasError && !hasShownErrorOnce) {
     setNoRouteOpen(true);
-    setHasShownErrorOnce(true); // предотвратим повторное открытие
+    setHasShownErrorOnce(true);
   }
 
   if (!hasError && hasShownErrorOnce) {
-    setHasShownErrorOnce(false); // сброс, если ошибка ушла
+    setHasShownErrorOnce(false);
   }
 }, [error, quoteError, hasShownErrorOnce]);
 
@@ -370,6 +370,7 @@ useEffect(() => {
     fetchProtocolsAndTokens();
   }, [quote]);
 
+  console.log(selectedDexs)
   useEffect(() => {
     if (
       shouldFetchQuote &&
@@ -378,12 +379,27 @@ useEffect(() => {
       data.toTokenAddress &&
       data.amount > 0
     ) {
-      dispatch(fetchQuote({
-        chainName: data.chainName,
-        fromTokenAddress: data.fromTokenAddress,
-        toTokenAddress: data.toTokenAddress,
-        amount: data.amount,
-      }));
+      if(isDexEnabled === false)
+      {
+        dispatch(fetchQuote({
+          chainName: data.chainName,
+          fromTokenAddress: data.fromTokenAddress,
+          toTokenAddress: data.toTokenAddress,
+          amount: data.amount,
+          requests: 5
+        }));
+      }
+      else 
+      {
+        dispatch(fetchQuote({
+          chainName: data.chainName,
+          fromTokenAddress: data.fromTokenAddress,
+          toTokenAddress: data.toTokenAddress,
+          amount: data.amount,
+          requests: 5,
+          selectedProtocols: selectedDexs.map(dex => dex.id)
+        }));
+      }
 
       setShouldFetchQuote(false);
     }
@@ -1053,8 +1069,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
 
                 <Grid item xs={12}>
                   <Grid container alignItems="center">
-                  
-
                     
                 <Grid item xs />
                   <Grid container spacing={2} alignItems="flex-start">
@@ -1111,7 +1125,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 dexs={allDexs}
                                 selectedDexs={selectedDexs}
                                 setSelectedDexs={setSelectedDexs}
-                                maxSelections={5}           
+                                maxSelections={4}           
                               />
                             </>
                          )}
