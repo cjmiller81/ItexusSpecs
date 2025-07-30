@@ -16,6 +16,7 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
 import SourceIcon from '@mui/icons-material/Source';
 import TagIcon from '@mui/icons-material/Tag';
+import InfoIcon from '@mui/icons-material/Info';
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -215,16 +216,15 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
       ],
     },
     {
+      title: t("Help", { ns: "SideBar" }),
+      icon: <InfoIcon />,
+      open: false,
+      children: [
+        {
           title: t("SupportAndLegal", { ns: "SideBar" }),
-          icon: (
-            <TelegramIcon
-              width="21px"
-              height="21px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
           href: "/support",
+        }
+      ]
     },
   ];
 }

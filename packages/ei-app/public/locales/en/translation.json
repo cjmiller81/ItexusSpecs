@@ -407,7 +407,8 @@
     "Centralized": "Centralized (CEX)",
     "Decentralized": "Decentralized (Web3)",
     "SupportAndLegal": "Support and Legal",
-    "DEX": "Decentralized (DEX)"
+    "DEX": "Decentralized (DEX)",
+    "Help": "Help"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
