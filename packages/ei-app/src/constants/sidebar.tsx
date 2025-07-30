@@ -10,13 +10,14 @@ import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
 import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
-import { Theme } from "@mui/system";
+import { Theme, useTheme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
 import SourceIcon from '@mui/icons-material/Source';
 import TagIcon from '@mui/icons-material/Tag';
 import InfoIcon from '@mui/icons-material/Info';
+import SvgIcon from "@mui/icons-material/AutoGraph";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -215,16 +216,22 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
         },
       ],
     },
+  ];
+}
+
+function getHelpItems(): SidebarListItem[] {
+  const ThemedIcon = () => {
+    const theme = useTheme();
+    const color = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
+    return <SvgIcon component={InfoIcon} sx={{ fontSize: 21, color }} />;
+  };
+
+  return [
     {
-      title: t("Help", { ns: "SideBar" }),
-      icon: <InfoIcon />,
+      title: t("SupportAndLegal", { ns: "SideBar" }),
+      icon: <ThemedIcon />,
       open: false,
-      children: [
-        {
-          title: t("SupportAndLegal", { ns: "SideBar" }),
-          href: "/support",
-        }
-      ]
+      href: "/support",
     },
   ];
 }
@@ -247,6 +254,10 @@ export function getSidebarMenuItems(theme: Theme, currentPlan: string | null): S
     {
       title: t("Community", { ns: "SideBar" }),
       sidebarListItems: getCommunityItems(theme),
+    },
+    {
+      title: t("Help", {ns: "Sidebar"}),
+      sidebarListItems: getHelpItems(),
     },
   ];
 }
