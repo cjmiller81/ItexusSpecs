@@ -22,6 +22,8 @@ interface OneInchQuoteRequest {
   fromTokenAddress: string;
   toTokenAddress: string;
   amount: number;
+  requests?: number;
+  selectedProtocols?: string[] 
 }
 
 export interface DexState {
