@@ -26,7 +26,7 @@ export default function MultiSelectDexDropdown({
     <Box>
       {selectedDexs.length >= maxSelections && (
         <Typography variant="caption" color="warning.main" mt={1}>
-          Maximum {maxSelections} DEXs selected. Remove one to add another.
+          Maximum {maxSelections} DEXs selected
         </Typography>
       )}
       <Autocomplete
