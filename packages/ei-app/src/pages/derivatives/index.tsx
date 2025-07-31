@@ -1,10 +1,17 @@
+import { Box, Typography } from "@mui/material";
 import React from "react";
 
 const DerivativesPage: React.FC = () => {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Derivatives</h1>
-    </div>
+    <Box>
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 0 }}>
+          Derivatives
+      </Typography>
+    </Box>
   );
 };
 
