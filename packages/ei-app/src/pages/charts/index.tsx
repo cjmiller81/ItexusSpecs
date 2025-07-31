@@ -11,7 +11,7 @@ export default function TradingPage() {
   const mode = useAppSelector(state => state.ui.mode);
   const { t } = useTranslation("TradingPage");
   return (
-    <Box sx={{ mt: 2, height: "770px" }}>
+    <Box sx={{ height: "770px" }}>
       <Typography
         variant="h4"
         component="div"
