@@ -361,7 +361,7 @@ export default function PutOptionSet() {
   const handleSendOrder = async (e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
       if (e) e.preventDefault();
   
-      if (!account) {
+      if (!account || !ticker) {
         return; 
       }
 
@@ -614,7 +614,7 @@ export default function PutOptionSet() {
             ],
           }}
         >
-          <span>
+          <Box>
             <Button
               variant="outlined"
               sx={{
@@ -625,11 +625,11 @@ export default function PutOptionSet() {
                 cursor: account ? "pointer" : "not-allowed",
               }}
               onClick={handleSendOrder}
-              disabled={!account}
+              disabled={!account || !ticker}
             >
               {t("SendOrder")}
             </Button>
-          </span>
+          </Box>
         </Tooltip>
       </Box>
 
