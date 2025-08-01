@@ -274,7 +274,7 @@ export default function CallOptionSet() {
   const handleSendOrder = async (e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
     if (e) e.preventDefault();
 
-    if (!account) {
+    if (!account || !ticker) {
       return; 
     }
     try {
@@ -615,7 +615,7 @@ export default function CallOptionSet() {
             ],
           }}
         >
-          <span>
+          <Box>
             <Button
               variant="outlined"
               sx={{
@@ -626,11 +626,11 @@ export default function CallOptionSet() {
                 cursor: account ? "pointer" : "not-allowed",
               }}
               onClick={handleSendOrder}
-              disabled={!account}
+              disabled={!account || !ticker}
             >
               {t("SendOrder")}
             </Button>
-          </span>
+          </Box>
         </Tooltip>
       </Box>
     <form onSubmit={handleSendOrder}>
