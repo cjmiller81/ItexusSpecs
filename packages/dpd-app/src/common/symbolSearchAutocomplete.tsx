@@ -60,7 +60,7 @@ const SymbolSearchAutoComplete: React.FC<SymbolSearchProps> = ({ value, onChange
       getOptionLabel={(option: Instrument) =>
         `${option.symbol} (${option.assetType}) - ${option.description}`
       }
-      options={symbols}
+      options={symbols ?? []}
       loading={loading}
       value={value}
       onChange={(_, newValue) => {
