@@ -192,7 +192,7 @@ export default function MyWalletsPage() {
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
         totalAmount = {totalAmount}
-        addWalletModalOpen={addWalletModalOpen} // 👈
+        addWalletModalOpen={addWalletModalOpen}
         setAddWalletModalOpen={setAddWalletModalOpen} 
       />
     </Stack>
