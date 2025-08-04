@@ -633,7 +633,6 @@ export default function PutOptionSet() {
         </Tooltip>
       </Box>
 
-      <form onSubmit={handleSendOrder}>
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <OptionSettingsForm
           ticker={ticker}
@@ -661,6 +660,7 @@ export default function PutOptionSet() {
           setBaSpreadDiff={setBaSpreadDiff}
           borderColor="rgb(143, 23, 15)"
           t={t}
+          onSubmit={handleSendOrder}
         />
         <EntryOrderPanel
           t={t}
@@ -712,8 +712,6 @@ export default function PutOptionSet() {
           </Box>
         </Box>
       </Box>
-      <button type="submit" style={{ display: "none" }}></button>
-      </form>
     </Box>
   );
 }

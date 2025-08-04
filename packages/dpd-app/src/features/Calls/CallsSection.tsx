@@ -633,7 +633,7 @@ export default function CallOptionSet() {
           </Box>
         </Tooltip>
       </Box>
-    <form onSubmit={handleSendOrder}>
+
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <OptionSettingsForm
           ticker={ticker}
@@ -661,6 +661,7 @@ export default function CallOptionSet() {
           setBaSpreadDiff={setBaSpreadDiff}
           borderColor="green"
           t={t}
+          onSubmit={handleSendOrder}
         />
         <EntryOrderPanel
           t={t}
@@ -713,8 +714,6 @@ export default function CallOptionSet() {
           </Box>
         </Box>
       </Box>
-      <button type="submit" style={{ display: "none" }}></button>
-      </form>
     </Box>
   );
 }
