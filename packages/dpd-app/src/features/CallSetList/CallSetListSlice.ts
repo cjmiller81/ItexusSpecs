@@ -39,14 +39,14 @@ export const callSetListSlice = createAppSlice({
           let entryType = "";
           if (strategySettings) {
             switch (strategySettings.entryType) {
-              case EntryType.ENTRY_BUY_ASK:
-                entryType = "BUY_ASK";
+              case EntryType.ENTRY_USE_ASK:
+                entryType = "USE_ASK";
                 break;
-              case EntryType.ENTRY_BUY_BID:
-                entryType = "BUY_BID";
+              case EntryType.ENTRY_USE_BID:
+                entryType = "USE_BID";
                 break;
-              case EntryType.ENTRY_BUY_MID:
-                entryType = "BUY_MID";
+              case EntryType.ENTRY_USE_MID:
+                entryType = "USE_MID";
                 break;
               case EntryType.ENTRY_MARKET:
                 entryType = "MARKET";

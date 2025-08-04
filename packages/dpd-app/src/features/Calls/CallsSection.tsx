@@ -15,13 +15,13 @@ import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
-  const [entryType, setEntryType] = useState<string>("Buy_Ask");
+  const [entryType, setEntryType] = useState<string>("Use_Ask");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
   const [isBreakUpEnabled, setIsBreakUpEnabled] = useState(false);
   const [amount, setAmount] = useState(30000);
   const [breakUp, setBreakUp] = useState(3);
-  const isBuyAsk = entryType === "Buy_Ask";
+  const isBuyAsk = entryType === "Use_Ask";
   const isOffsetValid = offsetPercent >= 0;
   const shouldDisableLaddering = isBuyAsk && isOffsetValid;
   const shouldShowHint = isBuyAsk && isOffsetValid;
@@ -59,7 +59,7 @@ export default function CallOptionSet() {
 
   const resetForm = () => {
     setAccount(undefined);
-    setEntryType("Buy_Ask");
+    setEntryType("Use_Ask");
     setOffsetPercent(0);
     setIsBreakUpEnabled(false);
     setAmount(30000);
@@ -201,7 +201,7 @@ export default function CallOptionSet() {
     const newEntryType = event.target.value;
     setEntryType(newEntryType);
 
-    if (newEntryType === "Buy_Ask" && offsetPercent >= 0) {
+    if (newEntryType === "Use_Ask" && offsetPercent >= 0) {
       setUseLaddering(false);
     }
   };
@@ -210,7 +210,7 @@ export default function CallOptionSet() {
     const newOffset = event.target.value === "" ? offsetPercent : parseFloat(event.target.value);
     setOffsetPercent(newOffset);
 
-    if (entryType === "Buy_Ask" && newOffset >= 0) {
+    if (entryType === "Use_Ask" && newOffset >= 0) {
       setUseLaddering(false);
     }
   };
