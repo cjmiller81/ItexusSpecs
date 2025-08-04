@@ -21,7 +21,7 @@ import { LookupPageSize } from "../Common/fetchLookupPage";
 export type Period = "daily" | "weekly" | "monthly";
 
 interface Props extends BoxProps {
-  title: string;
+  title?: string;
   period: Period;
   onPeriodChange: (period: Period) => void;
   onFromDateChange: (date: Date | null) => void;
@@ -104,7 +104,11 @@ export const HistoricalWalletsWorth = ({
       {...props}
       className="index-modeling-section-container">
       <StyledWalletWorthMenuContainer>
-        <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
+        {title && (
+          <StyledTypographyWalletsWorthTitle alignContent={"center"}>
+            {title}
+          </StyledTypographyWalletsWorthTitle>
+        )}
           <ToggleButtonGroup
             exclusive
             size="small"
@@ -112,7 +116,7 @@ export const HistoricalWalletsWorth = ({
             onChange={(_, newValue) => {
               if (newValue !== null) setSelectedSection(newValue);
             }}
-            sx={{ marginTop: 2 }}
+            sx={{ marginTop: 0 }}
           >
             <ToggleButton
               value="growth"
