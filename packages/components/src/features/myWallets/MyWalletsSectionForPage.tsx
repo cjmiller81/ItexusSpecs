@@ -20,7 +20,6 @@ import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
 import { createWallet, TotalWalletWorthData, useAppDispatch } from "../../slices";
 import { ExpandableRow } from "./TokensRow";
-import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
 import { StyledWalletsTable } from "./WalletsTable";
 import { getWalletsColumns } from "./WalletsTableColumnsDefs";
@@ -35,6 +34,8 @@ interface Props extends BoxProps {
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
   totalAmount: number;
+  addWalletModalOpen: boolean;
+  setAddWalletModalOpen: (open: boolean) => void;
 }
 
 export const MyWalletsSectionForPage = ({
@@ -46,12 +47,14 @@ export const MyWalletsSectionForPage = ({
   totalAmount,
   loading,
   selectedWalletsIds,
+  addWalletModalOpen,
+  setAddWalletModalOpen,
   sx,
   ...props
 }: Props) => {
   const { t } = useTranslation("MyWalletsSection");
   const apiRef = useGridApiRef();
-  const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
+  
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
@@ -60,7 +63,6 @@ export const MyWalletsSectionForPage = ({
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
-  const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
   const dispatch = useAppDispatch();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
 
@@ -70,7 +72,6 @@ export const MyWalletsSectionForPage = ({
       setCreateErrorMessage((resultAction.payload as any)?.error)
     } else {
       setCreateErrorMessage(null);
-      setAddWalletModalOpen(false);
     }
   };
 
@@ -106,27 +107,6 @@ export const MyWalletsSectionForPage = ({
     },
   });
 
-  const handleChainNameChange = (name: string) => {
-    setSelectedService(name);
-  };
-
-  const handleServiceChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    if (value === "" || value === "Kraken" || value === "Coinbase") {
-      setSelectedService(value);
-      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
-    }
-  };
-
-  const handleCancelExchange = () => {
-    setDialogState(["Kraken", "Coinbase"]);
-    setActiveConnection("");
-    setSelectedService("");
-    setOpenExchangeDialog(false);
-    setOpenKrakenDialog(false);
-    setOpenCoinbaseDialog(false);
-  };
-
   //eslint-disable-next-line no-undef
   const onCellClick = async (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
     const stopPropagation = ["expand", "trash", "address", "name"];
@@ -135,9 +115,6 @@ export const MyWalletsSectionForPage = ({
     }
   };
 
-  const handleOpenModal = () => {
-    setOpenExchangeDialog(true);
-  };
 
   useEffect(() => {
     if (selectedService === "Kraken") {
@@ -178,12 +155,6 @@ export const MyWalletsSectionForPage = ({
     onDeleteWallet(id as string);
   };
 
-  const handleExchangeEditClick = (id: GridRowId) => {};
-
-  const handleExchangeDeleteClick = (id: GridRowId) => {
-    setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
-  };
-
   const processRowUpdate = (newRow: GridRowModel<Wallet>, _oldRow: GridRowModel<Wallet>) => {
     const updatedRow = { ...newRow, isNew: false };
     onUpdateWallet(newRow);
@@ -207,19 +178,6 @@ export const MyWalletsSectionForPage = ({
           onCleanupError={() => setCreateErrorMessage(null)}
         />
       )}
-      <StyledWalletWorthContainer>
-        <TotalWalletsWorthCard
-          growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
-          totalWorth={totalAmount}
-        />
-      </StyledWalletWorthContainer>
-      <StyledAdaptivePageBox>
-        <StyledAddWalletButton
-          variant="contained"
-          onClick={() => setAddWalletModalOpen(true)}>
-          {t("AddWalletWeb3")}
-        </StyledAddWalletButton>
-      </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
         <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>

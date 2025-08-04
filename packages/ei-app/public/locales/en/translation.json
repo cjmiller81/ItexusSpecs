@@ -84,7 +84,11 @@
   },
   "MyWalletsPage": {
     "HistoricalWalletsWorth": "Wallets Performance",
-    "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
+    "HistoricalWalletsWorthSeries": "Historical Wallets Worth",
+    "WalletsWeb3": "Web3 Wallets",
+    "WalletsHoldingsOverview": "Wallets Holdings Overview",
+    "TotalValue": "Total Value",
+    "DeFi": "DeFi"
   },
   "UserMenu": {
     "Profile": "Profile",
