@@ -1,17 +1,28 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useTranslation } from "react-i18next";
 import React from "react";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import MovingIcon from "@mui/icons-material/Moving";
+import LayersIcon from "@mui/icons-material/Layers";
+import { fontSize } from "@mui/system";
 
 interface OverviewBlockProps {
   title: string;
   value: string;
   subtitle: string;
   iconColor: string;
+  Icon: React.ElementType;
 }
 
-const OverviewBlock: React.FC<OverviewBlockProps> = ({ title, value, subtitle, iconColor }) => {
+const OverviewBlock: React.FC<OverviewBlockProps> = ({
+  title,
+  value,
+  subtitle,
+  iconColor,
+  Icon,
+}) => {
   const theme = useTheme();
+
   return (
     <Box
       sx={{
@@ -22,7 +33,7 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({ title, value, subtitle, i
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: "6px" }}>
-        <AccountBalanceWalletIcon sx={{ color: iconColor }} />
+        <Icon sx={{ color: iconColor, fontSize:"28px" }} />
         <Typography sx={{ fontSize: "20px", color: "white" }}>{title}</Typography>
       </Box>
       <Box>
@@ -62,20 +73,22 @@ export const WalletsOverviewPanel: React.FC = () => {
         value="$70,087.19"
         subtitle="2 wallets selected"
         iconColor="#4090d7ff"
+        Icon={AccountBalanceWalletIcon}
       />
       <OverviewBlock
         title={t("Tokens")}
         value="$20,152.33"
         subtitle="9 tokens"
         iconColor="#72dd5fff"
+        Icon={MovingIcon}
       />
       <OverviewBlock
         title={t("DeFi")}
         value="$49,934.76"
         subtitle="6 protocols"
         iconColor="#e49a41ff"
+        Icon={LayersIcon}
       />
     </Box>
   );
 };
-
