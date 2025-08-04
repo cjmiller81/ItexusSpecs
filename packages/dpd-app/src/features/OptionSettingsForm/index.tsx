@@ -35,6 +35,7 @@ interface OptionSettingsFormProps {
   setBaSpreadDiff: (value: number) => void;
   borderColor: string;
   t: TFunction;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
@@ -63,6 +64,7 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
   setBaSpreadDiff,
   borderColor,
   t,
+  onSubmit
 }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -83,11 +85,14 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <SymbolSearchAutocomplete
-              value={ticker}
-              onChange={setTicker}
-              placeholder="Enter ticker"
-            />
+            <form onSubmit={onSubmit}>
+              <SymbolSearchAutocomplete
+                value={ticker}
+                onChange={setTicker}
+                placeholder="Enter ticker"
+              />
+              <button type="submit" style={{ display: "none" }}></button>
+            </form>
             <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
             <TextField
               type="number"

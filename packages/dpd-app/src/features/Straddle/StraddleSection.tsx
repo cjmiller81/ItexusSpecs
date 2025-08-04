@@ -626,7 +626,7 @@ export default function StraddleOptionSet() {
           </Box>
         </Tooltip>
       </Box>
-      <form onSubmit={handleSendOrder}>
+
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <OptionSettingsForm
           ticker={ticker}
@@ -654,6 +654,7 @@ export default function StraddleOptionSet() {
           setBaSpreadDiff={setBaSpreadDiff}
           borderColor="#ffd700"
           t={t}
+          onSubmit={handleSendOrder}
         />
         <Box>
           <Box sx={{
@@ -884,8 +885,6 @@ export default function StraddleOptionSet() {
           </Box>
         </Box>
       </Box>
-      <button type="submit" style={{ display: "none" }}></button>
-      </form>
     </Box>
   );
 }
