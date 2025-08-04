@@ -82,9 +82,9 @@ export interface ExitTier {
 }
 
 export enum EntryType {
-  ENTRY_BUY_ASK = 0,
-  ENTRY_BUY_BID = 1,
-  ENTRY_BUY_MID = 2,
+  ENTRY_USE_ASK = 0,
+  ENTRY_USE_BID = 1,
+  ENTRY_USE_MID = 2,
   ENTRY_MARKET = 3,
 }
 
