@@ -34,7 +34,7 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: "6px" }}>
         <Icon sx={{ color: iconColor, fontSize:"28px" }} />
-        <Typography sx={{ fontSize: "20px", color: "white" }}>{title}</Typography>
+        <Typography sx={{ fontSize: "20px", color: theme.palette.mode === "dark" ? "white" : "black", }}>{title}</Typography>
       </Box>
       <Box>
         <Typography sx={{ color: iconColor, fontSize: "26px", fontWeight: "800" }}>
