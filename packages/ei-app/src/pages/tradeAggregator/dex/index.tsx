@@ -43,16 +43,11 @@ export default function Dex() {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography
-        variant="h6"
+        variant="h4"
         component="div"
-        sx={{
-          alignSelf: "flex-start",
-          fontSize: "20px",
-          width: "100%",
-          marginBottom: 2,
-        }}
+        sx={{fontWeight: "bold", mb: 2 }}
       >
-        {"DEX:"}
+        {t("TradeAggregatorDex")}
       </Typography>
 
       <Grid container spacing={2}>
