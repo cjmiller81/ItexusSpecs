@@ -95,10 +95,10 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
           title: t("Decentralized", { ns: "SideBar" }),
           href: "/myWallets/decentralized"
         },
-        {
-          title: t("Centralized", { ns: "SideBar" }),
-          href: "/myWallets/centralized",
-        },
+        // {
+        //   title: t("Centralized", { ns: "SideBar" }),
+        //   href: "/myWallets/centralized",
+        // },
       ],
     },
 

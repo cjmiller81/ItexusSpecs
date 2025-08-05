@@ -356,61 +356,6 @@ export const MyWalletsSection = ({
           checkboxSelection={true}
         />
       </Box>
-
-      <Box>
-      <StyledAdaptivePageBox>
-        <StyledAddWalletButton
-          variant="contained"
-          onClick={handleOpenModal}>
-          {t("AddCentarlizedWallet")}
-        </StyledAddWalletButton>
-        <ExchangeDialog
-          open={openExchangeDialog}
-          title={dialogState}
-          selectedService={dialogState}
-          onClose={handleCancelExchange}
-          onServiceChange={handleServiceChange}
-        />
-
-      <KrakenDialog 
-        open={openKrakenDialog}
-        formik={formik}
-        onClose={handleCancelExchange}
-        onChainNameChange={handleChainNameChange}
-        existingExchanges={exchange}
-        isEditing={isEditing}
-        onUpdateExchange={handleUpdateExchange}
-        editingExchangeName ={editingExchangeName}
-      />
-      </StyledAdaptivePageBox>
-      </Box>
-
-      <StyledWalletsTable
-          loading={exchanges === null && loading}
-          disableVirtualization
-          hideFooter
-          sx={{
-            ...tableScrollSx,
-          }}
-          editMode="row"   
-          getRowId={x => x.exchange_id}
-          checkboxSelection={false}
-          columns={getExchangeAccountColumns({
-            handleEditClick: handleExchangeEditClick,
-            handleDeleteClick: handleExchangeDeleteClick,
-            expandedRows: expandedRows,
-            onExpandClick: handleExpandClick,
-          })}
-          rows={exchange || []}
-          slotProps={{
-            row: {
-              isExpanded: (id: GridRowId) => expandedRows.includes(id),
-            },
-          }}
-          slots={{
-            row: ExpandableChainRow,
-          }}
-        />
     </Box>
   );
 };
