@@ -2,7 +2,6 @@ import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { IndexModelingSection } from "@/features/Investing/IndexModelingSection";
 import { IndexResultsSection } from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
-import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import { HistoricalWalletsWorthMarketCap } from "@/features/MyWallets/HistoricalWalletsWorthMarketCap";
 import {
   fetchHistoricalCapWeightedData,
