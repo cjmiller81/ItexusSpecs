@@ -11,6 +11,7 @@ import { Instrument, scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlic
 import { connectedAccount } from "../strategies/userProfileSlice";
 import OptionSettingsForm from "../OptionSettingsForm";
 import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
+import SchwabConnectButton from "@/common/SchwabConnectButton";
 
 export default function StraddleOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -588,7 +589,9 @@ export default function StraddleOptionSet() {
 
       <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
 
-      <Box sx={{ display: "flex", marginTop: "50px" }}>
+      <Box sx={{ display: "flex",
+          alignItems: "center",
+          marginTop: "50px", }}>
         <Tooltip
           title={t("AccountMustBeSelected")}
           placement="right"
@@ -625,6 +628,12 @@ export default function StraddleOptionSet() {
             </Button>
           </Box>
         </Tooltip>
+
+        {connectedAccounts.length === 0 && (
+          <Box sx={{ marginLeft: !account ? "200px" : "5px" }}>
+            <SchwabConnectButton />
+          </Box>
+        )}
       </Box>
 
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
