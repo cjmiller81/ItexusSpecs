@@ -258,7 +258,8 @@
     "EnteredSymbolNotExist": "Entered symbol does not exist",
     "Exchange": "Exchange",
     "TradeOn": "Trade on",
-    "SwitchCryptoInput": "Switch Crypto Input"
+    "SwitchCryptoInput": "Switch Crypto Input",
+    "TradeAggregatorCex": "Trade Aggregator: Centralized Exchanges"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
