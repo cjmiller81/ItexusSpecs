@@ -12,6 +12,7 @@ import { connectedAccount } from "../strategies/userProfileSlice";
 import OptionSettingsForm from "../OptionSettingsForm";
 import EntryOrderPanel from "../EntryOrderPanel";
 import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
+import SchwabConnectButton from "@/common/SchwabConnectButton";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -595,9 +596,15 @@ export default function CallOptionSet() {
 
       <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
 
-      <Box sx={{ display: "flex", alignItems: "center", marginTop: "50px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          marginTop: "50px",
+        }}
+      >
         <Tooltip
-          title= {t("AccountMustBeSelected")}
+          title={t("AccountMustBeSelected")}
           placement="right"
           arrow
           open={!account}
@@ -632,7 +639,13 @@ export default function CallOptionSet() {
             </Button>
           </Box>
         </Tooltip>
-      </Box>
+
+         {connectedAccounts.length === 0 && (
+            <Box sx={{ marginLeft: !account ? "200px" : "5px" }}>
+              <SchwabConnectButton />
+            </Box>
+          )}
+      </Box> 
 
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
         <OptionSettingsForm
