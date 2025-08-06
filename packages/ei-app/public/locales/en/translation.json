@@ -88,7 +88,9 @@
     "WalletsWeb3": "Web3 Wallets",
     "WalletsHoldingsOverview": "Wallets Holdings Overview",
     "TotalValue": "Total Value",
-    "DeFi": "DeFi"
+    "DeFi": "DeFi",
+    "WalletTokens": "Wallet Tokens",
+    "DeFiPositions": "DeFi Positions"
   },
   "UserMenu": {
     "Profile": "Profile",

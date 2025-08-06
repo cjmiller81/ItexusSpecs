@@ -6,6 +6,7 @@ import { toTotalTokensBalances } from "../utils";
 import { createAppSlice } from "./createAppSlice";
 import { RootState } from "./store";
 import { IExchange } from "../models";
+import { WalletPortfolioResponse } from "../models/wallet/walletPortfolio";
 
 export type Status = "idle" | "loading" | "failed";
 export interface TotalWalletWorthData {
@@ -26,6 +27,7 @@ export interface WalletsState {
   statusTotalWalletWorthFetching: Status;
   selectedWallets: Wallet[];
   currentWalletsFilter: WalletsFilter;
+  portfolioWalletData: WalletPortfolioResponse[];
 }
 
 const initialState: WalletsState = {
@@ -40,6 +42,7 @@ const initialState: WalletsState = {
   statusTotalWalletWorthFetching: "idle",
   selectedWallets: [],
   currentWalletsFilter: { isPersonal: false },
+  portfolioWalletData: [],
 };
 
 type AddressModel = {
@@ -59,7 +62,7 @@ export const walletsSlice = createAppSlice({
           thunkApi.dispatch(fetchWallets(null));
         } catch (error: any) {
           if (error.response && error.response.status === 400) {
-            console.error(error)
+            console.error(error);
             return thunkApi.rejectWithValue({ error: error.response.data });
           }
           return thunkApi.rejectWithValue({ error: "Failed to add wallet" });
@@ -77,6 +80,31 @@ export const walletsSlice = createAppSlice({
         },
       },
     ),
+
+   fetchWalletsPortfolio: create.asyncThunk(
+  async (addresses: string[], thunkApi) => {
+    try {
+      const response = await walletsApi.getWalletsPortfolio(addresses);
+      return response;
+    } catch (error) {
+      return thunkApi.rejectWithValue("Failed to fetch wallet portfolio");
+    }
+  },
+  {
+    pending: state => {
+      state.statstatusCreatingWalletus = "loading";
+    },
+    fulfilled: (state, action: PayloadAction<WalletPortfolioResponse[]>) => {
+      state.statstatusCreatingWalletus = "idle";
+      state.portfolioWalletData = action.payload;
+    },
+    rejected: state => {
+      state.statstatusCreatingWalletus = "failed";
+    },
+  }
+),
+
+
     setWalletsFilter: create.reducer((state, action: PayloadAction<WalletsFilter>) => {
       state.currentWalletsFilter = action.payload;
     }),
@@ -96,10 +124,10 @@ export const walletsSlice = createAppSlice({
           state.wallets = state.wallets!.map(wallet =>
             wallet.address === action.payload.address
               ? {
-                ...wallet,
-                walletName: action.payload.walletName,
-                isPersonal: action.payload.isPersonal,
-              }
+                  ...wallet,
+                  walletName: action.payload.walletName,
+                  isPersonal: action.payload.isPersonal,
+                }
               : wallet,
           );
           state.statusUpdatingWallets = "idle";
@@ -127,7 +155,7 @@ export const walletsSlice = createAppSlice({
         return {
           growPercentage: historicalWalletsData[0].walletValue
             ? (historicalWalletsData[1].walletValue - historicalWalletsData[0].walletValue) /
-            historicalWalletsData[0].walletValue
+              historicalWalletsData[0].walletValue
             : 0,
         };
       },
@@ -188,7 +216,12 @@ export const walletsSlice = createAppSlice({
       async () => {
         const response = await walletsApi.getExchanges();
         const mappedResult = response.map(ex => {
-          const model: IExchange = {apiKey: '', apiSecret: '', exchange_id: ex.id, name: ex.account}
+          const model: IExchange = {
+            apiKey: "",
+            apiSecret: "",
+            exchange_id: ex.id,
+            name: ex.account,
+          };
           return model;
         });
         return mappedResult;
@@ -206,6 +239,7 @@ export const walletsSlice = createAppSlice({
         },
       },
     ),
+
     deleteExchange: create.asyncThunk(
       async (exchange: string) => {
         await walletsApi.deleteExchange(exchange);
@@ -227,5 +261,14 @@ export const walletsSlice = createAppSlice({
   }),
 });
 
-export const { createWallet, deleteWallet, fetchWallets, fetchTotalWalletsWorthData, selectWallets, updateWallet, fetchExchanges, deleteExchange } =
-  walletsSlice.actions;
+export const {
+  createWallet,
+  fetchWalletsPortfolio,
+  deleteWallet,
+  fetchWallets,
+  fetchTotalWalletsWorthData,
+  selectWallets,
+  updateWallet,
+  fetchExchanges,
+  deleteExchange,
+} = walletsSlice.actions;

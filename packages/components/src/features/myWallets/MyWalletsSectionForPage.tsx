@@ -18,12 +18,13 @@ import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
-import { createWallet, TotalWalletWorthData, useAppDispatch } from "../../slices";
-import { ExpandableRow } from "./TokensRow";
+import { createWallet, TotalWalletWorthData, useAppDispatch, useAppSelector } from "../../slices";
+
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
-import { StyledWalletsTable } from "./WalletsTable";
-import { getWalletsColumns } from "./WalletsTableColumnsDefs";
 import { useFormik } from "formik";
+import { DexWalletsTable } from "./DexWalletTable";
+import { getDexWalletsColumns } from "./DexWalletsTableColumnsDefs";
+import { ExpandableRowDex } from "./TokensRowDex";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -65,6 +66,7 @@ export const MyWalletsSectionForPage = ({
   const [activeConnection, setActiveConnection] = useState<string>("");
   const dispatch = useAppDispatch();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
+  const { portfolioWalletData } = useAppSelector( state => state.wallets);
 
   const addWallet = async (walletAddressModel: AddressModel) => {
     const resultAction = await dispatch(createWallet(walletAddressModel));
@@ -191,7 +193,7 @@ export const MyWalletsSectionForPage = ({
             />
           )}
         </Box>
-        <StyledWalletsTable
+        <DexWalletsTable
           loading={wallets === null && loading}
           disableVirtualization
           hideFooter
@@ -210,7 +212,7 @@ export const MyWalletsSectionForPage = ({
             },
           }}
           slots={{
-            row: ExpandableRow,
+            row: ExpandableRowDex,
           }}
           onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
             onSelectedChanged(
@@ -220,7 +222,7 @@ export const MyWalletsSectionForPage = ({
           onCellClick={onCellClick}
           apiRef={apiRef}
           getRowId={x => x.address}
-          columns={getWalletsColumns({
+          columns={getDexWalletsColumns({
             handleCancelClick: handleCancelClick,
             handleSaveClick: handleSaveClick,
             handleEditClick: handleEditClick,
