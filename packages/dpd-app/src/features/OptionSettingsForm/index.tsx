@@ -85,15 +85,18 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} style={{ flexGrow: 1 }}>
               <SymbolSearchAutocomplete
                 value={ticker}
                 onChange={setTicker}
                 placeholder="Enter ticker"
               />
-              <button type="submit" style={{ display: "none" }}></button>
+              <button type="submit" style={{ display: "none" }} />
             </form>
-            <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <Typography sx={{ color: "white", minWidth: "95px" }}>{t("DTERange")}</Typography>
             <TextField
               type="number"
               value={dteMin}
@@ -104,7 +107,7 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
               sx={{
                 bgcolor: "#1E1E1E",
                 input: { color: "white", textAlign: "center", padding: "10px 12px" },
-                width: "100px",
+                width: "109px",
                 "& .MuiOutlinedInput-root": { height: "40px" },
               }}
             />
@@ -119,25 +122,25 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
               sx={{
                 bgcolor: "#1E1E1E",
                 input: { color: "white", textAlign: "center", padding: "10px 12px" },
-                width: "100px",
+                width: "110px",
                 "& .MuiOutlinedInput-root": { height: "40px" },
               }}
             />
           </Box>
 
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Checkbox
                 checked={requireActiveBid}
                 onChange={(e) => setRequireActiveBid(e.target.checked)}
                 sx={{ color: "gray", p: 0 }}
               />
-              <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
+              <Typography sx={{ fontSize: "13px", color: "white" }}>
                 {t("RequireActiveBid")}
               </Typography>
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <Checkbox
                 checked={isBAMaxEnabled}
                 onChange={() => setIsBAMaxEnabled(!isBAMaxEnabled)}
@@ -161,7 +164,6 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
                 sx={{
                   bgcolor: "#1E1E1E",
                   width: "67px",
-                  marginLeft: "10px",
                   input: {
                     color: isBAMaxEnabled ? "white" : "gray",
                     padding: "10px 12px",
@@ -173,8 +175,6 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
                   },
                   "& .MuiOutlinedInput-root": {
                     height: "40px",
-                    display: "flex",
-                    alignItems: "center",
                     borderColor: "gray",
                   },
                 }}
@@ -182,8 +182,8 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
             </Box>
           </Box>
 
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography sx={{ color: "white" }}>{t("MinContractAsk")}</Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography sx={{ color: "white", minWidth: "120px" }}>{t("MinContractAsk")}</Typography>
             <TextField
               type="number"
               value={minContractAsk}
@@ -192,11 +192,11 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
               sx={{
                 bgcolor: "#1E1E1E",
                 input: { color: "white", textAlign: "center" },
-                width: "70px",
+                width: "100px",
                 "& .MuiOutlinedInput-root": { height: "40px" },
               }}
             />
-            <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+            <Box sx={{ display: "flex",marginLeft:"12px", alignItems: "center", gap: 1 }}>
               <Checkbox
                 checked={tradeAsSet}
                 onChange={(e) => setTradeAsSet(e.target.checked)}
@@ -240,7 +240,7 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
               />
             </Box>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, marginBottom:"15px" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography sx={{ color: "white" }}>{t("MinVolume")}</Typography>
               <TextField
                 type="number"
