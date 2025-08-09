@@ -133,7 +133,7 @@ export default function MyWalletsPage() {
       </Typography>
 
      <Grid container spacing={4} alignItems="flex-start">
-      <Grid item xs={12} md={3}>
+      <Grid item xs={12} md={2.2}>
         <Stack spacing={2}>
           <StyledAddWalletButton
             variant="contained"
@@ -147,7 +147,7 @@ export default function MyWalletsPage() {
         </Stack>
       </Grid>
 
-      <Grid item xs={12} md={9}>
+      <Grid item xs={12} md={9.8}>
         <Grid
           item
           sx={{

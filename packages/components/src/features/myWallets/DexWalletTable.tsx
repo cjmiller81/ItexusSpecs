@@ -1,9 +1,11 @@
 import { darken, lighten, styled } from "@mui/material/styles"
 import { BasicTable } from "../../components/DataDisplay"
+import { width } from "@mui/system"
 
 export const DexWalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
-  minHeight: 300,
+  minHeight: 500,
+  height:"auto",
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
@@ -11,14 +13,17 @@ export const DexWalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    maxHeight: "300px",
+    minHeight: 500,
+    width:"100%",
     backgroundColor:
       theme.palette.mode === "dark"
         ? "#1f2937"
         : "transparent",
   }, 
     "& .MuiDataGrid-row.Mui-selected": {
-    backgroundColor: "#1f2937 !important", 
+    backgroundColor: theme.palette.mode === "dark"
+        ? "#1f2937"
+        : "white", 
     },
   "&.MuiDataGrid-root.MuiDataGrid-withBorderColor": {
     borderWidth: "1px",

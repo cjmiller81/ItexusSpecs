@@ -21,6 +21,7 @@ import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import CustomTooltip from "components/src/components/common/CustomTooltip";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -66,22 +67,6 @@ export default function PrefilterTokensSection({
 
     fetchData();
   }, []);
-
-  const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip
-      {...props}
-      arrow
-      classes={{ popper: className }}
-    />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.arrow}`]: {
-      color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
-    },
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
-      color: "white",
-    },
-  }));
 
   const darkThemeStyles = {
     cursor: "default !important",

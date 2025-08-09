@@ -36,7 +36,7 @@ export interface UnderlyingToken {
   balanceUSD: number;
   price: number;
   network: string;
-  nestedTokens: string[];
+  nestedTokens: UnderlyingToken[];
 }
 
 export interface Metadata {

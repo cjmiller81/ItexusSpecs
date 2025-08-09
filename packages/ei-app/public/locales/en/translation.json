@@ -9,7 +9,9 @@
     "Yes": "Yes",
     "No": "No",
     "Selected": "selected",
-    "ToggleView": "Toggle View"
+    "ToggleView": "Toggle View",
+    "Position": "Position",
+    "Type": "Type"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
@@ -90,7 +92,10 @@
     "TotalValue": "Total Value",
     "DeFi": "DeFi",
     "WalletTokens": "Wallet Tokens",
-    "DeFiPositions": "DeFi Positions"
+    "DeFiPositions": "DeFi Positions",
+    "HideDust": "Hide dust",
+    "ShowDust": "Show Dust",
+    "NFTs": "NFTs"
   },
   "UserMenu": {
     "Profile": "Profile",
@@ -498,7 +503,17 @@
     "SlippageTolerance": "Slippage Tolerance",
     "Send": "Send",
     "SelectToken": "Select Token",
-    "SelectChain": "Select Chain"
+    "SelectChain": "Select Chain",
+    "Token": "Token",
+    "Network": "Network",
+    "Balance": "Balance",
+    "Value": "Value",
+    "ProcentOfPotfolio": "% of Potfolio"
+  },
+
+  "WalletDeFiOverview": {
+    "Claimable": "Claimable",
+    "Supplied": "Supplied"
   },
   "SymbolLookup": {
     "Search": "Search"

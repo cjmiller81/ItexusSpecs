@@ -73,9 +73,10 @@ export const walletsApi = {
   },
 
   getWalletsPortfolio: async (addresses: string[]): Promise<WalletPortfolioResponse[]> => {
-    return appAxios.post(`/api/portfolio/batch`, addresses);
+      const response = await appAxios.post(`/api/portfolio/batch`, addresses);
+      return response.data;
+    }
   }
-}
 
 function ToUtcDateFormatted(date: Date) {
   return moment(date).utc().format(apiDateFormatString)

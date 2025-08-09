@@ -26,6 +26,7 @@ import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import CustomTooltip from "components/src/components/common/CustomTooltip";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -88,22 +89,6 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 
     XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
   };
-
-  const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip
-      {...props}
-      arrow
-      classes={{ popper: className }}
-    />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.arrow}`]: {
-      color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
-    },
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
-      color: "white",
-    },
-  }));
 
   const darkThemeStyles = {
     cursor: "default !important",
