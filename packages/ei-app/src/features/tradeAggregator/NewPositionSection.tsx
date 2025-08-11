@@ -33,6 +33,7 @@ import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
 import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
+import { OneInchQuoteResponse } from "components/src/models/oneInchQuoteResponse";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -77,10 +78,15 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [allDexs, setAllDexs] = useState<Dex[]>([]);
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
   const [noRouteOpen, setNoRouteOpen] = useState(false);
-
+  const [invalidQuote, setInvalidQuote] = useState<OneInchQuoteResponse[]>([]);
+  
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
   };
+
+  const invalidQuoteError = () => {
+    return invalidQuote.map(x => x.error).join(', ');
+  }
 
   const clearAllDexSelections = () => {
     setSelectedDexs([]);
@@ -108,18 +114,18 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     }
   };
 
-useEffect(() => {
-  const hasError = Boolean(error || quoteError);
+  useEffect(() => {
+    const hasError = Boolean(error || quoteError);
 
-  if (hasError && !hasShownErrorOnce) {
-    setNoRouteOpen(true);
-    setHasShownErrorOnce(true);
-  }
+    if (hasError && !hasShownErrorOnce) {
+      setNoRouteOpen(true);
+      setHasShownErrorOnce(true);
+    }
 
-  if (!hasError && hasShownErrorOnce) {
-    setHasShownErrorOnce(false);
-  }
-}, [error, quoteError, hasShownErrorOnce]);
+    if (!hasError && hasShownErrorOnce) {
+      setHasShownErrorOnce(false);
+    }
+  }, [error, quoteError, hasShownErrorOnce]);
 
 
   const coinGeckoChainId = (chain: string) => {
@@ -131,7 +137,7 @@ useEffect(() => {
             case "polygon": return 137;
             case "avalanche": return 43114;
           }
-        };
+  };
 
   useEffect(() => {
     if (symbolOptionSwap && selectedChain && isDexEnabled) {
@@ -174,8 +180,8 @@ useEffect(() => {
       setSelectedChain("");
       setNewBalance("");
     const addresses: string[] = selectedWallet.chainAssets.flatMap(
-  (chainAsset) => chainAsset.walletAssets.map((token) => token.tokenAddress)
-).filter((address): address is string => typeof address === 'string' && address !== '');
+    (chainAsset) => chainAsset.walletAssets.map((token) => token.tokenAddress)
+  ).filter((address): address is string => typeof address === 'string' && address !== '');
 
 
     setTokenAddresses(addresses);
@@ -210,7 +216,7 @@ useEffect(() => {
 
 
   useEffect(() => {
-  const fetchIcons = async () => {
+    const fetchIcons = async () => {
     if (tokenAddresses.length === 0) return;
 
     const nonEmptyChainsCount = selectedWallet?.chainAssets?.filter(
@@ -246,12 +252,10 @@ useEffect(() => {
     } catch (error) {
       console.error('Error loading icons:', error);
     }
-  };
+    };
 
-  fetchIcons();
-}, [tokenAddresses, filteredRows]);
-
- 
+    fetchIcons();
+  }, [tokenAddresses, filteredRows]);
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -322,7 +326,10 @@ useEffect(() => {
         } catch (err) {
           console.error("Error fetching gas:", err);
         }
-        const processedData = quote.map((q) => {
+
+        setInvalidQuote(quote.filter(x => x.error));
+
+        const processedData = quote.filter(x => !x.error).map((q) => {
           const firstProtocol = q.protocols[0][0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
           const name = names[0];
@@ -345,14 +352,18 @@ useEffect(() => {
             });
           }
 
-          const estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
-          const price =  estAmount / parseFloat(newBalance)
+          let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
+          const price =  estAmount / parseFloat(newBalance);
+          const gasUSD = parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3));
+
+           //(Qty * Price)-((Est Gas Fees USD / Price of Swap For Token))
+          estAmount = estAmount - (gasUSD / swapForToken.price)
 
           return {
             name: names[0],
             gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
             price: price.toFixed(4),
-            gasUSD: parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
+            gasUSD: gasUSD,
             estAmount: estAmount.toFixed(4),
             deepLink,
           };
@@ -1295,6 +1306,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       )}
                   </Table>
                 </TableContainer>
+                {invalidQuote.length > 0 && lastUpdated && (
+                  <Typography sx={{ color: theme.palette.mode === "dark" ? "#f14f36ff" : "#be3f04ff", fontSize: "0.75rem", marginTop: 1 }}>
+                    {invalidQuoteError()}.
+                  </Typography>
+                )}
                 {quoteData.length > 0 && lastUpdated && (
                   <Typography sx={{ color: theme.palette.mode === "dark" ? "#f1b036ff" : "#be7d04ff", fontSize: "0.75rem", marginTop: 1 }}>
                     {t("MarketDataUpdatedAs", { value: lastUpdated })}

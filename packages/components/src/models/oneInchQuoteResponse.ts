@@ -24,5 +24,6 @@ export interface TokenInfo {
     dstAmount: string;
     protocols: ProtocolStep[][][];
     gas: number;
+    error?: string;
   }
   
