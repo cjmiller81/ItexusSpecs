@@ -91,7 +91,7 @@ const collectAllTokenSymbols = (tokens: UnderlyingToken[]): string[] => {
 };
 
 const getPositionName = (position: DeFiPosition): { name: string; tokens: string } => {
-  const allSymbols = [...new Set(collectAllTokenSymbols(position.underlyingTokens))];
+  const allSymbols = Array.from(new Set(collectAllTokenSymbols(position.underlyingTokens)));
   const sortedSymbols = [...allSymbols].sort();
 
   if (position.metadata?.label || position.metadata?.groupLabel) {
