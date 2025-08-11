@@ -4,7 +4,7 @@ import React from "react";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import MovingIcon from "@mui/icons-material/Moving";
 import LayersIcon from "@mui/icons-material/Layers";
-import { fontSize } from "@mui/system";
+import AppsIcon from '@mui/icons-material/Apps';
 
 interface OverviewBlockProps {
   title: string;
@@ -29,20 +29,20 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
         backgroundColor: theme.palette.mode === "dark" ? "#232628" : "lightgray",
         borderRadius: "8px",
         padding: "8px 18px",
-        marginBottom: "14px",
+        marginBottom: "13px",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: "6px" }}>
-        <Icon sx={{ color: iconColor, fontSize:"28px" }} />
-        <Typography sx={{ fontSize: "20px", color: theme.palette.mode === "dark" ? "white" : "black", }}>{title}</Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: "4px" }}>
+        <Icon sx={{ color: iconColor, fontSize:"24px" }} />
+        <Typography sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "white" : "black", }}>{title}</Typography>
       </Box>
       <Box>
-        <Typography sx={{ color: iconColor, fontSize: "26px", fontWeight: "800" }}>
+        <Typography sx={{ color: iconColor, fontSize: "22px", fontWeight: "800" }}>
           {value}
         </Typography>
       </Box>
       <Box>
-        <Typography sx={{ color: "gray", fontSize: "17px", fontWeight: "450" }}>
+        <Typography sx={{ color: "gray", fontSize: "16px", fontWeight: "450" }}>
           {subtitle}
         </Typography>
       </Box>
@@ -88,6 +88,13 @@ export const WalletsOverviewPanel: React.FC = () => {
         subtitle="6 protocols"
         iconColor="#e49a41ff"
         Icon={LayersIcon}
+      />
+      <OverviewBlock
+        title={t("NFTs")}
+        value="$6,263.12"
+        subtitle="6 protocols"
+        iconColor="#800080"
+        Icon={AppsIcon}
       />
     </Box>
   );

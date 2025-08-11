@@ -10,6 +10,7 @@ import {
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
+  fetchWalletsPortfolio,
   selectWallets,
   toTableTokensModel,
   updateWallet,
@@ -50,6 +51,13 @@ export default function MyWalletsPage() {
       );
     }
   };
+
+  useEffect(() => {
+  if (wallets && wallets.length > 0) {
+    const addresses = wallets.map(w => w.address);
+    dispatch(fetchWalletsPortfolio(addresses));
+  }
+}, [wallets, dispatch]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
@@ -125,7 +133,7 @@ export default function MyWalletsPage() {
       </Typography>
 
      <Grid container spacing={4} alignItems="flex-start">
-      <Grid item xs={12} md={3}>
+      <Grid item xs={12} md={2.2}>
         <Stack spacing={2}>
           <StyledAddWalletButton
             variant="contained"
@@ -139,7 +147,7 @@ export default function MyWalletsPage() {
         </Stack>
       </Grid>
 
-      <Grid item xs={12} md={9}>
+      <Grid item xs={12} md={9.8}>
         <Grid
           item
           sx={{
