@@ -1175,7 +1175,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
        
               </Grid>
-               <Grid item xs={12} sx={{ marginTop: 3 }}>
+              <Grid item xs={12} sx={{ marginTop: 3 }}>
                 <TableContainer
                   component={Paper}
                   sx={{
@@ -1189,7 +1189,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
                 }}>
                       <TableRow>
-                        <TableCell>{t("DEX")}</TableCell>
+                        <TableCell sx={{ pl: 2 }}>{t("DEX")}</TableCell>
                         <TableCell>{t("Est. Price")}</TableCell>
                         <TableCell>
                           {t("EstGasFees", {
@@ -1200,6 +1200,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         </TableCell>
                         <TableCell>{t("EstGasFeesUSD")}</TableCell>
                         <TableCell>{t("EstAmount")}</TableCell>
+                        <TableCell sx={{ width: 120 }} />
                       </TableRow>
                     </TableHead>
 
@@ -1209,23 +1210,40 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       quoteData &&
                       !errorMessage &&
                       !quoteError && (
-                        <TableBody sx={{
-                          backgroundColor:
-                            theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
-                        }}>
+                        <TableBody
+                          sx={{
+                            backgroundColor:
+                              theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                          }}
+                        >
                           {quoteData.map((row, index) => {
                             const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
                             const dexUrl = dexWebsites[dexKey];
+                            const isBest = index === 0;
 
                             return (
-                              <TableRow key={index}>
-                                <TableCell sx={{ color: "#539eec" }}>
+                              <TableRow
+                                key={index}
+                                sx={{
+                                  ...(isBest && {
+                                    borderLeft: "4px solid #1e88e5",
+                                     backgroundColor:
+                                      theme.palette.mode === "light"
+                                        ? "rgba(74, 158, 255, 0.08)"
+                                        : "rgba(74, 158, 255, 0.15)",
+                                  }),
+                                }}
+                              >
+                                <TableCell sx={{ color: "#23751aff", pl: 2 }}>
                                   {dexUrl ? (
                                     <a
                                       href={row.deepLink ?? dexUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      style={{ color: "#539eec", textDecoration: "underline" }}
+                                      style={{
+                                        color: "#1e88e5",
+                                        textDecoration: "underline",
+                                      }}
                                     >
                                       {dexKey}
                                     </a>
@@ -1237,6 +1255,39 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 <TableCell>{row.gas}</TableCell>
                                 <TableCell>{row.gasUSD}</TableCell>
                                 <TableCell>{row.estAmount}</TableCell>
+                                <TableCell align="right" sx={{ pr: 2 }}>
+                                  {isBest && (
+                                    <Chip
+                                      label={
+                                        <Box
+                                          component="span"
+                                          sx={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: 0.5,
+                                          }}
+                                        >
+                                          <Typography component="span" variant="body2">
+                                            ⭐
+                                          </Typography>
+                                          <Typography component="span" variant="body2" fontWeight={700}>
+                                            {t("BEST")}
+                                          </Typography>
+                                        </Box>
+                                      }
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: "#1e88e5",
+                                        color: "#fff",
+                                        fontWeight: 600,
+                                        borderRadius: "999px",
+                                        px: 1.2,
+                                        py: 0.4,
+                                        boxShadow: "none"
+                                      }}
+                                    />
+                                  )}
+                                </TableCell>
                               </TableRow>
                             );
                           })}
