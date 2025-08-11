@@ -78,58 +78,55 @@ const WalletDeFiOverview: React.FC<WalletDeFiOverviewProps> = ({ walletAddress }
   };
 
   const isLPToken = (token: UnderlyingToken): boolean => {
-    return token.nestedTokens?.length > 0 || /(LP|-)/i.test(token.symbol || "");
-  };
+  return token.nestedTokens?.length > 0 || /(LP|-)/i.test(token.symbol || "");
+};
 
 const collectAllTokenSymbols = (tokens: UnderlyingToken[]): string[] => {
   return tokens.flatMap((token) => {
-    const symbols: string[] = [];
-    if (token.symbol) {
-      symbols.push(token.symbol);
+    if (token.nestedTokens?.length > 0) {
+      return collectAllTokenSymbols(token.nestedTokens);
     }
-    if (token.nestedTokens && token.nestedTokens.length > 0) {
-      symbols.push(...collectAllTokenSymbols(token.nestedTokens));
-    }
-    return symbols;
+    return token.symbol ? [token.symbol] : [];
   });
 };
 
-  const getPositionName = (position: DeFiPosition): { name: string; tokens: string } => {
-    const allSymbols = [...new Set(collectAllTokenSymbols(position.underlyingTokens))];
-    const sortedSymbols = [...allSymbols].sort();
+const getPositionName = (position: DeFiPosition): { name: string; tokens: string } => {
+  const allSymbols = [...new Set(collectAllTokenSymbols(position.underlyingTokens))];
+  const sortedSymbols = [...allSymbols].sort();
 
-    if (position.metadata?.label || position.metadata?.groupLabel) {
-      return {
-        name: position.metadata.label || position.metadata.groupLabel,
-        tokens: allSymbols.join(" / "),
-      };
-    }
-
-    const lpToken = position.underlyingTokens.find(isLPToken);
-    if (lpToken) {
-      const lpPrefixMatch = lpToken.symbol?.match(/^([A-Z0-9]*LP)/);
-      const lpPrefix = lpPrefixMatch ? lpPrefixMatch[1] : null;
-      
-      return {
-        name: lpPrefix 
-          ? `${lpPrefix} ${sortedSymbols.join('-')}`
-          : sortedSymbols.join('+'),
-        tokens: allSymbols.join(" / "),
-      };
-    }
-
-    if (allSymbols.length === 1) {
-      return {
-        name: allSymbols[0],
-        tokens: allSymbols[0],
-      };
-    }
-
+  if (position.metadata?.label || position.metadata?.groupLabel) {
     return {
-      name: position.protocol,
+      name: position.metadata.label || position.metadata.groupLabel,
       tokens: allSymbols.join(" / "),
     };
+  }
+
+  const lpToken = position.underlyingTokens.find(isLPToken);
+  if (lpToken && sortedSymbols.length >= 2) {
+    const lpPrefixMatch = lpToken.symbol?.match(/^([A-Z0-9]+LP)/);
+    const lpPrefix = lpPrefixMatch ? lpPrefixMatch[1] : null;
+
+    return {
+      name: lpPrefix
+        ? `${lpPrefix}-${sortedSymbols.join('+')}`
+        : sortedSymbols.join('+'),
+      tokens: sortedSymbols.join(" / "),
+    };
+  }
+
+  if (allSymbols.length === 1) {
+    return {
+      name: allSymbols[0],
+      tokens: allSymbols[0],
+    };
+  }
+
+  return {
+    name: position.protocol,
+    tokens: sortedSymbols.join(" / "),
   };
+};
+
 
   const calculateValues = (position: DeFiPosition) => {
     let supplied = 0;
