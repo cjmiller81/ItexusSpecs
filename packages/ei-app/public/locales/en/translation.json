@@ -335,7 +335,8 @@
     "SelectUpToSpecificDEXs": "Select up to 4 specific DEXs to compare. Shows the best overall route first, then your",
     "ChosenExchangesRankedByPerformance": "chosen exchanges ranked by performance.",
     "TargetedDEXComparison": "✓ Targeted DEX comparison",
-    "SideBySidePerformanceAnalysis": "✓ Side-by-side performance analysis"
+    "SideBySidePerformanceAnalysis": "✓ Side-by-side performance analysis",
+    "BEST": "BEST"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
