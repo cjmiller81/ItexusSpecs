@@ -333,7 +333,8 @@
     "SelectTokenToSwapFrom": "Select token to swap from",
     "EnterSwapAmount": "Enter swap amount",
     "SelectTokenToSwapTo": "Select token to swap to",
-    "Selectсhain": "Select сhain"
+    "Selectсhain": "Select сhain",
+    "BEST": "BEST"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
