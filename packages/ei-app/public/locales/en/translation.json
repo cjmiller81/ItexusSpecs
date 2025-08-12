@@ -328,6 +328,11 @@
     "SelectTokenToSwapTo": "Select token to swap to",
     "Selectсhain": "Select сhain"
   },
+  "SessionWatcher": {
+    "SessionExpiringSoon": "Session Expiring Soon",
+    "YourSessionWillAutomaticallyExpireIn": "Your session will automatically expire in",
+    "UseRENEWButtonInTheTop": "Use the RENEW button in the top bar to extend your session"
+  },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
     "ComingSoon": "Coming soon..."
