@@ -4,6 +4,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useAppSelector } from "../../../slices";
 import { useTranslation } from "react-i18next";
 import { filterDustTokens } from "../../../helpers/filterDustTokens";
+import { WALLET_COLORS } from "../../../constants/colors";
 
 interface WalletTokensOverviewProps {
   walletAddress: string;
@@ -167,14 +168,14 @@ const columns: GridColDef<typeof rows[number]>[] = [
             overflow: "hidden",
           }}
         >
-          <Box
-            sx={{
-              height: "100%",
-              width: `${Math.min(params.value, 100)}%`,
-              bgcolor: theme.palette.mode === "dark" ? "#72dd5f" : "#106201ff",
-              transition: "width 0.3s ease-in-out",
-            }}
-          />
+                                               <Box
+                sx={{
+                  height: "100%",
+                  width: `${Math.min(params.value, 100)}%`,
+                  bgcolor: theme.palette.mode === "dark" ? WALLET_COLORS.tokens.dark : WALLET_COLORS.tokens.light,
+                  transition: "width 0.3s ease-in-out",
+                }}
+              />
         </Box>
       </Box>
     ),

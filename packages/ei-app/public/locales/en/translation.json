@@ -95,7 +95,12 @@
     "DeFiPositions": "DeFi Positions",
     "HideDust": "Hide dust",
     "ShowDust": "Show Dust",
-    "NFTs": "NFTs"
+    "NFTs": "NFTs",
+    "NFT": "NFT",
+    "Network": "Network",
+    "EstimatedValue": "Estimated Value",
+    "OfPortfolio": "% of Portfolio",
+    "NFTHoldings": "NFT Holdings"
   },
   "UserMenu": {
     "Profile": "Profile",
