@@ -62,7 +62,6 @@ export function Header({
     }
   }, [session]);
 
-  // Update countdown every minute
   useEffect(() => {
     if (showCountdown && session && session.expires_at) {
       const expirationTime = new Date(session.expires_at).getTime();
@@ -70,11 +69,14 @@ export function Header({
       const updateCountdown = () => {
         const msLeft = expirationTime - Date.now();
         const minutesLeft = Math.ceil(msLeft / (60 * 1000));
-        setRemainingMinutes(minutesLeft);
 
         if (minutesLeft <= 0) {
+          setRemainingMinutes(0);
           handleLogOut();
+          return;
         }
+
+        setRemainingMinutes(minutesLeft);
       };
 
       updateCountdown();
@@ -83,7 +85,7 @@ export function Header({
     }
   }, [showCountdown, session]);
 
-  // Handler for renewing the session
+
   const handleRenew = () => {
     renewSession();
   };
@@ -100,13 +102,13 @@ export function Header({
           {open ? <MenuOpen /> : <Menu />}
         </IconButton>
         <Box display="flex" alignItems="center" flex={1} justifyContent="space-between">
-          {/* Left section – header title */}
+
           <Typography color="textPrimary" variant="h6" noWrap component="div">
             {title}
           </Typography>
-          {/* Right section – countdown block, theme toggler, and user menu */}
+
           <Box display="flex" alignItems="center" gap={3}>
-            {showCountdown && remainingMinutes !== null && (
+            {showCountdown && remainingMinutes !== null && remainingMinutes >= 0 && (
               <Box
                 display="flex"
                 alignItems="center"
