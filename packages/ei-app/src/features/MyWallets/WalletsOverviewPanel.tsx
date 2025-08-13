@@ -5,13 +5,16 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import MovingIcon from "@mui/icons-material/Moving";
 import LayersIcon from "@mui/icons-material/Layers";
 import AppsIcon from '@mui/icons-material/Apps';
+import { useAppSelector } from "components";
 
 interface OverviewBlockProps {
   title: string;
   value: string;
-  subtitle: string;
+  subtitle?: string;
   iconColor: string;
   Icon: React.ElementType;
+  compact?: boolean;
+  prominent?: boolean;
 }
 
 const OverviewBlock: React.FC<OverviewBlockProps> = ({
@@ -20,6 +23,8 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
   subtitle,
   iconColor,
   Icon,
+  compact = false,
+  prominent = false,
 }) => {
   const theme = useTheme();
 
@@ -28,24 +33,26 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
       sx={{
         backgroundColor: theme.palette.mode === "dark" ? "#232628" : "lightgray",
         borderRadius: "8px",
-        padding: "8px 18px",
+        padding: prominent ? "14px 20px" : compact ? "6px 16px" : "8px 18px",
         marginBottom: "13px",
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginBottom: "4px" }}>
-        <Icon sx={{ color: iconColor, fontSize:"24px" }} />
-        <Typography sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "white" : "black", }}>{title}</Typography>
+        <Icon sx={{ color: iconColor, fontSize: prominent ? "32px" : compact ? "22px" : "24px" }} />
+        <Typography sx={{ fontSize: prominent ? "18px" : "16px", color: theme.palette.mode === "dark" ? "white" : "black", }}>{title}</Typography>
       </Box>
       <Box>
-        <Typography sx={{ color: iconColor, fontSize: "22px", fontWeight: "800" }}>
+        <Typography sx={{ color: iconColor, fontSize: prominent ? "30px" : compact ? "20px" : "22px", fontWeight: "800" }}>
           {value}
         </Typography>
       </Box>
-      <Box>
-        <Typography sx={{ color: "gray", fontSize: "16px", fontWeight: "450" }}>
-          {subtitle}
-        </Typography>
-      </Box>
+      {subtitle && (
+        <Box>
+          <Typography sx={{ color: "gray", fontSize: prominent ? "16px" : "14px", fontWeight: "450" }}>
+            {subtitle}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };
@@ -53,6 +60,40 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
 export const WalletsOverviewPanel: React.FC = () => {
   const { t } = useTranslation("MyWalletsPage");
   const theme = useTheme();
+  const { portfolioWalletData, selectedWallets } = useAppSelector((state) => state.wallets);
+
+  const formatCurrencyWithSymbol = React.useCallback((value: number, locale = "en-US") => {
+    return `$${value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }, []);
+
+  const selectedAddresses = (selectedWallets || []).map((w: any) => w.address);
+
+  const aggregateValues = React.useMemo(() => {
+    let tokensTotal = 0;
+    let defiTotal = 0;
+    let nftTotal = 0;
+
+    if (Array.isArray(portfolioWalletData) && selectedAddresses.length > 0) {
+      portfolioWalletData
+        .filter(w => selectedAddresses.includes(w.walletAddress))
+        .forEach(w => {
+          const tokenHoldings = w.tokenHoldings || [];
+          const deFiPositions = w.deFiPositions || [];
+          const nftHoldings = w.nftHoldings || [];
+
+          tokensTotal += tokenHoldings.reduce((sum, t) => sum + (t.balanceUSD || 0), 0);
+          defiTotal += deFiPositions.reduce((sum, d) => sum + (d.valueUSD || 0), 0);
+          nftTotal += nftHoldings.reduce((sum, n) => sum + (n.estimatedValue || 0), 0);
+        });
+    }
+
+    return {
+      tokensTotal,
+      defiTotal,
+      nftTotal,
+      totalValue: tokensTotal + defiTotal + nftTotal,
+    };
+  }, [portfolioWalletData, selectedAddresses]);
 
   return (
     <Box
@@ -62,6 +103,9 @@ export const WalletsOverviewPanel: React.FC = () => {
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
         padding: 2,
+        overflow: "hidden",
+        wordBreak: "break-word",
+        '& *': { minWidth: 0 },
       }}
     >
       <Typography sx={{ fontWeight: "500", marginBottom: "12px" }}>
@@ -70,31 +114,32 @@ export const WalletsOverviewPanel: React.FC = () => {
 
       <OverviewBlock
         title={t("TotalValue")}
-        value="$70,087.19"
-        subtitle="2 wallets selected"
+        value={formatCurrencyWithSymbol(aggregateValues.totalValue)}
+        subtitle={`${selectedWallets?.length || 0} wallets selected`}
         iconColor="#4090d7ff"
         Icon={AccountBalanceWalletIcon}
+        prominent
       />
       <OverviewBlock
         title={t("Tokens")}
-        value="$20,152.33"
-        subtitle="9 tokens"
+        value={formatCurrencyWithSymbol(aggregateValues.tokensTotal)}
         iconColor="#72dd5fff"
         Icon={MovingIcon}
+        compact
       />
       <OverviewBlock
         title={t("DeFi")}
-        value="$49,934.76"
-        subtitle="6 protocols"
+        value={formatCurrencyWithSymbol(aggregateValues.defiTotal)}
         iconColor="#e49a41ff"
         Icon={LayersIcon}
+        compact
       />
       <OverviewBlock
         title={t("NFTs")}
-        value="$6,263.12"
-        subtitle="6 protocols"
+        value={formatCurrencyWithSymbol(aggregateValues.nftTotal)}
         iconColor="#c084fc"
         Icon={AppsIcon}
+        compact
       />
     </Box>
   );
