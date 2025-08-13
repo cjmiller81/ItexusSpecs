@@ -93,7 +93,7 @@ export const WalletsOverviewPanel: React.FC = () => {
         title={t("NFTs")}
         value="$6,263.12"
         subtitle="6 protocols"
-        iconColor="#800080"
+        iconColor="#c084fc"
         Icon={AppsIcon}
       />
     </Box>

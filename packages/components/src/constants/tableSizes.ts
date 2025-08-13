@@ -1,0 +1,11 @@
+export const TABLE_SIZES = {
+  HEIGHT: 400,
+  PROGRESS_BAR_WIDTH: 64,
+  PROGRESS_BAR_HEIGHT: 8,
+  NETWORK_BADGE_MIN_WIDTH: 64,
+} as const;
+
+export const DATA_GRID_STYLES = {
+  BORDER_RADIUS: 2,
+  CELL_PADDING_Y: 1,
+} as const;
