@@ -1,7 +1,6 @@
 import { Box, useTheme } from "@mui/system";
-import { GridRow } from "@mui/x-data-grid";
+import { GridRow, GridRowProps } from "@mui/x-data-grid";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
-import { toTableTokensModels } from "../../utils";
 import { useTranslation } from "react-i18next";
 import WalletTokensOverview from "./DEX/WalletTokensOverview";
 import MovingIcon from "@mui/icons-material/Moving";
@@ -9,87 +8,229 @@ import { Typography } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 import { useAppSelector } from "../../slices";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { useMemo, useState } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { filterDustTokens } from "../../helpers/filterDustTokens";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WalletDeFiOverview from "./DEX/WalletDeFiOverview";
+import WalletNftOverview from "./DEX/WalletNftOverview";
+import AppsIcon from '@mui/icons-material/Apps';
+import { WalletPortfolioResponse, NftHolding } from "../../models/wallet/walletPortfolio";
+import { formatCurrencyWithSymbol } from "../../utils/currencyUtils";
+import { useDustToggle } from "../../hooks/useDustToggle";
+import { WALLET_COLORS, getTokensColor } from "../../constants/colors";
 
-export const ExpandableRowDex = (props: any) => {
-  const rows = toTableTokensModels(props.row.chainAssets);
+const NFT_MIN_VALUE = 0.01;
+const INVALID_NFT_PATTERN = "INVALID AND WORTHLESS";
+
+interface ExpandableRowDexProps extends GridRowProps {
+  row: {
+    address: string;
+    [key: string]: any;
+  };
+  isExpanded: (rowId: string | number) => boolean;
+  rowId: string | number;
+}
+
+interface WalletData {
+  wallet: WalletPortfolioResponse | undefined;
+  filteredTokens: any[];
+  filteredTokensValue: number;
+  totalDeFiValue: number;
+  validNFTs: NftHolding[];
+  totalNftValue: number;
+  nftCount: number;
+}
+
+const useWalletData = (walletAddress: string, showDust: boolean): WalletData => {
+  const { portfolioWalletData } = useAppSelector(state => state.wallets);
+
+  return useMemo(() => {
+    if (!Array.isArray(portfolioWalletData)) {
+      return {
+        wallet: undefined,
+        filteredTokens: [],
+        filteredTokensValue: 0,
+        totalDeFiValue: 0,
+        validNFTs: [],
+        totalNftValue: 0,
+        nftCount: 0,
+      };
+    }
+
+    const wallet = portfolioWalletData.find(
+      (w) => w.walletAddress === walletAddress
+    );
+
+    if (!wallet) {
+      return {
+        wallet: undefined,
+        filteredTokens: [],
+        filteredTokensValue: 0,
+        totalDeFiValue: 0,
+        validNFTs: [],
+        totalNftValue: 0,
+        nftCount: 0,
+      };
+    }
+
+    const filteredTokens = showDust 
+      ? wallet.tokenHoldings || []
+      : filterDustTokens(wallet.tokenHoldings || []);
+
+    const filteredTokensValue = filteredTokens.reduce(
+      (sum, token) => sum + (token.balanceUSD || 0), 
+      0
+    );
+
+    const defiPositions = wallet.deFiPositions || [];
+    const totalDeFiValue = defiPositions.reduce(
+      (sum: number, pos) => sum + (pos.valueUSD || 0), 
+      0
+    );
+
+    const filterValidNFTs = (nfts: NftHolding[]): NftHolding[] =>
+      nfts?.filter((nft) => {
+        const isInvalid = nft.collectionName?.includes(INVALID_NFT_PATTERN);
+        const hasMinimalValue = nft.estimatedValue > NFT_MIN_VALUE;
+        return !isInvalid && hasMinimalValue;
+      }) || [];
+
+    const validNFTs = filterValidNFTs(wallet.nftHoldings || []);
+    const totalNftValue = validNFTs.reduce((sum, nft) => sum + nft.estimatedValue, 0);
+    const nftCount = wallet.nftHoldings?.length || 0;
+
+    return {
+      wallet,
+      filteredTokens,
+      filteredTokensValue,
+      totalDeFiValue,
+      validNFTs,
+      totalNftValue,
+      nftCount,
+    };
+  }, [portfolioWalletData, walletAddress, showDust]);
+};
+
+const useFormattedCurrency = (value: number): string => {
+  return useMemo(() => {
+    return formatCurrencyWithSymbol(value);
+  }, [value]);
+};
+
+const SectionHeader: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  value?: string;
+  color: string;
+  onToggleDust?: () => void;
+  showDust?: boolean;
+}> = ({ icon, title, value, color, onToggleDust, showDust }) => {
   const { t } = useTranslation("MyWalletsPage");
-  const { portfolioWalletData } = useAppSelector( state => state.wallets);
-  const [showDust, setShowDust] = useState(false);
   const theme = useTheme();
 
-  if (!Array.isArray(portfolioWalletData)) return null;
-    const wallet = portfolioWalletData.find(
-    (w) => w.walletAddress === props.row.address
+  return (
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      mb={1}
+    >
+      <Box display="flex" alignItems="center">
+        {icon}
+        <Typography variant="h5" gutterBottom sx={{ 
+          fontWeight: 600, 
+          mb: 0, 
+          fontSize: "1.125rem", // text-lg equivalent
+          color: color 
+        }}>
+          {title}
+        </Typography>
+      </Box>
+
+      <Box display="flex" alignItems="center">
+                 {value && (
+           <Typography
+             variant="h6"
+             sx={{ color, fontWeight: 500, mr: 3 }}
+           >
+             {value}
+           </Typography>
+         )}
+
+        {onToggleDust && (
+          <Box 
+            display="flex" 
+            alignItems="center" 
+            sx={{ cursor: "pointer" }}
+            onClick={onToggleDust}
+          >
+                         {showDust ? (
+               <VisibilityOffIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
+             ) : (
+               <RemoveRedEyeIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
+             )}
+            <Typography variant="body2" color="text.secondary">
+              {showDust ? t("HideDust") : t("ShowDust")}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
-  const filteredTokens = showDust 
-    ? wallet?.tokenHoldings || []
-    : filterDustTokens(wallet?.tokenHoldings || []);
+};
 
-  const filteredTokensValue = filteredTokens.reduce(
-    (sum, token) => sum + (token.balanceUSD || 0), 
-    0
+export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
+  const { t } = useTranslation("MyWalletsPage");
+  const theme = useTheme();
+  const { showDust, toggleDust } = useDustToggle();
+
+  const {
+    filteredTokens,
+    filteredTokensValue,
+    totalDeFiValue,
+    totalNftValue,
+    nftCount,
+  } = useWalletData(props.row.address, showDust);
+
+  const formattedTokensValue = useFormattedCurrency(filteredTokensValue);
+  const formattedDeFiValue = useFormattedCurrency(totalDeFiValue);
+  const formattedNftValue = useFormattedCurrency(totalNftValue);
+
+  const tokensIcon = (
+    <MovingIcon 
+      sx={{ 
+        color: getTokensColor(theme.palette.mode === "dark"), 
+        mr: 1, 
+        fontSize: "40px" 
+      }} 
+    />
   );
 
-  const defiPositions = wallet?.deFiPositions || [];
+  const defiIcon = (
+    <LayersIcon sx={{ color: WALLET_COLORS.defi, mr: 1, fontSize: "40px" }} />
+  );
 
-  const totalDeFiValue = useMemo(() => {
-    return defiPositions.reduce((sum: number, pos) => sum + (pos.valueUSD || 0), 0);
-  }, [defiPositions]);
+  const nftIcon = (
+    <AppsIcon sx={{ color: WALLET_COLORS.nft, mr: 1, fontSize: "40px" }} />
+  );
 
   return (
-    <Box sx={{ width:"100%" }}>
+    <Box sx={{ width: "100%" }}>
       <GridRow {...props} />
       {props.isExpanded(props.rowId) && (
         <Box px={3} py={1}>
-          <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{paddingRight:"25px"}}>
+          <Box display="flex" flexDirection="column" alignItems="flex-start">
             <Box sx={{ width: "100%" }}>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={1}
-              >
-                <Box display="flex" alignItems="center">
-                  <MovingIcon sx={{ color: theme.palette.mode === "dark" ? "#72dd5f" : "#106201ff", pr: 1, fontSize: "40px" }} />
-                  <Typography variant="h5" gutterBottom sx={{ fontWeight: 450, mb: 0 }}>
-                    {t("WalletTokens")}
-                  </Typography>
-                </Box>
+                             <SectionHeader
+                 icon={tokensIcon}
+                 title={t("WalletTokens")}
+                 value={formattedTokensValue}
+                 color={getTokensColor(theme.palette.mode === "dark")}
+                 onToggleDust={toggleDust}
+                 showDust={showDust}
+               />
 
-                <Box display="flex" alignItems="center">
-                  <Typography
-                    variant="h6"
-                    sx={{ color: theme.palette.mode === "dark" ? "#72dd5f" : "#106201ff", fontWeight: 500, mr: 3 }}
-                  >
-                    ${filteredTokensValue.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </Typography>
-
-                  <Box 
-                    display="flex" 
-                    alignItems="center" 
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => setShowDust(!showDust)}
-                  >
-                    {showDust ? (
-                      <VisibilityOffIcon sx={{ color: "#aaa", fontSize: 22, mr: 0.5 }} />
-                    ) : (
-                      <RemoveRedEyeIcon sx={{ color: "#aaa", fontSize: 22, mr: 0.5 }} />
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      {showDust ? t("HideDust") : t("ShowDust")}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-
-              <Box sx={{width:"100%"}}> 
+              <Box sx={{ width: "100%" }}> 
                 <WalletTokensOverview 
                   walletAddress={props.row.address}
                   tokens={filteredTokens}
@@ -98,40 +239,29 @@ export const ExpandableRowDex = (props: any) => {
             </Box>
           </Box>
           
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mt={3}
-            mb={1}
-          >
-            <Box display="flex" alignItems="center">
-              <LayersIcon sx={{ color: "#e49a41", pr: 1, fontSize: "40px" }} />
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 450, mb: 0 }}>
-                {t("DeFiPositions")}
-              </Typography>
-            </Box>
-
-            <Typography
-              variant="h6"
-              sx={{ color: "#e49a41", fontWeight: 500, mr: 3 }}
-            >
-              ${totalDeFiValue.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </Typography>
-          </Box>
+                     <SectionHeader
+             icon={defiIcon}
+             title={t("DeFiPositions")}
+             value={formattedDeFiValue}
+             color={WALLET_COLORS.defi}
+           />
 
           <WalletDeFiOverview walletAddress={props.row.address} />
+
+          {nftCount > 0 && (
+            <Box mt={4} sx={{ width: "100%" }}>
+                             <SectionHeader
+                 icon={nftIcon}
+                 title={t("NFTHoldings")}
+                 value={formattedNftValue}
+                 color={WALLET_COLORS.nft}
+               />
+
+              <WalletNftOverview walletAddress={props.row.address} />
+            </Box>
+          )}
         </Box>
       )}
     </Box>
   );
-};
-
-const tableScrollSx = {
-  "& .MuiDataGrid-virtualScroller": {
-    ...nativeBarSx,
-  },
 };
