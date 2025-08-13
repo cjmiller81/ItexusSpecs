@@ -81,4 +81,3 @@ export const filterValidNFTs = (nfts: any[]): any[] => {
     return !isInvalid && hasMinimalValue;
   });
 };
-

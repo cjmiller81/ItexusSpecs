@@ -14,4 +14,3 @@ export const useDataGridStyles = () => {
     },
   }), [theme.palette.mode]);
 };
-
