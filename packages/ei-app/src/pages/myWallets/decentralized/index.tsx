@@ -133,11 +133,24 @@ export default function MyWalletsPage() {
       </Typography>
 
      <Grid container spacing={4} alignItems="flex-start">
-      <Grid item xs={12} md={2.2}>
-        <Stack spacing={2}>
+      <Grid item xs={12} md={3} sx={{ minWidth: 0 }}>
+        <Stack spacing={2} sx={{ minWidth: 0 }}>
           <StyledAddWalletButton
             variant="contained"
-            sx={{ width: "max-content" }}
+            sx={{
+              width: "max-content",
+              maxWidth: "100%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              [theme.breakpoints.between('md','lg')]: {
+                fontSize: "0.8125rem",
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 6,
+                paddingBottom: 6,
+              },
+            }}
             onClick={() => setAddWalletModalOpen(true)}
           >
             {t("AddWalletWeb3", { ns: "MyWalletsSection" })}
@@ -147,7 +160,7 @@ export default function MyWalletsPage() {
         </Stack>
       </Grid>
 
-      <Grid item xs={12} md={9.8}>
+      <Grid item xs={12} md={9}>
         <Grid
           item
           sx={{
