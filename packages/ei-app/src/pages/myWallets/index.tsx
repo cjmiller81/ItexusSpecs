@@ -9,6 +9,7 @@ import {
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
+  fetchWalletsPortfolio,
   selectWallets,
   toTableTokensModel,
   updateWallet,

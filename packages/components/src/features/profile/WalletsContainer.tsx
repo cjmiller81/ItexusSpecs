@@ -8,6 +8,7 @@ import {
   fetchExchanges,
   fetchTotalWalletsWorthData,
   fetchWallets,
+  fetchWalletsPortfolio,
   selectWallets,
   updateWallet,
 } from "../../slices/walletsSlice"
@@ -24,6 +25,13 @@ export const WalletsContainer = ({ ...props }: Props) => {
   const [totalAmount,setTotalAmount] = useState<number>(0);
 
   const dispatch = useAppDispatch()
+
+   useEffect(() => {
+      if (wallets && wallets.length > 0) {
+        const addresses = wallets.map(w => w.address);
+        dispatch(fetchWalletsPortfolio(addresses));
+      }
+    }, [wallets, dispatch]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null))

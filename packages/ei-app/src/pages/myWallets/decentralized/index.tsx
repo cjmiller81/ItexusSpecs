@@ -53,11 +53,11 @@ export default function MyWalletsPage() {
   };
 
   useEffect(() => {
-  if (wallets && wallets.length > 0) {
-    const addresses = wallets.map(w => w.address);
-    dispatch(fetchWalletsPortfolio(addresses));
-  }
-}, [wallets, dispatch]);
+    if (wallets && wallets.length > 0) {
+      const addresses = wallets.map(w => w.address);
+      dispatch(fetchWalletsPortfolio(addresses));
+    }
+  }, [wallets, dispatch]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
