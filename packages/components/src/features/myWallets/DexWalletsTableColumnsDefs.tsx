@@ -11,6 +11,8 @@ import i18next, { t } from "i18next"
 import { ChangeEvent } from "react"
 import { AppToolTip } from "../../components"
 import { Wallet } from "../../models"
+import CustomTooltip from "../../components/common/CustomTooltip"
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 interface ColumnsProps {
   handleSaveClick: (id: GridRowId) => void
@@ -154,19 +156,38 @@ export const getDexWalletsColumns = ({
       field: "expand",
       headerName: "",
       sortable: false,
-      editable: false,
-      filterable: false,
-      disableColumnMenu: true,
-      minWidth: 55,
-      maxWidth: 55,
-      renderCell: props => {
-        const isExpanded = expandedRows.includes(props.id)
+      width: 50,
+      renderCell: (params) => {
+        const isExpanded = expandedRows.includes(params.id);
         return (
-          <IconButton onClick={() => onExpandClick(props.id, !isExpanded)}>
-            {isExpanded ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-        )
-      },
+          <CustomTooltip title={t("ToggleView", { ns: "Common" })} arrow>
+            <IconButton
+              size="small"
+              sx={{
+                cursor: "pointer",
+                pointerEvents: "auto",
+                transform: isExpanded ? "rotate(90deg)" : "rotate(-90deg)",
+                padding: 0.5
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onExpandClick(params.id, !isExpanded);
+              }}
+            >
+              <ArrowBackIosNewOutlinedIcon
+                sx={{
+                  fontSize: 16,
+                  "& path": {
+                    stroke: "currentColor",
+                    strokeWidth: 2,
+                    fill: "currentColor",
+                  },
+                }}
+              />
+            </IconButton>
+          </CustomTooltip>
+        );
+      }
     },
   ]
 }
