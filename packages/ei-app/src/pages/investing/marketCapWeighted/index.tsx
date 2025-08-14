@@ -4,6 +4,7 @@ import { IndexResultsSection } from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import { HistoricalWalletsWorthMarketCap } from "@/features/MyWallets/HistoricalWalletsWorthMarketCap";
+import { InfoBadge } from "@/components/InfoBadge";
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -21,7 +22,7 @@ import {
 } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Wallet } from "@/models/Wallet/Wallet";
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
@@ -135,13 +136,26 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
 
   return (
     <Stack gap={2}>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 0 }}>
-        {t("MarketCapWeighted")}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }}>
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{ fontWeight: "bold" }}>
+          {t("MarketCapWeighted")}
+        </Typography>
+        <InfoBadge
+          title="What's Market Cap Investing"
+          tooltipContent={
+            <>
+              <strong style={{ color: '#60a5fa' }}>{t("MarketCapExplained")}</strong>
+              <br /><br />
+              {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
+              <br /><br />
+              {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a>
+            </>
+          }
+        />
+      </Box>
 
       <PrefilterTokensSection
         dataSource={dataSource}
