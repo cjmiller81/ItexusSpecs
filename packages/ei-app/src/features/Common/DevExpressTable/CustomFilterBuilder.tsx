@@ -6,6 +6,7 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import CloseIcon from "@mui/icons-material/Close";
 import TuneIcon from "@mui/icons-material/Tune";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -97,6 +98,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [openLogicGate, setOpenLogicGate] = useState(true);
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
+  const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
 
   useImperativeHandle(ref, () => ({
     onUpdateFilter: (filter) => {
@@ -116,7 +118,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       }
     },
     onOpenBuilder: (status) => {
-      setFilterBuilderOpen(status);
+      handleFilterBuilderOpen(status);
     }
   }));
 
@@ -135,7 +137,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setSelectedSavedFilter(null);
       setFilterName("");
     }
-  }, [filterToAppply, open, sortedPredefinedFilters]);
+  }, [filterToAppply, sortedPredefinedFilters]);
+
+  useEffect(() => {
+    if (filterBuilderOpen) {
+      setShowGuidanceBanner(true);
+    }
+  }, [filterBuilderOpen]);
 
   useEffect(() => {
     if (!selectedSavedFilter) return;
@@ -148,8 +156,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       return;
     }
 
-    setFilterValue(event.value);
+    setFilterValue(event.value);   
   };
+
+  const handleFilterBuilderClick = (e: React.MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (target.closest('.dx-filterbuilder-action-icon.dx-icon-plus')) {
+    setShowGuidanceBanner(false);
+  }
+};
 
   const handleApplyFilter = () => {
     if (filterValue) { 
@@ -177,6 +192,17 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     setSelectedSavedFilter(null);
     setFilterValue(undefined);
     setFilterName("");
+  };
+
+  const handleDismissGuidanceBanner = () => {
+    setShowGuidanceBanner(false);
+  };
+
+  const handleFilterBuilderOpen = (status: boolean) => {
+    setFilterBuilderOpen(status);
+    if (status) {
+      setShowGuidanceBanner(true);
+    }
   };
 
   const handleSaveFilter = () => {
@@ -395,12 +421,64 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         backgroundColor: theme.palette.background.paper,
                       },
                     }}>
-                    <FilterBuilderDef
-                      value={filterValue as any[]}
-                      fields={filterBuilderFields}
-                      onValueChanged={handleFilterValueChanged}
-                    />
+                    <Box 
+                      onClick={handleFilterBuilderClick}
+                      sx={{
+                        "& .dx-filterbuilder.dx-widget": {
+                          backgroundColor: theme.palette.background.paper,
+                        },
+                      }}>
+                      <FilterBuilderDef
+                        value={filterValue as any[]}
+                        fields={filterBuilderFields}
+                        onValueChanged={handleFilterValueChanged}
+                      />
+                    </Box>
                   </Box>
+                  
+                  {showGuidanceBanner && (!filterValue || filterValue.length === 0) && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '40px',
+                        maxWidth: '350px',
+                        background: 'linear-gradient(135deg, #3798ddff 0%, #2723edff 100%)',
+                        borderRadius: '8px',
+                        padding: '12px 16px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        zIndex: 1000,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ fontSize: '18px', display: 'flex', alignItems: 'center' }}>
+                          💡
+                        </Box>
+                        <Typography 
+                          sx={{ 
+                            fontSize: '13px', 
+                            lineHeight: 1.4,
+                            flex: 1,
+                            color: "white"
+                          }}
+                        >
+                          {t("ClickTheButtonToAddYourFirstFilterCondition")}
+                        </Typography>
+                        <IconButton
+                          onClick={handleDismissGuidanceBanner}
+                          size="small"
+                          sx={{ 
+                            color: '#1976d2',
+                            p: 0.5,
+                            ml: 1,
+                            flexShrink: 0
+                          }}
+                        >
+                          <CloseIcon sx={{ fontSize: '16px', color:"white" }} />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  )}
                 </FilterBuilderComponentContainer>
                 <ClearButton
                   disabled={!filterValue || !filterValue.length || filterValue.length == 0}
@@ -746,6 +824,7 @@ export default CustomFilterBuilder;
 const FilterBuilderComponentContainer = styled(Box)(({ theme }) => ({
   minHeight: theme.spacing(16),
   minWidth: theme.spacing(60),
+  position: 'relative',
 }));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
