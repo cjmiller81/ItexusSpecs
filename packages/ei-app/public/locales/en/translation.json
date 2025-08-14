@@ -37,7 +37,8 @@
     "LogicGateDiagramAND": "About the AND Gate",
     "LogicGateDiagramNOTAND": "About the NOT And (NAND) Gate",
     "LogicGateDiagramNORGate": "About the OR Gate",
-    "LogicGateDiagramOR": "About the Not Or (NOR)"
+    "LogicGateDiagramOR": "About the Not Or (NOR)",
+    "ClickTheButtonToAddYourFirstFilterCondition": "Click the + button to add your first filter condition. See videos below for more guidance."
   },
   "CalendarEventTile": {
     "Proof": "Proof",
