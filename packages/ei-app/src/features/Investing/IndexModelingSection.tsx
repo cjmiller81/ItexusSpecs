@@ -10,6 +10,10 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import Link from "next/link";
+import { Typography } from "@mui/material";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -33,8 +37,9 @@ export const IndexModelingSection = ({
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
-
   const theme = useTheme();
+  const [isInfoPanelExpanded, setIsInfoPanelExpanded] = useState<boolean>(false);
+
   const onExport = () => {
     const updatedAssets = tableAssets.map(asset => ({
       symbol: asset.symbol,
@@ -125,6 +130,126 @@ export const IndexModelingSection = ({
             min={0}
             onChange={(_, value) => onTokensChange(value || 0)}
           />
+          
+          <Box sx={{ width: "100%" }}>
+            <Box 
+              sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 1, 
+                cursor: "pointer",
+                "&:hover": { opacity: 0.8 }
+              }}
+              onClick={() => setIsInfoPanelExpanded(!isInfoPanelExpanded)}
+            >
+              <Typography 
+                sx={{ 
+                  color: "#1976d2", 
+                  fontSize: "14px",
+                  fontWeight: 500
+                }}
+              >
+                {t("HowTheTokensInputImpactsYourIndex")}
+              </Typography>
+              {isInfoPanelExpanded ? (
+                <ExpandLessIcon sx={{ fontSize: "16px", color: "#1976d2" }} />
+              ) : (
+                <ExpandMoreIcon sx={{ fontSize: "16px", color: "#1976d2" }} />
+              )}
+            </Box>
+            
+            {isInfoPanelExpanded ? (
+              <Box 
+                sx={{ 
+                  mt: 1,
+                  p: 2,
+                  borderRadius: "8px",
+                  backgroundColor: theme.palette.mode === "dark" ? "rgba(25, 118, 210, 0.1)" : "rgba(25, 118, 210, 0.05)",
+                  borderLeft: "4px solid #1976d2",
+                  borderTop: "1px solid rgba(25, 118, 210, 0.2)",
+                  borderRight: "1px solid rgba(25, 118, 210, 0.2)",
+                  borderBottom: "1px solid rgba(25, 118, 210, 0.2)"
+                }}
+              >
+                <Typography 
+                  sx={{ 
+                    color: "#1976d2", 
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    mb: 1,
+                    backgroundColor:"transparent"
+                  }}
+                >
+                  {t("IndexContributionDetails")}
+                </Typography>
+                <Typography 
+                  sx={{ 
+                    fontSize: "13px",
+                    lineHeight: 1.5
+                  }}
+                >
+                  {t("TheQuantityYouChooseDeterminesHowManyTokens")}
+                </Typography>
+                <Box component="ul" sx={{ mt: 1, mb: 1, pl: 2 }}>
+                  <Typography component="li" sx={{ fontSize: "13px", mb: 0.5 }}>
+                    {t("IncreaseTheWeightOfThisPosition")}
+                  </Typography>
+                  <Typography component="li" sx={{ fontSize: "13px", mb: 0.5 }}>
+                    {t("AffectYourOverallPortfolioBalance")}
+                  </Typography>
+                  <Typography component="li" sx={{ fontSize: "13px", mb: 0.5 }}>
+                    {t("ImpactRiskDistribution")}
+                  </Typography>
+                </Box>
+                <Typography 
+                  sx={{ 
+                    fontSize: "13px",
+                    lineHeight: 1.5
+                  }}
+                >
+                  {t("SeeThis")}
+                  <Link 
+                    href="https://www.investopedia.com/terms/c/capitalizationweightedindex.asp" 
+                    target="_blank"
+                    style={{ 
+                      color: "#1976d2", 
+                      textDecoration: "underline",
+                      fontWeight: 500
+                    }}
+                  >
+                    {t("InvestopediaPage")}
+                  </Link>
+                  {t("ForMoreInformation")}
+                </Typography>
+              </Box>
+            ) : (<Box 
+                sx={{ 
+                  mt: 1,
+                  paddingLeft:"10px",
+                  paddingTop:"5px",
+                  alignItems:"center",
+                  borderRadius: "8px",
+                  backgroundColor: theme.palette.mode === "dark" ? "rgba(25, 118, 210, 0.1)" : "rgba(25, 118, 210, 0.05)",
+                  borderLeft: "4px solid #1976d2",
+                  borderTop: "1px solid rgba(25, 118, 210, 0.2)",
+                  borderRight: "1px solid rgba(25, 118, 210, 0.2)",
+                  borderBottom: "1px solid rgba(25, 118, 210, 0.2)"
+                }}
+              >
+                <Typography 
+                  sx={{ 
+                    color: "#1976d2", 
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    mb: 1,
+                    backgroundColor:"transparent"
+                  }}
+                >
+                  {t("IndexContributionDetails")}
+                </Typography>
+                </Box>)}
+          </Box>
+          
           {isEqualWeight && (
             <AppPercentageField
               label={t("EqualWeight")}
