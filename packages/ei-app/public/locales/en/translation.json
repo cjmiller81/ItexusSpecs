@@ -236,7 +236,16 @@
     "TokensToTrade":"Tokens To Trade",
     "TokenAlreadyExists": "Token already exists on the selected chain!",
     "ClickToLoadCurrentPosition": "Click to load Current Position",
-    "TradeAggregatorDex": "Trade Aggregator: Decentralized Exchanges"
+    "TradeAggregatorDex": "Trade Aggregator: Decentralized Exchanges",
+    "HowTheTokensInputImpactsYourIndex": "How the 'Tokens' input impacts your Index",
+    "IndexContributionDetails": "Index Contribution Details",
+    "TheQuantityYouChooseDeterminesHowManyTokens": "The quantity you choose determines how many tokens contribute to your Index weighting. Higher quantities will:",
+    "IncreaseTheWeightOfThisPosition": "Increase the weight of this position",
+    "AffectYourOverallPortfolioBalance": "Affect your overall portfolio balance",
+    "ImpactRiskDistribution": "Impact risk distribution",
+    "SeeThis": "See this ",
+    "InvestopediaPage": "Investopedia page",
+    "ForMoreInformation": " for more information."
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
