@@ -16,7 +16,8 @@ import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Sl
 import { defaultTotalTokensCount } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { Wallet } from "@/models/Wallet/Wallet";
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import { InfoBadge } from "@/components/InfoBadge";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
@@ -130,13 +131,26 @@ export default function MarketCapEqualWeightedPage() {
 
   return (
     <Stack gap={2}>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 0 }}>
-        {t("MarketCapEqualWeight")}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }}>
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{ fontWeight: "bold" }}>
+          {t("MarketCapEqualWeight")}
+        </Typography>
+        <InfoBadge
+          title="What's Market Cap Investing"
+          tooltipContent={
+            <>
+              <strong style={{ color: '#60a5fa' }}>Market Cap Explained</strong>
+              <br /><br />
+              See this <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>article</a> to learn about Market Cap Weighted Index investing
+              <br /><br />
+              For further information, please also see this <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>article</a>
+            </>
+          }
+        />
+      </Box>
 
       <PrefilterTokensSection
         persisKey="EqualWeightedPrefilterTokens"

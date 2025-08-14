@@ -497,7 +497,12 @@
     "IndexResults": "Index Results versus Wallet",
     "RunTest": "Run Test",
     "MarketCapWeighted": "Market Cap Weighted Index Investing Strategy Model",
-    "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model"
+    "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model",
+    "MarketCapExplained": "Market Cap Explained",
+    "SeeThis": "See this",
+    "Article": "article",
+    "ToLearnAboutMarketCapWeightedIndexInvesting": "to learn about Market Cap Weighted Index investing",
+    "ForFurtherInformationPleaseAlsoSeeThis": "For further information, please also see this"
   },
   "TradingPage": {
     "TradingCharts": "Trading Charts"
