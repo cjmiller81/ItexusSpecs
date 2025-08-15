@@ -89,15 +89,8 @@ const optionTradeSlice = createSlice({
         state.subProfiles = action.payload.map(profile => ({
           ...profile,
           exitTiers: profile.exitTiers?.map((tier: any) => {
-            let exitTypeValue: number;
-            if (typeof tier.exitTypeValue === 'string') {
-              exitTypeValue = tier.exitTypeValue.toLowerCase() === 'limit' || tier.exitTypeValue === '0' ? 0 : 1;
-            } else {
-              exitTypeValue = tier.exitTypeValue;
-            }
             return {
               ...tier,
-              exitTypeValue
             };
           }) || []
         }));

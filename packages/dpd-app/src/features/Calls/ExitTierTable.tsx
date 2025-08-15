@@ -36,7 +36,6 @@ const columns: Column[] = [
 const defaultInitialRow: ExitTier = {
   exitTierPositionPercent: 100,
   exitType: 'Limit',
-  exitTypeValue: 0,
   optionStopOffsetPercent: 5,
   optionTargetOffsetPercent: 9,
   stockStopOffsetPercent: 1,
@@ -156,7 +155,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
 
   const handleExitTypeChange = (index: number, event: SelectChangeEvent<string>) => {
     const exitType = event.target.value;
-    const exitTypeValue = exitType.toLowerCase() === 'limit' ? 0 : 1;
   
     setRows((prevRows) => {
       const updatedRows = prevRows.map((row, i) =>
@@ -164,7 +162,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
           ? {
               ...row,
               exitType,
-              exitTypeValue,
               optionStopOffsetPercent: 5,
               stockStopOffsetPercent: 1,
             }
@@ -187,7 +184,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
     const newRow: ExitTier = {
       exitTierPositionPercent: remainingPercent,
       exitType: 'Limit',
-      exitTypeValue: 0,
       optionStopOffsetPercent: 5,
       optionTargetOffsetPercent: 9,
       stockStopOffsetPercent: 1,

@@ -74,7 +74,6 @@ export interface OrderSubmit {
 export interface ExitTier {
   exitTierPositionPercent: number;
   exitType: ExitType;
-  exitTypeValue: number;
   optionTargetOffsetPercent: number;
   optionStopOffsetPercent: number;
   stockTargetOffsetPercent: number;
