@@ -197,8 +197,9 @@ export const MyWalletsSectionForPage = ({
           loading={wallets === null && loading}
           disableVirtualization
           hideFooter
+          $hasExpandedRows={expandedRows.length > 0}
           sx={{
-            ...tableScrollSx,
+           ...tableScrollSx,
           }}
           scrollbarSize={7}
           editMode="row"
