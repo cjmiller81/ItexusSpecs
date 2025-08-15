@@ -2,16 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { optionTradeService } from "@/services/optionTradeService";
 import { SubProfile } from "@/models/SubProfile";
 
-interface ExitTier {
-  exitTierPositionPercent: number;
-  exitType: string;
-  exitTypeValue: string;
-  optionStopOffsetPercent: number;
-  optionTargetOffsetPercent: number;
-  stockStopOffsetPercent: number;
-  stockTargetOffsetPercent: number;
-}
-
 interface OptionTradeState {
   subProfiles: SubProfile[];
   loading: boolean;
@@ -96,7 +86,21 @@ const optionTradeSlice = createSlice({
       })
       .addCase(fetchSubProfiles.fulfilled, (state, action: PayloadAction<SubProfile[]>) => {
         state.loading = false;
-        state.subProfiles = action.payload;
+        state.subProfiles = action.payload.map(profile => ({
+          ...profile,
+          exitTiers: profile.exitTiers?.map((tier: any) => {
+            let exitTypeValue: number;
+            if (typeof tier.exitTypeValue === 'string') {
+              exitTypeValue = tier.exitTypeValue.toLowerCase() === 'limit' || tier.exitTypeValue === '0' ? 0 : 1;
+            } else {
+              exitTypeValue = tier.exitTypeValue;
+            }
+            return {
+              ...tier,
+              exitTypeValue
+            };
+          }) || []
+        }));
       })
       .addCase(fetchSubProfiles.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
