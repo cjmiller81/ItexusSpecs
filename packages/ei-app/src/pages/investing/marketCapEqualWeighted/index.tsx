@@ -142,11 +142,11 @@ export default function MarketCapEqualWeightedPage() {
           title="What's Market Cap Investing"
           tooltipContent={
             <>
-              <strong style={{ color: '#60a5fa' }}>Market Cap Explained</strong>
+              <strong style={{ color: '#60a5fa' }}>{t("MarketCapExplained")}</strong>
               <br /><br />
-              See this <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>article</a> to learn about Market Cap Weighted Index investing
+              {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
               <br /><br />
-              For further information, please also see this <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>article</a>
+              {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a>
             </>
           }
         />

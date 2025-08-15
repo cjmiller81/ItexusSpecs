@@ -95,14 +95,28 @@ export const IndexModelingSection = ({
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "#aaaaaa !important"
+    backgroundColor: "transparent",
+    "& .MuiAccordionDetails-root .MuiTypography-root": {
+      backgroundColor: "transparent !important"
+    },
+    "& .MuiTypography-root": {
+      backgroundColor: "transparent !important"
+    }
   };
 
   return (
     <AppAccordionSection
       persistKey={persistKey}
       defaultExpanded
-      sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
+      sx={{
+        ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
+        "& .MuiAccordionDetails-root .MuiTypography-root": {
+          backgroundColor: "transparent !important"
+        },
+        "& .MuiTypography-root": {
+          backgroundColor: "transparent !important"
+        }
+      }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
       headerChildren={
@@ -310,8 +324,11 @@ const MainContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
   display: "flex",
   width: "100%",
-  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "transparent",
   pointerEvents: "auto",
+  "& .MuiTypography-root": {
+    backgroundColor: "transparent !important"
+  },
   [theme.breakpoints.between("xs", "sm")]: {
     flexDirection: "column",
     alignItems: "center",
@@ -327,10 +344,13 @@ const StyledIndexModelingTable = styled(StyledWalletsTable)(() => ({
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   transition: "none",
-  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "transparent",
   borderTopLeftRadius: "10px",
   borderTopRightRadius: "10px",
   minHeight: "64px",
+  "& .MuiTypography-root": {
+    backgroundColor: "transparent !important"
+  },
   "&.Mui-expanded": {
     borderBottomLeftRadius: "0px",
     borderBottomRightRadius: "0px",
