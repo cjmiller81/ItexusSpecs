@@ -218,9 +218,9 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
     <Box sx={{ width: "100%" }}>
       <GridRow {...props} />
       {props.isExpanded(props.rowId) && (
-        <Box px={3} py={1}>
-          <Box display="flex" flexDirection="column" alignItems="flex-start">
-            <Box sx={{ width: "100%" }}>
+        <Box px={3} py={1} sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
+          <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{ width: "100%", maxWidth: "100%" }}>
+            <Box sx={{ width: "100%", maxWidth: "100%" }}>
                              <SectionHeader
                  icon={tokensIcon}
                  title={t("WalletTokens")}
@@ -230,7 +230,7 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
                  showDust={showDust}
                />
 
-              <Box sx={{ width: "100%" }}> 
+              <Box sx={{ width: "100%", maxWidth: "100%" }}> 
                 <WalletTokensOverview 
                   walletAddress={props.row.address}
                   tokens={filteredTokens}
@@ -246,10 +246,12 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
              color={WALLET_COLORS.defi}
            />
 
-          <WalletDeFiOverview walletAddress={props.row.address} />
+          <Box sx={{ width: "100%", maxWidth: "100%" }}>
+            <WalletDeFiOverview walletAddress={props.row.address} />
+          </Box>
 
           {nftCount > 0 && (
-            <Box mt={4} sx={{ width: "100%" }}>
+            <Box mt={4} sx={{ width: "100%", maxWidth: "100%" }}>
                              <SectionHeader
                  icon={nftIcon}
                  title={t("NFTHoldings")}

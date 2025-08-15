@@ -162,7 +162,7 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
   };
 
   return (
-    <Box width="100%" mb={6} display="flex" flexDirection="column" gap={2}>
+    <Box width="100%" maxWidth="100%" display="flex" flexDirection="column" gap={2} sx={{ overflow: "hidden" }}>
 
       {Object.entries(grouped).map(([protocol, positions]) => {
         const totalValue = positions.reduce((sum, p) => sum + (p.valueUSD || 0), 0);

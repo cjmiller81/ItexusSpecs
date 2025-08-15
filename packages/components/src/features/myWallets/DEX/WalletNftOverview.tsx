@@ -123,7 +123,9 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
     {
       field: "nft",
       headerName: t("NFT"),
-      flex: 3,
+      minWidth: 200,
+      maxWidth: 400,
+      flex: 1,
       renderCell: ({ row }) => (
         <NftCell
           imageUrl={row.imageUrl}
@@ -135,13 +137,17 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
     {
       field: "network",
       headerName: t("Network"),
+      minWidth: 80,
+      maxWidth: 120,
       flex: 1,
       renderCell: ({ value }) => <NetworkBadge network={value} />,
     },
     {
       field: "estimatedValue",
       headerName: t("EstimatedValue"),
-      flex: 1.5,
+      minWidth: 100,
+      maxWidth: 150,
+      flex: 1,
       align: "right",
       headerAlign: "right",
       renderCell: ({ value }) => (
@@ -153,7 +159,9 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
     {
       field: "portfolioPercent",
       headerName: t("OfPortfolio"),
-      flex: 2,
+      minWidth: 120,
+      maxWidth: 200,
+      flex: 1,
       align: "right",
       headerAlign: "right",
       renderCell: ({ value }) => <PortfolioProgressBar value={Number(value)} />,
@@ -167,16 +175,26 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
   }
 
   return (
-    <Box mt={2}>
-      <Card elevation={3}>
-        <Box sx={{ height: TABLE_SIZES.HEIGHT, width: "100%" }}>
+    <Box mt={2} sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
+      <Card elevation={3} sx={{ width: "100%", maxWidth: "100%" }}>
+        <Box sx={{ width: "100%", maxWidth: "100%" }}>
           <DataGrid
             rows={rows}
             columns={columns}
             hideFooter
             disableColumnMenu
             disableRowSelectionOnClick
-            sx={dataGridStyles}
+            autoHeight
+            sx={{
+              ...dataGridStyles,
+              width: "100%",
+              maxWidth: "100%",
+              "& .MuiDataGrid-main": {
+                ...dataGridStyles["& .MuiDataGrid-main"],
+                width: "100%",
+                maxWidth: "100%"
+              }
+            }}
           />
         </Box>
       </Card>

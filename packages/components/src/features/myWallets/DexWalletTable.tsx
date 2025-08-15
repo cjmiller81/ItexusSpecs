@@ -2,9 +2,9 @@ import { darken, lighten, styled } from "@mui/material/styles"
 import { BasicTable } from "../../components/DataDisplay"
 import { width } from "@mui/system"
 
-export const DexWalletsTable = styled(BasicTable)(({ theme }) => ({
+export const DexWalletsTable = styled(BasicTable)<{ $hasExpandedRows?: boolean }>(({ theme, $hasExpandedRows }) => ({
   width: "100%",
-  minHeight: 500,
+  minHeight: $hasExpandedRows ? "60vh" : 150,
   height:"auto",
   mt: 2,
   display: "grid",
@@ -13,7 +13,7 @@ export const DexWalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    minHeight: 500,
+    minHeight: 150,
     width:"100%",
     backgroundColor:
       theme.palette.mode === "dark"
