@@ -44,7 +44,7 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
   const processedVaults = useMemo(() => {
     return vaults.map(pool => ({
       ...pool,
-      apy: pool.breakdowns && pool.breakdowns.totalApy != null && pool.breakdowns.totalApy !== "Infinity" ?
+            apy: pool.breakdowns && pool.breakdowns.totalApy != null && pool.breakdowns.totalApy !== "Infinity" ?
         (typeof pool.breakdowns.totalApy === 'number' ? pool.breakdowns.totalApy.toFixed(2) : pool.breakdowns.totalApy) : null,
       tvl: pool.tvls ? pool.tvls?.value : null,
       platformId: pool.platform_id || null,
@@ -60,6 +60,8 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
           key: "id",
           data: processedVaults,
         },
+        paginate: true,
+        pageSize: 10,
       }),
     [processedVaults],
   );
@@ -76,12 +78,17 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
   const onExport = () => {
     const updatedAssets = filteredTokensSource.items().map(asset => {
+      const totalApy = asset.breakdowns?.totalApy ?? 0;
+      const apyValue = totalApy === "Infinity" || totalApy === Infinity ? 
+        "∞" : 
+        (typeof totalApy === 'number' ? (totalApy * 100).toFixed(2) : (parseFloat(totalApy) * 100).toFixed(2));
+      
       return {
         name: asset.name,
         chain: asset.chain,
         platform: asset.platformId,
         tvl: asset.tvl ? `$${asset.tvl.toFixed(2)}` : "$0.00",
-        apy: asset.apy ? `${asset.apy}%` : "0.00%",
+        apy: `${apyValue}%`,
         safety: calculateSafetyScore(asset.risks),
       };
     });
