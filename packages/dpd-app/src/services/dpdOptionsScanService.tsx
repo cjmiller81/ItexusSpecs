@@ -4,7 +4,6 @@ import { Instrument, InstrumentsResponse } from "@/slices/dpdOptionsScanSlice";
 export interface ExitTier {
   exitTierPositionPercent: number;
   exitType: string;
-  exitTypeValue: number | string;
   optionStopOffsetPercent: number;
   optionTargetOffsetPercent: number;
   stockStopOffsetPercent: number;

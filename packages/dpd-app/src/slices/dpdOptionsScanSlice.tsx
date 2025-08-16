@@ -4,7 +4,6 @@ import { dpdOptionsScanService } from "@/services/dpdOptionsScanService";
 export interface ExitTier {
   exitTierPositionPercent: number;
   exitType: string;
-  exitTypeValue: number | string;
   optionStopOffsetPercent: number;
   optionTargetOffsetPercent: number;
   stockStopOffsetPercent: number;

@@ -91,7 +91,6 @@ export default function CallOptionSet() {
     dispatch(fetchSubProfiles());
   }, [dispatch]);
 
-
   useEffect(() => {
     if (selectedSubProfile) {
       const edited = isProfileEdited(selectedSubProfile);
