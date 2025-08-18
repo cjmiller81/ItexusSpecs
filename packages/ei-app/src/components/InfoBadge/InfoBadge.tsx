@@ -14,7 +14,7 @@ const subtlePulse = keyframes`
 const InfoBadgeContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
   display: 'inline-block',
-  zIndex: 9999,
+  zIndex: 100,
 }));
 
 const StyledInfoBadge = styled(Button)<{ $isHovered?: boolean }>(({ theme, $isHovered }) => ({
@@ -58,7 +58,7 @@ const BadgeTooltip = styled(Box)<{ $isHovered?: boolean }>(({ theme, $isHovered 
   opacity: 0,
   visibility: 'hidden',
   transition: 'all 0.2s ease',
-  zIndex: 9999,
+  zIndex: 100,
   border: $isHovered ? 'none' : '2px solid white',
   '&::before': {
     content: '""',
