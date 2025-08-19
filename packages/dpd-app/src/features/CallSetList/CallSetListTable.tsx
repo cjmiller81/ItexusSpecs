@@ -1,546 +1,400 @@
+import React from "react";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import i18next, { t } from "i18next";
-import { Box, Theme, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { green, red, blue } from '@mui/material/colors';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, Typography, IconButton, Chip, Theme } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CloseIcon from "@mui/icons-material/Close";
+import { StrategyTableRow, PositionOrderRow } from "@/models/StrategyTableRow";
+import i18next from "i18next";
 
 i18next.setDefaultNamespace("ColumnsDefs");
 
-export const getCallSetListTableColumns = (theme: Theme): GridColDef[] => {
+const getTypeTextColor = (type: string, theme: Theme) => {
+  return type === "Underlying" ? "#00CED1" :
+         type === "Call" ? "#1976d2" :
+         type === "Put" ? "#FF8C00" :
+         type === "Strangle" ? "#9C27B0" :
+         "#666666";
+};
+
+const getOrderTypeTextColor = (orderType: string, theme: Theme) => {
+  return orderType === "Error" ? theme.palette.error.main :
+         orderType === "Filled Entry" ? theme.palette.success.main :
+         orderType === "Filled Exit" ? theme.palette.info.main :
+         orderType === "Filled Long" ? "#90EE90" :
+         orderType === "Filled Short" ? theme.palette.error.main :
+         orderType === "Working Entry" ? "#FF8C00" :
+         orderType === "Working Target" ? theme.palette.warning.main :
+         orderType === "Working Stop" ? theme.palette.error.main :
+         theme.palette.text.primary;
+};
+
+export const getCallSetListTableColumns = (
+  theme: Theme,
+  onToggleExpansion: (strategyId: string) => void
+): GridColDef[] => {
+  const { t } = useTranslation();
 
   return [
     {
       field: "account",
-      headerName: t("Account", { ns: "ColumnsDefs" }),
+      headerName: "Account #",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 120,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body1" sx={{ fontSize: "0.80rem" }}>
-          {params.row.account}
-        </Typography>
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <IconButton
+            size="small"
+            onClick={() => onToggleExpansion(params.row.id)}
+            sx={{ 
+              color: theme.palette.primary.main,
+              padding: 0,
+              minWidth: "auto"
+            }}
+          >
+            {params.row.isExpanded ? (
+              <ExpandLessIcon sx={{ fontSize: "16px" }} />
+            ) : (
+              <ExpandMoreIcon sx={{ fontSize: "16px" }} />
+            )}
+          </IconButton>
+          <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
+            {params.row.accountNumber}
+          </Typography>
+        </Box>
       ),
     },
     {
       field: "ticker",
-      headerName: t("Ticker", { ns: "ColumnsDefs" }),
+      headerName: "Ticker",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 100,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body1" sx={{ fontSize: "0.80rem" }}>
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem", fontWeight: 600, color: "#1976d2 !important" }}>
           {params.row.ticker}
         </Typography>
       ),
     },
     {
-      field: "action",
-      headerName: t("Action", { ns: "ColumnsDefs" }),
+      field: "type",
+      headerName: "Type",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 100,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => {
-        const isDark = theme.palette.mode === "dark";
-        const position = params.row;
-        const isWorking = position.entryStatus === 'Working';
-        if (!isWorking) return null;
-        const buttonText = t("CancelOrder", { ns: "ColumnsDefs" });
-
-        const handleClick = () => {
-          console.log('Clicked:', position.id, position.ticker, buttonText);
-        };
-
-        const buttonStyles = isWorking
-          ? isDark
-            ? {
-                backgroundColor: '#7f1d1d',
-                borderColor: '#dc2626',
-                color: '#f87171',
-                '&:hover': {
-                  backgroundColor: '#991b1b',
-                  borderColor: '#ef4444',
-                },
-              }
-            : {
-                backgroundColor: '#fef2f2',
-                borderColor: '#fecaca',
-                color: '#dc2626',
-                '&:hover': {
-                  backgroundColor: '#fee2e2',
-                  borderColor: '#fca5a5',
-                },
-              }
-          : isDark
-            ? {
-                backgroundColor: '#7c2d12',
-                borderColor: '#ea580c',
-                color: '#fdba74', 
-                '&:hover': {
-                  backgroundColor: '#9a3412',
-                  borderColor: '#fb923c',
-                },
-              }
-            : {
-                backgroundColor: '#fff7ed',
-                borderColor: '#fed7aa',
-                color: '#ea580c',
-                '&:hover': {
-                  backgroundColor: '#ffedd5',
-                  borderColor: '#fdba74',
-                },
-              };
-
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => {
+        const type = params.row.type || "Unknown";
+        const textColor = getTypeTextColor(type, theme);
+        
         return (
-          <Box
-            onClick={handleClick}
-            sx={{
-              ...buttonStyles,
-              px: 1.5,
-              py: 0.75,
-              borderRadius: '6px',
-              fontSize: '0.75rem',
-              fontWeight: 500,
-              display: 'inline-flex',
-              alignItems: 'center',
-              cursor: 'pointer',
-              border: '1px solid',
-              transition: 'all 0.2s ease',
-            }}
-            title={buttonText}
-          >
-            <CloseIcon sx={{ fontSize: 14, mr: 0.5 }} />
-            {buttonText}
-          </Box>
-        );
-      },
-    },
-    {
-      field: "optionType",
-      headerName: t("Type", { ns: "ColumnsDefs" }),
-      sortable: false,
-      editable: false,
-      filterable: false,
-      flex: 1,
-      disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => {
-        const isDark = theme.palette.mode === "dark";
-        const value = params.row.optionType as 'CALL' | 'PUT' | 'SHARES' | undefined;
-
-        if (!value) {
-          return <Typography sx={{ fontSize: "0.75rem", color: isDark ? theme.palette.grey[500] : theme.palette.grey[700] }}>—</Typography>;
-        }
-
-       const getChipStyles = () => {
-        if (isDark) {
-          switch (value) {
-            case 'CALL':
-              return {
-                bgcolor: green[900],
-                color: green[400],
-                borderColor: green[600],
-              };
-            case 'PUT':
-              return {
-                bgcolor: red[900],
-                color: red[400],
-                borderColor: red[600],
-              };
-            case 'SHARES':
-              return {
-                bgcolor: blue[900],
-                color: blue[400],
-                borderColor: blue[600],
-              };
-          }
-        } else {
-          switch (value) {
-            case 'CALL':
-              return {
-                bgcolor: green[100],
-                color: green[800],
-                borderColor: green[200],
-              };
-            case 'PUT':
-              return {
-                bgcolor: red[100],
-                color: red[800],
-                borderColor: red[200],
-              };
-            case 'SHARES':
-              return {
-                bgcolor: blue[100],
-                color: blue[800],
-                borderColor: blue[200],
-              };
-          }
-        }
-        return {
-          bgcolor: '#e0e0e0',
-          color: '#555555',
-          borderColor: '#bdbdbd',
-        };
-        };
-
-        const styles = getChipStyles();
-
-        return (
-          <Box
-            sx={{
-              backgroundColor: styles.bgcolor,
-              color: styles.color,
-              px: 1.5,
-              py: 0.5,
-              borderRadius: "16px",
-              display: "inline-block",
-              fontSize: "0.75rem",
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: "0.875rem",
               fontWeight: 600,
-              border: '1px solid',
-              borderColor: styles.borderColor,
-              textTransform: "uppercase",
-              textAlign: "center",
-              minWidth: "60px",
+              color: `${textColor} !important`
             }}
           >
-            {value}
-          </Box>
+            {type}
+          </Typography>
         );
       },
     },
     {
-      field: "qty",
-      headerName: t("Qty", { ns: "ColumnsDefs" }),
+      field: "dteRange",
+      headerName: "DTE Range",
       sortable: false,
       editable: false,
       filterable: false,
-      maxWidth: 100,
       flex: 1,
+      minWidth: 100,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body1" sx={{ fontSize: "0.80rem" }}>
-          {params.row.qty}
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
+          {params.row.dteRange}
         </Typography>
       ),
     },
     {
-      field: "DTERange",
-      headerName: t("DTERange", { ns: "ColumnsDefs" }),
+      field: "entryOffsetPercent",
+      headerName: "Entry Offset %",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 120,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => {
-        const min = params.row.dteMin;
-        const max = params.row.dteMax;
-
-        if (typeof min !== 'number' || typeof max !== 'number') {
-          return <Typography variant="body1">—</Typography>;
-        }
-
-        const renderNumberBox = (value: number) => (
-          <Box
-            sx={{
-              backgroundColor: theme.palette.mode === "dark" ? "#3e5260" : "#E5E7EB",
-              borderRadius: "4px",
-              px: 1,
-              py: 0.5,
-              fontSize: "0.75rem",
-              minWidth: "32px",
-              textAlign: "center",
-              display: "inline-block",
-              mx: 0.5,
-            }}
-          >
-            {value}
-          </Box>
-        );
-
-        return (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            {renderNumberBox(min)}
-            {min !== max && (
-              <>
-                <Typography variant="body1" sx={{ fontSize: "0.75rem", mx: 0.5 }}>to</Typography>
-                {renderNumberBox(max)}
-              </>
-            )}
-          </Box>
-        );
-      },
-    },
-    {
-      field: "entryStatus",
-      headerName: t("EntryStatus", { ns: "ColumnsDefs" }),
-      sortable: false,
-      editable: false,
-      filterable: false,
-      flex: 1,
-      disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => {
-        const status = params.row?.entryStatus;
-        const isDark = theme.palette.mode === 'dark';
-
-      if (status === "Working") {
-        return (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box
-              sx={{
-                width: 20,
-                height: 20,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: isDark ? '#78350f' : '#fef3c7',
-                border: `1px solid ${isDark ? '#d97706' : '#fde68a'}`,
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                style={{
-                  width: 12,
-                  height: 12,
-                  color: isDark ? '#facc15' : '#ca8a04'
-                }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: '0.85rem',
-                fontWeight: 500,
-                color: isDark ? '#facc15' : '#ca8a04',
-              }}
-            >
-              {t("Working", { ns: "EntryStatus" }) || "Working"}
-            </Typography>
-          </Box>
-        );
-      }
-
-      if (status === "Filled") {
-        return (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box
-              sx={{
-                width: 20,
-                height: 20,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: isDark ? '#064e3b' : '#d1fae5',
-                border: `1px solid ${isDark ? '#059669' : '#6ee7b7'}`,
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-                style={{
-                  width: 12,
-                  height: 12,
-                  color: isDark ? '#34d399' : '#047857'
-                }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: '0.85rem',
-                fontWeight: 500,
-                color: isDark ? '#34d399' : '#047857',
-              }}
-            >
-              {t("Filled", { ns: "EntryStatus" }) || "Filled"}
-            </Typography>
-          </Box>
-        );
-      }
-
-      return (
-        <Typography variant="body2" sx={{ fontSize: '0.85rem', color: isDark ? '#9ca3af' : '#6b7280' }}>
-          {status || "—"}
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            fontSize: "0.875rem",
+            color: (params.row.entryOffsetPercent || 0) >= 0 ? theme.palette.success.main : theme.palette.error.main
+          }}
+        >
+          {(params.row.entryOffsetPercent || 0) > 0 ? '+' : ''}{params.row.entryOffsetPercent || 0}%
         </Typography>
-      );
+      ),
     },
-  },
     {
       field: "entryType",
-      headerName: t("EntryType", { ns: "ColumnsDefs" }),
+      headerName: "Entry Type",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 100,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body1" sx={{ fontSize: "0.80rem" }}>
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
           {params.row.entryType}
         </Typography>
       ),
     },
     {
-      field: "entryPrice",
-      headerName: t("EntryPrice", { ns: "ColumnsDefs" }),
+      field: "amount",
+      headerName: "Amount $",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 100,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body1" sx={{ fontSize: "0.80rem" }}>
-          {params.row.entryPrice != null ? `$${params.row.entryPrice}` : "—"}
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem", fontWeight: 600 }}>
+          ${(params.row.amount || 0).toLocaleString()}
         </Typography>
       ),
     },
     {
-      field: "exitType",
-      headerName: t("ExitType", { ns: "ColumnsDefs" }),
+      field: "errorMsg",
+      headerName: "Error Msg",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 150,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => (
-        <Typography variant="body1" sx={{ fontSize: "0.80rem" }}>
-          {params.row.exitType ?? "—"}
+      renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            fontSize: "0.875rem",
+            color: params.row.errorMsg ? theme.palette.error.main : theme.palette.text.secondary
+          }}
+        >
+          {params.row.errorMsg || "-"}
+        </Typography>
+      ),
+    },
+  ];
+};
+
+export const getPositionOrdersTableColumns = (
+  theme: Theme,
+  onCancelOrder?: (orderId: string) => void
+): GridColDef[] => {
+  const { t } = useTranslation();
+
+  return [
+    {
+      field: "type",
+      headerName: "Type",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      minWidth: 100,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => {
+        const type = params.row.type || "Unknown";
+        const textColor = getTypeTextColor(type, theme);
+        
+        return (
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: "0.875rem",
+              fontWeight: 400,
+              color: `${textColor} !important`
+            }}
+          >
+            {type}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "ticker",
+      headerName: "Ticker",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      minWidth: 120,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem", color: "white !important" }}>
+          {params.row.ticker}
         </Typography>
       ),
     },
     {
-      field: "targetPrice",
-      headerName: t("TargetPrice", { ns: "ColumnsDefs" }),
+      field: "originalQty",
+      headerName: "Original Qty",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 100,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => {
-        const percentage = params.row.targetTierPercentage;
-        const price = params.row.targetPrice;
-        const isDark = theme.palette.mode === "dark";
-
-        if (!percentage || !price) {
-          return (
-            <Typography
-              variant="body2"
-              sx={{ fontSize: "0.75rem", color: isDark ? "gray" : "gray" }}
-            >
-              —
-            </Typography>
-          );
-        }
-
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
+          {params.row.originalQty || 0}
+        </Typography>
+      ),
+    },
+    {
+      field: "orderType",
+      headerName: "Order Type",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      minWidth: 120,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => {
+        const orderType = params.row.orderType || "Unknown";
+        const textColor = getOrderTypeTextColor(orderType, theme);
+        
         return (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box
-              sx={{
-                px: 1,
-                py: 0.5,
-                borderRadius: 1,
-                fontSize: "0.75rem",
-                fontWeight: 500,
-                borderStyle: "solid",
-                borderWidth: 1,
-                minWidth: 45,
-                textAlign: "center",
-                color: isDark ? "#68D391" : "#276749",
-                backgroundColor: isDark ? "#22543D" : "#C6F6D5",
-                borderColor: isDark ? "#48BB78" : "#9AE6B4",
-              }}
-            >
-              {percentage}%
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                fontWeight: 600,
-                fontSize: "0.875rem",
-                color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)",
-              }}
-            >
-              ${price}
-            </Typography>
-          </Box>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: "0.875rem",
+              fontWeight: 400,
+              color: `${textColor} !important`
+            }}
+          >
+            {orderType}
+          </Typography>
         );
       },
     },
-
-   {
-      field: "stopPrice",
-      headerName: t("StopPrice", { ns: "ColumnsDefs" }),
+    {
+      field: "orderId",
+      headerName: "Order Id",
       sortable: false,
       editable: false,
       filterable: false,
       flex: 1,
+      minWidth: 120,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams) => {
-        const percentage = params.row.stopTierPercentage;
-        const price = params.row.stopPrice;
-
-        const isDark = theme.palette.mode === "dark";
-
-        if (!percentage || !price) {
-          return (
-            <Typography
-              variant="body2"
-              sx={{ fontSize: "0.75rem", color: isDark ? "gray" : "gray" }}
-            >
-              —
-            </Typography>
-          );
-        }
-
-        return (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box
-              sx={{
-                px: 1,
-                py: 0.5,
-                borderRadius: 1,
-                fontSize: "0.75rem",
-                fontWeight: 500,
-                borderStyle: "solid",
-                borderWidth: 1,
-                minWidth: 45,
-                textAlign: "center",
-                color: isDark ? "#F87171" : "#9B2C2C",
-                backgroundColor: isDark ? "#7F1D1D" : "#FED7D7",
-                borderColor: isDark ? "#EF4444" : "#FEB2B2",
-              }}
-            >
-              {percentage}%
-            </Box>
-            <Typography
-              variant="body2"
-              sx={{
-                fontWeight: 600,
-                fontSize: "0.875rem",
-                color: isDark ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.9)",
-              }}
-            >
-              ${price}
-            </Typography>
-          </Box>
-        );
-      },
-    }    
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem", fontFamily: "monospace" }}>
+          {params.row.orderId}
+        </Typography>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 0.8,
+      minWidth: 80,
+      disableColumnMenu: true,
+             renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+           {(params.row.orderType === "Working Entry" || 
+             params.row.orderType === "Working Target" || 
+             params.row.orderType === "Working Stop") && onCancelOrder && (
+                          <IconButton
+                size="small"
+                onClick={() => onCancelOrder(params.row.orderId)}
+                sx={{ 
+                  backgroundColor: theme.palette.error.main,
+                  color: "white",
+                  padding: 0,
+                  minWidth: "auto",
+                  width: "24px",
+                  height: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  "&:hover": {
+                    backgroundColor: theme.palette.error.dark,
+                  }
+                }}
+              >
+                <CloseIcon sx={{ fontSize: "14px" }} />
+              </IconButton>
+           )}
+         </Box>
+       ),
+    },
+    {
+      field: "orderQty",
+      headerName: "Order Qty",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      minWidth: 100,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
+          {params.row.orderQty || 0}
+        </Typography>
+      ),
+    },
+    {
+      field: "avgFillPrice",
+      headerName: "Avg Fill Price",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      minWidth: 120,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+        <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
+          {(params.row.avgFillPrice || 0) > 0 ? `$${(params.row.avgFillPrice || 0).toFixed(2)}` : "-"}
+        </Typography>
+      ),
+    },
+    {
+      field: "errorMsg",
+      headerName: "Error Msg",
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      minWidth: 150,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            fontSize: "0.875rem",
+            color: "white !important"
+          }}
+        >
+          {params.row.errorMsg || "-"}
+        </Typography>
+      ),
+    },
   ];
 };

@@ -9,15 +9,21 @@ export interface DpdOptionsScan {
   userId: string;
   strategySettings?: OrderSubmit;
   callLegPosition?: PositionMsg;
+  callNextLegPosition?: PositionMsg;
   putLegPosition?: PositionMsg;
+  putNextLegPosition?: PositionMsg;
   underlyingPosition?: PositionMsg;
   callLegOriginalQty: number;
+  callNextLegOriginalQty: number;
   putLegOriginalQty: number;
+  putNextLegOriginalQty: number;
   underlyingOriginalQty: number;
+  errorMsg?: string;
 }
 
 export enum DpdOptionsScanStrategyState {
   INITIAL = 0,
+  ACTIVE = 5,
 }
 
 export enum OptionContractPutCall {
@@ -47,7 +53,7 @@ export interface OrderSubmit {
   dteMin: number;
   dteMax: number;
   entryOffsetPercent: number;
-  entryType: EntryType;
+  entryType: string;
   useLaddering: boolean;
   exitTiers: ExitTier[];
   maxDelta: number;
@@ -69,6 +75,8 @@ export interface OrderSubmit {
   orderBreaks?: number;
   tradeAsSet: boolean;
   userId?: string;
+  hasUserId?: boolean;
+  instrument?: Instrument;
 }
 
 export interface ExitTier {
@@ -92,23 +100,42 @@ export interface PositionMsg {
   exchange: string;
   symbol: string;
   streamerSymbol: string;
-  strikePrice?: number;
+  strikePrice?: number | null;
   underlyingSymbol: string;
   exchangeIdToOrderId: Record<string, string>;
   filledEntryOrders: Record<string, FilledOrder>;
   filledExitOrders: Record<string, FilledOrder>;
-  workingEntryOrders: Record<string, number>;
-  workingStopOrders: Record<string, number>;
-  workingTargetOrders: Record<string, number>;
+  workingEntryOrders: Record<string, OrderValue>;
+  workingStopOrders: Record<string, OrderValue>;
+  workingTargetOrders: Record<string, OrderValue>;
   filledLongOrders: Record<string, FilledOrder>;
   filledShortOrders: Record<string, FilledOrder>;
-  entryDate?: string;
-  contractExpirationDate?: string;
-  updatedAt: string;
+  entryDate?: string | null;
+  contractExpirationDate?: string | null;
+  updatedAt: Timestamp;
   errorOrders: Record<string, string>;
 }
 
+export interface Instrument {
+  cusip: string;
+  description: string;
+  exchange: string;
+  exchangeName: string;
+  assetType: string;
+  symbol: string;
+}
+
 export interface FilledOrder {
-  item1: number;
-  item2: number;
+  item1: OrderValue;
+  item2: OrderValue;
+}
+
+export interface OrderValue {
+  units: number;
+  nanos: number;
+}
+
+export interface Timestamp {
+  seconds: number;
+  nanos: number;
 }
