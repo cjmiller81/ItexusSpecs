@@ -41,6 +41,8 @@ import { iconsApi } from "@/services/iconsService";
 import SearchIcon from '@mui/icons-material/Search';
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 import { filterDustTokens } from "components";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -73,6 +75,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const [inputSearch, setInputSearch] = useState("");
   const [isManualUpdate, setIsManualUpdate] = useState(false);
   const [wasManualSelection, setWasManualSelection] = useState(false);
+  const [showDust, setShowDust] = useState(false);
   const { tableData } = useAppSelector( state => state.marketCapWeightedModeling );
     const { portfolioWalletData } = useAppSelector((state) => state.wallets);
 
@@ -88,6 +91,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       onWalletChange(null);
     }
     setFilteredRows([]);
+  };
+
+  const toggleDust = () => {
+    setShowDust(prev => !prev);
   };
 
     const coinGeckoChainId = (chain: string) => {
@@ -161,29 +168,29 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       (p) => p.walletAddress === selectedWallet?.address
     )?.tokenHoldings;
 
-         useEffect(() => {
-       if(selectedPortfolio) {
-         const filteredTokens = filterDustTokens(selectedPortfolio);
-         const data = filteredTokens.map(token => ({
-           tokenName: token.symbol,
-           name: token.name,
-           chain: normalizeNetworkName(token.network),
-           balance: token.balance,
-           tokenAddress: token.tokenAddress,
-         }));
-         setFilteredWalletData(data);
-         setFilteredRows(data);
-         if (onFilteredRowsChange) {
-           onFilteredRowsChange(data);
-         }
-       } else {
-         setFilteredWalletData([]);
-         setFilteredRows([]);
-         if (onFilteredRowsChange) {
-           onFilteredRowsChange([]);
-         }
-       }
-     },[selectedPortfolio])
+                   useEffect(() => {
+        if(selectedPortfolio) {
+          const tokensToProcess = showDust ? selectedPortfolio : filterDustTokens(selectedPortfolio);
+          const data = tokensToProcess.map(token => ({
+            tokenName: token.symbol,
+            name: token.name,
+            chain: normalizeNetworkName(token.network),
+            balance: token.balance,
+            tokenAddress: token.tokenAddress,
+          }));
+          setFilteredWalletData(data);
+          setFilteredRows(data);
+          if (onFilteredRowsChange) {
+            onFilteredRowsChange(data);
+          }
+        } else {
+          setFilteredWalletData([]);
+          setFilteredRows([]);
+          if (onFilteredRowsChange) {
+            onFilteredRowsChange([]);
+          }
+        }
+      },[selectedPortfolio, showDust])
 
   useEffect(() => {
     if (!selectedChain) return;
@@ -468,12 +475,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
             }}>
 
-            <Grid
-              item
-              xs={4.5}
-              md={4.5}
-              lg={4}
-              sx={{ marginTop: "15px", marginLeft: "2%" }}>
+             <Grid
+                item
+                xs={4.5}
+                md={4.5}
+                lg={4}
+                sx={{ marginTop: "31px", marginLeft: "2%" }}>
               <Select
                 displayEmpty
                 value={selectedWallet?.walletId || ""}
@@ -548,18 +555,41 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               </Box>
             </Grid>
 
-            <Grid
-              item
-              xs={6.8}
-              md={6.9}
-              lg={7.1}
-              spacing={1}
-              sx={{ marginTop: "15px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
-              <WalletsTable
-                sx={{
-                  ...tableScrollSx,
-                  width: "100%",
-                }}
+               <Grid
+                 item
+                 xs={6.8}
+                 md={6.9}
+                 lg={7.1}
+                 spacing={1}
+                 sx={{ marginTop: "5px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
+               
+                <Box 
+                  display="flex" 
+                  justifyContent="flex-end" 
+                  sx={{marginBottom:"5px", paddingRight:"5px"}}
+                >
+                 <Box 
+                   display="flex" 
+                   alignItems="center" 
+                   sx={{ cursor: "pointer" }}
+                   onClick={toggleDust}
+                 >
+                   {showDust ? (
+                     <VisibilityOffIcon sx={{ color: "#666", fontSize: 20, mr: 0.5 }} />
+                   ) : (
+                     <RemoveRedEyeIcon sx={{ color: "#666", fontSize: 20, mr: 0.5 }} />
+                   )}
+                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
+                     {showDust ? "Hide Dust" : "Show Dust"}
+                   </Typography>
+                 </Box>
+               </Box>
+               
+                                                               <WalletsTable
+                  sx={{
+                    ...tableScrollSx,
+                    width: "100%",
+                  }}
                 hideFooter
                 rowSelection={true}
                 rowSelectionModel={selectedRows ? [selectedRows] : []}
