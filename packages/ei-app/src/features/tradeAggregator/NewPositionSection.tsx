@@ -20,10 +20,10 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { fetchDex, fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { fetchDex, fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "components";
 import { dexWebsites } from "@/constants/dexWebsites";
 import { iconsApi } from "@/services/iconsService";
-import { PaginatedList } from "components/src/models/paginatedList";
+import { PaginatedList } from "components";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
 import Chip from '@mui/material/Chip';
@@ -33,7 +33,7 @@ import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
 import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
-import { OneInchQuoteResponse } from "components/src/models/oneInchQuoteResponse";
+import { OneInchQuoteResponse } from "components";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -154,12 +154,14 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     const chainId = coinGeckoChainId(selectedChain);
       if (!chainId) return;
 
-    setBalanceRaw( selectedWallet?.chainAssets
-      ?.find(chain => chain.chainId === chainId)
-      ?.walletAssets
-      ?.find(token =>
-        token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase()
-      )?.balance)
+    const matchedToken = filteredRows.find(token => 
+      token.tokenName?.toUpperCase() === symbolOptionSwap?.sym?.toUpperCase() &&
+      token.chain?.toUpperCase() === selectedChain.toUpperCase()
+    );
+    
+
+    
+    setBalanceRaw(matchedToken?.balance);
   }, [symbolOptionSwap, selectedChain])
 
   useEffect(() => {
@@ -179,13 +181,13 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setInputSearchSwapFor("");
       setSelectedChain("");
       setNewBalance("");
-    const addresses: string[] = selectedWallet.chainAssets.flatMap(
-    (chainAsset) => chainAsset.walletAssets.map((token) => token.tokenAddress)
-  ).filter((address): address is string => typeof address === 'string' && address !== '');
-
+    
+    const addresses: string[] = filteredRows
+      .map((token) => token.tokenAddress)
+      .filter((address): address is string => typeof address === 'string' && address !== '');
 
     setTokenAddresses(addresses);
-  }, [selectedWallet]);
+  }, [selectedWallet, filteredRows]);
 
   useEffect(() => {
     if (!selectedChain) return;
@@ -219,9 +221,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     const fetchIcons = async () => {
     if (tokenAddresses.length === 0) return;
 
-    const nonEmptyChainsCount = selectedWallet?.chainAssets?.filter(
-      chain => chain.walletAssets && chain.walletAssets.length > 0
-    ).length ?? 0;
+    const nonEmptyChainsCount = filteredRows.length > 0 ? 1 : 0;
 
     let pageSize = tokenAddresses?.length + nonEmptyChainsCount + 50;
 
@@ -238,15 +238,29 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       );
 
       const filteredItems = result.items.filter(item => {
-        const isNativeToken = item.address.includes('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
-        if (!isNativeToken) return true; 
-
         return walletTokenNamesLower.has(item.sym.toLowerCase());
       });
 
+      const virtualTokens = filteredRows
+        .filter(row => {
+          const hasIcon = filteredItems.some(item => 
+            item.sym.toLowerCase() === row.tokenName?.toLowerCase()
+          );
+          return !hasIcon;
+        })
+        .map(row => ({
+          id: `virtual-${row.tokenName?.toLowerCase()}`,
+          sym: row.tokenName || '',
+          name: row.name || '',
+          address: [row.tokenAddress || ''],
+          lURI: undefined,
+          mCap: 0,
+          mSup: null,
+        }));
+
       setTokenIcons({
         ...result,
-        items: filteredItems,
+        items: [...filteredItems, ...virtualTokens],
       });
 
     } catch (error) {
@@ -356,8 +370,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           const price =  estAmount / parseFloat(newBalance);
           const gasUSD = parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3));
 
-           //(Qty * Price)-((Est Gas Fees USD / Price of Swap For Token))
-          estAmount = estAmount - (gasUSD / swapForToken.price)
+          if (swapForToken && swapForToken.price) {
+            estAmount = estAmount - (gasUSD / swapForToken.price);
+          }
 
           return {
             name: names[0],
@@ -436,9 +451,66 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       if (matchedToken) {
         setSymbolOptionSwap(matchedToken);
         setSelectedToken(matchedToken.sym);
+      } else {
+        const virtualToken = {
+          id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+          sym: selectedTokenRow.tokenName || '',
+          name: selectedTokenRow.name || '',
+          address: [selectedTokenRow.tokenAddress || ''],
+          lURI: undefined,
+          mCap: 0,
+          mSup: null,
+        };
+        setSymbolOptionSwap(virtualToken);
+        setSelectedToken(virtualToken.sym);
       }
-    } 
+    } else if (selectedTokenRow && !tokenIcons?.items) {
+      setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
+    }
   }, [selectedTokenRow, tokenIcons]);
+
+  useEffect(() => {
+    if (filteredRows.length > 0) {
+      const virtualTokens = filteredRows.map(row => ({
+        id: `virtual-${row.tokenName?.toLowerCase()}`,
+        sym: row.tokenName || '',
+        name: row.name || '',
+        address: [row.tokenAddress || ''],
+        lURI: undefined,
+        mCap: 0,
+        mSup: null,
+      }));
+
+      setTokenIcons({
+        items: virtualTokens,
+        totalCount: virtualTokens.length,
+        pageNumber: 0,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hansNextPage: false,
+      });
+    }
+  }, [filteredRows]);
+
+  useEffect(() => {
+    if (selectedTokenRow && !tokenIcons?.items) {
+      setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
+      
+      const virtualToken = {
+        id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+        sym: selectedTokenRow.tokenName || '',
+        name: selectedTokenRow.name || '',
+        address: [selectedTokenRow.tokenAddress || ''],
+        lURI: undefined,
+        mCap: 0,
+        mSup: null,
+      };
+      setSymbolOptionSwap(virtualToken);
+      setSelectedToken(virtualToken.sym);
+    }
+  }, [selectedTokenRow, tokenIcons?.items]);
+
+
   
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
@@ -447,20 +519,20 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       return;
     }
   
-    const selectedChainUpper = selectedChain.toUpperCase();
     setNewBalance(maxBalance.toString());
-    const matchedToken = selectedWallet.chainAssets
-      .find(chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper)
-      ?.tokenDetails.find(token => token.sym.toUpperCase() === symbolOptionSwap.sym.toUpperCase());
+    const matchedToken = filteredRows.find(token => 
+      token.tokenName?.toUpperCase() === symbolOptionSwap.sym?.toUpperCase() &&
+      token.chain?.toUpperCase() === selectedChain.toUpperCase()
+    );
   
     if (matchedToken) {
-      setSelectedToken(matchedToken.sym || null);
-      onSelectedTokenChange?.(matchedToken.sym, selectedChain);
+      setSelectedToken(matchedToken.tokenName || null);
+      onSelectedTokenChange?.(matchedToken.tokenName, selectedChain);
     } else {
       setSelectedToken(null);
       onSelectedTokenChange?.(null,null);
     }
-  }, [symbolOptionSwap, selectedChain, selectedWallet]);
+  }, [symbolOptionSwap, selectedChain, selectedWallet, filteredRows]);
 
   useEffect(() => {
     if (useMax && symbolOptionSwap) {
@@ -503,6 +575,21 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     {
       onSelectedTokenChange?.(null,null);
       setSelectedChain("")
+    } else {
+      let matchedToken = filteredRows.find(token => 
+        token.tokenName?.toUpperCase() === value.sym?.toUpperCase() &&
+        token.chain?.toUpperCase() === selectedChain.toUpperCase()
+      );
+      
+      if (!matchedToken) {
+        matchedToken = filteredRows.find(token => 
+          token.tokenName?.toUpperCase() === value.sym?.toUpperCase()
+        );
+      }
+      
+      if (matchedToken) {
+        setSelectedChain(matchedToken.chain || "");
+      }
     }
     
     setSymbolOptionSwap(value);
@@ -524,7 +611,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
   const generateErrorMessage = () => {
     const errors: string[] = [];
   
-    const selectedSymbol = extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase();
+    const selectedSymbol = symbolOptionSwap?.sym?.toUpperCase();
     const tokenExistsInFilteredRows = filteredRows.some(
       token => token.tokenName?.toUpperCase() === selectedSymbol
     );
@@ -570,10 +657,10 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
         ) {
           const result = await dispatch(
             fetchQuoteParameters({
-              tokenPositionSymbol: extractSymbol(symbolOptionSwap.sym),
+              tokenPositionSymbol: symbolOptionSwap.sym,
               chainName: selectedChain,
               qty: Number(newBalance),
-              swapForSymbol: extractSymbol(symbolOptionSwapFor.sym),
+              swapForSymbol: symbolOptionSwapFor.sym,
               tokenPositionId: symbolOptionSwap.id,
               swapForId: symbolOptionSwapFor.id,
             })

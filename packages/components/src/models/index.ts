@@ -1,4 +1,5 @@
 export * from "./wallet"
 export * from "./token"
 export * from "./paginatedList"
+export * from "./oneInchQuoteResponse"
 export * from "../features/profile/Billing/models/PaymentCardModel"

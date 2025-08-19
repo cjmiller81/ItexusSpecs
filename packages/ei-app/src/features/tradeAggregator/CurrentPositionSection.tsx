@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import {
   BasicTable,
+  fetchWalletsPortfolio,
   nativeBarSx,
   PaginatedList,
   toTableTokensModels,
@@ -39,6 +40,7 @@ import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { iconsApi } from "@/services/iconsService";
 import SearchIcon from '@mui/icons-material/Search';
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
+import { filterDustTokens } from "components";
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -71,9 +73,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const [inputSearch, setInputSearch] = useState("");
   const [isManualUpdate, setIsManualUpdate] = useState(false);
   const [wasManualSelection, setWasManualSelection] = useState(false);
-  const { tableData } = useAppSelector(
-      state => state.marketCapWeightedModeling,
-    );
+  const { tableData } = useAppSelector( state => state.marketCapWeightedModeling );
+    const { portfolioWalletData } = useAppSelector((state) => state.wallets);
 
   const handleClearTable = () => {
     setSelectedChain("");
@@ -89,22 +90,34 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     setFilteredRows([]);
   };
 
-  const coinGeckoChainId = (chain: string) => {
-              switch (chain.toLowerCase()) {
-                case "ethereum":
-                  return 1;
-                case "optimism":
-                  return 10;
-                case "arbitrum":
-                  return 42161;
-                case "bnb chain":
-                  return 56;
-                case "polygon":
-                  return 137;
-                case "avalanche":
-                  return 43114;
-              }
-            };
+    const coinGeckoChainId = (chain: string) => {
+               switch (chain.toLowerCase()) {
+                 case "ethereum":
+                   return 1;
+                 case "optimism":
+                   return 10;
+                 case "arbitrum":
+                   return 42161;
+                 case "bnb chain":
+                   return 56;
+                 case "polygon":
+                   return 137;
+                 case "avalanche":
+                   return 43114;
+               }
+             };
+
+  const normalizeNetworkName = (network: string): string => {
+    if (!network) return "";
+    
+    const networkLower = network.toLowerCase();
+    
+    if (networkLower === "binance-smart-chain") {
+      return "BNB Chain";
+    }
+    
+    return network.charAt(0).toUpperCase() + network.slice(1).toLowerCase();
+  };
 
   const { wallets } = useAppSelector(state => state.wallets);
 
@@ -138,6 +151,41 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   }, []);
 
   useEffect(() => {
+      if (wallets && wallets.length > 0) {
+        const addresses = wallets.map(w => w.address);
+           dispatch(fetchWalletsPortfolio(addresses));
+      }
+    }, [wallets, dispatch]);
+
+    const selectedPortfolio = portfolioWalletData.find(
+      (p) => p.walletAddress === selectedWallet?.address
+    )?.tokenHoldings;
+
+         useEffect(() => {
+       if(selectedPortfolio) {
+         const filteredTokens = filterDustTokens(selectedPortfolio);
+         const data = filteredTokens.map(token => ({
+           tokenName: token.symbol,
+           name: token.name,
+           chain: normalizeNetworkName(token.network),
+           balance: token.balance,
+           tokenAddress: token.tokenAddress,
+         }));
+         setFilteredWalletData(data);
+         setFilteredRows(data);
+         if (onFilteredRowsChange) {
+           onFilteredRowsChange(data);
+         }
+       } else {
+         setFilteredWalletData([]);
+         setFilteredRows([]);
+         if (onFilteredRowsChange) {
+           onFilteredRowsChange([]);
+         }
+       }
+     },[selectedPortfolio])
+
+  useEffect(() => {
     if (!selectedChain) return;
 
     const delayDebounce = setTimeout(() => {
@@ -168,26 +216,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     if (!selectedWallet || isManualUpdate) {
       if (isManualUpdate) {
         setIsManualUpdate(false);
-      } else {
-        setFilteredRows([]);
-        if (onFilteredRowsChange) {
-          onFilteredRowsChange([]);
-        }
       }
       return;
-    }
-
-    const data = toTableTokensModels(
-      wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ?? []
-    ).map(({ tokenName, chainName, balance }) => ({
-      tokenName,
-      chain: chainName,
-      balance: balance,
-    }));
-
-    setFilteredRows(data);
-    if (onFilteredRowsChange) {
-      onFilteredRowsChange(data);
     }
   }, [selectedWallet]);
 
@@ -316,16 +346,26 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       return id === selectedId;
     }) ?? null;
 
-      if (onTokenChange) {
-        onTokenChange(selectedToken);
+       const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
+       const isSupportedChain = selectedToken && selectedToken.chain && supportedChains.includes(selectedToken.chain.toLowerCase());
+
+      if (isSupportedChain) {
+        if (onTokenChange) {
+          onTokenChange(selectedToken);
+        }
+        setSelectedRows(selectedId);
+      } else {
+        if (onTokenChange) {
+          onTokenChange(null);
+        }
+        setSelectedRows(null);
       }
     } else {
       if (onTokenChange) {
         onTokenChange(null);
       }
+      setSelectedRows(null);
     }
-    
-    setSelectedRows(selectedId);
 };
 
   const handleWalletSelect = (event: SelectChangeEvent) => {
@@ -386,11 +426,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
         onWalletChange(updatedWallet);
       }
 
-      const newRow: WalletBalance = {
-        tokenName: symbolOptionSwapFor.sym,
-        chain: selectedChain,
-        balance: parseFloat(newBalance),
-      };
+             const newRow: WalletBalance = {
+         tokenName: symbolOptionSwapFor.sym,
+         chain: normalizeNetworkName(selectedChain),
+         balance: parseFloat(newBalance),
+       };
       setFilteredRows(prevRows => [newRow, ...prevRows]);
       setIsAddingManualPosition(false);
       setIsManualUpdate(true);
@@ -532,17 +572,31 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 slots={{
                   noRowsOverlay: CustomNoWalletOverlay,
                 }}
-                getRowClassName={(params) =>
-                selectedRows &&
-                `${params.row.tokenName.toLowerCase()}-${params.row.chain.toLowerCase()}` === selectedRows
-                  ? 'selected-row'
-                  : ''
-              }
-              componentsProps={{
-                row: {
-                  title: t("ClickToLoadCurrentPosition")
-                }
-              }}
+                                                  getRowClassName={(params) => {
+                    const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
+                    const isSupportedChain = params.row.chain && supportedChains.includes(params.row.chain.toLowerCase());
+                    
+                    if (!isSupportedChain) {
+                      return 'unsupported-chain-row';
+                    }
+                    
+                    if (selectedRows &&
+                        `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
+                      return 'selected-row';
+                    }
+                    
+                    return '';
+                  }}
+                                                           componentsProps={{
+                  row: (params) => {
+                    const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
+                    const isSupportedChain = params.row.chain && supportedChains.includes(params.row.chain.toLowerCase());
+                    
+                    return {
+                      title: isSupportedChain ? t("ClickToLoadCurrentPosition") : "This chain is not supported for selection"
+                    };
+                  }
+                }}
               />
               <Dialog
                 open={isAddingManualPosition}
@@ -550,30 +604,30 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 450 }}>
                 <FormControl fullWidth size="medium" error={!!addPositionError}>
                   <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
-                  <Select
-                    labelId="chain-select-label"
-                    value={selectedChain}
-                    label={t("Chain")}
-                    onChange={e => {
-                      setSelectedChain(e.target.value);
-                      setSymbolOptionSwapFor(null)
-                      setAddPositionError("");
-                    }}
-                  >
-                      <MenuItem disabled value=""></MenuItem>
-                      <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
-                      <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
-                      <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
-                      <MenuItem value="POLYGON">POLYGON</MenuItem>
-                      <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
-                      <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                      <MenuItem value="BASE">BASE</MenuItem>
-                      <MenuItem value="ZKSYNC">ZKSYNC</MenuItem>
-                      <MenuItem value="GNOSIS">GNOSIS</MenuItem>
-                      <MenuItem value="LINEA">LINEA</MenuItem>
-                      <MenuItem value="SONIC">SONIC</MenuItem>
-                      <MenuItem value="UNICHAIN">UNICHAIN</MenuItem>
-                  </Select>
+                                     <Select
+                     labelId="chain-select-label"
+                     value={selectedChain}
+                     label={t("Chain")}
+                     onChange={e => {
+                       setSelectedChain(e.target.value);
+                       setSymbolOptionSwapFor(null)
+                       setAddPositionError("");
+                     }}
+                   >
+                       <MenuItem disabled value=""></MenuItem>
+                       <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
+                       <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
+                       <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
+                       <MenuItem value="POLYGON">POLYGON</MenuItem>
+                       <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
+                       <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                       <MenuItem value="BASE">BASE</MenuItem>
+                       <MenuItem value="ZKSYNC">ZKSYNC</MenuItem>
+                       <MenuItem value="GNOSIS">GNOSIS</MenuItem>
+                       <MenuItem value="LINEA">LINEA</MenuItem>
+                       <MenuItem value="SONIC">SONIC</MenuItem>
+                       <MenuItem value="UNICHAIN">UNICHAIN</MenuItem>
+                   </Select>
                   {addPositionError && (
                     <Box sx={(theme) => ({
                       color: theme.palette.error.main,
@@ -756,6 +810,18 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
     backgroundColor: theme.palette.mode === "light" ? "#109EEF" : darken(theme.palette.primary.main, 0.2),
+  },
+  "& .unsupported-chain-row": {
+    cursor: "not-allowed",
+    opacity: 0.6,
+  },
+  "& .unsupported-chain-row:hover": {
+    cursor: "not-allowed",
+    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "#2a2a2a",
+    border: "none",
+  },
+  "& .unsupported-chain-row:hover .MuiDataGrid-cell": {
+    backgroundColor: "transparent",
   },
   "& .selected-row .MuiDataGrid-cell": {
     backgroundColor: "transparent",
