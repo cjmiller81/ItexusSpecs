@@ -394,6 +394,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         fullWidth
         open={filterBuilderOpen!}
         sx={{
+          zIndex: 1300,
           "& .MuiDialog-container": {
             "& .MuiPaper-root": {
               minHeight: "80%",
