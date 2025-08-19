@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import {
   BasicTable,
+  fetchWalletsPortfolio,
   nativeBarSx,
   PaginatedList,
   toTableTokensModels,
@@ -39,6 +40,9 @@ import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { iconsApi } from "@/services/iconsService";
 import SearchIcon from '@mui/icons-material/Search';
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
+import { filterDustTokens } from "components";
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -71,9 +75,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const [inputSearch, setInputSearch] = useState("");
   const [isManualUpdate, setIsManualUpdate] = useState(false);
   const [wasManualSelection, setWasManualSelection] = useState(false);
-  const { tableData } = useAppSelector(
-      state => state.marketCapWeightedModeling,
-    );
+  const [showDust, setShowDust] = useState(false);
+  const { tableData } = useAppSelector( state => state.marketCapWeightedModeling );
+    const { portfolioWalletData } = useAppSelector((state) => state.wallets);
 
   const handleClearTable = () => {
     setSelectedChain("");
@@ -89,22 +93,38 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     setFilteredRows([]);
   };
 
-  const coinGeckoChainId = (chain: string) => {
-              switch (chain.toLowerCase()) {
-                case "ethereum":
-                  return 1;
-                case "optimism":
-                  return 10;
-                case "arbitrum":
-                  return 42161;
-                case "bnb chain":
-                  return 56;
-                case "polygon":
-                  return 137;
-                case "avalanche":
-                  return 43114;
-              }
-            };
+  const toggleDust = () => {
+    setShowDust(prev => !prev);
+  };
+
+    const coinGeckoChainId = (chain: string) => {
+               switch (chain.toLowerCase()) {
+                 case "ethereum":
+                   return 1;
+                 case "optimism":
+                   return 10;
+                 case "arbitrum":
+                   return 42161;
+                 case "bnb chain":
+                   return 56;
+                 case "polygon":
+                   return 137;
+                 case "avalanche":
+                   return 43114;
+               }
+             };
+
+  const normalizeNetworkName = (network: string): string => {
+    if (!network) return "";
+    
+    const networkLower = network.toLowerCase();
+    
+    if (networkLower === "binance-smart-chain") {
+      return "BNB Chain";
+    }
+    
+    return network.charAt(0).toUpperCase() + network.slice(1).toLowerCase();
+  };
 
   const { wallets } = useAppSelector(state => state.wallets);
 
@@ -138,6 +158,41 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   }, []);
 
   useEffect(() => {
+      if (wallets && wallets.length > 0) {
+        const addresses = wallets.map(w => w.address);
+           dispatch(fetchWalletsPortfolio(addresses));
+      }
+    }, [wallets, dispatch]);
+
+    const selectedPortfolio = portfolioWalletData.find(
+      (p) => p.walletAddress === selectedWallet?.address
+    )?.tokenHoldings;
+
+                   useEffect(() => {
+        if(selectedPortfolio) {
+          const tokensToProcess = showDust ? selectedPortfolio : filterDustTokens(selectedPortfolio);
+          const data = tokensToProcess.map(token => ({
+            tokenName: token.symbol,
+            name: token.name,
+            chain: normalizeNetworkName(token.network),
+            balance: token.balance,
+            tokenAddress: token.tokenAddress,
+          }));
+          setFilteredWalletData(data);
+          setFilteredRows(data);
+          if (onFilteredRowsChange) {
+            onFilteredRowsChange(data);
+          }
+        } else {
+          setFilteredWalletData([]);
+          setFilteredRows([]);
+          if (onFilteredRowsChange) {
+            onFilteredRowsChange([]);
+          }
+        }
+      },[selectedPortfolio, showDust])
+
+  useEffect(() => {
     if (!selectedChain) return;
 
     const delayDebounce = setTimeout(() => {
@@ -168,26 +223,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     if (!selectedWallet || isManualUpdate) {
       if (isManualUpdate) {
         setIsManualUpdate(false);
-      } else {
-        setFilteredRows([]);
-        if (onFilteredRowsChange) {
-          onFilteredRowsChange([]);
-        }
       }
       return;
-    }
-
-    const data = toTableTokensModels(
-      wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ?? []
-    ).map(({ tokenName, chainName, balance }) => ({
-      tokenName,
-      chain: chainName,
-      balance: balance,
-    }));
-
-    setFilteredRows(data);
-    if (onFilteredRowsChange) {
-      onFilteredRowsChange(data);
     }
   }, [selectedWallet]);
 
@@ -316,16 +353,26 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       return id === selectedId;
     }) ?? null;
 
-      if (onTokenChange) {
-        onTokenChange(selectedToken);
+       const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
+       const isSupportedChain = selectedToken && selectedToken.chain && supportedChains.includes(selectedToken.chain.toLowerCase());
+
+      if (isSupportedChain) {
+        if (onTokenChange) {
+          onTokenChange(selectedToken);
+        }
+        setSelectedRows(selectedId);
+      } else {
+        if (onTokenChange) {
+          onTokenChange(null);
+        }
+        setSelectedRows(null);
       }
     } else {
       if (onTokenChange) {
         onTokenChange(null);
       }
+      setSelectedRows(null);
     }
-    
-    setSelectedRows(selectedId);
 };
 
   const handleWalletSelect = (event: SelectChangeEvent) => {
@@ -386,11 +433,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
         onWalletChange(updatedWallet);
       }
 
-      const newRow: WalletBalance = {
-        tokenName: symbolOptionSwapFor.sym,
-        chain: selectedChain,
-        balance: parseFloat(newBalance),
-      };
+             const newRow: WalletBalance = {
+         tokenName: symbolOptionSwapFor.sym,
+         chain: normalizeNetworkName(selectedChain),
+         balance: parseFloat(newBalance),
+       };
       setFilteredRows(prevRows => [newRow, ...prevRows]);
       setIsAddingManualPosition(false);
       setIsManualUpdate(true);
@@ -428,12 +475,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
             }}>
 
-            <Grid
-              item
-              xs={4.5}
-              md={4.5}
-              lg={4}
-              sx={{ marginTop: "15px", marginLeft: "2%" }}>
+             <Grid
+                item
+                xs={4.5}
+                md={4.5}
+                lg={4}
+                sx={{ marginTop: "31px", marginLeft: "2%" }}>
               <Select
                 displayEmpty
                 value={selectedWallet?.walletId || ""}
@@ -508,18 +555,41 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               </Box>
             </Grid>
 
-            <Grid
-              item
-              xs={6.8}
-              md={6.9}
-              lg={7.1}
-              spacing={1}
-              sx={{ marginTop: "15px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
-              <WalletsTable
-                sx={{
-                  ...tableScrollSx,
-                  width: "100%",
-                }}
+               <Grid
+                 item
+                 xs={6.8}
+                 md={6.9}
+                 lg={7.1}
+                 spacing={1}
+                 sx={{ marginTop: "5px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
+               
+                <Box 
+                  display="flex" 
+                  justifyContent="flex-end" 
+                  sx={{marginBottom:"5px", paddingRight:"5px"}}
+                >
+                 <Box 
+                   display="flex" 
+                   alignItems="center" 
+                   sx={{ cursor: "pointer" }}
+                   onClick={toggleDust}
+                 >
+                   {showDust ? (
+                     <VisibilityOffIcon sx={{ color: "#666", fontSize: 20, mr: 0.5 }} />
+                   ) : (
+                     <RemoveRedEyeIcon sx={{ color: "#666", fontSize: 20, mr: 0.5 }} />
+                   )}
+                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
+                     {showDust ? "Hide Dust" : "Show Dust"}
+                   </Typography>
+                 </Box>
+               </Box>
+               
+                                                               <WalletsTable
+                  sx={{
+                    ...tableScrollSx,
+                    width: "100%",
+                  }}
                 hideFooter
                 rowSelection={true}
                 rowSelectionModel={selectedRows ? [selectedRows] : []}
@@ -532,17 +602,31 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 slots={{
                   noRowsOverlay: CustomNoWalletOverlay,
                 }}
-                getRowClassName={(params) =>
-                selectedRows &&
-                `${params.row.tokenName.toLowerCase()}-${params.row.chain.toLowerCase()}` === selectedRows
-                  ? 'selected-row'
-                  : ''
-              }
-              componentsProps={{
-                row: {
-                  title: t("ClickToLoadCurrentPosition")
-                }
-              }}
+                                                  getRowClassName={(params) => {
+                    const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
+                    const isSupportedChain = params.row.chain && supportedChains.includes(params.row.chain.toLowerCase());
+                    
+                    if (!isSupportedChain) {
+                      return 'unsupported-chain-row';
+                    }
+                    
+                    if (selectedRows &&
+                        `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
+                      return 'selected-row';
+                    }
+                    
+                    return '';
+                  }}
+                                                           componentsProps={{
+                  row: (params) => {
+                    const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
+                    const isSupportedChain = params.row.chain && supportedChains.includes(params.row.chain.toLowerCase());
+                    
+                    return {
+                      title: isSupportedChain ? t("ClickToLoadCurrentPosition") : "This chain is not supported for selection"
+                    };
+                  }
+                }}
               />
               <Dialog
                 open={isAddingManualPosition}
@@ -550,24 +634,30 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 450 }}>
                 <FormControl fullWidth size="medium" error={!!addPositionError}>
                   <InputLabel id="chain-select-label">{t("Chain")}</InputLabel>
-                  <Select
-                    labelId="chain-select-label"
-                    value={selectedChain}
-                    label={t("Chain")}
-                    onChange={e => {
-                      setSelectedChain(e.target.value);
-                      setSymbolOptionSwapFor(null)
-                      setAddPositionError("");
-                    }}
-                  >
-                    <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
-                    <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
-                    <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
-                    <MenuItem value="POLYGON">POLYGON</MenuItem>
-                    <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
-                    <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                    <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
-                  </Select>
+                                     <Select
+                     labelId="chain-select-label"
+                     value={selectedChain}
+                     label={t("Chain")}
+                     onChange={e => {
+                       setSelectedChain(e.target.value);
+                       setSymbolOptionSwapFor(null)
+                       setAddPositionError("");
+                     }}
+                   >
+                       <MenuItem disabled value=""></MenuItem>
+                       <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
+                       <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
+                       <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
+                       <MenuItem value="POLYGON">POLYGON</MenuItem>
+                       <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
+                       <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                       <MenuItem value="BASE">BASE</MenuItem>
+                       <MenuItem value="ZKSYNC">ZKSYNC</MenuItem>
+                       <MenuItem value="GNOSIS">GNOSIS</MenuItem>
+                       <MenuItem value="LINEA">LINEA</MenuItem>
+                       <MenuItem value="SONIC">SONIC</MenuItem>
+                       <MenuItem value="UNICHAIN">UNICHAIN</MenuItem>
+                   </Select>
                   {addPositionError && (
                     <Box sx={(theme) => ({
                       color: theme.palette.error.main,
@@ -750,6 +840,18 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
     backgroundColor: theme.palette.mode === "light" ? "#109EEF" : darken(theme.palette.primary.main, 0.2),
+  },
+  "& .unsupported-chain-row": {
+    cursor: "not-allowed",
+    opacity: 0.6,
+  },
+  "& .unsupported-chain-row:hover": {
+    cursor: "not-allowed",
+    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "#2a2a2a",
+    border: "none",
+  },
+  "& .unsupported-chain-row:hover .MuiDataGrid-cell": {
+    backgroundColor: "transparent",
   },
   "& .selected-row .MuiDataGrid-cell": {
     backgroundColor: "transparent",
