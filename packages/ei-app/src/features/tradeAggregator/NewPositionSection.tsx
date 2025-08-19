@@ -801,7 +801,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             <MenuItem value="POLYGON">POLYGON</MenuItem>
                             <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
                             <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                            <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
+                            <MenuItem value="BASE">BASE</MenuItem>
+                            <MenuItem value="ZKSYNC">ZKSYNC</MenuItem>
+                            <MenuItem value="GNOSIS">GNOSIS</MenuItem>
+                            <MenuItem value="LINEA">LINEA</MenuItem>
+                            <MenuItem value="SONIC">SONIC</MenuItem>
+                            <MenuItem value="UNICHAIN">UNICHAIN</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
