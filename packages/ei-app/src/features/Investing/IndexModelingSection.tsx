@@ -3,7 +3,7 @@ import { currencyFormat, percentageFormat, qtyFormat } from "@/constants/xls";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
 import DownloadIcon from "@mui/icons-material/Download";
-import { AccordionProps, AccordionSummary, Box, Button, styled, useTheme } from "@mui/material";
+import { AccordionProps, AccordionSummary, Box, Button, styled, useTheme, IconButton } from "@mui/material";
 import { useGridApiRef } from "@mui/x-data-grid";
 import { AppAccordionSection, AppNumberInput, AppPercentageField, nativeBarSx, StyledWalletsTable } from "components";
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import * as XLSX from "xlsx";
 import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
 import { Typography } from "@mui/material";
 
@@ -38,7 +39,7 @@ export const IndexModelingSection = ({
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const theme = useTheme();
-  const [isInfoPanelExpanded, setIsInfoPanelExpanded] = useState<boolean>(false);
+  const [isInfoPanelExpanded, setIsInfoPanelExpanded] = useState<boolean>(true);
 
   const onExport = () => {
     const updatedAssets = tableAssets.map(asset => ({
@@ -158,17 +159,17 @@ export const IndexModelingSection = ({
             >
               <Typography 
                 sx={{ 
-                  color: "#1976d2", 
-                  fontSize: "14px",
-                  fontWeight: 500
+                  color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                  fontSize: "15px",
+                  fontWeight: 600
                 }}
               >
                 {t("HowTheTokensInputImpactsYourIndex")}
               </Typography>
               {isInfoPanelExpanded ? (
-                <ExpandLessIcon sx={{ fontSize: "16px", color: "#1976d2" }} />
+                <ExpandLessIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2",  }} />
               ) : (
-                <ExpandMoreIcon sx={{ fontSize: "16px", color: "#1976d2" }} />
+                <ExpandMoreIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2",  }} />
               )}
             </Box>
             
@@ -179,19 +180,37 @@ export const IndexModelingSection = ({
                   p: 2,
                   borderRadius: "8px",
                   backgroundColor: theme.palette.mode === "dark" ? "rgba(25, 118, 210, 0.1)" : "rgba(25, 118, 210, 0.05)",
-                  borderLeft: "4px solid #1976d2",
+                  borderLeft: theme.palette.mode === "dark" ? "4px solid #03a9f4" : "4px solid #1976d2", 
                   borderTop: "1px solid rgba(25, 118, 210, 0.2)",
                   borderRight: "1px solid rgba(25, 118, 210, 0.2)",
-                  borderBottom: "1px solid rgba(25, 118, 210, 0.2)"
+                  borderBottom: "1px solid rgba(25, 118, 210, 0.2)",
+                  position: "relative"
                 }}
               >
+                <IconButton
+                  onClick={() => setIsInfoPanelExpanded(false)}
+                  sx={{
+                    position: "absolute",
+                    top: "8px",
+                    right: "8px",
+                    width: "24px",
+                    height: "24px",
+                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                    "&:hover": {
+                      backgroundColor: "rgba(25, 118, 210, 0.1)",
+                    },
+                  }}
+                >
+                  <CloseIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "white" : "black" }} />
+                </IconButton>
                 <Typography 
                   sx={{ 
-                    color: "#1976d2", 
-                    fontSize: "14px",
+                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                    fontSize: "15px",
                     fontWeight: 600,
                     mb: 1,
-                    backgroundColor:"transparent"
+                    backgroundColor:"transparent",
+                    paddingRight: "32px"
                   }}
                 >
                   {t("IndexContributionDetails")}
@@ -226,7 +245,7 @@ export const IndexModelingSection = ({
                     href="https://www.investopedia.com/terms/c/capitalizationweightedindex.asp" 
                     target="_blank"
                     style={{ 
-                      color: "#1976d2", 
+                      color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
                       textDecoration: "underline",
                       fontWeight: 500
                     }}
@@ -244,7 +263,7 @@ export const IndexModelingSection = ({
                   alignItems:"center",
                   borderRadius: "8px",
                   backgroundColor: theme.palette.mode === "dark" ? "rgba(25, 118, 210, 0.1)" : "rgba(25, 118, 210, 0.05)",
-                  borderLeft: "4px solid #1976d2",
+                  borderLeft: theme.palette.mode === "dark" ? "4px solid #03a9f4" : "4px solid #1976d2",
                   borderTop: "1px solid rgba(25, 118, 210, 0.2)",
                   borderRight: "1px solid rgba(25, 118, 210, 0.2)",
                   borderBottom: "1px solid rgba(25, 118, 210, 0.2)"
@@ -252,7 +271,7 @@ export const IndexModelingSection = ({
               >
                 <Typography 
                   sx={{ 
-                    color: "#1976d2", 
+                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
                     fontSize: "14px",
                     fontWeight: 600,
                     mb: 1,
