@@ -24,6 +24,11 @@ function getEquityOptionsItems(): SidebarListItem[] {
       icon: <FormatListBulletedIcon />,
       href: "/conversions",
     },
+    {
+      title: t("WeeklyMatches", { ns: "SideBar" }),
+      icon: <FormatListBulletedIcon />,
+      href: "/weeklyMatches",
+    },
   ];
 }
 
