@@ -1,7 +1,6 @@
 import React from "react";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Typography, IconButton, Chip, Theme } from "@mui/material";
-import { useTranslation } from "react-i18next";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CloseIcon from "@mui/icons-material/Close";
@@ -32,9 +31,9 @@ const getOrderTypeTextColor = (orderType: string, theme: Theme) => {
 
 export const getCallSetListTableColumns = (
   theme: Theme,
-  onToggleExpansion: (strategyId: string) => void
+  onToggleExpansion: (strategyId: string) => void,
+  t: (key: string) => string
 ): GridColDef[] => {
-  const { t } = useTranslation();
 
   return [
     {
@@ -203,9 +202,9 @@ export const getCallSetListTableColumns = (
 
 export const getPositionOrdersTableColumns = (
   theme: Theme,
+  t: (key: string) => string,
   onCancelOrder?: (orderId: string) => void
 ): GridColDef[] => {
-  const { t } = useTranslation();
 
   return [
     {

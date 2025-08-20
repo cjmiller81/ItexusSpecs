@@ -6,10 +6,12 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { fetchStrategies, toggleRowExpansion } from './CallSetListSlice';
 import { StrategyTableRow, PositionOrderRow } from '@/models/StrategyTableRow';
 import { Strategy, Position } from '@/models/Strategy';
+import { useTranslation } from 'react-i18next';
 
 const CallSetListSection = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
+  const { t } = useTranslation();
   const { strategies, expandedRows } = useAppSelector(state => state.callSetList);
 
   useEffect(() => {
@@ -382,7 +384,7 @@ const CallSetListSection = () => {
             }}>
               <PositionOrdersTable
                 rows={orders}
-                columns={getPositionOrdersTableColumns(theme, handleCancelOrder)}
+                columns={getPositionOrdersTableColumns(theme, t, handleCancelOrder)}
                 hideFooter
                 disableColumnMenu
                 disableRowSelectionOnClick
@@ -427,7 +429,7 @@ const CallSetListSection = () => {
           hideFooter
           rowSelection={false}
           getRowId={(row) => row.id}
-          columns={getCallSetListTableColumns(theme, handleToggleExpansion)}
+          columns={getCallSetListTableColumns(theme, handleToggleExpansion, t)}
           rows={strategiesData}
           slots={{ row: CustomRow }}
           autoHeight={expandedRows.length === 0}
