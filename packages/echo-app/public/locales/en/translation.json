@@ -132,7 +132,8 @@
     "CEX": "CEX",
     "CEXWallets": "CEX Wallets",
     "EquityOptions": "Equity Options",
-    "ConversionPositions": "Conversion Positions"
+    "ConversionPositions": "Conversion Positions",
+    "WeeklyMatches": "Weekly Matches"
   },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
