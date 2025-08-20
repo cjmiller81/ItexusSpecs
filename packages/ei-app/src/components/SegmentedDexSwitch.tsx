@@ -87,19 +87,52 @@ const SegmentedDexSwitch: React.FC<Props> = ({
             placement="bottom"
             arrow
             componentsProps={{
-              tooltip: { sx: { maxWidth: 320, p: 2, border: "2px solid #1e88e5", borderRadius: 2 } },
+              tooltip: {
+                sx: {
+                  maxWidth: 320,
+                  p: 2,
+                  border: "2px solid #1e88e5",
+                  borderRadius: 2,
+                  backgroundColor: "#696969",
+                  color: "white",
+                  boxShadow: 3,
+                },
+              },
+              arrow: {
+                sx: {
+                  color: "#696969",
+                  border: "2px solid #1e88e5",
+                },
+              },
             }}
           >
             <IconButton size="small" sx={{ color: "#1e88e5" }} aria-label="info best routes">
               <InfoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
+
           <Tooltip
             title={infoTexts.chooser}
             placement="bottom"
             arrow
             componentsProps={{
-              tooltip: { sx: { maxWidth: 320, p: 2, border: "2px solid #1e88e5", borderRadius: 2 } },
+              tooltip: {
+                sx: {
+                  maxWidth: 320,
+                  p: 2,
+                  border: "2px solid #1e88e5",
+                  borderRadius: 2,
+                  backgroundColor: "#696969",
+                  color: "white",
+                  boxShadow: 3,
+                },
+              },
+              arrow: {
+                sx: {
+                  color: "#696969",
+                  border: "2px solid #1e88e5",
+                },
+              },
             }}
           >
             <IconButton size="small" sx={{ color: "#1e88e5" }} aria-label="info dex chooser">

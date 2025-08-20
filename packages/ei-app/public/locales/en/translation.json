@@ -354,7 +354,7 @@
     "ConsidersPriceImpact": "✓ Considers price impact, gas costs & slippage",
     "RealTimeMarketOptimization": "✓ Real-time market optimization",
     "DEXChooserWithIcon": "🎯 DEX Chooser",
-    "SelectUpToSpecificDEXs": "Select up to 4 specific DEXs to compare. Shows the best overall route first, then your",
+    "SelectUpToSpecificDEXs": "Select up to 4 specific DEXs to compare. Shows the best overall route first, then your ",
     "ChosenExchangesRankedByPerformance": "chosen exchanges ranked by performance.",
     "TargetedDEXComparison": "✓ Targeted DEX comparison",
     "SideBySidePerformanceAnalysis": "✓ Side-by-side performance analysis",
