@@ -24,7 +24,13 @@ const WalletTokensOverview: React.FC<WalletTokensOverviewProps> = ({
   if (!Array.isArray(portfolioWalletData)) return null;
 
   const wallet = portfolioWalletData.find((w) => w.walletAddress === walletAddress);
-  if (!wallet || !wallet.tokenHoldings) return null;
+  if (!wallet || !wallet.tokenHoldings) {
+    return (
+      <Typography>
+        No valid Wallet Tokens found for this wallet.
+      </Typography>
+    );
+  }
 
   const tokensToDisplay = externalTokens || 
     (showDust ? wallet.tokenHoldings : filterDustTokens(wallet.tokenHoldings));
@@ -182,40 +188,35 @@ const columns: GridColDef<typeof rows[number]>[] = [
   },
 ];
 
-return (
-  <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-    {tokensToDisplay.length === 0 ? (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
-        height="100%"
-        color="text.secondary"
-      >
-        <Typography variant="body1">
-          {showDust ? t("NoTokensFound") : t("NoTokensAboveDustThreshold")}
+     return (
+          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", minHeight: "auto", height: "auto" }}>
+      {tokensToDisplay.length === 0 ? (
+        <Typography>
+          No valid Wallet Tokens found for this wallet.
         </Typography>
-      </Box>
-    ) : (
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        hideFooter
-        disableColumnMenu
-        disableRowSelectionOnClick
-        sx={{
-          flex: 1,
-          width: "100%",
-          borderRadius: "8px",
-          overflow: "hidden",
-          "& .MuiDataGrid-main": {
-            backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white ",
-            borderRadius:"8px"
-          },
-          "& .MuiDataGrid-cell": {
-            py: 1,
-          },
-        }}
+      ) : (
+             <DataGrid
+         rows={rows}
+         columns={columns}
+         hideFooter
+         disableColumnMenu
+         disableRowSelectionOnClick
+                 sx={{
+           width: "100%",
+           borderRadius: "8px",
+           overflow: "hidden",
+           minHeight: "auto !important",
+           height: "auto !important",
+           "& .MuiDataGrid-main": {
+             backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white ",
+             borderRadius:"8px",
+             minHeight: "auto !important",
+             height: "auto !important"
+           },
+           "& .MuiDataGrid-cell": {
+             py: 1,
+           },
+         }}
       />
     )}
   </Box>

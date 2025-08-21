@@ -60,6 +60,7 @@ export const MyWalletsSection = ({
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
+  const [expandedRowHeights, setExpandedRowHeights] = useState<Record<string, string>>({});
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
@@ -81,6 +82,13 @@ export const MyWalletsSection = ({
 
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
+  };
+
+  const updateRowHeight = (rowId: string, height: string) => {
+    setExpandedRowHeights(prev => ({
+      ...prev,
+      [rowId]: height
+    }));
   };
   const formik = useFormik({
     initialValues: {
@@ -255,6 +263,8 @@ export const MyWalletsSection = ({
               loading={wallets === null && loading}
               disableVirtualization
               hideFooter
+              $hasExpandedRows={expandedRows.length > 0}
+              $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
               sx={{
               ...tableScrollSx,
               }}
@@ -267,6 +277,7 @@ export const MyWalletsSection = ({
               slotProps={{
               row: {
               isExpanded: (id: GridRowId) => expandedRows.includes(id),
+              onHeightUpdate: updateRowHeight,
               },
               }}
               slots={{

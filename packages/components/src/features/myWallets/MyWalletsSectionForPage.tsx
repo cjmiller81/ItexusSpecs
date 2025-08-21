@@ -58,6 +58,7 @@ export const MyWalletsSectionForPage = ({
   
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
+  const [expandedRowHeights, setExpandedRowHeights] = useState<Record<string, string>>({});
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
   const [openCoinbaseDialog, setOpenCoinbaseDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
@@ -79,6 +80,13 @@ export const MyWalletsSectionForPage = ({
 
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
+  };
+
+  const updateRowHeight = (rowId: string, height: string) => {
+    setExpandedRowHeights(prev => ({
+      ...prev,
+      [rowId]: height
+    }));
   };
   const formik = useFormik({
     initialValues: {
@@ -184,7 +192,7 @@ export const MyWalletsSectionForPage = ({
         <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
-      <Box sx={{ width: "100%", overflow: "auto" }}>
+             <Box sx={{ width: "100%" }}>
         <Box sx={{ position: "relative", width: "99%", top: 18, overflowX: "clip" }}>
           {loading && (
             <CircularProgress
@@ -193,11 +201,12 @@ export const MyWalletsSectionForPage = ({
             />
           )}
         </Box>
-        <DexWalletsTable
-          loading={wallets === null && loading}
-          disableVirtualization
-          hideFooter
-          $hasExpandedRows={expandedRows.length > 0}
+                 <DexWalletsTable
+           loading={wallets === null && loading}
+           disableVirtualization
+           hideFooter
+           $hasExpandedRows={expandedRows.length > 0}
+           $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
           sx={{
            ...tableScrollSx,
           }}
@@ -210,6 +219,7 @@ export const MyWalletsSectionForPage = ({
           slotProps={{
             row: {
               isExpanded: (id: GridRowId) => expandedRows.includes(id),
+              onHeightUpdate: updateRowHeight,
             },
           }}
           slots={{

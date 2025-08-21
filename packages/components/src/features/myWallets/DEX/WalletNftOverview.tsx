@@ -178,23 +178,26 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
     <Box mt={2} sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
       <Card elevation={3} sx={{ width: "100%", maxWidth: "100%" }}>
         <Box sx={{ width: "100%", maxWidth: "100%" }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            hideFooter
-            disableColumnMenu
-            disableRowSelectionOnClick
-            autoHeight
-            sx={{
-              ...dataGridStyles,
-              width: "100%",
-              maxWidth: "100%",
-              "& .MuiDataGrid-main": {
-                ...dataGridStyles["& .MuiDataGrid-main"],
-                width: "100%",
-                maxWidth: "100%"
-              }
-            }}
+                     <DataGrid
+             rows={rows}
+             columns={columns}
+             hideFooter
+             disableColumnMenu
+             disableRowSelectionOnClick
+                         sx={{
+               ...dataGridStyles,
+               width: "100%",
+               maxWidth: "100%",
+               minHeight: "auto !important",
+               height: "auto !important",
+               "& .MuiDataGrid-main": {
+                 ...dataGridStyles["& .MuiDataGrid-main"],
+                 width: "100%",
+                 maxWidth: "100%",
+                 minHeight: "auto !important",
+                 height: "auto !important"
+               }
+             }}
           />
         </Box>
       </Card>

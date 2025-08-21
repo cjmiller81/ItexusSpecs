@@ -65,7 +65,13 @@ const WalletDeFiOverview: React.FC<WalletDeFiOverviewProps> = ({ walletAddress }
   if (!Array.isArray(portfolioWalletData)) return null;
 
   const wallet = portfolioWalletData.find((w) => w.walletAddress === walletAddress);
-  if (!wallet?.deFiPositions) return null;
+  if (!wallet?.deFiPositions || wallet.deFiPositions.length === 0) {
+    return (
+      <Typography>
+        No valid DeFi Position found for this wallet.
+      </Typography>
+    );
+  }
 
   const grouped = wallet.deFiPositions.reduce((acc, pos) => {
     if (!acc[pos.protocol]) acc[pos.protocol] = [];

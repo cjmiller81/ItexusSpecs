@@ -2,10 +2,10 @@ import { darken, lighten, styled } from "@mui/material/styles"
 import { BasicTable } from "../../components/DataDisplay"
 import { width } from "@mui/system"
 
-export const DexWalletsTable = styled(BasicTable)<{ $hasExpandedRows?: boolean }>(({ theme, $hasExpandedRows }) => ({
+export const DexWalletsTable = styled(BasicTable)<{ $hasExpandedRows?: boolean; $minHeight?: string }>(({ theme, $hasExpandedRows, $minHeight }) => ({
   width: "100%",
-  minHeight: $hasExpandedRows ? "60vh" : 150,
-  height:"auto",
+  minHeight: $hasExpandedRows ? ($minHeight || "55vh") : 150,
+  height: "auto",
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
@@ -13,7 +13,7 @@ export const DexWalletsTable = styled(BasicTable)<{ $hasExpandedRows?: boolean }
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    minHeight: 150,
+    minHeight: $hasExpandedRows ? ($minHeight || "55vh") : 150,
     width:"100%",
     backgroundColor:
       theme.palette.mode === "dark"
