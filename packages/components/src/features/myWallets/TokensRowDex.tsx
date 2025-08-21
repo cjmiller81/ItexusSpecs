@@ -209,12 +209,24 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
   const formattedNftValue = useFormattedCurrency(totalNftValue);
 
   const getMinHeight = () => {
-    switch (sectionsWithData) {
-      case 0: return "35vh";
-      case 1: return "43vh";
-      case 2: return "55vh";
-      case 3: return "55vh";
-      default: return "55vh";
+    const isProfilePage = window.location.pathname.includes('/profile');
+    
+    if (isProfilePage) {
+      switch (sectionsWithData) {
+        case 0: return "35vh";
+        case 1: return "43vh";
+        case 2: return "70vh";
+        case 3: return "75vh";
+        default: return "65vh";
+      }
+    } else {
+      switch (sectionsWithData) {
+        case 0: return "25vh";
+        case 1: return "40vh";
+        case 2: return "55vh";
+        case 3: return "55vh";
+        default: return "55vh";
+      }
     }
   };
 
