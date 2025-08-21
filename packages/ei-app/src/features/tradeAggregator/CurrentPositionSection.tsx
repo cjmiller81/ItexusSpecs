@@ -353,10 +353,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       return id === selectedId;
     }) ?? null;
 
-       const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
-       const isSupportedChain = selectedToken && selectedToken.chain && supportedChains.includes(selectedToken.chain.toLowerCase());
+       const isZoraChain = selectedToken && selectedToken.chain && selectedToken.chain.toLowerCase() === 'zora';
 
-      if (isSupportedChain) {
+      if (!isZoraChain) {
         if (onTokenChange) {
           onTokenChange(selectedToken);
         }
@@ -585,7 +584,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                  </Box>
                </Box>
                
-                                                               <WalletsTable
+                <WalletsTable
                   sx={{
                     ...tableScrollSx,
                     width: "100%",
@@ -603,10 +602,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   noRowsOverlay: CustomNoWalletOverlay,
                 }}
                                                   getRowClassName={(params) => {
-                    const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
-                    const isSupportedChain = params.row.chain && supportedChains.includes(params.row.chain.toLowerCase());
+                    const isZoraChain = params.row.chain && params.row.chain.toLowerCase() === 'zora';
                     
-                    if (!isSupportedChain) {
+                    if (isZoraChain) {
                       return 'unsupported-chain-row';
                     }
                     
@@ -617,13 +615,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     
                     return '';
                   }}
-                                                           componentsProps={{
+                  componentsProps={{
                   row: (params) => {
-                    const supportedChains = ['ethereum', 'bnb chain', 'optimism', 'polygon', 'avalanche', 'arbitrum'];
-                    const isSupportedChain = params.row.chain && supportedChains.includes(params.row.chain.toLowerCase());
+                    const isZoraChain = params.row.chain && params.row.chain.toLowerCase() === 'zora';
                     
                     return {
-                      title: isSupportedChain ? t("ClickToLoadCurrentPosition") : "This chain is not supported for selection"
+                      title: !isZoraChain ? t("ClickToLoadCurrentPosition") : "Zora chain is not supported for selection"
                     };
                   }
                 }}
