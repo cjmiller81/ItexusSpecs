@@ -8,7 +8,7 @@ import { Typography } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 import { useAppSelector } from "../../slices";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import { filterDustTokens } from "../../helpers/filterDustTokens";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import WalletDeFiOverview from "./DEX/WalletDeFiOverview";
@@ -29,6 +29,7 @@ interface ExpandableRowDexProps extends GridRowProps {
   };
   isExpanded: (rowId: string | number) => boolean;
   rowId: string | number;
+  onHeightUpdate?: (rowId: string, height: string) => void;
 }
 
 interface WalletData {
@@ -39,6 +40,7 @@ interface WalletData {
   validNFTs: NftHolding[];
   totalNftValue: number;
   nftCount: number;
+  sectionsWithData: number;
 }
 
 const useWalletData = (walletAddress: string, showDust: boolean): WalletData => {
@@ -54,6 +56,7 @@ const useWalletData = (walletAddress: string, showDust: boolean): WalletData => 
         validNFTs: [],
         totalNftValue: 0,
         nftCount: 0,
+        sectionsWithData: 0,
       };
     }
 
@@ -70,6 +73,7 @@ const useWalletData = (walletAddress: string, showDust: boolean): WalletData => 
         validNFTs: [],
         totalNftValue: 0,
         nftCount: 0,
+        sectionsWithData: 0,
       };
     }
 
@@ -99,6 +103,11 @@ const useWalletData = (walletAddress: string, showDust: boolean): WalletData => 
     const totalNftValue = validNFTs.reduce((sum, nft) => sum + nft.estimatedValue, 0);
     const nftCount = wallet.nftHoldings?.length || 0;
 
+    const hasTokens = filteredTokens.length > 0;
+    const hasDeFi = defiPositions.length > 0;
+    const hasNFTs = validNFTs.length > 0;
+    const sectionsWithData = [hasTokens, hasDeFi, hasNFTs].filter(Boolean).length;
+
     return {
       wallet,
       filteredTokens,
@@ -107,6 +116,7 @@ const useWalletData = (walletAddress: string, showDust: boolean): WalletData => 
       validNFTs,
       totalNftValue,
       nftCount,
+      sectionsWithData,
     };
   }, [portfolioWalletData, walletAddress, showDust]);
 };
@@ -134,13 +144,14 @@ const SectionHeader: React.FC<{
       justifyContent="space-between"
       alignItems="center"
       mb={1}
+      mt={3}
     >
       <Box display="flex" alignItems="center">
         {icon}
         <Typography variant="h5" gutterBottom sx={{ 
           fontWeight: 600, 
           mb: 0, 
-          fontSize: "1.125rem", // text-lg equivalent
+          fontSize: "1.125rem",
           color: color 
         }}>
           {title}
@@ -190,11 +201,28 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
     totalDeFiValue,
     totalNftValue,
     nftCount,
+    sectionsWithData,
   } = useWalletData(props.row.address, showDust);
 
   const formattedTokensValue = useFormattedCurrency(filteredTokensValue);
   const formattedDeFiValue = useFormattedCurrency(totalDeFiValue);
   const formattedNftValue = useFormattedCurrency(totalNftValue);
+
+  const getMinHeight = () => {
+    switch (sectionsWithData) {
+      case 0: return "35vh";
+      case 1: return "43vh";
+      case 2: return "55vh";
+      case 3: return "55vh";
+      default: return "55vh";
+    }
+  };
+
+  useEffect(() => {
+    if (props.onHeightUpdate && props.isExpanded(props.rowId)) {
+      props.onHeightUpdate(props.row.address, getMinHeight());
+    }
+  }, [sectionsWithData, props.onHeightUpdate, props.isExpanded, props.rowId, props.row.address]);
 
   const tokensIcon = (
     <MovingIcon 
@@ -218,9 +246,9 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
     <Box sx={{ width: "100%" }}>
       <GridRow {...props} />
       {props.isExpanded(props.rowId) && (
-        <Box px={3} py={1} sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
-          <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{ width: "100%", maxWidth: "100%" }}>
-            <Box sx={{ width: "100%", maxWidth: "100%" }}>
+                 <Box px={3} py={1} sx={{ width: "100%", maxWidth: "100%", minHeight: getMinHeight() }}>
+           <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{ width: "100%", maxWidth: "100%" }}>
+             <Box sx={{ width: "100%", maxWidth: "100%" }}>
                              <SectionHeader
                  icon={tokensIcon}
                  title={t("WalletTokens")}
@@ -250,18 +278,16 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
             <WalletDeFiOverview walletAddress={props.row.address} />
           </Box>
 
-          {nftCount > 0 && (
-            <Box mt={4} sx={{ width: "100%", maxWidth: "100%" }}>
-                             <SectionHeader
-                 icon={nftIcon}
-                 title={t("NFTHoldings")}
-                 value={formattedNftValue}
-                 color={WALLET_COLORS.nft}
-               />
+          <Box mt={4} sx={{ width: "100%", maxWidth: "100%" }}>
+            <SectionHeader
+              icon={nftIcon}
+              title={t("NFTHoldings")}
+              value={formattedNftValue}
+              color={WALLET_COLORS.nft}
+            />
 
-              <WalletNftOverview walletAddress={props.row.address} />
-            </Box>
-          )}
+            <WalletNftOverview walletAddress={props.row.address} />
+          </Box>
         </Box>
       )}
     </Box>
