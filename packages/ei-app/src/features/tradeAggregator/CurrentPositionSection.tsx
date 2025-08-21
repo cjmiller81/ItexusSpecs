@@ -793,7 +793,7 @@ const tableScrollSx = {
 
 export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   width: "100%",
-  minHeight: "426px",
+  minHeight: "400px",
   mt: 2,
   display: "grid",
   "& .MuiDataGrid-virtualScroller": {
@@ -802,7 +802,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    maxHeight: "425px",
+    maxHeight: "408px",
   },
   "& .MuiDataGrid-columnHeaders": {
   backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",

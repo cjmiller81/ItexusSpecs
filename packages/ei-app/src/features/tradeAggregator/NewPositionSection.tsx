@@ -510,6 +510,17 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     }
   }, [selectedTokenRow, tokenIcons?.items]);
 
+  // Clear Swap For when Current Position is cleared
+  useEffect(() => {
+    if (!selectedTokenRow) {
+      setSymbolOptionSwapFor(null);
+      setInputSearchSwapFor("");
+      setSelectedChain("");
+      setSymbolOptionSwap(null);
+      setSelectedToken(null);
+      setNewBalance("");
+    }
+  }, [selectedTokenRow]);
 
   
   useEffect(() => {
@@ -574,22 +585,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     if(value === null)
     {
       onSelectedTokenChange?.(null,null);
-      setSelectedChain("")
-    } else {
-      let matchedToken = filteredRows.find(token => 
-        token.tokenName?.toUpperCase() === value.sym?.toUpperCase() &&
-        token.chain?.toUpperCase() === selectedChain.toUpperCase()
-      );
-      
-      if (!matchedToken) {
-        matchedToken = filteredRows.find(token => 
-          token.tokenName?.toUpperCase() === value.sym?.toUpperCase()
-        );
-      }
-      
-      if (matchedToken) {
-        setSelectedChain(matchedToken.chain || "");
-      }
     }
     
     setSymbolOptionSwap(value);
@@ -846,14 +841,14 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
 
                 <Grid item xs={2.2}>
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                      <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
-
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("Chain")}</Typography>
                       {!selectedChain && (
                         <Tooltip
                           title={
                             <Typography sx={{ fontSize: '0.85rem'}}>
-                              {t("Selectсhain")}
+                              {t("ChooseToken")}
                             </Typography>
                           }
                         >
@@ -866,36 +861,21 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         </Tooltip>
                       )}
                     </Stack>
-                    
-                    <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
-                        <Select
-                            labelId="chain-select-label"
-                            value={selectedChain}
-                            onChange={e => {setShowNoQuotesMessage(false);setSelectedChain(e.target.value)}}
-                            sx={{
-                                height: "53px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                            displayEmpty
-                            renderValue={selected => selected || ""}
-                        >
-                            <MenuItem disabled value=""></MenuItem>
-                            <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
-                            <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
-                            <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
-                            <MenuItem value="POLYGON">POLYGON</MenuItem>
-                            <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
-                            <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                            <MenuItem value="BASE">BASE</MenuItem>
-                            <MenuItem value="ZKSYNC">ZKSYNC</MenuItem>
-                            <MenuItem value="GNOSIS">GNOSIS</MenuItem>
-                            <MenuItem value="LINEA">LINEA</MenuItem>
-                            <MenuItem value="SONIC">SONIC</MenuItem>
-                            <MenuItem value="UNICHAIN">UNICHAIN</MenuItem>
-                        </Select>
-                    </FormControl>
+                  </Box>
+                  
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    value={selectedChain}
+                    disabled
+                    sx={{
+                      height: "53px",
+                      marginBottom: 2,
+                      "& .MuiInputBase-root": {
+                        height: "53px",
+                      },
+                    }}
+                  />
                 </Grid>
 
                 <Grid item xs={2.2}>
@@ -1005,6 +985,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           : option.sym.toUpperCase()
                       }
                       value={symbolOptionSwapFor}
+                      disabled={!selectedTokenRow}
                       onChange={(_e, newValue) => {
                         onOptionChangeSwapFor(newValue);
                         if (newValue) {
@@ -1238,7 +1219,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         <Button
                           variant="contained"
                           onClick={handleFetchQuotes}
-                          disabled= {!symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+                          disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
                           sx={{
                             backgroundColor: "#1e88e5",
                             color: "#fff",

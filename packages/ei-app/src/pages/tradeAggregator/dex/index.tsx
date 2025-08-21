@@ -30,6 +30,7 @@ export default function Dex() {
     const clearSelectedTokenAndChain = () => {
       setSelectedToken(null);
       setSelectedChain(null);
+      setSelectedTokenRow(null);
     };
 
     const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
@@ -70,7 +71,7 @@ export default function Dex() {
           <Typography
             variant="h6"
             component="div"
-            sx={{ fontSize: "14px", marginBottom: 1, marginLeft:"17px" }}
+            sx={{ fontSize: "14px", marginBottom: 1.2, marginLeft:"17px" }}
           >
             {t("NewPosition")}
           </Typography>

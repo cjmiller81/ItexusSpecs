@@ -348,7 +348,7 @@
     "SelectTokenToSwapFrom": "Select token to swap from",
     "EnterSwapAmount": "Enter swap amount",
     "SelectTokenToSwapTo": "Select token to swap to",
-    "Selectсhain": "Select сhain",
+    "ChooseToken": "Select a token in the Current Position table",
     "BestRoutes": "🚀 Best Routes",
     "AutomaticallyDiscovers": "Automatically discovers the top 5 most efficient swap routes.",
     "ConsidersPriceImpact": "✓ Considers price impact, gas costs & slippage",
