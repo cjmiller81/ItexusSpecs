@@ -147,9 +147,9 @@ const EntryOrderPanel: React.FC<EntryOrderPanelProps> = ({
                   "& .MuiSelect-icon": { color: "#fff" },
                 }}
               >
-                <MenuItem value="Use_Bid">{t("Use_Bid")}</MenuItem>
-                <MenuItem value="Use_Mid">{t("Use_Mid")}</MenuItem>
-                <MenuItem value="Use_Ask">{t("Use_Ask")}</MenuItem>
+                <MenuItem value="USE_BID">{t("Use_Bid")}</MenuItem>
+                <MenuItem value="USE_MID">{t("Use_Mid")}</MenuItem>
+                <MenuItem value="USE_ASK">{t("Use_Ask")}</MenuItem>
               </Select>
             </Box>
 
