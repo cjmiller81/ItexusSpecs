@@ -30,6 +30,7 @@ export default function Dex() {
     const clearSelectedTokenAndChain = () => {
       setSelectedToken(null);
       setSelectedChain(null);
+      setSelectedTokenRow(null);
     };
 
     const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
