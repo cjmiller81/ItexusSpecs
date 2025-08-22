@@ -140,8 +140,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             case "zksync": return 324;
             case "gnosis": return 100;
             case "linea": return 59144;
-            case "sonic": return 1001;
-            case "unichain": return 1002;
+            case "sonic": return 146;
+            case "unichain": return 130;
           }
   };
 

@@ -121,9 +121,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                  case "linea":
                    return 59144;
                  case "sonic":
-                   return 1001;
+                   return 146;
                  case "unichain":
-                   return 1002;
+                   return 130;
                }
              };
 
