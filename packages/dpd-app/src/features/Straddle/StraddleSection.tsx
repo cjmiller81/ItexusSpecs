@@ -15,13 +15,13 @@ import SchwabConnectButton from "@/common/SchwabConnectButton";
 
 export default function StraddleOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
-  const [entryType, setEntryType] = useState<string>("Use_Ask");
+  const [entryType, setEntryType] = useState<string>("USE_ASK");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
   const [isBreakUpEnabled, setIsBreakUpEnabled] = useState(false);
   const [amount, setAmount] = useState(30000);
   const [breakUp, setBreakUp] = useState(3);
-  const isBuyAsk = entryType === "Use_Ask";
+  const isBuyAsk = entryType === "USE_ASK";
   const isOffsetValid = offsetPercent >= 0;
   const shouldDisableLaddering = isBuyAsk && isOffsetValid;
   const shouldShowHint = isBuyAsk && isOffsetValid;
@@ -59,7 +59,7 @@ export default function StraddleOptionSet() {
 
   const resetForm = () => {
     setAccount(undefined);
-    setEntryType("Use_Ask");
+          setEntryType("USE_ASK");
     setOffsetPercent(0);
     setIsBreakUpEnabled(false);
     setAmount(30000);
@@ -195,7 +195,7 @@ export default function StraddleOptionSet() {
     const newEntryType = event.target.value;
     setEntryType(newEntryType);
 
-    if (newEntryType === "Use_Ask" && offsetPercent >= 0) {
+    if (newEntryType === "USE_ASK" && offsetPercent >= 0) {
       setUseLaddering(false);
     }
   };
@@ -204,7 +204,7 @@ export default function StraddleOptionSet() {
     const newOffset = event.target.value === "" ? offsetPercent : parseFloat(event.target.value);
     setOffsetPercent(newOffset);
 
-    if (entryType === "Use_Ask" && newOffset >= 0) {
+    if (entryType === "USE_ASK" && newOffset >= 0) {
       setUseLaddering(false);
     }
   };
@@ -725,9 +725,9 @@ export default function StraddleOptionSet() {
                       "& .MuiSelect-icon": { color: "#fff",},
                     }}
                   >
-                    <MenuItem value="Use_Bid" >{t("Use_Bid")}</MenuItem>
-                    <MenuItem value="Use_Mid" >{t("Use_Mid")}</MenuItem>
-                    <MenuItem value="Use_Ask" >{t("Use_Ask")}</MenuItem>
+                    <MenuItem value="USE_BID" >{t("Use_Bid")}</MenuItem>
+                    <MenuItem value="USE_MID" >{t("Use_Mid")}</MenuItem>
+                    <MenuItem value="USE_ASK" >{t("Use_Ask")}</MenuItem>
                   </Select>
                 </Box>
 

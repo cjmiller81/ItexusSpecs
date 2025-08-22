@@ -91,7 +91,6 @@ export interface Instrument {
 export interface ExitTier {
   exitTierPositionPercent: number;
   exitType: string;
-  exitTypeValue: number;
   optionStopOffsetPercent: number;
   optionTargetOffsetPercent: number;
   stockStopOffsetPercent: number;
