@@ -136,6 +136,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             case "bnb chain": return 56;
             case "polygon": return 137;
             case "avalanche": return 43114;
+            case "base": return 8453;
+            case "zksync": return 324;
+            case "gnosis": return 100;
+            case "linea": return 59144;
+            case "sonic": return 1001;
+            case "unichain": return 1002;
           }
   };
 
@@ -298,6 +304,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               case "ethereum":
               case "optimism":
               case "arbitrum":
+              case "base":
+              case "zksync":
+              case "gnosis":
+              case "linea":
+              case "sonic":
+              case "unichain":
                 return "ethereum";
               case "bnb chain":
                 return "binancecoin";
@@ -596,6 +608,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
       "ETHEREUM": "ETH",
       "OPTIMISM": "ETH",
       "ARBITRUM": "ETH",
+      "BASE": "ETH",
+      "ZKSYNC": "ETH",
+      "GNOSIS": "ETH",
+      "LINEA": "ETH",
+      "SONIC": "ETH",
+      "UNICHAIN": "ETH",
       "BNB CHAIN": "BNB",
       "POLYGON": "MATIC",
       "AVALANCHE": "AVAX",

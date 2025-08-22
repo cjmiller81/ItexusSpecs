@@ -43,6 +43,7 @@ import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 import { filterDustTokens } from "components";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { isSupportedChain } from "@/utils/supportedChains";
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -111,6 +112,18 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                    return 137;
                  case "avalanche":
                    return 43114;
+                 case "base":
+                   return 8453;
+                 case "zksync":
+                   return 324;
+                 case "gnosis":
+                   return 100;
+                 case "linea":
+                   return 59144;
+                 case "sonic":
+                   return 1001;
+                 case "unichain":
+                   return 1002;
                }
              };
 
@@ -353,9 +366,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       return id === selectedId;
     }) ?? null;
 
-       const isZoraChain = selectedToken && selectedToken.chain && selectedToken.chain.toLowerCase() === 'zora';
+              const isSupportedChainToken = selectedToken && selectedToken.chain && 
+         isSupportedChain(selectedToken.chain);
 
-      if (!isZoraChain) {
+       if (isSupportedChainToken) {
         if (onTokenChange) {
           onTokenChange(selectedToken);
         }
@@ -601,12 +615,13 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 slots={{
                   noRowsOverlay: CustomNoWalletOverlay,
                 }}
-                                                  getRowClassName={(params) => {
-                    const isZoraChain = params.row.chain && params.row.chain.toLowerCase() === 'zora';
-                    
-                    if (isZoraChain) {
-                      return 'unsupported-chain-row';
-                    }
+                                                                     getRowClassName={(params) => {
+                     const isSupportedChainRow = params.row.chain && 
+                       isSupportedChain(params.row.chain);
+                     
+                     if (!isSupportedChainRow) {
+                       return 'unsupported-chain-row';
+                     }
                     
                     if (selectedRows &&
                         `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
@@ -615,15 +630,16 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     
                     return '';
                   }}
-                  componentsProps={{
-                  row: (params) => {
-                    const isZoraChain = params.row.chain && params.row.chain.toLowerCase() === 'zora';
-                    
-                    return {
-                      title: !isZoraChain ? t("ClickToLoadCurrentPosition") : "Zora chain is not supported for selection"
-                    };
-                  }
-                }}
+                                     componentsProps={{
+                   row: (params) => {
+                     const isSupportedChainRow = params.row.chain && 
+                       isSupportedChain(params.row.chain);
+                     
+                     return {
+                       title: isSupportedChainRow ? t("ClickToLoadCurrentPosition") : `${params.row.chain} chain is not supported for selection`
+                     };
+                   }
+                 }}
               />
               <Dialog
                 open={isAddingManualPosition}
