@@ -342,115 +342,15 @@ export function TradeTable() {
 
   return (
     <Box>
-    <Typography variant="h4" sx={{  marginBottom: 2 }}>
-        {t("CEX")}: {selectedCEX ? selectedCEX : ''}
+    <Typography variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 2 }}>
+        {t("TradeAggregatorCex")}: {selectedCEX ? selectedCEX : ''}
     </Typography>
     <Box display="flex" justifyContent="space-between" gap={10}>
-      <Box display="flex" flexDirection="column" gap={2}sx={{ minWidth: 200, maxWidth:"20%" }}>
-        <Box>
-          <Select
-            value={selectedCEX}
-            onChange={handleCEXSelect}
-            displayEmpty
-            renderValue={(selected) => (selected ? selected : "+ ADD SAVED CEX")}
-            sx={{
-              backgroundColor: "#109EEF",
-              fontSize: "11px",
-              width: "58%",
-              maxHeight: "40px",
-              marginBottom: "12px",
-            }}
-          >
-            {exchanges?.map((cex) => (
-              <MenuItem key={cex.exchange_id} value={cex.name}>
-                {cex.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
 
-        <Box flex="0.6">
-          <Typography
-            variant="h6"
-            sx={{
-              marginBottom: 2,
-              fontWeight: 500,
-            }}
-          >
-            {t("CurrentPosition")}
-          </Typography>
-          <TableContainer
-            component={Paper}
-            sx={{ width: "100%", boxShadow: 3 }}
-          >
-            <Table sx={{ tableLayout: "fixed" }}>
-              <TableHead>
-                <TableRow>
-                <TableCell
-                  sx={{ borderBottom: `1px solid ${borderColor}`, width: "50%", color: textColor }}
-                >
-                  {t("Symbol")}
-                </TableCell>
-                <TableCell
-                  sx={{ borderBottom: `1px solid ${borderColor}`, width: "50%", color: textColor }}
-                >
-                  {t("Qty")}
-                </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {balanceData.map((position) => {
-                  const isSelected = selectedPositions.includes(position.asset);
-
-                  return (
-                    <TableRow
-                      key={position.asset}
-                      onClick={() => {
-                        if (isSelected) {
-                          setSelectedPositions((prev) => prev.filter((p) => p !== position.asset));
-                        } else {
-                          setSelectedPositions((prev) => [...prev, position.asset]);
-                        }
-                      }}
-                      sx={{
-                        cursor: "pointer",
-                        backgroundColor: isSelected
-                          ? isDarkMode
-                            ? "rgba(255, 255, 255, 0.1)"
-                            : "rgba(0, 0, 0, 0.1)"
-                          : "transparent",
-                        transition: "background-color 0.3s",
-                        "&:hover": {
-                          backgroundColor: isDarkMode
-                            ? "rgba(255, 255, 255, 0.05)"
-                            : "rgba(0, 0, 0, 0.05)", 
-                        },
-                      }}
-                    >
-                      <TableCell
-                        sx={{
-                          borderBottom: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`, 
-                        }}
-                      >
-                        {position.asset}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          borderBottom: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"}`,
-                        }}
-                      >
-                        {position.balance}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          </Box>
-        </Box>
-
-      <Box flex="1.6" sx={{marginTop:"65px", maxWidth:"75%"}}>
+      <Box flex="1.6" sx={{marginTop:"5px", maxWidth:"100%"}}>
         <Typography
           variant="h6"
           sx={{

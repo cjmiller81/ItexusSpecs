@@ -3,6 +3,7 @@ import { appAxios } from "../lib/axios/customAxios";
 import { OneInchQuoteResponse } from "../models/oneInchQuoteResponse";
 import { QuoteParametersResponse } from "../models/QuoteParametersResponse";
 import { TokenResponse } from "../models/token/TokenResponse";
+import qs from "qs";
 
 export const dexService = {
   get: async ({ tokenPositionSymbol, chainName, qty, swapForSymbol, tokenPositionId, swapForId,}: {
@@ -30,11 +31,13 @@ export const dexService = {
     return response.data;
   },
 
- getQuote: async ({ chainName, fromTokenAddress, toTokenAddress, amount }: {
+ getQuote: async ({ chainName, fromTokenAddress, toTokenAddress, amount, requests, selectedProtocols  }: {
   chainName: string;
   fromTokenAddress: string;
   toTokenAddress: string;
   amount: number;
+  requests?:number;
+  selectedProtocols?: string[] 
   }): Promise<OneInchQuoteResponse[]> => {
     const response = await appAxios.get<OneInchQuoteResponse[]>(
       `/api/1inch/quote/${chainName}`,
@@ -42,8 +45,11 @@ export const dexService = {
         params: {
           fromTokenAddress,
           toTokenAddress,
-          amount
+          amount,
+          requests,
+          selectedProtocols,
         },
+        paramsSerializer: params => qs.stringify(params, { arrayFormat: "repeat" }),
         withCredentials: true,
       }
     );
@@ -65,6 +71,23 @@ export const dexService = {
       ...response.data,
     };
   },
+
+  getDex: async ({ chainName }: {
+    chainName: string;
+  }) => {
+    const response = await appAxios.get(
+      `/api/1inch/liquidity-sources/${chainName}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return {
+      ...response.data,
+    };
+  },
+
+  
 
   getToken: async ({id}: {id:string}): Promise<TokenResponse> => {
     const response = await appAxios.get<TokenResponse>(`/tokens/${id}`,

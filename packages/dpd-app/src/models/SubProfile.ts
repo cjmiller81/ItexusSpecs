@@ -1,9 +1,8 @@
-import { connectedAccount } from "@/features/strategies/userProfileSlice";
+import { Instrument } from "@/slices/dpdOptionsScanSlice";
 
 export interface ExitTier {
     exitTierPositionPercent: number;
     exitType: string;
-    exitTypeValue: string;
     optionStopOffsetPercent: number;
     optionTargetOffsetPercent: number;
     stockStopOffsetPercent: number;
@@ -37,6 +36,7 @@ export interface ExitTier {
     tradeAsSet: boolean;
     baSpreadDiff: number;
     account: string;
+    instruments: Instrument | null;
     exitTiers: ExitTier[];
   }
   

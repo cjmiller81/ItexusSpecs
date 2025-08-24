@@ -112,6 +112,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
       <StyledDataGridDef<PoolData>
         id="defi-tokens-table"
         dataSource={dataSource}
+        allowColumnResizing={true}
+        columnResizingMode="widget"
         ref={datagrid}
         noDataText={loading ? "" : "No data"}
         loadPanel={{
@@ -235,32 +237,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           allowHiding={true}
           cellComponent={ChainCell}
         />
-        <Column
-          dataField={DefiField.Dex}
-          caption={DefiLabel.Dex}
-          alignment="left"
-          visible={true}
-          dataType="string"
-          allowHiding={true}
-          calculateFilterExpression={calculateFilterExpression}
-          width="320px"
-        >
-           <HeaderFilter
-            height={650}
-            visible={true}
-            dataSource={{
-            store: {
-              type: "array",
-              data: dexs.map(dex => ({ value: dex, text: dex })),
-              },
-            }}
-            search={{
-              enabled: true,
-              mode: "contains",
-            }}>
-            <Search enabled={true} />
-          </HeaderFilter>
-          </Column>
         <Column
           dataField={DefiField.TVL}
           caption={DefiLabel.TVL}

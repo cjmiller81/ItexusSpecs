@@ -9,7 +9,9 @@
     "Yes": "Yes",
     "No": "No",
     "Selected": "selected",
-    "ToggleView": "Toggle View"
+    "ToggleView": "Toggle View",
+    "Position": "Position",
+    "Type": "Type"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
@@ -35,7 +37,8 @@
     "LogicGateDiagramAND": "About the AND Gate",
     "LogicGateDiagramNOTAND": "About the NOT And (NAND) Gate",
     "LogicGateDiagramNORGate": "About the OR Gate",
-    "LogicGateDiagramOR": "About the Not Or (NOR)"
+    "LogicGateDiagramOR": "About the Not Or (NOR)",
+    "ClickTheButtonToAddYourFirstFilterCondition": "Click the + button to add your first filter condition. See videos below for more guidance."
   },
   "CalendarEventTile": {
     "Proof": "Proof",
@@ -63,7 +66,17 @@
     "AddNewWallet": "Add new wallet",
     "WalletName": "Wallet name",
     "Personal": "Personal",
-    "WalletAddressAlreadyInTheList": "Wallet Address is already in the List"
+    "WalletAddressAlreadyInTheList": "Wallet Address is already in the List",
+    "CreateWalletName": "Create Wallet Name",
+    "EnterWalletName": "Enter a name for this wallet",
+    "InputWalletAddress": "Input Public Wallet Address",
+    "ExampleWallet": "Enter wallet address here (e.g. 0x...)",
+    "WalletType": "Wallet Type",
+    "YourWallet": "Your wallet",
+    "Model": "Model",
+    "Following": "Following",
+    "AddingYourOwnWallet": "Adding your own wallet address",
+    "FollowingWallet": "Following a public wallet address"
   },
   "MyWalletsSection": {
     "AddWalletWeb3": "+ADD WEB3 DECENTRALIZED WALLET",
@@ -74,7 +87,21 @@
   },
   "MyWalletsPage": {
     "HistoricalWalletsWorth": "Wallets Performance",
-    "HistoricalWalletsWorthSeries": "Historical Wallets Worth"
+    "HistoricalWalletsWorthSeries": "Historical Wallets Worth",
+    "WalletsWeb3": "Web3 Wallets",
+    "WalletsHoldingsOverview": "Wallets Holdings Overview",
+    "TotalValue": "Total Value",
+    "DeFi": "DeFi",
+    "WalletTokens": "Wallet Tokens",
+    "DeFiPositions": "DeFi Positions",
+    "HideDust": "Hide dust",
+    "ShowDust": "Show Dust",
+    "NFTs": "NFTs",
+    "NFT": "NFT",
+    "Network": "Network",
+    "EstimatedValue": "Estimated Value",
+    "OfPortfolio": "% of Portfolio",
+    "NFTHoldings": "NFT Holdings"
   },
   "UserMenu": {
     "Profile": "Profile",
@@ -96,7 +123,10 @@
     "Growth": "Growth % "
   },
   "WalletWorthTile": {
-    "ChartSeriesTitle": "Total Wallet Worth"
+    "ChartSeriesTitle": "Total Wallet Worth",
+    "WalletsPerformance": "Wallets Performance - Last 30 Days",
+    "Growth": "Growth %",
+    "Value": "Value $"
   },
   "ProfileContainer": {
     "ChangeDetails": "Change details",
@@ -206,7 +236,17 @@
     "IMPORTANTBeSure": "IMPORTANT: Be sure to do this before closing the Kraken add API Key window; you will immediately lose visibility to these keys as soon as you do so.",
     "TokensToTrade":"Tokens To Trade",
     "TokenAlreadyExists": "Token already exists on the selected chain!",
-    "ClickToLoadCurrentPosition": "Click to load Current Position"
+    "ClickToLoadCurrentPosition": "Click to load Current Position",
+    "TradeAggregatorDex": "Trade Aggregator: Decentralized Exchanges",
+    "HowTheTokensInputImpactsYourIndex": "How the 'Tokens' input impacts your Index",
+    "IndexContributionDetails": "Index Contribution Details",
+    "TheQuantityYouChooseDeterminesHowManyTokens": "The quantity you choose determines how many tokens contribute to your Index weighting. Higher quantities will:",
+    "IncreaseTheWeightOfThisPosition": "Increase the weight of this position",
+    "AffectYourOverallPortfolioBalance": "Affect your overall portfolio balance",
+    "ImpactRiskDistribution": "Impact risk distribution",
+    "SeeThis": "See this ",
+    "InvestopediaPage": "Investopedia page",
+    "ForMoreInformation": " for more information."
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
@@ -241,7 +281,8 @@
     "EnteredSymbolNotExist": "Entered symbol does not exist",
     "Exchange": "Exchange",
     "TradeOn": "Trade on",
-    "SwitchCryptoInput": "Switch Crypto Input"
+    "SwitchCryptoInput": "Switch Crypto Input",
+    "TradeAggregatorCex": "Trade Aggregator: Centralized Exchanges"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
@@ -287,7 +328,7 @@
     "EstGasFees": "Est. Gas Fees {{value}}",
     "Search": "Search",
     "UseMax": "Use Max",
-    "RefreshQuotes": "Get Quotes",
+    "GetQuotes": "Get Quotes",
     "MissingInputs": "Please provide the following inputs",
     "EnterAmount": "Enter Amount",
     "SelectChain": "Select Chain",
@@ -296,12 +337,33 @@
     "SelectedError": "Selected 'Token Position' does not exist in your current selected wallet. \nPlease add a manual position for this token, or revise your selection.",
     "SwapSearchError": "\nSwap search resulted in an error or can not be found at this time. Please check Qty and try again",
     "EstGasFeesUSD": "Est Gas Fees (USD)",
-    "TokensAddress": "Token Position Address",
-    "SwapForPositionAddress": "Swap For Position Address",
-    "EstAmount": "Est. Amount",
+    "TokensAddress": "Current Position Address",
+    "SwapForPositionAddress": "Swap For Address",
+    "EstAmount": "Est. Net Amount",
     "MarketDataUpdatedAs": "Market data updated as of: {{value}}. Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions. DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX.",
     "SameTokenError": "You have selected the same Swap For Token as your Current Token Position, please your review and change your Swap selections",
-    "NoQuotesFound":"No Quotes Found"
+    "NoQuotesFound":"No Quotes Found",
+    "GetBestRoutes": "Get Best Routes",
+    "DEXChooser": "DEX Chooser",
+    "SelectTokenToSwapFrom": "Select token to swap from",
+    "EnterSwapAmount": "Enter swap amount",
+    "SelectTokenToSwapTo": "Select token to swap to",
+    "ChooseToken": "Select a token in the Current Position table",
+    "BestRoutes": "🚀 Best Routes",
+    "AutomaticallyDiscovers": "Automatically discovers the top 5 most efficient swap routes.",
+    "ConsidersPriceImpact": "✓ Considers price impact, gas costs & slippage",
+    "RealTimeMarketOptimization": "✓ Real-time market optimization",
+    "DEXChooserWithIcon": "🎯 DEX Chooser",
+    "SelectUpToSpecificDEXs": "Select up to 4 specific DEXs to compare. Shows the best overall route first, then your ",
+    "ChosenExchangesRankedByPerformance": "chosen exchanges ranked by performance.",
+    "TargetedDEXComparison": "✓ Targeted DEX comparison",
+    "SideBySidePerformanceAnalysis": "✓ Side-by-side performance analysis",
+    "BEST": "BEST"
+  },
+  "SessionWatcher": {
+    "SessionExpiringSoon": "Session Expiring Soon",
+    "YourSessionWillAutomaticallyExpireIn": "Your session will automatically expire in",
+    "UseRENEWButtonInTheTop": "Use the RENEW button in the top bar to extend your session"
   },
   "PaymentMethodSelector": {
     "Title": "Payment Options",
@@ -363,14 +425,14 @@
     "MarketCapWeighted": "Market Cap Weighted",
     "MarketCapEqualWeight": "Market Cap Equal Weight",
     "TradingSubpage": "Charts",
-    "Derivatives": "Derivatives (Coming Soon)",
+    "Derivatives": "Derivatives",
     "OpenSourceCommunity": "Open Source",
     "Income": "Income",
     "Yields": "Yields",
     "Portfolios": "Portfolios",
     "MyWallets": "Wallets",
     "TradeAggregator": "Trade Aggregator",
-    "Community": "Community (Coming Soon)",
+    "Community": "Community",
     "CommunitySubMenu": "Community",
     "Discord": "Discord",
     "Telegram": "Telegram",
@@ -383,15 +445,52 @@
     "Blog": "Blog",
     "Education": "Education",
     "Web3DeFi": "Web3 DeFi",
-    "CEX": "CEX",
+    "CEX": "Centralized (CEX)",
     "CEXWallets": "CEX Wallets",
-    "Centralized": "Centralized",
-    "Decentralized": "Decentralized"
+    "Centralized": "Centralized (CEX)",
+    "Decentralized": "Decentralized (Web3)",
+    "SupportAndLegal": "Support and Legal",
+    "DEX": "Decentralized (DEX)",
+    "Help": "Help"
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
     "PrefilterLiquidityPools": "Prefilter Liquidity Pools"
   },
+  "Support": {
+    "SupportLegalCenter": "Support & Legal Center",
+    "WhoCanIContact": "Who can I contact for support?",
+    "Emails": "Legal: legal@elaninsights.io\nPrivacy: privacy@elaninsights.io\nWebsite: https://elaninsights.io/",
+    "HowAreUpdatesTo": "How are updates to the Agreement communicated?",
+    "NotificationsAreSentVia": "Notifications are sent via email or in-app alerts at least 30 days in advance.",
+    "WhatRisks": "What risks should I be aware of?",
+    "IsElanInsights": "Is Elan Insights available in Japan or South Korea?",
+    "NoAccessIs": "No. Access is restricted—including for users with VPNs. Violations may result in access termination.",
+    "CryptoInvestments": "Crypto investments involve risks such as volatility, smart contract bugs, API outages, and regulatory changes. Users are responsible for due diligence and compliance.",
+    "WhatAreMyPrivacyRights": "What are my privacy rights?",
+    "HowDoesElanInsightsHandle": "How does Elan Insights handle AML/KYC?",
+    "ItReliesOn": "It relies on centralized exchanges’ AML/KYC compliance. Suspicious activity monitoring is conducted to comply with AMLD5, FinCEN, etc.",
+    "UsersCanAccess": "Users can access, correct, delete, restrict, or port data. API keys can be revoked via exchange settings, and audit logs accessed. Contact: privacy@elaninsights.io.",
+    "HowIsMyDataProtected": "How is my data protected?",
+    "MinimalDataIsColleted": "Minimal data is collected (e.g., wallet addresses, view-only API keys). Data is encrypted with AES-256 and transmitted via HTTPS. Elan Insights complies with global data protection laws including GDPR, CPRA, PDPA, LGPD, etc.",
+    "WhatTokensExchangesAreSupported": "What tokens and exchanges are supported?",
+    "AllTokensListedOnCoinGecko": "All tokens listed on CoinGecko and exchanges on CoinGecko, 1inch, or DeFiLlama are available for viewing and analysis. Users must ensure compliance with local regulations.",
+    "WhatTheTradeAggregatorTool": "What is the trade aggregator tool?",
+    "ThisToolAnalyzesMarketData": "This tool analyzes market data and provides links to decentralized exchange websites where users can log in and execute trades. Elan Insights does not execute transactions.",
+    "PrefilterLiquidityPools": "Prefilter Liquidity Pools",
+    "EverythingYouNeedToKnow": "Everything you need to know about using Elan Insights",
+    "FrequentlyAskedQuestions": "Frequently Asked Questions",
+    "YesWeUseIndustryStandard": "Yes, we use industry-standard encryption and best practices to ensure your data remains safe and secure.",
+    "IsMyDataSecure": "Is my data secure?",
+    "YouCanResetYourPassword": "You can reset your password from the login page by clicking on 'Forgot Password' and following the instructions.",
+    "WhatIsElanInsights": "What is Elan Insights?",
+    "HowDoesPlatformEnsure": "How does the platform ensure my funds are safe?",
+    "NonCustodialElanInsights": "It is non-custodial—Elan Insights never controls user funds or private keys. Trades are signed directly in MetaMask or executed on exchange websites using view-only API keys.",
+    "IsElanInsightsRegulatedFinancialEntity": "Is Elan Insights a regulated financial entity?",
+    "ElanInsightsIsNonCustodialSaaS": "No. Elan Insights is not a broker-dealer, investment adviser, exchange, or money transmitter. It doesn’t hold funds, execute trades, or provide investment advice, making it exempt from regulations in numerous jurisdictions (SEC, FINRA, CFTC, etc.)..",
+    "ElanInsightsIs": "Elan Insights is a non-custodial SaaS platform offering cryptocurrency analytics, data mining, and decision-modeling tools. It integrates with centralized exchanges (e.g., Kraken, Coinbase) listed on CoinGecko, 1inch, or DeFiLlama via view-only API keys to display account data and provide a trade aggregator tool that generates links to exchange websites for user-initiated trades.\nThe platform is available in many countries including the U.S., EU, UK, Singapore, Australia, Canada, UAE, Saudi Arabia, Hong Kong, Switzerland, India, Brazil, Mexico, El Salvador, Panama, Chile, Argentina, Colombia, Nigeria, Turkey, Thailand, Malta, Estonia, Portugal, Liechtenstein, Georgia, and Cayman Islands, but not to residents of Japan or South Korea, including those using VPNs or anonymizing technologies."
+ },
+
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
@@ -399,7 +498,12 @@
     "IndexResults": "Index Results versus Wallet",
     "RunTest": "Run Test",
     "MarketCapWeighted": "Market Cap Weighted Index Investing Strategy Model",
-    "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model"
+    "MarketCapEqualWeight": "Market Cap Equal Weighted Index Investing Strategy Model",
+    "MarketCapExplained": "Market Cap Explained",
+    "SeeThis": "See this",
+    "Article": "article",
+    "ToLearnAboutMarketCapWeightedIndexInvesting": "to learn about Market Cap Weighted Index investing",
+    "ForFurtherInformationPleaseAlsoSeeThis": "For further information, please also see this"
   },
   "TradingPage": {
     "TradingCharts": "Trading Charts"
@@ -434,7 +538,17 @@
     "SlippageTolerance": "Slippage Tolerance",
     "Send": "Send",
     "SelectToken": "Select Token",
-    "SelectChain": "Select Chain"
+    "SelectChain": "Select Chain",
+    "Token": "Token",
+    "Network": "Network",
+    "Balance": "Balance",
+    "Value": "Value",
+    "ProcentOfPotfolio": "% of Potfolio"
+  },
+
+  "WalletDeFiOverview": {
+    "Claimable": "Claimable",
+    "Supplied": "Supplied"
   },
   "SymbolLookup": {
     "Search": "Search"
@@ -504,5 +618,13 @@
   "Vaults": {
     "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",
     "VaultsTitle": "Prefilter Vaults"
+  },
+  "Modals":{
+    "SwapRouteNotFound":"Swap Route Not Found",
+    "WeCouldntFindSwapRouteForThisTokenPair": "We couldn't find a swap route for this token pair. This could be due to:",
+    "InsufficientLiquidity": "Insufficient liquidity",
+    "UnsupportedTokenPair": "Unsupported token pair",
+    "NetworkCongestion": "Network congestion",
+    "TryAgain": "Try Again"
   }
 }

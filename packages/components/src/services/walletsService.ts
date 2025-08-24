@@ -5,6 +5,7 @@ import { appAxios } from "../lib/axios/customAxios"
 import { CapHistoricalWeightedDate } from "../models/wallet/capHistoricalWeightedDate"
 import { apiDateFormatString } from "../constants/common"
 import { Exchange } from "../models/wallet/exchange"
+import { WalletPortfolioResponse } from "../models/wallet/walletPortfolio"
 
 export const walletsApi = {
   getWalletsAssets: async (): Promise<Wallet[]> => {
@@ -70,7 +71,12 @@ export const walletsApi = {
 
     return response.data
   },
-}
+
+  getWalletsPortfolio: async (addresses: string[]): Promise<WalletPortfolioResponse[]> => {
+      const response = await appAxios.post(`/api/portfolio/batch`, addresses);
+      return response.data;
+    }
+  }
 
 function ToUtcDateFormatted(date: Date) {
   return moment(date).utc().format(apiDateFormatString)

@@ -21,11 +21,7 @@ interface Props extends StatePersistedAccordionProps {
 }
 
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip
-    {...props}
-    arrow
-    classes={{ popper: className }}
-  />
+  <Tooltip {...props} arrow classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
     color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
@@ -36,62 +32,60 @@ const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-export const AppAccordionSection = ({ children, headerChildren, title, tooltip, ...props }: Props) => {
+const StyledStatePersistedAccordion = styled(StatePersistedAccordion)(({ theme }) => ({
+  borderRadius: 10,
+  overflow: "hidden",
+  boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  border: theme.palette.mode === "dark" ? "1px solid #25252AFF" : "none",
+  pointerEvents: "auto",
+  "&.Mui-expanded": {
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  "&:not(.Mui-expanded)": {
+    borderRadius: 10,
+  },
+}));
+
+export const StyledAccordionSummary = styled(AccordionSummary)(({theme}) => ({
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  borderTopLeftRadius: 10,
+  borderTopRightRadius: 10,
+  borderBottomLeftRadius: 10,
+  borderBottomRightRadius: 10,
+  minHeight: 64,
+  transition: "none",
+}));
+
+export const AppAccordionSection = ({
+  children,
+  headerChildren,
+  title,
+  tooltip,
+  ...props
+}: Props) => {
   const theme = useTheme();
 
-  const darkThemeStyles = {
-    cursor: "default !important",
-    pointerEvents: "none",
-    position: "inherit",
-    borderRadius: "2px",
-    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
-    backgroundColor: "#363640",
-    border: "1.6px solid #25252AFF",
-    outline: "1.9px solid #363640",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
-    },
-  };
-
-  const lightThemeStyles = {
-    cursor: "default !important",
-    pointerEvents: "none",
-    position: "inherit",
-    borderRadius: "2px",
-    boxShadow: `
-    0px 0px 2px 1.5px rgba(15, 15, 16, 1),
-    -6.5px 0px 8px rgba(0, 0, 0, 0.9),
-     6.5px 0px 8px rgba(0, 0, 0, 0.9),
-     0px 0.05px 0.05px rgba(0, 0, 0, 0.1),
-     0px -0.05px 0.05px rgba(0, 0, 0, 0.1) 
-  `,
-    backgroundColor: "#9e9e9e",
-    border: "1.6px solid #5e5e5e",
-    outline: "1.9px solid #4a4a4a",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(200, 200, 200, 0.3) 24px, rgba(170, 170, 170, 1) 80%)`,
-    },
-  };
-
   return (
-    <StatePersistedAccordion
+    <StyledStatePersistedAccordion
       className="index-modeling-section-container"
-      sx={{
-        ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
-        pointerEvents: "auto",
-      }}
       defaultExpanded
-      {...props}>
+      {...props}
+    >
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={tooltip}>
-            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+            <IconButton
+              sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}
+            >
               <ArrowBackIosNewOutlinedIcon
                 sx={{
                   "& path": {
                     stroke: "currentColor",
                     strokeWidth: 2,
                     fill: "currentColor",
+                    borderRadius: 10,
                   },
                 }}
               />
@@ -103,21 +97,24 @@ export const AppAccordionSection = ({ children, headerChildren, title, tooltip, 
           "&.MuiAccordionSummary-root:hover": {
             cursor: "default !important",
           },
-        }}>
+        }}
+      >
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle
-            sx={{ width: "100%" }}
-            onClick={e => e.stopPropagation()}>
+          <PageTitle sx={{ width: "100%" }} onClick={(e) => e.stopPropagation()}>
             {title}
           </PageTitle>
           {headerChildren}
         </Box>
       </StyledAccordionSummary>
-      <AccordionDetails sx={{ bgcolor: "background.paper" }}>{children}</AccordionDetails>
-    </StatePersistedAccordion>
+      <AccordionDetails
+        sx={{
+          bgcolor: "background.paper",
+          borderBottomLeftRadius: 10,
+          borderBottomRightRadius: 10,
+        }}
+      >
+        {children}
+      </AccordionDetails>
+    </StyledStatePersistedAccordion>
   );
 };
-
-export const StyledAccordionSummary = styled(AccordionSummary)(() => ({
-  transition: "none",
-})) as typeof AccordionSummary;

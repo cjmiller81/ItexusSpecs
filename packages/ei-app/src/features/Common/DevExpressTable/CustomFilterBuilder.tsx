@@ -6,6 +6,7 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import CloseIcon from "@mui/icons-material/Close";
 import TuneIcon from "@mui/icons-material/Tune";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -29,9 +30,10 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { forwardRef, Ref, useEffect, useImperativeHandle, useState } from "react";
+import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
+import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 
 export interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
@@ -76,7 +78,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     logicGateDiagramNOTAND: "https://youtube.com/embed/SI1gUt3xNFU",
     logicGateDiagramNorGate: "https://youtube.com/embed/c48K1wqo5ow",
     logicGateDiagramOR: "https://youtube.com/embed/xfSR3MgBWrc", 
-};
+  };
+
+  const sortedPredefinedFilters = useMemo(() => {
+    return [...predefinedFilters].sort((a, b) => {
+      return (a.isPublic ? 0 : 1) - (b.isPublic ? 0 : 1);
+    });
+  }, [predefinedFilters]);
 
   const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
@@ -90,6 +98,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [openLogicGate, setOpenLogicGate] = useState(true);
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
+  const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
 
   useImperativeHandle(ref, () => ({
     onUpdateFilter: (filter) => {
@@ -99,7 +108,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         setFilterValue(filter as object[]);
       }
 
-      const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filter?.toString());
+      const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filter?.toString());
       if (isPredefinedFilter) {
         setSelectedSavedFilter(isPredefinedFilter);
         setFilterName(isPredefinedFilter.name);
@@ -109,7 +118,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       }
     },
     onOpenBuilder: (status) => {
-      setFilterBuilderOpen(status);
+      handleFilterBuilderOpen(status);
     }
   }));
 
@@ -120,7 +129,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setFilterValue(filterToAppply);
     }
 
-    const isPredefinedFilter = predefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
+    const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
     if (isPredefinedFilter) {
       setSelectedSavedFilter(isPredefinedFilter);
       setFilterName(isPredefinedFilter.name);
@@ -128,21 +137,34 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setSelectedSavedFilter(null);
       setFilterName("");
     }
-  }, [filterToAppply, open, predefinedFilters]);
+  }, [filterToAppply, sortedPredefinedFilters]);
+
+  useEffect(() => {
+    if (filterBuilderOpen) {
+      setShowGuidanceBanner(true);
+    }
+  }, [filterBuilderOpen]);
 
   useEffect(() => {
     if (!selectedSavedFilter) return;
-    const updatedFilter = predefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
+    const updatedFilter = sortedPredefinedFilters.find(filter => filter.id == selectedSavedFilter?.id);
     if (updatedFilter) setSelectedSavedFilter(updatedFilter);
-  }, [predefinedFilters, selectedSavedFilter]);
+  }, [sortedPredefinedFilters, selectedSavedFilter]);
 
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
     if (isDeepEqual(event.value, filterValue)) {
       return;
     }
 
-    setFilterValue(event.value);
+    setFilterValue(event.value);   
   };
+
+  const handleFilterBuilderClick = (e: React.MouseEvent) => {
+  const target = e.target as HTMLElement;
+  if (target.closest('.dx-filterbuilder-action-icon.dx-icon-plus')) {
+    setShowGuidanceBanner(false);
+  }
+};
 
   const handleApplyFilter = () => {
     if (filterValue) { 
@@ -153,7 +175,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
-    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
+    const predefinedFilter = sortedPredefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
       setSelectedSavedFilter(predefinedFilter);
       setFilterValue(predefinedFilter.filter);
@@ -170,6 +192,17 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     setSelectedSavedFilter(null);
     setFilterValue(undefined);
     setFilterName("");
+  };
+
+  const handleDismissGuidanceBanner = () => {
+    setShowGuidanceBanner(false);
+  };
+
+  const handleFilterBuilderOpen = (status: boolean) => {
+    setFilterBuilderOpen(status);
+    if (status) {
+      setShowGuidanceBanner(true);
+    }
   };
 
   const handleSaveFilter = () => {
@@ -203,7 +236,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleApplyFilterChange = (event: SelectChangeEvent<string>) => {
-    const predefinedFilter = predefinedFilters.find(filter => filter.id === event.target.value[0]);
+    const predefinedFilter = sortedPredefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
       onApply([predefinedFilter.filter]);
       setSelectedSavedFilter(predefinedFilter);
@@ -235,9 +268,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   };
 
-  const mapFilterName = (filter: string | null | undefined) => `Personal - ${filter}`;
-  const mapButtonFilterName = (filter: string | null | undefined) => {
-    return filter ? `Personal - ${filter}` : "SELECT PRE-BUILT FILTER";
+  const mapFilterName = (filter: string | null | undefined, isPublic: boolean = true) => {
+    return isPublic ? `Default - ${filter}` : `${filter}`;
+  }
+
+  const mapButtonFilterName = (filter: string | null | undefined, isPublic: boolean = true) => {
+    if (filter) {
+      return isPublic ? `Default - ${filter}` : `${filter}`;
+    }
+
+    return "SELECT PRE-BUILT FILTER";
   };
 
   const handleToggle = () => {
@@ -281,20 +321,27 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
               fill: theme.palette.mode === "dark" ? "#363640" : "white",
             },
           }}
-          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name)}>
-          {predefinedFilters.map(filter => (
+          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)}>
+          {sortedPredefinedFilters.map(filter => (
             <MenuItem
               selected={false}
               key={filter.id}
               value={[filter.id, filter.name]}>
-              <ListItemText primary={mapFilterName(filter?.name)} />
-              <LoadingButton
-                loading={filter.id === filterToDelete?.id && filterDeletingLoading}
-                onClick={event => handleDeleteFilter(filter, event)}
-                variant="contained"
-                color="error">
-                {t("Delete", { ns: "Common" })}
-              </LoadingButton>
+              <ListItemText primary={mapFilterName(filter?.name, filter?.isPublic)} />
+              {!filter.isPublic && (
+                <IconButton
+                  onClick={event => handleDeleteFilter(filter, event)}
+                  disableRipple
+                  sx={{
+                    padding: 0,
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                    },
+                  }}
+                >
+                  <CustomDeleteIcon />
+                </IconButton>
+              )}
             </MenuItem>
           ))}
         </Select>
@@ -347,6 +394,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         fullWidth
         open={filterBuilderOpen!}
         sx={{
+          zIndex: 1300,
           "& .MuiDialog-container": {
             "& .MuiPaper-root": {
               minHeight: "80%",
@@ -374,12 +422,64 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         backgroundColor: theme.palette.background.paper,
                       },
                     }}>
-                    <FilterBuilderDef
-                      value={filterValue as any[]}
-                      fields={filterBuilderFields}
-                      onValueChanged={handleFilterValueChanged}
-                    />
+                    <Box 
+                      onClick={handleFilterBuilderClick}
+                      sx={{
+                        "& .dx-filterbuilder.dx-widget": {
+                          backgroundColor: theme.palette.background.paper,
+                        },
+                      }}>
+                      <FilterBuilderDef
+                        value={filterValue as any[]}
+                        fields={filterBuilderFields}
+                        onValueChanged={handleFilterValueChanged}
+                      />
+                    </Box>
                   </Box>
+                  
+                  {showGuidanceBanner && (!filterValue || filterValue.length === 0) && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '40px',
+                        maxWidth: '350px',
+                        background: 'linear-gradient(135deg, #3798ddff 0%, #2723edff 100%)',
+                        borderRadius: '8px',
+                        padding: '12px 16px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        zIndex: 1000,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ fontSize: '18px', display: 'flex', alignItems: 'center' }}>
+                          💡
+                        </Box>
+                        <Typography 
+                          sx={{ 
+                            fontSize: '13px', 
+                            lineHeight: 1.4,
+                            flex: 1,
+                            color: "white"
+                          }}
+                        >
+                          {t("ClickTheButtonToAddYourFirstFilterCondition")}
+                        </Typography>
+                        <IconButton
+                          onClick={handleDismissGuidanceBanner}
+                          size="small"
+                          sx={{ 
+                            color: '#1976d2',
+                            p: 0.5,
+                            ml: 1,
+                            flexShrink: 0
+                          }}
+                        >
+                          <CloseIcon sx={{ fontSize: '16px', color:"white" }} />
+                        </IconButton>
+                      </Box>
+                    </Box>
+                  )}
                 </FilterBuilderComponentContainer>
                 <ClearButton
                   disabled={!filterValue || !filterValue.length || filterValue.length == 0}
@@ -675,21 +775,24 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     size="small"
                     onChange={handleSavedFilterChange}
                     renderValue={_value => {
-                      return <ListItemText primary={mapFilterName(selectedSavedFilter?.name)} />;
+                      return <ListItemText primary={mapFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)} />;
                     }}>
-                    {predefinedFilters.map(filter => (
+                    {sortedPredefinedFilters.map(filter => (
                       <MenuItem
                         selected={false}
                         key={filter.id}
                         value={[filter.id, filter.name]}>
-                        <ListItemText primary={mapFilterName(filter?.name)} />
-                        <LoadingButton
-                          loading={filter.id === filterToDelete?.id && filterDeletingLoading}
-                          onClick={event => handleDeleteFilter(filter, event)}
-                          variant="contained"
-                          color="error">
-                          {t("Delete", { ns: "Common" })}
-                        </LoadingButton>
+                        <ListItemText primary={mapFilterName(filter?.name, filter?.isPublic)} />
+                        {!filter.isPublic && (
+                          <LoadingButton
+                            loading={filter.id === filterToDelete?.id && filterDeletingLoading}
+                            onClick={event => handleDeleteFilter(filter, event)}
+                            variant="contained"
+                            color="error"
+                          >
+                            {t("Delete", { ns: "Common" })}
+                          </LoadingButton>
+                        )}
                       </MenuItem>
                     ))}
                   </Select>
@@ -722,6 +825,7 @@ export default CustomFilterBuilder;
 const FilterBuilderComponentContainer = styled(Box)(({ theme }) => ({
   minHeight: theme.spacing(16),
   minWidth: theme.spacing(60),
+  position: 'relative',
 }));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({

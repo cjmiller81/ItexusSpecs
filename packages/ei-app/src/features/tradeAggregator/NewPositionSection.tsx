@@ -1,43 +1,39 @@
 import React, { useEffect, useState } from "react";
-import {
-  Grid,
-  Button,
-  useTheme,
-  Typography,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-  TableCell,
-  TableRow,
-  TableHead,
+import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextField, TableCell, TableRow, TableHead,
   Table,
   TableContainer,
   TableBody,
   Paper,
   Box,
-  Checkbox,
   Tooltip,
   InputAdornment,
   IconButton,
   Autocomplete,
-  Avatar
+  Avatar,
+  Stack,
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
-import CreateIcon from '@mui/icons-material/Create';
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "../../../../components/src/slices/dexSlice";
+import { fetchDex, fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "components";
 import { dexWebsites } from "@/constants/dexWebsites";
 import { iconsApi } from "@/services/iconsService";
-import { PaginatedList } from "components/src/models/paginatedList";
+import { PaginatedList } from "components";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
+import Chip from '@mui/material/Chip';
+import ReplayIcon from '@mui/icons-material/Replay';
+import MultiSelectDexDropdown, { Dex } from "./MultiSelectDexDropdown";
+import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
+import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
+import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
+import NoRouteDialog from "./NoRouteDialog";
+import { OneInchQuoteResponse } from "components";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -52,7 +48,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
-  const [lookupLoading, setLookupLoading] = useState<boolean>(false);
   const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
@@ -66,8 +61,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
-  const [errorQuote, setErrorQuote] = useState<string | null>(null);
-  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>(null);
+  const [errorQuote, setErrorQuote] = useState<string | null>("");
+  const [errorQuoteParametrs, setErrorQuoteParametrs] = useState<string | null>("");
+  const [hasShownErrorOnce, setHasShownErrorOnce] = useState(false);
   const [tokenAddress,setTokenAddress] = useState<string | null>(null);
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
@@ -75,7 +71,62 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
-  const[balanceRaw, setBalanceRaw] = useState<number | undefined>();
+  const [balanceRaw, setBalanceRaw] = useState<number | undefined>();
+  const [isDexEnabled, setIsDexEnabled] = useState(false);
+  const [selectedDexs, setSelectedDexs] = useState<Dex[]>([]);
+  const MAX_SELECTIONS = 4;
+  const [allDexs, setAllDexs] = useState<Dex[]>([]);
+  const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
+  const [noRouteOpen, setNoRouteOpen] = useState(false);
+  const [invalidQuote, setInvalidQuote] = useState<OneInchQuoteResponse[]>([]);
+  
+  const handleRemoveDex = (dexId: string) => {
+    setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
+  };
+
+  const invalidQuoteError = () => {
+    return invalidQuote.map(x => x.error).join(', ');
+  }
+
+  const clearAllDexSelections = () => {
+    setSelectedDexs([]);
+  };
+
+  const toggleDexFilter = async () => {
+    const newState = !isDexEnabled;
+    setIsDexEnabled(newState);
+
+    const result = await dispatch(
+      fetchDex({
+        chainName: selectedChain,
+      })
+    );
+    
+    if (fetchDex.fulfilled.match(result)) {
+      const data = result.payload;   
+      setAllDexs(data.protocols);    
+    } else {
+      console.error("Error API:", result);
+    }
+        
+    if (!newState) {
+      setSelectedDexs([]);
+    }
+  };
+
+  useEffect(() => {
+    const hasError = Boolean(error || quoteError);
+
+    if (hasError && !hasShownErrorOnce) {
+      setNoRouteOpen(true);
+      setHasShownErrorOnce(true);
+    }
+
+    if (!hasError && hasShownErrorOnce) {
+      setHasShownErrorOnce(false);
+    }
+  }, [error, quoteError, hasShownErrorOnce]);
+
 
   const coinGeckoChainId = (chain: string) => {
           switch (chain.toLowerCase()) {
@@ -85,20 +136,39 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             case "bnb chain": return 56;
             case "polygon": return 137;
             case "avalanche": return 43114;
+            case "base": return 8453;
+            case "zksync": return 324;
+            case "gnosis": return 100;
+            case "linea": return 59144;
+            case "sonic": return 146;
+            case "unichain": return 130;
           }
-        };
+  };
+
+  useEffect(() => {
+    if (symbolOptionSwap && selectedChain && isDexEnabled) {
+      toggleDexFilter();
+    }
+  }, [selectedChain])     
 
   useEffect(()=> {
+    if (!symbolOptionSwap || !selectedChain) {
+        setSelectedDexs([]);
+        setIsDexEnabled(false);
+    }
+
     const chainId = coinGeckoChainId(selectedChain);
       if (!chainId) return;
 
-    setBalanceRaw( selectedWallet?.chainAssets
-      ?.find(chain => chain.chainId === chainId)
-      ?.walletAssets
-      ?.find(token =>
-        token.tokenName?.toUpperCase() === extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase()
-      )?.balance)
-  },[symbolOptionSwap, selectedChain])
+    const matchedToken = filteredRows.find(token => 
+      token.tokenName?.toUpperCase() === symbolOptionSwap?.sym?.toUpperCase() &&
+      token.chain?.toUpperCase() === selectedChain.toUpperCase()
+    );
+    
+
+    
+    setBalanceRaw(matchedToken?.balance);
+  }, [symbolOptionSwap, selectedChain])
 
   useEffect(() => {
     if (!selectedWallet) {
@@ -117,13 +187,13 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setInputSearchSwapFor("");
       setSelectedChain("");
       setNewBalance("");
-    const addresses: string[] = selectedWallet.chainAssets.flatMap(
-  (chainAsset) => chainAsset.walletAssets.map((token) => token.tokenAddress)
-).filter((address): address is string => typeof address === 'string' && address !== '');
-
+    
+    const addresses: string[] = filteredRows
+      .map((token) => token.tokenAddress)
+      .filter((address): address is string => typeof address === 'string' && address !== '');
 
     setTokenAddresses(addresses);
-  }, [selectedWallet]);
+  }, [selectedWallet, filteredRows]);
 
   useEffect(() => {
     if (!selectedChain) return;
@@ -154,12 +224,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
 
   useEffect(() => {
-  const fetchIcons = async () => {
+    const fetchIcons = async () => {
     if (tokenAddresses.length === 0) return;
 
-    const nonEmptyChainsCount = selectedWallet?.chainAssets?.filter(
-      chain => chain.walletAssets && chain.walletAssets.length > 0
-    ).length ?? 0;
+    const nonEmptyChainsCount = filteredRows.length > 0 ? 1 : 0;
 
     let pageSize = tokenAddresses?.length + nonEmptyChainsCount + 50;
 
@@ -176,85 +244,38 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       );
 
       const filteredItems = result.items.filter(item => {
-        const isNativeToken = item.address.includes('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
-        if (!isNativeToken) return true; 
-
         return walletTokenNamesLower.has(item.sym.toLowerCase());
       });
 
+      const virtualTokens = filteredRows
+        .filter(row => {
+          const hasIcon = filteredItems.some(item => 
+            item.sym.toLowerCase() === row.tokenName?.toLowerCase()
+          );
+          return !hasIcon;
+        })
+        .map(row => ({
+          id: `virtual-${row.tokenName?.toLowerCase()}`,
+          sym: row.tokenName || '',
+          name: row.name || '',
+          address: [row.tokenAddress || ''],
+          lURI: undefined,
+          mCap: 0,
+          mSup: null,
+        }));
+
       setTokenIcons({
         ...result,
-        items: filteredItems,
+        items: [...filteredItems, ...virtualTokens],
       });
 
     } catch (error) {
       console.error('Error loading icons:', error);
     }
-  };
+    };
 
-  fetchIcons();
-}, [tokenAddresses, filteredRows]);
-
-  const generateUniswapLink = ({
-  inputCurrency,
-  outputCurrency,
-  exactAmount,
-  exactField,
-  version,
-}:{inputCurrency: string;
-    outputCurrency: string;
-    exactAmount: number;
-    exactField: "input" | "output";
-    version: string;
-  }) => {
-  switch (version) {
-    case "UNISWAP_V1": {
-      const slippage = (exactAmount * 0.05).toFixed(6);
-      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&${exactField}Amount=${exactAmount}&slippage=${slippage}`;
-    }
-    case "UNISWAP_V2": {
-      return `https://app.uniswap.org/#/swap?inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}&exactField=${exactField}`;
-    }
-    case "UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?use=v3&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-    }
-    case "UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?use=v4&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}`;
-    }
-    case "BSC_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "BSC_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=bnb&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "OPTIMISM_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "OPTIMISM_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=optimism&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "POLYGON_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "POLYGON_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=polygon&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "AVALANCHE_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "AVALANCHE_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=avalanche&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "ARBITRUM_UNISWAP_V3": {
-      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    case "ARBITRUM_UNISWAP_V4": {
-      return `https://app.uniswap.org/swap?chain=arbitrum&&inputCurrency=${inputCurrency}&outputCurrency=${outputCurrency}&exactAmount=${exactAmount}9&exactField=${exactField}`;
-    }
-    default:
-      throw new Error(`Unsupported Uniswap version: ${version}`);
-  }
-};
+    fetchIcons();
+  }, [tokenAddresses, filteredRows]);
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -283,6 +304,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               case "ethereum":
               case "optimism":
               case "arbitrum":
+              case "base":
+              case "zksync":
+              case "gnosis":
+              case "linea":
+              case "sonic":
+              case "unichain":
                 return "ethereum";
               case "bnb chain":
                 return "binancecoin";
@@ -325,7 +352,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         } catch (err) {
           console.error("Error fetching gas:", err);
         }
-        const processedData = quote.map((q) => {
+
+        setInvalidQuote(quote.filter(x => x.error));
+
+        const processedData = quote.filter(x => !x.error).map((q) => {
           const firstProtocol = q.protocols[0][0];
           const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
           const name = names[0];
@@ -348,14 +378,19 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             });
           }
 
-          const estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
-          const price =  estAmount / parseFloat(newBalance)
+          let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
+          const price =  estAmount / parseFloat(newBalance);
+          const gasUSD = parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3));
+
+          if (swapForToken && swapForToken.price) {
+            estAmount = estAmount - (gasUSD / swapForToken.price);
+          }
 
           return {
             name: names[0],
             gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
             price: price.toFixed(4),
-            gasUSD: parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3)),
+            gasUSD: gasUSD,
             estAmount: estAmount.toFixed(4),
             deepLink,
           };
@@ -381,12 +416,27 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       data.toTokenAddress &&
       data.amount > 0
     ) {
-      dispatch(fetchQuote({
-        chainName: data.chainName,
-        fromTokenAddress: data.fromTokenAddress,
-        toTokenAddress: data.toTokenAddress,
-        amount: data.amount,
-      }));
+      if(isDexEnabled === false)
+      {
+        dispatch(fetchQuote({
+          chainName: data.chainName,
+          fromTokenAddress: data.fromTokenAddress,
+          toTokenAddress: data.toTokenAddress,
+          amount: data.amount,
+          requests: 5
+        }));
+      }
+      else 
+      {
+        dispatch(fetchQuote({
+          chainName: data.chainName,
+          fromTokenAddress: data.fromTokenAddress,
+          toTokenAddress: data.toTokenAddress,
+          amount: data.amount,
+          requests: 5,
+          selectedProtocols: selectedDexs.map(dex => dex.id)
+        }));
+      }
 
       setShouldFetchQuote(false);
     }
@@ -413,9 +463,77 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       if (matchedToken) {
         setSymbolOptionSwap(matchedToken);
         setSelectedToken(matchedToken.sym);
+      } else {
+        const virtualToken = {
+          id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+          sym: selectedTokenRow.tokenName || '',
+          name: selectedTokenRow.name || '',
+          address: [selectedTokenRow.tokenAddress || ''],
+          lURI: undefined,
+          mCap: 0,
+          mSup: null,
+        };
+        setSymbolOptionSwap(virtualToken);
+        setSelectedToken(virtualToken.sym);
       }
-    } 
+    } else if (selectedTokenRow && !tokenIcons?.items) {
+      setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
+    }
   }, [selectedTokenRow, tokenIcons]);
+
+  useEffect(() => {
+    if (filteredRows.length > 0) {
+      const virtualTokens = filteredRows.map(row => ({
+        id: `virtual-${row.tokenName?.toLowerCase()}`,
+        sym: row.tokenName || '',
+        name: row.name || '',
+        address: [row.tokenAddress || ''],
+        lURI: undefined,
+        mCap: 0,
+        mSup: null,
+      }));
+
+      setTokenIcons({
+        items: virtualTokens,
+        totalCount: virtualTokens.length,
+        pageNumber: 0,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hansNextPage: false,
+      });
+    }
+  }, [filteredRows]);
+
+  useEffect(() => {
+    if (selectedTokenRow && !tokenIcons?.items) {
+      setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
+      
+      const virtualToken = {
+        id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+        sym: selectedTokenRow.tokenName || '',
+        name: selectedTokenRow.name || '',
+        address: [selectedTokenRow.tokenAddress || ''],
+        lURI: undefined,
+        mCap: 0,
+        mSup: null,
+      };
+      setSymbolOptionSwap(virtualToken);
+      setSelectedToken(virtualToken.sym);
+    }
+  }, [selectedTokenRow, tokenIcons?.items]);
+
+  // Clear Swap For when Current Position is cleared
+  useEffect(() => {
+    if (!selectedTokenRow) {
+      setSymbolOptionSwapFor(null);
+      setInputSearchSwapFor("");
+      setSelectedChain("");
+      setSymbolOptionSwap(null);
+      setSelectedToken(null);
+      setNewBalance("");
+    }
+  }, [selectedTokenRow]);
+
   
   useEffect(() => {
     if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
@@ -424,20 +542,20 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       return;
     }
   
-    const selectedChainUpper = selectedChain.toUpperCase();
     setNewBalance(maxBalance.toString());
-    const matchedToken = selectedWallet.chainAssets
-      .find(chainAsset => chainAsset.chainName.toUpperCase() === selectedChainUpper)
-      ?.tokenDetails.find(token => token.sym.toUpperCase() === symbolOptionSwap.sym.toUpperCase());
+    const matchedToken = filteredRows.find(token => 
+      token.tokenName?.toUpperCase() === symbolOptionSwap.sym?.toUpperCase() &&
+      token.chain?.toUpperCase() === selectedChain.toUpperCase()
+    );
   
     if (matchedToken) {
-      setSelectedToken(matchedToken.sym || null);
-      onSelectedTokenChange?.(matchedToken.sym, selectedChain);
+      setSelectedToken(matchedToken.tokenName || null);
+      onSelectedTokenChange?.(matchedToken.tokenName, selectedChain);
     } else {
       setSelectedToken(null);
       onSelectedTokenChange?.(null,null);
     }
-  }, [symbolOptionSwap, selectedChain, selectedWallet]);
+  }, [symbolOptionSwap, selectedChain, selectedWallet, filteredRows]);
 
   useEffect(() => {
     if (useMax && symbolOptionSwap) {
@@ -479,7 +597,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     if(value === null)
     {
       onSelectedTokenChange?.(null,null);
-      setSelectedChain("")
     }
     
     setSymbolOptionSwap(value);
@@ -491,6 +608,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
       "ETHEREUM": "ETH",
       "OPTIMISM": "ETH",
       "ARBITRUM": "ETH",
+      "BASE": "ETH",
+      "ZKSYNC": "ETH",
+      "GNOSIS": "ETH",
+      "LINEA": "ETH",
+      "SONIC": "ETH",
+      "UNICHAIN": "ETH",
       "BNB CHAIN": "BNB",
       "POLYGON": "MATIC",
       "AVALANCHE": "AVAX",
@@ -501,7 +624,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
   const generateErrorMessage = () => {
     const errors: string[] = [];
   
-    const selectedSymbol = extractSymbol(symbolOptionSwap?.sym ?? "").toUpperCase();
+    const selectedSymbol = symbolOptionSwap?.sym?.toUpperCase();
     const tokenExistsInFilteredRows = filteredRows.some(
       token => token.tokenName?.toUpperCase() === selectedSymbol
     );
@@ -547,10 +670,10 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
         ) {
           const result = await dispatch(
             fetchQuoteParameters({
-              tokenPositionSymbol: extractSymbol(symbolOptionSwap.sym),
+              tokenPositionSymbol: symbolOptionSwap.sym,
               chainName: selectedChain,
               qty: Number(newBalance),
-              swapForSymbol: extractSymbol(symbolOptionSwapFor.sym),
+              swapForSymbol: symbolOptionSwapFor.sym,
               tokenPositionId: symbolOptionSwap.id,
               swapForId: symbolOptionSwapFor.id,
             })
@@ -624,7 +747,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
           </Button>
         </Grid>
 
-        {false && (
+         
         <Grid item>
           <Button
             variant={activeTab === "bridge" ? "contained" : "outlined"}
@@ -644,7 +767,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             {t("Bridge")}
           </Button>
         </Grid>
-        )}
+        
       </Grid>
 
       <Grid item>
@@ -652,7 +775,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
             <Grid container spacing={2}>
                 <Grid item xs={3.7}>
                   <Box>
-                    <Typography sx={{paddingBottom:"4.7px"}}>{t("TokenPosition")}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("TokenPosition")}</Typography>
+
+                      {!symbolOptionSwap && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem',}}>
+                              {t("SelectTokenToSwapFrom")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
                      <Autocomplete
                         options={tokenIcons?.items ?? []}
                         getOptionLabel={(option) => option.sym}
@@ -717,36 +859,64 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
 
                 <Grid item xs={2.2}>
-                    <Typography sx={{ marginBottom: "4px" }}>{t("Chain")}</Typography>
-                    <FormControl fullWidth size="small" sx={{ marginBottom: 2 }}>
-                        <Select
-                            labelId="chain-select-label"
-                            value={selectedChain}
-                            onChange={e => {setShowNoQuotesMessage(false);setSelectedChain(e.target.value)}}
-                            sx={{
-                                height: "53px",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                            displayEmpty
-                            renderValue={selected => selected || ""}
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("Chain")}</Typography>
+                      {!selectedChain && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem'}}>
+                              {t("ChooseToken")}
+                            </Typography>
+                          }
                         >
-                            <MenuItem disabled value=""></MenuItem>
-                            <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
-                            <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
-                            <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
-                            <MenuItem value="POLYGON">POLYGON</MenuItem>
-                            <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
-                            <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                            <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
-                        </Select>
-                    </FormControl>
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
+                  </Box>
+                  
+                  <TextField
+                    variant="outlined"
+                    size="small"
+                    value={selectedChain}
+                    disabled
+                    sx={{
+                      height: "53px",
+                      marginBottom: 2,
+                      "& .MuiInputBase-root": {
+                        height: "53px",
+                      },
+                    }}
+                  />
                 </Grid>
 
                 <Grid item xs={2.2}>
-                  <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBottom: "4px" }}>
-                    <Typography>{t("Qty")}</Typography>
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("Qty")}</Typography>
+                      {!newBalance && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem'}}>
+                              {t("EnterSwapAmount")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
                   </Box>
 
                   <TextField
@@ -805,7 +975,26 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
 
                 <Grid item xs={3.7}>
                   <Box>
-                    <Typography sx={{paddingBottom:"4.7px"}}>{t("SwapFor")}</Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>{t("SwapFor")}</Typography>
+                      {!symbolOptionSwapFor && (
+                        <Tooltip
+                          title={
+                            <Typography sx={{ fontSize: '0.85rem' }}>
+                              {t("SelectTokenToSwapTo")}
+                            </Typography>
+                          }
+                        >
+                          <WarningTwoToneIcon
+                            sx={{
+                              color: "#fbc02d", 
+                              fontSize: "14px",
+                            }}
+                          />
+                        </Tooltip>
+                      )}
+                    </Stack>
+                    
                     <Autocomplete
                       options={tokenIconsSwapFor?.items ?? []}
                       getOptionLabel={(option) =>
@@ -814,6 +1003,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           : option.sym.toUpperCase()
                       }
                       value={symbolOptionSwapFor}
+                      disabled={!selectedTokenRow}
                       onChange={(_e, newValue) => {
                         onOptionChangeSwapFor(newValue);
                         if (newValue) {
@@ -892,259 +1082,341 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   </Box>
                 </Grid>
 
-                <Grid item xs={12}>
-                  <Grid container alignItems="center">
-                  {(errorMessage || error || quoteError) && (
-                    <Grid item>
-                      <Typography sx={{ color: "red", fontSize: "0.875rem", whiteSpace: "pre-line" }}>
-                        {errorMessage}
-                        { !errorMessage && errorQuoteParametrs && (errorMessage ? `\n${errorQuoteParametrs}` : errorQuoteParametrs)}
-                        {!errorMessage && errorQuoteParametrs === null && errorQuote && t("SwapSearchError")}
-                      </Typography>
-                    </Grid>
-                    )}
-                <Grid item xs />
-                  <Grid item>
-                  <Box display="flex" flexDirection="column" alignItems="flex-end">
-                    <Button
-                      variant="contained"
-                      onClick={handleFetchQuotes}
-                      disabled= {errorMessage !== null? true : false}
-                      sx={{
-                        backgroundColor: "#1e88e5",
-                        color: "#fff",
-                        textTransform: "none",
-                        fontWeight: 500,
-                        fontSize: "0.875rem",
-                        "&:hover": {
-                          backgroundColor: "#1565c0",
-                        },
-                      }}
-                      startIcon={
-                        <Box
-                          sx={{
+                <Grid item xs={11.8}>
+                  <Grid container justifyContent="space-between" spacing={0}>
+                    <Grid item xs={3.7}>
+                      <Box
+                        sx={{
                             display: "flex",
                             alignItems: "center",
-                            animation: quoteLoading ? "spin 1s linear infinite" : "none",
-                            "@keyframes spin": {
-                              "0%": { transform: "rotate(0deg)" },
-                              "100%": { transform: "rotate(360deg)" },
-                            },
+                            justifyContent: "space-between",
+                            backgroundColor: "transparent" ,
+                            borderRadius: "4px",
+                            paddingLeft: "15px"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.85rem",
+                            color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            maxWidth: "calc(100% - 32px)",
                           }}
                         >
-                          <RefreshIcon />
+                          {tokenAddress ? `${tokenAddress.slice(0, 25)}...` : t("TokensAddress")}
+                        </Typography>
+
+                        {tokenAddress && tokenAddressSwapFor && !errorMessage && (
+                          <Tooltip title={t("Copy")}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                navigator.clipboard.writeText(tokenAddress);
+                              }}
+                            >
+                              <ContentCopyIcon fontSize="small" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray" }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    </Grid>
+
+
+                    <Grid item xs={3.7}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          backgroundColor: "transparent",
+                          borderRadius: "4px",
+                          paddingLeft: "20px"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: "0.85rem",
+                            color:theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            maxWidth: "calc(100% - 32px)",
+                          }}
+                        >
+                          {tokenAddressSwapFor
+                            ? `${tokenAddressSwapFor.slice(0, 25)}...`
+                            : t("SwapForPositionAddress")}
+                        </Typography>
+
+                        {tokenAddressSwapFor && !errorMessage && (
+                          <Tooltip title={t("Copy")}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                navigator.clipboard.writeText(tokenAddressSwapFor);
+                              }}
+                            >
+                              <ContentCopyIcon fontSize="small" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255, 0.23)" : "gray" }} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </Box>
+                    </Grid>
+
+                  </Grid>
+              </Grid>
+
+                <Grid item xs={12}>
+                  <Grid container alignItems="center">
+                    
+                <Grid item xs />
+                  <Grid container spacing={2} alignItems="flex-start">
+                      <Grid item xs={9}>
+                        <Box>
+                          <Stack 
+                            direction="row" 
+                            justifyContent="space-between" 
+                            alignItems="center" 
+                            mb={2}
+                          >
+                            <SegmentedDexSwitch
+                              isDexEnabled={isDexEnabled}
+                              selectedDexsCount={selectedDexs.length}
+                              maxSelections={MAX_SELECTIONS}
+                              onToggle={toggleDexFilter}
+                            />
+
+                            {isDexEnabled && selectedDexs.length > 0 && (
+                              <Button
+                                startIcon={<ReplayIcon />}
+                                onClick={clearAllDexSelections}
+                                sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>
+                                Clear
+                              </Button>
+                            )}
+                          </Stack>
+
+                          {isDexEnabled && (
+                            <>
+                              {selectedDexs.length > 0 && (
+                                <Box mb={2}>
+                                  <Stack direction="row" flexWrap="wrap" gap={1}>
+                                    {selectedDexs.map((dex) => (
+                                      <Chip
+                                        key={dex.id}
+                                        label={dex.title}
+                                        onDelete={() => handleRemoveDex(dex.id)}
+                                        sx={{ 
+                                         bgcolor: 'background.default',
+                                         border: '1px solid',
+                                         borderColor: 'divider',
+                                        '&:hover': { borderColor: 'primary.main' }
+                                        }}
+                                      />
+                                     ))}
+                                  </Stack>
+                                </Box>
+                              )}
+
+                              <MultiSelectDexDropdown
+                                setIsDexDropdownOpen={setIsDexDropdownOpen}
+                                isDexDropdownOpen={isDexDropdownOpen}
+                                dexs={allDexs}
+                                selectedDexs={selectedDexs}
+                                setSelectedDexs={setSelectedDexs}
+                                maxSelections={4}           
+                              />
+                            </>
+                         )}
                         </Box>
-                      }
-                    >
-                      {t("RefreshQuotes")}
-                    </Button>
-                    </Box>
-                    {quoteData.length > 0 && lastUpdated && (
-                  <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1 }}>
-                    {t("LastUpdate")}: {lastUpdated}
-                  </Typography>
-                )}
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Box display="flex" flexDirection="column" alignItems="flex-end" sx={{marginTop:"58px"}}>
+                        <Button
+                          variant="contained"
+                          onClick={handleFetchQuotes}
+                          disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+                          sx={{
+                            backgroundColor: "#1e88e5",
+                            color: "#fff",
+                            textTransform: "none",
+                            fontWeight: 500,
+                            fontSize: "0.875rem",
+                            "&:hover": {
+                              backgroundColor: "#1565c0",
+                          },
+                         }}
+                         startIcon={
+                           <Box
+                             sx={{
+                               display: "flex",
+                               alignItems: "center",
+                               animation: quoteLoading ? "spin 1s linear infinite" : "none",
+                               "@keyframes spin": {
+                                 "0%": { transform: "rotate(0deg)" },
+                                 "100%": { transform: "rotate(360deg)" },
+                                },
+                              }}
+                             >
+                             <RefreshIcon />
+                           </Box>
+                         }
+                        >
+                      {t("GetQuotes")}
+                       </Button>
+                       </Box >
+                         {quoteData.length > 0 && lastUpdated && (
+                           <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1, textAlign: "right",}}>
+                             {t("LastUpdate")}: {lastUpdated}
+                           </Typography>
+                         )}
+                      </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={11.8} sx={{ marginTop: 2 }}>
-                  <Grid container justifyContent="space-between" spacing={2}>
-                    <Grid item xs={3.7}>
-                      <Typography sx={{ marginBottom: "6px" }}>{t("TokensAddress")}</Typography>
-                      <TextField
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                          },
-                        }}
-                        value={tokenAddress ?? ''}
-                        placeholder={t("AutoFilled")}
-                        variant="outlined"
-                        fullWidth
-                        inputProps={{
-                          readOnly: true,
-                          onFocus: (e) => e.target.blur(),
-                          style: { cursor: 'not-allowed' },
-                        }}
-                        InputProps={{
-                          sx: {
-                            fontSize: '0.6rem',
-                            cursor: 'not-allowed',
-                          },
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip title={t("Auto-filled field")}>
-                                <CreateIcon fontSize="small" sx={{ opacity: 0.5, mr: 1 }} />
-                              </Tooltip>
-                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
-                                <Tooltip title={t("Copy")}>
-                                  <IconButton
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(tokenAddress);
-                                    }}
-                                    edge="end"
-                                  >
-                                    <ContentCopyIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-
-                    <Grid item xs={3.7}>
-                      <Typography sx={{ marginBottom: "6px" }}>{t("SwapForPositionAddress")}</Typography>
-                      <TextField
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                              borderColor: theme.palette.mode === 'dark'
-                                ? 'rgba(255, 255, 255, 0.23)'
-                                : 'rgba(0, 0, 0, 0.23)',
-                            },
-                          },
-                        }}
-                        value={tokenAddressSwapFor ?? ''}
-                        placeholder={t("AutoFilled")}
-                        variant="outlined"
-                        fullWidth
-                        inputProps={{
-                          readOnly: true,
-                          onFocus: (e) => e.target.blur(),
-                          style: { cursor: 'not-allowed' },
-                        }}
-                        InputProps={{
-                          sx: {
-                            fontSize: '0.6rem',
-                            cursor: 'not-allowed',
-                          },
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Tooltip title={t("Auto-filled field")}>
-                                <CreateIcon fontSize="small" sx={{ opacity: 0.5 }} />
-                              </Tooltip>
-                              {tokenAddress && tokenAddressSwapFor && errorMessage === null && (
-                                <Tooltip title={t("Copy")}>
-                                  <IconButton
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(tokenAddressSwapFor);
-                                    }}
-                                    edge="end"
-                                  >
-                                    <ContentCopyIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              )}
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-              </Grid>
        
               </Grid>
-            </Grid>
-        ) : (
-            <Typography sx={{ color: "gray" }}></Typography>
-        )}
-      </Grid>
-
-      <Grid item xs={12} sx={{ marginTop: 3 }}>
-        <TableContainer
-          component={Paper}
-          sx={{
-            border: "1px solid gray",
-            borderRadius: "4px",
-          }}
-        >
-          <Table sx={{ color: "blue" }}>
-            <TableHead  sx={{
-          backgroundColor:
-            theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
-        }}>
-              <TableRow>
-                <TableCell>{t("DEX")}</TableCell>
-                <TableCell>{t("Est. Price")}</TableCell>
-                <TableCell>
-                  {t("EstGasFees", {
-                    value: getGasTokenSymbol(selectedChain)
-                      ? `(${getGasTokenSymbol(selectedChain)})`
-                      : "",
-                  })}
-                </TableCell>
-                <TableCell>{t("EstGasFeesUSD")}</TableCell>
-                <TableCell>{t("EstAmount")}</TableCell>
-              </TableRow>
-            </TableHead>
-
-            {symbolOptionSwap &&
-              symbolOptionSwapFor &&
-              selectedChain &&
-              quoteData &&
-              !errorMessage &&
-              !quoteError && (
-                <TableBody sx={{
+              <Grid item xs={12} sx={{ marginTop: 3 }}>
+                <TableContainer
+                  component={Paper}
+                  sx={{
+                    border: "1px solid gray",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <Table sx={{ color: "blue" }}>
+                    <TableHead  sx={{
                   backgroundColor:
-                    theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                    theme.palette.mode === "light" ? "#d2d2d2" : "inherit",
                 }}>
-                  {quoteData.map((row, index) => {
-                    const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
-                    const dexUrl = dexWebsites[dexKey];
-
-                    return (
-                      <TableRow key={index}>
-                        <TableCell sx={{ color: "#539eec" }}>
-                          {dexUrl ? (
-                            <a
-                              href={row.deepLink ?? dexUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ color: "#539eec", textDecoration: "underline" }}
-                            >
-                              {dexKey}
-                            </a>
-                          ) : (
-                            dexKey
-                          )}
+                      <TableRow>
+                        <TableCell sx={{ pl: 2 }}>{t("DEX")}</TableCell>
+                        <TableCell>{t("Est. Price")}</TableCell>
+                        <TableCell>
+                          {t("EstGasFees", {
+                            value: getGasTokenSymbol(selectedChain)
+                              ? `(${getGasTokenSymbol(selectedChain)})`
+                              : "",
+                          })}
                         </TableCell>
-                        <TableCell>{row.price}</TableCell>
-                        <TableCell>{row.gas}</TableCell>
-                        <TableCell>{row.gasUSD}</TableCell>
-                        <TableCell>{row.estAmount}</TableCell>
+                        <TableCell>{t("EstGasFeesUSD")}</TableCell>
+                        <TableCell>{t("EstAmount")}</TableCell>
+                        <TableCell sx={{ width: 120 }} />
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              )}
-          </Table>
-        </TableContainer>
-        {quoteData.length > 0 && lastUpdated && (
-          <Typography sx={{ color: "#FFA500", fontSize: "0.75rem", marginTop: 1 }}>
-            {t("MarketDataUpdatedAs", { value: lastUpdated })}
-          </Typography>
+                    </TableHead>
+
+                    {symbolOptionSwap &&
+                      symbolOptionSwapFor &&
+                      selectedChain &&
+                      quoteData &&
+                      !errorMessage &&
+                      !quoteError && (
+                        <TableBody
+                          sx={{
+                            backgroundColor:
+                              theme.palette.mode === "light" ? "#f5f5f5" : "#192132",
+                          }}
+                        >
+                          {quoteData.map((row, index) => {
+                            const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
+                            const dexUrl = dexWebsites[dexKey];
+                            const isBest = index === 0;
+
+                            return (
+                              <TableRow
+                                key={index}
+                                sx={{
+                                  ...(isBest && {
+                                    borderLeft: "4px solid #1e88e5",
+                                     backgroundColor:
+                                      theme.palette.mode === "light"
+                                        ? "rgba(74, 158, 255, 0.08)"
+                                        : "rgba(74, 158, 255, 0.15)",
+                                  }),
+                                }}
+                              >
+                                <TableCell sx={{ color: "#23751aff", pl: 2 }}>
+                                  {dexUrl ? (
+                                    <a
+                                      href={row.deepLink ?? dexUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{
+                                        color: "#1e88e5",
+                                        textDecoration: "underline",
+                                      }}
+                                    >
+                                      {dexKey}
+                                    </a>
+                                  ) : (
+                                    dexKey
+                                  )}
+                                </TableCell>
+                                <TableCell>{row.price}</TableCell>
+                                <TableCell>{row.gas}</TableCell>
+                                <TableCell>{row.gasUSD}</TableCell>
+                                <TableCell>{row.estAmount}</TableCell>
+                                <TableCell align="right" sx={{ pr: 2 }}>
+                                  {isBest && (
+                                    <Chip
+                                      label={
+                                        <Box
+                                          component="span"
+                                          sx={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: 0.5,
+                                          }}
+                                        >
+                                          <Typography component="span" variant="body2">
+                                            ⭐
+                                          </Typography>
+                                          <Typography component="span" variant="body2" fontWeight={700}>
+                                            {t("BEST")}
+                                          </Typography>
+                                        </Box>
+                                      }
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: "#1e88e5",
+                                        color: "#fff",
+                                        fontWeight: 600,
+                                        borderRadius: "999px",
+                                        px: 1.2,
+                                        py: 0.4,
+                                        boxShadow: "none"
+                                      }}
+                                    />
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      )}
+                  </Table>
+                </TableContainer>
+                {invalidQuote.length > 0 && lastUpdated && (
+                  <Typography sx={{ color: theme.palette.mode === "dark" ? "#f14f36ff" : "#be3f04ff", fontSize: "0.75rem", marginTop: 1 }}>
+                    {invalidQuoteError()}.
+                  </Typography>
+                )}
+                {quoteData.length > 0 && lastUpdated && (
+                  <Typography sx={{ color: theme.palette.mode === "dark" ? "#f1b036ff" : "#be7d04ff", fontSize: "0.75rem", marginTop: 1 }}>
+                    {t("MarketDataUpdatedAs", { value: lastUpdated })}
+                  </Typography>
+                )}
+                <NoRouteDialog
+                    open={noRouteOpen}
+                    onClose={() => setNoRouteOpen(false)}
+                  />
+              </Grid> 
+            </Grid>            
+        ) : (
+            <Typography sx={{ fontSize: "20px" }}> Coming soon...</Typography>
         )}
-        {showNoQuotesMessage && hasAttemptedSubmit !== false && (
-          <Typography sx={{ color: "#f44336", fontSize: "0.875rem", marginTop: 2 }}>
-            {t("NoQuotesFound")}
-          </Typography>
-        )}
-      </Grid>
+      </Grid> 
     </Grid>
   );
 };

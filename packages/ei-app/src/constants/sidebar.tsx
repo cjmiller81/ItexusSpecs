@@ -10,12 +10,14 @@ import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
 import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
-import { Theme } from "@mui/system";
+import { Theme, useTheme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
 import SourceIcon from '@mui/icons-material/Source';
 import TagIcon from '@mui/icons-material/Tag';
+import InfoIcon from '@mui/icons-material/Info';
+import SvgIcon from "@mui/icons-material/AutoGraph";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -93,10 +95,10 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
           title: t("Decentralized", { ns: "SideBar" }),
           href: "/myWallets/decentralized"
         },
-        {
-          title: t("Centralized", { ns: "SideBar" }),
-          href: "/myWallets/centralized",
-        },
+        // {
+        //   title: t("Centralized", { ns: "SideBar" }),
+        //   href: "/myWallets/centralized",
+        // },
       ],
     },
 
@@ -123,38 +125,6 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
   const fillColor = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
 
   return [
-    {
-      title: t("OpenSourceCommunity", { ns: "SideBar" }),
-      icon: <SourceIcon />,
-      href: "/community",
-      open: false,
-      children: [
-        {
-          title: t("Discord", { ns: "SideBar" }),
-          icon: (
-            <DiscordIcon
-              width="21px"
-              height="21px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
-        },
-        {
-          title: t("GitHub", { ns: "SideBar" }),
-          icon: (
-            <GitHubIcon
-              width="23px"
-              height="23px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
-        },
-      ],
-    },
     {
       title: t("Social", { ns: "SideBar" }),
       icon: <TagIcon />, 
@@ -200,6 +170,38 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
       ],
     },
     {
+      title: t("OpenSourceCommunity", { ns: "SideBar" }),
+      icon: <SourceIcon />,
+      href: "/community",
+      open: false,
+      children: [
+        {
+          title: t("Discord", { ns: "SideBar" }),
+          icon: (
+            <DiscordIcon
+              width="21px"
+              height="21px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
+        },
+        {
+          title: t("GitHub", { ns: "SideBar" }),
+          icon: (
+            <GitHubIcon
+              width="23px"
+              height="23px"
+              fill={fillColor}
+              stroke={fillColor}
+            />
+          ),
+          href: "/#",
+        },
+      ],
+    },
+    {
       title: t("Updates", { ns: "SideBar" }),
       icon: <NotificationsActiveIcon />,
       open: false,
@@ -213,6 +215,23 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
           href: "/education",
         },
       ],
+    },
+  ];
+}
+
+function getHelpItems(): SidebarListItem[] {
+  const ThemedIcon = () => {
+    const theme = useTheme();
+    const color = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
+    return <SvgIcon component={InfoIcon} sx={{ fontSize: 21, color }} />;
+  };
+
+  return [
+    {
+      title: t("SupportAndLegal", { ns: "SideBar" }),
+      icon: <ThemedIcon />,
+      open: false,
+      href: "/support",
     },
   ];
 }
@@ -235,6 +254,10 @@ export function getSidebarMenuItems(theme: Theme, currentPlan: string | null): S
     {
       title: t("Community", { ns: "SideBar" }),
       sidebarListItems: getCommunityItems(theme),
+    },
+    {
+      title: t("Help", {ns: "Sidebar"}),
+      sidebarListItems: getHelpItems(),
     },
   ];
 }

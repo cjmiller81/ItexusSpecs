@@ -245,6 +245,8 @@ export const HistoricalWalletsWorthMarketCap = ({
 
 export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   flexDirection: "row",
+  borderRadius: "10px",
+  overflow: "hidden",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },
@@ -260,6 +262,7 @@ export const StyledSymbolLookup = styled(SymbolsLookupVirtualized)(() => ({
 export const StyledWalletWorthMenuContainer = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   gap: theme.spacing(2),
+  borderRadius:"10px",
   width: "35%",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",

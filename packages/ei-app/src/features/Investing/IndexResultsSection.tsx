@@ -515,13 +515,19 @@ export const IndexResultsSection = ({
                         label={t("Chain")}
                         onChange={e => setSelectedChain(e.target.value)}
                       >
+                        <MenuItem disabled value=""></MenuItem>
                         <MenuItem value="ETHEREUM">ETHEREUM</MenuItem>
                         <MenuItem value="BNB CHAIN">BNB CHAIN</MenuItem>
                         <MenuItem value="OPTIMISM">OPTIMISM</MenuItem>
                         <MenuItem value="POLYGON">POLYGON</MenuItem>
                         <MenuItem value="AVALANCHE">AVALANCHE</MenuItem>
                         <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
-                        <MenuItem value="ABSTRACTIONS">ABSTRACTIONS</MenuItem>
+                        <MenuItem value="BASE">BASE</MenuItem>
+                        <MenuItem value="ZKSYNC">ZKSYNC</MenuItem>
+                        <MenuItem value="GNOSIS">GNOSIS</MenuItem>
+                        <MenuItem value="LINEA">LINEA</MenuItem>
+                        <MenuItem value="SONIC">SONIC</MenuItem>
+                        <MenuItem value="UNICHAIN">UNICHAIN</MenuItem>
                       </Select>
                       {addPositionError && (
                         <Box sx={(theme) => ({

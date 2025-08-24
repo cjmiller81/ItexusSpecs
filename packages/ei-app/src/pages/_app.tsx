@@ -12,6 +12,8 @@ import 'simplebar-react/dist/simplebar.min.css';
 import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
 import "../libs/axios/axios"
+import { SessionWatcher } from "../../../components/src/components/common/SessionWatcher"
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)
 
@@ -43,6 +45,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <>
       {mocksStarted && (
         <RootLayout {...pageProps}>
+          <SessionWatcher />
           <Component {...pageProps} />
         </RootLayout>
       )}

@@ -22,6 +22,8 @@ interface OneInchQuoteRequest {
   fromTokenAddress: string;
   toTokenAddress: string;
   amount: number;
+  requests?: number;
+  selectedProtocols?: string[] 
 }
 
 export interface DexState {
@@ -104,6 +106,27 @@ export const fetchGas = createAsyncThunk<
   }
 );
 
+export const fetchDex = createAsyncThunk<
+  any,
+  { chainName: string },
+  { rejectValue: string }
+>(
+  "quote/fetchDex",
+  async ({ chainName }, { rejectWithValue }) => {
+    try {
+      const data = await dexService.getDex({ chainName });
+      return data;
+    } catch (error: any) {
+      const message =
+        typeof error?.response?.data === "string"
+          ? error.response.data
+          : error?.response?.data?.message || error?.message;
+
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const fetchToken = createAsyncThunk<
   TokenResponse,
   { id: string },
@@ -128,7 +151,12 @@ export const fetchToken = createAsyncThunk<
 export const dexSlice = createSlice({
   name: "dex",
   initialState,
-  reducers: {},
+  reducers: {
+    clearDexErrors: (state) => {
+      state.error = null;
+      state.quoteError = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchQuoteParameters.pending, (state) => {
@@ -161,5 +189,5 @@ export const dexSlice = createSlice({
       });
   },
 });
-
+export const { clearDexErrors } = dexSlice.actions;
 export const dexReducer = dexSlice.reducer;

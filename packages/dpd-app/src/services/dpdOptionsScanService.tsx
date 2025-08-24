@@ -1,11 +1,9 @@
 import axios from "axios";
-
-const API_BASE_URL = "https://api.dpd-dev.emergentcybernetics.net/api/dpdOptionsScan";
+import { Instrument, InstrumentsResponse } from "@/slices/dpdOptionsScanSlice";
 
 export interface ExitTier {
   exitTierPositionPercent: number;
   exitType: string;
-  exitTypeValue: number | string;
   optionStopOffsetPercent: number;
   optionTargetOffsetPercent: number;
   stockStopOffsetPercent: number;
@@ -35,6 +33,7 @@ export interface StrategySettings {
   breakUpOrder: boolean;
   orderBreaks: number;
   tradeAsSet: boolean;
+  instrument?: Instrument | null;
 }
 
 export interface SubProfiles {
@@ -47,7 +46,7 @@ export class dpdOptionsScanService {
   
   static async scanSchwab(request: SubProfiles): Promise<any> {
     try {
-      const response = await axios.post(`${API_BASE_URL}/schwab`, request, { withCredentials: true });
+      const response = await axios.post(`${process.env.API_BASE_URL}/api/dpdOptionsScan/schwab`, request, { withCredentials: true });
       return response.data;
     } catch (error) {
       console.error("Error executing Schwab scan:", error);

@@ -4,6 +4,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   AccordionDetails,
   AccordionProps,
+  AccordionSummary,
   Box,
   Button,
   IconButton,
@@ -14,7 +15,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
+import { PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
 import * as XLSX from "xlsx";
@@ -106,38 +107,21 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 
   const darkThemeStyles = {
     cursor: "default !important",
-    mt: 2,
     pointerEvents: "none",
     position: "inherit",
-    borderRadius: "2px",
-    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     backgroundColor: "#363640",
-    border: "1.6px solid #25252AFF",
-    outline: "1.9px solid #363640",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
-    },
+    border: "1px solid #25252AFF",
   };
 
   const lightThemeStyles = {
     cursor: "default !important",
-    mt: 2,
     pointerEvents: "none",
     position: "inherit",
-    borderRadius: "2px",
-    boxShadow: `
-    0px 0px 2px 1.5px rgba(15, 15, 16, 1),
-    -6.5px 0px 8px rgba(0, 0, 0, 0.9),
-     6.5px 0px 8px rgba(0, 0, 0, 0.9),
-     0px 0.05px 0.05px rgba(0, 0, 0, 0.1),
-     0px -0.05px 0.05px rgba(0, 0, 0, 0.1) 
-  `,
-    backgroundColor: "#9e9e9e",
-    border: "1.6px solid #5e5e5e",
-    outline: "1.9px solid #4a4a4a",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 0%, rgba(200, 200, 200, 0.3) 24px, rgba(170, 170, 170, 1) 80%)`,
-    },
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    backgroundColor: "#aaaaaa !important"
   };
 
   return (
@@ -153,13 +137,27 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         className="index-modeling-section-container"
         persistKey={persisKey}
         defaultExpanded
-        sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
-        {...props}>
+        sx={{
+          ... (theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
+          borderRadius: "10px",
+          overflow: "hidden",
+          "&.Mui-expanded": {
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+          },
+          "&:not(.Mui-expanded)": {
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+          },
+        }}
+        {...props}
+      >
         <StyledAccordionSummary
           expandIcon={
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
-              arrow>
+              arrow
+            >
               <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
                 <ArrowBackIosNewOutlinedIcon
                   sx={{
@@ -174,8 +172,16 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
             </CustomTooltip>
           }
           sx={{
+            borderBottom: "none",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+            "&.Mui-expanded": {
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+            },
             "&.MuiAccordionSummary-root:hover": {},
-          }}>
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -183,7 +189,8 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
               alignItems: "center",
               pointerEvents: "auto !important",
               cursor: "default",
-            }}>
+            }}
+          >
             <PageTitle
               sx={{ width: "100%" }}
               onClick={e => e.stopPropagation()}>
@@ -195,7 +202,8 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
                 onExport();
               }}
               variant="outlined"
-              sx={{ ml: 4, marginRight: "17px" }}>
+              sx={{ ml: 4, marginRight: "17px" }}
+            >
               <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <DownloadIcon />
                 {t("Export")}
@@ -205,11 +213,12 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
         </StyledAccordionSummary>
         <AccordionDetails
           sx={{
-            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
-            width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa !important",
+            width: sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)",
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",
-          }}>
+          }}
+        >
           <MemoizedDefiPoolsTable
             loading={isPoolsLoading && isDexsLoading}
             dexs={dexsData || []}
@@ -225,3 +234,11 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps) => {
   return prevProps.dataSource === nextProps.dataSource;
 });
+
+export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  transition: "none",
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  borderTopLeftRadius: "10px",
+  borderTopRightRadius: "10px",
+  minHeight: "64px",
+}));

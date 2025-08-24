@@ -1,6 +1,7 @@
 export interface WalletBalance {
   tokenName?: string,
+  name?: string,
   chain?: string,
-  balance: number
-
+  balance: number,
+  tokenAddress?: string
 }

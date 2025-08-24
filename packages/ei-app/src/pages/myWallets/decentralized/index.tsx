@@ -2,13 +2,15 @@ import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import { fetchHistoricalWalletData, selectSeries, setPeriod } from "@/libs/redux/Slices/WalletWorthChartSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Stack } from "@mui/material";
+import { Grid, Stack, Typography, useTheme } from "@mui/material";
 import {
   LookUpOption,
+  StyledAddWalletButton,
   Wallet,
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
+  fetchWalletsPortfolio,
   selectWallets,
   toTableTokensModel,
   updateWallet,
@@ -17,8 +19,8 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
-import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
+import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
@@ -33,7 +35,8 @@ export default function MyWalletsPage() {
   const dispatch = useAppDispatch();
   const [totalAmount,setTotalAmount] = useState<number>(0);
   const [valueChartSeries, setValueChartSeries] = useState<ChartSeries[]>([]);
-
+  const theme = useTheme();
+  const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const { t } = useTranslation("MyWalletsPage");
 
   const fetchHistoricalData = () => {
@@ -48,6 +51,13 @@ export default function MyWalletsPage() {
       );
     }
   };
+
+  useEffect(() => {
+    if (wallets && wallets.length > 0) {
+      const addresses = wallets.map(w => w.address);
+      dispatch(fetchWalletsPortfolio(addresses));
+    }
+  }, [wallets, dispatch]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
@@ -114,7 +124,87 @@ export default function MyWalletsPage() {
 
   return (
     <Stack>
-      <MyWalletsSectionForPage
+      <Typography
+        variant="h4"
+        component="div"
+        gutterBottom
+        sx={{ fontWeight: "bold", mb: 5 }}>
+        {t("WalletsWeb3")}
+      </Typography>
+
+     <Grid container spacing={4} alignItems="flex-start">
+      <Grid item xs={12} md={3} sx={{ minWidth: 0 }}>
+        <Stack spacing={2} sx={{ minWidth: 0 }}>
+          <StyledAddWalletButton
+            variant="contained"
+            sx={{
+              width: "max-content",
+              maxWidth: "100%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              [theme.breakpoints.between('md','lg')]: {
+                fontSize: "0.8125rem",
+                paddingLeft: 12,
+                paddingRight: 12,
+                paddingTop: 6,
+                paddingBottom: 6,
+              },
+            }}
+            onClick={() => setAddWalletModalOpen(true)}
+          >
+            {t("AddWalletWeb3", { ns: "MyWalletsSection" })}
+          </StyledAddWalletButton>
+
+          <WalletsOverviewPanel />
+        </Stack>
+      </Grid>
+
+      <Grid item xs={12} md={9}>
+        <Grid
+          item
+          sx={{
+            minHeight: "500px",
+            borderRadius: "10px",
+            boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+            backgroundColor:
+              theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+            padding: 2,
+            paddingTop:"20px"
+          }}
+        >
+          <Typography sx={{fontWeight:"500"}}>
+            {t("HistoricalWalletsWorth")}
+          </Typography>
+          <HistoricalWalletsWorth
+            sx={{ mt: 4 }}
+            onFetchPage={fetchLookupPage}
+            chartDataLoading={statstatusFetchingHistoricalData === "loading"}
+            lookupOption={symbolOption}
+            chartAxisTicks={yAxisTicks}
+            chartSeries={chartSeries}
+            valueSeries={valueChartSeries}
+            fromDate={fromDate}
+            toDate={toDate}
+            onDatesValidChanged={setIsDatesValid}
+            lookupLoading={false}
+            maxChartValue={maxChartValue}
+            minChartValue={minChartValue}
+            onChartSubmit={onChartRefresh}
+            onFromDateChange={date => setFromDate(date)}
+            onToDateChange={date => setToDate(date)}
+            onOptionChange={option => setSymbolOption(option)}
+            onPeriodChange={period => dispatch(setPeriod({ period: period }))}
+            period={period}
+            onToggleSeries={seriesIndex => dispatch(selectSeries({ seriesIndex }))}
+            submitButtonDisabled={!fromDate || !selectedWallets.length}
+            title={""}
+          />
+        </Grid>
+      </Grid>
+    </Grid>
+
+      <MyWalletsSectionForPage 
         onUpdateWallet={onUpdateWallet}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
@@ -123,31 +213,8 @@ export default function MyWalletsPage() {
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
         totalAmount = {totalAmount}
-      />
-
-      <HistoricalWalletsWorth
-        sx={{ mt: 4 }}
-        onFetchPage={fetchLookupPage}
-        chartDataLoading={statstatusFetchingHistoricalData === "loading"}
-        lookupOption={symbolOption}
-        chartAxisTicks={yAxisTicks}
-        chartSeries={chartSeries}
-        valueSeries={valueChartSeries}
-        fromDate={fromDate}
-        toDate={toDate}
-        onDatesValidChanged={setIsDatesValid}
-        lookupLoading={false}
-        maxChartValue={maxChartValue}
-        minChartValue={minChartValue}
-        onChartSubmit={onChartRefresh}
-        onFromDateChange={date => setFromDate(date)}
-        onToDateChange={date => setToDate(date)}
-        onOptionChange={option => setSymbolOption(option)}
-        onPeriodChange={period => dispatch(setPeriod({ period: period }))}
-        period={period}
-        onToggleSeries={seriesIndex => dispatch(selectSeries({ seriesIndex: seriesIndex }))}
-        submitButtonDisabled={!fromDate || !selectedWallets.length}
-        title={t("HistoricalWalletsWorth")}
+        addWalletModalOpen={addWalletModalOpen}
+        setAddWalletModalOpen={setAddWalletModalOpen} 
       />
     </Stack>
   );

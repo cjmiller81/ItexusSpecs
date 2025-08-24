@@ -18,7 +18,7 @@ import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
-import { fetchWallets, useOry } from "components";
+import { fetchWallets, fetchWalletsPortfolio, useOry } from "components";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,6 +32,7 @@ export default function HomePage() {
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
+  const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData)
   const dispatch = useAppDispatch();
   const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
     moment().startOf("day").toDate(),
@@ -80,6 +81,13 @@ useEffect(() => {
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
   }, [wallets,dispatch]);
+
+  useEffect(() => {
+    if (wallets && wallets.length > 0) {
+      const addresses = wallets.map(w => w.address);
+         dispatch(fetchWalletsPortfolio(addresses));
+    }
+  }, [wallets, dispatch]);
 
   useEffect(() => {
     if (!wallets?.length) return;
@@ -146,9 +154,9 @@ useEffect(() => {
           lg={5}>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
-            title={t("WalletsWorthTile")}
             icon={<AccountBalanceWalletIcon />}
-            chartData={totalWalletWorthChartData}
+            chartDataGrowth={totalWalletWorthChartData}
+            chartDataValue={totalWalletWorthValueChartData}
           />
         </Grid>
         <Grid

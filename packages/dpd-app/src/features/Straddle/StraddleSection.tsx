@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Button, Divider, MenuItem, Select, SelectChangeEvent, TextField, Checkbox, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -7,18 +7,21 @@ import { ExitTier, SubProfile } from "@/models/SubProfile";
 import { optionTradeService } from "@/services/optionTradeService";
 import { deleteSubProfile, fetchSubProfiles, updateSubProfile } from "@/slices/optionTradeSlice";
 import ExitTierTable from "../Calls/ExitTierTable";
-import { scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlice";
+import { Instrument, scanSchwab, SubProfiles } from "@/slices/dpdOptionsScanSlice";
 import { connectedAccount } from "../strategies/userProfileSlice";
+import OptionSettingsForm from "../OptionSettingsForm";
+import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
+import SchwabConnectButton from "@/common/SchwabConnectButton";
 
 export default function StraddleOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
-  const [entryType, setEntryType] = useState<string>("Buy_Ask");
+  const [entryType, setEntryType] = useState<string>("USE_ASK");
   const { t } = useTranslation("CallsSection");
   const [offsetPercent, setOffsetPercent] = useState(0);
   const [isBreakUpEnabled, setIsBreakUpEnabled] = useState(false);
   const [amount, setAmount] = useState(30000);
   const [breakUp, setBreakUp] = useState(3);
-  const isBuyAsk = entryType === "Buy_Ask";
+  const isBuyAsk = entryType === "USE_ASK";
   const isOffsetValid = offsetPercent >= 0;
   const shouldDisableLaddering = isBuyAsk && isOffsetValid;
   const shouldShowHint = isBuyAsk && isOffsetValid;
@@ -40,7 +43,7 @@ export default function StraddleOptionSet() {
   const [minVolume, setMinVolume] = useState<number>(10);
   const [oiCapPercent, setOiCapPercent] = useState<number>(500);
   const [requireActiveBid, setRequireActiveBid] = useState<boolean>(false);
-  const [ticker, setTicker] = useState<string>("");
+  const [ticker, setTicker] = useState<Instrument | null>(null);
   const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
   const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
   const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
@@ -56,7 +59,7 @@ export default function StraddleOptionSet() {
 
   const resetForm = () => {
     setAccount(undefined);
-    setEntryType("Buy_Ask");
+          setEntryType("USE_ASK");
     setOffsetPercent(0);
     setIsBreakUpEnabled(false);
     setAmount(30000);
@@ -75,7 +78,7 @@ export default function StraddleOptionSet() {
     setMinVolume(10);
     setOiCapPercent(500);
     setRequireActiveBid(false);
-    setTicker("");
+    setTicker(null);
     setTradeAsSet(false);
     setBaSpreadDiff(10);
     setExitTiers([]);
@@ -141,7 +144,7 @@ export default function StraddleOptionSet() {
       setRequireActiveBid(selectedSubProfile.requireActiveBid);
       setIsBAMaxEnabled(selectedSubProfile.useBidAskMax);
       setBidAskMax(selectedSubProfile.bidAskMax || 0);
-      setTicker(selectedSubProfile.ticker);
+      setTicker(selectedSubProfile.instruments);
       setAmount(selectedSubProfile.totalDollarAmount);
       setTradeUnderlyingFound(selectedSubProfile.tradeUnderlying);
       setIsBreakUpEnabled(selectedSubProfile.breakUpOrder);
@@ -171,7 +174,8 @@ export default function StraddleOptionSet() {
       original.requireActiveBid !== requireActiveBid ||
       original.useBidAskMax !== isBAMaxEnabled ||
       original.bidAskMax !== bidAskMax ||
-      original.ticker !== ticker ||
+      original.ticker !== ticker?.symbol ||
+      original.instruments !== ticker ||
       original.totalDollarAmount !== amount ||
       original.tradeUnderlying !== tradeUnderlyingFound ||
       original.breakUpOrder !== isBreakUpEnabled ||
@@ -191,7 +195,7 @@ export default function StraddleOptionSet() {
     const newEntryType = event.target.value;
     setEntryType(newEntryType);
 
-    if (newEntryType === "Buy_Ask" && offsetPercent >= 0) {
+    if (newEntryType === "USE_ASK" && offsetPercent >= 0) {
       setUseLaddering(false);
     }
   };
@@ -200,7 +204,7 @@ export default function StraddleOptionSet() {
     const newOffset = event.target.value === "" ? offsetPercent : parseFloat(event.target.value);
     setOffsetPercent(newOffset);
 
-    if (entryType === "Buy_Ask" && newOffset >= 0) {
+    if (entryType === "USE_ASK" && newOffset >= 0) {
       setUseLaddering(false);
     }
   };
@@ -228,7 +232,8 @@ export default function StraddleOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker,
+        instruments: ticker,
+        ticker: ticker? ticker.symbol : "",
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -313,7 +318,8 @@ export default function StraddleOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker,
+        instruments: ticker,
+        ticker: ticker? ticker.symbol : "",
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -377,35 +383,18 @@ export default function StraddleOptionSet() {
     setUpdateSubProfileOpen(true);
   }
 
-enum EntryTypeProto {
-  ENTRY_BUY_ASK = 0,
-  ENTRY_BUY_BID = 1,
-  ENTRY_BUY_MID = 2,
-  ENTRY_MARKET = 3,
-}
-
-function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
-  const key = entryTypeStr.toUpperCase();
-  switch (key) {
-    case "BUY_ASK":
-      return EntryTypeProto.ENTRY_BUY_ASK;
-    case "BUY_BID":
-      return EntryTypeProto.ENTRY_BUY_BID;
-    case "BUY_MID":
-      return EntryTypeProto.ENTRY_BUY_MID;
-    case "ENTRY_MARKET":
-      return EntryTypeProto.ENTRY_MARKET;
-    default:
-      return EntryTypeProto.ENTRY_MARKET;
-  }
-}
-
-  const handleSendOrder = async () => {
+  const handleSendOrder = async (e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+        if (e) e.preventDefault();
+    
+        if (!account || !ticker) {
+          return; 
+        }
+  
       try {
         const entryTypeEnum = mapEntryTypeStringToEnum(entryType);
   
         const subProfileRequest: SubProfiles = {
-          accountNumber: account?.accountNumber || "",
+          accountNumber: account.accountNumber,
           state: 0,
           strategySettings: {
             cancelAndResubmitOnPartial,
@@ -423,13 +412,14 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
             oiCapPercent,
             optionType: "STRADDLE",
             requireActiveBid,
-            ticker,
+            ticker: ticker?.symbol || "",
             totalDollarAmount: amount,
             tradeUnderlying: tradeUnderlyingFound,
             onlyTradeUnderlying,
             breakUpOrder: isBreakUpEnabled,
             orderBreaks: breakUp,
             tradeAsSet,
+            instrument: ticker
           },
         };
   
@@ -599,247 +589,82 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
 
       <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
 
-      <Box sx={{ display: "flex", marginTop: "50px" }}>
-        <Button variant="outlined"
-          sx={{
-            height: "40px", bgcolor: "#b8860b", color: "white", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
+      <Box sx={{ display: "flex",
+          alignItems: "center",
+          marginTop: "50px", }}>
+        <Tooltip
+          title={t("AccountMustBeSelected")}
+          placement="right"
+          arrow
+          open={!account}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          PopperProps={{
+            modifiers: [
+              {
+                name: "offset",
+                options: {
+                  offset: [0, 8],
+                },
+              },
+            ],
           }}
-          onClick={handleSendOrder}>
-          {t("SendOrder")}
-        </Button>
+        >
+          <Box>
+            <Button
+              variant="outlined"
+              sx={{
+                height: "40px",
+                bgcolor: account ? "#b8860b" : "rgba(255, 255, 255, 0.3)",
+                color: "white",
+                boxShadow: account ? "0px 4px 10px rgba(0, 0, 0, 0.5)" : "none",
+                cursor: account ? "pointer" : "not-allowed",
+              }}
+              onClick={handleSendOrder}
+              disabled={!account || !ticker}
+            >
+              {t("SendOrder")}
+            </Button>
+          </Box>
+        </Tooltip>
+
+        {connectedAccounts.length === 0 && (
+          <Box sx={{ marginLeft: !account ? "200px" : "5px" }}>
+            <SchwabConnectButton />
+          </Box>
+        )}
       </Box>
+
       <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{
-            width: "500px",
-            bgcolor: "#2A2A2A",
-            p: 3,
-            borderRadius: 2,
-            color: "white",
-            marginTop: "25px",
-            border: "2px solid #ffd700 ",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
-          }}>
-            <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("OptionDetails")}</Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-              <TextField
-                placeholder="Enter ticker"
-                variant="outlined"
-                name="tickerInput"
-                autoComplete="off"
-                value={ticker}
-                onChange={(e) => setTicker(e.target.value)}
-                inputProps={{
-                  autoComplete: "off",
-                }}
-                InputLabelProps={{ shrink: false }}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: {
-                    color: "white",
-                    padding: "10px 12px"
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    height: "40px",
-                    display: "flex",
-                    alignItems: "center"
-                  }
-                }}
-              />
-                <Typography sx={{ color: "white", minWidth: "80px" }}>{t("DTERange")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={dteMin}
-                  onChange={(e) => {
-                    const newValue = Number(e.target.value);
-                    if (newValue >= 0 && newValue < dteMax) {
-                      setDteMin(newValue);
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center", padding: "10px 12px", },
-                    width: "75px",
-                    "& .MuiOutlinedInput-root": { height: "40px" },
-                  }}
-                />
-
-                <Typography sx={{ color: "white" }}>{t("to")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={dteMax}
-                  onChange={(e) => {
-                    const newValue = Number(e.target.value);
-                    if (newValue >= 0 && newValue > dteMin) {
-                      setDteMax(newValue);
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center", padding: "10px 12px", },
-                    width: "75px",
-                    "& .MuiOutlinedInput-root": { height: "40px" },
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "flex-start" }}>
-                <Checkbox
-                  checked={requireActiveBid}
-                  onChange={(e) => setRequireActiveBid(e.target.checked)}
-                  sx={{ color: "gray", p: 0 }}
-                />
-                <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                    {t("RequireActiveBid")}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-                  <Checkbox checked={isBAMaxEnabled}
-                    onChange={() => setIsBAMaxEnabled((prev) => !prev)}
-                    sx={{ color: "gray" }} />
-                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                    <Typography sx={{ fontSize: "13px", color: "white", mt: 0.5 }}>
-                      {t("B/AMaxOn/Off")}
-                    </Typography>
-
-                    <Typography sx={{ fontSize: "10px", fontStyle: "italic", color: isBAMaxEnabled ? "white" : "gray" }}>
-                      {t("B/AMax(e.g 5 = 5%)")}
-                    </Typography>
-                  </Box>
-                  <TextField
-                    variant="outlined"
-                    type="number"
-                    value={bidAskMax}
-                    onChange={handleChange}
-                    disabled={!isBAMaxEnabled}
-                    inputProps={{ min: 1, step: 1 }}
-                    onFocus={handleEnableToggle}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      width: "67px",
-                      marginLeft: "10px",
-                      input: {
-                        color: isBAMaxEnabled ? "white" : "gray",
-                        padding: "10px 12px",
-                        textAlign: "center",  
-                      },
-                      "& .MuiOutlinedInput-root.Mui-disabled": {
-                        "& .MuiInputBase-input": {
-                          color: "gray !important",
-                          WebkitTextFillColor: "gray !important",
-                        },
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        height: "40px",
-                        display: "flex",
-                        alignItems: "center",
-                        borderColor: "gray",
-                        "&:hover": {
-                          borderColor: "white",
-                        },
-                      },
-                    }}
-                  />
-                </Box>
-              </Box>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Typography sx={{ color: "white" }}>{t("MinContractAsk")}</Typography>
-              <TextField
-                type="number"
-                variant="outlined"
-                value={minContractAsk}
-                onChange={(e) => setMinContractAsk(Number(e.target.value))}
-                inputProps={{ step: 0.01 }}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: { color: "white", textAlign: "center" },
-                  width: "70px",
-                  "& .MuiOutlinedInput-root": { height: "40px" },
-                }}
-              />
-                <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Checkbox
-                  checked={tradeAsSet}
-                  onChange={(e) => setTradeAsSet(e.target.checked)}
-                  sx={{ color: "gray", p: 0 }}
-                />
-                  <Typography sx={{ color: "white" }}>{t("TradeAsSet")}</Typography>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box sx={{
-            width: "500px",
-            bgcolor: "#2A2A2A",
-            p: 3,
-            borderRadius: 2,
-            color: "white",
-            marginTop: "25px",
-            border: "2px solid #ffd700",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"
-          }}>
-            <Typography variant="h5" sx={{ marginBottom: "10px" }}>{t("OptionFilter")}</Typography>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Typography sx={{ color: "white", }}>{t("MinOpenInterest")}</Typography>
-                  <TextField
-                    type="number"
-                    variant="outlined"
-                    value={minOpenInterest}
-                    disabled={true}
-                    sx={{
-                      bgcolor: "#1E1E1E",
-                      input: { color: "white", textAlign: "center" },
-                      width: "100px",
-                      "& .MuiOutlinedInput-root": { height: "40px" }
-                    }}
-                  />
-                </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Typography sx={{ color: "white" }}>{t("MinVolume")}</Typography>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  value={minVolume}
-                  onChange={(e) => {
-                    const newValue = Number(e.target.value);
-                    if (newValue >= 0) {
-                      setMinVolume(newValue);
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "#1E1E1E",
-                    input: { color: "white", textAlign: "center" },
-                    width: "100px",
-                    "& .MuiOutlinedInput-root": { height: "40px" }
-                  }}
-                />
-                </Box>
-              </Box>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}></Box>
-              <Typography sx={{ color: "white" }}>{t("B/ASpreadDiff")}</Typography>
-              <TextField
-                type="number"
-                variant="outlined"
-                value={baSpreadDiff}
-                onChange={(e) => setBaSpreadDiff(Number(e.target.value))}
-                sx={{
-                  bgcolor: "#1E1E1E",
-                  input: { color: "white", textAlign: "center" },
-                  width: "100px",
-                  "& .MuiOutlinedInput-root": { height: "40px" }
-                }}
-              />
-            </Box>
-          </Box>
-        </Box>
+        <OptionSettingsForm
+          ticker={ticker}
+          setTicker={setTicker}
+          dteMin={dteMin}
+          setDteMin={setDteMin}
+          dteMax={dteMax}
+          setDteMax={setDteMax}
+          requireActiveBid={requireActiveBid}
+          setRequireActiveBid={setRequireActiveBid}
+          isBAMaxEnabled={isBAMaxEnabled}
+          setIsBAMaxEnabled={setIsBAMaxEnabled}
+          bidAskMax={bidAskMax}
+          handleChange={handleChange}
+          handleEnableToggle={handleEnableToggle}
+          minContractAsk={minContractAsk}
+          setMinContractAsk={setMinContractAsk}
+          tradeAsSet={tradeAsSet}
+          setTradeAsSet={setTradeAsSet}
+          minOpenInterest={minOpenInterest}
+          setMinOpenInterest={setMinOpenInterest}
+          minVolume={minVolume}
+          setMinVolume={setMinVolume}
+          baSpreadDiff={baSpreadDiff}
+          setBaSpreadDiff={setBaSpreadDiff}
+          borderColor="#ffd700"
+          t={t}
+          onSubmit={handleSendOrder}
+        />
         <Box>
           <Box sx={{
             width: "450px",
@@ -900,9 +725,9 @@ function mapEntryTypeStringToEnum(entryTypeStr: string): EntryTypeProto {
                       "& .MuiSelect-icon": { color: "#fff",},
                     }}
                   >
-                    <MenuItem value="Buy_Bid" >{t("Buy_Bid")}</MenuItem>
-                    <MenuItem value="Buy_Mid" >{t("Buy_Mid")}</MenuItem>
-                    <MenuItem value="Buy_Ask" >{t("Buy_Ask")}</MenuItem>
+                    <MenuItem value="USE_BID" >{t("Use_Bid")}</MenuItem>
+                    <MenuItem value="USE_MID" >{t("Use_Mid")}</MenuItem>
+                    <MenuItem value="USE_ASK" >{t("Use_Ask")}</MenuItem>
                   </Select>
                 </Box>
 
