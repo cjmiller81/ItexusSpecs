@@ -55,9 +55,13 @@ export const Login: FC<{}> = () => {
         returnTo,
       })
       .then(({ data }) => {
-        // keep aal2 flag in URL so UI shows MFA prompt
+        // keep aal2 flag and return_to in URL so UI shows MFA prompt and preserves return URL
         const qs = [`flow=${data.id}`]
         if (isAal2) qs.push("aal2=true")
+        if (refresh) qs.push("refresh=true")
+        if (returnTo && returnTo !== window.location.origin) {
+          qs.push(`return_to=${encodeURIComponent(returnTo)}`)
+        }
         router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true })
       })
       .catch(err => {
@@ -66,7 +70,12 @@ export const Login: FC<{}> = () => {
           return ory
             .createBrowserLoginFlow({ refresh, returnTo })
             .then(({ data }) => {
-              router.replace(`/ui/login?flow=${data.id}`, undefined, { shallow: true })
+              const qs = [`flow=${data.id}`]
+              if (refresh) qs.push("refresh=true")
+              if (returnTo && returnTo !== window.location.origin) {
+                qs.push(`return_to=${encodeURIComponent(returnTo)}`)
+              }
+              router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true })
             })
         }
         throw err
@@ -85,7 +94,11 @@ export const Login: FC<{}> = () => {
 
     ory.toSession().then(
       () => {
-        router.replace("/")
+        if (returnTo && returnTo !== window.location.origin) {
+          router.replace(returnTo)
+        } else {
+          router.replace("/")
+        }
       },
       () => {
         if (hasFlowId && flowId) {
@@ -109,7 +122,12 @@ export const Login: FC<{}> = () => {
     // Otherwise we initialize it
     ory.toSession().then(
       () => {
-        router.replace("/")
+        // User is already authenticated, redirect to return_to or home
+        if (returnTo && returnTo !== window.location.origin) {
+          router.replace(returnTo)
+        } else {
+          router.replace("/")
+        }
       },
       () => {
         if (!hasFlowId) {
@@ -117,7 +135,7 @@ export const Login: FC<{}> = () => {
         }
       }
     )
-  }, [router.isReady])
+  }, [router.isReady, returnTo])
 
   const submitFlow = (values: UpdateLoginFlowBody) => {
     ory
@@ -127,12 +145,18 @@ export const Login: FC<{}> = () => {
       })
       // We logged in successfully! Let's bring the user home.
       .then(() => {
+        // Check for postRecoveryRedirect cookie first
         const match = document.cookie.split("; ")
          .find(row => row.startsWith("postRecoveryRedirect="))
  
-        const redirect = match
+        let redirect = match
          ? decodeURIComponent(match.split("=")[1])
          : "/"
+
+        // If no recovery redirect, check for return_to parameter
+        if (!match && returnTo && returnTo !== window.location.origin) {
+          redirect = returnTo
+        }
 
         document.cookie = `postRecoveryRedirect=; path=/; max-age=0`
         router.push(redirect)
