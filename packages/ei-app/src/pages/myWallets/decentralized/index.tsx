@@ -14,6 +14,7 @@ import {
   selectWallets,
   toTableTokensModel,
   updateWallet,
+  getCurrentTokensValueFromZapper,
 } from "components";
 import moment from "moment";
 import { useEffect, useState, useCallback } from "react";
@@ -61,6 +62,22 @@ export default function MyWalletsPage() {
       dispatch(fetchWalletsPortfolio(addresses));
     }
   }, [wallets, dispatch]);
+
+  useEffect(() => {
+    if (chartData?.seriesData) {
+      const valueSeries: ChartSeries = {
+        name: "Value",
+        data: chartData.seriesData.map(point => ({
+          x: point.historyDate,
+          y: point.walletValue,
+        })),
+      };
+
+      setValueChartSeries([valueSeries]);
+    } else {
+      setValueChartSeries([]);
+    }
+  }, [chartData]);
 
   useEffect(() => {
     if (chartData?.seriesData) {

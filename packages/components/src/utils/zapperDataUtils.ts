@@ -49,6 +49,14 @@ export const updateChartDataWithCurrentDayValue = (
       ...updatedData[todayDataIndex],
       walletValue: currentTokensValue
     };
+  } else {
+    if (updatedData.length > 0) {
+      const lastIndex = updatedData.length - 1;
+      updatedData[lastIndex] = {
+        ...updatedData[lastIndex],
+        walletValue: currentTokensValue
+      };
+    }
   }
 
   return updatedData;
