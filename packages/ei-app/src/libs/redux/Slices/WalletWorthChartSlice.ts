@@ -82,7 +82,7 @@ export const walletWorthChartSlice = createAppSlice({
           ) : 0
           
           const updatedResponse = updateChartDataWithCurrentDayValue ? updateChartDataWithCurrentDayValue(response, currentTokensValue) : response
-            return { seriesData: updatedResponse, comareToLabel: payload.compareLabel }
+          return { seriesData: updatedResponse, comareToLabel: payload.compareLabel }
         }
 
         return { seriesData: response, comareToLabel: payload.compareLabel }
@@ -120,8 +120,14 @@ function makeChartSeries(state: WalletsChartState) {
   }
   const periodFilter = getPeriodHistoricalDataFileter(state.period)
   const firstComparePrice = state.chartData.seriesData[0].comparePrice
+  const firstWalletValue = state.chartData.seriesData[0].walletValue
 
-  const walletWorthValues = getHistoricalWalletWorthChartData(state.chartData.seriesData, state.period)
+  const walletWorthValues = state.chartData.seriesData
+    .filter(seriesPoint => periodFilter(seriesPoint.historyDate))
+    .map(x => ({
+      x: x.historyDate,
+      y: ((x.walletValue - firstWalletValue) / firstWalletValue) * 100,
+    }))
 
   state.chartSeries = []
   state.chartSeries.push({
@@ -150,12 +156,18 @@ function makeChartSeries(state: WalletsChartState) {
 
 function CalculateMinMax(state: WalletsChartState) {
   const selectedSeriesValues = [
-    ...(state.walletWorthSeriesSelected ? state.chartSeries[0].data.map(x => x) : []),
-    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1 ? state.chartSeries[1].data.map(x => x) : []),
-  ].map(p => p.y)
-  state.maxChartValue = Math.max(...selectedSeriesValues)
-  state.minChartValue = Math.min(...selectedSeriesValues)
-  state.minChartValue = state.minChartValue > 0 ? 0 : state.minChartValue
+    ...(state.walletWorthSeriesSelected ? state.chartSeries[0].data.map(x => x.y) : []),
+    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1 ? state.chartSeries[1].data.map(x => x.y) : []),
+  ]
+  
+  if (selectedSeriesValues.length > 0) {
+    state.maxChartValue = Math.max(...selectedSeriesValues)
+    state.minChartValue = Math.min(...selectedSeriesValues)
+    state.minChartValue = state.minChartValue > 0 ? 0 : state.minChartValue
+  } else {
+    state.maxChartValue = 0
+    state.minChartValue = 0
+  }
 }
 
 export const { fetchHistoricalWalletData, setPeriod, selectSeries } = walletWorthChartSlice.actions
