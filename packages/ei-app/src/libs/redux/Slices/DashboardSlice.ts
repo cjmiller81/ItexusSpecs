@@ -2,6 +2,10 @@ import { Status, createAppSlice, toTotalTokensBalances, walletsApi } from "compo
 import moment from "moment";
 import { RootState } from "../RootReducer";
 import { CompareToValues, getHistoricalWalletWorthChartData } from "./Shared";
+import { 
+  getCurrentTokensValueFromZapper, 
+  updateChartDataWithCurrentDayValue 
+} from "components";
 
 export interface WalletsState {
   totalWalletWorthChartData: CompareToValues | null;
@@ -33,9 +37,17 @@ export const dashboardSlice = createAppSlice({
           null,
         );
 
-        const growthData = getHistoricalWalletWorthChartData(response, "daily");
+        const selectedWalletAddresses = state.wallets.wallets?.map(wallet => wallet.address) || []
+        const currentTokensValue = getCurrentTokensValueFromZapper ? getCurrentTokensValueFromZapper(
+          state.wallets.portfolioWalletData,
+          selectedWalletAddresses
+        ) : 0
+        
+        const updatedResponse = updateChartDataWithCurrentDayValue ? updateChartDataWithCurrentDayValue(response, currentTokensValue) : response
 
-        const valueData: CompareToValues = response.map((item: any) => ({
+        const growthData = getHistoricalWalletWorthChartData(updatedResponse, "daily");
+
+        const valueData: CompareToValues = updatedResponse.map((item: any) => ({
           x: new Date(item.historyDate),
           y: item.walletValue,
         }));

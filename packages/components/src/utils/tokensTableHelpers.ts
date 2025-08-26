@@ -46,5 +46,5 @@ export const toTotalTokensBalances = (wallets: Wallet[] | null): { symbol: strin
     }
   }
 
-  return Array.from(groupedSymbols, ([key, value]) => ({ symbol: key, qty: parseFloat(value.totalBalance.toFixed(4)) }))
+  return Array.from(groupedSymbols, ([key, value]) => ({ symbol: key, qty: parseFloat(value.totalBalance.toFixed(4)) }));
 }
