@@ -5,6 +5,11 @@ import i18next from "i18next"
 import { RootState } from "../RootReducer"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
 import { getHistoricalWalletWorthChartData } from "./Shared"
+import { 
+  getCurrentTokensValueFromZapper, 
+  updateChartDataWithCurrentDayValue, 
+  shouldUpdateCurrentDayValue 
+} from "components"
 
 interface WalletsChartState {
   chartData?: ChartSeriesDataResponse
@@ -59,12 +64,27 @@ export const walletWorthChartSlice = createAppSlice({
         thunkApi,
       ): Promise<ChartSeriesDataResponse> => {
         const state = thunkApi.getState() as RootState
+        const tokensBalances = toTotalTokensBalances(state.wallets.selectedWallets);
+        
         const response = await walletsApi.getHistoricalWalletData(
-          toTotalTokensBalances(state.wallets.selectedWallets),
+          tokensBalances,
           payload.startDate,
           payload.endDate,
           payload.tokenId,
         )
+
+        const shouldUpdate = shouldUpdateCurrentDayValue ? shouldUpdateCurrentDayValue(payload.endDate) : false;
+        if (shouldUpdate) {
+          const selectedWalletAddresses = state.wallets.selectedWallets.map(wallet => wallet.address)
+          const currentTokensValue = getCurrentTokensValueFromZapper ? getCurrentTokensValueFromZapper(
+            state.wallets.portfolioWalletData,
+            selectedWalletAddresses
+          ) : 0
+          
+          const updatedResponse = updateChartDataWithCurrentDayValue ? updateChartDataWithCurrentDayValue(response, currentTokensValue) : response
+            return { seriesData: updatedResponse, comareToLabel: payload.compareLabel }
+        }
+
         return { seriesData: response, comareToLabel: payload.compareLabel }
       },
       {
@@ -77,7 +97,8 @@ export const walletWorthChartSlice = createAppSlice({
           state.chartCompareToLabel = state.chartData.comareToLabel
           CalculateChartSeries(state)
         },
-        rejected: state => {
+        rejected: (state, action) => {
+          console.error('fetchHistoricalWalletData failed:', action.error);
           state.statstatusFetchingHistoricalData = "failed"
         },
       },
