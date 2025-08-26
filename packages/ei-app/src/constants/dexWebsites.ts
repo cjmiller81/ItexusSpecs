@@ -418,5 +418,126 @@ export const dexWebsites = {
   "POLYGON_RETRO": "https://retro.finance/",
   "POLYGON_SMARDEX": "https://smardex.io/",
   "POLYGON_VIRTUSWAP": "https://virtuswap.io/",
-  "POLYGON_BGD_AAVE_STATIC": "https://aave.com/"
+  "POLYGON_BGD_AAVE_STATIC": "https://aave.com/",
+
+    // Base Chain DEXes
+  "BASE_MAVERICK": "https://www.mav.xyz/",
+  "BASE_MAVERICK_V2": "https://www.mav.xyz/",
+  "BASE_ONE_INCH_LIMIT_ORDER_V3": "https://app.1inch.io/",
+  "BASE_ONE_INCH_LIMIT_ORDER_V4": "https://app.1inch.io/",
+  "BASE_UNISWAP_V3": "https://app.uniswap.org/",
+  "BASE_UNISWAP_V2": "https://app.uniswap.org/",
+  "BASE_UNISWAP_V4": "https://app.uniswap.org/",
+  "BASE_BALANCER_V2": "https://app.balancer.fi/",
+  "BASE_BALANCER_V3": "https://v3.balancer.fi/",
+  "BASE_SUSHI_V3": "https://www.sushi.com/swap",
+  "BASE_SUSHI_V2": "https://www.sushi.com/swap",
+  "BASE_SWAP": "https://baseswap.fi/",
+  "BASE_BASESWAP_V3": "https://baseswap.fi/",
+  "BASE_KOKONUT_SWAP": "https://kokonutswap.finance/",
+  "BASE_ROCKET_SWAP": "https://app.rocketswap.cc/",
+  "BASE_SWAP_BASED": "https://swapbased.finance/",
+  "BASE_SYNTHSWAP": "https://www.synthswap.io/",
+  "BASE_HORIZON_DEX": "https://horizondex.org/",
+  "BASE_VELOCIMETER_V2": "https://base.velocimeter.xyz/",
+  "BASE_DACKIE_SWAP": "https://www.dackieswap.xyz/",
+  "BASE_ALIEN_BASE": "https://alienbase.xyz/",
+  "BASE_WOOFI_V2": "https://woofi.com/",
+  "BASE_ZYBER_V3": "https://www.synthswap.io/", // Note: This appears to be mislabeled in the API response
+  "BASE_PANCAKESWAP_V2": "https://pancakeswap.finance/",
+  "BASE_PANCAKESWAP_V3": "https://pancakeswap.finance/",
+  "BASE_AERODROME": "https://aerodrome.finance/",
+  "BASE_AERODROME_V3": "https://aerodrome.finance/",
+  "BASE_CURVE": "https://curve.fi/",
+  "BASE_CURVE_V2_TRICRYPTO_NG": "https://curve.fi/",
+  "BASE_CURVE_V2_TWO_CRYPTO": "https://curve.fi/",
+  "BASE_SMARDEX": "https://smardex.io/",
+  "BASE_EQUALIZER": "https://swap.equalizer.finance/",
+  "BASE_SOLIDLY_V3": "https://solidly.exchange/",
+  "BASE_ANGLE": "https://app.angle.money/",
+  "BASE_WRAPPER_SUPER_OETH": "https://originprotocol.com/", // Super Origin ETH wrapper
+  "BASE_SPARK_PSM": "https://spark.fi/", // Spark Protocol (MakerDAO)
+  "BASE_BGD_AAVE_STATIC": "https://aave.com/",
+  "BASE_AAVE_V3": "https://aave.com/",
+  "BASE_AAVE_STATA_TOKEN": "https://aave.com/",
+  "BASE_DFX_FINANCE_V3": "https://dfx.finance/",
+  "BASE_DODO_V2": "https://dodoex.io/",
+  "BASE_FLUID_DEX_T1": "https://fluid.instadapp.io/", // Fluid DEX by Instadapp
+  "BASE_RINGSWAP_V2": "https://pancakeswap.finance/", // Uses PancakeSwap branding based on logo
+
+    // zkSync Chain DEXes
+  "ZKSYNC_MUTE": "https://app.koi.finance/", // Mute has rebranded to Koi Finance
+  "ZKSYNC_ONE_INCH_LIMIT_ORDER_V3": "https://app.1inch.io/",
+  "ZKSYNC_ONE_INCH_LIMIT_ORDER_V4": "https://app.1inch.io/",
+  "ZKSYNC_SPACEFI": "https://swap-zksync.spacefi.io/", // zkSync-specific SpaceFi interface
+  "ZKSYNC_SYNCSWAP": "https://syncswap.xyz/",
+  "ZKSYNC_GEM": "https://zks.gemswap.online/", // GemSwap's zkSync application
+  "ZKSYNC_MAVERICK_V1": "https://www.mav.xyz/",
+  "ZKSYNC_MAVERICK_V2": "https://www.mav.xyz/",
+  "ZKSYNC_WOOFI_V2": "https://woofi.com/",
+  "ZKSYNC_PANCAKESWAP_V3": "https://pancakeswap.finance/",
+  "ZKSYNC_ZKSWAP_FINANCE": "https://www.zkswap.finance/",
+  "ZKSYNC_UNISWAP_V3": "https://app.uniswap.org/",
+
+    // Gnosis Chain DEXes
+  "GNOSIS_CURVE": "https://curve.fi/",
+  "GNOSIS_CURVE_V2_TWOCRYPTO_META": "https://curve.fi/",
+  "GNOSIS_SUSHI": "https://www.sushi.com/swap",
+  "GNOSIS_SUSHI_V3": "https://www.sushi.com/swap",
+  "GNOSIS_HONEYSWAP": "https://honeyswap.org/", // Gnosis-native DEX by 1Hive
+  "GNOSIS_LEVINSWAP": "https://app.levinswap.org/", // Gnosis-native DEX for RealT tokens
+  "GNOSIS_ONE_INCH_LIMIT_ORDER_V2": "https://app.1inch.io/",
+  "GNOSIS_ONE_INCH_LIMIT_ORDER_V3": "https://app.1inch.io/",
+  "GNOSIS_ONE_INCH_LIMIT_ORDER_V4": "https://app.1inch.io/",
+  "GNOSIS_SWAPR": "https://swapr.eth.link/", // DXdao governance-enabled AMM
+  "GNOSIS_ELK": "https://app.elk.finance/", // Cross-chain DEX
+  "GNOSIS_SYMMETRIC": "https://app.symm.fi/", // Multi-chain AMM on Gnosis, Telos, Kava & Celo
+  "GNOSIS_BAOFINANCE": "https://www.bao.finance/",
+  "GNOSIS_BALANCER_V2": "https://app.balancer.fi/",
+  "GNOSIS_BALANCER_V3": "https://v3.balancer.fi/",
+  "GNOSIS_AAVE_V3": "https://aave.com/",
+  "GNOSIS_BGD_AAVE_STATIC": "https://aave.com/", // BGD Aave Static wrapper
+  "GNOSIS_REALTRMM": "https://realt.co/", // RealT RMM V3 - Real estate token protocol
+  "GNOSIS_SDAI": "https://spark.fi/", // sDAI savings rate token (Maker/Spark ecosystem)
+  "GNOSIS_UNISWAP_V3": "https://app.uniswap.org/",
+
+    // Linea Chain DEXes
+  "LINEA_ONE_INCH_LIMIT_ORDER_V4": "https://app.1inch.io/",
+  "LINEA_WOOFI_V2": "https://woofi.com/",
+  "LINEA_SYNCSWAP": "https://syncswap.xyz/",
+  "LINEA_SUSHISWAP_V3": "https://www.sushi.com/swap",
+  "LINEA_PANCAKESWAP_V3": "https://pancakeswap.finance/",
+  "LINEA_NILE_V2": "https://www.nile.build/", // Linea's central liquidity hub
+  "LINEA_NILE": "https://www.nile.build/", // Next-generation AMM on Linea
+  "LINEA_SECTA_V2": "https://www.secta.finance/", // DEX and Launchpad on Linea
+  "LINEA_SECTA_V3": "https://www.secta.finance/",
+  "LINEA_SPARTA_DEX": "https://spartadex.io/", // Gamified DEX (originally Arbitrum-focused)
+  "LINEA_ECHODEX_V2": "https://www.echodex.io/", // First generation DEX on Linea
+  "LINEA_ECHODEX_V3": "https://www.echodex.io/",
+  "LINEA_LYNEX": "https://app.lynex.cc/", // Native liquidity market on Linea
+
+   // Sonic Chain DEXes
+  "SONIC_BEETS": "https://beets.fi/", // Flagship LST Hub on Sonic (Beethoven X)
+  "SONIC_BEETS_V3": "https://beets.fi/",
+  "SONIC_WAGMI": "https://wagmi.com/", // Sonic-native DEX
+  "SONIC_STS": "https://beets.fi/", // stS (Beets Staked Sonic) - liquid staking token
+  "SONIC_SHADOW_CLMM": "https://www.shadowdex.fi/", // Shadow Exchange concentrated liquidity
+  "SONIC_SHADOW": "https://www.shadowdex.fi/", // Sonic-native concentrated liquidity exchange
+  "SONIC_CURVE_STABLE_NG": "https://curve.fi/", // Curve Stable NG
+  "SONIC_WOOFI_V2": "https://woofi.com/", // Multi-chain WOOFi V2
+  "SONIC_SWAP_X_V2": "https://swapx.fi/", // SwapX V4 DEX on Sonic with Algebra integration
+  "SONIC_SOLIDLY_V3": "https://solidly.exchange/", // Solidly V3
+  "SONIC_UNISWAP_V3": "https://app.uniswap.org/", // Multi-chain Uniswap V3
+  "SONIC_SPOOKYSWAP_V2": "https://spooky.fi/", // SpookySwap V2 (originally from Fantom)
+  "SONIC_SPOOKYSWAP_V3": "https://spooky.fi/", // SpookySwap V3
+  "SONIC_EQUALIZER_V2": "https://swap.equalizer.finance/", // Equalizer V2
+  "SONIC_SWAP_X_ALGEBRA": "https://swapx.fi/", // SwapX with Algebra Finance integration
+  "SONIC_SILO2": "https://silo.finance/", // Silo Finance V2 - isolated lending protocol
+  "SONIC_DEFIVE": "https://defive.com/", // DeFive - Supercharged DeFi platform on Sonic
+
+    // Unichain DEXes
+  "UNICHAIN_UNISWAP_V2": "https://app.uniswap.org/",
+  "UNICHAIN_UNISWAP_V3": "https://app.uniswap.org/", 
+  "UNICHAIN_UNISWAP_V4": "https://app.uniswap.org/",
+  "UNICHAIN_VENUS": "https://app.venus.io/"
 };
