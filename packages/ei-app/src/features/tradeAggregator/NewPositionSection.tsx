@@ -362,10 +362,13 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
           let deepLink: string | null = null;
 
-          const isUniswap =
-            ["UNISWAP_V1", "UNISWAP_V2", "UNISWAP_V3", "UNISWAP_V4","BSC_UNISWAP_V3","BSC_UNISWAP_V4","OPTIMISM_UNISWAP_V3",
-              "OPTIMISM_UNISWAP_V4","POLYGON_UNISWAP_V3","POLYGON_UNISWAP_V4","AVALANCHE_UNISWAP_V3","AVALANCHE_UNISWAP_V4",
-              "ARBITRUM_UNISWAP_V3","ARBITRUM_UNISWAP_V4"].includes(name);
+         const isUniswap = ["UNISWAP_V1", "UNISWAP_V2", "UNISWAP_V3", "UNISWAP_V4", "BSC_UNISWAP_V3", "BSC_UNISWAP_V4", 
+            "OPTIMISM_UNISWAP_V3", "OPTIMISM_UNISWAP_V4", "POLYGON_UNISWAP_V3", "POLYGON_UNISWAP_V4", "AVALANCHE_UNISWAP_V3",
+            "AVALANCHE_UNISWAP_V4", "ARBITRUM_UNISWAP_V3", "ARBITRUM_UNISWAP_V4", "BASE_UNISWAP_V3", "BASE_UNISWAP_V4",
+            "ZKSYNC_UNISWAP_V3", "ZKSYNC_UNISWAP_V4", "GNOSIS_UNISWAP_V3", "GNOSIS_UNISWAP_V4", "SONIC_UNISWAP_V3",
+            "SONIC_UNISWAP_V4", "UNICHAIN_UNISWAP_V3", "UNICHAIN_UNISWAP_V4",
+          ].includes(name);
+
 
           if (isUniswap && tokenAddress && tokenAddressSwapFor && newBalance) {
             
@@ -376,6 +379,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               exactField: "input",
               version: name,
             });
+
+            console.log(deepLink)
           }
 
           let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
