@@ -25,6 +25,10 @@ export const TopTokensTile: FC<Props> = ({ title, icon, tableAssets, loading, ..
       title={title}
       icon={icon}
       loading={loading}
+      sectionLink={{
+        href: "/investing/marketCapWeighted",
+        text: "Go to full page"
+      }}
       {...props}>
       <DataGrid
         loading={loading}
