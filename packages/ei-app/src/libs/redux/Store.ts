@@ -10,6 +10,7 @@ import { persistStore } from "redux-persist";
 import { RootState, persistedReducer } from "./RootReducer";
 import { categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import { dexsApi } from "@/features/Income/DexApi";
+import { cexApi } from "@/features/tradeAggregator/TradeTableApi";
 
 const makeStore = () => {
   return configureStore({
@@ -23,6 +24,7 @@ const makeStore = () => {
         categoriesEventsApi.middleware,
         defisApi.middleware,
         dexsApi.middleware,
+        cexApi.middleware,
         chainsApi.middleware,
         exchangesApi.middleware,
         categoriesApi.middleware,
