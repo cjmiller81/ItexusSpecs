@@ -17,6 +17,7 @@ import { marketCapWeightedChartSlice } from "./Slices/MarketCapWeightedChartSlic
 import { marketCapWeightedModelingSlice } from "./Slices/MarketCapWeightedModelingSlice";
 import { walletWorthChartSlice } from "./Slices/WalletWorthChartSlice";
 import { dexsApi } from "@/features/Income/DexApi";
+import { cexApi } from "@/features/tradeAggregator/TradeTableApi";
 
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
@@ -40,6 +41,7 @@ export const rootReducer = combineReducers({
 
   [defisApi.reducerPath]: defisApi.reducer,
   [dexsApi.reducerPath]: dexsApi.reducer,
+  [cexApi.reducerPath]: cexApi.reducer
 });
 
 const config = getPersistConfig<RootState>({
