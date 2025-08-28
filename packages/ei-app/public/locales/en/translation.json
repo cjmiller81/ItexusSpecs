@@ -283,7 +283,13 @@
     "Exchange": "Exchange",
     "TradeOn": "Trade on",
     "SwitchCryptoInput": "Switch Crypto Input",
-    "TradeAggregatorCex": "Trade Aggregator: Centralized Exchanges"
+    "TradeAggregatorCex": "Trade Aggregator: Centralized Exchanges",
+    "TradingPairs": "Trading Pairs",
+    "ArbitrageMatrix": "Arbitrage Matrix",
+    "SelectExchange": "Select Exchange",
+    "ModelTradeon": "Model Trade on",
+    "SelectTradingPair": "Select Trading Pair",
+    "TopTradingPairsOn": "Top 10 Trading Pairs by Volume on"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",

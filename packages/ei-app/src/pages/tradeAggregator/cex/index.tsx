@@ -4,7 +4,7 @@ import { Stack } from "@mui/material";
 
 export default function Cex(){
     return(
-        <Stack>
+        <Stack sx={{height: "100%"}}>
             <TradeTable></TradeTable>
         </Stack>
     )
