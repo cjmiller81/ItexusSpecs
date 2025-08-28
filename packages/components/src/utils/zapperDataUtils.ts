@@ -19,7 +19,7 @@ export const getCurrentTokensValueFromZapper = (
   selectedWalletsData.forEach(wallet => {
     if (wallet.tokenHoldings && Array.isArray(wallet.tokenHoldings)) {
       wallet.tokenHoldings.forEach(token => {
-        if (token.balanceUSD) {
+        if (token.balanceUSD && token.balance > 0) {
           totalTokensValue += token.balanceUSD;
         }
       });

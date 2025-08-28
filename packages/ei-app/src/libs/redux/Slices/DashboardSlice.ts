@@ -1,4 +1,4 @@
-import { Status, createAppSlice, toTotalTokensBalances, walletsApi } from "components";
+import { Status, createAppSlice, toTotalTokensBalancesFromPortfolio, walletsApi } from "components";
 import moment from "moment";
 import { RootState } from "../RootReducer";
 import { CompareToValues, getHistoricalWalletWorthChartData } from "./Shared";
@@ -31,7 +31,7 @@ export const dashboardSlice = createAppSlice({
         const state = thunkApi.getState() as RootState;
 
         const response = await walletsApi.getHistoricalWalletData(
-          toTotalTokensBalances(state.wallets.wallets),
+          toTotalTokensBalancesFromPortfolio(state.wallets.portfolioWalletData),
           moment().utc().add(-1, "M").toDate(),
           moment().utc().toDate(),
           null,

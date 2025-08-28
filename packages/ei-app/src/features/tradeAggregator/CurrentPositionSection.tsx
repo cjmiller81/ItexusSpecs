@@ -26,7 +26,6 @@ import {
   fetchWalletsPortfolio,
   nativeBarSx,
   PaginatedList,
-  toTableTokensModels,
 } from "components";
 import { useTranslation } from "react-i18next";
 import { GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
@@ -77,16 +76,18 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const [isManualUpdate, setIsManualUpdate] = useState(false);
   const [wasManualSelection, setWasManualSelection] = useState(false);
   const [showDust, setShowDust] = useState(false);
+  const [manualPositions, setManualPositions] = useState<WalletBalance[]>([]);
   const { tableData } = useAppSelector( state => state.marketCapWeightedModeling );
-    const { portfolioWalletData } = useAppSelector((state) => state.wallets);
+  const { portfolioWalletData } = useAppSelector((state) => state.wallets);
 
   const handleClearTable = () => {
     setSelectedChain("");
     setSelectedRows(null);
     setSelectedWallet(null);
-     if (onClearTokenAndChain) {
-    onClearTokenAndChain();
-  }
+    setManualPositions([]);
+    if (onClearTokenAndChain) {
+      onClearTokenAndChain();
+    }
 
     if (onWalletChange) {
       onWalletChange(null);
@@ -181,29 +182,31 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       (p) => p.walletAddress === selectedWallet?.address
     )?.tokenHoldings;
 
-                   useEffect(() => {
+      useEffect(() => {
         if(selectedPortfolio) {
           const tokensToProcess = showDust ? selectedPortfolio : filterDustTokens(selectedPortfolio);
-          const data = tokensToProcess.map(token => ({
+          const portfolioData = tokensToProcess.map(token => ({
             tokenName: token.symbol,
             name: token.name,
             chain: normalizeNetworkName(token.network),
             balance: token.balance,
             tokenAddress: token.tokenAddress,
           }));
-          setFilteredWalletData(data);
-          setFilteredRows(data);
+          
+          const combinedData = [...portfolioData, ...manualPositions];
+          setFilteredWalletData(combinedData);
+          setFilteredRows(combinedData);
           if (onFilteredRowsChange) {
-            onFilteredRowsChange(data);
+            onFilteredRowsChange(combinedData);
           }
         } else {
-          setFilteredWalletData([]);
-          setFilteredRows([]);
+          setFilteredWalletData(manualPositions);
+          setFilteredRows(manualPositions);
           if (onFilteredRowsChange) {
-            onFilteredRowsChange([]);
+            onFilteredRowsChange(manualPositions);
           }
         }
-      },[selectedPortfolio, showDust])
+      },[selectedPortfolio, showDust, manualPositions])
 
   useEffect(() => {
     if (!selectedChain) return;
@@ -259,7 +262,19 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     if (symbolOptionSwapFor && newBalance && selectedChain) {
       const tokenNameLower = symbolOptionSwapFor.sym.toLowerCase();
       const selectedChainLower = selectedChain.toLowerCase();
-      const isDuplicate = filteredRows.some(
+      
+      const selectedPortfolio = portfolioWalletData.find(
+        (p) => p.walletAddress === selectedWallet?.address
+      )?.tokenHoldings;
+      
+      const portfolioData = selectedPortfolio ? selectedPortfolio.map(token => ({
+        tokenName: token.symbol,
+        chain: normalizeNetworkName(token.network),
+      })) : [];
+      
+      const allTokens = [...portfolioData, ...manualPositions];
+      
+      const isDuplicate = allTokens.some(
         row =>
           row.tokenName?.toLowerCase() === tokenNameLower &&
           row.chain?.toLowerCase() === selectedChainLower
@@ -273,8 +288,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     } else {
       setAddPositionError("");
     }
-  }, [symbolOptionSwapFor
-    , newBalance, selectedChain, filteredRows]);
+  }, [symbolOptionSwapFor, newBalance, selectedChain, portfolioWalletData, selectedWallet, manualPositions]);
 
   useEffect(() => {
     if (filteredRows.length > 0 || tableData.length > 0) {
@@ -408,50 +422,21 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     setSelectedChain("");
     setSymbolOptionSwapFor(null);
     setNewBalance("");
+    setAddPositionError("");
     setIsAddingManualPosition(false);
   };
 
   const handleSaveManualPosition = () => {
     if (symbolOptionSwapFor && newBalance) {
-      const tokenName = symbolOptionSwapFor.sym.toUpperCase();
-      const balance = parseFloat(newBalance);
-      const chainId = coinGeckoChainId(selectedChain);
-
-      if (!chainId || !selectedWallet) return;
-
-      const newAsset = {
-        tokenName: symbolOptionSwapFor.sym.toUpperCase(),
+      const newRow: WalletBalance = {
+        tokenName: symbolOptionSwapFor.sym,
+        chain: normalizeNetworkName(selectedChain),
         balance: parseFloat(newBalance),
         tokenAddress: symbolOptionSwapFor?.address?.[0],
       };
 
-      const updatedChainAssets = selectedWallet.chainAssets.map(chainAsset => {
-        if (chainAsset.chainId === chainId) {
-          return {
-            ...chainAsset,
-            walletAssets: [newAsset, ...chainAsset.walletAssets],
-          };
-        }
-        return chainAsset;
-      });
-
-      const updatedWallet = {
-        ...selectedWallet,
-        chainAssets: updatedChainAssets,
-      };
-
-      setSelectedWallet(updatedWallet);
-
-      if (onWalletChange) {
-        onWalletChange(updatedWallet);
-      }
-
-             const newRow: WalletBalance = {
-         tokenName: symbolOptionSwapFor.sym,
-         chain: normalizeNetworkName(selectedChain),
-         balance: parseFloat(newBalance),
-       };
-      setFilteredRows(prevRows => [newRow, ...prevRows]);
+      setManualPositions(prevPositions => [newRow, ...prevPositions]);
+      
       setIsAddingManualPosition(false);
       setIsManualUpdate(true);
     }

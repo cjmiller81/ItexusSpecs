@@ -1,6 +1,6 @@
 import { HistoricalWalletData } from "@/models/Wallet/HistoricalWalletData"
 import { PayloadAction } from "@reduxjs/toolkit"
-import { Period, Status, createAppSlice, toTotalTokensBalances, walletsApi } from "components"
+import { Period, Status, createAppSlice, toTotalTokensBalancesFromPortfolio, walletsApi } from "components"
 import i18next from "i18next"
 import { RootState } from "../RootReducer"
 import { ChartSeries, GetPrettyScale, getPeriodHistoricalDataFileter } from "./ChartSlicesCommon"
@@ -64,7 +64,13 @@ export const walletWorthChartSlice = createAppSlice({
         thunkApi,
       ): Promise<ChartSeriesDataResponse> => {
         const state = thunkApi.getState() as RootState
-        const tokensBalances = toTotalTokensBalances(state.wallets.selectedWallets);
+        
+        const selectedWalletAddresses = state.wallets.selectedWallets.map(wallet => wallet.address);
+        const filteredPortfolioData = state.wallets.portfolioWalletData.filter(
+          portfolio => selectedWalletAddresses.includes(portfolio.walletAddress)
+        );
+        
+        const tokensBalances = toTotalTokensBalancesFromPortfolio(filteredPortfolioData);
         
         const response = await walletsApi.getHistoricalWalletData(
           tokensBalances,
@@ -77,7 +83,7 @@ export const walletWorthChartSlice = createAppSlice({
         if (shouldUpdate) {
           const selectedWalletAddresses = state.wallets.selectedWallets.map(wallet => wallet.address)
           const currentTokensValue = getCurrentTokensValueFromZapper ? getCurrentTokensValueFromZapper(
-            state.wallets.portfolioWalletData,
+            filteredPortfolioData,
             selectedWalletAddresses
           ) : 0
           
@@ -94,7 +100,7 @@ export const walletWorthChartSlice = createAppSlice({
         fulfilled: (state, action) => {
           state.statstatusFetchingHistoricalData = "idle"
           state.chartData = action.payload
-          state.chartCompareToLabel = state.chartData.comareToLabel
+          state.chartCompareToLabel = state.chartData?.comareToLabel ?? null
           CalculateChartSeries(state)
         },
         rejected: (state, action) => {
@@ -115,19 +121,25 @@ function CalculateChartSeries(state: WalletsChartState) {
 }
 
 function makeChartSeries(state: WalletsChartState) {
-  if (!state.chartData) {
+  if (!state.chartData || !state.chartData.seriesData) {
     return
   }
   const periodFilter = getPeriodHistoricalDataFileter(state.period)
-  const firstComparePrice = state.chartData.seriesData[0].comparePrice
-  const firstWalletValue = state.chartData.seriesData[0].walletValue
+  const firstDataPoint = state.chartData.seriesData[0]
+  const firstComparePrice = firstDataPoint?.comparePrice ?? null
+  const firstWalletValue = firstDataPoint?.walletValue ?? 0
 
   const walletWorthValues = state.chartData.seriesData
     .filter(seriesPoint => periodFilter(seriesPoint.historyDate))
     .map(x => ({
       x: x.historyDate,
-      y: ((x.walletValue - firstWalletValue) / firstWalletValue) * 100,
+      y: firstWalletValue !== 0 ? ((x.walletValue - firstWalletValue) / firstWalletValue) * 100 : 0,
     }))
+
+  if (walletWorthValues.length === 0) {
+    state.chartSeries = []
+    return
+  }
 
   state.chartSeries = []
   state.chartSeries.push({
@@ -140,7 +152,7 @@ function makeChartSeries(state: WalletsChartState) {
     y: number
   }[] = []
 
-  if (state.chartCompareToLabel && firstComparePrice !== null) {
+  if (state.chartCompareToLabel && firstComparePrice !== null && firstComparePrice !== 0) {
     compareToValues = state.chartData.seriesData
       .filter(seriesPoint => periodFilter(seriesPoint.historyDate))
       .map(x => ({
@@ -156,8 +168,8 @@ function makeChartSeries(state: WalletsChartState) {
 
 function CalculateMinMax(state: WalletsChartState) {
   const selectedSeriesValues = [
-    ...(state.walletWorthSeriesSelected ? state.chartSeries[0].data.map(x => x.y) : []),
-    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1 ? state.chartSeries[1].data.map(x => x.y) : []),
+    ...(state.walletWorthSeriesSelected && state.chartSeries[0] ? state.chartSeries[0].data.map(x => x.y) : []),
+    ...(state.compareSymbolSeriesSelected && state.chartSeries.length > 1 && state.chartSeries[1] ? state.chartSeries[1].data.map(x => x.y) : []),
   ]
   
   if (selectedSeriesValues.length > 0) {
@@ -165,7 +177,7 @@ function CalculateMinMax(state: WalletsChartState) {
     state.minChartValue = Math.min(...selectedSeriesValues)
     state.minChartValue = state.minChartValue > 0 ? 0 : state.minChartValue
   } else {
-    state.maxChartValue = 0
+    state.maxChartValue = 10
     state.minChartValue = 0
   }
 }
