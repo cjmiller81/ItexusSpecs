@@ -17,6 +17,10 @@ export const TradingViewTile: FC<Props> = ({ title, icon, ...props }) => {
     <DashboardTile
       title={title}
       icon={icon}
+      sectionLink={{
+        href: "/charts",
+        text: "Go to full page"
+      }}
       {...props}>
       <Box>
         <MemoizedTickerTapeNoSSR

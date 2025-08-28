@@ -1,6 +1,7 @@
 import { CircularProgress, Paper, Typography } from "@mui/material";
 import { Box, Stack, StackProps, useTheme } from "@mui/system";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useState } from "react";
+import { SectionLink } from "./SectionLink";
 
 export type DashboardTileProps = Omit<StackProps, 'title'> & {
   title: string;
@@ -9,6 +10,10 @@ export type DashboardTileProps = Omit<StackProps, 'title'> & {
   datePicker?: ReactNode;
   afterTitleComponent?: ReactNode;
   rightHeaderContent?: ReactNode;
+  sectionLink?: {
+    href: string;
+    text?: string;
+  };
 };
 
 export const DashboardTile: FC<DashboardTileProps> = ({
@@ -19,13 +24,32 @@ export const DashboardTile: FC<DashboardTileProps> = ({
   afterTitleComponent,
   datePicker,
   rightHeaderContent,
+  sectionLink,
   ...props
 }) => {
   const theme = useTheme();
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <Stack {...props}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
-        <Stack direction="row" alignItems="center" gap={1} flex="1 1 auto" minWidth={0}>
+    <Stack 
+      {...props}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      sx={{ position: 'relative' }}
+    >
+      <Stack 
+        direction="row" 
+        alignItems="center" 
+        justifyContent="space-between" 
+        gap={1}
+      >
+        <Stack 
+          direction="row" 
+          alignItems="center" 
+          gap={1} 
+          flex="1 1 auto" 
+          minWidth={0}
+        >
           {icon}
           <Typography
             sx={{
@@ -39,6 +63,9 @@ export const DashboardTile: FC<DashboardTileProps> = ({
             variant="h6">
             {title}
           </Typography>
+          {sectionLink && isHovered && (
+            <SectionLink href={sectionLink.href} text={sectionLink.text} />
+        )}
           {afterTitleComponent}
           {loading && (
             <CircularProgress
