@@ -31,15 +31,17 @@ export const DashboardTile: FC<DashboardTileProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Stack {...props}>
+    <Stack 
+      {...props}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      sx={{ position: 'relative' }}
+    >
       <Stack 
         direction="row" 
         alignItems="center" 
         justifyContent="space-between" 
         gap={1}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        sx={{ position: 'relative' }}
       >
         <Stack 
           direction="row" 
@@ -61,6 +63,9 @@ export const DashboardTile: FC<DashboardTileProps> = ({
             variant="h6">
             {title}
           </Typography>
+          {sectionLink && isHovered && (
+            <SectionLink href={sectionLink.href} text={sectionLink.text} />
+        )}
           {afterTitleComponent}
           {loading && (
             <CircularProgress
@@ -74,35 +79,6 @@ export const DashboardTile: FC<DashboardTileProps> = ({
           {rightHeaderContent}
           {datePicker && <Box>{datePicker}</Box>}
         </Stack>
-        
-        {sectionLink && isHovered && (
-          <Box sx={{ 
-            position: 'absolute', 
-            right: '22%', 
-            top: '50%', 
-            transform: 'translateY(-50%)',
-            zIndex: 10,
-            backgroundColor: 'white',
-            borderRadius: '4px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            padding: '4px'
-          }}>
-            <SectionLink href={sectionLink.href} text={sectionLink.text} />
-          </Box>
-        )}
-        
-        {sectionLink && isHovered && (
-          <Box sx={{ 
-            position: 'absolute', 
-            bottom: '-4px',
-            left: 0,
-            right: 0,
-            height: '4px',
-            background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
-            borderRadius: '2px',
-            zIndex: 5
-          }} />
-        )}
       </Stack>
       <Paper sx={{ boxShadow: theme.shadows?.[8] }}>{children}</Paper>
     </Stack>
