@@ -72,7 +72,6 @@ export function TradeTable() {
   const { t } = useTranslation(["TradeTable"]);
   const [showMarketSelector, setShowMarketSelector] = useState(true);
   const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
-  const [crossPairWarning, setCrossPairWarning] = useState<string | null>(null);
   const [selectedCEX, setSelectedCEX] = useState('');
   const [insufficientFunds, setInsufficientFunds] = useState<boolean>(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -233,7 +232,6 @@ export function TradeTable() {
   useEffect(() => {
     if (!tradeData.mkt) {
       setSelectedPositions([]);
-      setCrossPairWarning(null);
       return;
     }
 
@@ -242,12 +240,8 @@ export function TradeTable() {
     
     if (matchingPosition) {
       setSelectedPositions([matchingPosition.asset]);
-      setCrossPairWarning(null);
     } else {
       setSelectedPositions([]);
-      setCrossPairWarning(
-        t("PleaseSelectDifferentMarket")
-      );
     }
   }, [tradeData.mkt]);
 
@@ -274,10 +268,8 @@ export function TradeTable() {
     const baseAsset = tradeData.symbol.toLowerCase();
 
     const crossPos = balanceData.find(pos => pos.asset.toLowerCase() === crossAsset);
-    const basePos = balanceData.find(pos => pos.asset.toLowerCase() === baseAsset);
 
     const crossBalance = crossPos ? parseFloat(crossPos.balance.replace(/,/g, '')) : 0;
-    const baseBalance = basePos ? parseFloat(basePos.balance.replace(/,/g, '')) : 0;
 
     if (isSwitchIncluded) {
       if(tradeData.action === 'buy')
@@ -601,7 +593,7 @@ export function TradeTable() {
                                  </Box>
                                ) : (
                                  <Box sx={{ ml: 1, marginTop:"5px" }}>
-                                   <EditIcon sx={{ color: "blue", fontSize: 16 }} />
+                                   <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: "16px"}} />
                                  </Box>
                              )}
                            </Box>
@@ -629,7 +621,7 @@ export function TradeTable() {
                                  </Box>
                                ) : (
                                  <Box sx={{ ml: 1, marginTop:"5px" }}>
-                                   <EditIcon sx={{ color: "blue", fontSize: 16 }} />
+                                   <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: 16 }} />
                                  </Box>
                              )}
                            </Box>
@@ -860,7 +852,6 @@ export function TradeTable() {
                                  disabled={
                                    !tradeData.mkt ||
                                    !tradeData.action ||
-                                   crossPairWarning !== null ||
                                    insufficientFunds === true
                                  }
                                  onClick={handleSendClick}
@@ -974,36 +965,6 @@ export function TradeTable() {
                 errors={placeOrderError}
                 t={t}
               />
-              {(crossPairWarning || insufficientFunds) && (
-               <Paper 
-                elevation={3} 
-                sx={(theme) => ({
-                  borderRadius: 2,
-                  p: 2,
-                  marginTop: 1,
-                  backgroundColor: alpha(
-                    theme.palette.mode === 'light'
-                      ? theme.palette.grey[100]
-                      : theme.palette.grey[900],
-                    0.9
-                  ),
-                })}>
-      
-                <Typography
-                  sx={{
-                    color: '#ff4d4d',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                  }}
-                >
-                  {crossPairWarning || insufficientFunds ? (
-                    insufficientFunds ? t("WarningInsufficientFunds") : crossPairWarning
-                  ) : null}
-                </Typography>
-              
-               </Paper>
-              )}
-
             </Box>
           </Box>
 
