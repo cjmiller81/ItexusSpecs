@@ -43,16 +43,15 @@ import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexR
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 
-import { Coins, Wallet } from "lucide-react";
+import { Coins } from "lucide-react";
+import { Wallet as WalletIcon } from "lucide-react";
 import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 
-interface SelectedWallet {
-  address: string;
-  walletId: string;
-  isValid: boolean;
-  walletName?: string;
-  isPersonal: boolean;
+import { Wallet } from "components";
+
+interface SelectedWallet extends Wallet {
+
 }
 interface SelectedRow {
   id: string;
@@ -296,7 +295,7 @@ export const IndexResultsSection = ({
     const selectedWalletId = event.target.value as string;
     const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
     setSelectedWallet(selectedWallet);
-    if (onWalletChange && selectedWallet) {
+    if (onWalletChange) {
       onWalletChange(selectedWallet);
     }
   };
@@ -601,7 +600,7 @@ export const IndexResultsSection = ({
               
               <Grid container item alignItems="center" direction="row" spacing={1}>
                 <Grid item>
-                  <Wallet color={useWalletCapital ? "gray" : "#0ea5e9"} />
+                  <WalletIcon color={useWalletCapital ? "gray" : "#0ea5e9"} />
                 </Grid>
                 <Grid item>
                   <Typography
