@@ -9,7 +9,7 @@ import { WalletPortfolioResponse } from "../models/wallet/walletPortfolio"
 
 export const walletsApi = {
   getWalletsAssets: async (): Promise<Wallet[]> => {
-    const response = await appAxios.get<Wallet[]>(`/user/wallet`)
+    const response = await appAxios.get<Wallet[]>(`/api/wallet`)
     return response.data
   },
 
@@ -23,11 +23,11 @@ export const walletsApi = {
   },
 
   deleteWallet: async (wallet: string): Promise<void> => {
-    return appAxios.delete(`/user/wallet/${wallet}`)
+    return appAxios.delete(`/api/wallet/${wallet}`)
   },
 
   addWallets: async (wallet: string, walletName: string, isPersonal: boolean): Promise<void> => {
-    return appAxios.post(`/user/wallet`, [
+    return appAxios.post(`/api/wallet`, [
       {
         address: wallet,
         isPersonal,
@@ -36,8 +36,8 @@ export const walletsApi = {
     ])
   },
   updateWallets: async (wallet: Wallet): Promise<void> => {
-    const {chainAssets, ...walletRequest} = wallet
-    return appAxios.post(`/user/wallet/${wallet.address}`, walletRequest)
+    const { ...walletRequest} = wallet
+    return appAxios.post(`/api/wallet/${wallet.address}`, walletRequest)
   },
   getHistoricalWalletData: async (
     symbols: { symbol: string; qty: number }[],

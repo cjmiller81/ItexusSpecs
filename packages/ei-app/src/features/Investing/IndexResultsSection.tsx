@@ -25,13 +25,11 @@ import {
 } from "@mui/material";
 import {
   AppAccordionSection,
-  AppNumberInput,
   BasicTable,
   InvestingTableAsset,
   nativeBarSx,
-  StyledWalletsTable,
-  toTableTokensModel,
-  toTableTokensModels,
+  toTableTokensModelFromWallet,
+  toTableTokensModelsFromPortfolio,
   useAppSelector,
 } from "components";
 import { useTranslation } from "react-i18next";
@@ -44,7 +42,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
-import { ChainAsset } from "@/models/Wallet/ChainAsset";
+
 import { Coins, Wallet } from "lucide-react";
 import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
@@ -55,7 +53,6 @@ interface SelectedWallet {
   isValid: boolean;
   walletName?: string;
   isPersonal: boolean;
-  chainAssets: ChainAsset[];
 }
 interface SelectedRow {
   id: string;
@@ -129,21 +126,29 @@ export const IndexResultsSection = ({
     }
   }, [selectedWallet]);
 
+  const { portfolioWalletData } = useAppSelector(state => state.wallets);
+
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
-    setFilteredWalletData(
-      selectedWallet
-        ? toTableTokensModels(
-            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ??
-              [],
-          ).map(({ tokenName, chainName, balance }) => ({
+    
+    if (selectedWallet && portfolioWalletData.length > 0) {
+      const wallet = portfolioWalletData.find(w => w.walletAddress === selectedWallet.address);
+      if (wallet) {
+        const tokens = toTableTokensModelFromWallet(wallet);
+        setFilteredWalletData(
+          tokens.map(({ tokenName, chainName, balance }) => ({
             tokenName,
             chain: chainName,
             balance: balance,
           }))
-        : [],
-    );
-  }, [wallets, selectedWallet]);
+        );
+      } else {
+        setFilteredWalletData([]);
+      }
+    } else {
+      setFilteredWalletData([]);
+    }
+  }, [wallets, selectedWallet, portfolioWalletData]);
 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
@@ -261,18 +266,13 @@ export const IndexResultsSection = ({
 
 
   const calculateTotalUsdAmount = (selectedWallet: SelectedWallet): number => {
-    let totalUsdAmount = 0;
-
-    selectedWallet.chainAssets.forEach(chainAsset => {
-      const tableAssets = toTableTokensModel(chainAsset);
-
-      tableAssets.forEach(asset => {
-        if (asset.usdAmount) {
-          totalUsdAmount += asset.usdAmount;
-        }
-      });
-    });
-    return totalUsdAmount;
+    const wallet = portfolioWalletData.find(w => w.walletAddress === selectedWallet.address);
+    
+    if (wallet) {
+      return wallet.totalValueUSD;
+    }
+    
+    return 0;
   };
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {

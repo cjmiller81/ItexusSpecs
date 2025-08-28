@@ -14,12 +14,11 @@ import {
 } from "../../slices/walletsSlice"
 import { MyWalletsSection } from "../myWallets/MyWalletsSection"
 import { Wallet } from "../../models"
-import { toTableTokensModel } from "../../utils/tokensTableHelpers"
 
 interface Props extends BoxProps {}
 
 export const WalletsContainer = ({ ...props }: Props) => {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, exchanges } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, exchanges, portfolioWalletData } = useAppSelector(
     state => state.wallets,
   )
   const [totalAmount,setTotalAmount] = useState<number>(0);
@@ -45,31 +44,26 @@ export const WalletsContainer = ({ ...props }: Props) => {
     dispatch(fetchTotalWalletsWorthData({}))
   }, [selectedWallets])
 
-  const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
+  const calculateTotalUsdAmount = (selectedWallets: Wallet[], portfolioData: any[]): number => {
     let totalUsdAmount = 0;
 
     selectedWallets.forEach(wallet => {
-      wallet.chainAssets.forEach(chainAsset => {
-        const tableAssets = toTableTokensModel(chainAsset);
-
-        tableAssets.forEach(asset => {
-          if (asset.usdAmount) {
-            totalUsdAmount += asset.usdAmount;
-          }
-        });
-      });
+      const portfolioWallet = portfolioData.find(p => p.walletAddress === wallet.address);
+      if (portfolioWallet) {
+        totalUsdAmount += portfolioWallet.totalValueUSD;
+      }
     });
 
     return totalUsdAmount;
   };
 
   useEffect(() => {
-    if (selectedWallets.length) {
-      setTotalAmount(calculateTotalUsdAmount(selectedWallets));
+    if (selectedWallets.length && portfolioWalletData.length) {
+      setTotalAmount(calculateTotalUsdAmount(selectedWallets, portfolioWalletData));
     } else {
       setTotalAmount(0);
     }
-  }, [selectedWallets]);
+  }, [selectedWallets, portfolioWalletData]);
 
   return (
     <Box {...props}>

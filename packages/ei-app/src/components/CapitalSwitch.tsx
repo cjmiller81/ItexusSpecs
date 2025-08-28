@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Wallet, Coins } from "lucide-react";
 import { Grid, Typography, Switch, Box, InputBase, Paper, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ChainAsset } from "components/src/models";
+
 
 interface CapitalSwitchProps {
   onToggle: (isWallet: boolean) => void;
@@ -17,7 +17,6 @@ interface SelectedWallet {
   isValid: boolean;
   walletName?: string;
   isPersonal: boolean;
-  chainAssets: ChainAsset[];
 }
 
 const CapitalSwitch: React.FC<CapitalSwitchProps> = ({
