@@ -288,7 +288,7 @@
     "SelectExchange": "Select Exchange",
     "ModelTradeon": "Model Trade on",
     "SelectTradingPair": "Select Trading Pair",
-    "TopTradingPairsOn": "Top Trading Pairs on"
+    "TopTradingPairsOn": "Top 10 Trading Pairs by Volume on"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
