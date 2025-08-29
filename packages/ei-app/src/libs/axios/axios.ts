@@ -23,18 +23,27 @@ appAxios.interceptors.response.use(
   },
 )
 
+const EXCLUDED_URLS = [
+  "https://api.coingecko.com",
+];
+
 export const axiosBaseQuery =
   () =>
   async ({ url, method, data, params, headers }: any) => {
+    const isExcluded = EXCLUDED_URLS.some(excluded => url.startsWith(excluded));
+
     const result = await appAxios({
-      url: url,
+      baseURL: isExcluded ? undefined : process.env.NEXT_PUBLIC_API_BASE_URL,
+      url,
       method,
       data,
       params,
       headers,
-    })
-    return { data: result.data }
-  }
+      withCredentials: !isExcluded,
+    });
+
+    return { data: result.data };
+  };
 
 if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API === "true") {
   configureAxiosMockHandlers(appAxios)

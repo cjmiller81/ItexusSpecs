@@ -20,15 +20,14 @@ import {
   alpha,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import NorthEastIcon from "@mui/icons-material/NorthEast";
-import { fetchExchanges, getAccountBalance, getTradablePairs, resetAccountBalance, useAppDispatch, useAppSelector, postPlaceOrder, resetPlaceOrderResponseError } from 'components';
-import { formatVolume, makeId } from '@/utils/utils';
-import { PlaceOrderResponseDialog } from './PlaceOrderResponseDialog';
+import { getTradablePairs,  useAppDispatch } from 'components';
+import { formatVolume} from '@/utils/utils';
 import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 import { Exchange, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
+import { skipToken } from "@reduxjs/toolkit/query";
 
 interface TradeData {
   symbol: string;
@@ -36,20 +35,6 @@ interface TradeData {
   qty: string;
   value: string;
   action: string;
-}
-
-interface OrderRequest {
-  marketSymbol: string,
-  amount: number,
-  price: number,
-  stopPrice: number,
-  isBuy: boolean,
-  isMargin: boolean,
-  orderId: string,
-  clientOrderId: string,
-  shouldRoundAmount: boolean,
-  orderType: number,
-  isPostOnly: boolean
 }
 
 interface TradingPair {
@@ -71,20 +56,9 @@ export function TradeTable() {
   
   const { t } = useTranslation(["TradeTable"]);
   const [showMarketSelector, setShowMarketSelector] = useState(true);
-  const [selectedPositions, setSelectedPositions] = useState<number[]>([]);
   const [selectedCEX, setSelectedCEX] = useState('');
-  const [insufficientFunds, setInsufficientFunds] = useState<boolean>(false);
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [placeOrderResultDialogOpen, setPlaceOrderResultDialogOpen] = useState(false);
   const dispatch = useAppDispatch()
-  const [balanceData, setBalanceData] = useState<any[]>([]);
-  const balance = useAppSelector((state) => state.kraken.balance);
-  const marketData = useAppSelector((state) => state.kraken.tradablePairs);
-  const { error, placeOrderError } = useAppSelector((state) => state.kraken);
-  const placeOrderResponse = useAppSelector((state) => state.kraken.placeOrderResponse)
   const [debouncedSymbol, setDebouncedSymbol] = useState('');
-  const [baseSymbols, setBaseSymbols] = useState<string[]>([]);
-  const shouldShowSendButton = false;
   const theme = useTheme();
   const textColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const isDarkMode = theme.palette.mode === "dark";
@@ -92,9 +66,9 @@ export function TradeTable() {
   const [isSwitchIncluded, setIsSwitchIncluded] = useState<boolean>(false);
   const [manualValueInput, setManualValueInput] = useState('');
   const [activeTab, setActiveTab] = useState<"Trading Pairs" | "Arbitrage Matrix">("Trading Pairs");
-  const { data: coinGeckoExchanges, error: coinGeckoExchangesError, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
-  const { data: coinGeckoExchangesWithTickers } = useGetExchangesWithTickersQuery()
+  const { data: coinGeckoExchanges, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
+  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken)
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
   
@@ -104,11 +78,9 @@ export function TradeTable() {
       if (!selectedExchange || !coinGeckoExchangesWithTickers) return;
 
       try {
-
         // Process and deduplicate trading pairs
         const pairsMap = new Map();
-        coinGeckoExchangesWithTickers
-          .find(x => x.id == selectedExchange.id)?.tickers?.forEach(ticker => {
+        coinGeckoExchangesWithTickers.tickers?.forEach(ticker => {
             const pair = `${ticker.base}/${ticker.target}`;
             if (!pairsMap.has(pair)) {
               pairsMap.set(pair, {
@@ -124,10 +96,10 @@ export function TradeTable() {
         const pairs = Array.from(pairsMap.values());
         setTradingPairs(pairs);
         
-        // Get top 5 trading pairs by volume for the table
+        // Get top 10 trading pairs by volume for the table
         const topPairs = [...pairs]
           .sort((a, b) => b.volume - a.volume)
-          .slice(0, 5);
+          .slice(0, 10);
         setTopTradingPairs(topPairs);
       } catch (error) {
         console.error('Failed to fetch trading pairs:', error);
@@ -171,17 +143,6 @@ export function TradeTable() {
     handleTradingPairSelect(pair.pair);
   };
 
-  
-  const getCrossPair = (marketPair: string): string => {
-    if (!marketPair) return '';
-    const parts = marketPair.split('/');
-    return parts.length > 1 ? parts[1] : '';
-  };
-
-  const handleSendClick = () => {
-    setConfirmDialogOpen(true);
-  };
-
   const handleSwitchClick = () => {
     setManualValueInput('');
     setTradeData((prev) => ({
@@ -191,24 +152,6 @@ export function TradeTable() {
     }));
     setIsSwitchIncluded(prev => !prev);
   };
-
-  useEffect(() => {
-    dispatch(fetchExchanges(null))
-  }, [dispatch])
-
-  useEffect(() => {
-    return () => {
-      dispatch(resetAccountBalance());
-    };
-  }, [])
-
-  useEffect(() => {
-    if (placeOrderResponse != null || placeOrderError != null) {
-      setConfirmDialogOpen(false);
-      setPlaceOrderResultDialogOpen(true);
-    }
-
-  }, [placeOrderResponse, placeOrderError])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -231,45 +174,19 @@ export function TradeTable() {
 
   useEffect(() => {
     if (!tradeData.mkt) {
-      setSelectedPositions([]);
       return;
     }
-
-    const crossPair = getCrossPair(tradeData.mkt);
-    const matchingPosition = balanceData.find(position => position.asset.toLowerCase() === crossPair.toLowerCase());
-    
-    if (matchingPosition) {
-      setSelectedPositions([matchingPosition.asset]);
-    } else {
-      setSelectedPositions([]);
-    }
-  }, [tradeData.mkt]);
-
-  useEffect(() => {
-    if (!tradeData.mkt) {
-      setInsufficientFunds(false);
-      return;
-    }
-    const selectedMarket = marketData.find(m => m.displayName === tradeData.mkt);
+    const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
     if (!selectedMarket) {
       setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
-      setInsufficientFunds(false);
       return;
     }
 
-    const price = parseFloat(selectedMarket.price);
+    const price = selectedMarket.last;
     if (isNaN(price) || price <= 0) {
       setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
-      setInsufficientFunds(false);
       return;
     }
-
-    const crossAsset = getCrossPair(tradeData.mkt).toLowerCase();
-    const baseAsset = tradeData.symbol.toLowerCase();
-
-    const crossPos = balanceData.find(pos => pos.asset.toLowerCase() === crossAsset);
-
-    const crossBalance = crossPos ? parseFloat(crossPos.balance.replace(/,/g, '')) : 0;
 
     if (isSwitchIncluded) {
       if(tradeData.action === 'buy')
@@ -282,9 +199,7 @@ export function TradeTable() {
               maximumFractionDigits: 8,
             });
           setTradeData(prev => ({ ...prev, qty: formattedQty }));
-        
         }
-        setInsufficientFunds(val > crossBalance);
       }
       else{
         const val = parseFloat(tradeData.value.replace(/,/g, '')) || 0;
@@ -296,15 +211,6 @@ export function TradeTable() {
             });
           setTradeData(prev => ({ ...prev, qty: formattedQty }));
         }
-        
-        const positionSell = balanceData.find(
-            (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
-          );
-          if (positionSell === undefined) {
-            setInsufficientFunds(true);
-          } else {
-            setInsufficientFunds(computedQty > positionSell.balance);
-          }
       }
     } else {
         if(tradeData.action === 'buy')
@@ -316,15 +222,7 @@ export function TradeTable() {
           const formattedValue = (!isNaN(qtyParse) && qtyParse > 0)
             ? valueNeeded.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })
             : '';
-          const positionSell = balanceData.find(
-                      (pos) => pos.asset?.toLowerCase() === tradeData.mkt.split("/")[1].toLowerCase()
-                    );
 
-          if (positionSell === undefined) {
-            setInsufficientFunds(true);
-          } else {
-            setInsufficientFunds(valueNeeded  > positionSell.balance);
-          }
           setTradeData(prev => ({ ...prev, value: formattedValue }));
         }
         else{  
@@ -337,16 +235,6 @@ export function TradeTable() {
               });
             setTradeData(prev => ({ ...prev, value: formattedQty }));
           }
-
-          const positionSell = balanceData.find(
-            (pos) => pos.asset?.toLowerCase() === tradeData.symbol?.toLowerCase()
-          );
-
-          if (positionSell === undefined) {
-            setInsufficientFunds(true);
-          } else {
-            setInsufficientFunds(parseFloat(tradeData.qty) > parseFloat(positionSell.balance.replace(/,/g, '')));
-          }
         }
       }
   }, [
@@ -356,69 +244,8 @@ export function TradeTable() {
     tradeData.symbol,
     isSwitchIncluded,
     tradeData.action,
-    balanceData,
-    marketData,
+    tradingPairs
   ]);
-
-  const handleCEXSelect = (event: SelectChangeEvent<string>) => {
-    const selectedCEXValue = event.target.value;
-    setSelectedCEX(selectedCEXValue);
-
-    if (selectedCEXValue) {
-      fetchBalance();
-    }
-  };
-
-  const fetchBalance = async () => {
-    try {
-      dispatch(getAccountBalance());
-    } catch (error) {
-      console.error('Failed to fetch Kraken balance:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (balance && typeof balance === 'object') {
-      const formattedData = Object.entries(balance).map(([asset, amount]) => {
-        const formattedAmount = parseFloat(amount.toString()).toFixed(10).replace(/\.?0+$/, '');
-        return {
-          asset,
-          balance: formattedAmount,
-        };
-      });
-
-      setBalanceData(formattedData);
-
-      const extractedBaseSymbols = formattedData.map((position) => position.asset);
-      setBaseSymbols(extractedBaseSymbols);
-    }
-  }, [balance]);
-
-  const handleMarketSelect = (market: string) => {
-    setTradeData({ ...tradeData, mkt: market });
-  };
-
-  const onConfirmTransaction = () => {
-    let orderRequest: OrderRequest = {
-      isMargin: false,
-      orderId: "",
-      orderType: 1,
-      isPostOnly: false,
-      clientOrderId: makeId(10),
-      marketSymbol: tradeData.mkt.replace("/", ""),
-      amount: Number.parseFloat(tradeData.qty),
-      isBuy: tradeData.action === "buy",
-      price: 0,
-      stopPrice: 0,
-      shouldRoundAmount: true
-    }
-    dispatch(postPlaceOrder(orderRequest));
-  }
-
-  const onClosePlaceOrderResponseDialog = () => {
-    setPlaceOrderResultDialogOpen(false);
-    dispatch(resetPlaceOrderResponseError())
-  }
 
   return (
     <Box sx={{height: "100%"}}>
@@ -511,6 +338,7 @@ export function TradeTable() {
                 <Autocomplete
                   size="small"
                   options={coinGeckoExchanges || []}
+                  loading={isCoinGeckoExchangesLoading}
                   getOptionLabel={(option) => option.name} 
                   value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
                   onChange={(event, newValue) => {
@@ -637,12 +465,13 @@ export function TradeTable() {
                        <TableRow>
 
                          <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor}}> 
-                           <FormControl size="small" sx={{ minWidth: 200 }}>
+                           <FormControl size="small" sx={{ minWidth: 100 }}>
                              <Autocomplete
                                size="small"
                                options={tradingPairs}
                                disabled={!selectedExchange}
                                getOptionLabel={(option) => option.pair} 
+                               loading={isTradingPairsLoading}
                                value={tradingPairs.find(x => x.pair == tradeData.mkt) || null}
                                onChange={(event, newValue) => {
                                  handleTradingPairSelect(newValue?.pair || null);
@@ -844,29 +673,6 @@ export function TradeTable() {
                            )}
                          </TableCell>
 
-                         {shouldShowSendButton && (
-                           <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
-                             <Tooltip title={t("SendTradeExchange")} arrow>
-                               <Button
-                                 variant="contained"
-                                 disabled={
-                                   !tradeData.mkt ||
-                                   !tradeData.action ||
-                                   insufficientFunds === true
-                                 }
-                                 onClick={handleSendClick}
-                                 sx={{
-                                   backgroundColor: "#4caf50",
-                                   fontWeight: "bold",
-                                   "&:hover": { backgroundColor: "#45a049" },
-                                 }}
-                               >
-                                 {t("SEND")}
-                               </Button>
-                             </Tooltip>
-                           </TableCell>
-                         )}
-
                          <TableCell sx={{ borderBottom: `1px solid ${borderColor}`}}>
                            <Tooltip title={`${t("Trade")} on ${selectedExchange?.name}`} arrow>
                              <a
@@ -947,24 +753,7 @@ export function TradeTable() {
                     </TableRow>
                    </Table>
                  </TableContainer>
-              </Paper>
-
-
-              <ConfirmTransactionDialog
-                open={confirmDialogOpen}
-                onClose={() => setConfirmDialogOpen(false)}
-                tradeData={tradeData}
-                selectedCEX={selectedCEX}
-                onConfirmTransaction={onConfirmTransaction}
-              />
-    
-              <PlaceOrderResponseDialog
-                open={placeOrderResultDialogOpen}
-                onClose={onClosePlaceOrderResponseDialog}
-                response={placeOrderResponse}
-                errors={placeOrderError}
-                t={t}
-              />
+              </Paper>    
             </Box>
           </Box>
 

@@ -28,13 +28,38 @@ export const cexApi = createApi({
     getExchanges: build.query<Exchange[], void>({
       query: () => ({ url: "/exchanges", method: "get" }),
       transformResponse: (response: Exchange[]) =>
-        response.filter(e => e.centralized),
+        response.filter(e =>
+          e.centralized &&
+          !e.name.toLowerCase().includes("futures") &&
+          !e.name.toLowerCase().includes("derivative")
+        ),
     }),
-    getExchangesWithTickers: build.query<Exchange[], void>({
-      query: () => ({ url: "/exchanges?includeTickers=true", method: "get" }),
-      transformResponse: (response: Exchange[]) =>
-        response.filter(e => e.centralized),
-    }),
+    getExchangesWithTickers: build.query<Exchange, string>({
+      async queryFn(id, _queryApi, _extraOptions, fetchWithBQ) {
+        const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+    
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          const result = await fetchWithBQ({
+            url: `https://api.coingecko.com/api/v3/exchanges/${id}/tickers?page=1&order=volume`,
+            method: "get",
+          });
+    
+          if (!('error' in result)) {
+            return { data: result.data as Exchange };
+          }
+    
+          const status = (result.error as any)?.status;
+          if ((status === 429 || status >= 500) && attempt < 3) {
+            await delay(5000 * attempt); 
+            continue;
+          }
+    
+          return { error: result.error };
+        }
+    
+        return { error: { status: 'CUSTOM_ERROR', data: 'Max retries reached' } };
+      },
+    })
   }),
 });
 
