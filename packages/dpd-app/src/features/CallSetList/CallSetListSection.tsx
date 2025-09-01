@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { Box, darken, lighten, styled, Typography, useTheme } from '@mui/material';
-import { DataGrid, GridRow } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import { getCallSetListTableColumns, getPositionOrdersTableColumns } from './CallSetListTable';
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { fetchStrategies, toggleRowExpansion } from './CallSetListSlice';
@@ -28,6 +28,10 @@ const CallSetListSection = () => {
 
   const nanoToPrice = (nanos: number): number => {
     return nanos / 1000000000;
+  };
+
+  const decimalValueToPrice = (units: number, nanos: number): number => {
+    return units + (nanos / 1000000000);
   };
 
   const processPositionOrders = (position: Position | null, positionType: string, originalQty: number): PositionOrderRow[] => {
@@ -72,20 +76,9 @@ const CallSetListSection = () => {
           ticker: position.symbol || "",
           originalQty: originalQty || 0,
           orderType: "Filled Long",
-          orderId: `${orderId}_item1`,
+          orderId: orderId,
           orderQty: orderValue.item1?.units || 0,
-          avgFillPrice: nanoToPrice(orderValue.item1?.nanos || 0),
-          errorMsg: ""
-        });
-        orders.push({
-          id: `${positionType}_filled_long_${orderIdCounter++}`,
-          type: positionType,
-          ticker: position.symbol || "",
-          originalQty: originalQty || 0,
-          orderType: "Filled Long",
-          orderId: `${orderId}_item2`,
-          orderQty: orderValue.item2?.units || 0,
-          avgFillPrice: nanoToPrice(orderValue.item2?.nanos || 0),
+          avgFillPrice: decimalValueToPrice(orderValue.item2?.units || 0, orderValue.item2?.nanos || 0),
           errorMsg: ""
         });
       } else {
@@ -98,7 +91,7 @@ const CallSetListSection = () => {
           orderId: orderId,
           orderQty: 0,
           avgFillPrice: 0,
-          errorMsg: ""
+          errorMsg: "Invalid data structure"
         });
       }
     });
@@ -202,11 +195,14 @@ const CallSetListSection = () => {
       let entryType = "Use Ask";
       if (strategySettings) {
         switch (strategySettings.entryType) {
-          case "entryBuyBid":
+          case "useBid":
             entryType = "Use Bid";
             break;
-          case "entryBuyMid":
+          case "useMid":
             entryType = "Use Mid";
+            break;
+          case "useAsk":
+            entryType = "Use Ask";
             break;
           default:
             entryType = "Use Ask";
@@ -261,13 +257,15 @@ const CallSetListSection = () => {
   const CallListTable = styled(DataGrid)(({ theme }) => ({
     borderRadius: "8px",
     width: "100%",
+    minWidth: "500px",
     mt: 2,
     display: "grid",
     "& .MuiDataGrid-virtualScroller": {
       overflowY: "auto !important",
+      maxHeight: "none"
     },
     "& .MuiDataGrid-main": {
-      height: "auto",
+      height: "auto"
     },
     "& .MuiDataGrid-columnHeaders": {
       backgroundColor: theme.palette.mode === "dark" ? "#353F4B" : "#F3F4F6",
@@ -311,15 +309,18 @@ const CallSetListSection = () => {
     borderRadius: "8px",
     width: "100% !important",
     maxWidth: "100% !important",
-    minWidth: "100% !important",
+    overflow: "hidden !important",
     "& .MuiDataGrid-virtualScroller": {
       overflowY: "auto !important",
       overflowX: "hidden !important",
+      maxHeight: "400px",
+      width: "100% !important"
     },
     "& .MuiDataGrid-main": {
       height: "auto",
       width: "100% !important",
       maxWidth: "100% !important",
+      overflow: "hidden !important"
     },
     "& .MuiDataGrid-columnHeaders": {
       backgroundColor: theme.palette.mode === "dark" ? "#353F4B" : "#F3F4F6",
@@ -328,113 +329,206 @@ const CallSetListSection = () => {
       borderBottom: "1px solid",
       borderBottomColor: theme.palette.divider,
       width: "100% !important",
+      overflow: "hidden !important"
     },
     "& .MuiDataGrid-columnHeaders .MuiDataGrid-columnHeaderTitle": {
       textTransform: "uppercase",
+      overflow: "hidden !important",
+      textOverflow: "ellipsis !important"
     },
     "& .MuiDataGrid-row": {
       backgroundColor: theme.palette.mode === "dark" ? "#111827" : "#FFFFFF",
       borderBottom: "1px solid",
       borderBottomColor: theme.palette.divider,
       width: "100% !important",
+      maxWidth: "100% !important",
+      overflow: "hidden !important"
     },
     "& .MuiDataGrid-cell": {
       backgroundColor: theme.palette.mode === "dark" ? "#111827" : "#FFFFFF",
+      overflow: "hidden !important",
+      textOverflow: "ellipsis !important"
     },
     "& .MuiDataGrid-root": {
       border: "none",
       width: "100% !important",
       maxWidth: "100% !important",
+      overflow: "hidden !important"
     },
     "& .MuiDataGrid-virtualScrollerContent": {
       width: "100% !important",
       maxWidth: "100% !important",
+      overflow: "hidden !important"
     },
     "& .MuiDataGrid-virtualScrollerRenderZone": {
       width: "100% !important",
       maxWidth: "100% !important",
+      overflow: "hidden !important"
     },
+    "& .MuiDataGrid-columnsContainer": {
+      width: "100% !important",
+      maxWidth: "100% !important",
+      overflow: "hidden !important"
+    },
+    "& .MuiDataGrid-columnHeader": {
+      overflow: "hidden !important",
+      textOverflow: "ellipsis !important"
+    },
+    "& .MuiDataGrid-columnHeaderTitleContainer": {
+      overflow: "hidden !important"
+    }
   }));
 
-  const CustomRow = (props: { row: StrategyTableRow }) => {
-    const strategy = strategiesData.find(s => s.id === props.row.id);
-    const orders = positionOrdersData[props.row.id] || [];
-    
-    return (
-      <Box sx={{ width: "100%", overflow: "hidden" }}>
-        <GridRow {...props} />
-        {strategy?.isExpanded && orders.length > 0 && (
-          <Box sx={{ 
-            p: 2, 
-            backgroundColor: theme.palette.mode === "dark" ? "#1f2937" : "#f9fafb",
-            borderTop: "1px solid",
-            borderTopColor: theme.palette.divider,
-            width: "100%",
-            maxWidth: "100%",
-            overflow: "hidden",
-            boxSizing: "border-box"
-          }}>
-            <Box sx={{ 
-              width: "100%", 
-              maxWidth: "100%", 
-              overflow: "hidden",
-              boxSizing: "border-box",
-              paddingLeft: "5px",
-              paddingRight: "5px"
-            }}>
-              <PositionOrdersTable
-                rows={orders}
-                columns={getPositionOrdersTableColumns(theme, t, handleCancelOrder)}
-                hideFooter
-                disableColumnMenu
-                disableRowSelectionOnClick
-                autoHeight
-                getRowId={(row) => row.id}
-                sx={{
-                  width: "calc(100% - 10px) !important",
-                  minWidth: "calc(100% - 10px) !important",
-                  maxWidth: "calc(100% - 10px) !important",
-                  overflow: "hidden !important",
-                  boxSizing: "border-box !important"
-                }}
-              />
-            </Box>
-          </Box>
-        )}
-      </Box>
-    );
-  };
+
 
   return (
-    <Box sx={{ width: '100%', height: "100%" }}>
+    <Box sx={{ 
+      width: '100%', 
+      height: "100%",
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Set List
       </Typography>
 
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: '100%',
-          overflow: 'hidden',
-          height: expandedRows.length > 0 ? 'calc(100vh - 120px)' : 'auto',
-        }}
-      >
-        <CallListTable
-          sx={{
-            width: "100%",
-            maxWidth: "100%",
-            overflow: "hidden",
-            height: expandedRows.length > 0 ? '100%' : 'auto',
-          }}
-          hideFooter
-          rowSelection={false}
-          getRowId={(row) => row.id}
-          columns={getCallSetListTableColumns(theme, handleToggleExpansion, t)}
-          rows={strategiesData}
-          slots={{ row: CustomRow }}
-          autoHeight={expandedRows.length === 0}
-        />
-      </Box>
+             <Box
+         sx={{
+           width: '100%',
+           flex: 1,
+           overflow: 'hidden',
+           display: 'flex',
+           flexDirection: 'column',
+           [theme.breakpoints.down('md')]: {
+             overflow: 'auto'
+           }
+         }}
+       >
+                   <Box sx={{ 
+            minWidth: { xs: "800px", md: "100%" }
+          }}>
+            {strategiesData.length === 0 ? (
+              <CallListTable
+                sx={{
+                  width: "100%",
+                  overflow: 'hidden',
+                  '& .MuiDataGrid-main': {
+                    overflow: 'hidden',
+                    width: "100%"
+                  },
+                  '& .MuiDataGrid-virtualScroller': {
+                    overflow: 'hidden',
+                    width: "100%"
+                  },
+                  '& .MuiDataGrid-root': {
+                    height: 'auto',
+                    width: "100%",
+                    overflow: 'hidden'
+                  },
+                  '& .MuiDataGrid-row': {
+                    width: "100% !important",
+                    maxWidth: "100% !important"
+                  },
+                  '& .MuiDataGrid-cell': {
+                    overflow: 'hidden !important'
+                  }
+                }}
+                hideFooter
+                rowSelection={false}
+                getRowId={(row) => row.id}
+                columns={getCallSetListTableColumns(theme, handleToggleExpansion, t)}
+                rows={[]}
+                autoHeight={true}
+                components={{
+                  NoRowsOverlay: () => (
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100px',
+                        color: theme.palette.mode === 'dark' ? '#9ca3af' : '#6b7280'
+                      }}
+                    >
+                      <Typography variant="body1">
+                        No rows
+                      </Typography>
+                    </Box>
+                  )
+                }}
+              />
+            ) : (
+              strategiesData.map((strategy, index) => (
+                <React.Fragment key={strategy.id}>
+                  <CallListTable
+                    sx={{
+                      width: "100%",
+                      overflow: 'hidden',
+                      '& .MuiDataGrid-main': {
+                        overflow: 'hidden',
+                        width: "100%"
+                      },
+                      '& .MuiDataGrid-virtualScroller': {
+                        overflow: 'hidden',
+                        width: "100%"
+                      },
+                      '& .MuiDataGrid-root': {
+                        height: 'auto',
+                        width: "100%",
+                        overflow: 'hidden'
+                      },
+                      '& .MuiDataGrid-row': {
+                        width: "100% !important",
+                        maxWidth: "100% !important"
+                      },
+                      '& .MuiDataGrid-cell': {
+                        overflow: 'hidden !important'
+                      },
+                      '& .MuiDataGrid-columnHeaders': {
+                        display: index === 0 ? 'flex' : 'none'
+                      }
+                    }}
+                    hideFooter
+                    rowSelection={false}
+                    getRowId={(row) => row.id}
+                    columns={getCallSetListTableColumns(theme, handleToggleExpansion, t)}
+                    rows={[strategy]}
+                    autoHeight={true}
+                  />
+                  
+                  {strategy.isExpanded && positionOrdersData[strategy.id]?.length > 0 && (
+                    <Box 
+                      sx={{ 
+                        backgroundColor: theme.palette.mode === "dark" ? "#1f2937" : "#f9fafb",
+                        borderTop: "1px solid",
+                        borderTopColor: theme.palette.divider,
+                        width: "100%",
+                        overflow: "hidden",
+                        p: 1
+                      }}
+                    >
+                      <PositionOrdersTable
+                        rows={positionOrdersData[strategy.id]}
+                        columns={getPositionOrdersTableColumns(theme, t, handleCancelOrder)}
+                        hideFooter
+                        disableColumnMenu
+                        disableRowSelectionOnClick
+                        autoHeight
+                        getRowId={(row) => row.id}
+                        sx={{
+                          width: "100% !important",
+                          overflow: "hidden !important",
+                          boxSizing: "border-box !important"
+                        }}
+                      />
+                    </Box>
+                  )}
+                </React.Fragment>
+              ))
+            )}
+          </Box>
+       </Box>
     </Box>
   );
 }

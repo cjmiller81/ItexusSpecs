@@ -13,6 +13,8 @@ import OptionSettingsForm from "../OptionSettingsForm";
 import EntryOrderPanel from "../EntryOrderPanel";
 import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
 import SchwabConnectButton from "@/common/SchwabConnectButton";
+import { StrategyMonitorService } from "@/services/strategyMonitorService";
+import { addError, addMessage } from "components";
 
 export default function PutOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -365,7 +367,6 @@ export default function PutOptionSet() {
       if (!account || !ticker) {
         return; 
       }
-
       try {
         const entryTypeEnum = mapEntryTypeStringToEnum(entryType);
   
@@ -400,8 +401,27 @@ export default function PutOptionSet() {
         };
   
         const response = await dispatch(scanSchwab(subProfileRequest)).unwrap();
-      } catch (error) {
+        
+        if (response && response.strategyId) {
+          StrategyMonitorService.monitorStrategyStatus(
+            account.accountNumber,
+            response.strategyId,
+            (status) => {
+              dispatch(addMessage(`Strategy state: ${status.state}`));
+            },
+            (errorMsg) => {
+              dispatch(addError(errorMsg));
+            }
+          );
+        }
+      } catch (error: any) {
         console.error("Error sending order:", error);
+        
+        if (error.status === 400) {
+          dispatch(addError("Error submitting set!"));
+        } else {
+          dispatch(addError(error.message || "Failed to send order"));
+        }
       }
     };
 
@@ -442,7 +462,7 @@ export default function PutOptionSet() {
   };
 
   return (
-    <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
+    <Box sx={{ width: "100%", minHeight: "100%", bgcolor: "background.default", p: 1.2 }}>
       <Typography
         variant="h4"
         sx={{ fontWeight: "bold", mb: 3 }}
@@ -450,7 +470,7 @@ export default function PutOptionSet() {
         {t("PutOptionSet")}
       </Typography>
 
-      <Divider sx={{ mb: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
+      <Divider sx={{ mb: 4, width: "100%", left: 0, top: "auto" }} />
 
       <Box sx={{ display: "flex", gap: 1.8, alignItems: "center", marginTop: "45px" }}>
         <Select
@@ -593,7 +613,7 @@ export default function PutOptionSet() {
         </Button>
       </Box>
 
-      <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
+      <Divider sx={{ my: 4, width: "100%", left: 0, top: "auto" }} />
 
       <Box sx={{
           display: "flex",
@@ -709,7 +729,7 @@ export default function PutOptionSet() {
             p: 3,
             borderRadius: 2,
             color: "white",
-            height: "670px",
+            height: "594px",
             marginTop: "25px",
             border: "2px solid rgb(143, 23, 15)",
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"

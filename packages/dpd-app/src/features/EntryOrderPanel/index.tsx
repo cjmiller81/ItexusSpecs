@@ -81,12 +81,12 @@ const EntryOrderPanel: React.FC<EntryOrderPanelProps> = ({
     <Box>
       <Box
         sx={{
-          width: "450px",
+          width: "auto",
+          minHeight: "594px",
           bgcolor: "#2A2A2A",
           p: 3,
           borderRadius: 2,
           color: "white",
-          minHeight: "670px",
           marginTop: "25px",
           border: `2px solid ${borderColor}`,
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
