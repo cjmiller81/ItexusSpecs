@@ -29,6 +29,7 @@ export default function HomePage() {
   const firstName = traits?.name?.first ?? "" ;
   const { t } = useTranslation("HomePage");
   const wallets = useAppSelector(state => state.wallets.wallets);
+  const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
@@ -90,10 +91,11 @@ useEffect(() => {
   }, [wallets, dispatch]);
 
   useEffect(() => {
-    if (!wallets?.length) return;
+    if (!wallets || wallets.length === 0) return;
+    if (!portfolioWalletData || portfolioWalletData.length === 0) return;
 
     dispatch(fetchHistoricalWalletData());
-  }, [wallets,dispatch]);
+  }, [wallets, portfolioWalletData, dispatch]);
 
 const retryRef = useRef<ReturnType<typeof setInterval> | null>(null);
 const topTokensRef = useRef<TopTokenData[] | null>(null);
