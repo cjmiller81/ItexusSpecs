@@ -25,13 +25,11 @@ import {
 } from "@mui/material";
 import {
   AppAccordionSection,
-  AppNumberInput,
   BasicTable,
   InvestingTableAsset,
   nativeBarSx,
-  StyledWalletsTable,
-  toTableTokensModel,
-  toTableTokensModels,
+  toTableTokensModelFromWallet,
+  toTableTokensModelsFromPortfolio,
   useAppSelector,
 } from "components";
 import { useTranslation } from "react-i18next";
@@ -44,18 +42,16 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
-import { ChainAsset } from "@/models/Wallet/ChainAsset";
-import { Coins, Wallet } from "lucide-react";
+
+import { Coins } from "lucide-react";
+import { Wallet as WalletIcon } from "lucide-react";
 import { MarketCapWallet } from "../MyWallets/MarketCapWallet";
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 
-interface SelectedWallet {
-  address: string;
-  walletId: string;
-  isValid: boolean;
-  walletName?: string;
-  isPersonal: boolean;
-  chainAssets: ChainAsset[];
+import { Wallet } from "components";
+
+interface SelectedWallet extends Wallet {
+
 }
 interface SelectedRow {
   id: string;
@@ -129,21 +125,29 @@ export const IndexResultsSection = ({
     }
   }, [selectedWallet]);
 
+  const { portfolioWalletData } = useAppSelector(state => state.wallets);
+
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
-    setFilteredWalletData(
-      selectedWallet
-        ? toTableTokensModels(
-            wallets?.find(wallet => wallet.walletId.toString() === selectedWallet.walletId.toString())?.chainAssets ??
-              [],
-          ).map(({ tokenName, chainName, balance }) => ({
+    
+    if (selectedWallet && portfolioWalletData.length > 0) {
+      const wallet = portfolioWalletData.find(w => w.walletAddress === selectedWallet.address);
+      if (wallet) {
+        const tokens = toTableTokensModelFromWallet(wallet);
+        setFilteredWalletData(
+          tokens.map(({ tokenName, chainName, balance }) => ({
             tokenName,
             chain: chainName,
             balance: balance,
           }))
-        : [],
-    );
-  }, [wallets, selectedWallet]);
+        );
+      } else {
+        setFilteredWalletData([]);
+      }
+    } else {
+      setFilteredWalletData([]);
+    }
+  }, [wallets, selectedWallet, portfolioWalletData]);
 
   useEffect(() => {
     setFilteredRows(filteredWalletData);
@@ -261,18 +265,13 @@ export const IndexResultsSection = ({
 
 
   const calculateTotalUsdAmount = (selectedWallet: SelectedWallet): number => {
-    let totalUsdAmount = 0;
-
-    selectedWallet.chainAssets.forEach(chainAsset => {
-      const tableAssets = toTableTokensModel(chainAsset);
-
-      tableAssets.forEach(asset => {
-        if (asset.usdAmount) {
-          totalUsdAmount += asset.usdAmount;
-        }
-      });
-    });
-    return totalUsdAmount;
+    const wallet = portfolioWalletData.find(w => w.walletAddress === selectedWallet.address);
+    
+    if (wallet) {
+      return wallet.totalValueUSD;
+    }
+    
+    return 0;
   };
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -296,7 +295,7 @@ export const IndexResultsSection = ({
     const selectedWalletId = event.target.value as string;
     const selectedWallet = wallets?.find(wallet => wallet.walletId === selectedWalletId) || null;
     setSelectedWallet(selectedWallet);
-    if (onWalletChange && selectedWallet) {
+    if (onWalletChange) {
       onWalletChange(selectedWallet);
     }
   };
@@ -601,7 +600,7 @@ export const IndexResultsSection = ({
               
               <Grid container item alignItems="center" direction="row" spacing={1}>
                 <Grid item>
-                  <Wallet color={useWalletCapital ? "gray" : "#0ea5e9"} />
+                  <WalletIcon color={useWalletCapital ? "gray" : "#0ea5e9"} />
                 </Grid>
                 <Grid item>
                   <Typography

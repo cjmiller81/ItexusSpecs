@@ -62,33 +62,53 @@ export function Header({
     }
   }, [session]);
 
-  useEffect(() => {
-    if (showCountdown && session && session.expires_at) {
-      const expirationTime = new Date(session.expires_at).getTime();
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const [modes, setModes] = useState<"minutes" | "seconds">("minutes");
 
-      const updateCountdown = () => {
-        const msLeft = expirationTime - Date.now();
-        const minutesLeft = Math.ceil(msLeft / (60 * 1000));
+useEffect(() => {
+  if (!showCountdown || !session?.expires_at) return;
 
-        if (minutesLeft <= 0) {
-          setRemainingMinutes(0);
-          handleLogOut();
-          return;
-        }
+  let timerId: ReturnType<typeof setTimeout>;
+  const tick = () => {
+    if (!session?.expires_at) return;
+    const expirationTime = new Date(session.expires_at).getTime();
+    const msLeft = expirationTime - Date.now();
 
-        setRemainingMinutes(minutesLeft);
-      };
-
-      updateCountdown();
-      const intervalId = setInterval(updateCountdown, 60 * 1000);
-      return () => clearInterval(intervalId);
+    if (msLeft <= 0) {
+      setRemaining(0);
+      setModes("seconds");
+      router.push("/login");
+      return;
     }
-  }, [showCountdown, session]);
 
-
-  const handleRenew = () => {
-    renewSession();
+    if (msLeft > 60_000) {
+      setRemaining(Math.ceil(msLeft / 60_000));
+      setModes("minutes");
+      const next = (msLeft % 60_000) || 60_000;
+      timerId = setTimeout(tick, next);
+    } else {
+      setRemaining(Math.ceil(msLeft / 1000));
+      setModes("seconds");
+      timerId = setTimeout(tick, 1000);
+    }
   };
+
+  tick();
+  return () => clearTimeout(timerId);
+}, [showCountdown, session, router]);
+
+
+ const handleRenew = async () => {
+    try {
+      await renewSession()
+      setRemaining(null)
+      setShowCountdown(false)
+      setTimeout(() => setShowCountdown(true), 0)
+    } catch (err) {
+      console.error(err)
+      router.push("/ui/login")
+    }
+  }
 
   return (
     <StyledAppBar position="fixed" sx={{ width: "100%", bgcolor: "background.paper" }}>
@@ -108,7 +128,7 @@ export function Header({
           </Typography>
 
           <Box display="flex" alignItems="center" gap={3}>
-            {showCountdown && remainingMinutes !== null && remainingMinutes >= 0 && (
+            {showCountdown && remaining !== null && remaining >= 0 && (
               <Box
                 display="flex"
                 alignItems="center"
@@ -121,7 +141,8 @@ export function Header({
                 }}
               >
                 <Typography variant="body2" color="error">
-                  Your session will expire in {remainingMinutes} {remainingMinutes === 1 ? 'minute' : 'minutes'}
+                  Your session will expire in {remaining}{" "}
+                  {modes}
                 </Typography>
                 <Button variant="outlined" size="small" onClick={handleRenew}>
                   Renew

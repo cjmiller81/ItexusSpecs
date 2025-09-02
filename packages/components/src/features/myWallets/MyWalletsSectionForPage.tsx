@@ -75,6 +75,7 @@ export const MyWalletsSectionForPage = ({
       setCreateErrorMessage((resultAction.payload as any)?.error)
     } else {
       setCreateErrorMessage(null);
+      setAddWalletModalOpen(false)
     }
   };
 

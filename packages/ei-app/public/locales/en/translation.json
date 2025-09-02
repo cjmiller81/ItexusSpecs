@@ -126,7 +126,8 @@
     "ChartSeriesTitle": "Total Wallet Worth",
     "WalletsPerformance": "Wallets Performance - Last 30 Days",
     "Growth": "Growth %",
-    "Value": "Value $"
+    "Value": "Value $",
+    "GoToFullPage": "Go to full page"
   },
   "ProfileContainer": {
     "ChangeDetails": "Change details",
@@ -240,8 +241,8 @@
     "TradeAggregatorDex": "Trade Aggregator: Decentralized Exchanges",
     "HowTheTokensInputImpactsYourIndex": "How the 'Tokens' input impacts your Index",
     "IndexContributionDetails": "Index Contribution Details",
-    "TheQuantityYouChooseDeterminesHowManyTokens": "The quantity you choose determines how many tokens contribute to your Index weighting. Higher quantities will:",
-    "IncreaseTheWeightOfThisPosition": "Increase the weight of this position",
+    "TheQuantityYouChooseDeterminesHowManyTokens": "The tokens quantity you choose determines how many tokens contribute to your Index weighting. Higher quantities will:",
+    "IncreaseTheWeightOfThisPosition": "Decrease the weight of this position",
     "AffectYourOverallPortfolioBalance": "Affect your overall portfolio balance",
     "ImpactRiskDistribution": "Impact risk distribution",
     "SeeThis": "See this ",
@@ -282,7 +283,13 @@
     "Exchange": "Exchange",
     "TradeOn": "Trade on",
     "SwitchCryptoInput": "Switch Crypto Input",
-    "TradeAggregatorCex": "Trade Aggregator: Centralized Exchanges"
+    "TradeAggregatorCex": "Trade Aggregator: Centralized Exchanges",
+    "TradingPairs": "Trading Pairs",
+    "ArbitrageMatrix": "Arbitrage Matrix",
+    "SelectExchange": "Select Exchange",
+    "ModelTradeon": "Model Trade on",
+    "SelectTradingPair": "Select Trading Pair",
+    "TopTradingPairsOn": "Top 10 Trading Pairs by Volume on"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",

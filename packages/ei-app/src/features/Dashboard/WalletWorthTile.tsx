@@ -2,7 +2,7 @@ import { CompareToValues } from "@/libs/redux/Slices/Shared";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardTile, DashboardTileProps } from "./DashboardTile";
-import { useTheme, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { useTheme, ToggleButton, ToggleButtonGroup, Box } from "@mui/material";
 import { AppChartHome } from "@/components/Charts/AppChartHome";
 import { ApexOptions } from "apexcharts";
 
@@ -87,45 +87,51 @@ export const WalletWorthTile: FC<Props> = ({
     <DashboardTile
       icon={icon}
       title={t("WalletsPerformance")}
+      sectionLink={{
+        href: "/myWallets/decentralized",
+        text: t("GoToFullPage")
+      }}
       rightHeaderContent={
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={selectedSection}
-          onChange={(_, newValue) => {
-            if (newValue !== null) {
-              setSelectedSection(newValue);
-            }
-          }}
-          aria-label="Select chart type"
-        >
-          <ToggleButton
-            value="growth"
-            sx={{
-              textTransform: "none",
-              "&.Mui-selected": {
-                color: "white",
-                backgroundColor: "#1976d2",
-                "&:hover": { backgroundColor: "#1565c0" },
-              },
+        <Box display="flex" alignItems="center" gap={2}>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={selectedSection}
+            onChange={(_, newValue) => {
+              if (newValue !== null) {
+                setSelectedSection(newValue);
+              }
             }}
+            aria-label="Select chart type"
           >
-            {t("Growth")}
-          </ToggleButton>
-          <ToggleButton
-            value="value"
-            sx={{
-              textTransform: "none",
-              "&.Mui-selected": {
-                color: "white",
-                backgroundColor: "#1976d2",
-                "&:hover": { backgroundColor: "#1565c0" },
-              },
-            }}
-          >
-            {t("Value")}
-          </ToggleButton>
-        </ToggleButtonGroup>
+            <ToggleButton
+              value="growth"
+              sx={{
+                textTransform: "none",
+                "&.Mui-selected": {
+                  color: "white",
+                  backgroundColor: "#1976d2",
+                  "&:hover": { backgroundColor: "#1565c0" },
+                },
+              }}
+            >
+              {t("Growth")}
+            </ToggleButton>
+            <ToggleButton
+              value="value"
+              sx={{
+                textTransform: "none",
+                "&.Mui-selected": {
+                  color: "white",
+                  backgroundColor: "#1976d2",
+                  "&:hover": { backgroundColor: "#1565c0" },
+                },
+              }}
+            >
+              {t("Value")}
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
       }
       {...props}
     >

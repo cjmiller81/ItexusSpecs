@@ -1,6 +1,5 @@
 import { CurrentPositionSection } from "@/features/tradeAggregator/CurrentPositionSection";
 import { NewPositionSection } from "@/features/tradeAggregator/NewPositionSection";
-import { ChainAsset } from "@/models/Wallet/ChainAsset";
 import { Wallet } from "@/models/Wallet/Wallet";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { Box, Grid, Typography } from "@mui/material";

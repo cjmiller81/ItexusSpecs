@@ -12,22 +12,25 @@ import {
   fetchWallets,
   fetchWalletsPortfolio,
   selectWallets,
-  toTableTokensModel,
   updateWallet,
+  getCurrentTokensValueFromZapper,
 } from "components";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
 
+
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
     state => state.wallets,
   );
   const { chartData, chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
     useAppSelector(state => state.walletWorthChart);
+  
+
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, "day").toDate());
   const [toDate, setToDate] = useState<Date | null>(new Date());
@@ -39,7 +42,7 @@ export default function MyWalletsPage() {
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const { t } = useTranslation("MyWalletsPage");
 
-  const fetchHistoricalData = () => {
+  const fetchHistoricalData = useCallback(() => {
     if (isDatesValid && fromDate && toDate) {
       dispatch(
         fetchHistoricalWalletData({
@@ -50,14 +53,19 @@ export default function MyWalletsPage() {
         }),
       );
     }
-  };
+  }, [isDatesValid, fromDate, toDate, symbolOption?.id, symbolOption?.label, dispatch]);
 
   useEffect(() => {
     if (wallets && wallets.length > 0) {
       const addresses = wallets.map(w => w.address);
-      dispatch(fetchWalletsPortfolio(addresses));
+      const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
+      const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
+      
+      if (addressesChanged || portfolioWalletData.length === 0) {
+        dispatch(fetchWalletsPortfolio(addresses));
+      }
     }
-  }, [wallets, dispatch]);
+  }, [wallets, dispatch, portfolioWalletData]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
@@ -78,41 +86,75 @@ export default function MyWalletsPage() {
   const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
     let totalUsdAmount = 0;
 
-    selectedWallets.forEach(wallet => {
-      wallet.chainAssets.forEach(chainAsset => {
-        const tableAssets = toTableTokensModel(chainAsset);
-
-        tableAssets.forEach(asset => {
-          if (asset.usdAmount) {
-            totalUsdAmount += asset.usdAmount;
-          }
-        });
+    try {
+      selectedWallets.forEach(wallet => {
+        const portfolioWallet = portfolioWalletData.find(p => p.walletAddress === wallet.address);
+        if (portfolioWallet) {
+          totalUsdAmount += portfolioWallet.totalValueUSD;
+        }
       });
-    });
+    } catch (error) {
+      console.error('Error calculating total USD amount:', error);
+    }
 
     return totalUsdAmount;
   };
 
   useEffect(() => {
     if (selectedWallets.length) {
-      fetchHistoricalData();
+      const selectedAddresses = selectedWallets.map(w => w.address);
+      const availableAddresses = portfolioWalletData.map(w => w.walletAddress);
+      const allSelectedWalletsHaveData = selectedAddresses.every(addr => availableAddresses.includes(addr));
+      
+      if (allSelectedWalletsHaveData) {
+        fetchHistoricalData();
+      } else {
+        const allAddresses = wallets?.map(w => w.address) || [];
+        dispatch(fetchWalletsPortfolio(allAddresses)).then(() => {
+          fetchHistoricalData();
+        });
+      }
+    } else {
+      setTotalAmount(0);
+    }
+  }, [selectedWallets, dispatch, fetchHistoricalData, portfolioWalletData, wallets]);
+
+  useEffect(() => {
+    if (selectedWallets.length) {
       setTotalAmount(calculateTotalUsdAmount(selectedWallets));
     } else {
       setTotalAmount(0);
     }
-  }, [selectedWallets]);
+  }, [selectedWallets, portfolioWalletData]);
 
   useEffect(() => {
-    if (wallets === null) dispatch(fetchWallets(null));
+    if (wallets === null) {
+      dispatch(fetchWallets(null));
+    }
   }, [dispatch, wallets]);
 
   const onChartRefresh = () => {
-    fetchHistoricalData();
+    if (selectedWallets.length > 0) {
+      const allAddresses = wallets?.map(w => w.address) || [];
+      dispatch(fetchWalletsPortfolio(allAddresses)).then(() => {
+        fetchHistoricalData();
+      });
+    } else {
+      fetchHistoricalData();
+    }
   };
 
   useEffect(() => {
-    dispatch(fetchTotalWalletsWorthData({}));
-  }, [dispatch, selectedWallets]);
+    if (selectedWallets.length > 0 && portfolioWalletData.length > 0) {
+      const selectedAddresses = selectedWallets.map(w => w.address);
+      const availableAddresses = portfolioWalletData.map(w => w.walletAddress);
+      const allSelectedWalletsHaveData = selectedAddresses.every(addr => availableAddresses.includes(addr));
+      
+      if (allSelectedWalletsHaveData) {
+        dispatch(fetchTotalWalletsWorthData({}));
+      }
+    }
+  }, [dispatch, selectedWallets, portfolioWalletData]);
 
   const onRowsChanged = (rows: Wallet[]) => {
     dispatch(selectWallets(rows));

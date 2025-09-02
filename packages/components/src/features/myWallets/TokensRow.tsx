@@ -2,11 +2,21 @@ import { Box } from "@mui/system";
 import { GridRow } from "@mui/x-data-grid";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { BasicTable } from "../../components/DataDisplay";
-import { toTableTokensModels } from "../../utils";
+import { useAppSelector } from "../../slices";
+import { useMemo } from "react";
 import { getTokenNamesColumns } from "./TokensTableColumnsDefs";
+import { toTableTokensModelFromWallet } from "../../utils/tokensTableHelpers";
 
 export const ExpandableRow = (props: any) => {
-  const rows = toTableTokensModels(props.row.chainAssets);
+  const { portfolioWalletData } = useAppSelector(state => state.wallets);
+  
+  const rows = useMemo(() => {
+    const wallet = portfolioWalletData.find(w => w.walletAddress === props.row.address);
+    if (!wallet) return [];
+    
+    return toTableTokensModelFromWallet(wallet);
+  }, [portfolioWalletData, props.row.address]);
+
   return (
     <Box sx={{ overflowX: "auto" }}>
       <GridRow {...props} />

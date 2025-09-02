@@ -29,6 +29,10 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
   return (
     <DashboardTile
       loading={loading}
+      sectionLink={{
+        href: "/liquidity_pools",
+        text: "Go to full page"
+      }}
       {...props}>
       <DataGrid
         autoHeight

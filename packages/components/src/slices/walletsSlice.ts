@@ -2,7 +2,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import moment from "moment";
 import { Wallet } from "../models/wallet/wallet";
 import { walletsApi } from "../services/walletsService";
-import { toTotalTokensBalances } from "../utils";
+import { toTotalTokensBalancesFromPortfolio } from "../utils";
 import { createAppSlice } from "./createAppSlice";
 import { RootState } from "./store";
 import { IExchange } from "../models";
@@ -25,6 +25,7 @@ export interface WalletsState {
   statusUpdatingWallets: Status;
   statusFetchingExchanges: Status;
   statusTotalWalletWorthFetching: Status;
+  statusFetchingPortfolio: Status;
   selectedWallets: Wallet[];
   currentWalletsFilter: WalletsFilter;
   portfolioWalletData: WalletPortfolioResponse[];
@@ -40,6 +41,7 @@ const initialState: WalletsState = {
   statusUpdatingWallets: "idle",
   statusFetchingExchanges: "idle",
   statusTotalWalletWorthFetching: "idle",
+  statusFetchingPortfolio: "idle",
   selectedWallets: [],
   currentWalletsFilter: { isPersonal: false },
   portfolioWalletData: [],
@@ -92,14 +94,14 @@ export const walletsSlice = createAppSlice({
   },
   {
     pending: state => {
-      state.statstatusCreatingWalletus = "loading";
+      state.statusFetchingPortfolio = "loading";
     },
     fulfilled: (state, action: PayloadAction<WalletPortfolioResponse[]>) => {
-      state.statstatusCreatingWalletus = "idle";
+      state.statusFetchingPortfolio = "idle";
       state.portfolioWalletData = action.payload;
     },
     rejected: state => {
-      state.statstatusCreatingWalletus = "failed";
+      state.statusFetchingPortfolio = "failed";
     },
   }
 ),
@@ -141,13 +143,18 @@ export const walletsSlice = createAppSlice({
       async (_, thunkApi): Promise<TotalWalletWorthData> => {
         const state = thunkApi.getState() as RootState;
 
-        if (!state.wallets.selectedWallets.length) {
+        if (!state.wallets.selectedWallets.length || !state.wallets.portfolioWalletData.length) {
           return {
             growPercentage: 0,
           };
         }
+        const selectedWalletAddresses = state.wallets.selectedWallets.map(wallet => wallet.address);
+        const filteredPortfolioData = state.wallets.portfolioWalletData.filter(
+          portfolio => selectedWalletAddresses.includes(portfolio.walletAddress)
+        );
+        
         const historicalWalletsData = await walletsApi.getHistoricalWalletData(
-          toTotalTokensBalances(state.wallets.selectedWallets),
+          toTotalTokensBalancesFromPortfolio(filteredPortfolioData),
           moment().add(-1, "d").toDate(),
           moment().toDate(),
         );

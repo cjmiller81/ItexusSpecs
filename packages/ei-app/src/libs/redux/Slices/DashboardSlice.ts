@@ -1,7 +1,11 @@
-import { Status, createAppSlice, toTotalTokensBalances, walletsApi } from "components";
+import { Status, createAppSlice, toTotalTokensBalancesFromPortfolio, walletsApi } from "components";
 import moment from "moment";
 import { RootState } from "../RootReducer";
 import { CompareToValues, getHistoricalWalletWorthChartData } from "./Shared";
+import { 
+  getCurrentTokensValueFromZapper, 
+  updateChartDataWithCurrentDayValue 
+} from "components";
 
 export interface WalletsState {
   totalWalletWorthChartData: CompareToValues | null;
@@ -27,15 +31,23 @@ export const dashboardSlice = createAppSlice({
         const state = thunkApi.getState() as RootState;
 
         const response = await walletsApi.getHistoricalWalletData(
-          toTotalTokensBalances(state.wallets.wallets),
+          toTotalTokensBalancesFromPortfolio(state.wallets.portfolioWalletData),
           moment().utc().add(-1, "M").toDate(),
           moment().utc().toDate(),
           null,
         );
 
-        const growthData = getHistoricalWalletWorthChartData(response, "daily");
+        const selectedWalletAddresses = state.wallets.wallets?.map(wallet => wallet.address) || []
+        const currentTokensValue = getCurrentTokensValueFromZapper ? getCurrentTokensValueFromZapper(
+          state.wallets.portfolioWalletData,
+          selectedWalletAddresses
+        ) : 0
+        
+        const updatedResponse = updateChartDataWithCurrentDayValue ? updateChartDataWithCurrentDayValue(response, currentTokensValue) : response
 
-        const valueData: CompareToValues = response.map((item: any) => ({
+        const growthData = getHistoricalWalletWorthChartData(updatedResponse, "daily");
+
+        const valueData: CompareToValues = updatedResponse.map((item: any) => ({
           x: new Date(item.historyDate),
           y: item.walletValue,
         }));
