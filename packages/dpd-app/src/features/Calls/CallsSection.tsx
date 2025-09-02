@@ -13,6 +13,8 @@ import OptionSettingsForm from "../OptionSettingsForm";
 import EntryOrderPanel from "../EntryOrderPanel";
 import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
 import SchwabConnectButton from "@/common/SchwabConnectButton";
+import { monitorStrategyStatus } from "@/services/strategyMonitorService";
+import { addError, addMessage } from "components";
 
 export default function CallOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -311,8 +313,27 @@ export default function CallOptionSet() {
       };
 
       const response = await dispatch(scanSchwab(subProfileRequest)).unwrap();
-    } catch (error) {
+      
+      if (response && response.strategyId) {
+        monitorStrategyStatus(
+          account.accountNumber,
+          response.strategyId,
+          (status) => {
+            dispatch(addMessage(`Strategy state: ${status.state}`));
+          },
+          (errorMsg) => {
+            dispatch(addError(errorMsg));
+          }
+        );
+      }
+    } catch (error: any) {
       console.error("Error sending order:", error);
+      
+      if (error.status === 400) {
+        dispatch(addError("Error submitting set!"));
+      } else {
+        dispatch(addError(error.message || "Failed to send order"));
+      }
     }
   };
 
@@ -441,7 +462,7 @@ export default function CallOptionSet() {
 };
 
   return (
-    <Box sx={{ width: "100%", minHeight: "100vh", bgcolor: "background.default", p: 1.2 }}>
+    <Box sx={{ width: "100%", minHeight: "100%", bgcolor: "background.default", p: 1.2 }}>
       <Typography
         variant="h4"
         sx={{ fontWeight: "bold", mb: 3 }}
@@ -449,7 +470,7 @@ export default function CallOptionSet() {
         {t("CallOptionSet")}
       </Typography>
 
-      <Divider sx={{ mb: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
+      <Divider sx={{ mb: 4, width: "100%", mx: "auto" }} />
 
       <Box sx={{ display: "flex", gap: 1.8, alignItems: "center", marginTop: "45px" }}>
         <Select
@@ -593,7 +614,7 @@ export default function CallOptionSet() {
         </Button>
       </Box>
 
-      <Divider sx={{ my: 4, width: "100vw", left: 0, position: "absolute", top: "auto" }} />
+      <Divider sx={{ my: 4, width: "100%", mx: "auto" }} />
 
       <Box
         sx={{
@@ -712,7 +733,7 @@ export default function CallOptionSet() {
             p: 3,
             borderRadius: 2,
             color: "white",
-            height: "670px",
+            height: "594px",
             marginTop: "25px",
             border: "2px solid green",
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)"

@@ -182,15 +182,21 @@ export const getCallSetListTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 150,
+      flex: 2,
+      minWidth: 200,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<StrategyTableRow>) => (
         <Typography 
           variant="body2" 
           sx={{ 
             fontSize: "0.875rem",
-            color: params.row.errorMsg ? theme.palette.error.main : theme.palette.text.secondary
+            color: params.row.errorMsg ? theme.palette.error.main : theme.palette.text.secondary,
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+            overflow: "visible",
+            textOverflow: "unset",
+            lineHeight: 1.2,
+            padding: "4px 0"
           }}
         >
           {params.row.errorMsg || "-"}
@@ -213,8 +219,7 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 100,
+      flex: 0.8,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => {
         const type = params.row.type || "Unknown";
@@ -241,7 +246,6 @@ export const getPositionOrdersTableColumns = (
       editable: false,
       filterable: false,
       flex: 1,
-      minWidth: 120,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
         <Typography variant="body2" sx={{ fontSize: "0.875rem", color: "white !important" }}>
@@ -255,8 +259,7 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 100,
+      flex: 0.8,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
         <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
@@ -270,8 +273,7 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 120,
+      flex: 1.2,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => {
         const orderType = params.row.orderType || "Unknown";
@@ -297,8 +299,7 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 120,
+      flex: 1.2,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
         <Typography variant="body2" sx={{ fontSize: "0.875rem", fontFamily: "monospace" }}>
@@ -312,10 +313,9 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 0.8,
-      minWidth: 80,
+      flex: 0.6,
       disableColumnMenu: true,
-             renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
+       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
            {(params.row.orderType === "Working Entry" || 
              params.row.orderType === "Working Target" || 
@@ -350,8 +350,7 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 100,
+      flex: 0.8,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
         <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
@@ -366,7 +365,6 @@ export const getPositionOrdersTableColumns = (
       editable: false,
       filterable: false,
       flex: 1,
-      minWidth: 120,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
         <Typography variant="body2" sx={{ fontSize: "0.875rem" }}>
@@ -380,15 +378,20 @@ export const getPositionOrdersTableColumns = (
       sortable: false,
       editable: false,
       filterable: false,
-      flex: 1,
-      minWidth: 150,
+      flex: 2,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PositionOrderRow>) => (
         <Typography 
           variant="body2" 
           sx={{ 
             fontSize: "0.875rem",
-            color: "white !important"
+            color: params.row.errorMsg ? theme.palette.error.main : theme.palette.text.secondary,
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+            overflow: "visible",
+            textOverflow: "unset",
+            lineHeight: 1.2,
+            padding: "4px 0"
           }}
         >
           {params.row.errorMsg || "-"}

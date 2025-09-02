@@ -70,7 +70,7 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Box
         sx={{
-          width: "500px",
+          width: "auto",
           bgcolor: "#2A2A2A",
           p: 3,
           borderRadius: 2,
@@ -210,7 +210,7 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
 
       <Box
         sx={{
-          width: "500px",
+          width: "auto",
           bgcolor: "#2A2A2A",
           p: 3,
           borderRadius: 2,

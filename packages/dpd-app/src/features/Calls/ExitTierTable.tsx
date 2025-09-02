@@ -60,7 +60,6 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
       backgroundColor: tableContainerBackgroundColor,
     },
     table: {
-      minWidth: 650,
     },
     headerCell: {
       backgroundColor: '#222',
@@ -243,15 +242,37 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
   
       handleExitTiersChange(updatedRows);
     } else {
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) {
+        return;
+      }
+      
+      if (!isSendTriggerChecked) {
+        const validValue = Math.max(0, Math.min(100, numValue));
+        const updatedRows = rows.map((row, i) => {
+          if (i === index) {
+            return { ...row, [field]: validValue };
+          }
+          return row;
+        });
+    
+        setRows(updatedRows);
+        handleExitTiersChange(updatedRows);
+        return;
+      }
+      
+      if (numValue < 0 || numValue > 100) {
+        return; 
+      }
+      
       const updatedRows = rows.map((row, i) => {
         if (i === index) {
-          return { ...row, [field]: value };
+          return { ...row, [field]: numValue };
         }
         return row;
       });
   
       setRows(updatedRows);
-  
       handleExitTiersChange(updatedRows); 
     }
   };
@@ -323,7 +344,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     value={row.optionTargetOffsetPercent}
                     onChange={(e) => handleNumberChange(index, 'optionTargetOffsetPercent', e.target.value)}
                     type="number"
-                    InputProps={{ inputProps: { step: 0.1 } }}
+                    InputProps={{ inputProps: { min: 0, max: 100, step: 0.1 } }}
                     variant="outlined"
                     size="small"
                     sx={styles.numberInput}
@@ -335,10 +356,10 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     <span style={styles.staticText}>--</span>
                   ) : (
                     <TextField
-                      value={row.optionStopOffsetPercent === 0 ? '5' : row.optionStopOffsetPercent}
+                      value={row.optionStopOffsetPercent}
                       onChange={(e) => handleNumberChange(index, 'optionStopOffsetPercent', e.target.value)}
                       type="number"
-                      InputProps={{ inputProps: { step: 0.1 } }}
+                      InputProps={{ inputProps: { min: 0, max: 100, step: 0.1 } }}
                       variant="outlined"
                       size="small"
                       sx={styles.numberInput}
@@ -351,7 +372,7 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     value={row.stockTargetOffsetPercent}
                     onChange={(e) => handleNumberChange(index, 'stockTargetOffsetPercent', e.target.value)}
                     type="number"
-                    InputProps={{ inputProps: { step: 0.1 } }}
+                    InputProps={{ inputProps: { min: 0, max: 100, step: 0.1 } }}
                     variant="outlined"
                     size="small"
                     sx={styles.numberInput}
@@ -363,10 +384,10 @@ export default function ExitTierTable({isSendTriggerChecked: isSendTriggerChecke
                     <span style={styles.staticText}>--</span>
                   ) : (
                     <TextField
-                      value={row.stockStopOffsetPercent === 0 ? '1' : row.stockStopOffsetPercent}
+                      value={row.stockStopOffsetPercent}
                       onChange={(e) => handleNumberChange(index, 'stockStopOffsetPercent', e.target.value)}
                       type="number"
-                      InputProps={{ inputProps: { step: 0.1 } }}
+                      InputProps={{ inputProps: { min: 0, max: 100, step: 0.1 } }}
                       variant="outlined"
                       size="small"
                       sx={styles.numberInput}
