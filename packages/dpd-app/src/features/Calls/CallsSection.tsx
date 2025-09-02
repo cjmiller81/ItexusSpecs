@@ -13,7 +13,7 @@ import OptionSettingsForm from "../OptionSettingsForm";
 import EntryOrderPanel from "../EntryOrderPanel";
 import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
 import SchwabConnectButton from "@/common/SchwabConnectButton";
-import { StrategyMonitorService } from "@/services/strategyMonitorService";
+import { monitorStrategyStatus } from "@/services/strategyMonitorService";
 import { addError, addMessage } from "components";
 
 export default function CallOptionSet() {
@@ -315,7 +315,7 @@ export default function CallOptionSet() {
       const response = await dispatch(scanSchwab(subProfileRequest)).unwrap();
       
       if (response && response.strategyId) {
-        StrategyMonitorService.monitorStrategyStatus(
+        monitorStrategyStatus(
           account.accountNumber,
           response.strategyId,
           (status) => {

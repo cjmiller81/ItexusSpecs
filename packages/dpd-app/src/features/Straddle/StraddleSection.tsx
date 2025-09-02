@@ -12,8 +12,8 @@ import { connectedAccount } from "../strategies/userProfileSlice";
 import OptionSettingsForm from "../OptionSettingsForm";
 import { mapEntryTypeStringToEnum } from "@/common/mapEntryTypeStringToEnum";
 import SchwabConnectButton from "@/common/SchwabConnectButton";
-import { StrategyMonitorService } from "@/services/strategyMonitorService";
 import { addError, addMessage } from "components";
+import { monitorStrategyStatus } from "@/services/strategyMonitorService";
 
 export default function StraddleOptionSet() {
   const [account, setAccount] = useState<connectedAccount>();
@@ -414,7 +414,7 @@ export default function StraddleOptionSet() {
         const response = await dispatch(scanSchwab(subProfileRequest)).unwrap();
         
         if (response && response.strategyId) {
-          StrategyMonitorService.monitorStrategyStatus(
+          monitorStrategyStatus(
             account.accountNumber,
             response.strategyId,
             (status) => {
