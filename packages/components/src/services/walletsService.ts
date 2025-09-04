@@ -40,7 +40,7 @@ export const walletsApi = {
     return appAxios.post(`/api/wallet/${wallet.address}`, walletRequest)
   },
   getHistoricalWalletData: async (
-    symbols: { symbol: string; qty: number }[],
+    symbols: { symbol: string; qty: number, chain: string }[],
     startDate: Date,
     endDate: Date,
     compareSymbol?: string | null,
