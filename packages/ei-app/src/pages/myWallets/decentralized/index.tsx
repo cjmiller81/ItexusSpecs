@@ -16,7 +16,7 @@ import {
   getCurrentTokensValueFromZapper,
 } from "components";
 import moment from "moment";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
@@ -82,6 +82,31 @@ export default function MyWalletsPage() {
       setValueChartSeries([]);
     }
   }, [chartData]);
+
+  const growthZeroSeries = useMemo<ChartSeries[]>(() => {
+    if (chartData?.seriesData) {
+      return [{
+        name: "Growth",
+        data: chartData.seriesData.map(point => ({ x: point.historyDate, y: 0 })),
+      }];
+    }
+    return [];
+  }, [chartData]);
+
+  // Ensure Value chart shows zero when no wallets are selected
+  useEffect(() => {
+    if (selectedWallets.length === 0) {
+      if (chartData?.seriesData) {
+        const zeroSeries: ChartSeries = {
+          name: "Value",
+          data: chartData.seriesData.map(point => ({ x: point.historyDate, y: 0 })),
+        };
+        setValueChartSeries([zeroSeries]);
+      } else {
+        setValueChartSeries([{ name: "Value", data: [] }]);
+      }
+    }
+  }, [selectedWallets, chartData]);
 
   const calculateTotalUsdAmount = (selectedWallets: Wallet[]): number => {
     let totalUsdAmount = 0;
@@ -224,14 +249,14 @@ export default function MyWalletsPage() {
             chartDataLoading={statstatusFetchingHistoricalData === "loading"}
             lookupOption={symbolOption}
             chartAxisTicks={yAxisTicks}
-            chartSeries={chartSeries}
+            chartSeries={selectedWallets.length === 0 ? growthZeroSeries : chartSeries}
             valueSeries={valueChartSeries}
             fromDate={fromDate}
             toDate={toDate}
             onDatesValidChanged={setIsDatesValid}
             lookupLoading={false}
-            maxChartValue={maxChartValue}
-            minChartValue={minChartValue}
+            maxChartValue={selectedWallets.length === 0 ? 10 : maxChartValue}
+            minChartValue={selectedWallets.length === 0 ? 0 : minChartValue}
             onChartSubmit={onChartRefresh}
             onFromDateChange={date => setFromDate(date)}
             onToDateChange={date => setToDate(date)}
