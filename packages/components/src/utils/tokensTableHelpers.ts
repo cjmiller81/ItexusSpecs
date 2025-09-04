@@ -41,21 +41,22 @@ export const toTableTokensModelFromWallet = (wallet: WalletPortfolioResponse): W
     }))
 }
 
-export const toTotalTokensBalancesFromPortfolio = (portfolioData: WalletPortfolioResponse[]): { symbol: string; qty: number }[] => {
+export const toTotalTokensBalancesFromPortfolio = (portfolioData: WalletPortfolioResponse[]): { symbol: string; qty: number; chain: string }[] => {
   const allTokens = portfolioData.flatMap(wallet => wallet.tokenHoldings)
 
-  const groupedSymbols = new Map<string, { totalBalance: number }>()
+  const groupedByAddressAndNetwork = new Map<string, { totalBalance: number; symbol: string; chain: string }>()
   for (const token of allTokens) {
     if (token.balance > 0) {
-      const key = token.tokenAddress
-      let value = groupedSymbols.get(key)
+      const chain = token.network
+      const key = `${token.tokenAddress}|${chain}`
+      let value = groupedByAddressAndNetwork.get(key)
       if (!value) {
-        groupedSymbols.set(key, { totalBalance: token.balance })
+        groupedByAddressAndNetwork.set(key, { totalBalance: token.balance, symbol: token.tokenAddress, chain })
       } else {
         value.totalBalance += token.balance
       }
     }
   }
 
-  return Array.from(groupedSymbols, ([key, value]) => ({ symbol: key, qty: parseFloat(value.totalBalance.toFixed(4)) }));
+  return Array.from(groupedByAddressAndNetwork.values()).map(x => ({ symbol: x.symbol, qty: parseFloat(x.totalBalance.toFixed(4)), chain: x.chain }))
 }
