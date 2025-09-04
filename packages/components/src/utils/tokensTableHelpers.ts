@@ -1,5 +1,6 @@
 import { Asset } from "../models/wallet"
 import { WalletPortfolioResponse } from "../models/wallet/walletPortfolio"
+import { filterDustTokens } from "../helpers/filterDustTokens"
 
 export interface WalletTokensTableModel extends Asset {
   price?: number
@@ -42,7 +43,7 @@ export const toTableTokensModelFromWallet = (wallet: WalletPortfolioResponse): W
 }
 
 export const toTotalTokensBalancesFromPortfolio = (portfolioData: WalletPortfolioResponse[]): { symbol: string; qty: number; chain: string }[] => {
-  const allTokens = portfolioData.flatMap(wallet => wallet.tokenHoldings)
+  const allTokens = portfolioData.flatMap(wallet => filterDustTokens(wallet.tokenHoldings))
 
   const groupedByAddressAndNetwork = new Map<string, { totalBalance: number; symbol: string; chain: string }>()
   for (const token of allTokens) {
