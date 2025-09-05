@@ -8,6 +8,7 @@ export type PoolData = {
   chain: string;
   project: string;
   symbol: string;
+  category: string;
   tvlUsd: number;
   apyBase: number;
   apyReward: number | null;
