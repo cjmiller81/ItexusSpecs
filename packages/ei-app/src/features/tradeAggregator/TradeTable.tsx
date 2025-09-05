@@ -120,13 +120,13 @@ export function TradeTable() {
       const anchors = getAnchors();
       if (anchors[0]) {
         setTourAnchor(anchors[0]);
-        try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+        try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_e) { /* noop */ }
       }
     }, 0);
     const anchors = getAnchors();
     if (anchors[0]) {
       setTourAnchor(anchors[0]);
-      try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+      try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_e) { /* noop */ }
     }
   };
   
@@ -319,7 +319,7 @@ export function TradeTable() {
         setTourAnchor(el);
         try {
           el.scrollIntoView({ behavior: 'auto', block: 'center' });
-        } catch {}
+        } catch (_e) { /* noop */ }
       }
     }, 150);
     return () => window.clearTimeout(timer);
