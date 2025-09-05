@@ -992,13 +992,13 @@ export function TradeTable() {
               'Choose Trading Pair',
               'Buy or Sell',
               'Enter Amount',
-              'Switch Crypto Mode',
+              'Switch Input Mode',
               'Execute Trade',
               'Quick Access Pairs'
             ][tourStep]}
           </Typography>
         </Box>
-        <Typography sx={{ color: '#1a1a1a', lineHeight: 1.6, mb: 2 }}>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, mb: 2, fontSize: '0.95rem' }}>
           {[
             'First, choose which exchange you want to trade on. Each exchange offers different trading pairs and fees.',
             "Select the cryptocurrency pair you want to trade. This determines what you're buying or selling.",
