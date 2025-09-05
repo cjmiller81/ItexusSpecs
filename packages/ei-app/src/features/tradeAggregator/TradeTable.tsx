@@ -18,6 +18,9 @@ import {
   FormControl,
   Autocomplete,
   alpha,
+  Backdrop,
+  Popover,
+  Divider,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
@@ -30,6 +33,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { Exchange, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
+ 
 
 interface TradeData {
   symbol: string;
@@ -73,14 +77,64 @@ export function TradeTable() {
   const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken)
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
+  const [demoRequested, setDemoRequested] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
+  const [tourAnchor, setTourAnchor] = useState<HTMLElement | null>(null);
+  const [highlightTick, setHighlightTick] = useState(0);
+  const [highlightReady, setHighlightReady] = useState(false);
+
+  const resetTour = React.useCallback(() => {
+    setTourOpen(false);
+    setTourStep(0);
+    setTourAnchor(null);
+    setSelectedExchange(null);
+    setTradeData({ symbol: '', mkt: '', qty: '0', value: '', action: 'buy' });
+  }, []);
+  const getAnchors = React.useCallback((): (HTMLElement | null)[] => [
+    document.getElementById('step-1') as HTMLElement | null,
+    document.getElementById('step-2') as HTMLElement | null,
+    document.getElementById('step-3') as HTMLElement | null,
+    document.getElementById('step-4') as HTMLElement | null,
+    document.getElementById('step-5') as HTMLElement | null,
+    document.getElementById('step-6') as HTMLElement | null,
+    document.getElementById('step-7') as HTMLElement | null,
+  ], []);
   
-  // Fetch trading pairs for selected exchange
+  const handleDemoClick = () => {
+    const kraken = coinGeckoExchanges?.find(ex => ex.id?.toLowerCase() === 'kraken' || ex.name?.toLowerCase() === 'kraken') || null;
+    setSelectedExchange(kraken);
+    setTradeData({
+      symbol: 'ETH',
+      mkt: 'ETH/USD',
+      qty: '1',
+      value: '',
+      action: 'buy',
+    });
+    setDemoRequested(true);
+    setTourStep(0);
+    setTourOpen(false);
+    setTourAnchor(null);
+    setTimeout(() => {
+      setTourOpen(true);
+      const anchors = getAnchors();
+      if (anchors[0]) {
+        setTourAnchor(anchors[0]);
+        try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+      }
+    }, 0);
+    const anchors = getAnchors();
+    if (anchors[0]) {
+      setTourAnchor(anchors[0]);
+      try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+    }
+  };
+  
   useEffect(() => {
     const fetchTradingPairs = async () => {
       if (!selectedExchange || !coinGeckoExchangesWithTickers) return;
 
       try {
-        // Process and deduplicate trading pairs
         const pairsMap = new Map();
         coinGeckoExchangesWithTickers.tickers?.forEach(ticker => {
             const pair = `${ticker.base}/${ticker.target}`;
@@ -98,18 +152,22 @@ export function TradeTable() {
         const pairs = Array.from(pairsMap.values());
         setTradingPairs(pairs);
         
-        // Get top 10 trading pairs by volume for the table
         const topPairs = [...pairs]
           .sort((a, b) => b.volume - a.volume)
           .slice(0, 10);
         setTopTradingPairs(topPairs);
+
+        if (demoRequested) {
+          setTradeData(prev => ({ ...prev, qty: '1' }));
+          setDemoRequested(false);
+        }
       } catch (error) {
         console.error('Failed to fetch trading pairs:', error);
       } 
     };
 
     fetchTradingPairs();
-  }, [selectedExchange, coinGeckoExchangesWithTickers]);
+  }, [selectedExchange, coinGeckoExchangesWithTickers, demoRequested]);
 
   const handleTradingPairSelect = (pair: string | null) => {
     if (pair) {
@@ -180,7 +238,9 @@ export function TradeTable() {
     }
     const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
     if (!selectedMarket) {
-      setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
+      if (!demoRequested) {
+        setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
+      }
       return;
     }
 
@@ -246,8 +306,77 @@ export function TradeTable() {
     tradeData.symbol,
     isSwitchIncluded,
     tradeData.action,
-    tradingPairs
+    tradingPairs,
+    demoRequested
   ]);
+
+  useEffect(() => {
+    if (!tourOpen) return;
+    const anchors = getAnchors();
+    const timer = window.setTimeout(() => {
+      const el = anchors[tourStep];
+      if (el) {
+        setTourAnchor(el);
+        try {
+          el.scrollIntoView({ behavior: 'auto', block: 'center' });
+        } catch {}
+      }
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [tourStep, tourOpen, selectedExchange, tradingPairs, tradeData, isSwitchIncluded, getAnchors]);
+
+  useEffect(() => {
+    if (!tourOpen) return;
+    const interval = window.setInterval(() => setHighlightTick(t => t + 1), 120);
+    return () => window.clearInterval(interval);
+  }, [tourOpen, tourStep]);
+
+  useEffect(() => {
+    if (!tourOpen || !tourAnchor) return;
+    setHighlightReady(false);
+    let frame = 0;
+    let last: DOMRect | null = null;
+    let stableCount = 0;
+    let raf = 0 as any;
+
+    const measure = () => {
+      const baseEl = tourStep === 6
+        ? (document.querySelector('#step-7 table') as HTMLElement | null)
+        : (tourAnchor as HTMLElement);
+      const rect = baseEl ? baseEl.getBoundingClientRect() : null;
+      if (rect && last) {
+        const dx = Math.abs(rect.left - last.left);
+        const dy = Math.abs(rect.top - last.top);
+        if (dx < 1 && dy < 1) stableCount += 1; else stableCount = 0;
+      }
+      last = rect || last;
+      if (stableCount >= 2 || frame > 20) {
+        setHighlightReady(true);
+        return;
+      }
+      frame += 1;
+      raf = window.requestAnimationFrame(measure);
+    };
+    raf = window.requestAnimationFrame(measure);
+    return () => window.cancelAnimationFrame(raf);
+  }, [tourOpen, tourStep, tourAnchor]);
+
+  const highlightRect = (() => {
+    if (!tourAnchor) return null;
+    try {
+      if (tourStep === 3) {
+        const col = document.getElementById('step-4') as HTMLElement | null;
+        if (col) return col.getBoundingClientRect();
+      }
+      if (tourStep === 6) {
+        const tableEl = document.querySelector('#step-7 table') as HTMLElement | null;
+        if (tableEl) return tableEl.getBoundingClientRect();
+      }
+      return (tourAnchor as HTMLElement).getBoundingClientRect();
+    } catch {
+      return (tourAnchor as HTMLElement).getBoundingClientRect();
+    }
+  })();
 
   return (
     <Box sx={{height: "100%"}}>
@@ -319,44 +448,70 @@ export function TradeTable() {
           <Grid
             container
             spacing={2}
-            alignItems="center" 
+            alignItems="flex-start"
+            direction="column"
             sx={{ mb: 2 }}
           >
             <Grid item>
-              <Typography
-                variant="h6"
+              <Button
+                variant="contained"
+                size="small"
                 sx={{
-                  fontSize: '0.9rem',
-                  color: (theme) =>
-                    theme.palette.mode === 'dark'
-                      ? 'rgba(255, 255, 255, 0.7)'
-                      : 'rgba(0, 0, 0, 0.7)',
+                  textTransform: "none",
+                  borderRadius: "16px",
+                  padding: "2px 10px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  backgroundColor: "#1866aaff",
+                  color: "#fff",
+                  border: "1px solid #fff",
+                  boxShadow: "none",
+                  '&:hover': { backgroundColor: "#13549eff", boxShadow: "none" }
                 }}
+                onClick={handleDemoClick}
               >
-                {t("SelectExchange")}:
-              </Typography>
+                {t("TradingPairsDemo")}
+              </Button>
             </Grid>
-    
-            <Grid item>
-              <FormControl size="small" sx={{ minWidth: 200 }}>
-                <Autocomplete
-                  size="small"
-                  options={coinGeckoExchanges || []}
-                  loading={isCoinGeckoExchangesLoading}
-                  getOptionLabel={(option) => option.name} 
-                  value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
-                  onChange={(event, newValue) => {
-                    handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={t("SelectExchange")}
+            <Grid item sx={{ width: "100%" }}>
+              <Grid id="step-1" container alignItems="center">
+                <Grid item>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: '0.9rem',
+                      marginRight:"10px",
+                      color: (theme) =>
+                        theme.palette.mode === 'dark'
+                          ? 'rgba(255, 255, 255, 0.7)'
+                          : 'rgba(0, 0, 0, 0.7)',
+                    }}
+                  >
+                    {t("SelectExchange")}:
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <FormControl size="small" sx={{ minWidth: 200 }}>
+                    <Autocomplete
+                      size="small"
+                      options={coinGeckoExchanges || []}
+                      loading={isCoinGeckoExchangesLoading}
+                      getOptionLabel={(option) => option.name} 
+                      value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
+                      onChange={(event, newValue) => {
+                        handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          placeholder={t("SelectExchange")}
+                        />
+                      )}
+                      sx={{ width: 200 }}
                     />
-                  )}
-                  sx={{ width: 200 }}
-                />
-              </FormControl>
+                  </FormControl>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
 
@@ -391,12 +546,12 @@ export function TradeTable() {
                    </>)}
 
                   <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", overflow: "auto" }}>
-                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "180px" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "180px" }}>
                        <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem', fontWeight: 500 }}>
                          {t("TradingPair")}
                        </Typography>
-                       <FormControl size="small" sx={{ minWidth: 180 }}>
-                         <Autocomplete
+                       <FormControl  id="step-2"size="small" sx={{ minWidth: 180 }}>
+                         <Autocomplete 
                            size="small"
                            options={tradingPairs}
                            disabled={!selectedExchange}
@@ -421,6 +576,7 @@ export function TradeTable() {
                          {t("TradeType")}
                        </Typography>
                        <Box
+                          id="step-3"
                           sx={{
                             height: "37px",
                             borderRadius: "6px",
@@ -482,6 +638,7 @@ export function TradeTable() {
                            <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: "16px", ml: 1 }} />
                          )}
                        </Typography>
+                       <Box id="step-4">
                          {isSwitchIncluded ? (
                           <Box
                             sx={{
@@ -503,6 +660,7 @@ export function TradeTable() {
                           </Box>
                        ) : (
                          <TextField
+                           
                            disabled={!tradeData.symbol}
                            value={
                              tradeData.qty === "0" || tradeData.qty === "" 
@@ -527,13 +685,15 @@ export function TradeTable() {
                            autoComplete="off"
                          />
                        )}
+                       </Box>
                      </Box>
 
                      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "190px" }}>
-                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem', }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem',}}>
                          {t("SwitchCryptoInput")}
                        </Typography>
                        <Button
+                        id="step-5"
                          variant="contained"
                          disabled={!tradeData.symbol}
                          onClick={handleSwitchClick}
@@ -636,6 +796,7 @@ export function TradeTable() {
                            style={{ textDecoration: "none", pointerEvents: !tradeData.symbol ? "none" : "auto", }}
                          >
                          <Button
+                         id="step-6"
                            variant="outlined"
                            disabled={!tradeData.symbol}
                            sx={{
@@ -707,7 +868,8 @@ export function TradeTable() {
            </Box>
 
           {selectedExchange && (    
-            <Paper 
+            <Paper
+            id="step-7"
               elevation={3} 
               sx={(theme) => ({
                 borderRadius: 2,
@@ -729,7 +891,7 @@ export function TradeTable() {
                   sx={{
                     backgroundColor: 'transparent', 
                   }}>
-                    <Table>
+                    <Table >
                       <TableHead>
                         <TableRow>
                           <TableCell>Pair</TableCell>
@@ -767,6 +929,117 @@ export function TradeTable() {
         <Typography sx={{ fontSize: "20px", height: "20%" }}> Coming soon...</Typography>
       )}
      </Grid>
+
+      <Backdrop
+        open={tourOpen}
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.modal - 1,
+          backgroundColor: 'rgba(0,0,0,.4)'
+        }}
+      />
+      {tourOpen && highlightReady && highlightRect && (
+        <Box
+          sx={{
+            position: 'fixed',
+            zIndex: (theme) => theme.zIndex.modal + 1,
+            boxShadow: 'inset 0 0 0 4px #3b82f6',
+            borderRadius: '12px',
+            pointerEvents: 'none',
+          }}
+          style={{
+            left: Math.max(0, highlightRect.left),
+            top: Math.max(0, highlightRect.top),
+            width: highlightRect.width,
+            height: highlightRect.height,
+          }}
+        />
+      )}
+
+      <Popover
+        sx={{ zIndex: (theme) => theme.zIndex.modal + 2 }}
+        open={tourOpen && Boolean(tourAnchor)}
+        anchorEl={tourAnchor}
+        onClose={resetTour}
+        anchorOrigin={{
+          vertical: tourStep === 6 ? 'top' : 'bottom',
+          horizontal: 'center'
+        }}
+        transformOrigin={{
+          vertical: tourStep === 6 ? 'bottom' : 'top',
+          horizontal: 'center'
+        }}
+        PaperProps={{
+          sx: {
+            p: 3,
+            borderRadius: 3,
+            maxWidth: 360,
+            backgroundColor: '#ffffff',
+            color: '#1a1a1a',
+            ...(tourStep === 6 ? { mb: '15px' } : { mt: '15px' })
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+          <Box sx={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14
+          }}>{tourStep + 1}</Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ color: '#1a1a1a' }}>
+            {[
+              'Select Exchange',
+              'Choose Trading Pair',
+              'Buy or Sell',
+              'Enter Amount',
+              'Switch Crypto Mode',
+              'Execute Trade',
+              'Quick Access Pairs'
+            ][tourStep]}
+          </Typography>
+        </Box>
+        <Typography sx={{ color: '#1a1a1a', lineHeight: 1.6, mb: 2 }}>
+          {[
+            'First, choose which exchange you want to trade on. Each exchange offers different trading pairs and fees.',
+            "Select the cryptocurrency pair you want to trade. This determines what you're buying or selling.",
+            "Decide whether you want to buy or sell the first currency in the pair (ETH in this case).",
+            'Input the amount of cryptocurrency you want to trade. This will automatically calculate the cost.',
+            'Click this button to switch between entering the crypto amount or the dollar amount you want to spend.',
+            "When you're ready, click this button to go directly to the exchange and complete your trade.",
+            'Use this table to quickly model trades for the most popular trading pairs. Click "MODEL TRADE" to instantly load a pair.'
+          ][tourStep]}
+        </Typography>
+        <Divider sx={{ my: 1.5 }} />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+          <Box sx={{ display: 'flex', gap: '6px' }}>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= tourStep ? '#3b82f6' : '#e2e8f0' }} />
+            ))}
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="contained"
+              onClick={resetTour}
+              sx={{ background: '#ffffff', color: '#4a5568', border: '1px solid #e2e8f0', boxShadow: 'none', textTransform: 'none', '&:hover': { background: '#f7fafc', boxShadow: 'none' } }}
+            >
+              Skip
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setTourStep((prev) => {
+                  if (prev < 6) return prev + 1;
+                  resetTour();
+                  return 0; 
+                });
+              }}
+              sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+            >
+              {tourStep === 6 ? 'Finish' : 'Next'}
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
     </Box>
   );
 }
