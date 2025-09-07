@@ -31,7 +31,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
-import { Exchange, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
+import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
  
 
@@ -60,6 +60,7 @@ export function TradeTable() {
     action: 'buy',
   });
   
+  const AllCountries = "All Countries";
   const { t } = useTranslation(["TradeTable"]);
   const [showMarketSelector, setShowMarketSelector] = useState(true);
   const [selectedCEX, setSelectedCEX] = useState('');
@@ -72,8 +73,11 @@ export function TradeTable() {
   const [isSwitchIncluded, setIsSwitchIncluded] = useState<boolean>(false);
   const [manualValueInput, setManualValueInput] = useState('');
   const [activeTab, setActiveTab] = useState<"Trading Pairs" | "Arbitrage Matrix">("Trading Pairs");
-  const { data: coinGeckoExchanges, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
+  const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
+  const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
+  const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
   const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken)
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
@@ -129,6 +133,13 @@ export function TradeTable() {
       try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_e) { /* noop */ }
     }
   };
+
+  useEffect(() => {
+    if (coinGeckoExchangesInitial) {
+      setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => selectedCountry == AllCountries 
+        || x.country == selectedCountry));
+    }
+  }, [coinGeckoExchangesInitial, selectedCountry]);
   
   useEffect(() => {
     const fetchTradingPairs = async () => {
@@ -197,6 +208,24 @@ export function TradeTable() {
       value: '',
       action: 'buy',
     });
+  };
+
+  const handleCountrySelect = (event: SelectChangeEvent<string>) => {
+      const country = event.target.value;
+      setSelectedCountry(country);
+      
+      if (selectedExchange?.country == country) {
+        return;
+      }
+
+      setSelectedExchange(null);
+      setTradeData({
+        symbol: '',
+        mkt: '',
+        qty: '0',
+        value: '',
+        action: 'buy',
+      });
   };
 
   const handleTopPairClick = (pair: TradingPair) => {
@@ -401,7 +430,7 @@ export function TradeTable() {
       >
       
       <Grid item container spacing={2} sx={{ marginBottom: 2 }}>
-                 <Grid item>
+        <Grid item>
            <Button
              variant={activeTab === "Trading Pairs" ? "contained" : "outlined"}
              color="primary"
@@ -422,7 +451,7 @@ export function TradeTable() {
                {t("TradingPairs")}
            </Button>
         </Grid>
-               <Grid item>
+          <Grid item>
            <Button
              variant={activeTab === "Arbitrage Matrix" ? "contained" : "outlined"}
              color="primary"
@@ -474,42 +503,83 @@ export function TradeTable() {
               </Button>
             </Grid>
             <Grid item sx={{ width: "100%" }}>
-              <Grid id="step-1" container alignItems="center">
-                <Grid item>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontSize: '0.9rem',
-                      marginRight:"10px",
-                      color: (theme) =>
-                        theme.palette.mode === 'dark'
-                          ? 'rgba(255, 255, 255, 0.7)'
-                          : 'rgba(0, 0, 0, 0.7)',
-                    }}
-                  >
-                    {t("SelectExchange")}:
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <Autocomplete
-                      size="small"
-                      options={coinGeckoExchanges || []}
-                      loading={isCoinGeckoExchangesLoading}
-                      getOptionLabel={(option) => option.name} 
-                      value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
-                      onChange={(event, newValue) => {
-                        handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
+              <Grid container alignItems="center" direction="row" spacing={2}>
+                <Grid item id="step-1" container alignItems="center" sx={{ width: "auto" }}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginRight:"10px",
+                        color: (theme) =>
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
                       }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          placeholder={t("SelectExchange")}
-                        />
-                      )}
-                      sx={{ width: 200 }}
-                    />
-                  </FormControl>
+                    >
+                      {t("SelectExchange")}:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        size="small"
+                        options={coinGeckoExchanges || []}
+                        loading={isCoinGeckoExchangesLoading}
+                        getOptionLabel={(option) => option.name} 
+                        value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
+                        onChange={(event, newValue) => {
+                          handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectExchange")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid item container alignItems="center" sx={{ width: "auto" }}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginRight:"10px",
+                        color: (theme) =>
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                      }}
+                    >
+                      {t("FilterbyCountry")}:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        disableClearable
+                        size="small"
+                        options={countries || []}
+                        loading={isCoutriesLoading}
+                        getOptionLabel={(option) => option} 
+                        value={selectedCountry}
+                        onChange={(event, newValue) => {
+                          handleCountrySelect({ target: { value: newValue }} as SelectChangeEvent<string>);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
