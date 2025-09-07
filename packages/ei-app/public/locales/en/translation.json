@@ -287,10 +287,12 @@
     "TradingPairs": "Trading Pairs",
     "ArbitrageMatrix": "Arbitrage Matrix",
     "SelectExchange": "Select Exchange",
+    "SelectCountry": "Select Country",
     "ModelTradeon": "Model Trade on",
     "SelectTradingPair": "Select Trading Pair",
     "TopTradingPairsOn": "Top 10 Trading Pairs by Volume on",
-    "TradingPairsDemo": "Trading Pairs Demo"
+    "TradingPairsDemo": "Trading Pairs Demo",
+    "FilterbyCountry": "Filter by Country"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",

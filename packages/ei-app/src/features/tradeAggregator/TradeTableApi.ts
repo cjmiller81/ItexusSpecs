@@ -3,6 +3,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 
 export type Exchange = {
   id: string;
+  country: string | null;
   name: string;
   url: string;
   centralized: boolean;
@@ -34,6 +35,9 @@ export const cexApi = createApi({
           !e.name.toLowerCase().includes("derivative")
         ),
     }),
+    getCountries: build.query<string[], void>({
+      query: () => ({ url: "/api/countries", method: "get" })
+    }),
     getExchangesWithTickers: build.query<Exchange, string>({
       async queryFn(id, _queryApi, _extraOptions, fetchWithBQ) {
         const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -63,4 +67,4 @@ export const cexApi = createApi({
   }),
 });
 
-export const { useGetExchangesQuery, useGetExchangesWithTickersQuery } = cexApi;
+export const { useGetExchangesQuery, useGetCountriesQuery, useGetExchangesWithTickersQuery } = cexApi;
