@@ -50,6 +50,7 @@ export const CryptoNewsTile: FC<Props> = ({
       {...props}>
       <>
         <Select
+          id="ei-news-filter"
           sx={{
             backgroundColor:
               theme.palette.mode === "dark"
