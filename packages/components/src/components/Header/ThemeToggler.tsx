@@ -11,6 +11,7 @@ type Props = {
 export function ThemeToggler({ mode, onToggleMode, styles = {} }: Props) {
   return (
     <IconButton
+      id="ei-theme-toggle"
       sx={{ ...styles } }
       color="inherit"
       onClick={onToggleMode}>

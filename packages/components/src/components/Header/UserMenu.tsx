@@ -35,6 +35,7 @@ export const UserMenu: React.FC<Props> = ({ defaultAvatar, avatarUrl, logOut }) 
   return (
     <React.Fragment>
       <IconButton
+        id="ei-profile-button"
         onClick={handleClick}
         size="small"
         sx={{ ml: 2 }}

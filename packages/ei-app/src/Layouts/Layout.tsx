@@ -42,6 +42,7 @@ export default function Layout({ children }: Props) {
         toggleSide={open => dispatch(toggleSideBar({ open: open }))}  
         title={
           <img
+            id="ei-logo"
             src={logoSrc}
             alt="ElanInsights"
             style={{ height: 20, marginTop: "10px", objectFit: "contain" }}

@@ -145,7 +145,20 @@
     "CryptoNewsTile": "Crypto News",
     "UpdatesTile": "Updates",
     "TradingTile": "Real-Time Trading",
-    "IncomeTile": "Income - Top 10 Liquidity Pools by TVL"
+    "IncomeTile": "Income - Top 10 Liquidity Pools by TVL",
+    "StartTour": "Start Tour",
+    "CryptoDataMiningAnalyticsDecisionModeling": "Crypto data mining, analytics & decision modeling - democratizing crypto Alpha",
+    "ClickHereToAccessYourProfile": "Click here to access your profile, manage wallets, and configure your subscription",
+    "FilterNewsAndCalendarEvents": "Filter news and calendar events to stay updated with relevant crypto information",
+    "PlatformsContainStrategies": "Platforms contain strategies - the engine of EI. Click each to explore modules",
+    "ProfileSettings": "Profile & Settings",
+    "WelcomeToElanInsights": "Welcome to Elan Insights",
+    "PlatformStrategies": "Platform Strategies",
+    "AdvancedTools": "Advanced Tools",
+    "ToolsEnableCustomizedAnalysis": "Tools enable customized analysis. Click each to explore modules (subscription only)",
+    "SnapshotOfTheInvestingStrategy": "Snapshot of the investing strategy. Personalization coming soon",
+    "SnapshotOfTheIncomeStrategy": "Snapshot of the Income strategy. Personalization coming soon",
+    "ChangeBetweenLightAndDarkModes": "Change between light and dark modes for your viewing preference"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
