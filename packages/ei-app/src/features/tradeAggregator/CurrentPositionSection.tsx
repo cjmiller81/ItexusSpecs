@@ -43,6 +43,7 @@ import { filterDustTokens } from "components";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { isSupportedChain } from "@/utils/supportedChains";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -447,12 +448,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   };
 
   return (
+    <>
       <Grid
         mt={2}
         spacing={0}
         container
-        xs={12}
-        sx={{ marginTop: 0}}>
+        xs={12}>
         <Grid
           container
           xs={12}
@@ -462,6 +463,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
             xs={12}
             md={12}
             lg={12}
+            spacing={1}
             container
             direction="row"
             sx={{
@@ -469,16 +471,16 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               borderRadius: "10px",
               marginLeft: "8px",
               marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
-              marginTop: { lg: "1.5%", md: "1.5%", xs: "4%" },
+              marginTop: { lg: "0%", md: "1.5%", xs: "4%" },
               backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
             }}>
 
              <Grid
                 item
-                xs={4.5}
+                xs={12}
                 md={4.5}
-                lg={4}
-                sx={{ marginTop: "31px", marginLeft: "2%" }}>
+                lg={4.6}
+                sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }  }}>
               <Select
                 displayEmpty
                 value={selectedWallet?.walletId || ""}
@@ -551,21 +553,82 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   {t("Clear")}
                 </Button>
               </Box>
+
+              {selectedWallet && (
+                <Box
+                  sx={{
+                    mt: 2,
+                    width: '100%',
+                    borderRadius: '12px',
+                    background: (theme) => theme.palette.mode === 'dark' ? '#222b3fff' : '#e9eef6',
+                    color: (theme) => theme.palette.mode === 'dark' ? '#ffffff' : '#1a1a1a',
+                    '--tg-step': '0px',
+                    '@media (min-width:3840px)': { '--tg-step': '1px' },
+                  }}
+                >
+                  <Box sx={{ padding:"8px" }}>
+                    <Typography sx={{ fontSize: 'calc(11px + var(--tg-step))', fontWeight: 600, mb: 1, color: '#00a8ff' }}>
+                      {t("HowToUseADDTEMPORARYPOSITION")}
+                    </Typography>
+                    <Typography sx={{ fontSize: 'calc(10px + var(--tg-step))', color: '#d1d5db', lineHeight: 1.4 }}>
+                      {t("ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet")}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ backgroundColor:'#10141dff',padding:"6px" }}>
+                    {[{
+                      n: 1, t: 'Choose Your Asset and Chain', d: 'Select any token and blockchain to simulate'
+                    },{
+                      n: 2, t: 'Set Quantity', d: "Enter the amount you're considering"
+                    },{
+                      n: 3, t: 'Preview Impact', d: 'Test current swap routes with the position'
+                    }].map(step => (
+                      <Box key={step.n} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 0.5 }}>
+                        <Box sx={{
+                          width: 'calc(18px + var(--tg-step))', height: 'calc(18px + var(--tg-step))', borderRadius: '50%',
+                          background: '#00a8ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 'calc(10px + var(--tg-step))', fontWeight: 600, flexShrink: 0
+                        }}>{step.n}</Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography sx={{ fontSize: 'calc(11px + var(--tg-step))', fontWeight: 450, color: '#e5e7eb', mb: 0.25 }}>{step.t}</Typography>
+                          <Typography sx={{ fontSize: 'calc(10px + var(--tg-step))', color: '#9ca3af', lineHeight: 1 }}>{step.d}</Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  <Box sx={{padding:"8px"}}>
+                    <Typography sx={{ fontSize: 'calc(11px + var(--tg-step))', color: '#d1d5db', mb: 0.5 }}>
+                      Use the <Box component="span" sx={{ color: '#00a8ff', fontWeight: 500 }}>&quot;Clear&quot;</Box> button to remove the position.
+                    </Typography>
+                    <Typography sx={{ fontSize: 'calc(10px + var(--tg-step))', color: '#9ca3af', fontStyle: 'italic' }}>
+                      {t("NOTEThisWillAlsoRequireYouToReloadSelectedWallet")}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
             </Grid>
 
                <Grid
                  item
-                 xs={6.8}
+                 xs={12}
                  md={6.9}
-                 lg={7.1}
-                 spacing={1}
-                 sx={{ marginTop: "5px", marginLeft: { lg: "5%", md: "2%", xs: "0%" } }}>
+                 lg={6.6}
+                 sx={{ marginTop: "5px", marginLeft: { lg: "4%", md: "2%", xs: "0%" },marginRight:{ lg: "0%", md: "1%", xs: "2%" }, position: 'relative' }}>
                
                 <Box 
                   display="flex" 
-                  justifyContent="flex-end" 
-                  sx={{marginBottom:"5px", paddingRight:"5px"}}
+                  justifyContent="space-between" 
+                  sx={{marginBottom:"5px", paddingRight:"5px", paddingLeft:"5px"}}
                 >
+                 {selectedWallet !== undefined ? (
+                   <Box display="flex" alignItems="center" sx={{ visibility: selectedWallet ? 'visible' : 'hidden' }}>
+                     <InfoOutlinedIcon sx={{ color: "#666", fontSize: 18, mr: 0.5 }} />
+                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
+                       {t("TableDisplaysTokenPositionsOnly")}
+                     </Typography>
+                   </Box>
+                 ) : null}
                  <Box 
                    display="flex" 
                    alignItems="center" 
@@ -780,6 +843,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
           </Grid>
         </Grid>
       </Grid>
+    </>
   );
 };
 

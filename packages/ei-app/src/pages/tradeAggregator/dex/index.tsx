@@ -50,8 +50,8 @@ export default function Dex() {
         {t("TradeAggregatorDex")}
       </Typography>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4.5}>
+      <Grid container spacing={1}>
+        <Grid item xs={12} md={4.9}>
           <Typography
             variant="h6"
             component="div"
