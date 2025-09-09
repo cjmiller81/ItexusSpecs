@@ -260,7 +260,11 @@
     "ImpactRiskDistribution": "Impact risk distribution",
     "SeeThis": "See this ",
     "InvestopediaPage": "Investopedia page",
-    "ForMoreInformation": " for more information."
+    "ForMoreInformation": " for more information.",
+    "TableDisplaysTokenPositionsOnly": "Table displays token positions only",
+    "HowToUseADDTEMPORARYPOSITION": "How to use '+ADD TEMPORARY POSITION'",
+    "ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet": "This is a tool to use to simulate a trade or holding not yet in your wallet. Great for planning and testing strategies.",
+    "NOTEThisWillAlsoRequireYouToReloadSelectedWallet": "NOTE: This will also require you to reload the selected wallet"
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",

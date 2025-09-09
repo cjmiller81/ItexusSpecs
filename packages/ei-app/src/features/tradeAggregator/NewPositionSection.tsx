@@ -721,7 +721,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
       container
       direction="column"
       sx={{
-        minHeight: "500px",
+        minHeight: "522px",
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor:
