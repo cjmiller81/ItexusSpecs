@@ -14,6 +14,7 @@ import {
 } from "@mui/x-data-grid";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
@@ -66,6 +67,7 @@ export const MyWalletsSectionForPage = ({
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const { portfolioWalletData } = useAppSelector( state => state.wallets);
 
@@ -175,6 +177,16 @@ export const MyWalletsSectionForPage = ({
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
+
+  useEffect(() => {
+    const collapseOnRoute = () => setExpandedRows([]);
+    router.events.on("routeChangeStart", collapseOnRoute);
+    router.events.on("hashChangeStart", collapseOnRoute);
+    return () => {
+      router.events.off("routeChangeStart", collapseOnRoute);
+      router.events.off("hashChangeStart", collapseOnRoute);
+    };
+  }, [router.events]);
 
   return (
     <Box
