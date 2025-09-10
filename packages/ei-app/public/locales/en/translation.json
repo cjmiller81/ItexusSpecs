@@ -262,8 +262,8 @@
     "InvestopediaPage": "Investopedia page",
     "ForMoreInformation": " for more information.",
     "TableDisplaysTokenPositionsOnly": "Table displays token positions only",
-    "HowToUseADDTEMPORARYPOSITION": "How to use '+ADD TEMPORARY POSITION'",
-    "ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet": "This is a tool to use to simulate a trade or holding not yet in your wallet. Great for planning and testing strategies.",
+    "HowToUseADDTEMPORARYPOSITION": "Using '+ADD TEMPORARY POSITION'",
+    "ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet": "Use this tool to simulate a trade/holding not yet in your wallet, to plan or test strategies.",
     "NOTEThisWillAlsoRequireYouToReloadSelectedWallet": "NOTE: This will also require you to reload the selected wallet"
   },
   "TradeTable": {
