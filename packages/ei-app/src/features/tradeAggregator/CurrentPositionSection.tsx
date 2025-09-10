@@ -585,9 +585,9 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     }].map(step => (
                       <Box key={step.n} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 0.5 }}>
                         <Box sx={{
-                          width: '16px', height: 'calc(18px + var(--tg-step))', borderRadius: '50%',
+                          width: '18px', height: '18px', borderRadius: '50%',
                           background: '#00a8ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '16px', fontWeight: 600, flexShrink: 0
+                          fontSize: '14px', fontWeight: 600, flexShrink: 0
                         }}>{step.n}</Box>
                         <Box sx={{ flex: 1 }}>
                           <Typography sx={{ fontSize: '15px', fontWeight: 450, color: '#e5e7eb', mb: 0.25 }}>{step.t}</Typography>
