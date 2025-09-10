@@ -297,8 +297,9 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
               value={formattedNftValue}
               color={WALLET_COLORS.nft}
             />
-
-            <WalletNftOverview walletAddress={props.row.address} />
+            <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box"  }}>
+              <WalletNftOverview walletAddress={props.row.address} />
+            </Box>
           </Box>
         </Box>
       )}
