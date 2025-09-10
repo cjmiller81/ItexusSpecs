@@ -567,15 +567,15 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   }}
                 >
                   <Box sx={{ padding:"8px" }}>
-                    <Typography sx={{ fontSize: 'calc(11px + var(--tg-step))', fontWeight: 600, mb: 1, color: '#00a8ff' }}>
+                    <Typography sx={{ fontSize: '15px', fontWeight: 600, mb: 1, color: '#00a8ff' }}>
                       {t("HowToUseADDTEMPORARYPOSITION")}
                     </Typography>
-                    <Typography sx={{ fontSize: 'calc(10px + var(--tg-step))', color: '#d1d5db', lineHeight: 1.4 }}>
+                    <Typography sx={{ fontSize: '14px', color: '#d1d5db', lineHeight: 1.4 }}>
                       {t("ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet")}
                     </Typography>
                   </Box>
 
-                  <Box sx={{ backgroundColor:'#10141dff',padding:"6px" }}>
+                  <Box sx={{ padding:"6px" }}>
                     {[{
                       n: 1, t: 'Choose Your Asset and Chain', d: 'Select any token and blockchain to simulate'
                     },{
@@ -585,23 +585,23 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     }].map(step => (
                       <Box key={step.n} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 0.5 }}>
                         <Box sx={{
-                          width: 'calc(18px + var(--tg-step))', height: 'calc(18px + var(--tg-step))', borderRadius: '50%',
+                          width: '16px', height: 'calc(18px + var(--tg-step))', borderRadius: '50%',
                           background: '#00a8ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 'calc(10px + var(--tg-step))', fontWeight: 600, flexShrink: 0
+                          fontSize: '16px', fontWeight: 600, flexShrink: 0
                         }}>{step.n}</Box>
                         <Box sx={{ flex: 1 }}>
-                          <Typography sx={{ fontSize: 'calc(11px + var(--tg-step))', fontWeight: 450, color: '#e5e7eb', mb: 0.25 }}>{step.t}</Typography>
-                          <Typography sx={{ fontSize: 'calc(10px + var(--tg-step))', color: '#9ca3af', lineHeight: 1 }}>{step.d}</Typography>
+                          <Typography sx={{ fontSize: '15px', fontWeight: 450, color: '#e5e7eb', mb: 0.25 }}>{step.t}</Typography>
+                          <Typography sx={{ fontSize: '14px', color: '#9ca3af', lineHeight: 1 }}>{step.d}</Typography>
                         </Box>
                       </Box>
                     ))}
                   </Box>
 
                   <Box sx={{padding:"8px"}}>
-                    <Typography sx={{ fontSize: 'calc(11px + var(--tg-step))', color: '#d1d5db', mb: 0.5 }}>
-                      Use the <Box component="span" sx={{ color: '#00a8ff', fontWeight: 500 }}>&quot;Clear&quot;</Box> button to remove the position.
+                    <Typography sx={{ fontSize: '14px', color: '#d1d5db', mb: 0.5 }}>
+                      Click <Box component="span" sx={{ color: '#00a8ff', fontWeight: 500 }}>&quot;Clear&quot;</Box> to remove the position.
                     </Typography>
-                    <Typography sx={{ fontSize: 'calc(10px + var(--tg-step))', color: '#9ca3af', fontStyle: 'italic' }}>
+                    <Typography sx={{ fontSize: '13px', color: '#9ca3af', fontStyle: 'italic' }}>
                       {t("NOTEThisWillAlsoRequireYouToReloadSelectedWallet")}
                     </Typography>
                   </Box>
