@@ -79,6 +79,11 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     dataType: "string",
   },
   {
+    caption: DefiLabel.Category,
+    dataField: DefiField.Category,
+    dataType: "string",
+  },
+  {
     caption: DefiLabel.TVL,
     dataField: DefiField.TVL,
     dataType: "number",
