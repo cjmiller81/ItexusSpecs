@@ -332,7 +332,15 @@
     "BILLING": "Plans/Billing",
     "UserProfile": "User Profile",
     "AvatarUploadingError": "Error while loading image",
-    "ProfileUpdatingError": "Error while updating profile"
+    "ProfileUpdatingError": "Error while updating profile",
+    "YourProfileSection": "Your Profile Section",
+    "ManageYourAccountSettings": "Manage your account settings, wallets, and subscription details here",
+    "CustomizeYourExperience": "Customize Your Experience",
+    "PersonalizeYourDashboardSubscribeForFullToolsAccess": "Personalize your dashboard and subscribe for full Tools access",
+    "ConnectedWallets": "Connected Wallets",
+    "ViewManageYourConnectedCryptoWallets": "View and manage your connected crypto wallets",
+    "SubscriptionStatus": "Subscription Status",
+    "ViewYourCurrentSubscriptionTierAvailableFeatures": "View your current subscription tier and available features"
   },
   "CardPaymentForm": {
     "CardNumber": "Card Number",
