@@ -2,7 +2,9 @@ import { darken, lighten, styled } from "@mui/material/styles"
 import { BasicTable } from "../../components/DataDisplay"
 import { width } from "@mui/system"
 
-export const DexWalletsTable = styled(BasicTable)<{ $hasExpandedRows?: boolean; $minHeight?: string }>(({ theme, $hasExpandedRows, $minHeight }) => ({
+export const DexWalletsTable = styled(BasicTable, {
+  shouldForwardProp: (prop) => prop !== '$hasExpandedRows' && prop !== '$minHeight',
+})<{ $hasExpandedRows?: boolean; $minHeight?: string }>(({ theme, $hasExpandedRows, $minHeight }) => ({
   width: "100%",
   minHeight: $hasExpandedRows ? ($minHeight || "55vh") : 150,
   height: "auto",
