@@ -57,7 +57,11 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
   );
 };
 
-export const WalletsOverviewPanel: React.FC = () => {
+interface WalletsOverviewPanelProps {
+  id?: string;
+}
+
+export const WalletsOverviewPanel: React.FC<WalletsOverviewPanelProps> = ({ id }) => {
   const { t } = useTranslation("MyWalletsPage");
   const theme = useTheme();
   const { portfolioWalletData, selectedWallets } = useAppSelector((state) => state.wallets);
@@ -97,6 +101,7 @@ export const WalletsOverviewPanel: React.FC = () => {
 
   return (
     <Box
+      id={id}
       sx={{
         minHeight: "520px",
         borderRadius: "10px",

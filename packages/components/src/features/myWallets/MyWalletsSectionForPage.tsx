@@ -38,6 +38,7 @@ interface Props extends BoxProps {
   totalAmount: number;
   addWalletModalOpen: boolean;
   setAddWalletModalOpen: (open: boolean) => void;
+  id?: string;
 }
 
 export const MyWalletsSectionForPage = ({
@@ -51,6 +52,7 @@ export const MyWalletsSectionForPage = ({
   selectedWalletsIds,
   addWalletModalOpen,
   setAddWalletModalOpen,
+  id,
   sx,
   ...props
 }: Props) => {
@@ -190,6 +192,7 @@ export const MyWalletsSectionForPage = ({
 
   return (
     <Box
+      id={id}
       {...props}
       sx={{ ...sx, position: "relative" }}>
       {addWalletModalOpen && (

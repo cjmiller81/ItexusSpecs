@@ -1,8 +1,8 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
 import { fetchHistoricalWalletData, selectSeries, setPeriod } from "@/libs/redux/Slices/WalletWorthChartSlice";
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { Grid, Stack, Typography, useTheme } from "@mui/material";
+import { useAppSelector } from "@/libs/redux/Store";
+import { Grid, Stack, Typography, useTheme, Button, Box } from "@mui/material";
 import {
   LookUpOption,
   StyledAddWalletButton,
@@ -18,10 +18,85 @@ import {
 import moment from "moment";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { useAppDispatch } from "@/libs/redux/Store";
+import { setAccordionState } from "components";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
 
+const TOUR_ID = "wallet_v1";
+
+const StartTourButton = () => {
+  const { setIsOpen, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  
+  const openAllAccordions = () => {
+    const accordionKeys = [
+      'WalletsOverviewPanel',
+      'MyWalletsSectionForPage'
+    ];
+    
+    accordionKeys.forEach(key => {
+      dispatch(setAccordionState({ key, open: true }));
+    });
+  };
+  
+  return (
+    <Button
+      variant="outlined"
+      size="small"
+      sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
+      onClick={() => {
+        openAllAccordions();
+        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+        setIsOpen(true);
+      }}
+    >
+      Start Tour
+    </Button>
+  );
+};
+
+const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
+  const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  
+  const openAllAccordions = () => {
+    const accordionKeys = [
+      'WalletsOverviewPanel',
+      'MyWalletsSectionForPage'
+    ];
+    
+    accordionKeys.forEach(key => {
+      dispatch(setAccordionState({ key, open: true }));
+    });
+  };
+  
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
+    if (currentStep >= totalSteps - 1) {
+      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+    }
+  }, [currentStep, totalSteps]);
+  
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
+  }, [isOpen]);
+  
+  useEffect(() => {
+    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+    if (!viewed) {
+      openAllAccordions(); // Открываем аккордеоны при автоматическом запуске тура
+      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+      setIsOpen(true);
+    }
+  }, []);
+  
+  return null;
+};
 
 export default function MyWalletsPage() {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
@@ -189,20 +264,89 @@ export default function MyWalletsPage() {
     dispatch(updateWallet(wallet));
   };
 
+  const steps: StepType[] = [
+    {
+      selector: "#wallet_header",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourWalletSectionTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourWalletSectionText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#wallet_link_info",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourWalletLinkRequirementTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourWalletLinkRequirementText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#wallet_selector",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourWalletMultipleText")}</Typography>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#wallet_chart",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourWalletChartTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourWalletChartText")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    }
+  ];
+
   return (
-    <Stack>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 5 }}>
-        {t("WalletsWeb3")}
-      </Typography>
+    <TourProvider
+      steps={steps}
+      styles={{
+        popover: (base) => ({ 
+          ...base, 
+          borderRadius: 12, 
+          padding: "32px 24px 24px 24px", 
+          background: "#ffffff", 
+          color: "#1a1a1a", 
+          minWidth: 400, 
+          maxWidth: 500,
+          paddingTop: "40px"
+        }),
+        maskArea: (base) => ({ ...base, rx: 10 }),
+        badge: (base) => ({ ...base, display: "none" }),
+        close: (base) => ({ 
+          ...base, 
+          top: "12px", 
+          right: "12px",
+          zIndex: 1000
+        }),
+      }}
+    >
+      <>
+        <TourStateSync totalSteps={steps.length} />
+        <Stack>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 5 }}>
+        <Typography
+          id="wallet_header"
+          variant="h4"
+          component="div"
+          sx={{ fontWeight: "bold" }}>
+          {t("WalletsWeb3")}
+        </Typography>
+        <StartTourButton />
+      </Box>
 
      <Grid container spacing={4} alignItems="flex-start">
       <Grid item xs={12} md={3} sx={{ minWidth: 0 }}>
         <Stack spacing={2} sx={{ minWidth: 0 }}>
           <StyledAddWalletButton
+            id="wallet_link_info"
             variant="contained"
             sx={{
               width: "max-content",
@@ -229,6 +373,7 @@ export default function MyWalletsPage() {
 
       <Grid item xs={12} md={9}>
         <Grid
+          id="wallet_chart"
           item
           sx={{
             minHeight: "500px",
@@ -272,6 +417,7 @@ export default function MyWalletsPage() {
     </Grid>
 
       <MyWalletsSectionForPage 
+        id="wallet_selector"
         onUpdateWallet={onUpdateWallet}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
         totalWalletsWorthData={totalWalletsWorthData}
@@ -283,6 +429,8 @@ export default function MyWalletsPage() {
         addWalletModalOpen={addWalletModalOpen}
         setAddWalletModalOpen={setAddWalletModalOpen} 
       />
-    </Stack>
+        </Stack>
+      </>
+    </TourProvider>
   );
 }
