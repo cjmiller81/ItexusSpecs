@@ -190,7 +190,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           sorting: true,
           paging: true,
         }}
-        id="prefilter-tokens-table"
         dataSource={dataSource}
         allowColumnResizing={true}
         columnResizingMode="widget"
