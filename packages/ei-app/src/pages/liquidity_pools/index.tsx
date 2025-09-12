@@ -3,11 +3,24 @@ import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { Box, Typography, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { useAppDispatch } from "@/libs/redux/Store";
+import { setAccordionState } from "components";
 
 const TOUR_ID = "income_v1";
 
 const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  
+  const openAllAccordions = () => {
+    const accordionKeys = [
+      'DefiTokensSection'
+    ];
+    
+    accordionKeys.forEach(key => {
+      dispatch(setAccordionState({ key, open: true }));
+    });
+  };
   
   return (
     <Button
@@ -15,6 +28,7 @@ const StartTourButton = () => {
       size="small"
       sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
       onClick={() => {
+        openAllAccordions();
         const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
         setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
         setIsOpen(true);
@@ -27,7 +41,18 @@ const StartTourButton = () => {
 
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
   const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  
+  const openAllAccordions = () => {
+    const accordionKeys = [
+      'DefiTokensSection'
+    ];
+    
+    accordionKeys.forEach(key => {
+      dispatch(setAccordionState({ key, open: true }));
+    });
+  };
   
   useEffect(() => {
     try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
@@ -43,6 +68,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   useEffect(() => {
     const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
     if (!viewed) {
+      openAllAccordions(); // Открываем аккордеоны при автоматическом запуске тура
       if (!isNaN(savedStep)) setCurrentStep(savedStep);
       setIsOpen(true);
     }
@@ -76,7 +102,7 @@ export default function LiquidityPoolsPage() {
       position: "bottom"
     },
     {
-      selector: "#income_filters",
+      selector: "#filter_presets",
       content: () => (
         <Typography sx={{ color: "#1a1a1a" }}>{t("TourIncomeFiltersText")}</Typography>
       ),

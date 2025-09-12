@@ -296,11 +296,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     <>
       <StyledAdaptivePageBox sx={{ width: "100%" }}>
         <Select
+          id="filter_presets"
           fullWidth
           size="small"
           displayEmpty
           onChange={handleApplyFilterChange}
-          id="income_filters"
           sx={{
             minWidth: 250,
             maxWidth: 250,
