@@ -110,7 +110,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     <div ref={containerRef}>
       {/*@ts-ignore*/}
       <StyledDataGridDef<PoolData>
-        id="defi-tokens-table"
+        id="income_table"
         dataSource={dataSource}
         allowColumnResizing={true}
         columnResizingMode="widget"

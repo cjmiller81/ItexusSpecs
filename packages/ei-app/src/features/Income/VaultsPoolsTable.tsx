@@ -103,7 +103,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
       {/*@ts-ignore*/}
       <StyledDataGridDef<VaultsData>
         style={{ pointerEvents: "auto" }}
-        id="vaults-tokens-table"
+        id="income_table"
         allowColumnResizing={true}
         columnResizingMode="widget"
         dataSource={dataSource}

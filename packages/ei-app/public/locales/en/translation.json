@@ -490,7 +490,17 @@
   },
   "LiquidityPoolsPage": {
     "PageTitleLiquidityPools": "Liquidity Pools Yield Rankings and Filtering",
-    "PrefilterLiquidityPools": "Prefilter Liquidity Pools"
+    "PrefilterLiquidityPools": "Prefilter Liquidity Pools",
+    "TourIncomeStrategyTitle": "Income Strategy Platform",
+    "TourIncomeStrategyText": "You are in the Income strategy section",
+    "TourIncomeTableSortTitle": "Data Management",
+    "TourIncomeTableSortText": "Quickly sort and filter the table in the first two rows",
+    "TourIncomeFiltersText": "Your pre-built filters appear here",
+    "TourIncomeFilterBuilderTitle": "Filter Builder",
+    "TourIncomeFilterBuilderText": "View the filter-builder videos and build your own custom filters",
+    "TourIncomeClearFiltersText": "Clear all filters to reset your view",
+    "TourIncomeCurrentFilterText": "Your current filter appears here",
+    "TourIncomeExportText": "Export table to a spreadsheet (subscription only)"
   },
   "Support": {
     "SupportLegalCenter": "Support & Legal Center",
@@ -674,7 +684,17 @@
   },
   "Vaults": {
     "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",
-    "VaultsTitle": "Prefilter Vaults"
+    "VaultsTitle": "Prefilter Vaults",
+    "TourIncomeStrategyTitle": "Income Strategy Platform",
+    "TourIncomeStrategyText": "You are in the Income strategy section",
+    "TourIncomeTableSortTitle": "Data Management",
+    "TourIncomeTableSortText": "Quickly sort and filter the table in the first two rows",
+    "TourIncomeFiltersText": "Your pre-built filters appear here",
+    "TourIncomeFilterBuilderTitle": "Filter Builder",
+    "TourIncomeFilterBuilderText": "View the filter-builder videos and build your own custom filters",
+    "TourIncomeClearFiltersText": "Clear all filters to reset your view",
+    "TourIncomeCurrentFilterText": "Your current filter appears here",
+    "TourIncomeExportText": "Export table to a spreadsheet (subscription only)"
   },
   "Modals":{
     "SwapRouteNotFound":"Swap Route Not Found",

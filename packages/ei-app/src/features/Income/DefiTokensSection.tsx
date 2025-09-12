@@ -29,9 +29,10 @@ import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutl
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
+  startTourButton?: React.ReactNode;
 };
 
-export default function DefiTokensSection({ persisKey, ...props }: Props) {
+export default function DefiTokensSection({ persisKey, startTourButton, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
@@ -126,13 +127,17 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 
   return (
     <>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 0 }}>
-        {t("PageTitleLiquidityPools")}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }}>
+        <Typography
+          variant="h4"
+          component="div"
+          gutterBottom
+          sx={{ fontWeight: "bold", mb: 0 }}
+          id="income_header">
+          {t("PageTitleLiquidityPools")}
+        </Typography>
+        {startTourButton}
+      </Box>
       <StatePersistedAccordion
         className="index-modeling-section-container"
         persistKey={persisKey}
@@ -203,6 +208,7 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
               }}
               variant="outlined"
               sx={{ ml: 4, marginRight: "17px" }}
+              id="income_export"
             >
               <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <DownloadIcon />
