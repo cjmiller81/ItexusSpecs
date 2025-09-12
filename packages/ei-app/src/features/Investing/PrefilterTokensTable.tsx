@@ -210,7 +210,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         onFilterValueChange={(filter) => onApplyFilter(filter)}>
         <FilterRow visible={true} />
         <FilterPanel
-          id="current_filter"
           visible={true}
           customizeText={e => (e.text ? e.text : "No Filter Applied")}
         />
