@@ -165,7 +165,9 @@
     "ToolsEnableCustomizedAnalysis": "Tools enable customized analysis. Click each to explore modules (subscription only)",
     "SnapshotOfTheInvestingStrategy": "Snapshot of the investing strategy. Personalization coming soon",
     "SnapshotOfTheIncomeStrategy": "Snapshot of the Income strategy. Personalization coming soon",
-    "ChangeBetweenLightAndDarkModes": "Change between light and dark modes for your viewing preference"
+    "ChangeBetweenLightAndDarkModes": "Change between light and dark modes for your viewing preference",
+    "ThankYouTitle": "Thank You!",
+    "ThankYouText": "Thank you for participating in this v1 'Alpha' group. I deeply appreciate your help on this! Please go through the site, fill out the survey and return to me at your earliest opportunity.\n\nI am available for any questions / comments:\n+1816-694-2148 | vankeppel@gmail.com"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",

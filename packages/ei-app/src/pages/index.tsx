@@ -226,6 +226,16 @@ useEffect(() => {
       ),
       position: "left"
     },
+    {
+      selector: "#homepage",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ThankYouTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568", whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    }
   ];
 
   const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
@@ -239,7 +249,7 @@ useEffect(() => {
         badge: (base) => ({ ...base, display: "none" }),
       }}
     >
-      <>
+      <Box id="homepage">
         <TourStateSync totalSteps={steps.length} />
         <Box display="flex" alignItems="center">
           <Typography
@@ -354,7 +364,7 @@ useEffect(() => {
           </Grid>
         </Grid>
       </Grid>
-    </>
+      </Box>
     </TourProvider>
   );
 }
