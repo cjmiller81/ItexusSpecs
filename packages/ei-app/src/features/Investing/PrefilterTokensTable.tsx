@@ -177,6 +177,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       style={{ pointerEvents: "auto" }}>
       {/*@ts-ignore*/}
       <StyledDataGridDef<ICoin>
+        id="table_header"
         onOptionChanged={e => {
           if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
             setTimeout(() => {
@@ -189,7 +190,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           sorting: true,
           paging: true,
         }}
-        id="prefilter-tokens-table"
         dataSource={dataSource}
         allowColumnResizing={true}
         columnResizingMode="widget"

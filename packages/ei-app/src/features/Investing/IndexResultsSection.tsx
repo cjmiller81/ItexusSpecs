@@ -67,6 +67,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   capital: number;
   onTokensChange: (tokens: number) => void;
   tokens: number;
+  id?: string;
 }
 
 export const IndexResultsSection = ({
@@ -77,6 +78,7 @@ export const IndexResultsSection = ({
   capital,
   onCapitalChange,
   tokens,
+  id,
   ...props
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
@@ -339,6 +341,7 @@ export const IndexResultsSection = ({
       defaultExpanded={false}
       title={title}
       tooltip={t("ToggleView", { ns: "Common" })}
+      id={id}
       {...props}>
       <Grid
         mt={2}
