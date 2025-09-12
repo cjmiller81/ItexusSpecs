@@ -70,14 +70,14 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
   const videoLinks = {
     introduction: "https://www.youtube.com/embed/HMoJuK9mNtw",
-    buildFilter: "https://www.youtube.com/embed/e1tWUwDouiw", 
+    buildFilter: "https://www.youtube.com/embed/e1tWUwDouiw",
     nandGate: "https://www.youtube.com/embed/wYhxPBvQL1g",
     buildingNORGate: "https://www.youtube.com/embed/IMm88o07GLg",
-    buildingORGate: "https://www.youtube.com/embed/PW-5hBCggu8",    
+    buildingORGate: "https://www.youtube.com/embed/PW-5hBCggu8",
     logicGateDiagramAND: "https://youtube.com/embed/pS3erHfCcY8",
     logicGateDiagramNOTAND: "https://youtube.com/embed/SI1gUt3xNFU",
     logicGateDiagramNorGate: "https://youtube.com/embed/c48K1wqo5ow",
-    logicGateDiagramOR: "https://youtube.com/embed/xfSR3MgBWrc", 
+    logicGateDiagramOR: "https://youtube.com/embed/xfSR3MgBWrc",
   };
 
   const sortedPredefinedFilters = useMemo(() => {
@@ -156,7 +156,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       return;
     }
 
-    setFilterValue(event.value);   
+    setFilterValue(event.value);
   };
 
   const handleFilterBuilderClick = (e: React.MouseEvent) => {
@@ -167,8 +167,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 };
 
   const handleApplyFilter = () => {
-    if (filterValue) { 
-      onApply(filterValue); 
+    if (filterValue) {
+      onApply(filterValue);
       setFilterBuilderOpen(false);
     }
     else setFilterBuilderOpen(false);
@@ -362,8 +362,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           }}
           color={"success"}
           onClick={() => setFilterBuilderOpen(true)}
-          startIcon={<TuneIcon />}
-          id="filter_builder_btn">
+          startIcon={<TuneIcon />}>
           {t("BuildStrategyFilter")}
         </StyledFilterButton>
         <StyledFilterButton
@@ -426,7 +425,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         backgroundColor: theme.palette.background.paper,
                       },
                     }}>
-                    <Box 
+                    <Box
                       onClick={handleFilterBuilderClick}
                       sx={{
                         "& .dx-filterbuilder.dx-widget": {
@@ -440,7 +439,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       />
                     </Box>
                   </Box>
-                  
+
                   {showGuidanceBanner && (!filterValue || filterValue.length === 0) && (
                     <Box
                       sx={{
@@ -459,9 +458,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         <Box sx={{ fontSize: '18px', display: 'flex', alignItems: 'center' }}>
                           💡
                         </Box>
-                        <Typography 
-                          sx={{ 
-                            fontSize: '13px', 
+                        <Typography
+                          sx={{
+                            fontSize: '13px',
                             lineHeight: 1.4,
                             flex: 1,
                             color: "white"
@@ -472,7 +471,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         <IconButton
                           onClick={handleDismissGuidanceBanner}
                           size="small"
-                          sx={{ 
+                          sx={{
                             color: '#1976d2',
                             p: 0.5,
                             ml: 1,
@@ -537,7 +536,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       {t("ApplyFilter")}
                     </Button>
                   </Stack>
-                  
+
                   <Stack direction="row" spacing={2}>
                     <Box sx={{ flex: 1 }}>
                       <Typography variant="h6" sx={{ mt: 2 }}>
@@ -761,7 +760,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         </Collapse>
                       </Box>
                     </Box>
-                    
+
                   </Stack>
                 </FilterControlsContainer>
               </Stack>
@@ -805,7 +804,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       {currentVideo && (
                         <iframe
                           width="100%"
-                          height="515"        
+                          height="515"
                           src={currentVideo}
                           title="YouTube video player"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
