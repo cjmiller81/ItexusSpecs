@@ -27,6 +27,7 @@ type Props = Omit<AccordionProps, "children"> & {
   dataSource: DataSource;
   onFilterChanged: (filter: any) => void;
   onSorterChanged: (sorter: any) => void;
+  id?: string;
 };
 
 export default function PrefilterTokensSection({
@@ -34,6 +35,7 @@ export default function PrefilterTokensSection({
   onFilterChanged,
   dataSource,
   persisKey,
+  id,
   ...props
 }: Props) {
   const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
@@ -183,6 +185,7 @@ export default function PrefilterTokensSection({
       persistKey={persisKey}
       defaultExpanded
       sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
+      id={id}
       {...props}>
       <StyledAccordionSummary
         sx={{
@@ -230,6 +233,7 @@ export default function PrefilterTokensSection({
             {t("PrefilterTokens")}
           </PageTitle>
           <Button
+            id="export_button"
             onClick={e => {
               e.stopPropagation();
               onExport();

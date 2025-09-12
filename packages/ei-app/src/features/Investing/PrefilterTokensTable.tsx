@@ -177,6 +177,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       style={{ pointerEvents: "auto" }}>
       {/*@ts-ignore*/}
       <StyledDataGridDef<ICoin>
+        id="table_header"
         onOptionChanged={e => {
           if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
             setTimeout(() => {
@@ -210,6 +211,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         onFilterValueChange={(filter) => onApplyFilter(filter)}>
         <FilterRow visible={true} />
         <FilterPanel
+          id="current_filter"
           visible={true}
           customizeText={e => (e.text ? e.text : "No Filter Applied")}
         />

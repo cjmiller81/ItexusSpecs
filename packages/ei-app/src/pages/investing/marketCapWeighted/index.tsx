@@ -21,13 +21,51 @@ import {
   setTokens,
 } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { setAccordionState } from "components";
 import { Wallet } from "@/models/Wallet/Wallet";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
 import { AppAccordionSection } from "components";
 import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TourProvider, useTour, StepType } from "@reactour/tour";
+
+const TOUR_ID = "investing_v1";
+
+const StartTourButton = () => {
+  const { setIsOpen, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  
+  const openAllAccordions = () => {
+    const accordionKeys = [
+      'WeightedPrefilterTokens',
+      'WeightedIndexModeling', 
+      'WeightedHistoricalWalletsWorth',
+      'IndexResultsSection'
+    ];
+    
+    accordionKeys.forEach(key => {
+      dispatch(setAccordionState({ key, open: true }));
+    });
+  };
+  
+  return (
+    <Button
+      variant="outlined"
+      size="small"
+      sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
+      onClick={() => {
+        openAllAccordions();
+        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+        setIsOpen(true);
+      }}
+    >
+      Start Tour
+    </Button>
+  );
+};
 
 export default function MarketCapWeightedPage() {
   const {
@@ -52,6 +90,97 @@ export default function MarketCapWeightedPage() {
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
+
+  const steps: StepType[] = [
+    {
+      selector: "#mcw_strategy",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourMCWStrategyTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourMCWStrategyText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#table_header .dx-header-row, #table_header .dx-datagrid-headers",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourQuickSortTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourQuickSortText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: ".dx-datagrid-filter-panel-text",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourCurrentFilterText")}</Typography>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#filter_presets",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourPrebuiltFiltersText")}</Typography>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#filter_builder_btn",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourCustomFiltersTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourCustomFiltersText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#export_button",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourExportText")}</Typography>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#modeling_section",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourModelingTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourModelingText")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    },
+    {
+      selector: "#historical_chart",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourHistoricalText")}</Typography>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#token_selector",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourTokenCountTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourTokenCountText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#performance_metric",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourPerformanceTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourPerformanceText")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    }
+  ];
 
   const dataSource = useMemo(
     () =>
@@ -135,33 +264,60 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
   };
 
   return (
-    <Stack gap={2}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }}>
-        <Typography
-          variant="h4"
-          component="div"
-          sx={{ fontWeight: "bold" }}>
-          {t("MarketCapWeighted")}
-        </Typography>
-        <InfoBadge
-          title="What's Market Cap Investing"
-          tooltipContent={
-            <>
-              <strong style={{ color: '#60a5fa' }}>{t("MarketCapExplained")}</strong>
-              <br /><br />
-              {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
-              <br /><br />
-              {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a>
-            </>
-          }
-        />
-      </Box>
+    <TourProvider
+      steps={steps}
+      styles={{
+        popover: (base) => ({ 
+          ...base, 
+          borderRadius: 12, 
+          padding: "32px 24px 24px 24px", 
+          background: "#ffffff", 
+          color: "#1a1a1a", 
+          minWidth: 400, 
+          maxWidth: 500,
+          paddingTop: "40px"
+        }),
+        maskArea: (base) => ({ ...base, rx: 10 }),
+        badge: (base) => ({ ...base, display: "none" }),
+        close: (base) => ({ 
+          ...base, 
+          top: "12px", 
+          right: "12px",
+          zIndex: 1000
+        }),
+      }}
+    >
+      <>
+        <TourStateSync totalSteps={steps.length} />
+        <Stack gap={2}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }} id="mcw_strategy">
+            <Typography
+              variant="h4"
+              component="div"
+              sx={{ fontWeight: "bold" }}>
+              {t("MarketCapWeighted")}
+            </Typography>
+            <InfoBadge
+              title="What's Market Cap Investing"
+              tooltipContent={
+                <>
+                  <strong style={{ color: '#60a5fa' }}>{t("MarketCapExplained")}</strong>
+                  <br /><br />
+                  {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
+                  <br /><br />
+                  {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a>
+                </>
+              }
+            />
+            <StartTourButton />
+          </Box>
 
       <PrefilterTokensSection
         dataSource={dataSource}
         onSorterChanged={onSorterChanged}
         onFilterChanged={onFilterChanged}
         persisKey="WeightedPrefilterTokens"
+        id="table_header"
       />
 
       <IndexModelingSection
@@ -173,6 +329,7 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
         tokens={tokensCount || 0}
         tableAssets={tableData}
         title={t("IndexModeling")}
+        id="modeling_section"
       />
 
       <AppAccordionSection
@@ -182,6 +339,7 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
         title={t("WeightedChartTitle")}
         tooltip={t("ToggleView", { ns: "Common" })}>
         <HistoricalWalletsWorthMarketCap
+          id="historical_chart"
           className="index-modeling-section-container"
           onFetchPage={fetchLookupPage}
           toDate={endDate}
@@ -219,6 +377,30 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
         }}
         tokens={tokensCount || 0}
       /> : ""}
-    </Stack>
+        </Stack>
+      </>
+    </TourProvider>
   );
 }
+
+const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
+  const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
+  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
+    if (currentStep >= totalSteps - 1) {
+      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+    }
+  }, [currentStep, totalSteps]);
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
+  }, [isOpen]);
+  useEffect(() => {
+    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+    if (!viewed) {
+      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+      setIsOpen(true);
+    }
+  }, []);
+  return null;
+};

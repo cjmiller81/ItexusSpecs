@@ -296,6 +296,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     <>
       <StyledAdaptivePageBox sx={{ width: "100%" }}>
         <Select
+          id="filter_presets"
           fullWidth
           size="small"
           displayEmpty
@@ -346,6 +347,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           ))}
         </Select>
         <StyledFilterButton
+          id="filter_builder_btn"
           variant="contained"
           sx={{
             minWidth: 250,

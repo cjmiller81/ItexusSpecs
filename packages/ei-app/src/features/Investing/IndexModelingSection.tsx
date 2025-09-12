@@ -24,6 +24,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
+  id?: string;
 }
 
 export const IndexModelingSection = ({
@@ -34,6 +35,7 @@ export const IndexModelingSection = ({
   tableAssets,
   isEqualWeight,
   persistKey,
+  id,
   ...props
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
@@ -120,8 +122,10 @@ export const IndexModelingSection = ({
       }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
+      id={id}
       headerChildren={
         <Button
+          id="export_button"
           sx={{ mr: 2, pointerEvents: "auto" }}
           onClick={event => {
             event.stopPropagation();
@@ -140,6 +144,7 @@ export const IndexModelingSection = ({
         gap={2}>
         <LeftContainer>
           <AppNumberInput
+            id="token_selector"
             label={t("Tokens")}
             value={tokens}
             min={0}

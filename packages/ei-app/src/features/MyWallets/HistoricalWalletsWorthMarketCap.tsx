@@ -97,6 +97,7 @@ export const HistoricalWalletsWorthMarketCap = ({
   return (
     <StyledWalletWorthContainer
       {...props}
+      id={props.id}
       className="index-modeling-section-container">
       <StyledWalletWorthMenuContainer>
         <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
@@ -170,6 +171,7 @@ export const HistoricalWalletsWorthMarketCap = ({
       </StyledWalletWorthMenuContainer>
       <Box sx={{ width: "100%" }}>
         <AppChartMarketCap
+          id="performance_metric"
           series={chartSeries || []}
           height={460}
           optionsOverrides={{
