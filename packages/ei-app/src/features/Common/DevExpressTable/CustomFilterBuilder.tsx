@@ -300,6 +300,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           size="small"
           displayEmpty
           onChange={handleApplyFilterChange}
+          id="income_filters"
           sx={{
             minWidth: 250,
             maxWidth: 250,
@@ -360,7 +361,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           }}
           color={"success"}
           onClick={() => setFilterBuilderOpen(true)}
-          startIcon={<TuneIcon />}>
+          startIcon={<TuneIcon />}
+          id="filter_builder_btn">
           {t("BuildStrategyFilter")}
         </StyledFilterButton>
         <StyledFilterButton
@@ -379,7 +381,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           variant="contained"
           color={"error"}
           disabled={!filterValue || filterValue?.length == 0}
-          onClick={() => handleClearFilters()}>
+          onClick={() => handleClearFilters()}
+          id="clear_filter_btn">
           {t("ClearFilter")}
         </StyledFilterButton>
       </StyledAdaptivePageBox>
