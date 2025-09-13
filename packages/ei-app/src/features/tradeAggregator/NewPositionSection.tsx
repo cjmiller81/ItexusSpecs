@@ -1040,7 +1040,6 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       noOptionsText={t("NoOptionsOnThisChain")}
                       renderInput={(params) => (
                         <TextField
-                          id="target_token_input"
                           {...params}
                           placeholder={t("Search")}
                           InputProps={{
