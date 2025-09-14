@@ -923,6 +923,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   </Box>
 
                   <TextField
+                    id="quantity_input"
                     variant="outlined"
                     size="small"
                     value={formatNumberWithCommas(newBalance)}
@@ -999,6 +1000,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </Stack>
                     
                     <Autocomplete
+                      id="target_token_dropdown"
                       options={tokenIconsSwapFor?.items ?? []}
                       getOptionLabel={(option) =>
                         option.name
@@ -1238,6 +1240,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       <Grid item xs={3}>
                         <Box display="flex" flexDirection="column" alignItems="flex-end" sx={{marginTop:"58px"}}>
                         <Button
+                          id="get_quotes_btn"
                           variant="contained"
                           onClick={handleFetchQuotes}
                           disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
@@ -1280,8 +1283,9 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
        
               </Grid>
-              <Grid item xs={12} sx={{ marginTop: 3 }}>
+              <Grid item xs={12} sx={{ marginTop: 3 }} id="execute_section">
                 <TableContainer
+                  id="routes_list"
                   component={Paper}
                   sx={{
                     border: "1px solid gray",

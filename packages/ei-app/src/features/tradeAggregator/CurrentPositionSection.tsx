@@ -459,6 +459,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
           xs={12}
           spacing={1}>
           <Grid
+            id="current_position_section"
             item
             xs={12}
             md={12}
@@ -482,6 +483,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 lg={4.6}
                 sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }  }}>
               <Select
+                id="wallet_dropdown"
                 displayEmpty
                 value={selectedWallet?.walletId || ""}
                 onChange={handleWalletSelect}
@@ -506,6 +508,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
 
               {selectedWallet?(<>
                             <Button
+                              id="manual_position_btn"
                               sx={{
                                 backgroundColor: "white",
                                 width: "100%",
@@ -522,6 +525,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                             </>
                             ) : (
                               <Button
+                                id="manual_position_btn"
                                 sx={{
                                   backgroundColor: "white",
                                   width: "100%",
@@ -646,23 +650,24 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                  </Box>
                </Box>
                
-                <WalletsTable
-                  sx={{
-                    ...tableScrollSx,
-                    width: "100%",
+                <Box id="token_list">
+                  <WalletsTable
+                    sx={{
+                      ...tableScrollSx,
+                      width: "100%",
+                    }}
+                  hideFooter
+                  rowSelection={true}
+                  rowSelectionModel={selectedRows ? [selectedRows] : []}
+                  checkboxSelection={false}
+                  apiRef={apiRef}
+                  getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
+                  columns={getIndexResultWalletTableColumns()}
+                  rows={filteredRows}
+                  onRowSelectionModelChange={handleSelectionChange}
+                  slots={{
+                    noRowsOverlay: CustomNoWalletOverlay,
                   }}
-                hideFooter
-                rowSelection={true}
-                rowSelectionModel={selectedRows ? [selectedRows] : []}
-                checkboxSelection={false}
-                apiRef={apiRef}
-                getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
-                columns={getIndexResultWalletTableColumns()}
-                rows={filteredRows}
-                onRowSelectionModelChange={handleSelectionChange}
-                slots={{
-                  noRowsOverlay: CustomNoWalletOverlay,
-                }}
                                                                      getRowClassName={(params) => {
                      const isSupportedChainRow = params.row.chain && 
                        isSupportedChain(params.row.chain);
@@ -670,7 +675,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                      if (!isSupportedChainRow) {
                        return 'unsupported-chain-row';
                      }
-                    
+                     
                     if (selectedRows &&
                         `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
                       return 'selected-row';
@@ -688,7 +693,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                      };
                    }
                  }}
-              />
+                />
+                </Box>
               <Dialog
                 open={isAddingManualPosition}
                 onClose={handleCancelManualPosition}>
