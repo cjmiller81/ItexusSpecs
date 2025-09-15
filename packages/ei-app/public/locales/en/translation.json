@@ -720,6 +720,7 @@
     "Go Back": "Go Back",
     "Upgrade Plan": "Upgrade Plan",
     "You have reached the limit of {{limit}} saved strategies for {{plan}} plan": "You have reached the limit of {{limit}} saved strategies for {{plan}} plan",
+    "You have reached the limit of {{limit}} saved {{filterType}} strategies for {{plan}} plan": "You have reached the limit of {{limit}} saved {{filterType}} strategies for {{plan}} plan",
     "Table export is not available in {{plan}} plan": "Table export is not available in {{plan}} plan",
     "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan": "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan",
     "DEX quote requests are not available in {{plan}} plan": "DEX quote requests are not available in {{plan}} plan",

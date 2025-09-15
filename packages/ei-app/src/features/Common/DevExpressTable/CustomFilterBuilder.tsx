@@ -524,6 +524,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
            <FeatureAccessGuard
              feature="saveStrategy"
              currentCount={sortedPredefinedFilters.filter(f => !f.isPublic).length}
+             filterType={filterType ? String(filterType) : undefined}
+             savedFilters={sortedPredefinedFilters}
            >
                       <LoadingButton
                         loading={filterLoading}

@@ -3,11 +3,14 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Tooltip, Button, Box, Typography, Stack } from "@mui/material";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
+import BlockIcon from "@mui/icons-material/Block";
 
 interface FeatureAccessGuardProps {
   feature: "saveStrategy" | "tableExport" | "tradeAggregatorQuoteDEX" | "walletConnectionCEX" | "walletConnectionDEX";
   children: ReactNode;
   currentCount?: number; // For features with limits like saved strategies or wallet connections
+  filterType?: string; // For saveStrategy feature - the type of filter being saved
+  savedFilters?: any[]; // Array of saved filters for checking limits by type
   showTooltip?: boolean;
   tooltipPlacement?: "top" | "bottom" | "left" | "right";
   disabled?: boolean; // Allow external disabling
@@ -17,11 +20,13 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
   feature,
   children,
   currentCount = 0,
+  filterType,
+  savedFilters = [],
   showTooltip = false,
   tooltipPlacement = "top",
   disabled: externalDisabled = false,
 }) => {
-  const { subscription, canSaveStrategy, canExportTable, canConnectWallet, getTradeAggregatorQuoteLimit } = useSubscription();
+  const { subscription, canSaveStrategy, canSaveStrategyByType, canExportTable, canConnectWallet, getTradeAggregatorQuoteLimit } = useSubscription();
   const router = useRouter();
   const { t } = useTranslation("AccessControl");
 
@@ -35,10 +40,27 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
   } else {
     switch (feature) {
       case "saveStrategy":
-        isFeatureAvailable = canSaveStrategy(currentCount);
+        // If filterType is provided, check limits by type
+        if (filterType && savedFilters.length > 0) {
+          isFeatureAvailable = canSaveStrategyByType(filterType, savedFilters);
+        } else {
+          // Fallback to general count check
+          isFeatureAvailable = canSaveStrategy(currentCount);
+        }
         limit = subscription.plan.featureLimits.savedStrategyCount;
         if (!isFeatureAvailable) {
-          tooltipMessage = t("You have reached the limit of {{limit}} saved strategies for {{plan}} plan", { limit, plan: subscription.plan.name });
+          if (filterType) {
+            tooltipMessage = t("You have reached the limit of {{limit}} saved {{filterType}} strategies for {{plan}} plan", { 
+              limit, 
+              filterType, 
+              plan: subscription.plan.name 
+            });
+          } else {
+            tooltipMessage = t("You have reached the limit of {{limit}} saved strategies for {{plan}} plan", { 
+              limit, 
+              plan: subscription.plan.name 
+            });
+          }
         }
         break;
       case "tableExport":
@@ -92,7 +114,10 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
       <Tooltip
         title={
           <Stack spacing={1} sx={{ p: 1 }}>
-            <Typography variant="body2">{tooltipMessage}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <BlockIcon sx={{ color: 'error.main', fontSize: 20 }} />
+              <Typography variant="body2">{tooltipMessage}</Typography>
+            </Box>
             <Button
               variant="contained"
               color="primary"

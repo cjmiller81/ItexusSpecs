@@ -5,7 +5,7 @@ import {
   UserSubscription, 
   SubscriptionPlan, 
   getPlanFromStripeSubscription,
-  SUBSCRIPTION_PLANS 
+  DEFAULT_FREE_PLAN 
 } from '@/types/subscription';
 import { fetchProductAsync, RootState } from 'components';
 
@@ -40,12 +40,35 @@ export function useSubscription() {
     return subscription.plan.pageAccess.includes(pagePath);
   }, [subscription.isActive, subscription.plan.pageAccess]);
 
-  const canSaveStrategy = useCallback((currentCount: number): boolean => {
+  const canSaveStrategy = useCallback((currentCount: number, filterType?: string): boolean => {
     if (!subscription.isActive) {
       return false;
     }
     
+    // If no filterType specified, use general limit
+    if (!filterType) {
+      return currentCount < subscription.plan.featureLimits.savedStrategyCount;
+    }
+    
+    // For specific filter types, check if we have saved filters of that type
+    // This will be used with the actual saved filters array
     return currentCount < subscription.plan.featureLimits.savedStrategyCount;
+  }, [subscription.isActive, subscription.plan.featureLimits.savedStrategyCount]);
+
+  const canSaveStrategyByType = useCallback((filterType: string, savedFilters: any[]): boolean => {
+    if (!subscription.isActive) {
+      return false;
+    }
+    
+    // Count filters of the specific type that are not public (user's own filters)
+    const userFiltersOfType = savedFilters.filter(filter => 
+      filter.filterType === filterType && !filter.isPublic
+    );
+    
+    // Check only the limit for this specific filter type
+    const limit = subscription.plan.featureLimits.savedStrategyCount;
+    
+    return userFiltersOfType.length < limit;
   }, [subscription.isActive, subscription.plan.featureLimits.savedStrategyCount]);
 
   const canExportTable = useCallback((): boolean => {
@@ -90,13 +113,13 @@ export function useSubscription() {
     subscription,
     hasPageAccess,
     canSaveStrategy,
+    canSaveStrategyByType,
     canExportTable,
     getTradeAggregatorQuoteLimit,
     canConnectWallet,
     getWalletConnectionLimit,
-    isFreePlan: subscription.plan.id === SUBSCRIPTION_PLANS.FREE.id,
-    isBasicPlan: subscription.plan.id === SUBSCRIPTION_PLANS.BASIC_MONTHLY.id,
-    isPowerPlan: subscription.plan.id === SUBSCRIPTION_PLANS.POWER_MONTHLY.id,
-    isProPlan: subscription.plan.id === SUBSCRIPTION_PLANS.PRO_MONTHLY.id,
+    isFreePlan: subscription.plan.id === DEFAULT_FREE_PLAN.id,
+    isActiveSubscription: subscription.isActive,
+    planName: subscription.plan.name,
   };
 }

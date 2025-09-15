@@ -32,7 +32,6 @@ export default function Layout({ children }: Props) {
   const isDarkMode = mode === 'dark';
   const logoSrc = isDarkMode ? "/ElanInsightsLight.png" : "/ElanInsights.png"
 
-  // Load billing data first, then subscriptions
   useEffect(() => {
     const loadBillingData = async () => {
       try {
@@ -45,10 +44,8 @@ export default function Layout({ children }: Props) {
         
         if (billingData?.id) {
           
-          // Load subscriptions first
           const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
           
-          // Load product data if we have an active subscription
           if (subscriptionsData && subscriptionsData.length > 0) {
             const activeSubscription = subscriptionsData
               ?.filter((sub) => sub.status === "active")
@@ -61,7 +58,7 @@ export default function Layout({ children }: Props) {
         } else {
         }
       } catch (error) {
-        console.error('❌ Error loading billing:', error);
+        console.error('Error loading billing:', error);
       }
     };
     
