@@ -124,7 +124,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
               </Stack>
             )}
 
-            {price && (
+            {price !== undefined && price !== null && (
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography fontWeight={700} variant="h4">
                   ${price}

@@ -30,12 +30,289 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
+import { TourProvider, useTour } from "@reactour/tour";
 import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
 import { useSubscription } from "@/hooks/useSubscription";
+
+const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
+
+const TourManager = () => {
+  const { isOpen, setIsOpen, currentStep } = useTour();
+
+  useEffect(() => {
+    if (isOpen) {
+        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_VIEWED`, "1");
+
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && currentStep >= 0) {
+        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_STEP`, currentStep.toString());
+
+    }
+  }, [isOpen, currentStep]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        const popover = document.querySelector('.reactour__popover');
+        const mask = document.querySelector('.reactour__mask');
+        
+        if (popover) {
+          (popover as HTMLElement).style.zIndex = '99999999';
+          (popover as HTMLElement).style.position = 'fixed';
+          (popover as HTMLElement).style.display = 'block';
+          (popover as HTMLElement).style.visibility = 'visible';
+          (popover as HTMLElement).style.opacity = '1';
+        }
+        
+        if (mask) {
+          (mask as HTMLElement).style.zIndex = '99999998';
+          (mask as HTMLElement).style.position = 'fixed';
+          (mask as HTMLElement).style.display = 'block';
+          (mask as HTMLElement).style.visibility = 'visible';
+          (mask as HTMLElement).style.opacity = '0.8';
+        }
+
+        const styleId = 'reactour-modal-override';
+        let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+        
+        if (!styleElement) {
+          styleElement = document.createElement('style');
+          styleElement.id = styleId;
+          document.head.appendChild(styleElement);
+        }
+        
+        styleElement.textContent = `
+          .reactour__popover {
+            z-index: 99999999 !important;
+            position: fixed !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+          .reactour__mask {
+            z-index: 99999998 !important;
+            position: fixed !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 0.8 !important;
+          }
+          .reactour__close {
+            z-index: 100000000 !important;
+          }
+          .reactour__controls {
+            z-index: 99999999 !important;
+          }
+          .reactour__navigation {
+            z-index: 99999999 !important;
+          }
+        `;
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  return null; 
+};
+
+const TourPortalManager = ({ isTourOpen }: { 
+  isTourOpen: boolean
+}) => {
+  const { setIsOpen, setCurrentStep, currentStep } = useTour();
+
+  useEffect(() => {
+    
+    if (isTourOpen) {
+      setIsOpen(true);
+      
+      const savedStep = localStorage.getItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_STEP`);
+      if (savedStep && !isNaN(Number(savedStep))) {
+        const stepNumber = Number(savedStep);
+        setTimeout(() => {
+          setCurrentStep(stepNumber);
+        }, 100);
+      }
+    } else {
+      setIsOpen(false);
+    }
+  }, [isTourOpen, setIsOpen, setCurrentStep]);
+
+  useEffect(() => {
+    if (isTourOpen && currentStep >= 0) {
+        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_STEP`, currentStep.toString());
+        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_VIEWED`, "1");
+    }
+  }, [isTourOpen, currentStep]);
+
+  return null;
+};
+
+const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: { 
+  tourSteps: any[], 
+  isModalOpen: boolean,
+  onStartTourRef: React.MutableRefObject<(() => void) | null>
+}) => {
+  const [isTourOpen, setIsTourOpen] = useState(false);
+
+  const handleStartTour = () => {
+    setIsTourOpen(true);
+  };
+
+  useEffect(() => {
+    onStartTourRef.current = handleStartTour;
+  }, [onStartTourRef]);
+
+  useEffect(() => {
+    if (isModalOpen && !isTourOpen) {
+      const isTourViewed = localStorage.getItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_VIEWED`) === "1";
+      if (!isTourViewed) {
+        setTimeout(() => {
+          setIsTourOpen(true);
+        }, 1000); 
+      }
+    }
+  }, [isModalOpen, isTourOpen]);
+
+  useEffect(() => {
+    if (!isModalOpen && isTourOpen) {
+      setIsTourOpen(false);
+    }
+  }, [isModalOpen, isTourOpen]);
+
+  useEffect(() => {
+    if (isTourOpen) {
+      const timer = setTimeout(() => {
+        const popover = document.querySelector('.reactour__popover');
+        const mask = document.querySelector('.reactour__mask');
+        
+        if (popover) {
+          (popover as HTMLElement).style.zIndex = '99999999';
+          (popover as HTMLElement).style.position = 'fixed';
+          (popover as HTMLElement).style.display = 'block';
+          (popover as HTMLElement).style.visibility = 'visible';
+          (popover as HTMLElement).style.opacity = '1';
+        }
+        
+        if (mask) {
+          (mask as HTMLElement).style.zIndex = '99999998';
+          (mask as HTMLElement).style.position = 'fixed';
+          (mask as HTMLElement).style.display = 'block';
+          (mask as HTMLElement).style.visibility = 'visible';
+          (mask as HTMLElement).style.opacity = '0.8';
+        }
+
+        const styleId = 'reactour-modal-override';
+        let styleElement = document.getElementById(styleId) as HTMLStyleElement;
+        
+        if (!styleElement) {
+          styleElement = document.createElement('style');
+          styleElement.id = styleId;
+          document.head.appendChild(styleElement);
+        }
+        
+        styleElement.textContent = `
+          .reactour__popover {
+            z-index: 99999999 !important;
+            position: fixed !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+          .reactour__mask {
+            z-index: 99999998 !important;
+            position: fixed !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 0.8 !important;
+          }
+          .reactour__close {
+            z-index: 100000000 !important;
+          }
+          .reactour__controls {
+            z-index: 99999999 !important;
+          }
+          .reactour__navigation {
+            z-index: 99999999 !important;
+          }
+        `;
+      }, 100);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isTourOpen]);
+
+  if (typeof window === 'undefined' || !isModalOpen) {
+    return null;
+  }
+
+  return createPortal(
+    <TourProvider
+      steps={tourSteps}
+      showNavigation={true}
+      showBadge={false}
+      styles={{
+        popover: (base) => ({ 
+          ...base, 
+          borderRadius: 12, 
+          padding: "24px", 
+          background: "#ffffff", 
+          color: "#1a1a1a", 
+          minWidth: 300, 
+          maxWidth: 400,
+          zIndex: 99999999,
+        }),
+        maskArea: (base) => ({ 
+          ...base, 
+          rx: 10,
+          zIndex: 99999998,
+        }),
+        badge: (base) => ({ ...base, display: "none" }),
+        close: (base) => ({ 
+          ...base, 
+          zIndex: 100000000,
+        }),
+        controls: (base) => ({ 
+          ...base, 
+          zIndex: 99999999,
+        }),
+        navigation: (base) => ({ 
+          ...base, 
+          zIndex: 99999999,
+        }),
+      }}
+    >
+      <TourPortalManager isTourOpen={isTourOpen} />
+    </TourProvider>,
+    document.body
+  );
+};
+
+const StartTourButton = ({ onStartTour }: { onStartTour: () => void }) => {
+  return (
+    <Button
+      variant="outlined"
+      size="small"
+      onClick={onStartTour}
+      sx={{ 
+        textTransform: "none", 
+        borderWidth: 2,
+        fontWeight: 600,
+        px: 2,
+        py: 0.5
+      }}
+    >
+      Start Tour
+    </Button>
+  );
+};
 
 export interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
@@ -102,6 +379,51 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
+  
+  const startTourRef = useRef<(() => void) | null>(null);
+
+  const tourSteps = [
+    {
+      selector: "#filter_builder_header",
+      content: (
+        <div>
+          <h3>Filter Builder</h3>
+          <p>You are in the Filter Builder (Income Platform)</p>
+        </div>
+      ),
+      position: "bottom" as const,
+    },
+    {
+      selector: "#instruction_videos",
+      content: (
+        <div>
+          <h3>Instruction Videos</h3>
+          <p>Filter Builder instruction videos to help you get started</p>
+        </div>
+      ),
+      position: "right" as const,
+    },
+    {
+      selector: "#custom_section",
+      content: (
+        <div>
+          <h3>Custom Filter Build</h3>
+          <p>Custom filter build section - create your own filters here</p>
+        </div>
+      ),
+      position: "bottom" as const,
+    },
+    {
+      selector: "#saved_filters",
+      content: (
+        <div>
+          <h3>Saved Filters</h3>
+          <p>View your saved filters here</p>
+        </div>
+      ),
+      position: "left" as const,
+    },
+  ];
 
   useImperativeHandle(ref, () => ({
     onUpdateFilter: (filter) => {
@@ -297,6 +619,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
   return (
     <>
+      <TourPortal tourSteps={tourSteps} isModalOpen={filterBuilderOpen} onStartTourRef={startTourRef} />
       <StyledAdaptivePageBox sx={{ width: "100%" }}>
         <Select
           id="filter_presets"
@@ -415,13 +738,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           <CloseIcon />
         </IconButton>
         <DialogTitle sx={{ bgcolor: "background.paper" }}>
-          <Typography variant="h6">{t("FilterTokens")}</Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="h6" id="filter_builder_header">{t("FilterTokens")}</Typography>
+            <StartTourButton onStartTour={() => startTourRef.current?.()} />
+          </Box>
         </DialogTitle>
         <DialogContent sx={{ bgcolor: "background.paper" }}>
           <Box sx={{ width: "100%" }}>
             <ContentContainer>
               <Stack>
-                <FilterBuilderComponentContainer>
+                <FilterBuilderComponentContainer id="custom_section">
                   <Box
                     sx={{
                       "& .dx-filterbuilder.dx-widget": {
@@ -547,9 +873,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     </Button>
                   </Stack>
 
-                  <Stack direction="row" spacing={2}>
+                  <Stack direction="row" spacing={2} id="instruction_videos">
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="h6" sx={{ mt: 2 }}>
+                      <Typography variant="h6" sx={{ mt: 2 }} >
                         {t("FilterBuilderTrainingVideos")}
                       </Typography>
 
@@ -775,7 +1101,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                 </FilterControlsContainer>
               </Stack>
               <Stack width="100%">
-                <FilterSelectorContainer>
+                <FilterSelectorContainer id="saved_filters">
                   <Typography
                     noWrap
                     fontWeight={500}
