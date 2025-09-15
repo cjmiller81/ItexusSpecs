@@ -55,7 +55,6 @@ export default function Layout({ children }: Props) {
               await dispatch(fetchProductAsync(activeSubscription.items.data[0].price.product));
             }
           }
-        } else {
         }
       } catch (error) {
         console.error('Error loading billing:', error);

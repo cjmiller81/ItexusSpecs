@@ -12,14 +12,12 @@ import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
 import { Theme, useTheme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
-import { useSubscription } from "@/hooks/useSubscription";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
 import SourceIcon from '@mui/icons-material/Source';
 import TagIcon from '@mui/icons-material/Tag';
 import InfoIcon from '@mui/icons-material/Info';
 import SvgIcon from "@mui/icons-material/AutoGraph";
-import { SUBSCRIPTION_PLANS } from "@/types/subscription";
 
 i18next.setDefaultNamespace("SideBar");
 

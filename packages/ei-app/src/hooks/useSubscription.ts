@@ -3,11 +3,10 @@ import { useSelector } from 'react-redux';
 
 import { 
   UserSubscription, 
-  SubscriptionPlan, 
   getPlanFromStripeSubscription,
   DEFAULT_FREE_PLAN 
 } from '@/types/subscription';
-import { fetchProductAsync, RootState } from 'components';
+import { RootState } from 'components';
 
 export function useSubscription() {
   const billing = useSelector((state: RootState) => state.billing);

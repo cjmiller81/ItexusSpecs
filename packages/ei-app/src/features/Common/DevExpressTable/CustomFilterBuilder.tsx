@@ -6,7 +6,6 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import CloseIcon from "@mui/icons-material/Close";
 import TuneIcon from "@mui/icons-material/Tune";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -30,19 +29,18 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 import { TourProvider, useTour } from "@reactour/tour";
 import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
-import { useSubscription } from "@/hooks/useSubscription";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
 const TourManager = () => {
-  const { isOpen, setIsOpen, currentStep } = useTour();
+  const { isOpen, currentStep } = useTour();
 
   useEffect(() => {
     if (isOpen) {
@@ -375,7 +373,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const theme = useTheme();
   const [openIntroduction, setOpenIntroduction] = useState(true);
   const [openLogicGate, setOpenLogicGate] = useState(true);
-  const { canSaveStrategy } = useSubscription();
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
