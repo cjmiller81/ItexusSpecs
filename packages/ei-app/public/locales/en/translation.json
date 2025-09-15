@@ -595,7 +595,17 @@
     "TourPerformanceTextMCEW": "Notice the YTD Market Cap Equal Weighted Index performance: 10% over BTC. This is the magic of MCEWI: rewarding growth"
   },
   "TradingPage": {
-    "TradingCharts": "Trading Charts"
+    "TradingCharts": "Trading Charts",
+    "TradingChartsTourPlatformTitle": "Trading Platform",
+    "TradingChartsTourPlatformText": "You are in the Trading Platform, viewing Charts",
+    "TradingChartsTourPrimaryTokenText": "Choose your primary token",
+    "TradingChartsTourIndicatorsTitle": "Chart Indicators",
+    "TradingChartsTourIndicatorsText": "Choose among classic chart indicators, such as the MACD below the chart",
+    "TradingChartsTourViewPrefsText": "Choose your view preferences",
+    "TradingChartsTourToolsText": "Charting tools for technical analysis",
+    "TradingChartsTourTimelineText": "Choose your timeline preferences",
+    "TradingChartsTourHelpTitle": "Need Help?",
+    "TradingChartsTourHelpText": "For charting information and education, please see TradingView's Knowledge Base"
   },
   "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",

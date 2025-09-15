@@ -1,8 +1,56 @@
 import { useAppSelector } from "@/libs/redux/Store";
-import { Box } from "@mui/system";
+import { Box, Button } from "@mui/material";
 import { Typography, Chip, keyframes } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
+import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { useState, useEffect } from "react";
+
+const TOUR_ID = "trading_v1";
+
+const StartTourButton = () => {
+  const { setIsOpen, setCurrentStep } = useTour();
+  return (
+    <Button
+      variant="outlined"
+      size="small"
+      sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
+      onClick={() => {
+        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+        setIsOpen(true);
+      }}
+    >
+      Start Tour
+    </Button>
+  );
+};
+
+const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
+  const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
+  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
+    if (currentStep >= totalSteps - 1) {
+      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+    }
+  }, [currentStep, totalSteps]);
+  
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
+  }, [isOpen]);
+  
+  useEffect(() => {
+    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+    if (!viewed) {
+      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+      setIsOpen(true);
+    }
+  }, []);
+  
+  return null;
+};
 
 const SymbolOverviewNoSSR = dynamic(() => import("react-ts-tradingview-widgets").then(w => w.AdvancedRealTimeChart), {
   ssr: false,
@@ -38,16 +86,107 @@ const rotate = keyframes`
 export default function TradingPage() {
   const mode = useAppSelector(state => state.ui.mode);
   const { t } = useTranslation("TradingPage");
+
+  const steps: StepType[] = [
+    {
+      selector: "#trading_header",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TradingChartsTourPlatformTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TradingChartsTourPlatformText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#tradingview_widget",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourPrimaryTokenText")}</Typography>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#tradingview_widget",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TradingChartsTourIndicatorsTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TradingChartsTourIndicatorsText")}</Typography>
+        </Box>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#tradingview_widget",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourViewPrefsText")}</Typography>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#tradingview_widget",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourToolsText")}</Typography>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#tradingview_widget",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourTimelineText")}</Typography>
+      ),
+      position: "top"
+    },
+    {
+      selector: "#tradingview_widget",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TradingChartsTourHelpTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TradingChartsTourHelpText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    }
+  ];
   
   return (
-    <Box sx={{ height: "770px" }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-        <Typography
-          variant="h4"
-          component="div"
-          sx={{ fontWeight: "bold", mb: 0 }}>
-          {t("TradingCharts")}
-        </Typography>
+    <TourProvider
+      steps={steps}
+      styles={{
+        popover: (base) => ({ 
+          ...base, 
+          borderRadius: 12, 
+          padding: "32px 24px 24px 24px", 
+          background: "#ffffff", 
+          color: "#1a1a1a", 
+          minWidth: 400, 
+          maxWidth: 500,
+          paddingTop: "40px"
+        }),
+        maskArea: (base) => ({ ...base, rx: 10 }),
+        badge: (base) => ({ ...base, display: "none" }),
+        close: (base) => ({ 
+          ...base, 
+          top: "12px", 
+          right: "12px",
+          zIndex: 1000
+        }),
+      }}
+    >
+      <>
+        <TourStateSync totalSteps={steps.length} />
+        <Box sx={{ height: "770px" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+            <Box display="flex" alignItems="center">
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ fontWeight: "bold", mb: 0 }}
+                id="trading_header"
+              >
+                {t("TradingCharts")}
+              </Typography>
+              <StartTourButton />
+            </Box>
         
         <Chip
           icon={
@@ -102,16 +241,20 @@ export default function TradingPage() {
         />
       </Box>
       
-      <SymbolOverviewNoSSR
-        symbol="COINBASE:BTCUSD"
-        copyrightStyles={{
-          parent: {
-            display: "none",
-          },
-        }}
-        theme={mode === "light" ? "light" : "dark"}
-        autosize
-      />
-    </Box>
+          <Box id="tradingview_widget" sx={{ width: "100%", height: "100%" }}>
+            <SymbolOverviewNoSSR
+              symbol="COINBASE:BTCUSD"
+              copyrightStyles={{
+                parent: {
+                  display: "none",
+                },
+              }}
+              theme={mode === "light" ? "light" : "dark"}
+              autosize
+            />
+          </Box>
+        </Box>
+      </>
+    </TourProvider>
   );
 }
