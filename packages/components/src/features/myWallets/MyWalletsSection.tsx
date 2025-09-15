@@ -1,5 +1,7 @@
 import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
 import { styled } from "@mui/system";
+import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   GridCellParams,
   GridEventListener,
@@ -58,6 +60,7 @@ export const MyWalletsSection = ({
 }: Props) => {
   const { t } = useTranslation("MyWalletsSection");
   const apiRef = useGridApiRef();
+  const { canConnectWallet } = useSubscription();
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
@@ -252,11 +255,16 @@ export const MyWalletsSection = ({
         />
       )}
       <StyledAdaptivePageBox>
-        <StyledAddWalletButton
-          variant="contained"
-          onClick={() => setAddWalletModalOpen(true)}>
-          {t("AddWalletWeb3")}
-        </StyledAddWalletButton>
+        <FeatureAccessGuard
+          feature="walletConnectionDEX"
+          currentCount={wallets?.length || 0}
+        >
+          <StyledAddWalletButton
+            variant="contained"
+            onClick={() => setAddWalletModalOpen(true)}>
+            {t("AddWalletWeb3")}
+          </StyledAddWalletButton>
+        </FeatureAccessGuard>
       </StyledAdaptivePageBox>
       <StyledAdaptivePageBox>
         <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>

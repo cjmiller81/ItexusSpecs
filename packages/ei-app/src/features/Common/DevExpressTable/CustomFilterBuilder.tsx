@@ -34,6 +34,8 @@ import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useSta
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
+import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
+import { useSubscription } from "@/hooks/useSubscription";
 
 export interface ICustomFilterBuilderProps {
   predefinedFilters: IPrefilterTokensFilterValues[];
@@ -96,6 +98,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const theme = useTheme();
   const [openIntroduction, setOpenIntroduction] = useState(true);
   const [openLogicGate, setOpenLogicGate] = useState(true);
+  const { canSaveStrategy } = useSubscription();
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
@@ -518,15 +521,20 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     gap={2}
                     justifyContent="space-between"
                     height={24}>
-                    <LoadingButton
-                      loading={filterLoading}
-                      sx={{ minWidth: 90 }}
-                      color="primary"
-                      disabled={!filterName}
-                      onClick={handleSaveFilter}
-                      variant="contained">
-                      {t("Save", { ns: "Common" })}
-                    </LoadingButton>
+           <FeatureAccessGuard
+             feature="saveStrategy"
+             currentCount={sortedPredefinedFilters.filter(f => !f.isPublic).length}
+           >
+                      <LoadingButton
+                        loading={filterLoading}
+                        sx={{ minWidth: 90 }}
+                        color="primary"
+                        disabled={!filterName}
+                        onClick={handleSaveFilter}
+                        variant="contained">
+                        {t("Save", { ns: "Common" })}
+                      </LoadingButton>
+                    </FeatureAccessGuard>
                     <Button
                       sx={{ width: "100%" }}
                       disabled={!filterValue}

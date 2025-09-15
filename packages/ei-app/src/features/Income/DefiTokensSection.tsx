@@ -26,6 +26,7 @@ import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -201,20 +202,22 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
               onClick={e => e.stopPropagation()}>
               {t("PrefilterLiquidityPools")}
             </PageTitle>
-            <Button
-              onClick={e => {
-                e.stopPropagation();
-                onExport();
-              }}
-              variant="outlined"
-              sx={{ ml: 4, marginRight: "17px" }}
-              id="income_export"
-            >
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <DownloadIcon />
-                {t("Export")}
-              </Box>
-            </Button>
+            <FeatureAccessGuard feature="tableExport">
+              <Button
+                onClick={e => {
+                  e.stopPropagation();
+                  onExport();
+                }}
+                variant="outlined"
+                sx={{ ml: 4, marginRight: "17px" }}
+                id="income_export"
+              >
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  <DownloadIcon />
+                  {t("Export")}
+                </Box>
+              </Button>
+            </FeatureAccessGuard>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails

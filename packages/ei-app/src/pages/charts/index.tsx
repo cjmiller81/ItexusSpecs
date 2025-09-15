@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import { Typography, Chip, keyframes } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
+import { PageAccessGuard } from "@/components/PageAccessGuard";
 
 const SymbolOverviewNoSSR = dynamic(() => import("react-ts-tradingview-widgets").then(w => w.AdvancedRealTimeChart), {
   ssr: false,
@@ -40,7 +41,8 @@ export default function TradingPage() {
   const { t } = useTranslation("TradingPage");
   
   return (
-    <Box sx={{ height: "770px" }}>
+    <PageAccessGuard requiredPage="/charts">
+      <Box sx={{ height: "770px" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
         <Typography
           variant="h4"
@@ -113,5 +115,6 @@ export default function TradingPage() {
         autosize
       />
     </Box>
+    </PageAccessGuard>
   );
 }

@@ -5,6 +5,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { Box, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import React from "react";
+import { PageAccessGuard } from "@/components/PageAccessGuard";
 import { useTranslation } from "react-i18next";
 
 
@@ -41,47 +42,49 @@ export default function Dex() {
       };
     
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography
-        variant="h4"
-        component="div"
-        sx={{fontWeight: "bold", mb: 2 }}
-      >
-        {t("TradeAggregatorDex")}
-      </Typography>
+    <PageAccessGuard requiredPage="/tradeAggregator/dex">
+      <Box sx={{ padding: 2 }}>
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{fontWeight: "bold", mb: 2 }}
+        >
+          {t("TradeAggregatorDex")}
+        </Typography>
 
-      <Grid container spacing={1}>
-        <Grid item xs={12} md={4.9}>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontSize: "14px", marginBottom: 1 }}
-          >
-            {t("CurrentPosition")}
-          </Typography>
-          <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
-            selectedChainNewPosition={selectedChain}
-            onFilteredRowsChange={setFilteredRows}
-            onTokenChange={handleSelectedTokenRowChange}
-            onClearTokenAndChain={clearSelectedTokenAndChain}/>
-        </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={12} md={4.9}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontSize: "14px", marginBottom: 1 }}
+            >
+              {t("CurrentPosition")}
+            </Typography>
+            <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
+              selectedChainNewPosition={selectedChain}
+              onFilteredRowsChange={setFilteredRows}
+              onTokenChange={handleSelectedTokenRowChange}
+              onClearTokenAndChain={clearSelectedTokenAndChain}/>
+          </Grid>
 
-        <Grid item xs={12} md={7}>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontSize: "14px", marginBottom: 1, marginLeft:"17px" }}
-          >
-            {t("NewPosition")}
-          </Typography>
-          <NewPositionSection
-            selectedWallet={selectedWallet}
-            onSelectedTokenChange={handleSelectedTokenChange}
-            filteredRows={filteredRows}
-            selectedTokenRow={selectedTokenRow}
-          />
+          <Grid item xs={12} md={7}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontSize: "14px", marginBottom: 1, marginLeft:"17px" }}
+            >
+              {t("NewPosition")}
+            </Typography>
+            <NewPositionSection
+              selectedWallet={selectedWallet}
+              onSelectedTokenChange={handleSelectedTokenChange}
+              filteredRows={filteredRows}
+              selectedTokenRow={selectedTokenRow}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </PageAccessGuard>
   );
 }

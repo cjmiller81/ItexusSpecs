@@ -15,6 +15,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
 import { Typography } from "@mui/material";
+import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -124,19 +125,21 @@ export const IndexModelingSection = ({
       tooltip={t("ToogleView", { ns: "Common" })}
       id={id}
       headerChildren={
-        <Button
-          id="export_button"
-          sx={{ mr: 2, pointerEvents: "auto" }}
-          onClick={event => {
-            event.stopPropagation();
-            onExport();
-          }}
-          variant="outlined">
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <DownloadIcon />
-            {t("Export")}
-          </Box>
-        </Button>
+        <FeatureAccessGuard feature="tableExport">
+          <Button
+            id="export_button"
+            sx={{ mr: 2, pointerEvents: "auto" }}
+            onClick={event => {
+              event.stopPropagation();
+              onExport();
+            }}
+            variant="outlined">
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <DownloadIcon />
+              {t("Export")}
+            </Box>
+          </Button>
+        </FeatureAccessGuard>
       }
       {...props}>
       <MainContainer

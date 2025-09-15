@@ -712,5 +712,17 @@
     "UnsupportedTokenPair": "Unsupported token pair",
     "NetworkCongestion": "Network congestion",
     "TryAgain": "Try Again"
+  },
+  "AccessControl": {
+    "Access Restricted": "Access Restricted",
+    "This page is not available in your current subscription plan.": "This page is not available in your current subscription plan.",
+    "Current Plan": "Current Plan",
+    "Go Back": "Go Back",
+    "Upgrade Plan": "Upgrade Plan",
+    "You have reached the limit of {{limit}} saved strategies for {{plan}} plan": "You have reached the limit of {{limit}} saved strategies for {{plan}} plan",
+    "Table export is not available in {{plan}} plan": "Table export is not available in {{plan}} plan",
+    "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan": "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan",
+    "DEX quote requests are not available in {{plan}} plan": "DEX quote requests are not available in {{plan}} plan",
+    "This feature is not available in your current plan": "This feature is not available in your current plan"
   }
 }
