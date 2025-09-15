@@ -24,8 +24,8 @@ import { setAccordionState } from "components";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
-import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
-import { useSubscription } from "@/hooks/useSubscription";
+import { FeatureAccessGuard } from "components";
+import { useSubscription } from "components";
 
 const TOUR_ID = "wallet_v1";
 

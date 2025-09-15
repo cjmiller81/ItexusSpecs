@@ -1,7 +1,7 @@
 import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
 import { styled } from "@mui/system";
-import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
-import { useSubscription } from "@/hooks/useSubscription";
+import { FeatureAccessGuard } from "../../components/FeatureAccessGuard";
+import { useSubscription } from "../../hooks/useSubscription";
 import {
   GridCellParams,
   GridEventListener,

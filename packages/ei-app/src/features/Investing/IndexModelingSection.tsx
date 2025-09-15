@@ -15,7 +15,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
 import { Typography } from "@mui/material";
-import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
+import { FeatureAccessGuard } from "components";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;

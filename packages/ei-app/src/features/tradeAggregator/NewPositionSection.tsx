@@ -34,7 +34,7 @@ import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "components";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;

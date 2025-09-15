@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "../hooks/useSubscription";
 import { Tooltip, Button, Box, Typography, Stack } from "@mui/material";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
@@ -138,4 +138,3 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
 
   return renderContent;
 };
-

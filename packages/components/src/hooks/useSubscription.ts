@@ -5,7 +5,7 @@ import {
   UserSubscription, 
   getPlanFromStripeSubscription,
   DEFAULT_FREE_PLAN 
-} from '@/types/subscription';
+} from '../types/subscription';
 import { RootState } from 'components';
 
 export function useSubscription() {

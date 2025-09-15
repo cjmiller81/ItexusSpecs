@@ -23,7 +23,7 @@ import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
-import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
+import { FeatureAccessGuard } from "components";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { Box, Typography, Button, Paper } from '@mui/material';
 import { Lock, ArrowBack } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useSubscription } from 'components';
 
 interface PageAccessGuardProps {
   children: React.ReactNode;

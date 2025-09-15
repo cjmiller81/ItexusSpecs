@@ -7,7 +7,7 @@ import { fetchSubscriptionsAsync, getBillingAsync, Header, RootState, Sidebar, S
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useSelector } from "react-redux"
-import { useSubscription } from "@/hooks/useSubscription"
+import { useSubscription } from "components"
 import "react-toastify/dist/ReactToastify.css"
 
 interface Props {

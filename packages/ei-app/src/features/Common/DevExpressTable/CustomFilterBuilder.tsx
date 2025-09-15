@@ -35,7 +35,7 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 import { TourProvider, useTour } from "@reactour/tour";
-import { FeatureAccessGuard } from "@/components/FeatureAccessGuard";
+import { FeatureAccessGuard } from "components";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
