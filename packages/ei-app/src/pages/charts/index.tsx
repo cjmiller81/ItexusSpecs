@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { useState, useEffect } from "react";
+import { PageAccessGuard } from "@/components/PageAccessGuard";
 
 const TOUR_ID = "trading_v1";
 
@@ -149,6 +150,7 @@ export default function TradingPage() {
   ];
   
   return (
+    <PageAccessGuard requiredPage="/charts">
     <TourProvider
       steps={steps}
       styles={{
@@ -256,5 +258,6 @@ export default function TradingPage() {
         </Box>
       </>
     </TourProvider>
+    </PageAccessGuard>
   );
 }

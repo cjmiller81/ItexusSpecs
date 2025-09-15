@@ -34,6 +34,7 @@ import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
+import { useSubscription } from "components";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -45,6 +46,7 @@ interface NewPositionSectionProps {
 export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow})=> {
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
+  const { getTradeAggregatorQuoteLimit } = useSubscription();
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
@@ -379,7 +381,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               version: name,
             });
 
-            console.log(deepLink)
           }
 
           let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
@@ -420,6 +421,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       data.toTokenAddress &&
       data.amount > 0
     ) {
+      const quoteLimit = getTradeAggregatorQuoteLimit();
+      
       if(isDexEnabled === false)
       {
         dispatch(fetchQuote({
@@ -427,7 +430,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           fromTokenAddress: data.fromTokenAddress,
           toTokenAddress: data.toTokenAddress,
           amount: data.amount,
-          requests: 5
+          requests: quoteLimit
         }));
       }
       else 
@@ -437,7 +440,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           fromTokenAddress: data.fromTokenAddress,
           toTokenAddress: data.toTokenAddress,
           amount: data.amount,
-          requests: 5,
+          requests: quoteLimit,
           selectedProtocols: selectedDexs.map(dex => dex.id)
         }));
       }

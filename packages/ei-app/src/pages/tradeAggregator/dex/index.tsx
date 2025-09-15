@@ -5,6 +5,7 @@ import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { Box, Grid, Typography, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import React from "react";
+import { PageAccessGuard } from "@/components/PageAccessGuard";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 
@@ -162,6 +163,7 @@ export default function Dex() {
       };
     
   return (
+    <PageAccessGuard requiredPage="/tradeAggregator/dex">
     <TourProvider
       steps={steps}
       styles={{
@@ -200,21 +202,21 @@ export default function Dex() {
             <StartTourButton />
           </Box>
 
-      <Grid container spacing={1}>
-        <Grid item xs={12} md={4.9}>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontSize: "14px", marginBottom: 1 }}
-          >
-            {t("CurrentPosition")}
-          </Typography>
-          <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
-            selectedChainNewPosition={selectedChain}
-            onFilteredRowsChange={setFilteredRows}
-            onTokenChange={handleSelectedTokenRowChange}
-            onClearTokenAndChain={clearSelectedTokenAndChain}/>
-        </Grid>
+        <Grid container spacing={1}>
+          <Grid item xs={12} md={4.9}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontSize: "14px", marginBottom: 1 }}
+            >
+              {t("CurrentPosition")}
+            </Typography>
+            <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
+              selectedChainNewPosition={selectedChain}
+              onFilteredRowsChange={setFilteredRows}
+              onTokenChange={handleSelectedTokenRowChange}
+              onClearTokenAndChain={clearSelectedTokenAndChain}/>
+          </Grid>
 
         <Grid item xs={12} md={7}>
           <Typography
@@ -235,5 +237,6 @@ export default function Dex() {
         </Box>
       </>
     </TourProvider>
+    </PageAccessGuard>
   );
 }

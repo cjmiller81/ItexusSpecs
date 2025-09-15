@@ -21,6 +21,7 @@ import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { FeatureAccessGuard } from "components";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -232,19 +233,21 @@ export default function PrefilterTokensSection({
             onClick={e => e.stopPropagation()}>
             {t("PrefilterTokens")}
           </PageTitle>
-          <Button
-            id="export_button"
-            onClick={e => {
-              e.stopPropagation();
-              onExport();
-            }}
-            variant="outlined"
-            sx={{ ml: 4, marginRight: "17px" }}>
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-              <DownloadIcon />
-              {t("Export")}
-            </Box>
-          </Button>
+          <FeatureAccessGuard feature="tableExport">
+            <Button
+              id="export_button"
+              onClick={e => {
+                e.stopPropagation();
+                onExport();
+              }}
+              variant="outlined"
+              sx={{ ml: 4, marginRight: "17px" }}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                <DownloadIcon />
+                {t("Export")}
+              </Box>
+            </Button>
+          </FeatureAccessGuard>
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails

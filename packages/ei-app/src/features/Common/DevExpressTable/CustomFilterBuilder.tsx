@@ -6,7 +6,6 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import CloseIcon from "@mui/icons-material/Close";
 import TuneIcon from "@mui/icons-material/Tune";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { LoadingButton } from "@mui/lab";
 import {
   Box,
@@ -30,17 +29,18 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { forwardRef, Ref, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 import { TourProvider, useTour } from "@reactour/tour";
+import { FeatureAccessGuard } from "components";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
 const TourManager = () => {
-  const { isOpen, setIsOpen, currentStep } = useTour();
+  const { isOpen, currentStep } = useTour();
 
   useEffect(() => {
     if (isOpen) {
@@ -844,15 +844,22 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     gap={2}
                     justifyContent="space-between"
                     height={24}>
-                    <LoadingButton
-                      loading={filterLoading}
-                      sx={{ minWidth: 90 }}
-                      color="primary"
-                      disabled={!filterName}
-                      onClick={handleSaveFilter}
-                      variant="contained">
-                      {t("Save", { ns: "Common" })}
-                    </LoadingButton>
+           <FeatureAccessGuard
+             feature="saveStrategy"
+             currentCount={sortedPredefinedFilters.filter(f => !f.isPublic).length}
+             filterType={filterType ? String(filterType) : undefined}
+             savedFilters={sortedPredefinedFilters}
+           >
+                      <LoadingButton
+                        loading={filterLoading}
+                        sx={{ minWidth: 90 }}
+                        color="primary"
+                        disabled={!filterName}
+                        onClick={handleSaveFilter}
+                        variant="contained">
+                        {t("Save", { ns: "Common" })}
+                      </LoadingButton>
+                    </FeatureAccessGuard>
                     <Button
                       sx={{ width: "100%" }}
                       disabled={!filterValue}

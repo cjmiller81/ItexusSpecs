@@ -24,6 +24,8 @@ import { setAccordionState } from "components";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
+import { FeatureAccessGuard } from "components";
+import { useSubscription } from "components";
 
 const TOUR_ID = "wallet_v1";
 
@@ -116,6 +118,7 @@ export default function MyWalletsPage() {
   const theme = useTheme();
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const { t } = useTranslation("MyWalletsPage");
+  const { canConnectWallet } = useSubscription();
 
   const fetchHistoricalData = useCallback(() => {
     if (isDatesValid && fromDate && toDate) {
@@ -345,27 +348,32 @@ export default function MyWalletsPage() {
      <Grid container spacing={4} alignItems="flex-start">
       <Grid item xs={12} md={3} sx={{ minWidth: 0 }}>
         <Stack spacing={2} sx={{ minWidth: 0 }}>
-          <StyledAddWalletButton
-            id="wallet_link_info"
-            variant="contained"
-            sx={{
-              width: "max-content",
-              maxWidth: "100%",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              [theme.breakpoints.between('md','lg')]: {
-                fontSize: "0.8125rem",
-                paddingLeft: 12,
-                paddingRight: 12,
-                paddingTop: 6,
-                paddingBottom: 6,
-              },
-            }}
-            onClick={() => setAddWalletModalOpen(true)}
+          <FeatureAccessGuard
+            feature="walletConnectionDEX"
+            currentCount={wallets?.length || 0}
           >
-            {t("AddWalletWeb3", { ns: "MyWalletsSection" })}
-          </StyledAddWalletButton>
+            <StyledAddWalletButton
+              id="wallet_link_info"
+              variant="contained"
+              sx={{
+                width: "max-content",
+                maxWidth: "100%",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                [theme.breakpoints.between('md','lg')]: {
+                  fontSize: "0.8125rem",
+                  paddingLeft: 12,
+                  paddingRight: 12,
+                  paddingTop: 6,
+                  paddingBottom: 6,
+                },
+              }}
+              onClick={() => setAddWalletModalOpen(true)}
+            >
+              {t("AddWalletWeb3", { ns: "MyWalletsSection" })}
+            </StyledAddWalletButton>
+          </FeatureAccessGuard>
 
           <WalletsOverviewPanel />
         </Stack>
