@@ -270,7 +270,6 @@ export default function PrefilterTokensSection({
             onCurrentFilterChange={onFilterChanged}
             dataSource={dataSource}
             onSorterChanged={onSorterChanged}
-            filterType={filterType}
           />
         )}
       </AccordionDetails>
