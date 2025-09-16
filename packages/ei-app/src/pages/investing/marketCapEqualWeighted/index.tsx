@@ -26,6 +26,30 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 
+const transformFilter = (filter: any): any => {
+  if (!filter || !Array.isArray(filter)) {
+    return filter;
+  }
+
+  if (filter.length === 3 && filter[1] === 'between' && Array.isArray(filter[2])) {
+    const [field, , values] = filter;
+    const [minValue, maxValue] = values;
+    
+    return [
+      [field, '>=', minValue],
+      'and',
+      [field, '<=', maxValue]
+    ];
+  }
+
+  return filter.map((item: any) => {
+    if (Array.isArray(item)) {
+      return transformFilter(item);
+    }
+    return item;
+  });
+};
+
 
 const TOUR_ID = "investing_v1";
 
@@ -90,18 +114,37 @@ export default function MarketCapEqualWeightedPage() {
   const { t } = useTranslation(["MarketCapPage", "Common"]);
 
   const dataSource = useMemo(
-    () =>
-      new DataSource({
-        store: createStore({
-          key: "id",
-          cacheRawData: true,
-          loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
+      () =>
+        new DataSource({
+          store: createStore({
+            key: "id",
+            cacheRawData: true,
+            loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
+  
+            onBeforeSend: (method, ajaxOptions) => {
+              ajaxOptions.xhrFields = { withCredentials: true };
+              
+              if (ajaxOptions.data && ajaxOptions.data.filter !== undefined) {
+                try {
+                  if (ajaxOptions.data.filter === null || ajaxOptions.data.filter === "null") {
+                    ajaxOptions.data.filter = "[]";
+                  } else {
+                    const originalFilter = JSON.parse(ajaxOptions.data.filter);
+                    const transformedFilter = transformFilter(originalFilter);
+                    ajaxOptions.data.filter = JSON.stringify(transformedFilter);
+                  }
+                } catch (error) {
+                  console.error('Error transforming filter in DataSource:', error);
+                  ajaxOptions.data.filter = "[]"; 
+                }
+              }
+            },
+          }),
+          paginate: true,
+          pageSize: 20,
         }),
-        paginate: true,
-        pageSize: 20,
-      }),
-    [],
-  );
+      [],
+    );
 
   const steps: StepType[] = [
     {
