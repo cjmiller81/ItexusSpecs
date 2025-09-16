@@ -29,6 +29,7 @@ type Props = Omit<AccordionProps, "children"> & {
   onFilterChanged: (filter: any) => void;
   onSorterChanged: (sorter: any) => void;
   id?: string;
+  filterType?: string;
 };
 
 export default function PrefilterTokensSection({
@@ -37,6 +38,7 @@ export default function PrefilterTokensSection({
   dataSource,
   persisKey,
   id,
+  filterType = "market-cap",
   ...props
 }: Props) {
   const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
