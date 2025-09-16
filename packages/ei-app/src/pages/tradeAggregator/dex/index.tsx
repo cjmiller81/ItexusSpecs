@@ -8,6 +8,7 @@ import React from "react";
 import { PageAccessGuard } from "@/components/PageAccessGuard";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { useSubscription } from "components";
 
 const TOUR_ID = "dex_aggregator_v1";
 
@@ -15,9 +16,17 @@ const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
   return (
     <Button
-      variant="outlined"
+      variant="contained"
       size="small"
-      sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
+      sx={{ 
+        ml: 2, 
+        textTransform: "none", 
+        backgroundColor: "#109EEF",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
+      }}
       onClick={() => {
         const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
         setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
@@ -62,6 +71,7 @@ export default function Dex() {
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
     const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
     const [selectedTokenRow, setSelectedTokenRow] = useState<WalletBalance | null>(null);
+    const { getTradeAggregatorQuoteLimit } = useSubscription();
 
     const steps: StepType[] = [
       {
@@ -75,18 +85,18 @@ export default function Dex() {
         position: "bottom"
       },
       {
-        selector: "#manual_position_btn",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourManualPositionText")}</Typography>
-        ),
-        position: "right"
-      },
-      {
         selector: "#wallet_dropdown",
         content: () => (
           <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourWalletChoiceText")}</Typography>
         ),
         position: "bottom"
+      },
+      {
+        selector: "#manual_position_btn",
+        content: () => (
+          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourManualPositionText")}</Typography>
+        ),
+        position: "right"
       },
       {
         selector: "#token_list",
@@ -114,7 +124,7 @@ export default function Dex() {
         content: () => (
           <Box sx={{ color: "#1a1a1a" }}>
             <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("DexAggregatorTourQuotesTitle")}</Typography>
-            <Typography sx={{ color: "#4a5568" }}>{t("DexAggregatorTourQuotesText")}</Typography>
+            <Typography sx={{ color: "#4a5568" }}>{t("DexAggregatorTourQuotesText", { quoteCount: getTradeAggregatorQuoteLimit() })}</Typography>
           </Box>
         ),
         position: "top"

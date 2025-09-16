@@ -80,9 +80,17 @@ const StartTourButton = () => {
   
   return (
     <Button
-      variant="outlined"
+      variant="contained"
       size="small"
-      sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
+      sx={{ 
+        ml: 2, 
+        textTransform: "none", 
+        backgroundColor: "#109EEF",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
+      }}
       onClick={() => {
         openAllAccordions();
         const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
@@ -186,17 +194,7 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
     {
       selector: "#historical_chart",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("TourHistoricalText")}</Typography>
-      ),
-      position: "bottom"
-    },
-    {
-      selector: "#token_selector",
-      content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourTokenCountTitle")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("TourTokenCountText")}</Typography>
-        </Box>
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourHistoricalText", { currentYear: new Date().getFullYear() })}</Typography>
       ),
       position: "bottom"
     },

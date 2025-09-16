@@ -296,15 +296,19 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
 const StartTourButton = ({ onStartTour }: { onStartTour: () => void }) => {
   return (
     <Button
-      variant="outlined"
+      variant="contained"
       size="small"
       onClick={onStartTour}
       sx={{ 
         textTransform: "none", 
-        borderWidth: 2,
+        backgroundColor: "#109EEF",
+        color: "white",
         fontWeight: 600,
         px: 2,
-        py: 0.5
+        py: 0.5,
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
       }}
     >
       Start Tour

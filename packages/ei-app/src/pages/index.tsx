@@ -30,9 +30,17 @@ const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
   return (
     <Button
-      variant="outlined"
+      variant="contained"
       size="small"
-      sx={{ ml: 2, textTransform: "none", borderWidth: 2 }}
+      sx={{ 
+        ml: 2, 
+        textTransform: "none", 
+        backgroundColor: "#109EEF",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
+      }}
       onClick={() => {
         const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
         setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
@@ -186,7 +194,7 @@ useEffect(() => {
       position: "right"
     },
     {
-      selector: "#ei-platforms-section",
+      selector: "#ei-platform-menu",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
           <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("PlatformStrategies")}</Typography>
