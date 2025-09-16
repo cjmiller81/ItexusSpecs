@@ -22,6 +22,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
       component="nav"
       onClick={() => toggleSide(true)}
       aria-labelledby="tools-subheader"
+      id={sectionName === "Platform" ? "ei-platform-menu" : undefined}
       subheader={
         <Collapse
           orientation="vertical"
