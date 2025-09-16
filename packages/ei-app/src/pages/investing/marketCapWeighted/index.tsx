@@ -360,6 +360,7 @@ export default function MarketCapWeightedPage() {
         onFilterChanged={onFilterChanged}
         persisKey="WeightedPrefilterTokens"
         id="table_header"
+        filterType="market-cap"
       />
 
       <IndexModelingSection
