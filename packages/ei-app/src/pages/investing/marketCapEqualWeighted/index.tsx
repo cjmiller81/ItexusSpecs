@@ -26,6 +26,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 
+
 const TOUR_ID = "investing_v1";
 
 const StartTourButton = () => {
@@ -82,9 +83,25 @@ export default function MarketCapEqualWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
+
+
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
+
+  const dataSource = useMemo(
+    () =>
+      new DataSource({
+        store: createStore({
+          key: "id",
+          cacheRawData: true,
+          loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
+        }),
+        paginate: true,
+        pageSize: 20,
+      }),
+    [],
+  );
 
   const steps: StepType[] = [
     {
@@ -232,23 +249,6 @@ export default function MarketCapEqualWeightedPage() {
     }
   };
 
-  const dataSource = useMemo(
-    () =>
-      new DataSource({
-        store: createStore({
-          key: "id",
-          cacheRawData: true,
-          loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
-
-          onBeforeSend: (method, ajaxOptions) => {
-            ajaxOptions.xhrFields = { withCredentials: true };
-          },
-        }),
-        paginate: true,
-        pageSize: 20,
-      }),
-    [],
-  );
 
   const onSorterChanged = (sorter: any) => {
     setCurrentSorter(sorter ? JSON.stringify(sorter) : "[]");

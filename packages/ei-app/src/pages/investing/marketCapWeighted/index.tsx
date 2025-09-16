@@ -31,6 +31,34 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 
+// Function to transform 'between' filter to '>=' and '<=' with 'and'
+const transformFilter = (filter: any): any => {
+  if (!filter || !Array.isArray(filter)) {
+    return filter;
+  }
+
+  // Check if this is a direct 'between' operation
+  if (filter.length === 3 && filter[1] === 'between' && Array.isArray(filter[2])) {
+    const [field, , values] = filter;
+    const [minValue, maxValue] = values;
+    
+    // Transform to: [field, '>=', minValue, 'and', field, '<=', maxValue]
+    return [
+      [field, '>=', minValue],
+      'and',
+      [field, '<=', maxValue]
+    ];
+  }
+
+  // Recursively process nested arrays
+  return filter.map((item: any) => {
+    if (Array.isArray(item)) {
+      return transformFilter(item);
+    }
+    return item;
+  });
+};
+
 const TOUR_ID = "investing_v1";
 
 const StartTourButton = () => {
@@ -87,6 +115,8 @@ export default function MarketCapWeightedPage() {
     state => state.marketCapWeightedModeling,
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
+
+
   const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
@@ -182,6 +212,8 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
     }
   ];
 
+
+
   const dataSource = useMemo(
     () =>
       new DataSource({
@@ -192,6 +224,23 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
 
           onBeforeSend: (method, ajaxOptions) => {
             ajaxOptions.xhrFields = { withCredentials: true };
+            
+            // Transform filter parameter if it exists
+            if (ajaxOptions.data && ajaxOptions.data.filter !== undefined) {
+              try {
+                // Handle null filter
+                if (ajaxOptions.data.filter === null || ajaxOptions.data.filter === "null") {
+                  ajaxOptions.data.filter = "[]";
+                } else {
+                  const originalFilter = JSON.parse(ajaxOptions.data.filter);
+                  const transformedFilter = transformFilter(originalFilter);
+                  ajaxOptions.data.filter = JSON.stringify(transformedFilter);
+                }
+              } catch (error) {
+                console.error('Error transforming filter in DataSource:', error);
+                ajaxOptions.data.filter = "[]"; // Fallback to empty array
+              }
+            }
           },
         }),
         paginate: true,
@@ -199,6 +248,7 @@ const [showPanel, setShowPanel] = useState<boolean>(false);
       }),
     [],
   );
+
 
   useEffect(() => {
     dispatch(resetState());
