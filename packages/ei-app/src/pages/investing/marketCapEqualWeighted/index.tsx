@@ -364,6 +364,7 @@ export default function MarketCapEqualWeightedPage() {
         onSorterChanged={onSorterChanged}
         onFilterChanged={onFilterChanged}
         id="table_header"
+        filterType="market-cap-equal"
       />
 
       <IndexModelingSection
