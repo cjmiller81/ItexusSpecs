@@ -273,7 +273,7 @@
     "TokensToTrade":"Tokens To Trade",
     "TokenAlreadyExists": "Token already exists on the selected chain!",
     "ClickToLoadCurrentPosition": "Click to load Current Position",
-    "TradeAggregatorDex": "Trade Aggregator: Decentralized Exchanges",
+    "TradeAggregatorDexFull": "Trade Aggregator: Decentralized Exchanges",
     "HowTheTokensInputImpactsYourIndex": "How the 'Tokens' input impacts your Index",
     "IndexContributionDetails": "Index Contribution Details",
     "TheQuantityYouChooseDeterminesHowManyTokens": "The tokens quantity you choose determines how many tokens contribute to your Index weighting. Higher quantities will:",
@@ -579,6 +579,7 @@
     "TourQuickSortText": "Quickly sort and filter the table in the first two rows",
     "TourCurrentFilterText": "Your current filter appears here",
     "TourPrebuiltFiltersText": "Your pre-built filters appear here",
+    "TourPrebuiltFiltersStep8Text": "Select a pre-build strategy filter here to update the Model Results below.",
     "TourCustomFiltersTitle": "Custom Filters",
     "TourCustomFiltersText": "View the filter-builder videos and build your own",
     "TourExportText": "Export table to a spreadsheet (subscription only)",
@@ -603,7 +604,7 @@
     "TradingChartsTourToolsText": "Charting tools for technical analysis",
     "TradingChartsTourTimelineText": "Choose your timeline preferences",
     "TradingChartsTourHelpTitle": "Need Help?",
-    "TradingChartsTourHelpText": "For charting information and education, please see TradingView's Knowledge Base"
+    "TradingChartsTourHelpText": "For charting information and education, please see TradingView's <a href='https://www.tradingview.com/support/knowledge-base/' target='_blank' rel='noopener noreferrer' style='color: #109EEF; text-decoration: underline;'>Knowledge Base</a>"
   },
   "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",
