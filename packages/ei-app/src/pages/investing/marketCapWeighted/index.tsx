@@ -188,6 +188,13 @@ export default function MarketCapWeightedPage() {
       position: "top"
     },
     {
+      selector: "#filter_presets",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourPrebuiltFiltersStep8Text")}</Typography>
+      ),
+      position: "right"
+    },
+    {
       selector: "#historical_chart",
       content: () => (
         <Typography sx={{ color: "#1a1a1a" }}>{t("TourHistoricalText", { currentYear: new Date().getFullYear() })}</Typography>
@@ -203,7 +210,7 @@ export default function MarketCapWeightedPage() {
         </Box>
       ),
       position: "top"
-    }
+    },
   ];
 
 
