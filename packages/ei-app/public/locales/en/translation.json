@@ -334,7 +334,13 @@
     "SelectExchangesFirst": "Select exchanges first",
     "NoExchangesSelected": "No Exchanges Selected",
     "PleaseSelectExchangesToViewArbitrageMatrix": "Please select exchanges from the dropdown above to view the arbitrage matrix",
-    "SelectedExchanges": "Selected Exchanges"
+    "SelectedExchanges": "Selected Exchanges",
+    "ExchangesSelected": "Exchanges Selected",
+    "SelectTradingPairTooltip": "Please select a trading pair from the list to populate the arbitrage matrix below",
+    "ArbitrageMatrixTitle": "Arbitrage Matrix:",
+    "ArbitrageMatrixSubtitle": "Read as: Buy from (rows) → Sell to (columns)",
+    "SelectTradingPairMessage": "Select Trading Pair",
+    "PleaseSelectTradingPairMessage": "Please select a trading pair from the dropdown above to view the arbitrage matrix"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
