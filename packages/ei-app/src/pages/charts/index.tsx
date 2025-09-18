@@ -108,49 +108,52 @@ export default function TradingPage() {
       position: "bottom"
     },
     {
-      selector: "#tradingview_widget",
+      selector: "#tradingview_top_bar",
       content: () => (
         <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourPrimaryTokenText")}</Typography>
       ),
-      position: "right"
+      position: "bottom"
     },
     {
-      selector: "#tradingview_widget",
+      selector: "#tradingview_indicators_area",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
           <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TradingChartsTourIndicatorsTitle")}</Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("TradingChartsTourIndicatorsText")}</Typography>
         </Box>
       ),
-      position: "left"
+      position: "bottom"
     },
     {
-      selector: "#tradingview_widget",
+      selector: "#tradingview_price_info",
       content: () => (
         <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourViewPrefsText")}</Typography>
       ),
       position: "bottom"
     },
     {
-      selector: "#tradingview_widget",
+      selector: "#tradingview_tools_area",
       content: () => (
         <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourToolsText")}</Typography>
       ),
-      position: "left"
+      position: "right"
     },
     {
-      selector: "#tradingview_widget",
+      selector: "#tradingview_timeline_area",
       content: () => (
         <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourTimelineText")}</Typography>
       ),
-      position: "top"
+      position: "bottom"
     },
     {
       selector: "#tradingview_widget",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
           <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TradingChartsTourHelpTitle")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("TradingChartsTourHelpText")}</Typography>
+          <Typography 
+            sx={{ color: "#4a5568" }} 
+            dangerouslySetInnerHTML={{ __html: t("TradingChartsTourHelpText") }}
+          />
         </Box>
       ),
       position: "bottom"
@@ -251,7 +254,67 @@ export default function TradingPage() {
         />
       </Box>
       
-          <Box id="tradingview_widget" sx={{ width: "100%", height: "100%" }}>
+          <Box id="tradingview_widget" sx={{ width: "100%", height: "100%", position: "relative" }}>
+            <Box 
+              id="tradingview_top_bar" 
+              sx={{ 
+                position: "absolute", 
+                top: 0, 
+                left: 0, 
+                width: "20%", 
+                height: "70px", 
+                zIndex: 1,
+                pointerEvents: "none"
+              }} 
+            />
+            <Box 
+              id="tradingview_indicators_area" 
+              sx={{ 
+                position: "absolute", 
+                top: 0, 
+                left: "18%", 
+                width: "25%", 
+                height: "130px", 
+                zIndex: 1,
+                pointerEvents: "none"
+              }} 
+            />
+            <Box 
+              id="tradingview_price_info" 
+              sx={{ 
+                position: "absolute", 
+                top: 0, 
+                left: "8%", 
+                width: "20%", 
+                height: "80px", 
+                zIndex: 1,
+                pointerEvents: "none"
+              }} 
+            />
+            <Box 
+              id="tradingview_tools_area" 
+              sx={{ 
+                position: "absolute", 
+                top: "120px", 
+                left: "5%", 
+                width: "20%", 
+                height: "80px", 
+                zIndex: 1,
+                pointerEvents: "none" 
+              }} 
+            />
+            <Box 
+              id="tradingview_timeline_area" 
+              sx={{ 
+                position: "absolute", 
+                top: 0, 
+                left: "8%", 
+                width: "22%", 
+                height: "80px", 
+                zIndex: 1,
+                pointerEvents: "none"
+              }} 
+            />
             <SymbolOverviewNoSSR
               symbol="COINBASE:BTCUSD"
               copyrightStyles={{
