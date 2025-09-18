@@ -1,11 +1,11 @@
-import { useAppSelector } from "@/libs/redux/Store";
 import { Box, Button } from "@mui/material";
-import { Typography, Chip, keyframes } from "@mui/material";
+import { Typography, Chip, keyframes, useTheme } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { PageAccessGuard } from "@/components/PageAccessGuard";
+import Image from "next/image";
 
 const TOUR_ID = "trading_v1";
 
@@ -35,7 +35,7 @@ const StartTourButton = () => {
   );
 };
 
-const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
+const TourStateSync = ({ totalSteps, themeMode }: { totalSteps: number; themeMode: string }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
   
@@ -57,6 +57,18 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
       setIsOpen(true);
     }
   }, []);
+
+  // Force tour refresh when theme changes
+  useEffect(() => {
+    if (isOpen) {
+      setIsOpen(false);
+      setTimeout(() => {
+        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+        setCurrentStep(savedStep);
+        setIsOpen(true);
+      }, 100);
+    }
+  }, [themeMode]);
   
   return null;
 };
@@ -93,10 +105,10 @@ const rotate = keyframes`
 `;
 
 export default function TradingPage() {
-  const mode = useAppSelector(state => state.ui.mode);
+  const theme = useTheme();
   const { t } = useTranslation("TradingPage");
 
-  const steps: StepType[] = [
+  const steps: StepType[] = useMemo(() => [
     {
       selector: "#trading_header",
       content: () => (
@@ -110,7 +122,18 @@ export default function TradingPage() {
     {
       selector: "#tradingview_top_bar",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourPrimaryTokenText")}</Typography>
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography sx={{ color: "#1a1a1a", mb: 2 }}>{t("TradingChartsTourPrimaryTokenText")}</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Image
+              src={theme.palette.mode === "light" ? "/chart_step2_light.png" : "/chart_step2_dark.png"}
+              alt="Chart Step 2"
+              width={125}
+              height={63}
+              style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+            />
+          </Box>
+        </Box>
       ),
       position: "bottom"
     },
@@ -119,7 +142,16 @@ export default function TradingPage() {
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
           <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TradingChartsTourIndicatorsTitle")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("TradingChartsTourIndicatorsText")}</Typography>
+          <Typography sx={{ color: "#4a5568", mb: 2 }}>{t("TradingChartsTourIndicatorsText")}</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Image
+              src={theme.palette.mode === "light" ? "/chart_step3_light.png" : "/chart_step3_dark.png"}
+              alt="Chart Step 3"
+              width={115}
+              height={55}
+              style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+            />
+          </Box>
         </Box>
       ),
       position: "bottom"
@@ -127,21 +159,54 @@ export default function TradingPage() {
     {
       selector: "#tradingview_price_info",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourViewPrefsText")}</Typography>
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography sx={{ color: "#1a1a1a", mb: 2 }}>{t("TradingChartsTourViewPrefsText")}</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Image
+              src={theme.palette.mode === "light" ? "/chart_step4_light.png" : "/chart_step4_dark.png"}
+              alt="Chart Step 4"
+              width={125}
+              height={63}
+              style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+            />
+          </Box>
+        </Box>
       ),
       position: "bottom"
     },
     {
       selector: "#tradingview_tools_area",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourToolsText")}</Typography>
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography sx={{ color: "#1a1a1a", mb: 2 }}>{t("TradingChartsTourToolsText")}</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Image
+              src={theme.palette.mode === "light" ? "/chart_step5_light.png" : "/chart_step5_dark.png"}
+              alt="Chart Step 5"
+              width={63}
+              height={120}
+              style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+            />
+          </Box>
+        </Box>
       ),
-      position: "right"
+      position: "center"
     },
     {
       selector: "#tradingview_timeline_area",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("TradingChartsTourTimelineText")}</Typography>
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography sx={{ color: "#1a1a1a", mb: 2 }}>{t("TradingChartsTourTimelineText")}</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Image
+              src={theme.palette.mode === "light" ? "/chart_step6_light.png" : "/chart_step6_dark.png"}
+              alt="Chart Step 6"
+              width={125}
+              height={63}
+              style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+            />
+          </Box>
+        </Box>
       ),
       position: "bottom"
     },
@@ -158,11 +223,12 @@ export default function TradingPage() {
       ),
       position: "bottom"
     }
-  ];
+  ], [theme.palette.mode, t]);
   
   return (
     <PageAccessGuard requiredPage="/charts">
     <TourProvider
+      key={theme.palette.mode}
       steps={steps}
       styles={{
         popover: (base) => ({ 
@@ -172,7 +238,7 @@ export default function TradingPage() {
           background: "#ffffff", 
           color: "#1a1a1a", 
           minWidth: 400, 
-          maxWidth: 500,
+          maxWidth: 600,
           paddingTop: "40px"
         }),
         maskArea: (base) => ({ ...base, rx: 10 }),
@@ -186,7 +252,7 @@ export default function TradingPage() {
       }}
     >
       <>
-        <TourStateSync totalSteps={steps.length} />
+        <TourStateSync totalSteps={steps.length} themeMode={theme.palette.mode} />
         <Box sx={{ height: "770px" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
             <Box display="flex" alignItems="center">
@@ -260,8 +326,8 @@ export default function TradingPage() {
               sx={{ 
                 position: "absolute", 
                 top: 0, 
-                left: 0, 
-                width: "20%", 
+                left: "0%", 
+                width: "100%", 
                 height: "70px", 
                 zIndex: 1,
                 pointerEvents: "none"
@@ -272,9 +338,9 @@ export default function TradingPage() {
               sx={{ 
                 position: "absolute", 
                 top: 0, 
-                left: "18%", 
-                width: "25%", 
-                height: "130px", 
+                left: "0%", 
+                width: "100%", 
+                height: "70px", 
                 zIndex: 1,
                 pointerEvents: "none"
               }} 
@@ -284,21 +350,21 @@ export default function TradingPage() {
               sx={{ 
                 position: "absolute", 
                 top: 0, 
-                left: "8%", 
-                width: "20%", 
-                height: "80px", 
+                left: "0%", 
+                width: "100%", 
+                height: "70px", 
                 zIndex: 1,
                 pointerEvents: "none"
-              }} 
+              }}  
             />
             <Box 
               id="tradingview_tools_area" 
               sx={{ 
                 position: "absolute", 
-                top: "120px", 
-                left: "5%", 
-                width: "20%", 
-                height: "80px", 
+                top: "0px", 
+                left: "0%", 
+                width: { xs: "10%", lg: "3%" }, 
+                height: "100%", 
                 zIndex: 1,
                 pointerEvents: "none" 
               }} 
@@ -308,12 +374,12 @@ export default function TradingPage() {
               sx={{ 
                 position: "absolute", 
                 top: 0, 
-                left: "8%", 
-                width: "22%", 
-                height: "80px", 
+                left: "0%", 
+                width: "100%", 
+                height: "70px", 
                 zIndex: 1,
                 pointerEvents: "none"
-              }} 
+              }}  
             />
             <SymbolOverviewNoSSR
               symbol="COINBASE:BTCUSD"
@@ -322,7 +388,7 @@ export default function TradingPage() {
                   display: "none",
                 },
               }}
-              theme={mode === "light" ? "light" : "dark"}
+              theme={theme.palette.mode === "light" ? "light" : "dark"}
               autosize
             />
           </Box>
