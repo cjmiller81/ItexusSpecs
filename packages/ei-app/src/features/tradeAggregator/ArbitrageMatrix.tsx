@@ -212,9 +212,7 @@ export default function ArbitrageMatrix() {
   useEffect(() => {
     setSelectedTradingPair(null);
     fetchCommonTradingPairs();
-  }, [selectedExchanges, fetchCommonTradingPairs]);
-
-  
+  }, [selectedExchanges, fetchCommonTradingPairs]);  
 
   return (
     <Box sx={{ height: "100%", p: 1 }}>
@@ -462,6 +460,7 @@ export default function ArbitrageMatrix() {
                   >
                     {t("PleaseSelectExchangesToViewArbitrageMatrix")}
                   </Typography>
+
                 </Box>
               ) : selectedTradingPair === null ? (
                 <Box
@@ -474,6 +473,7 @@ export default function ArbitrageMatrix() {
                     textAlign: 'center',
                   }}
                 >
+
                   <Typography
                     variant="h5"
                     sx={{
