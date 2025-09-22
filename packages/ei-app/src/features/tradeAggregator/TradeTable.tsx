@@ -33,6 +33,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
+import ArbitrageMatrix from './ArbitrageMatrix';
  
 
 interface TradeData {
@@ -996,7 +997,7 @@ export function TradeTable() {
       ) 
       :  
       (
-        <Typography sx={{ fontSize: "20px", height: "20%" }}> Coming soon...</Typography>
+        <ArbitrageMatrix/>
       )}
      </Grid>
 
