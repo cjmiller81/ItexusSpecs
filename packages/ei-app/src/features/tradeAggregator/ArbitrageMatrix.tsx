@@ -285,7 +285,7 @@ export default function ArbitrageMatrix() {
                     if (selectedExchanges.length === 1) {
                       displayText = selectedExchanges[0].name;
                     } else if (selectedExchanges.length > 1) {
-                      displayText = `${selectedExchanges.length} ${t('TradeTable.ExchangesSelected')}`;
+                      displayText = `${selectedExchanges.length} ${t('ExchangesSelected')}`;
                     }
                     
                     return (
@@ -396,16 +396,109 @@ export default function ArbitrageMatrix() {
                       sx={{ width: 200 }}
                     />
                   </FormControl>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: '0.8rem',
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {t('TradeTable.SelectTradingPairTooltip')}
-                  </Typography>
+                  
+                  {/* Information Panel - inline with trading pair selection */}
+                  {selectedTradingPair && (
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, ml: 1 }}>
+                      {/* How to Read Section */}
+                      <Box>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 'bold',
+                            mb: 0.5,
+                            color: theme.palette.mode === 'light' ? 'black' : 'white',
+                            fontSize: '0.9rem',
+                          }}
+                        >
+                          How to Read This Matrix
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.3 }}>
+                          <Box
+                            sx={{
+                              width: 12,
+                              height: 12,
+                              backgroundColor: 'rgba(76, 175, 80, 0.3)',
+                              border: '1px solid #4caf50',
+                              borderRadius:"2px",
+                              mr: 0.8,
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: '0.7rem',
+                              color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                            }}
+                          >
+                            Green = Profitable arbitrage opportunity
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <Box
+                            sx={{
+                              width: 12,
+                              height: 12,
+                              backgroundColor: 'rgba(244, 67, 54, 0.3)',
+                              border: '1px solid #f44336',
+                              mr: 0.8,
+                              borderRadius:"2px",
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: '0.7rem',
+                              color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                            }}
+                          >
+                            Red = Loss (sell price lower than buy price)
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      <Box>
+                        <Typography
+                          sx={{
+                            fontSize: '0.9rem',
+                            fontWeight: 'bold',
+                            color: theme.palette.mode === 'light' ? 'black' : 'white',
+                            mb: 0.5,
+                          }}
+                        >
+                          {t("ExampleBuy")}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                            mb: 0.3,
+                          }}
+                        >
+                          {t("FindTheIntersectionOfYour")}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '0.7rem',
+                            color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                          }}
+                        >
+                          <strong>{t("Note")}</strong> {t("ProfitsShownExcludeTradingDees")}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  
+                  {!selectedTradingPair && (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '0.8rem',
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {t("SelectTradingPairToCiewArbitrageOpportunities")}
+                    </Typography>
+                  )}
                 </Box>
               </Paper>
             </Grid>

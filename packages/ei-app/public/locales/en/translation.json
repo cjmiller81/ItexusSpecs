@@ -341,7 +341,12 @@
     "ArbitrageMatrixTitle": "Arbitrage Matrix:",
     "ArbitrageMatrixSubtitle": "Read as: Buy from (rows) → Sell to (columns)",
     "SelectTradingPairMessage": "Select Trading Pair",
-    "PleaseSelectTradingPairMessage": "Please select a trading pair from the dropdown above to view the arbitrage matrix"
+    "PleaseSelectTradingPairMessage": "Please select a trading pair from the dropdown above to view the arbitrage matrix",
+    "ExampleBuy": "Example: Buy BTC on Bybit → Sell on Gate.io",
+    "FindTheIntersectionOfYour": "Find the intersection of your buy exchange (row) and sell exchange (column) to see profit potential",
+    "ProfitsShownExcludeTradingDees": "Profits shown exclude trading fees and transfer costs.",
+    "SelectTradingPairToCiewArbitrageOpportunities": "Select a trading pair to view arbitrage opportunities",
+    "Note": "Note:"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
