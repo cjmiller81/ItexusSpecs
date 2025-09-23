@@ -250,10 +250,14 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const calculateProrationAmount = (activeSubscription: any, newPlan: any) => {
     try {
   
-      const currentPlanAmount = activeSubscription.items.data?.[0]?.price?.unit_amount;
+      const currentPlanAmount = activeSubscription.items.data?.[0]?.price?.unit_amount || 0;
       const newPlanAmount = newPlan?.unit_amount;
 
-      if (!currentPlanAmount || !newPlanAmount) {
+      if (currentPlanAmount === 0) {
+        return newPlanAmount;
+      }
+
+      if (!newPlanAmount) {
         throw new Error('Invalid current plan or new plan amount');
       }
   
@@ -268,7 +272,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       const countOfDayInMonth = Math.max((currentPeriodEndMs - currentPeriodStart) / (1000 * 60 * 60 * 24), 0);
       const dailyRate = newPlanAmount / countOfDayInMonth;
 
-      const oldSubscriptionRate = currentPlanAmount /countOfDayInMonth;
+      const oldSubscriptionRate = currentPlanAmount / countOfDayInMonth;
 
       const prorationAmount = Math.floor(dailyRate * daysLeft - oldSubscriptionRate * daysLeft);
 
