@@ -483,7 +483,7 @@ export default function ArbitrageMatrix() {
                             color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
                           }}
                         >
-                          <strong>Note:</strong> {t("ProfitsShownExcludeTradingDees")}
+                          <strong>{t("Note")}</strong> {t("ProfitsShownExcludeTradingDees")}
                         </Typography>
                       </Box>
                     </Box>
