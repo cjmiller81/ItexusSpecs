@@ -1,5 +1,5 @@
 import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled, useMediaQuery, useTheme } from "@mui/system";
 import { FeatureAccessGuard } from "../../components/FeatureAccessGuard";
 import { useSubscription } from "../../hooks/useSubscription";
 import {
@@ -231,6 +231,9 @@ export const MyWalletsSection = ({
     setRowModesModel(newRowModesModel);
   };
 
+  const theme = useTheme();
+  const isXL = useMediaQuery("(min-width:2000px)");
+
   useEffect(() => {
     const collapseOnRoute = () => setExpandedRows([]);
     router.events.on("routeChangeStart", collapseOnRoute);
@@ -319,6 +322,7 @@ export const MyWalletsSection = ({
           gridRowModesModel: rowModesModel,
           expandedRows: expandedRows,
           onExpandClick: handleExpandClick,
+          isXL: isXL
           })}
           rows={wallets || []}
           rowSelectionModel={selectedWalletsIds}
