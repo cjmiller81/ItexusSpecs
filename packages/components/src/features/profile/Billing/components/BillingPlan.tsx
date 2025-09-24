@@ -41,20 +41,22 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
     ? duplicatePlans?.find(p => p.recurring?.interval === "year" &&  p.product === plan.product) || plan
     : plan;
 
-     const price = pricingPeriod === "month"
+  const price = pricingPeriod === "month"
      ? Math.floor((monthlyPlan.unit_amount ?? 0)) / 100
      : Math.floor((yearlyPlan.unit_amount ?? 0)) / 100;
 
-     const plansInfo: PermissionItem[] = products
-     ? products
-         .filter((product) => product.id === plan.product && product.active === true)
-         .flatMap((product) =>
-           product.marketing_features.map((feature) => ({
-             permissionValue: `${feature?.name || "N/A"}`,
-             isEnabled: active,
-           }))
-         )
-     : [];
+  const plansInfo: PermissionItem[] = products
+    ? products
+        .filter((product) => product.id === plan.product && product.active === true)
+        .flatMap((product) =>
+          product.marketing_features
+            .filter((feature) => feature?.name !== "Community Access")
+            .map((feature) => ({
+              permissionValue: `${feature?.name || "N/A"}`,
+              isEnabled: active,
+            }))
+        )
+    : [];
 
     const productName = products?.find((product) => product.id === plan.product && product.active === true)?.name || "Unknown Plan";
     const firstWord = productName.split(" ")[0];
