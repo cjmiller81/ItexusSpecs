@@ -346,7 +346,7 @@
     "FindTheIntersectionOfYour": "Find the intersection of your buy exchange (row) and sell exchange (column) to see profit potential",
     "ProfitsShownExcludeTradingDees": "Profits shown exclude trading fees and transfer costs.",
     "SelectTradingPairToCiewArbitrageOpportunities": "Select a trading pair to view arbitrage opportunities",
-    "Note": "Note:"
+    "Note:": "Note:"
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
