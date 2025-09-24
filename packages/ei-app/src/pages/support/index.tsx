@@ -77,6 +77,28 @@ export default function Support() {
               </ListItemButton>
             ))}
           </List>
+          
+          <Box sx={{ mt: 3, pt: 2, borderTop: `1px solid ${isDark ? "#333" : "#e0e0e0"}` }}>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                fontWeight: "bold", 
+                color: isDark ? "#fff" : "#000",
+                mb: 1
+              }}
+            >
+              Disclaimer
+            </Typography>
+            <Typography 
+              sx={{ 
+                color: isDark ? "#B2BEB5" : "#4a4a4a",
+                fontSize: "0.9rem",
+                lineHeight: 1.5
+              }}
+            >
+              Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see our policies and terms below for further information.
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
 
