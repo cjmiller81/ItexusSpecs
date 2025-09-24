@@ -214,8 +214,16 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
               overflow: "hidden",
             }}
           >
-            <Box sx={{ pl: 1.5, py: 1.5 }} display="flex" justifyContent="space-between" alignItems="center">
-              <Box>
+            <Box sx={{ pl: 1.5, py: 1.5 }} display="flex" alignItems="center">
+              <Box sx={{ 
+                width: "87.8%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "flex-start",
+                "@media (min-width: 2000px)": {
+                  width: "87.4%"
+                }
+              }}>
                 <Typography fontWeight={600}>{protocol}</Typography>
                 <Chip
                   label={readableNetwork}
@@ -223,6 +231,7 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                   sx={{
                     fontSize: 11,
                     mt: 0.5,
+                    ml: 1,
                     px: 0.5,
                     py: 0,
                     height: 20,
@@ -234,7 +243,16 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                 />
               </Box>
 
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box sx={{ 
+                width: "11.2%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "flex-start", 
+                gap: 1,
+                "@media (min-width: 2000px)": {
+                  width: "11.6%"
+                }
+              }}>
                 <Typography variant="h6" fontWeight={600} color="#e49a41">
                   {formatCurrency(totalValue)}
                 </Typography>
