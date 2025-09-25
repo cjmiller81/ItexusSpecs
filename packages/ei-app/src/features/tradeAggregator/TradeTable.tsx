@@ -890,7 +890,7 @@ export function TradeTable() {
                      </Box>
                    </Box>
 
-                   {tradeData.qty && tradeData.value && tradeData.symbol && tradeData.mkt && tradeData.action && (
+                   {tradeData.symbol && tradeData.mkt && tradeData.action && (
                      <Box
                        sx={{
                          display: "flex",
@@ -924,12 +924,22 @@ export function TradeTable() {
      
                        <Box sx={{ marginLeft: "12px" }}>
                          <div style={{ marginBottom: "4px", color: tradeData.action === "buy" ? "#4caf50" : "#f44336" }}>
-                           {t("Transaction")}:
+                           {tradeData.qty && tradeData.value ? t("Transaction") : "Last Price"}:
                          </div>
                          <div>
-                           {tradeData.action === "buy"
-                             ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
-                             : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`}
+                           {tradeData.qty && tradeData.value ? (
+                             tradeData.action === "buy"
+                               ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
+                               : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
+                           ) : (
+                             (() => {
+                               const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
+                               const currentPrice = selectedMarket?.last;
+                               return currentPrice 
+                                 ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
+                                 : `${tradeData.mkt} - Price not available`;
+                             })()
+                           )}
                          </div>
                        </Box>
                      </Box>
