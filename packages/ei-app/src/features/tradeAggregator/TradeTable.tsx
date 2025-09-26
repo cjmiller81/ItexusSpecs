@@ -97,7 +97,8 @@ export function TradeTable() {
   const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
   const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
   const coinId = selectedTradingPair ? getCoinIdFromBackend(selectedTradingPair.base) : null;
-  const queryParams = coinId && selectedExchange?.id ? [coinId, selectedExchange.id, refreshTimestamp.toString()] : skipToken; 
+  const queryParams = coinId && selectedExchange?.id && selectedTradingPair ? 
+    [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()] : skipToken; 
   const { data: coinGeckoPrices, isLoading: isCoinGeckoPricesLoading } = useGetCoinGeckoPricesQuery(
     queryParams,
     {

@@ -7,26 +7,49 @@ export type Exchange = {
   name: string;
   url: string;
   centralized: boolean;
-  tickers?: Ticker[];
-}
-
-type Ticker = {
-    base: string,
-    target: string,
-    last: number,
-    volume: number,
-    converted_volume: ConvertedVolume
-    coin_id: string
+  tickers?: CoinGeckoTicker[];
 }
 
 type ConvertedVolume = {
   usd: number;
 }
 
+export type CoinGeckoTicker = {
+  base: string;
+  target: string;
+  last: number;
+  volume: number;
+  converted_last: {
+    btc: number;
+    eth: number;
+    usd: number;
+  };
+  converted_volume: {
+    btc: number;
+    eth: number;
+    usd: number;
+  };
+  trust_score: string;
+  bid_ask_spread_percentage: number;
+  timestamp: string;
+  last_traded_at: string;
+  last_fetch_at: string;
+  is_anomaly: boolean;
+  is_stale: boolean;
+  trade_url: string;
+  token_info_url: string;
+  coin_id: string;
+  target_coin_id: string;
+}
+
+export type CoinGeckoTickersResponse = {
+  name: string;
+  tickers: CoinGeckoTicker[];
+}
 
 export type CoinGeckoPrice = {
-  [key: string]: {
-    [key: string]: number;
+  [coinId: string]: {
+    usd: number;
   };
 }
 
@@ -56,7 +79,7 @@ export const cexApi = createApi({
       async queryFn(params, _queryApi, _extraOptions, fetchWithBQ) {
         const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
         
-        const [coinId, exchangeId] = params;
+        const [coinId, exchangeId, base, target] = params;
         
         for (let attempt = 1; attempt <= 3; attempt++) {
           const result = await fetchWithBQ({
@@ -65,8 +88,11 @@ export const cexApi = createApi({
           });
     
           if (!('error' in result)) {
-            const tickerData = result.data as any;
-            const ticker = tickerData.tickers?.[0];
+            const tickerData = result.data as CoinGeckoTickersResponse;
+            const ticker = tickerData.tickers?.find((t: CoinGeckoTicker) => 
+              t.base.toLowerCase() === base.toLowerCase() && 
+              t.target.toLowerCase() === target.toLowerCase()
+            );
             
             if (ticker) {
               return { 
