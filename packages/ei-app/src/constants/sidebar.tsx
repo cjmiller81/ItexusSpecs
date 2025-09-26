@@ -235,6 +235,20 @@ function getHelpItems(): SidebarListItem[] {
   ];
 }
 
+function getDisclaimerItems(): SidebarListItem[] {
+  return [
+    {
+      title: "Disclaimer",
+      children: [
+        {
+          title: "Elan Insights offers research only, not investment advice. Users are solely responsible for their financial decisions. See our Support and Legal page for details.",
+          href: "/support",
+        },
+      ],
+    },
+  ];
+}
+
 export function getSidebarMenuItems(theme: Theme, hasPageAccess: (pagePath: string) => boolean): SidebarItems[] {
   return [
     {
@@ -257,6 +271,11 @@ export function getSidebarMenuItems(theme: Theme, hasPageAccess: (pagePath: stri
     {
       title: t("Help", {ns: "Sidebar"}),
       sidebarListItems: getHelpItems(),
+    },
+    {
+      title: "",
+      sidebarListItems: getDisclaimerItems(),
+      isDisclaimer: true,
     },
   ];
 }

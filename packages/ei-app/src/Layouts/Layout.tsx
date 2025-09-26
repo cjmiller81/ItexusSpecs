@@ -82,12 +82,12 @@ export default function Layout({ children }: Props) {
             style={{ height: 20, marginTop: "10px", objectFit: "contain" }}
           />}
       />
-      <Sidebar
-        key={billing.product?.id}
-        sidebarItems={sideBarOptions}
-        open={sidebarOpened}
-        toggleSide={open => dispatch(toggleSideBar({ open: open }))}  
-      />
+            <Sidebar
+              key={billing.product?.id}
+              sidebarItems={sideBarOptions}
+              open={sidebarOpened}
+              toggleSide={open => dispatch(toggleSideBar({ open: open }))}
+            />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <StyledDrawerHeader />
         <CssBaseline />

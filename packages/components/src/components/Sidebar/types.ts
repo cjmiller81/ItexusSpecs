@@ -11,6 +11,7 @@ export type SidebarItems = {
   title: string;
   sidebarListItems: SidebarListItem[];
   href?: string;
+  isDisclaimer?: boolean;
 };
 
 export type SidebarListItem = {
