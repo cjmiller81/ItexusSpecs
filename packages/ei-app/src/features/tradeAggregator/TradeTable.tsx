@@ -31,7 +31,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
-import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
+import { Exchange, CoinGeckoExchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesTickerQuery, useGetCoinGeckoPricesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
 import ArbitrageMatrix from './ArbitrageMatrix';
  
@@ -77,9 +77,35 @@ export function TradeTable() {
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
+
+  // Функция для получения coin_id из backend данных
+  const getCoinIdFromBackend = (base: string): string | null => {
+    if (!backendExchangeData) return null;
+    
+    for (const exchange of backendExchangeData) {
+      const ticker = exchange.tickers?.find(t => t.base === base);
+      if (ticker?.coin_id) {
+        return ticker.coin_id;
+      }
+    }
+    return null;
+  };
+
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
-  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken)
+  const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken);
+  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken);
+  const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
+  const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
+  const coinId = selectedTradingPair ? getCoinIdFromBackend(selectedTradingPair.base) : null;
+  const queryParams = coinId && selectedExchange?.id ? [coinId, selectedExchange.id, refreshTimestamp.toString()] : skipToken; 
+  const { data: coinGeckoPrices, isLoading: isCoinGeckoPricesLoading } = useGetCoinGeckoPricesQuery(
+    queryParams,
+    {
+      refetchOnMountOrArgChange: true
+    }
+  );
+
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
   const [demoRequested, setDemoRequested] = useState(false);
@@ -143,7 +169,7 @@ export function TradeTable() {
   }, [coinGeckoExchangesInitial, selectedCountry]);
   
   useEffect(() => {
-    const fetchTradingPairs = async () => {
+    const fetchTopTradingPairs = async () => {
       if (!selectedExchange || !coinGeckoExchangesWithTickers) return;
 
       try {
@@ -162,7 +188,6 @@ export function TradeTable() {
         });
 
         const pairs = Array.from(pairsMap.values());
-        setTradingPairs(pairs);
         
         const topPairs = [...pairs]
           .sort((a, b) => b.volume - a.volume)
@@ -174,22 +199,88 @@ export function TradeTable() {
           setDemoRequested(false);
         }
       } catch (error) {
-        console.error('Failed to fetch trading pairs:', error);
+        console.error('Failed to fetch top trading pairs:', error);
       } 
     };
 
-    fetchTradingPairs();
+    fetchTopTradingPairs();
   }, [selectedExchange, coinGeckoExchangesWithTickers, demoRequested]);
+
+  useEffect(() => {
+    const fetchAllTradingPairs = async () => {
+      if (!selectedExchange || !backendExchangeData) return;
+
+      try {
+        const pairsMap = new Map();
+
+        backendExchangeData.forEach(exchange => {
+          exchange.tickers?.forEach(ticker => {
+            const pair = `${ticker.base}/${ticker.target}`;
+            if (!pairsMap.has(pair)) {
+              pairsMap.set(pair, {
+                base: ticker.base,
+                target: ticker.target,
+                last: ticker.last,
+                volume: ticker.converted_volume.usd,
+                pair: pair
+              });
+            }
+          });
+        });
+
+        const pairs = Array.from(pairsMap.values());
+        setTradingPairs(pairs);
+      } catch (error) {
+        console.error('Failed to fetch all trading pairs:', error);
+      } 
+    };
+
+    fetchAllTradingPairs();
+    }, [selectedExchange, backendExchangeData]);
+
+  useEffect(() => {
+    if (coinGeckoPrices && selectedTradingPair && tradeData.symbol && coinId) {
+      const currentPrice = coinGeckoPrices[coinId]?.usd;
+
+      
+      if (currentPrice) {
+        const updatedSelectedPair = {
+          ...selectedTradingPair,
+          last: currentPrice
+        };
+        setSelectedTradingPair(updatedSelectedPair);
+        
+        const updatedTradingPairs = tradingPairs.map(pair => {
+          if (pair.pair === selectedTradingPair.pair) {
+            return {
+              ...pair,
+              last: currentPrice
+            };
+          }
+          return pair;
+        });
+        setTradingPairs(updatedTradingPairs);
+      }
+    }
+  }, [coinGeckoPrices, selectedTradingPair, tradeData.symbol, coinId, tradingPairs, topTradingPairs]);
 
   const handleTradingPairSelect = (pair: string | null) => {
     if (pair) {
       const [symbol, target] = pair.split('/');
+      const selectedPair = tradingPairs.find(p => p.pair === pair);
+
+      if (selectedPair) {
+        setSelectedTradingPair(selectedPair);
+        setRefreshTimestamp(Date.now());
+      }
+
       setTradeData({
         ...tradeData,
         symbol,
         mkt: pair
       });
     } else {
+      setSelectedTradingPair(null);
       setTradeData({
         ...tradeData,
         symbol : '',
@@ -202,6 +293,7 @@ export function TradeTable() {
     const exchangeId = event.target.value;
     const exchange = coinGeckoExchanges?.find(e => e.id === exchangeId);
     setSelectedExchange(exchange || null);
+    setSelectedTradingPair(null);
     setTradeData({
       symbol: '',
       mkt: '',
@@ -220,6 +312,7 @@ export function TradeTable() {
       }
 
       setSelectedExchange(null);
+      setSelectedTradingPair(null);
       setTradeData({
         symbol: '',
         mkt: '',
@@ -266,7 +359,9 @@ export function TradeTable() {
     if (!tradeData.mkt) {
       return;
     }
-    const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
+    
+    // Используем цену из выбранной пары, если она есть, иначе из списка торговых пар
+    const selectedMarket = selectedTradingPair || tradingPairs.find(m => m.pair === tradeData.mkt);
     if (!selectedMarket) {
       if (!demoRequested) {
         setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
@@ -337,6 +432,7 @@ export function TradeTable() {
     isSwitchIncluded,
     tradeData.action,
     tradingPairs,
+    selectedTradingPair,
     demoRequested
   ]);
 
@@ -627,7 +723,7 @@ export function TradeTable() {
                            options={tradingPairs}
                            disabled={!selectedExchange}
                            getOptionLabel={(option) => option.pair} 
-                           loading={isTradingPairsLoading}
+                           loading={isBackendExchangeLoading}
                            value={tradingPairs.find(x => x.pair == tradeData.mkt) || null}
                            onChange={(event, newValue) => {
                              handleTradingPairSelect(newValue?.pair || null);
@@ -932,13 +1028,13 @@ export function TradeTable() {
                                ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
                                : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
                            ) : (
-                             (() => {
-                               const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
-                               const currentPrice = selectedMarket?.last;
-                               return currentPrice 
-                                 ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
-                                 : `${tradeData.mkt} - Price not available`;
-                             })()
+                            (() => {
+                              const selectedMarket = selectedTradingPair || tradingPairs.find(m => m.pair === tradeData.mkt);
+                              const currentPrice = selectedMarket?.last;
+                              return currentPrice 
+                                ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
+                                : `${tradeData.mkt} - Price not available`;
+                            })()
                            )}
                          </div>
                        </Box>
