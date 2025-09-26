@@ -34,6 +34,7 @@ import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
+import { useSubscription } from "components";
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -45,6 +46,7 @@ interface NewPositionSectionProps {
 export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow})=> {
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
+  const { getTradeAggregatorQuoteLimit } = useSubscription();
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
@@ -379,7 +381,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               version: name,
             });
 
-            console.log(deepLink)
           }
 
           let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
@@ -420,6 +421,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       data.toTokenAddress &&
       data.amount > 0
     ) {
+      const quoteLimit = getTradeAggregatorQuoteLimit();
+      
       if(isDexEnabled === false)
       {
         dispatch(fetchQuote({
@@ -427,7 +430,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           fromTokenAddress: data.fromTokenAddress,
           toTokenAddress: data.toTokenAddress,
           amount: data.amount,
-          requests: 5
+          requests: quoteLimit
         }));
       }
       else 
@@ -437,7 +440,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           fromTokenAddress: data.fromTokenAddress,
           toTokenAddress: data.toTokenAddress,
           amount: data.amount,
-          requests: 5,
+          requests: quoteLimit,
           selectedProtocols: selectedDexs.map(dex => dex.id)
         }));
       }
@@ -721,7 +724,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
       container
       direction="column"
       sx={{
-        minHeight: "500px",
+        minHeight: "522px",
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor:
@@ -923,6 +926,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   </Box>
 
                   <TextField
+                    id="quantity_input"
                     variant="outlined"
                     size="small"
                     value={formatNumberWithCommas(newBalance)}
@@ -999,6 +1003,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </Stack>
                     
                     <Autocomplete
+                      id="target_token_dropdown"
                       options={tokenIconsSwapFor?.items ?? []}
                       getOptionLabel={(option) =>
                         option.name
@@ -1238,6 +1243,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       <Grid item xs={3}>
                         <Box display="flex" flexDirection="column" alignItems="flex-end" sx={{marginTop:"58px"}}>
                         <Button
+                          id="get_quotes_btn"
                           variant="contained"
                           onClick={handleFetchQuotes}
                           disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
@@ -1280,8 +1286,9 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 </Grid>
        
               </Grid>
-              <Grid item xs={12} sx={{ marginTop: 3 }}>
+              <Grid item xs={12} sx={{ marginTop: 3 }} id="execute_section">
                 <TableContainer
+                  id="routes_list"
                   component={Paper}
                   sx={{
                     border: "1px solid gray",

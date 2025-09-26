@@ -17,11 +17,40 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
-import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
+import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { fetchWallets, fetchWalletsPortfolio, useOry } from "components";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+const TOUR_ID = "home_v1";
+
+const StartTourButton = () => {
+  const { setIsOpen, setCurrentStep } = useTour();
+  return (
+    <Button
+      variant="contained"
+      size="small"
+      sx={{ 
+        ml: 2, 
+        textTransform: "none", 
+        backgroundColor: "#109EEF",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
+      }}
+      onClick={() => {
+        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+        setIsOpen(true);
+      }}
+    >
+      Start Tour
+    </Button>
+  );
+};
 
 export default function HomePage() {
   const { session } = useOry();
@@ -29,6 +58,7 @@ export default function HomePage() {
   const firstName = traits?.name?.first ?? "" ;
   const { t } = useTranslation("HomePage");
   const wallets = useAppSelector(state => state.wallets.wallets);
+  const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
@@ -90,10 +120,11 @@ useEffect(() => {
   }, [wallets, dispatch]);
 
   useEffect(() => {
-    if (!wallets?.length) return;
+    if (!wallets || wallets.length === 0) return;
+    if (!portfolioWalletData || portfolioWalletData.length === 0) return;
 
     dispatch(fetchHistoricalWalletData());
-  }, [wallets,dispatch]);
+  }, [wallets, portfolioWalletData, dispatch]);
 
 const retryRef = useRef<ReturnType<typeof setInterval> | null>(null);
 const topTokensRef = useRef<TopTokenData[] | null>(null);
@@ -134,13 +165,108 @@ useEffect(() => {
   };
 }, []);
 
+  const steps: StepType[] = [
+    {
+      selector: "#ei-logo",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("WelcomeToElanInsights")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("CryptoDataMiningAnalyticsDecisionModeling")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#ei-profile-button",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ProfileSettings")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("ClickHereToAccessYourProfile")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#ei-news-filter",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("FilterNewsAndCalendarEvents")}</Typography>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#ei-platform-menu",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("PlatformStrategies")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("PlatformsContainStrategies")}</Typography>
+        </Box>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#ei-tools-section",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("AdvancedTools")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("ToolsEnableCustomizedAnalysis")}</Typography>
+        </Box>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#ei-investing-card",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+      ),
+      position: "top"
+    },
+    {
+      selector: "#ei-income-card",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+      ),
+      position: "top"
+    },
+    {
+      selector: "#ei-theme-toggle",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#homepage",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ThankYouTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568", whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    }
+  ];
+
+  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+
   return (
-    <>
-      <Typography
-        variant="h5"
-        sx={{ fontWeight: "bold" }}>
-        {t("Welcome", { userName: firstName })}
-      </Typography>
+    <TourProvider
+      steps={steps}
+      styles={{
+        popover: (base) => ({ ...base, borderRadius: 12, padding: 16, background: "#ffffff", color: "#1a1a1a" }),
+        maskArea: (base) => ({ ...base, rx: 10 }),
+        badge: (base) => ({ ...base, display: "none" }),
+      }}
+    >
+      <Box id="homepage">
+        <TourStateSync totalSteps={steps.length} />
+        <Box display="flex" alignItems="center">
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold" }}>
+            {t("Welcome", { userName: firstName })}
+          </Typography>
+          <StartTourButton />
+        </Box>
 
       <Grid
         mt={2}
@@ -164,7 +290,8 @@ useEffect(() => {
           xs={12}
           md={6}
           lg={5}
-          sx={{ marginBottom: "10px" }}>
+          sx={{ marginBottom: "10px" }}
+          id="ei-investing-card">
           <TopTokensTile
             loading={isFetchingTopTokens}
             title={t("TopTokensTile")}
@@ -193,12 +320,14 @@ useEffect(() => {
           xs={12}
           container
           spacing={2}
-          justifyContent="space-between">
+          justifyContent="space-between"
+          id="ei-platforms-section">
           <Grid
             item
             xs={12}
             md={6}
-            lg={4}>
+            lg={4}
+            id="ei-income-card">
             <IncomeTile
               loading={isPoolsLoading}
               data={poolsData}
@@ -210,7 +339,8 @@ useEffect(() => {
             item
             xs={12}
             md={6}
-            lg={6}>
+            lg={6}
+            id="ei-tools-section">
             <TradingViewTile
               icon={<SyncAltIcon />}
               title={t("TradingTile")}
@@ -242,6 +372,29 @@ useEffect(() => {
           </Grid>
         </Grid>
       </Grid>
-    </>
+      </Box>
+    </TourProvider>
   );
 }
+
+const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
+  const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
+  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
+    if (currentStep >= totalSteps - 1) {
+      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+    }
+  }, [currentStep, totalSteps]);
+  useEffect(() => {
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
+  }, [isOpen]);
+  useEffect(() => {
+    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+    if (!viewed) {
+      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+      setIsOpen(true);
+    }
+  }, []);
+  return null;
+};

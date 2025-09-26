@@ -105,7 +105,6 @@ type Effect =
   | { type: "validateSymbol"; position: Position }
 
 const stateReducer: EffectReducer<State, Action, Effect> = (state, action, exec) => {
-  //console.log(action)
   switch (action.type) {
     case "set_positions":
       action.payload.positions.forEach(position => {

@@ -18,6 +18,9 @@ import {
   FormControl,
   Autocomplete,
   alpha,
+  Backdrop,
+  Popover,
+  Divider,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
@@ -26,8 +29,12 @@ import { getTradablePairs,  useAppDispatch } from 'components';
 import { formatVolume} from '@/utils/utils';
 import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
-import { Exchange, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
+import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
+import ArbitrageMatrix from './ArbitrageMatrix';
+ 
 
 interface TradeData {
   symbol: string;
@@ -54,6 +61,7 @@ export function TradeTable() {
     action: 'buy',
   });
   
+  const AllCountries = "All Countries";
   const { t } = useTranslation(["TradeTable"]);
   const [showMarketSelector, setShowMarketSelector] = useState(true);
   const [selectedCEX, setSelectedCEX] = useState('');
@@ -66,19 +74,79 @@ export function TradeTable() {
   const [isSwitchIncluded, setIsSwitchIncluded] = useState<boolean>(false);
   const [manualValueInput, setManualValueInput] = useState('');
   const [activeTab, setActiveTab] = useState<"Trading Pairs" | "Arbitrage Matrix">("Trading Pairs");
-  const { data: coinGeckoExchanges, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
+  const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
+  const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
+  const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
   const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken)
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
+  const [demoRequested, setDemoRequested] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
+  const [tourAnchor, setTourAnchor] = useState<HTMLElement | null>(null);
+  const [highlightTick, setHighlightTick] = useState(0);
+  const [highlightReady, setHighlightReady] = useState(false);
+
+  const resetTour = React.useCallback(() => {
+    setTourOpen(false);
+    setTourStep(0);
+    setTourAnchor(null);
+    setSelectedExchange(null);
+    setTradeData({ symbol: '', mkt: '', qty: '0', value: '', action: 'buy' });
+  }, []);
+  const getAnchors = React.useCallback((): (HTMLElement | null)[] => [
+    document.getElementById('step-1') as HTMLElement | null,
+    document.getElementById('step-2') as HTMLElement | null,
+    document.getElementById('step-3') as HTMLElement | null,
+    document.getElementById('step-4') as HTMLElement | null,
+    document.getElementById('step-5') as HTMLElement | null,
+    document.getElementById('step-6') as HTMLElement | null,
+    document.getElementById('step-7') as HTMLElement | null,
+  ], []);
   
-  // Fetch trading pairs for selected exchange
+  const handleDemoClick = () => {
+    const kraken = coinGeckoExchanges?.find(ex => ex.id?.toLowerCase() === 'kraken' || ex.name?.toLowerCase() === 'kraken') || null;
+    setSelectedExchange(kraken);
+    setTradeData({
+      symbol: 'ETH',
+      mkt: 'ETH/USD',
+      qty: '1',
+      value: '',
+      action: 'buy',
+    });
+    setDemoRequested(true);
+    setTourStep(0);
+    setTourOpen(false);
+    setTourAnchor(null);
+    setTimeout(() => {
+      setTourOpen(true);
+      const anchors = getAnchors();
+      if (anchors[0]) {
+        setTourAnchor(anchors[0]);
+        try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_e) { /* noop */ }
+      }
+    }, 0);
+    const anchors = getAnchors();
+    if (anchors[0]) {
+      setTourAnchor(anchors[0]);
+      try { anchors[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_e) { /* noop */ }
+    }
+  };
+
+  useEffect(() => {
+    if (coinGeckoExchangesInitial) {
+      setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => selectedCountry == AllCountries 
+        || x.country == selectedCountry));
+    }
+  }, [coinGeckoExchangesInitial, selectedCountry]);
+  
   useEffect(() => {
     const fetchTradingPairs = async () => {
       if (!selectedExchange || !coinGeckoExchangesWithTickers) return;
 
       try {
-        // Process and deduplicate trading pairs
         const pairsMap = new Map();
         coinGeckoExchangesWithTickers.tickers?.forEach(ticker => {
             const pair = `${ticker.base}/${ticker.target}`;
@@ -96,18 +164,22 @@ export function TradeTable() {
         const pairs = Array.from(pairsMap.values());
         setTradingPairs(pairs);
         
-        // Get top 10 trading pairs by volume for the table
         const topPairs = [...pairs]
           .sort((a, b) => b.volume - a.volume)
           .slice(0, 10);
         setTopTradingPairs(topPairs);
+
+        if (demoRequested) {
+          setTradeData(prev => ({ ...prev, qty: '1' }));
+          setDemoRequested(false);
+        }
       } catch (error) {
         console.error('Failed to fetch trading pairs:', error);
       } 
     };
 
     fetchTradingPairs();
-  }, [selectedExchange, coinGeckoExchangesWithTickers]);
+  }, [selectedExchange, coinGeckoExchangesWithTickers, demoRequested]);
 
   const handleTradingPairSelect = (pair: string | null) => {
     if (pair) {
@@ -137,6 +209,24 @@ export function TradeTable() {
       value: '',
       action: 'buy',
     });
+  };
+
+  const handleCountrySelect = (event: SelectChangeEvent<string>) => {
+      const country = event.target.value;
+      setSelectedCountry(country);
+      
+      if (selectedExchange?.country == country) {
+        return;
+      }
+
+      setSelectedExchange(null);
+      setTradeData({
+        symbol: '',
+        mkt: '',
+        qty: '0',
+        value: '',
+        action: 'buy',
+      });
   };
 
   const handleTopPairClick = (pair: TradingPair) => {
@@ -178,7 +268,9 @@ export function TradeTable() {
     }
     const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
     if (!selectedMarket) {
-      setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
+      if (!demoRequested) {
+        setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
+      }
       return;
     }
 
@@ -244,8 +336,77 @@ export function TradeTable() {
     tradeData.symbol,
     isSwitchIncluded,
     tradeData.action,
-    tradingPairs
+    tradingPairs,
+    demoRequested
   ]);
+
+  useEffect(() => {
+    if (!tourOpen) return;
+    const anchors = getAnchors();
+    const timer = window.setTimeout(() => {
+      const el = anchors[tourStep];
+      if (el) {
+        setTourAnchor(el);
+        try {
+          el.scrollIntoView({ behavior: 'auto', block: 'center' });
+        } catch (_e) { /* noop */ }
+      }
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [tourStep, tourOpen, selectedExchange, tradingPairs, tradeData, isSwitchIncluded, getAnchors]);
+
+  useEffect(() => {
+    if (!tourOpen) return;
+    const interval = window.setInterval(() => setHighlightTick(t => t + 1), 120);
+    return () => window.clearInterval(interval);
+  }, [tourOpen, tourStep]);
+
+  useEffect(() => {
+    if (!tourOpen || !tourAnchor) return;
+    setHighlightReady(false);
+    let frame = 0;
+    let last: DOMRect | null = null;
+    let stableCount = 0;
+    let raf = 0 as any;
+
+    const measure = () => {
+      const baseEl = tourStep === 6
+        ? (document.querySelector('#step-7 table') as HTMLElement | null)
+        : (tourAnchor as HTMLElement);
+      const rect = baseEl ? baseEl.getBoundingClientRect() : null;
+      if (rect && last) {
+        const dx = Math.abs(rect.left - last.left);
+        const dy = Math.abs(rect.top - last.top);
+        if (dx < 1 && dy < 1) stableCount += 1; else stableCount = 0;
+      }
+      last = rect || last;
+      if (stableCount >= 2 || frame > 20) {
+        setHighlightReady(true);
+        return;
+      }
+      frame += 1;
+      raf = window.requestAnimationFrame(measure);
+    };
+    raf = window.requestAnimationFrame(measure);
+    return () => window.cancelAnimationFrame(raf);
+  }, [tourOpen, tourStep, tourAnchor]);
+
+  const highlightRect = (() => {
+    if (!tourAnchor) return null;
+    try {
+      if (tourStep === 3) {
+        const col = document.getElementById('step-4') as HTMLElement | null;
+        if (col) return col.getBoundingClientRect();
+      }
+      if (tourStep === 6) {
+        const tableEl = document.querySelector('#step-7 table') as HTMLElement | null;
+        if (tableEl) return tableEl.getBoundingClientRect();
+      }
+      return (tourAnchor as HTMLElement).getBoundingClientRect();
+    } catch {
+      return (tourAnchor as HTMLElement).getBoundingClientRect();
+    }
+  })();
 
   return (
     <Box sx={{height: "100%"}}>
@@ -269,496 +430,527 @@ export function TradeTable() {
           }}
       >
       
-      {/* Tabs */}
       <Grid item container spacing={2} sx={{ marginBottom: 2 }}>
         <Grid item>
-          <Button
-            variant={activeTab === "Trading Pairs" ? "contained" : "outlined"}
-            color="primary"
-            onClick={() => setActiveTab("Trading Pairs")}
-            sx={{
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "0.875rem",
-              backgroundColor: activeTab === "Trading Pairs" ? "#1e88e5" : undefined,
-              color: activeTab === "Trading Pairs" ? "#fff" : undefined,
-              "&:hover": {
-                backgroundColor: activeTab === "Trading Pairs" ? "#1565c0" : undefined,
-              },
-            }}>
-              {t("TradingPairs")}
-          </Button>
-       </Grid>
-       <Grid item>
-          <Button
-            variant={activeTab === "Arbitrage Matrix" ? "contained" : "outlined"}
-            color="primary"
-            onClick={() => setActiveTab("Arbitrage Matrix")}
-            sx={{
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "0.875rem",
-              backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
-              color: activeTab === "Arbitrage Matrix" ? "#fff" : undefined,
-              "&:hover": {
-                backgroundColor: activeTab === "Arbitrage Matrix" ? "#1565c0" : undefined,
-              },
-            }}>
-              {t("ArbitrageMatrix")}
-          </Button>
+           <Button
+             variant={activeTab === "Trading Pairs" ? "contained" : "outlined"}
+             color="primary"
+             onClick={() => setActiveTab("Trading Pairs")}
+             startIcon={<SwapVertIcon sx={{ 
+               color: activeTab === "Trading Pairs" ? "#fff" : undefined 
+             }} />}
+             sx={{
+               textTransform: "none",
+               fontWeight: 500,
+               fontSize: "0.875rem",
+               backgroundColor: activeTab === "Trading Pairs" ? "#1e88e5" : undefined,
+               color: activeTab === "Trading Pairs" ? "#fff" : undefined,
+               "&:hover": {
+                 backgroundColor: activeTab === "Trading Pairs" ? "#1565c0" : undefined,
+               },
+             }}>
+               {t("TradingPairs")}
+           </Button>
         </Grid>
+          <Grid item>
+           <Button
+             variant={activeTab === "Arbitrage Matrix" ? "contained" : "outlined"}
+             color="primary"
+             onClick={() => setActiveTab("Arbitrage Matrix")}
+             startIcon={<TrendingUpIcon />}
+             sx={{
+               textTransform: "none",
+               fontWeight: 500,
+               fontSize: "0.875rem",
+               backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
+               color: activeTab === "Arbitrage Matrix" ? "#fff" : undefined,
+               "&:hover": {
+                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
+               },
+             }}>
+               {t("ArbitrageMatrix")}
+           </Button>
+         </Grid>
       </Grid>
 
       {activeTab === "Trading Pairs" ? (
         <>
-          {/* Exchange dropdown */}
           <Grid
             container
             spacing={2}
-            alignItems="center" 
+            alignItems="flex-start"
+            direction="column"
             sx={{ mb: 2 }}
           >
             <Grid item>
-              <Typography
-                variant="h6"
+              <Button
+                variant="contained"
+                size="small"
                 sx={{
-                  fontSize: '0.9rem',
-                  color: (theme) =>
-                    theme.palette.mode === 'dark'
-                      ? 'rgba(255, 255, 255, 0.7)'
-                      : 'rgba(0, 0, 0, 0.7)',
+                  textTransform: "none",
+                  borderRadius: "16px",
+                  padding: "2px 10px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  backgroundColor: "#1866aaff",
+                  color: "#fff",
+                  border: "1px solid #fff",
+                  boxShadow: "none",
+                  '&:hover': { backgroundColor: "#13549eff", boxShadow: "none" }
                 }}
+                onClick={handleDemoClick}
               >
-                {t("SelectExchange")}:
-              </Typography>
+                {t("TradingPairsDemo")}
+              </Button>
             </Grid>
-    
-            <Grid item>
-              <FormControl size="small" sx={{ minWidth: 200 }}>
-                <Autocomplete
-                  size="small"
-                  options={coinGeckoExchanges || []}
-                  loading={isCoinGeckoExchangesLoading}
-                  getOptionLabel={(option) => option.name} 
-                  value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
-                  onChange={(event, newValue) => {
-                    handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={t("SelectExchange")}
-                    />
-                  )}
-                  sx={{ width: 200 }}
-                />
-              </FormControl>
+            <Grid item sx={{ width: "100%" }}>
+              <Grid container alignItems="center" direction="row" spacing={2}>
+                <Grid item id="step-1" container alignItems="center" sx={{ width: "auto" }}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginRight:"10px",
+                        color: (theme) =>
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                      }}
+                    >
+                      {t("SelectExchange")}:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        size="small"
+                        options={coinGeckoExchanges || []}
+                        loading={isCoinGeckoExchangesLoading}
+                        getOptionLabel={(option) => option.name} 
+                        value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
+                        onChange={(event, newValue) => {
+                          handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectExchange")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid item container alignItems="center" sx={{ width: "auto" }}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginRight:"10px",
+                        color: (theme) =>
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                      }}
+                    >
+                      {t("FilterbyCountry")}:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        disableClearable
+                        size="small"
+                        options={countries || []}
+                        loading={isCoutriesLoading}
+                        getOptionLabel={(option) => option} 
+                        value={selectedCountry}
+                        onChange={(event, newValue) => {
+                          handleCountrySelect({ target: { value: newValue }} as SelectChangeEvent<string>);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
 
-          {/* Content */}
-          <Box display="flex" justifyContent="space-between" gap={10}>
-            <Box flex="1.6" sx={{marginTop:"5px", maxWidth:"100%"}}>
-              <Paper 
-                elevation={3} 
-                sx={(theme) => ({
-                  borderRadius: 2,
-                  p: 2,
-                  backgroundColor: alpha(
-                    theme.palette.mode === 'light'
-                      ? theme.palette.grey[100]
-                      : theme.palette.grey[900],
-                    0.9
-                  ),
-                })}>
-                 {selectedExchange && (
-                   <>
-                     <Typography
-                       variant="h6"
-                       sx={{
-                         color: (theme) =>
-                           theme.palette.mode === 'dark'
-                             ? 'rgba(255, 255, 255, 0.9)'
-                             : 'rgba(0, 0, 0, 0.9)',
-                       }}
-                     >
-                      {t("ModelTradeon")} {selectedExchange.name}
-                     </Typography>
-                  </>)}
+           <Box display="flex">
+             <Box flex="1.6" sx={{ maxWidth:"100%"}}>
+               <Paper 
+                 elevation={3} 
+                 sx={(theme) => ({
+                   borderRadius: 2,
+                   p: 2,
+                   backgroundColor: alpha(
+                     theme.palette.mode === 'light'
+                       ? theme.palette.grey[100]
+                       : theme.palette.grey[900],
+                     0.9
+                   ),
+                 })}>
+                  {selectedExchange && (
+                    <>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                         marginBottom:"10px",
+                          color: (theme) =>
+                            theme.palette.mode === 'dark'
+                              ? 'rgba(255, 255, 255, 0.9)'
+                              : 'rgba(0, 0, 0, 0.9)',
+                        }}
+                      >
+                       {t("ModelTradeon")} {selectedExchange.name}
+                      </Typography>
+                   </>)}
 
-                 <TableContainer
-                   component={Paper}
-                   sx={{ width: "100%", backgroundColor: 'transparent' }}
-                   elevation={0}
-                 >
-                   <Table sx={{ tableLayout: "fixed",  '& td, & th': { border: 'none' } }}>
-                     <TableHead>
-                       <TableRow>
-                         
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, width: "15%", color: textColor, }}>
-                           {t("TradingPair")}
-                         </TableCell>
-         
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`,width: "13%", color: textColor }}>
-                           {t("TradeType")}
-                         </TableCell>
-         
-                         <TableCell
-                           sx={{
-                             borderBottom: `1px solid ${borderColor}`,
-                             width: "16%",
-                             paddingLeft: "45px",
-                             color: textColor,
-                             fontWeight: "bold",
+                  <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", overflow: "auto" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "180px" }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem', fontWeight: 500 }}>
+                         {t("TradingPair")}
+                       </Typography>
+                       <FormControl  id="step-2"size="small" sx={{ minWidth: 180 }}>
+                         <Autocomplete 
+                           size="small"
+                           options={tradingPairs}
+                           disabled={!selectedExchange}
+                           getOptionLabel={(option) => option.pair} 
+                           loading={isTradingPairsLoading}
+                           value={tradingPairs.find(x => x.pair == tradeData.mkt) || null}
+                           onChange={(event, newValue) => {
+                             handleTradingPairSelect(newValue?.pair || null);
                            }}
-                         >
-                           <Box sx={{ display: "flex", alignItems: "center" }}>
-                             {`${tradeData.symbol ? tradeData.symbol.toUpperCase() + " to" : ""} ${tradeData.action === "buy" ? "Buy" : "Sell"}`}
-                             
-                             {isSwitchIncluded ? (
-                                 <Box sx={{ ml: 1, marginTop:"5px" }}>
-                                   <LockIcon sx={{ color: "#ffa600", fontSize: 16 }} />
-                                 </Box>
-                               ) : (
-                                 <Box sx={{ ml: 1, marginTop:"5px" }}>
-                                   <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: "16px"}} />
-                                 </Box>
-                             )}
-                           </Box>
-                         </TableCell>
-         
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`,fontWeight: "bold", color: textColor, width: "10%" }}>
-                           {t("SwitchCryptoInput")}
-                         </TableCell>
-         
-                         <TableCell
-                           sx={{
-                             borderBottom: `1px solid ${borderColor}`,
-                             width: "13%",
-                             color: textColor,
-                             fontWeight: "bold",
-                           }}
-                         >
-                           <Box sx={{ display: "flex", alignItems: "center", marginLeft: "4px" }}>
-                             {`${tradeData.mkt ? tradeData.mkt.split("/")[1] + " to" : ""} ${tradeData.action === "buy" ? "Spend" : "Receive"}`}
-         
-                             {!isSwitchIncluded ? (
-                               
-                                <Box sx={{ ml: 1, marginTop:"5px" }}>
-                                   <LockIcon sx={{ color: "#ffa600", fontSize: 16 }} />
-                                 </Box>
-                               ) : (
-                                 <Box sx={{ ml: 1, marginTop:"5px" }}>
-                                   <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: 16 }} />
-                                 </Box>
-                             )}
-                           </Box>
-                         </TableCell>
-                         
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor, width:"12%"}}>
-                           {t("Exchange")}
-                         </TableCell>
-
-                       </TableRow>
-                     </TableHead>
-                     <TableBody>
-                       <TableRow>
-
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, color: textColor}}> 
-                           <FormControl size="small" sx={{ minWidth: 100 }}>
-                             <Autocomplete
-                               size="small"
-                               options={tradingPairs}
-                               disabled={!selectedExchange}
-                               getOptionLabel={(option) => option.pair} 
-                               loading={isTradingPairsLoading}
-                               value={tradingPairs.find(x => x.pair == tradeData.mkt) || null}
-                               onChange={(event, newValue) => {
-                                 handleTradingPairSelect(newValue?.pair || null);
-                               }}
-                               renderInput={(params) => (
-                                 <TextField
-                                   {...params}
-                                   placeholder={t("SelectTradingPair")}
-                                 />
-                               )}
-                               sx={{ width: 200 }}
-                             />
-                           </FormControl>
-                         </TableCell>
-                          
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
-                           <Box
-                             sx={{
-                               width: "90%",
-                               height: 30,
-                               borderRadius: "4px",
-                               overflow: "hidden",
-                               display: "flex",
-                               userSelect: "none",
-                               cursor: tradeData.symbol ? "pointer" : "not-allowed",
-                               opacity: tradeData.symbol ? 1 : 0.5,
-                               border: `1px solid ${borderColor}`,
-                               pointerEvents: tradeData.symbol ? "auto" : "none", 
-                             }}
-                             onClick={() => {
-                               if (!tradeData.symbol) return; 
-                               setTradeData({
-                                 ...tradeData,
-                                 action: tradeData.action === "buy" ? "sell" : "buy",
-                               });
-                             }}
-                           >
-                             <Box
-                               sx={{
-                                 flex: 1,
-                                 backgroundColor: tradeData.action === "buy" ? "green" : "transparent",
-                                 color: tradeData.action === "buy" ? "white" : textColor,
-                                 display: "flex",
-                                 alignItems: "center",
-                                 justifyContent: "center",
-                                 fontSize: "12px",
-                                 fontWeight: "bold",
-                                 transition: "0.3s",
-                               }}
-                             >
-                               {t("Buy")} {tradeData.symbol?.toUpperCase() || ""}
-                             </Box>
-                             <Box
-                               sx={{
-                                 flex: 1,
-                                 backgroundColor: tradeData.action === "sell" ? "red" : "transparent",
-                                 color: tradeData.action === "sell" ? "white" : textColor,
-                                 display: "flex",
-                                 alignItems: "center",
-                                 justifyContent: "center",
-                                 fontSize: "12px",
-                                 fontWeight: "bold",
-                                 transition: "0.3s",
-                               }}
-                             >
-                               {t("Sell")} {tradeData.symbol?.toUpperCase() || ""}
-                             </Box>
-                           </Box>
-                         </TableCell>
-
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`, paddingLeft: "40px" }}>
-                           {isSwitchIncluded ? (
-                           <Box
-                             sx={{
-                               height: "36px",
-                               padding: "8px",
-                               color: "gray",
-                               textAlign: "center",
-                               fontWeight: "bold",
-                               backgroundColor: isDarkMode ? "#373737" : "#e0e0e0",
-                               borderRadius: "8px",
-                               border: `1px solid ${borderColor}`,
-                               display: "flex",
-                               alignItems: "center",
-                               justifyContent: "center",
-                               userSelect: "none",
-                               cursor: "default",
-                             }}
-                           >
-                             {tradeData.qty || ""}
-                           </Box>
-                         ) : (
-                           <TextField
-                             disabled={!tradeData.symbol}
-                             value={
-                               tradeData.qty === "0" || tradeData.qty === "" 
-                                 ? "" 
-                                 : tradeData.qty.startsWith(".") 
-                                   ? `0${tradeData.qty}` 
-                                   : tradeData.qty
-                             }
-                             onChange={(e) => {
-                               const rawValue = e.target.value.replace(/,/g, "");
-                               if (/^(\d+)?(\.\d*)?$/.test(rawValue) || rawValue === "") {
-                                 setTradeData((prev) => ({ ...prev, qty: rawValue }));
-                               }
-                             }}
-                             placeholder={`Input ${tradeData.symbol?.toUpperCase() || ""} Qty`}
-                             variant="outlined"
-                             sx={{
-                               input: { height: "20px", padding: "8px" },
-                               fieldset: { borderRadius: "8px" },
-                             }}
-                             autoComplete="off"
-                           />
-                         )}
-                         </TableCell>
-
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
-                             <Button
-                                 variant="contained"
-                                 disabled={!tradeData.symbol}
-                                 onClick={handleSwitchClick}
-                                 sx={{
-                                   width:"100%",
-                                   backgroundColor: "#f59e0b",
-                                   fontWeight: "bold",
-                                   "&:hover": { backgroundColor: "#d97706" },
-                                 }}
-                               >
-                                 <SwapHorizIcon />
-                             </Button>
-                         </TableCell>
-           
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}` }}>
-                           {!isSwitchIncluded ? (
-                             <Box
-                               tabIndex={-1}
-                               sx={{
-                                 height: "36px",
-                                 padding: "8px",
-                                 color: "gray",
-                                 textAlign: "center",
-                                 fontWeight: "bold",
-                                 backgroundColor: isDarkMode ? "#373737" : "#e0e0e0",
-                                 borderRadius: "8px",
-                                 border: `1px solid ${borderColor}`,
-                                 display: "flex",
-                                 alignItems: "center",
-                                 justifyContent: "center",
-                                 userSelect: "none",
-                                 cursor: "default",
-                               }}
-                             >
-                               {tradeData.value || ""}
-                             </Box>
-                           ) : (
+                           renderInput={(params) => (
                              <TextField
-                               disabled={!tradeData.symbol || !isSwitchIncluded}
-                               value={isSwitchIncluded
-                                 ? (manualValueInput === "0" || manualValueInput === ""
-                                     ? ""
-                                     : manualValueInput.startsWith(".")
-                                     ? `0${manualValueInput}`
-                                     : manualValueInput)
-                                 : (tradeData.value === "0" || tradeData.value === ""
-                                     ? ""
-                                     : tradeData.value.startsWith(".")
-                                     ? `0${tradeData.value}`
-                                     : tradeData.value)
-                               }
-                               onChange={(e) => {
-                                 const raw = e.target.value.replace(/,/g, "");
-                                 if (/^(\d+)?(\.\d*)?$/.test(raw) || raw === "") {
-                                   if (isSwitchIncluded) {
-                                     setManualValueInput(raw);
-                                     setTradeData(prev => ({ ...prev, value: raw }));
-                                   }
-                                 }
-                               }}
-                               onBlur={() => {
-                                 if (isSwitchIncluded) {
-                                   setTradeData(prev => ({ ...prev, value: manualValueInput }));
-                                 }
-                               }}
-                               placeholder={
-                                 isSwitchIncluded
-                                   ? `Input ${tradeData.mkt?.split("/")[1]?.toUpperCase() || ""} Qty`
-                                   : ""
-                               }
-                               variant="outlined"
-                               sx={{
-                                 input: { height: "20px", padding: "8px" },
-                                 fieldset: { borderRadius: "8px" },
-                                 textAlign: "center",
-                               }}
-                               autoComplete="off"
+                               {...params}
+                               placeholder={t("SelectTradingPair")}
                              />
                            )}
-                         </TableCell>
+                         />
+                       </FormControl>
+                     </Box>
 
-                         <TableCell sx={{ borderBottom: `1px solid ${borderColor}`}}>
-                           <Tooltip title={`${t("Trade")} on ${selectedExchange?.name}`} arrow>
-                             <a
-                               href={selectedExchange?.url || ""}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               style={{ textDecoration: "none", pointerEvents: !tradeData.symbol ? "none" : "auto", }}
-                             >
-                             <Button
-                               variant="outlined"
-                               disabled={!tradeData.symbol}
-                               sx={{
-                                 textTransform: "none",
-                                 fontWeight: "bold",
-                                 borderRadius: "4px",
-                                  ...(tradeData.symbol && {
-                                   backgroundColor: "rgb(3, 169, 244)",
-                                   "&:hover": { backgroundColor: "rgb(6, 120, 172)", borderColor: "#45a049" },
-                                 }),
-                                 color: "white",
-                               }}
-                               endIcon={<NorthEastIcon />}
-                             >
-                               {t("TradeOn")} {selectedExchange?.name}
-                             </Button>
-                             </a>
-                           </Tooltip>
-                         </TableCell>
-                      </TableRow>
-                    </TableBody>
-                    <TableRow>
-                      <TableCell colSpan={6} sx={{ padding: "16px 24px" }}>
-                        {tradeData.qty && tradeData.value && tradeData.symbol && tradeData.mkt && tradeData.action && (
+                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "200px" }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem', fontWeight: 500 }}>
+                         {t("TradeType")}
+                       </Typography>
+                       <Box
+                          id="step-3"
+                          sx={{
+                            height: "37px",
+                            borderRadius: "6px",
+                            overflow: "hidden",
+                            display: "flex",
+                            userSelect: "none",
+                            cursor: tradeData.symbol ? "pointer" : "not-allowed",
+                            opacity: tradeData.symbol ? 1 : 0.5,
+                            border: `1px solid ${borderColor}`,
+                            pointerEvents: tradeData.symbol ? "auto" : "none", 
+                          }}
+                         onClick={() => {
+                           if (!tradeData.symbol) return; 
+                           setTradeData({
+                             ...tradeData,
+                             action: tradeData.action === "buy" ? "sell" : "buy",
+                           });
+                         }}
+                       >
+                         <Box
+                           sx={{
+                             flex: 1,
+                             backgroundColor: tradeData.action === "buy" ? "green" : "transparent",
+                             color: tradeData.action === "buy" ? "white" : textColor,
+                             display: "flex",
+                             alignItems: "center",
+                             justifyContent: "center",
+                             fontSize: "12px",
+                             fontWeight: "bold",
+                             transition: "0.3s",
+                           }}
+                         >
+                           {t("Buy")} {tradeData.symbol?.toUpperCase() || ""}
+                         </Box>
+                         <Box
+                           sx={{
+                             flex: 1,
+                             backgroundColor: tradeData.action === "sell" ? "red" : "transparent",
+                             color: tradeData.action === "sell" ? "white" : textColor,
+                             display: "flex",
+                             alignItems: "center",
+                             justifyContent: "center",
+                             fontSize: "12px",
+                             fontWeight: "bold",
+                             transition: "0.3s",
+                           }}
+                         >
+                           {t("Sell")} {tradeData.symbol?.toUpperCase() || ""}
+                         </Box>
+                       </Box>
+                     </Box>
+
+                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "190px" }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem',}}>
+                         {`${tradeData.symbol ? tradeData.symbol.toUpperCase() + " to" : ""} ${tradeData.action === "buy" ? "Buy" : "Sell"}`}
+                         {isSwitchIncluded ? (
+                           <LockIcon sx={{ color: "#ffa600", fontSize: 16, ml: 1 }} />
+                         ) : (
+                           <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: "16px", ml: 1 }} />
+                         )}
+                       </Typography>
+                       <Box id="step-4">
+                         {isSwitchIncluded ? (
                           <Box
-                          tabIndex={-1}
                             sx={{
+                              height: "37px",
+                              color: "gray",
+                              textAlign: "center",
+                              fontWeight: "bold",
+                              backgroundColor: isDarkMode ? "#373737" : "#e0e0e0",
+                              borderRadius: "8px",
+                              border: `1px solid ${borderColor}`,
                               display: "flex",
                               alignItems: "center",
-                              borderRadius: "8px",
-                              padding: "10px 16px",
-                              fontWeight: "bold",
-                              backgroundColor: isDarkMode
-                                      ? "#0a1e2c"
-                                      : "#e0e0e0", 
-                              position: "relative",
+                              justifyContent: "center",
                               userSelect: "none",
                               cursor: "default",
                             }}
                           >
-                            <Box
-                            tabIndex={-1}
-                              sx={{
-                                width: "6px",
-                                height: "100%",
-                                borderRadius: "4px 0 0 4px",
-                                backgroundColor: tradeData.action === "buy" ? "#4caf50" : "#f44336",
-                                position: "absolute",
-                                left: 0,
-                                top: 0,
-                                userSelect: "none",
-                                cursor: "default",
-                              }}
-                            />
-          
-                            <Box sx={{ marginLeft: "12px" }}>
-                              <div style={{ marginBottom: "4px", color: tradeData.action === "buy" ? "#4caf50" : "#f44336" }}>
-                                {t("Transaction")}:
-                              </div>
-                              <div>
-                                {tradeData.action === "buy"
-                                  ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
-                                  : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`}
-                              </div>
-                            </Box>
+                            {tradeData.qty || ""}
                           </Box>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                   </Table>
-                 </TableContainer>
-              </Paper>    
-            </Box>
-          </Box>
+                       ) : (
+                         <TextField
+                           
+                           disabled={!tradeData.symbol}
+                           value={
+                             tradeData.qty === "0" || tradeData.qty === "" 
+                               ? "" 
+                               : tradeData.qty.startsWith(".") 
+                                 ? `0${tradeData.qty}` 
+                                 : tradeData.qty
+                           }
+                           onChange={(e) => {
+                             const rawValue = e.target.value.replace(/,/g, "");
+                             if (/^(\d+)?(\.\d*)?$/.test(rawValue) || rawValue === "") {
+                               setTradeData((prev) => ({ ...prev, qty: rawValue }));
+                             }
+                           }}
+                           placeholder={`Input ${tradeData.symbol?.toUpperCase() || ""} Qty`}
+                           variant="outlined"
+                           sx={{
+                             input: { height: "20px", padding: "0 12px" },
+                             fieldset: { borderRadius: "8px" },
+                             "& .MuiOutlinedInput-root": { height: "37px" }
+                           }}
+                           autoComplete="off"
+                         />
+                       )}
+                       </Box>
+                     </Box>
+
+                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "190px" }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem',}}>
+                         {t("SwitchCryptoInput")}
+                       </Typography>
+                       <Button
+                        id="step-5"
+                         variant="contained"
+                         disabled={!tradeData.symbol}
+                         onClick={handleSwitchClick}
+                         sx={{
+                           width: "auto",
+                           height: "37px",
+                           backgroundColor: "#f59e0b",
+                           fontWeight: "bold",
+                           borderRadius: "6px",
+                           "&:hover": { backgroundColor: "#d97706" },
+                         }}
+                       >
+                         <SwapHorizIcon />
+                       </Button>
+                     </Box>
+
+                     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "190px" }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem',}}>
+                         {`${tradeData.mkt ? tradeData.mkt.split("/")[1] + " to" : ""} ${tradeData.action === "buy" ? "Spend" : "Receive"}`}
+                         {!isSwitchIncluded ? (
+                           <LockIcon sx={{ color: "#ffa600", fontSize: 16, ml: 1 }} />
+                         ) : (
+                           <EditIcon sx={{ color: theme.palette.mode === 'light' ? "black" : "white", fontSize: 16, ml: 1 }} />
+                         )}
+                       </Typography>
+                         {!isSwitchIncluded ? (
+                          <Box
+                            sx={{
+                              height: "37px",
+                              color: "gray",
+                              textAlign: "center",
+                              fontWeight: "bold",
+                              backgroundColor: isDarkMode ? "#373737" : "#e0e0e0",
+                              borderRadius: "8px",
+                              border: `1px solid ${borderColor}`,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              userSelect: "none",
+                              cursor: "default",
+                            }}
+                          >
+                            {tradeData.value || ""}
+                          </Box>
+                       ) : (
+                         <TextField
+                           disabled={!tradeData.symbol || !isSwitchIncluded}
+                           value={isSwitchIncluded
+                             ? (manualValueInput === "0" || manualValueInput === ""
+                                 ? ""
+                                 : manualValueInput.startsWith(".")
+                                 ? `0${manualValueInput}`
+                                 : manualValueInput)
+                             : (tradeData.value === "0" || tradeData.value === ""
+                                 ? ""
+                                 : tradeData.value.startsWith(".")
+                                 ? `0${tradeData.value}`
+                                 : tradeData.value)
+                           }
+                           onChange={(e) => {
+                             const raw = e.target.value.replace(/,/g, "");
+                             if (/^(\d+)?(\.\d*)?$/.test(raw) || raw === "") {
+                               if (isSwitchIncluded) {
+                                 setManualValueInput(raw);
+                                 setTradeData(prev => ({ ...prev, value: raw }));
+                               }
+                             }
+                           }}
+                           onBlur={() => {
+                             if (isSwitchIncluded) {
+                               setTradeData(prev => ({ ...prev, value: manualValueInput }));
+                             }
+                           }}
+                           placeholder={
+                             isSwitchIncluded
+                               ? `Input ${tradeData.mkt?.split("/")[1]?.toUpperCase() || ""} Qty`
+                               : ""
+                           }
+                           variant="outlined"
+                           sx={{
+                             input: { height: "20px", padding: "0 12px" },
+                             fieldset: { borderRadius: "6px" },
+                             textAlign: "center",
+                             "& .MuiOutlinedInput-root": { height: "37px" }
+                           }}
+                           autoComplete="off"
+                         />
+                       )}
+                     </Box>
+
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: "180px" }}>
+                       <Typography variant="body2" sx={{ color: textColor, fontSize: '0.9rem'}}>
+                         {t("Exchange")}
+                       </Typography>
+                       <Tooltip title={`${t("Trade")} on ${selectedExchange?.name}`} arrow>
+                         <a
+                           href={selectedExchange?.url || ""}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           style={{ textDecoration: "none", pointerEvents: !tradeData.symbol ? "none" : "auto", }}
+                         >
+                         <Button
+                         id="step-6"
+                           variant="outlined"
+                           disabled={!tradeData.symbol}
+                           sx={{
+                              textTransform: "none",
+                              fontWeight: "bold",
+                              borderRadius: "6px",
+                              height: "37px",
+                               ...(tradeData.symbol && {
+                                backgroundColor: "#1e88e5",
+                                "&:hover": { backgroundColor: "#1e88e5", },
+                              }),
+                              color: "white",
+                            }}
+                           endIcon={<NorthEastIcon />}
+                         >
+                           {t("TradeOn")} {selectedExchange?.name}
+                         </Button>
+                         </a>
+                       </Tooltip>
+                     </Box>
+                   </Box>
+
+                   {tradeData.symbol && tradeData.mkt && tradeData.action && (
+                     <Box
+                       sx={{
+                         display: "flex",
+                         alignItems: "center",
+                         borderRadius: "8px",
+                         padding: "10px 16px",
+                         fontWeight: "bold",
+                         backgroundColor: isDarkMode
+                                 ? "#0a1e2c"
+                                 : "#e0e0e0", 
+                         position: "relative",
+                         userSelect: "none",
+                         cursor: "default",
+                         marginTop: 2,
+                         width: "100%",
+                       }}
+                     >
+                       <Box
+                         sx={{
+                           width: "6px",
+                           height: "100%",
+                           borderRadius: "4px 0 0 4px",
+                           backgroundColor: tradeData.action === "buy" ? "#4caf50" : "#f44336",
+                           position: "absolute",
+                           left: 0,
+                           top: 0,
+                           userSelect: "none",
+                           cursor: "default",
+                         }}
+                       />
+     
+                       <Box sx={{ marginLeft: "12px" }}>
+                         <div style={{ marginBottom: "4px", color: tradeData.action === "buy" ? "#4caf50" : "#f44336" }}>
+                           {tradeData.qty && tradeData.value ? t("Transaction") : "Last Price"}:
+                         </div>
+                         <div>
+                           {tradeData.qty && tradeData.value ? (
+                             tradeData.action === "buy"
+                               ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
+                               : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
+                           ) : (
+                             (() => {
+                               const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
+                               const currentPrice = selectedMarket?.last;
+                               return currentPrice 
+                                 ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
+                                 : `${tradeData.mkt} - Price not available`;
+                             })()
+                           )}
+                         </div>
+                       </Box>
+                     </Box>
+                   )}
+               </Paper>    
+             </Box>
+           </Box>
 
           {selectedExchange && (    
-            <Paper 
+            <Paper
+            id="step-7"
               elevation={3} 
               sx={(theme) => ({
                 borderRadius: 2,
@@ -780,7 +972,7 @@ export function TradeTable() {
                   sx={{
                     backgroundColor: 'transparent', 
                   }}>
-                    <Table>
+                    <Table >
                       <TableHead>
                         <TableRow>
                           <TableCell>Pair</TableCell>
@@ -815,9 +1007,120 @@ export function TradeTable() {
       ) 
       :  
       (
-        <Typography sx={{ fontSize: "20px", height: "20%" }}> Coming soon...</Typography>
+        <ArbitrageMatrix/>
       )}
      </Grid>
+
+      <Backdrop
+        open={tourOpen}
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.modal - 1,
+          backgroundColor: 'rgba(0,0,0,.4)'
+        }}
+      />
+      {tourOpen && highlightReady && highlightRect && (
+        <Box
+          sx={{
+            position: 'fixed',
+            zIndex: (theme) => theme.zIndex.modal + 1,
+            boxShadow: 'inset 0 0 0 4px #3b82f6',
+            borderRadius: '12px',
+            pointerEvents: 'none',
+          }}
+          style={{
+            left: Math.max(0, highlightRect.left),
+            top: Math.max(0, highlightRect.top),
+            width: highlightRect.width,
+            height: highlightRect.height,
+          }}
+        />
+      )}
+
+      <Popover
+        sx={{ zIndex: (theme) => theme.zIndex.modal + 2 }}
+        open={tourOpen && Boolean(tourAnchor)}
+        anchorEl={tourAnchor}
+        onClose={resetTour}
+        anchorOrigin={{
+          vertical: tourStep === 6 ? 'top' : 'bottom',
+          horizontal: 'center'
+        }}
+        transformOrigin={{
+          vertical: tourStep === 6 ? 'bottom' : 'top',
+          horizontal: 'center'
+        }}
+        PaperProps={{
+          sx: {
+            p: 3,
+            borderRadius: 3,
+            maxWidth: 360,
+            backgroundColor: '#ffffff',
+            color: '#1a1a1a',
+            ...(tourStep === 6 ? { mb: '15px' } : { mt: '15px' })
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+          <Box sx={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14
+          }}>{tourStep + 1}</Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ color: '#1a1a1a' }}>
+            {[
+              'Select Exchange',
+              'Choose Trading Pair',
+              'Buy or Sell',
+              'Enter Amount',
+              'Switch Input Mode',
+              'Execute Trade',
+              'Quick Access Pairs'
+            ][tourStep]}
+          </Typography>
+        </Box>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, mb: 2, fontSize: '0.95rem' }}>
+          {[
+            'First, choose which exchange you want to trade on. Each exchange offers different trading pairs and fees.',
+            "Select the cryptocurrency pair you want to trade. This determines what you're buying or selling.",
+            "Decide whether you want to buy or sell the first currency in the pair (ETH in this case).",
+            'Input the amount of cryptocurrency you want to trade. This will automatically calculate the cost.',
+            'Click this button to switch between entering the crypto amount or the dollar amount you want to spend.',
+            "When you're ready, click this button to go directly to the exchange and complete your trade.",
+            'Use this table to quickly model trades for the most popular trading pairs. Click "MODEL TRADE" to instantly load a pair.'
+          ][tourStep]}
+        </Typography>
+        <Divider sx={{ my: 1.5 }} />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+          <Box sx={{ display: 'flex', gap: '6px' }}>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= tourStep ? '#3b82f6' : '#e2e8f0' }} />
+            ))}
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="contained"
+              onClick={resetTour}
+              sx={{ background: '#ffffff', color: '#4a5568', border: '1px solid #e2e8f0', boxShadow: 'none', textTransform: 'none', '&:hover': { background: '#f7fafc', boxShadow: 'none' } }}
+            >
+              Skip
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setTourStep((prev) => {
+                  if (prev < 6) return prev + 1;
+                  resetTour();
+                  return 0; 
+                });
+              }}
+              sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+            >
+              {tourStep === 6 ? 'Finish' : 'Next'}
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
     </Box>
   );
 }

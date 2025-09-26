@@ -21,12 +21,15 @@ import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { FeatureAccessGuard } from "components";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   dataSource: DataSource;
   onFilterChanged: (filter: any) => void;
   onSorterChanged: (sorter: any) => void;
+  id?: string;
+  filterType?: string;
 };
 
 export default function PrefilterTokensSection({
@@ -34,6 +37,8 @@ export default function PrefilterTokensSection({
   onFilterChanged,
   dataSource,
   persisKey,
+  id,
+  filterType = "market-cap",
   ...props
 }: Props) {
   const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
@@ -183,6 +188,7 @@ export default function PrefilterTokensSection({
       persistKey={persisKey}
       defaultExpanded
       sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
+      id={id}
       {...props}>
       <StyledAccordionSummary
         sx={{
@@ -229,18 +235,21 @@ export default function PrefilterTokensSection({
             onClick={e => e.stopPropagation()}>
             {t("PrefilterTokens")}
           </PageTitle>
-          <Button
-            onClick={e => {
-              e.stopPropagation();
-              onExport();
-            }}
-            variant="outlined"
-            sx={{ ml: 4, marginRight: "17px" }}>
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-              <DownloadIcon />
-              {t("Export")}
-            </Box>
-          </Button>
+          <FeatureAccessGuard feature="tableExport">
+            <Button
+              id="export_button"
+              onClick={e => {
+                e.stopPropagation();
+                onExport();
+              }}
+              variant="outlined"
+              sx={{ ml: 4, marginRight: "17px" }}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                <DownloadIcon />
+                {t("Export")}
+              </Box>
+            </Button>
+          </FeatureAccessGuard>
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails
@@ -261,6 +270,7 @@ export default function PrefilterTokensSection({
             onCurrentFilterChange={onFilterChanged}
             dataSource={dataSource}
             onSorterChanged={onSorterChanged}
+            filterType={filterType}
           />
         )}
       </AccordionDetails>

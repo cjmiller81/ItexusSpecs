@@ -32,8 +32,7 @@ function getHomeItems(): SidebarListItem[] {
   ];
 }
 
-function getPlatformsItems(currentPlan: string | null): SidebarListItem[] {
-  const isBasic = currentPlan?.toLowerCase() === "basic";
+function getPlatformsItems(hasPageAccess: (pagePath: string) => boolean): SidebarListItem[] {
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
@@ -56,12 +55,12 @@ function getPlatformsItems(currentPlan: string | null): SidebarListItem[] {
         {
           title: t("TradingSubpage", { ns: "SideBar" }),
           href: "/charts",
-          disabled: isBasic,
+          disabled: !hasPageAccess("/charts"),
         },  
         {
           title: t("Derivatives", { ns: "SideBar" }),
           href: "/derivatives",
-          disabled: isBasic,
+          disabled: !hasPageAccess("/derivatives"),
         },
       ],
     },
@@ -72,20 +71,19 @@ function getPlatformsItems(currentPlan: string | null): SidebarListItem[] {
         {
           title: t("LiquidityPools", { ns: "IncomeSection" }),
           href: "/liquidity_pools",
-          disabled: isBasic,
+          disabled: !hasPageAccess("/liquidity_pools"),
         },
         {
           title: t("Vaults", { ns: "IncomeSection" }),
           href: "/vaults",
-          disabled: isBasic,
+          disabled: !hasPageAccess("/vaults"),
         },
       ],
     },
   ];
 }
 
-function getToolsItems(currentPlan: string | null): SidebarListItem[] {
-  const isBasic = currentPlan?.toLowerCase() === "basic";
+function getToolsItems(hasPageAccess: (pagePath: string) => boolean): SidebarListItem[] {
   return [
     {
       title: t("Wallets", { ns: "SideBar" }),
@@ -93,7 +91,8 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
       children: [
         {
           title: t("Decentralized", { ns: "SideBar" }),
-          href: "/myWallets/decentralized"
+          href: "/myWallets/decentralized",
+          disabled: !hasPageAccess("/myWallets/decentralized"),
         },
         // {
         //   title: t("Centralized", { ns: "SideBar" }),
@@ -110,7 +109,7 @@ function getToolsItems(currentPlan: string | null): SidebarListItem[] {
         {
           title: t("DEX", { ns: "SideBar" }),
           href: "/tradeAggregator/dex",
-          disabled: isBasic,
+          disabled: !hasPageAccess("/tradeAggregator/dex"),
         },
         {
           title: t("CEX", { ns: "SideBar" }),
@@ -236,7 +235,7 @@ function getHelpItems(): SidebarListItem[] {
   ];
 }
 
-export function getSidebarMenuItems(theme: Theme, currentPlan: string | null): SidebarItems[] {
+export function getSidebarMenuItems(theme: Theme, hasPageAccess: (pagePath: string) => boolean): SidebarItems[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
@@ -244,12 +243,12 @@ export function getSidebarMenuItems(theme: Theme, currentPlan: string | null): S
     },
     {
       title: t("Platform", { ns: "SideBar" }),
-      sidebarListItems: getPlatformsItems(currentPlan),
+      sidebarListItems: getPlatformsItems(hasPageAccess),
     },
 
     {
       title: t("Tools", { ns: "SideBar" }),
-      sidebarListItems: getToolsItems(currentPlan),
+      sidebarListItems: getToolsItems(hasPageAccess),
     },
     {
       title: t("Community", { ns: "SideBar" }),

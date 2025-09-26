@@ -34,6 +34,10 @@ export default function SupportCenterSection() {
                 <span style={{ fontWeight: "bold" }}>Privacy Concerns</span><br />
                 <a href="mailto:privacy@elaninsights.io" style={{ color: "#70b3ff", fontWeight: "normal" }}>
                 privacy@elaninsights.io
+                </a><br /><br />
+                <span style={{ fontWeight: "bold" }}>Legal</span><br />
+                <a href="mailto:legal@elaninsights.com" style={{ color: "#70b3ff", fontWeight: "normal" }}>
+                legal@elaninsights.com
                 </a>
             </Typography>
         </Paper>
@@ -48,14 +52,8 @@ export default function SupportCenterSection() {
             <span style={{ fontWeight: "bold" }}>
                 Website
             </span><br />
-            <a href="https://elaninsights.io" target="_blank" style={{ color: "#70b3ff", fontWeight: "normal" }}>
-                https://elaninsights.io
-            </a><br /><br />
-            <span style={{ fontWeight: "bold" }}>
-                Documentation
-            </span><br />
-            <a href="https://docs.elaninsights.io" target="_blank" style={{ color: "#70b3ff", fontWeight: "normal" }}>
-                docs.elaninsights.io
+            <a href="https://www.elaninsights.com" target="_blank" style={{ color: "#70b3ff", fontWeight: "normal" }}>
+                www.elaninsights.com
             </a>
            </Typography>
 

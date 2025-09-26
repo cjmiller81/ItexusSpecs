@@ -5,7 +5,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess"
 import ExpandMore from "@mui/icons-material/ExpandMore"
 import RemoveRedEye from "@mui/icons-material/RemoveRedEye"
 import Save from "@mui/icons-material/Save"
-import { Checkbox, Fade, IconButton } from "@mui/material"
+import { Checkbox, Fade, IconButton, useMediaQuery, useTheme } from "@mui/material"
 import { GridActionsCellItem, GridColDef, GridRowId, GridRowModes, GridRowModesModel } from "@mui/x-data-grid"
 import i18next, { t } from "i18next"
 import { ChangeEvent } from "react"
@@ -22,6 +22,7 @@ interface ColumnsProps {
   onExpandClick: (id: GridRowId, expanded: boolean) => void
   gridRowModesModel: GridRowModesModel
   expandedRows: GridRowId[]
+  isXL: boolean
 }
 
 export const getDexWalletsColumns = ({
@@ -31,6 +32,7 @@ export const getDexWalletsColumns = ({
   handleDeleteClick,
   gridRowModesModel,
   expandedRows,
+  isXL,
   onExpandClick,
 }: ColumnsProps): GridColDef<Wallet>[] => {
   return [
@@ -41,7 +43,7 @@ export const getDexWalletsColumns = ({
       editable: false,
       filterable: false,
       minWidth: 100,
-      flex: 1,
+      flex: isXL? 0.91 : 1.15,
       disableColumnMenu: true,
     },
     {
@@ -52,19 +54,7 @@ export const getDexWalletsColumns = ({
       type: "text",
       filterable: false,
       minWidth: 100,
-      flex: 1,
-      disableColumnMenu: true,
-    },
-    {
-      field: "value",
-      headerName: i18next.t("Value", { ns: "ColumnsDefs" }),
-      sortable: false,
-      editable: true,
-      type: "text",
-      filterable: false,
-      minWidth: 60,
-      maxWidth: 120,
-      flex: 1,
+      flex: isXL? 0.85 : 1,
       disableColumnMenu: true,
     },
     {
@@ -74,7 +64,7 @@ export const getDexWalletsColumns = ({
       editable: true,
       filterable: false,
       align: "center",
-      width: 150,
+      width: 130,
       disableColumnMenu: true,
       renderEditCell: props => {
         const { id, value, api, field } = props
@@ -106,7 +96,7 @@ export const getDexWalletsColumns = ({
     {
       field: "actions",
       type: "actions",
-      width: 100,
+      width: isXL? 290 : 100,
       cellClassName: "actions",
       getActions: ({ id }) => {
         const isInEditMode = gridRowModesModel[id]?.mode === GridRowModes.Edit

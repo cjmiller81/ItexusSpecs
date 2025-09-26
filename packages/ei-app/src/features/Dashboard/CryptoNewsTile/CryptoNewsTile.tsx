@@ -47,9 +47,11 @@ export const CryptoNewsTile: FC<Props> = ({
       sx={{ position: "relative" }}
       title={title}
       icon={icon}
+      id="ei-news-filter"
       {...props}>
       <>
         <Select
+          
           sx={{
             backgroundColor:
               theme.palette.mode === "dark"

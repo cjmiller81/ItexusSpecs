@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, Typography, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card } from "@mui/material";
 import { useAppSelector } from "../../../slices";
 import { useTranslation } from "react-i18next";
 import { filterDustTokens } from "../../../helpers/filterDustTokens";
@@ -35,10 +34,6 @@ const WalletTokensOverview: React.FC<WalletTokensOverviewProps> = ({
   const tokensToDisplay = externalTokens || 
     (showDust ? wallet.tokenHoldings : filterDustTokens(wallet.tokenHoldings));
 
-  const totalFilteredValue = tokensToDisplay.reduce(
-    (sum, token) => sum + (token.balanceUSD || 0), 0
-  );
-
   const rows = tokensToDisplay.map((token, index) => ({
     id: index,
     token: token.symbol,
@@ -48,8 +43,8 @@ const WalletTokensOverview: React.FC<WalletTokensOverviewProps> = ({
     balance: token.balance,
     price: token.price,
     value: token.balanceUSD,
-    portfolioPercent: totalFilteredValue > 0 
-      ? (token.balanceUSD / totalFilteredValue) * 100 
+    portfolioPercent: wallet.totalValueUSD && wallet.totalValueUSD > 0 
+      ? (token.balanceUSD / wallet.totalValueUSD) * 100 
       : 0,
   }));
   
@@ -67,159 +62,134 @@ const networkMap: Record<string, string> = {
     "avalanche": "Avalanche"
 };
 
-const columns: GridColDef<typeof rows[number]>[] = [
-  {
-    field: "token",
-    headerName: t("Token"),
-    flex: 25,
-    renderCell: (params) => (
-      <Box display="flex" alignItems="center">
-        <Typography fontWeight={500}>
-          {params.row.token}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          ml={1}
-          fontSize={12}
-        >
-          {params.row.name}
-        </Typography>
-      </Box>
-    ),
-  },
-  {
-    field: "network",
-    headerName: t("Network"),
-    flex: 10,
-    renderCell: (params) => (
-      <Box
-        px={1}
-        py={0.5}
-        border="1px solid"
-        borderColor="rgba(148,163,184,0.3)"
-        borderRadius={1}
-        fontSize={12}
-        sx={(theme) => ({
-          color: theme.palette.mode === "dark" ? "rgba(203,213,225,1)" : "#000",
-          bgcolor: "rgba(71,85,105,0.2)",
-        })}
-      >
-        {networkMap[params.value] ?? params.value}
-      </Box>
-    ),
-  },
-  {
-    field: "balance",
-    headerName: t("Balance"),
-    align: "right",
-    headerAlign: "right",
-    flex: 12, 
-    renderCell: (params) => (
-      <Typography fontSize={14}>
-        {params.value < 0.0001
-          ? params.value.toExponential(2)
-          : params.value.toLocaleString(undefined, {
-              maximumFractionDigits: 4,
-            })}
-      </Typography>
-    ),
-  },
-  {
-    field: "price",
-    headerName: t("Price"),
-    align: "right",
-    headerAlign: "right",
-    flex: 10,
-    renderCell: (params) => (
-      <Typography fontSize={14}>
-        ${params.value.toFixed(2)}
-      </Typography>
-    ),
-  },
-  {
-    field: "value",
-    headerName: t("Value"),
-    align: "right",
-    headerAlign: "right",
-    flex: 10,
-    renderCell: (params) => (
-      <Typography fontWeight={600}>
-        ${params.value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </Typography>
-    ),
-  },
-  {
-    field: "portfolioPercent",
-    headerName: t("ProcentOfPotfolio"),
-    align: "right",
-    headerAlign: "right",
-    flex: 17,
-    renderCell: (params) => (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="flex-end"
-        width="100%"
-      >
-        <Typography fontSize={14} mr={1}>
-          {params.value.toFixed(1)}%
-        </Typography>
-        <Box
-          sx={{
-            width: 64,
-            height: 8,
-            bgcolor: "rgba(71,85,105,0.5)",
-            borderRadius: "9999px",
-            overflow: "hidden",
-          }}
-        >
-                                               <Box
-                sx={{
-                  height: "100%",
-                  width: `${Math.min(params.value, 100)}%`,
-                  bgcolor: theme.palette.mode === "dark" ? WALLET_COLORS.tokens.dark : WALLET_COLORS.tokens.light,
-                  transition: "width 0.3s ease-in-out",
-                }}
-              />
-        </Box>
-      </Box>
-    ),
-  },
-];
 
-     return (
-          <Box sx={{ width: "100%", display: "flex", flexDirection: "column", minHeight: "auto", height: "auto" }}>
-      {tokensToDisplay.length === 0 ? (
-        <Typography>
-          No valid Wallet Tokens found for this wallet.
-        </Typography>
-      ) : (
-             <DataGrid
-         rows={rows}
-         columns={columns}
-         hideFooter
-         disableColumnMenu
-         disableRowSelectionOnClick
-                 sx={{
-           width: "100%",
-           borderRadius: "8px",
-           overflow: "hidden",
-           minHeight: "auto !important",
-           height: "auto !important",
-           "& .MuiDataGrid-main": {
-             backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white ",
-             borderRadius:"8px",
-             minHeight: "auto !important",
-             height: "auto !important"
-           },
-           "& .MuiDataGrid-cell": {
-             py: 1,
-           },
-         }}
-      />
-    )}
-  </Box>
-)}
+  return (
+    <Box mt={2} sx={{ width: "100%", maxWidth: "100%", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}>
+      <Card elevation={3} sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
+        <Box sx={{ 
+          width: "100%", 
+          maxWidth: "100%", 
+          minWidth: 0, 
+          boxSizing: "border-box",
+          backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white",
+        }}>
+          <TableContainer component={Paper} elevation={0} sx={{ backgroundColor: 'transparent' }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: "24.5%", fontWeight: 500, pl: 1.5 }}>
+                    {t("Token")}
+                  </TableCell>
+                  <TableCell sx={{ width: "20.8%", fontWeight: 500 }}>
+                    {t("Network")}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "12%", fontWeight: 500 }}>
+                    {t("Balance")}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "11.8%", fontWeight: 500 }}>
+                    {t("Price")}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "16.8%", fontWeight: 500 }}>
+                    {t("Value")}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "12.8%", fontWeight: 500 }}>
+                    {t("ProcentOfPotfolio")}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell sx={{ pl: 1.5 }}>
+                      <Box display="flex" alignItems="center">
+                        <Typography fontWeight={500}>
+                          {row.token}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          ml={1}
+                          fontSize={12}
+                        >
+                          {row.name}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        display="inline-block"
+                        px={1}
+                        py={0.5}
+                        border="1px solid"
+                        borderColor="rgba(148,163,184,0.3)"
+                        borderRadius={1}
+                        fontSize={12}
+                        sx={(theme) => ({
+                          color: theme.palette.mode === "dark" ? "rgba(203,213,225,1)" : "#000",
+                          bgcolor: "rgba(71,85,105,0.2)",
+                        })}
+                      >
+                        {networkMap[row.network] ?? row.network}
+                      </Box>
+                    </TableCell>
+                    <TableCell align="left">
+                      <Typography fontSize={14}>
+                        {row.balance < 0.0001
+                          ? row.balance.toExponential(2)
+                          : row.balance.toLocaleString(undefined, {
+                              maximumFractionDigits: 4,
+                            })}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="left">
+                      <Typography fontSize={14}>
+                        ${row.price.toFixed(2)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="left">
+                      <Typography fontWeight={600}>
+                        ${row.value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="left">
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="flex-start"
+                        width="100%"
+                      >
+                        <Typography fontSize={14} mr={1}>
+                          {row.portfolioPercent.toFixed(1)}%
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: 64,
+                            height: 8,
+                            bgcolor: "rgba(71,85,105,0.5)",
+                            borderRadius: "9999px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              height: "100%",
+                              width: `${Math.min(row.portfolioPercent, 100)}%`,
+                              bgcolor: theme.palette.mode === "dark" ? WALLET_COLORS.tokens.dark : WALLET_COLORS.tokens.light,
+                              transition: "width 0.3s ease-in-out",
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Card>
+    </Box>
+  );
+}
 
 export default WalletTokensOverview;

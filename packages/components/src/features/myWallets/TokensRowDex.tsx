@@ -134,19 +134,46 @@ const SectionHeader: React.FC<{
   color: string;
   onToggleDust?: () => void;
   showDust?: boolean;
-}> = ({ icon, title, value, color, onToggleDust, showDust }) => {
+  titleWidth?: string;
+  valueWidth?: string;
+  titleWidthLarge?: string;
+  valueWidthLarge?: string;
+}> = ({ 
+  icon, 
+  title, 
+  value, 
+  color, 
+  onToggleDust, 
+  showDust, 
+  titleWidth = "85.9%", 
+  valueWidth = "12.8%",
+  titleWidthLarge,
+  valueWidthLarge
+}) => {
   const { t } = useTranslation("MyWalletsPage");
   const theme = useTheme();
 
   return (
     <Box
       display="flex"
-      justifyContent="space-between"
       alignItems="center"
       mb={1}
       mt={3}
+      sx={{ width: "100%" }}
     >
-      <Box display="flex" alignItems="center">
+      <Box 
+        display="flex" 
+        alignItems="center" 
+        sx={{ 
+          width: titleWidth,
+          justifyContent: "flex-start",
+          ...(titleWidthLarge && {
+            "@media (min-width: 2000px)": {
+              width: titleWidthLarge
+            }
+          })
+        }}
+      >
         {icon}
         <Typography variant="h5" gutterBottom sx={{ 
           fontWeight: 600, 
@@ -158,28 +185,40 @@ const SectionHeader: React.FC<{
         </Typography>
       </Box>
 
-      <Box display="flex" alignItems="center">
-                 {value && (
-           <Typography
-             variant="h6"
-             sx={{ color, fontWeight: 500, mr: 3 }}
-           >
-             {value}
-           </Typography>
-         )}
+      <Box 
+        display="flex" 
+        alignItems="center" 
+        sx={{ 
+          width: valueWidth,
+          justifyContent: "flex-start",
+          ...(valueWidthLarge && {
+            "@media (min-width: 2000px)": {
+              width: valueWidthLarge
+            }
+          })
+        }}
+      >
+        {value && (
+          <Typography
+            variant="h6"
+            sx={{ color, fontWeight: 500 }}
+          >
+            {value}
+          </Typography>
+        )}
 
         {onToggleDust && (
           <Box 
             display="flex" 
             alignItems="center" 
-            sx={{ cursor: "pointer" }}
+            sx={{ cursor: "pointer", ml: 2 }}
             onClick={onToggleDust}
           >
-                         {showDust ? (
-               <VisibilityOffIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
-             ) : (
-               <RemoveRedEyeIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
-             )}
+            {showDust ? (
+              <VisibilityOffIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
+            ) : (
+              <RemoveRedEyeIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
+            )}
             <Typography variant="body2" color="text.secondary">
               {showDust ? t("HideDust") : t("ShowDust")}
             </Typography>
@@ -261,14 +300,18 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
                  <Box px={3} py={1} sx={{ width: "100%", maxWidth: "100%", minHeight: getMinHeight() }}>
            <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{ width: "100%", maxWidth: "100%" }}>
              <Box sx={{ width: "100%", maxWidth: "100%" }}>
-                             <SectionHeader
-                 icon={tokensIcon}
-                 title={t("WalletTokens")}
-                 value={formattedTokensValue}
-                 color={getTokensColor(theme.palette.mode === "dark")}
-                 onToggleDust={toggleDust}
-                 showDust={showDust}
-               />
+                              <SectionHeader
+                  icon={tokensIcon}
+                  title={t("WalletTokens")}
+                  value={formattedTokensValue}
+                  color={getTokensColor(theme.palette.mode === "dark")}
+                  onToggleDust={toggleDust}
+                  showDust={showDust}
+                  titleWidth="87.7%"
+                  valueWidth="11.3%"
+                  titleWidthLarge="87.4%"
+                  valueWidthLarge="11.6%"
+                />
 
               <Box sx={{ width: "100%", maxWidth: "100%" }}> 
                 <WalletTokensOverview 
@@ -279,26 +322,35 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
             </Box>
           </Box>
           
-                     <SectionHeader
-             icon={defiIcon}
-             title={t("DeFiPositions")}
-             value={formattedDeFiValue}
-             color={WALLET_COLORS.defi}
-           />
+            <SectionHeader
+              icon={defiIcon}
+              title={t("DeFiPositions")}
+              value={formattedDeFiValue}
+              color={WALLET_COLORS.defi}
+              titleWidth="87.8%"
+              valueWidth="11.2%"
+              titleWidthLarge="87.4%"
+              valueWidthLarge="11.6%"
+            />
 
           <Box sx={{ width: "100%", maxWidth: "100%" }}>
             <WalletDeFiOverview walletAddress={props.row.address} />
           </Box>
 
           <Box mt={4} sx={{ width: "100%", maxWidth: "100%" }}>
-            <SectionHeader
-              icon={nftIcon}
-              title={t("NFTHoldings")}
-              value={formattedNftValue}
-              color={WALLET_COLORS.nft}
-            />
-
-            <WalletNftOverview walletAddress={props.row.address} />
+             <SectionHeader
+               icon={nftIcon}
+               title={t("NFTHoldings")}
+               value={formattedNftValue}
+               color={WALLET_COLORS.nft}
+               titleWidth="87.8%"
+               valueWidth="11.2%"
+               titleWidthLarge="87.4%"
+               valueWidthLarge="11.6%"
+             />
+            <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box"  }}>
+              <WalletNftOverview walletAddress={props.row.address} />
+            </Box>
           </Box>
         </Box>
       )}

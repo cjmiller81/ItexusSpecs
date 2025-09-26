@@ -5,6 +5,7 @@ export enum DefiField {
   Project = "project",
   Symbol = "symbol",
   TVL = "tvlUsd",
+  Category = "category",
   ApyBase = "apyBase",
   APYReward = "apyReward",
   APY = "apy",
@@ -36,6 +37,7 @@ export enum DefiLabel {
   Project = "Project",
   Symbol = "Pool",
   TVL = "TVL",
+  Category = "Category",
   ApyBase = "APY Base",
   APYReward = "APY Reward",
   APY = "APY",
@@ -74,6 +76,11 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
+    dataType: "string",
+  },
+  {
+    caption: DefiLabel.Category,
+    dataField: DefiField.Category,
     dataType: "string",
   },
   {

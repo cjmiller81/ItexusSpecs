@@ -23,12 +23,14 @@ import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { FeatureAccessGuard } from "components";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
+  startTourButton?: React.ReactNode;
 };
 
-export default function VaultsTokensSection({ persisKey, ...props }: Props) {
+export default function VaultsTokensSection({ persisKey, startTourButton, ...props }: Props) {
   const [vaults, setVaults] = useState<VaultsData[]>([]);
   const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
   const { t } = useTranslation(["Vaults", "Common"]);
@@ -149,13 +151,17 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
 
   return (
     <>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold" }}>
-        {t("VaultsPageTitle")}
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }}>
+        <Typography
+          variant="h4"
+          component="div"
+          gutterBottom
+          sx={{ fontWeight: "bold", mb: 0 }}
+          id="income_header">
+          {t("VaultsPageTitle")}
+        </Typography>
+        {startTourButton}
+      </Box>
       <StatePersistedAccordion
               className="index-modeling-section-container"
               persistKey={persisKey}
@@ -211,18 +217,21 @@ export default function VaultsTokensSection({ persisKey, ...props }: Props) {
               onClick={e => e.stopPropagation()}>
               {t("VaultsTitle")}
             </PageTitle>
-            <Button
-              onClick={e => {
-                e.stopPropagation();
-                onExport();
-              }}
-              variant="outlined"
-              sx={{ ml: 4, marginRight: "17px" }}>
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <DownloadIcon />
-                {t("Export")}
-              </Box>
-            </Button>
+            <FeatureAccessGuard feature="tableExport">
+              <Button
+                onClick={e => {
+                  e.stopPropagation();
+                  onExport();
+                }}
+                variant="outlined"
+                sx={{ ml: 4, marginRight: "17px" }}
+                id="income_export">
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  <DownloadIcon />
+                  {t("Export")}
+                </Box>
+              </Button>
+            </FeatureAccessGuard>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails

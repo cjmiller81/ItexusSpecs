@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { Box, Typography, useTheme, Card } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Box, Typography, useTheme, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { useAppSelector } from "../../../slices";
 import { NftCell } from "./NftCell";
 import { useTranslation } from "react-i18next";
@@ -9,7 +8,6 @@ import { formatCurrencyWithSymbol } from "../../../utils/currencyUtils";
 import { WALLET_COLORS } from "../../../constants/colors";
 import { getNetworkConfig } from "../../../constants/networks";
 import { TABLE_SIZES } from "../../../constants/tableSizes";
-import { useDataGridStyles } from "../../../hooks/useDataGridStyles";
 
 interface WalletNftOverviewProps {
   walletAddress: string;
@@ -43,7 +41,9 @@ const useWalletNFTs = (walletAddress: string) => {
         tokenId: nft.tokenId,
         network: nft.network,
         estimatedValue: nft.estimatedValue,
-        portfolioPercent: (nft.estimatedValue / totalValue) * 100,
+        portfolioPercent: wallet?.totalValueUSD && wallet.totalValueUSD > 0 
+          ? (nft.estimatedValue / wallet.totalValueUSD) * 100 
+          : 0,
       };
     });
 
@@ -86,7 +86,7 @@ const PortfolioProgressBar: React.FC<{ value: number }> = ({ value }) => {
   const percentage = Math.min(value, 100);
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="flex-end" width="100%" gap={1}>
+    <Box display="flex" alignItems="center" justifyContent="flex-start" width="100%" gap={1}>
       <Typography fontSize={14}>{value.toFixed(1)}%</Typography>
       <Box
         sx={{
@@ -119,86 +119,65 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
   const { t } = useTranslation("MyWalletsPage");
   const { rows, hasNFTs } = useWalletNFTs(walletAddress);
 
-  const columns: GridColDef[] = useMemo(() => [
-    {
-      field: "nft",
-      headerName: t("NFT"),
-      minWidth: 200,
-      maxWidth: 400,
-      flex: 1,
-      renderCell: ({ row }) => (
-        <NftCell
-          imageUrl={row.imageUrl}
-          collectionName={row.collectionName}
-          tokenId={row.tokenId}
-        />
-      ),
-    },
-    {
-      field: "network",
-      headerName: t("Network"),
-      minWidth: 80,
-      maxWidth: 120,
-      flex: 1,
-      renderCell: ({ value }) => <NetworkBadge network={value} />,
-    },
-    {
-      field: "estimatedValue",
-      headerName: t("EstimatedValue"),
-      minWidth: 100,
-      maxWidth: 150,
-      flex: 1,
-      align: "right",
-      headerAlign: "right",
-      renderCell: ({ value }) => (
-        <Typography fontWeight={600}>
-          {formatCurrencyWithSymbol(value)}
-        </Typography>
-      ),
-    },
-    {
-      field: "portfolioPercent",
-      headerName: t("OfPortfolio"),
-      minWidth: 120,
-      maxWidth: 200,
-      flex: 1,
-      align: "right",
-      headerAlign: "right",
-      renderCell: ({ value }) => <PortfolioProgressBar value={Number(value)} />,
-    },
-  ], [t]);
-
-  const dataGridStyles = useDataGridStyles();
 
   if (!hasNFTs) {
     return <EmptyState />;
   }
 
   return (
-    <Box mt={2} sx={{ width: "100%", maxWidth: "100%", overflow: "hidden" }}>
-      <Card elevation={3} sx={{ width: "100%", maxWidth: "100%" }}>
-        <Box sx={{ width: "100%", maxWidth: "100%" }}>
-                     <DataGrid
-             rows={rows}
-             columns={columns}
-             hideFooter
-             disableColumnMenu
-             disableRowSelectionOnClick
-                         sx={{
-               ...dataGridStyles,
-               width: "100%",
-               maxWidth: "100%",
-               minHeight: "auto !important",
-               height: "auto !important",
-               "& .MuiDataGrid-main": {
-                 ...dataGridStyles["& .MuiDataGrid-main"],
-                 width: "100%",
-                 maxWidth: "100%",
-                 minHeight: "auto !important",
-                 height: "auto !important"
-               }
-             }}
-          />
+    <Box mt={2} sx={{ width: "100%", maxWidth: "100%", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}>
+      <Card elevation={3} sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
+        <Box sx={{ 
+          width: "100%", 
+          maxWidth: "100%", 
+          minWidth: 0, 
+          boxSizing: "border-box",
+          backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white",
+        }}>
+          <TableContainer component={Paper} elevation={0} sx={{ backgroundColor: 'transparent' }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: "25%", fontWeight: 500, pl: 1.5 }}>
+                    {t("NFT")}
+                  </TableCell>
+                  <TableCell sx={{ width: "21%", fontWeight: 500 }}>
+                    {t("Network")}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "41%", fontWeight: 500 }}>
+                    {t("EstimatedValue")}
+                  </TableCell>
+                  <TableCell align="left" sx={{ width: "13%", fontWeight: 500 }}>
+                    {t("OfPortfolio")}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell sx={{ pl: 1.5 }}>
+                      <NftCell
+                        imageUrl={row.imageUrl}
+                        collectionName={row.collectionName}
+                        tokenId={row.tokenId}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <NetworkBadge network={row.network} />
+                    </TableCell>
+                    <TableCell align="left">
+                      <Typography fontWeight={600}>
+                        {formatCurrencyWithSymbol(row.estimatedValue)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="left">
+                      <PortfolioProgressBar value={Number(row.portfolioPercent)} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Card>
     </Box>

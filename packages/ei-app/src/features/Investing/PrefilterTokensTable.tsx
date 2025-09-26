@@ -29,6 +29,7 @@ import SimpleBar from "simplebar-react";
 import { ICategory, IExchange, IPlatform } from "components";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { FilterType } from "components/src/models/token/IPrefilterTokensFilterValues";
 
 export interface IPrefilterTokensTable {
   onCurrentFilterChange: (object?: object[] | null | undefined) => void;
@@ -37,6 +38,7 @@ export interface IPrefilterTokensTable {
   chains: IPlatform[];
   categories: ICategory[];
   exchanges: IExchange[];
+  filterType?: string;
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
@@ -46,13 +48,14 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   chains,
   categories,
   exchanges,
+  filterType = "market-cap",
 }) => {
   const datagrid = React.createRef<DataGridDef<ICoin, string>>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );
-  const marketCapFilters = useMemo(() => filters.filter(f => f.filterType === "market-cap"), [filters]);
+  const marketCapFilters = useMemo(() => filters.filter(f => f.filterType === filterType), [filters, filterType]);
   const dispatch = useAppDispatch();
   const filterPanelText = useRef<Element | null>(null);
   const [currentSorter, setCurrentSorter] = useState<any>();
@@ -177,6 +180,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       style={{ pointerEvents: "auto" }}>
       {/*@ts-ignore*/}
       <StyledDataGridDef<ICoin>
+        id="table_header"
         onOptionChanged={e => {
           if (e.fullName.startsWith("columns") && e.fullName.endsWith("sortOrder")) {
             setTimeout(() => {
@@ -189,7 +193,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           sorting: true,
           paging: true,
         }}
-        id="prefilter-tokens-table"
         dataSource={dataSource}
         allowColumnResizing={true}
         columnResizingMode="widget"
@@ -258,7 +261,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder 
                 ref={filterRef}
-                filterType="market-cap"
+                filterType={filterType as FilterType}
                 filterBuilderFields={filterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
                 filterDeletingLoading={deletingFilterStatus === "loading"}

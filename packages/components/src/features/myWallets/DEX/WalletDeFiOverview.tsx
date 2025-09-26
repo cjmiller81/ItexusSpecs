@@ -20,6 +20,7 @@ import { useAppSelector } from "../../../slices";
 import { useTranslation } from "react-i18next";
 import CustomTooltip from "../../../components/common/CustomTooltip";
 import { DeFiPosition, UnderlyingToken } from "../../../models/wallet/walletPortfolio";
+import { WALLET_COLORS } from "../../../constants/colors";
 
 interface WalletDeFiOverviewProps {
   walletAddress: string;
@@ -32,6 +33,35 @@ const formatCurrency = (value: number | undefined) =>
         maximumFractionDigits: 2,
       })}`
     : "-";
+
+const PortfolioProgressBar: React.FC<{ value: number }> = ({ value }) => {
+  const theme = useTheme();
+  const percentage = Math.min(value, 100);
+
+  return (
+    <Box display="flex" alignItems="center" justifyContent="flex-start" width="100%" gap={1}>
+      <Typography fontSize={14}>{value.toFixed(1)}%</Typography>
+      <Box
+        sx={{
+          width: 64,
+          height: 8,
+          bgcolor: theme.palette.mode === "dark" ? "rgba(71,85,105,0.5)" : "#ccc",
+          borderRadius: "9999px",
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            height: "100%",
+            width: `${percentage}%`,
+            bgcolor: WALLET_COLORS.defi,
+            transition: "width 0.3s ease-in-out",
+          }}
+        />
+      </Box>
+    </Box>
+  );
+};
 
 const networkMap: Record<string, string> = {
   "binance-smart-chain": "BNB Chain",
@@ -184,8 +214,16 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
               overflow: "hidden",
             }}
           >
-            <Box px={2} py={2} display="flex" justifyContent="space-between" alignItems="center">
-              <Box>
+            <Box sx={{ pl: 1.5, py: 1.5 }} display="flex" alignItems="center">
+              <Box sx={{ 
+                width: "87.8%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "flex-start",
+                "@media (min-width: 2000px)": {
+                  width: "87.4%"
+                }
+              }}>
                 <Typography fontWeight={600}>{protocol}</Typography>
                 <Chip
                   label={readableNetwork}
@@ -193,6 +231,7 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                   sx={{
                     fontSize: 11,
                     mt: 0.5,
+                    ml: 1,
                     px: 0.5,
                     py: 0,
                     height: 20,
@@ -204,7 +243,16 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                 />
               </Box>
 
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box sx={{ 
+                width: "11.2%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "flex-start", 
+                gap: 1,
+                "@media (min-width: 2000px)": {
+                  width: "11.6%"
+                }
+              }}>
                 <Typography variant="h6" fontWeight={600} color="#e49a41">
                   {formatCurrency(totalValue)}
                 </Typography>
@@ -217,31 +265,33 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
             </Box>
 
             <Collapse in={isOpen}>
-              <Box
-                px={2}
-                py={2}
-                sx={{
-                  backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white",
-                }}
-              >
+                <Box
+                  sx={{
+                    py: 1.5,
+                    backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white",
+                  }}
+                >
                 <TableContainer>
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ width: "31%", fontWeight: 500 }}>
+                        <TableCell sx={{ width: "25%", fontWeight: 500, pl: 1.5 }}>
                           {t("Position", { ns: "Common" })}
                         </TableCell>
-                        <TableCell sx={{ width: "15%", fontWeight: 500 }}>
+                        <TableCell sx={{ width: "21%", fontWeight: 500 }}>
                           {t("Type", { ns: "Common" })}
                         </TableCell>
-                        <TableCell align="right" sx={{ width: "15%", fontWeight: 500 }}>
+                        <TableCell align="left" sx={{ width: "6%", fontWeight: 500 }}>
                           {t("Supplied", { ns: "WalletDeFiOverview" })}
                         </TableCell>
-                        <TableCell align="right" sx={{ width: "15%", fontWeight: 500 }}>
+                        <TableCell align="left" sx={{ width: "7%", fontWeight: 500 }}>
                           {t("Claimable", { ns: "WalletDeFiOverview" })}
                         </TableCell>
-                        <TableCell align="right" sx={{ width: "21%", fontWeight: 500 }}>
+                        <TableCell align="left" sx={{ width: "15%", fontWeight: 500 }}>
                           {t("TotalValue", { ns: "MyWalletsPage" })}
+                        </TableCell>
+                        <TableCell align="left" sx={{ width: "36%", fontWeight: 500 }}>
+                          {t("ProcentOfPotfolio", { ns: "ColumnsDefs" })}
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -250,13 +300,16 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                       {positions.map((pos) => {
                         const { name, tokens } = getPositionName(pos);
                         const { supplied, claimable } = calculateValues(pos);
+                        const portfolioPercent = wallet?.totalValueUSD && wallet.totalValueUSD > 0 
+                          ? (pos.valueUSD / wallet.totalValueUSD) * 100 
+                          : 0;
 
                         return (
                           <TableRow 
                             key={`${protocol}-${pos.positionType}-${name}`}
                             sx={{ borderBottom: "1px solid rgba(75,85,99,0.5)" }}
                           >
-                            <TableCell sx={{ width: "33%" }}>
+                            <TableCell sx={{ width: "25%", pl: 1.5 }}>
                               <Typography fontWeight={500}>{name}</Typography>
                               {tokens && (
                                 <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ? "#CBD5E1" : "#616161" }}>
@@ -265,7 +318,7 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                               )}
                             </TableCell>
 
-                            <TableCell sx={{ width: "15%" }}>
+                            <TableCell sx={{ width: "12%" }}>
                               <Chip
                                 label={positionTypeMap[pos.positionType] || pos.positionType}
                                 size="small"
@@ -281,14 +334,14 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                               />
                             </TableCell>
 
-                            <TableCell align="right" sx={{ width: "15%" }}>
+                            <TableCell align="left" sx={{ width: "12%" }}>
                               {formatCurrency(supplied)}
                             </TableCell>
 
                             <TableCell
-                              align="right"
+                              align="left"
                               sx={{
-                                width: "15%",
+                                width: "12%",
                                 color: claimable > 0
                                   ? theme.palette.mode === "dark" ? "#72dd5f" : "#106201ff"
                                   : "inherit",
@@ -297,8 +350,12 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                               {claimable > 0 ? formatCurrency(claimable) : "-"}
                             </TableCell>
 
-                            <TableCell align="right" sx={{ width: "22%", fontWeight: 600 }}>
+                            <TableCell align="left" sx={{ width: "17%", fontWeight: 600 }}>
                               {formatCurrency(pos.valueUSD)}
+                            </TableCell>
+
+                            <TableCell align="left" sx={{ width: "22%" }}>
+                              <PortfolioProgressBar value={portfolioPercent} />
                             </TableCell>
                           </TableRow>
                         );

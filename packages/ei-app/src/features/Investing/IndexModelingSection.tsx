@@ -15,6 +15,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CloseIcon from "@mui/icons-material/Close";
 import Link from "next/link";
 import { Typography } from "@mui/material";
+import { FeatureAccessGuard } from "components";
 
 interface Props extends Omit<AccordionProps, "children"> {
   title: string;
@@ -24,6 +25,7 @@ interface Props extends Omit<AccordionProps, "children"> {
   tokens: number;
   weighted: number;
   persistKey: string;
+  id?: string;
 }
 
 export const IndexModelingSection = ({
@@ -34,6 +36,7 @@ export const IndexModelingSection = ({
   tableAssets,
   isEqualWeight,
   persistKey,
+  id,
   ...props
 }: Props) => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
@@ -120,19 +123,23 @@ export const IndexModelingSection = ({
       }}
       title={title}
       tooltip={t("ToogleView", { ns: "Common" })}
+      id={id}
       headerChildren={
-        <Button
-          sx={{ mr: 2, pointerEvents: "auto" }}
-          onClick={event => {
-            event.stopPropagation();
-            onExport();
-          }}
-          variant="outlined">
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <DownloadIcon />
-            {t("Export")}
-          </Box>
-        </Button>
+        <FeatureAccessGuard feature="tableExport">
+          <Button
+            id="export_button"
+            sx={{ mr: 2, pointerEvents: "auto" }}
+            onClick={event => {
+              event.stopPropagation();
+              onExport();
+            }}
+            variant="outlined">
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <DownloadIcon />
+              {t("Export")}
+            </Box>
+          </Button>
+        </FeatureAccessGuard>
       }
       {...props}>
       <MainContainer
@@ -140,6 +147,7 @@ export const IndexModelingSection = ({
         gap={2}>
         <LeftContainer>
           <AppNumberInput
+            id="token_selector"
             label={t("Tokens")}
             value={tokens}
             min={0}

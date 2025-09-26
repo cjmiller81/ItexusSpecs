@@ -1,5 +1,5 @@
 import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled, useMediaQuery, useTheme } from "@mui/system";
 import {
   GridCellParams,
   GridEventListener,
@@ -14,6 +14,7 @@ import {
 } from "@mui/x-data-grid";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
@@ -37,6 +38,7 @@ interface Props extends BoxProps {
   totalAmount: number;
   addWalletModalOpen: boolean;
   setAddWalletModalOpen: (open: boolean) => void;
+  id?: string;
 }
 
 export const MyWalletsSectionForPage = ({
@@ -50,6 +52,7 @@ export const MyWalletsSectionForPage = ({
   selectedWalletsIds,
   addWalletModalOpen,
   setAddWalletModalOpen,
+  id,
   sx,
   ...props
 }: Props) => {
@@ -66,6 +69,7 @@ export const MyWalletsSectionForPage = ({
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const { portfolioWalletData } = useAppSelector( state => state.wallets);
 
@@ -176,8 +180,21 @@ export const MyWalletsSectionForPage = ({
     setRowModesModel(newRowModesModel);
   };
 
+  useEffect(() => {
+    const collapseOnRoute = () => setExpandedRows([]);
+    router.events.on("routeChangeStart", collapseOnRoute);
+    router.events.on("hashChangeStart", collapseOnRoute);
+    return () => {
+      router.events.off("routeChangeStart", collapseOnRoute);
+      router.events.off("hashChangeStart", collapseOnRoute);
+    };
+  }, [router.events]);
+  const theme = useTheme();
+  const isXL = useMediaQuery("(min-width:2000px)");
+
   return (
     <Box
+      id={id}
       {...props}
       sx={{ ...sx, position: "relative" }}>
       {addWalletModalOpen && (
@@ -242,6 +259,7 @@ export const MyWalletsSectionForPage = ({
             gridRowModesModel: rowModesModel,
             expandedRows: expandedRows,
             onExpandClick: handleExpandClick,
+            isXL: isXL
           })}
           rows={wallets || []}
           rowSelectionModel={selectedWalletsIds}
