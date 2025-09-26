@@ -16,29 +16,13 @@ type Ticker = {
     last: number,
     volume: number,
     converted_volume: ConvertedVolume
+    coin_id: string
 }
 
 type ConvertedVolume = {
   usd: number;
 }
 
-export type CoinGeckoExchange = {
-  id: string;
-  country: string | null;
-  name: string;
-  url: string;
-  centralized: boolean;
-  tickers?: CoinGeckoTicker[];
-}
-
-export type CoinGeckoTicker = {
-  base: string;
-  target: string;
-  last: number;
-  volume: number;
-  converted_volume: ConvertedVolume;
-  coin_id: string
-}
 
 export type CoinGeckoPrice = {
   [key: string]: {
@@ -63,9 +47,9 @@ export const cexApi = createApi({
       query: () => ({ url: "/api/countries", method: "get" })
     }),
 
-    getExchangesTicker: build.query<CoinGeckoExchange[], string>({
+    getExchangesTicker: build.query<Exchange[], string>({
       query: (id) => ({ url: `/exchanges/tickers/${id}`, method: "get" }),
-      transformResponse: (response: CoinGeckoExchange[]) => response || [],
+      transformResponse: (response: Exchange[]) => response || [],
     }),
 
     getCoinGeckoPrices: build.query<CoinGeckoPrice, string[]>({

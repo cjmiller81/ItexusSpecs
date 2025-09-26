@@ -31,7 +31,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
-import { Exchange, CoinGeckoExchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesTickerQuery, useGetCoinGeckoPricesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
+import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesTickerQuery, useGetCoinGeckoPricesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
 import ArbitrageMatrix from './ArbitrageMatrix';
  
@@ -78,7 +78,6 @@ export function TradeTable() {
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
 
-  // Функция для получения coin_id из backend данных
   const getCoinIdFromBackend = (base: string): string | null => {
     if (!backendExchangeData) return null;
     
