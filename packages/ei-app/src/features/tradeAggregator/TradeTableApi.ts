@@ -42,10 +42,6 @@ export type CoinGeckoTicker = {
   target_coin_id: string;
 }
 
-export type CoinGeckoTickersResponse = {
-  name: string;
-  tickers: CoinGeckoTicker[];
-}
 
 export type CoinGeckoPrice = {
   [coinId: string]: {
@@ -88,7 +84,7 @@ export const cexApi = createApi({
           });
     
           if (!('error' in result)) {
-            const tickerData = result.data as CoinGeckoTickersResponse;
+            const tickerData = result.data as Exchange;
             const ticker = tickerData.tickers?.find((t: CoinGeckoTicker) => 
               t.base.toLowerCase() === base.toLowerCase() && 
               t.target.toLowerCase() === target.toLowerCase()
