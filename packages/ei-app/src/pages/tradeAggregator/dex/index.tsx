@@ -200,11 +200,11 @@ export default function Dex() {
       <>
         <TourStateSync totalSteps={steps.length} />
         <Box sx={{ padding: 2 }}>
-          <Box display="flex" alignItems="center">
+          <Box display="flex" alignItems="center" sx={{marginBottom: "15px"}}>
             <Typography
               variant="h4"
               component="div"
-              sx={{fontWeight: "bold", mb: 2 }}
+              sx={{fontWeight: "bold" }}
               id="dex_header"
             >
               {t("TradeAggregatorDex")}
