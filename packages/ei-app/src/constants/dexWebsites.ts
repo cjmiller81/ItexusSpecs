@@ -1,5 +1,6 @@
 export const dexWebsites = {
   // 1inch PMM protocols
+  "1inch PMM": "https://app.1inch.io/",
   "PMM15": "https://1inch.io/liquidity-protocol/",
   "PMM11": "https://1inch.io/liquidity-protocol/",
   "POLYGON_PMM11": "https://1inch.io/liquidity-protocol/",
