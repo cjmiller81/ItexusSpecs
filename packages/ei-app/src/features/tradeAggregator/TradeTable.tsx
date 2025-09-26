@@ -359,7 +359,6 @@ export function TradeTable() {
       return;
     }
     
-    // Используем цену из выбранной пары, если она есть, иначе из списка торговых пар
     const selectedMarket = selectedTradingPair || tradingPairs.find(m => m.pair === tradeData.mkt);
     if (!selectedMarket) {
       if (!demoRequested) {
