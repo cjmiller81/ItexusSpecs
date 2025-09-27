@@ -30,6 +30,7 @@ import Chip from '@mui/material/Chip';
 import ReplayIcon from '@mui/icons-material/Replay';
 import MultiSelectDexDropdown, { Dex } from "./MultiSelectDexDropdown";
 import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
+import { generateOneInchLink } from "@/helpers/OneInchLinksGenerator";
 import SegmentedDexSwitch from "@/components/SegmentedDexSwitch";
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
@@ -371,6 +372,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             "SONIC_UNISWAP_V4", "UNICHAIN_UNISWAP_V3", "UNICHAIN_UNISWAP_V4",
           ].includes(name);
 
+          const isOneInch = name === "1inch PMM";
+
           if (isUniswap && tokenAddress && tokenAddressSwapFor && newBalance) {
             
             deepLink = generateUniswapLink({
@@ -381,6 +384,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               version: name,
             });
 
+          } else if (isOneInch && symbolOptionSwap && symbolOptionSwapFor && selectedChain) {
+            deepLink = generateOneInchLink({
+              chainName: selectedChain,
+              srcTokenAddress: symbolOptionSwap.sym.toUpperCase(),
+              dstTokenAddress: symbolOptionSwapFor.sym.toUpperCase(),
+            });
           }
 
           let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
