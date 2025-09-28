@@ -2,7 +2,7 @@ import { Box, Chip, keyframes, Typography, useTheme } from "@mui/material"
 import React from "react"
 import { useTranslation } from "react-i18next";
 
-export default function Telegram() {
+export default function GitHub() {
 
     const theme = useTheme();
     const { t } = useTranslation("Social");
