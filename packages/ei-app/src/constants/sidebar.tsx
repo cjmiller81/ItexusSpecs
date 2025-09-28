@@ -140,7 +140,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
+          href: "/social/telegram",
         },
         {
           title: t("X", { ns: "SideBar" }),
@@ -152,19 +152,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
-        },
-        {
-          title: t("Reddit", { ns: "SideBar" }),
-          icon: (
-            <RedditIcon
-              width="24px"
-              height="24px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
+          href: "/social/twitter",
         },
       ],
     },
@@ -184,7 +172,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
+          href: "/openSource/discord",
         },
         {
           title: t("GitHub", { ns: "SideBar" }),
@@ -196,7 +184,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
+          href: "/openSource/github",
         },
       ],
     },
