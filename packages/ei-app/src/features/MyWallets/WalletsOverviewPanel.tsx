@@ -70,6 +70,8 @@ export const WalletsOverviewPanel: React.FC<WalletsOverviewPanelProps> = ({ id }
     return `$${value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }, []);
 
+  const tokensColor = theme.palette.mode === "dark" ? "#72dd5fff" : "#106201ff";
+
   const selectedAddresses = (selectedWallets || []).map((w: any) => w.address);
 
   const aggregateValues = React.useMemo(() => {
@@ -128,7 +130,7 @@ export const WalletsOverviewPanel: React.FC<WalletsOverviewPanelProps> = ({ id }
       <OverviewBlock
         title={t("Tokens")}
         value={formatCurrencyWithSymbol(aggregateValues.tokensTotal)}
-        iconColor="#72dd5fff"
+        iconColor= {tokensColor}
         Icon={MovingIcon}
         compact
       />
