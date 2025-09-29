@@ -161,7 +161,6 @@ export const cexApi = createApi({
     
         return { error: { status: 'CUSTOM_ERROR', data: 'Max retries reached' } };
       },
-      // Отключаем кэширование - всегда делаем новый запрос
       keepUnusedDataFor: 0,
     })
   }),

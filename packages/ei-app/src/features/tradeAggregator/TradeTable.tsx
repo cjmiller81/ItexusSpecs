@@ -21,6 +21,7 @@ import {
   Backdrop,
   Popover,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
@@ -113,8 +114,23 @@ export function TradeTable() {
   };
 
   const coinId = selectedTradingPair ? getCoinIdFromBackend(selectedTradingPair.base) : null;
-  const queryParams = coinId && selectedExchange?.id && selectedTradingPair ? 
-    [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()] : skipToken;
+  
+  const hasPriceInCoinGecko = React.useMemo(() => {
+    if (!selectedTradingPair || !coinGeckoExchangesWithTickers?.tickers) return false;
+    
+    return coinGeckoExchangesWithTickers.tickers.some(ticker => 
+      ticker.base === selectedTradingPair.base && 
+      ticker.target === selectedTradingPair.target && 
+      ticker.last > 0
+    );
+  }, [selectedTradingPair, coinGeckoExchangesWithTickers]);
+  
+  const queryParams = React.useMemo(() => {
+    if (!coinId || !selectedExchange?.id || !selectedTradingPair || hasPriceInCoinGecko) {
+      return skipToken;
+    }
+    return [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()];
+  }, [coinId, selectedExchange?.id, selectedTradingPair, hasPriceInCoinGecko, refreshTimestamp]);
   
   const { data: coinGeckoPrices } = useGetCoinGeckoPricesQuery(
     queryParams,
@@ -232,7 +248,7 @@ export function TradeTable() {
               pairsMap.set(pair, {
                 base: ticker.base,
                 target: ticker.target,
-                last: ticker.last,
+                last: 0,
                 volume: ticker.converted_volume.usd,
                 pair: pair
               });
@@ -249,6 +265,34 @@ export function TradeTable() {
 
     fetchAllTradingPairs();
     }, [selectedExchange, backendExchangeData]);
+
+  useEffect(() => {
+    if (!coinGeckoExchangesWithTickers || !tradingPairs.length) return;
+
+    setTradingPairs(prevPairs => {
+      // Сначала обновляем цены
+      const updatedPairs = prevPairs.map(pair => {
+        const coinGeckoTicker = coinGeckoExchangesWithTickers.tickers?.find(ticker => 
+          ticker.base === pair.base && ticker.target === pair.target
+        );
+        
+        if (coinGeckoTicker) {
+          return {
+            ...pair,
+            last: coinGeckoTicker.last
+          };
+        }
+        
+        return pair;
+      });
+
+      const uniquePairs = updatedPairs.filter((pair, index, self) => 
+        index === self.findIndex(p => p.pair === pair.pair)
+      );
+
+      return uniquePairs;
+    });
+  }, [coinGeckoExchangesWithTickers, tradingPairs.length]);
 
   useEffect(() => {
     if (coinGeckoPrices && selectedTradingPair && tradeData.symbol && selectedExchange?.id) {
@@ -1046,7 +1090,12 @@ export function TradeTable() {
                               const currentPrice = selectedMarket?.last;
                               return currentPrice 
                                 ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
-                                : `${tradeData.mkt} - Price not available`;
+                                : (
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <span>{tradeData.mkt}</span>
+                                      <CircularProgress size={16} />
+                                    </Box>
+                                  );
                             })()
                            )}
                          </div>
