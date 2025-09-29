@@ -77,8 +77,22 @@ export function TradeTable() {
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
+  const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
+  const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken);
+  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken);
+  const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
+  const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
+  const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
+  const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
+  const [demoRequested, setDemoRequested] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
+  const [tourAnchor, setTourAnchor] = useState<HTMLElement | null>(null);
+  const [highlightTick, setHighlightTick] = useState(0);
+  const [highlightReady, setHighlightReady] = useState(false);
 
-  const getCoinIdFromBackend = (base: string): string | null => {
+   const getCoinIdFromBackend = (base: string): string | null => {
     if (!backendExchangeData) return null;
     
     for (const exchange of backendExchangeData) {
@@ -90,30 +104,20 @@ export function TradeTable() {
     return null;
   };
 
-  const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
-  const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken);
-  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken);
-  const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
-  const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
   const coinId = selectedTradingPair ? getCoinIdFromBackend(selectedTradingPair.base) : null;
   const queryParams = coinId && selectedExchange?.id && selectedTradingPair ? 
-    [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()] : skipToken; 
-  const { data: coinGeckoPrices, isLoading: isCoinGeckoPricesLoading } = useGetCoinGeckoPricesQuery(
+    [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()] : skipToken;
+  
+  const { data: coinGeckoPrices } = useGetCoinGeckoPricesQuery(
     queryParams,
     {
-      refetchOnMountOrArgChange: true
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+      skip: queryParams === skipToken,
+      pollingInterval: 0
     }
   );
-
-  const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
-  const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
-  const [demoRequested, setDemoRequested] = useState(false);
-  const [tourOpen, setTourOpen] = useState(false);
-  const [tourStep, setTourStep] = useState(0);
-  const [tourAnchor, setTourAnchor] = useState<HTMLElement | null>(null);
-  const [highlightTick, setHighlightTick] = useState(0);
-  const [highlightReady, setHighlightReady] = useState(false);
 
   const resetTour = React.useCallback(() => {
     setTourOpen(false);
@@ -239,30 +243,32 @@ export function TradeTable() {
     }, [selectedExchange, backendExchangeData]);
 
   useEffect(() => {
-    if (coinGeckoPrices && selectedTradingPair && tradeData.symbol && coinId) {
-      const currentPrice = coinGeckoPrices[coinId]?.usd;
-
+    if (coinGeckoPrices && selectedTradingPair && tradeData.symbol && selectedExchange?.id) {
+      const uniqueKey = `${selectedTradingPair.base}_${selectedTradingPair.target}_${selectedExchange.id}`;
+      const priceData = coinGeckoPrices[uniqueKey];
+      const currentPrice = priceData?.usd;
       
-      if (currentPrice) {
+      if (currentPrice && currentPrice !== selectedTradingPair.last) {
         const updatedSelectedPair = {
           ...selectedTradingPair,
           last: currentPrice
         };
         setSelectedTradingPair(updatedSelectedPair);
         
-        const updatedTradingPairs = tradingPairs.map(pair => {
-          if (pair.pair === selectedTradingPair.pair) {
-            return {
-              ...pair,
-              last: currentPrice
-            };
-          }
-          return pair;
-        });
-        setTradingPairs(updatedTradingPairs);
+        setTradingPairs(prevPairs => 
+          prevPairs.map(pair => {
+            if (pair.pair === selectedTradingPair.pair) {
+              return {
+                ...pair,
+                last: currentPrice
+              };
+            }
+            return pair;
+          })
+        );
       }
     }
-  }, [coinGeckoPrices, selectedTradingPair, tradeData.symbol, coinId, tradingPairs, topTradingPairs]);
+  }, [coinGeckoPrices, selectedTradingPair, tradeData.symbol, selectedExchange?.id]);
 
   const handleTradingPairSelect = (pair: string | null) => {
     if (pair) {

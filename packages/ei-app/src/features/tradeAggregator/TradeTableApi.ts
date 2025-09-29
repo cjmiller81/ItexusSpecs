@@ -44,8 +44,11 @@ export type CoinGeckoTicker = {
 
 
 export type CoinGeckoPrice = {
-  [coinId: string]: {
+  [key: string]: {
     usd: number;
+    base: string;
+    target: string;
+    exchangeId: string;
   };
 }
 
@@ -78,9 +81,15 @@ export const cexApi = createApi({
         const [coinId, exchangeId, base, target] = params;
         
         for (let attempt = 1; attempt <= 3; attempt++) {
+          const timestamp = Date.now();
           const result = await fetchWithBQ({
-            url: `https://api.coingecko.com/api/v3/coins/${coinId}/tickers?exchange_ids=${exchangeId}`,
+            url: `https://api.coingecko.com/api/v3/coins/${coinId}/tickers?exchange_ids=${exchangeId}&_t=${timestamp}`,
             method: "get",
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
           });
     
           if (!('error' in result)) {
@@ -91,15 +100,19 @@ export const cexApi = createApi({
             );
             
             if (ticker) {
+              const uniqueKey = `${base}_${target}_${exchangeId}`;
               return { 
                 data: { 
-                  [coinId]: { 
-                    usd: ticker.last 
+                  [uniqueKey]: { 
+                    usd: ticker.last,
+                    base: base,
+                    target: target,
+                    exchangeId: exchangeId
                   } 
                 } as CoinGeckoPrice 
               };
             }
-            
+                     
             return { data: {} as CoinGeckoPrice };
           }
     
