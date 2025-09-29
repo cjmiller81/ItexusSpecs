@@ -79,8 +79,16 @@ export function TradeTable() {
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
-  const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken);
-  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken);
+  const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
+  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
   const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
   const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);

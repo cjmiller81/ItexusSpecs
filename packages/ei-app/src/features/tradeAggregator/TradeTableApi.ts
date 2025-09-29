@@ -64,6 +64,7 @@ export const cexApi = createApi({
           !e.name.toLowerCase().includes("futures") &&
           !e.name.toLowerCase().includes("derivative")
         ),
+      keepUnusedDataFor: 0,
     }),
     getCountries: build.query<string[], void>({
       query: () => ({ url: "/api/countries", method: "get" })
@@ -72,6 +73,7 @@ export const cexApi = createApi({
     getExchangesTicker: build.query<Exchange[], string>({
       query: (id) => ({ url: `/exchanges/tickers/${id}`, method: "get" }),
       transformResponse: (response: Exchange[]) => response || [],
+      keepUnusedDataFor: 0,
     }),
 
     getCoinGeckoPrices: build.query<CoinGeckoPrice, string[]>({
@@ -137,6 +139,11 @@ export const cexApi = createApi({
           const result = await fetchWithBQ({
             url: `https://api.coingecko.com/api/v3/exchanges/${id}/tickers?page=1&order=volume`,
             method: "get",
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
           });
     
           if (!('error' in result)) {
@@ -154,6 +161,8 @@ export const cexApi = createApi({
     
         return { error: { status: 'CUSTOM_ERROR', data: 'Max retries reached' } };
       },
+      // Отключаем кэширование - всегда делаем новый запрос
+      keepUnusedDataFor: 0,
     })
   }),
 });
