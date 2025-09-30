@@ -285,10 +285,13 @@ export default function TradingPage() {
           }
           label="Customization Coming Soon"
           sx={{
-            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.15) 100%)',
+            background:
+            theme.palette.mode === 'light'
+                ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%)'
+                : 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.2) 100%)',
             border: '1px solid rgba(59, 130, 246, 0.4)',
             borderRadius: '20px',
-            color: '#60a5fa',
+            color: theme.palette.mode === 'light' ? theme.palette.primary.dark : '#60a5fa',
             fontWeight: 600,
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
