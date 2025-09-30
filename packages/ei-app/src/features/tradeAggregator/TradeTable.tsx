@@ -53,6 +53,12 @@ interface TradingPair {
   pair: string;
 }
 
+const getCanonicalNames = (ticker: any) => {
+  const base = ticker.canonical_base || ticker.base;
+  const target = ticker.canonical_target || ticker.target;
+  return { base, target };
+};
+
 export function TradeTable() {
   const [tradeData, setTradeData] = useState<TradeData>({
     symbol: '',
@@ -105,9 +111,27 @@ export function TradeTable() {
     if (!backendExchangeData) return null;
     
     for (const exchange of backendExchangeData) {
-      const ticker = exchange.tickers?.find(t => t.base === base);
+      const ticker = exchange.tickers?.find(t => {
+        const { base: canonicalBase } = getCanonicalNames(t);
+        return canonicalBase === base;
+      });
       if (ticker?.coin_id) {
         return ticker.coin_id;
+      }
+    }
+    return null;
+  };
+
+  const getOriginalBaseTargetFromBackend = (canonicalBase: string, canonicalTarget: string): { base: string, target: string } | null => {
+    if (!backendExchangeData) return null;
+    
+    for (const exchange of backendExchangeData) {
+      const ticker = exchange.tickers?.find(t => {
+        const { base, target } = getCanonicalNames(t);
+        return base === canonicalBase && target === canonicalTarget;
+      });
+      if (ticker) {
+        return { base: ticker.base, target: ticker.target };
       }
     }
     return null;
@@ -118,19 +142,26 @@ export function TradeTable() {
   const hasPriceInCoinGecko = React.useMemo(() => {
     if (!selectedTradingPair || !coinGeckoExchangesWithTickers?.tickers) return false;
     
-    return coinGeckoExchangesWithTickers.tickers.some(ticker => 
-      ticker.base === selectedTradingPair.base && 
-      ticker.target === selectedTradingPair.target && 
-      ticker.last > 0
-    );
+    return coinGeckoExchangesWithTickers.tickers.some(ticker => {
+      const { base, target } = getCanonicalNames(ticker);
+      return base === selectedTradingPair.base && 
+             target === selectedTradingPair.target && 
+             ticker.last > 0;
+    });
   }, [selectedTradingPair, coinGeckoExchangesWithTickers]);
   
   const queryParams = React.useMemo(() => {
     if (!coinId || !selectedExchange?.id || !selectedTradingPair || hasPriceInCoinGecko || !tradeData.mkt || !selectedTradingPair.base || !selectedTradingPair.target) {
       return skipToken;
     }
-    return [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()];
-  }, [coinId, selectedExchange?.id, selectedTradingPair, hasPriceInCoinGecko, refreshTimestamp, tradeData.mkt]);
+    
+    const originalFields = getOriginalBaseTargetFromBackend(selectedTradingPair.base, selectedTradingPair.target);
+    if (!originalFields) {
+      return skipToken;
+    }
+    
+    return [coinId, selectedExchange.id, originalFields.base, originalFields.target, refreshTimestamp.toString()];
+  }, [coinId, selectedExchange?.id, selectedTradingPair, hasPriceInCoinGecko, refreshTimestamp, tradeData.mkt, backendExchangeData]);
   
   const { data: coinGeckoPrices } = useGetCoinGeckoPricesQuery(
     queryParams,
@@ -203,11 +234,12 @@ export function TradeTable() {
       try {
         const pairsMap = new Map();
         coinGeckoExchangesWithTickers.tickers?.forEach(ticker => {
-            const pair = `${ticker.base}/${ticker.target}`;
+            const { base, target } = getCanonicalNames(ticker);
+            const pair = `${base}/${target}`;
             if (!pairsMap.has(pair)) {
               pairsMap.set(pair, {
-                base: ticker.base,
-                target: ticker.target,
+                base: base,
+                target: target,
                 last: ticker.last,
                 volume: ticker.converted_volume.usd,
                 pair: pair
@@ -243,11 +275,12 @@ export function TradeTable() {
 
         backendExchangeData.forEach(exchange => {
           exchange.tickers?.forEach(ticker => {
-            const pair = `${ticker.base}/${ticker.target}`;
+            const { base, target } = getCanonicalNames(ticker);
+            const pair = `${base}/${target}`;
             if (!pairsMap.has(pair)) {
               pairsMap.set(pair, {
-                base: ticker.base,
-                target: ticker.target,
+                base: base,
+                target: target,
                 last: 0,
                 volume: ticker.converted_volume.usd,
                 pair: pair
@@ -270,11 +303,11 @@ export function TradeTable() {
     if (!coinGeckoExchangesWithTickers || !tradingPairs.length) return;
 
     setTradingPairs(prevPairs => {
-      // Сначала обновляем цены
       const updatedPairs = prevPairs.map(pair => {
-        const coinGeckoTicker = coinGeckoExchangesWithTickers.tickers?.find(ticker => 
-          ticker.base === pair.base && ticker.target === pair.target
-        );
+        const coinGeckoTicker = coinGeckoExchangesWithTickers.tickers?.find(ticker => {
+          const { base, target } = getCanonicalNames(ticker);
+          return base === pair.base && target === pair.target;
+        });
         
         if (coinGeckoTicker) {
           return {
