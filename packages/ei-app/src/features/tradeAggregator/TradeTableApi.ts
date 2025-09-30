@@ -82,49 +82,54 @@ export const cexApi = createApi({
         
         const [coinId, exchangeId, base, target] = params;
         
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          const timestamp = Date.now();
-          const result = await fetchWithBQ({
-            url: `https://api.coingecko.com/api/v3/coins/${coinId}/tickers?exchange_ids=${exchangeId}&_t=${timestamp}`,
-            method: "get",
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0'
+        for (let attempt = 1; attempt <= 5; attempt++) {
+          try {
+            const timestamp = Date.now();
+            const result = await fetchWithBQ({
+              url: `https://api.coingecko.com/api/v3/coins/${coinId}/tickers?exchange_ids=${exchangeId}&_t=${timestamp}`,
+              method: "get",
+            });
+      
+            if (!('error' in result)) {
+              const tickerData = result.data as Exchange;
+              const ticker = tickerData.tickers?.find((t: CoinGeckoTicker) => 
+                t.base.toLowerCase() === base.toLowerCase() && 
+                t.target.toLowerCase() === target.toLowerCase()
+              );
+              
+              if (ticker) {
+                const uniqueKey = `${base}_${target}_${exchangeId}`;
+                return { 
+                  data: { 
+                    [uniqueKey]: { 
+                      usd: ticker.last,
+                      base: base,
+                      target: target,
+                      exchangeId: exchangeId
+                    } 
+                  } as CoinGeckoPrice 
+                };
+              }
+                       
+              return { data: {} as CoinGeckoPrice };
             }
-          });
-    
-          if (!('error' in result)) {
-            const tickerData = result.data as Exchange;
-            const ticker = tickerData.tickers?.find((t: CoinGeckoTicker) => 
-              t.base.toLowerCase() === base.toLowerCase() && 
-              t.target.toLowerCase() === target.toLowerCase()
-            );
+      
+            throw result.error;
             
-            if (ticker) {
-              const uniqueKey = `${base}_${target}_${exchangeId}`;
-              return { 
-                data: { 
-                  [uniqueKey]: { 
-                    usd: ticker.last,
-                    base: base,
-                    target: target,
-                    exchangeId: exchangeId
-                  } 
-                } as CoinGeckoPrice 
-              };
+          } catch (error: any) {
+            const status = error?.status || error?.response?.status;
+            const statusCode = typeof status === 'string' ? parseInt(status) : status;
+            const isNetworkError = error?.code === 'ERR_NETWORK';
+            const is429Error = statusCode === 429;
+            
+            if ((is429Error || isNetworkError || statusCode >= 500) && attempt < 5) {
+              const delayTime = is429Error ? 15000 * attempt : (isNetworkError ? 10000 * attempt : 5000 * attempt);
+              await delay(delayTime); 
+              continue;
             }
-                     
-            return { data: {} as CoinGeckoPrice };
+      
+            return { error: error };
           }
-    
-          const status = (result.error as any)?.status;
-          if ((status === 429 || status >= 500) && attempt < 3) {
-            await delay(5000 * attempt); 
-            continue;
-          }
-    
-          return { error: result.error };
         }
     
         return { error: { status: 'CUSTOM_ERROR', data: 'Max retries reached' } };
@@ -135,28 +140,33 @@ export const cexApi = createApi({
       async queryFn(id, _queryApi, _extraOptions, fetchWithBQ) {
         const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
     
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          const result = await fetchWithBQ({
-            url: `https://api.coingecko.com/api/v3/exchanges/${id}/tickers?page=1&order=volume`,
-            method: "get",
-            headers: {
-              'Cache-Control': 'no-cache, no-store, must-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0'
+        for (let attempt = 1; attempt <= 5; attempt++) {
+          try {
+            const result = await fetchWithBQ({
+              url: `https://api.coingecko.com/api/v3/exchanges/${id}/tickers?page=1&order=volume`,
+              method: "get",
+            });
+      
+            if (!('error' in result)) {
+              return { data: result.data as Exchange };
             }
-          });
-    
-          if (!('error' in result)) {
-            return { data: result.data as Exchange };
+      
+            throw result.error;
+            
+          } catch (error: any) {
+            const status = error?.status || error?.response?.status;
+            const statusCode = typeof status === 'string' ? parseInt(status) : status;
+            const isNetworkError = error?.code === 'ERR_NETWORK';
+            const is429Error = statusCode === 429;
+            
+            if ((is429Error || isNetworkError || statusCode >= 500) && attempt < 5) {
+              const delayTime = is429Error ? 15000 * attempt : (isNetworkError ? 10000 * attempt : 5000 * attempt);
+              await delay(delayTime); 
+              continue;
+            }
+      
+            return { error: error };
           }
-    
-          const status = (result.error as any)?.status;
-          if ((status === 429 || status >= 500) && attempt < 3) {
-            await delay(5000 * attempt); 
-            continue;
-          }
-    
-          return { error: result.error };
         }
     
         return { error: { status: 'CUSTOM_ERROR', data: 'Max retries reached' } };
