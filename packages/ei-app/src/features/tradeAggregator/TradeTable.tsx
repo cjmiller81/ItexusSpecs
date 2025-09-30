@@ -82,13 +82,13 @@ export function TradeTable() {
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
   const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken, {
     refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
   });
   const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken, {
     refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
   });
   const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
   const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
@@ -126,19 +126,19 @@ export function TradeTable() {
   }, [selectedTradingPair, coinGeckoExchangesWithTickers]);
   
   const queryParams = React.useMemo(() => {
-    if (!coinId || !selectedExchange?.id || !selectedTradingPair || hasPriceInCoinGecko) {
+    if (!coinId || !selectedExchange?.id || !selectedTradingPair || hasPriceInCoinGecko || !tradeData.mkt || !selectedTradingPair.base || !selectedTradingPair.target) {
       return skipToken;
     }
     return [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()];
-  }, [coinId, selectedExchange?.id, selectedTradingPair, hasPriceInCoinGecko, refreshTimestamp]);
+  }, [coinId, selectedExchange?.id, selectedTradingPair, hasPriceInCoinGecko, refreshTimestamp, tradeData.mkt]);
   
   const { data: coinGeckoPrices } = useGetCoinGeckoPricesQuery(
     queryParams,
     {
       refetchOnMountOrArgChange: true,
-      refetchOnFocus: true,
-      refetchOnReconnect: true,
-      skip: queryParams === skipToken,
+      refetchOnFocus: false,
+      refetchOnReconnect: false,
+      skip: queryParams === skipToken || !selectedTradingPair || !tradeData.mkt,
       pollingInterval: 0
     }
   );
