@@ -762,5 +762,13 @@
     "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan": "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan",
     "DEX quote requests are not available in {{plan}} plan": "DEX quote requests are not available in {{plan}} plan",
     "This feature is not available in your current plan": "This feature is not available in your current plan"
+  },
+  "Social":{
+    "Telegram":"Telegram",
+    "Twitter": "X",
+    "Discord": "Discord",
+    "GitHub": "GitHub",
+    "Education": "Education",
+    "Blog": "Blog"
   }
 }
