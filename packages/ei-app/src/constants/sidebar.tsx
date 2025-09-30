@@ -229,7 +229,7 @@ function getDisclaimerItems(): SidebarListItem[] {
       title: "Disclaimer",
       children: [
         {
-          title: "Elan Insights offers research only, not investment advice. Users are solely responsible for their financial decisions. See our Support and Legal page for details.",
+          title: "Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.",
           href: "/support",
         },
       ],
