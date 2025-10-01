@@ -21,6 +21,7 @@ import {
   Backdrop,
   Popover,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
@@ -31,7 +32,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
-import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
+import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesTickerQuery, useGetCoinGeckoPricesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
 import ArbitrageMatrix from './ArbitrageMatrix';
  
@@ -79,7 +80,18 @@ export function TradeTable() {
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
-  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken)
+  const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+  });
+  const { data: coinGeckoExchangesWithTickers, isLoading: isTradingPairsLoading } = useGetExchangesWithTickersQuery(selectedExchange?.id ?? skipToken, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
+  });
+  const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
+  const [refreshTimestamp, setRefreshTimestamp] = useState(Date.now());
   const [tradingPairs, setTradingPairs] = useState<TradingPair[]>([]);
   const [topTradingPairs, setTopTradingPairs] = useState<TradingPair[]>([]);
   const [demoRequested, setDemoRequested] = useState(false);
@@ -88,6 +100,48 @@ export function TradeTable() {
   const [tourAnchor, setTourAnchor] = useState<HTMLElement | null>(null);
   const [highlightTick, setHighlightTick] = useState(0);
   const [highlightReady, setHighlightReady] = useState(false);
+
+   const getCoinIdFromBackend = (base: string): string | null => {
+    if (!backendExchangeData) return null;
+    
+    for (const exchange of backendExchangeData) {
+      const ticker = exchange.tickers?.find(t => t.base === base);
+      if (ticker?.coin_id) {
+        return ticker.coin_id;
+      }
+    }
+    return null;
+  };
+
+  const coinId = selectedTradingPair ? getCoinIdFromBackend(selectedTradingPair.base) : null;
+  
+  const hasPriceInCoinGecko = React.useMemo(() => {
+    if (!selectedTradingPair || !coinGeckoExchangesWithTickers?.tickers) return false;
+    
+    return coinGeckoExchangesWithTickers.tickers.some(ticker => 
+      ticker.base === selectedTradingPair.base && 
+      ticker.target === selectedTradingPair.target && 
+      ticker.last > 0
+    );
+  }, [selectedTradingPair, coinGeckoExchangesWithTickers]);
+  
+  const queryParams = React.useMemo(() => {
+    if (!coinId || !selectedExchange?.id || !selectedTradingPair || hasPriceInCoinGecko || !tradeData.mkt || !selectedTradingPair.base || !selectedTradingPair.target) {
+      return skipToken;
+    }
+    return [coinId, selectedExchange.id, selectedTradingPair.base, selectedTradingPair.target, refreshTimestamp.toString()];
+  }, [coinId, selectedExchange?.id, selectedTradingPair, hasPriceInCoinGecko, refreshTimestamp, tradeData.mkt]);
+  
+  const { data: coinGeckoPrices } = useGetCoinGeckoPricesQuery(
+    queryParams,
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: false,
+      refetchOnReconnect: false,
+      skip: queryParams === skipToken || !selectedTradingPair || !tradeData.mkt,
+      pollingInterval: 0
+    }
+  );
 
   const resetTour = React.useCallback(() => {
     setTourOpen(false);
@@ -143,7 +197,7 @@ export function TradeTable() {
   }, [coinGeckoExchangesInitial, selectedCountry]);
   
   useEffect(() => {
-    const fetchTradingPairs = async () => {
+    const fetchTopTradingPairs = async () => {
       if (!selectedExchange || !coinGeckoExchangesWithTickers) return;
 
       try {
@@ -162,7 +216,6 @@ export function TradeTable() {
         });
 
         const pairs = Array.from(pairsMap.values());
-        setTradingPairs(pairs);
         
         const topPairs = [...pairs]
           .sort((a, b) => b.volume - a.volume)
@@ -174,22 +227,118 @@ export function TradeTable() {
           setDemoRequested(false);
         }
       } catch (error) {
-        console.error('Failed to fetch trading pairs:', error);
+        console.error('Failed to fetch top trading pairs:', error);
       } 
     };
 
-    fetchTradingPairs();
+    fetchTopTradingPairs();
   }, [selectedExchange, coinGeckoExchangesWithTickers, demoRequested]);
+
+  useEffect(() => {
+    const fetchAllTradingPairs = async () => {
+      if (!selectedExchange || !backendExchangeData) return;
+
+      try {
+        const pairsMap = new Map();
+
+        backendExchangeData.forEach(exchange => {
+          exchange.tickers?.forEach(ticker => {
+            const pair = `${ticker.base}/${ticker.target}`;
+            if (!pairsMap.has(pair)) {
+              pairsMap.set(pair, {
+                base: ticker.base,
+                target: ticker.target,
+                last: 0,
+                volume: ticker.converted_volume.usd,
+                pair: pair
+              });
+            }
+          });
+        });
+
+        const pairs = Array.from(pairsMap.values());
+        setTradingPairs(pairs);
+      } catch (error) {
+        console.error('Failed to fetch all trading pairs:', error);
+      } 
+    };
+
+    fetchAllTradingPairs();
+    }, [selectedExchange, backendExchangeData]);
+
+  useEffect(() => {
+    if (!coinGeckoExchangesWithTickers || !tradingPairs.length) return;
+
+    setTradingPairs(prevPairs => {
+      // Сначала обновляем цены
+      const updatedPairs = prevPairs.map(pair => {
+        const coinGeckoTicker = coinGeckoExchangesWithTickers.tickers?.find(ticker => 
+          ticker.base === pair.base && ticker.target === pair.target
+        );
+        
+        if (coinGeckoTicker) {
+          return {
+            ...pair,
+            last: coinGeckoTicker.last
+          };
+        }
+        
+        return pair;
+      });
+
+      const uniquePairs = updatedPairs.filter((pair, index, self) => 
+        index === self.findIndex(p => p.pair === pair.pair)
+      );
+
+      return uniquePairs;
+    });
+  }, [coinGeckoExchangesWithTickers, tradingPairs.length]);
+
+  useEffect(() => {
+    if (coinGeckoPrices && selectedTradingPair && tradeData.symbol && selectedExchange?.id) {
+      const uniqueKey = `${selectedTradingPair.base}_${selectedTradingPair.target}_${selectedExchange.id}`;
+      const priceData = coinGeckoPrices[uniqueKey];
+      const currentPrice = priceData?.usd;
+      
+      if (currentPrice && currentPrice !== selectedTradingPair.last) {
+        const updatedSelectedPair = {
+          ...selectedTradingPair,
+          last: currentPrice
+        };
+        setSelectedTradingPair(updatedSelectedPair);
+        
+        setTradingPairs(prevPairs => 
+          prevPairs.map(pair => {
+            if (pair.pair === selectedTradingPair.pair) {
+              return {
+                ...pair,
+                last: currentPrice
+              };
+            }
+            return pair;
+          })
+        );
+      }
+    }
+  }, [coinGeckoPrices, selectedTradingPair, tradeData.symbol, selectedExchange?.id]);
 
   const handleTradingPairSelect = (pair: string | null) => {
     if (pair) {
       const [symbol, target] = pair.split('/');
+      const selectedPair = tradingPairs.find(p => p.pair === pair);
+
+      if (selectedPair) {
+        setSelectedTradingPair(selectedPair);
+        setRefreshTimestamp(Date.now());
+      }
+
       setTradeData({
         ...tradeData,
         symbol,
         mkt: pair
       });
     } else {
+      setSelectedTradingPair(null);
       setTradeData({
         ...tradeData,
         symbol : '',
@@ -202,6 +351,7 @@ export function TradeTable() {
     const exchangeId = event.target.value;
     const exchange = coinGeckoExchanges?.find(e => e.id === exchangeId);
     setSelectedExchange(exchange || null);
+    setSelectedTradingPair(null);
     setTradeData({
       symbol: '',
       mkt: '',
@@ -220,6 +370,7 @@ export function TradeTable() {
       }
 
       setSelectedExchange(null);
+      setSelectedTradingPair(null);
       setTradeData({
         symbol: '',
         mkt: '',
@@ -266,7 +417,8 @@ export function TradeTable() {
     if (!tradeData.mkt) {
       return;
     }
-    const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
+    
+    const selectedMarket = selectedTradingPair || tradingPairs.find(m => m.pair === tradeData.mkt);
     if (!selectedMarket) {
       if (!demoRequested) {
         setTradeData(prev => ({ ...prev, value: '', qty: '0' }));
@@ -337,6 +489,7 @@ export function TradeTable() {
     isSwitchIncluded,
     tradeData.action,
     tradingPairs,
+    selectedTradingPair,
     demoRequested
   ]);
 
@@ -627,7 +780,7 @@ export function TradeTable() {
                            options={tradingPairs}
                            disabled={!selectedExchange}
                            getOptionLabel={(option) => option.pair} 
-                           loading={isTradingPairsLoading}
+                           loading={isBackendExchangeLoading}
                            value={tradingPairs.find(x => x.pair == tradeData.mkt) || null}
                            onChange={(event, newValue) => {
                              handleTradingPairSelect(newValue?.pair || null);
@@ -932,13 +1085,18 @@ export function TradeTable() {
                                ? `Buy ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Spend ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
                                : `Sell ${tradeData.qty} ${tradeData.symbol.toUpperCase()} → Receive ~${tradeData.value} ${tradeData.mkt.split("/")[1]}`
                            ) : (
-                             (() => {
-                               const selectedMarket = tradingPairs.find(m => m.pair === tradeData.mkt);
-                               const currentPrice = selectedMarket?.last;
-                               return currentPrice 
-                                 ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
-                                 : `${tradeData.mkt} - Price not available`;
-                             })()
+                            (() => {
+                              const selectedMarket = selectedTradingPair || tradingPairs.find(m => m.pair === tradeData.mkt);
+                              const currentPrice = selectedMarket?.last;
+                              return currentPrice 
+                                ? `${tradeData.mkt} @ $${currentPrice.toLocaleString()}`
+                                : (
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <span>{tradeData.mkt}</span>
+                                      <CircularProgress size={16} />
+                                    </Box>
+                                  );
+                            })()
                            )}
                          </div>
                        </Box>
