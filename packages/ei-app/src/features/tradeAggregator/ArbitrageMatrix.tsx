@@ -26,11 +26,10 @@ import {
 } from '@mui/material';
 import { keyframes } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { Exchange, useGetExchangesWithTickersFromDbQuery, useGetCountriesQuery, useLazyGetExchangesTickerQuery } from './TradeTableApi';
+import { Exchange, useGetExchangesQuery, useGetCountriesQuery, useLazyGetExchangesTickerQuery } from './TradeTableApi';
 
 interface ExtendedExchange extends Exchange {
   isSelectAll?: boolean;
-  hasSpotMarkets?: boolean;
 }
 
 interface TradingPair {
@@ -73,11 +72,9 @@ export default function ArbitrageMatrix() {
   const { t } = useTranslation(["TradeTable"]);
   const theme = useTheme();
   const AllCountries = "All Countries";
-  
-  const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesWithTickersFromDbQuery();
+  const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const { data: countries, isLoading: isCountriesLoading } = useGetCountriesQuery();
   const [getExchangesTicker] = useLazyGetExchangesTickerQuery();
-  
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const [selectedExchanges, setSelectedExchanges] = useState<Exchange[]>([]);
   const [tempSelectedExchanges, setTempSelectedExchanges] = useState<Exchange[]>([]);
@@ -88,20 +85,9 @@ export default function ArbitrageMatrix() {
   const [commonTradingPairs, setCommonTradingPairs] = useState<TradingPair[]>([]);
   const [isLoadingTradingPairs, setIsLoadingTradingPairs] = useState<boolean>(false);
   const [exchangeDataCache, setExchangeDataCache] = useState<Map<string, any>>(new Map());
-  const [exchangesWithSpotMarkets, setExchangesWithSpotMarkets] = useState<Set<string>>(new Set());
   
   useEffect(() => {
     if (coinGeckoExchangesInitial) {
-      const spotMarketsSet = new Set<string>();
-      
-      coinGeckoExchangesInitial.forEach(exchange => {
-        if (exchange.tickers && Array.isArray(exchange.tickers) && exchange.tickers.length > 0) {
-          spotMarketsSet.add(exchange.id);
-        }
-      });
-      
-      setExchangesWithSpotMarkets(spotMarketsSet);
-      
       setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => 
         selectedCountry === AllCountries || x.country === selectedCountry
       ));
@@ -124,17 +110,11 @@ export default function ArbitrageMatrix() {
       country: null,
       url: '',
       centralized: true,
-      isSelectAll: true,
-      hasSpotMarkets: true
+      isSelectAll: true
     };
     
-    const exchangesWithSpotInfo = filteredExchanges.map(exchange => ({
-      ...exchange,
-      hasSpotMarkets: exchangesWithSpotMarkets.has(exchange.id)
-    }));
-    
-    return [selectAllOption, ...exchangesWithSpotInfo];
-  }, [filteredExchanges, isAllSelected, exchangesWithSpotMarkets]);
+    return [selectAllOption, ...filteredExchanges];
+  }, [filteredExchanges, isAllSelected]);
 
   const filteredCountries = useMemo(() => {
     if (!coinGeckoExchangesInitial) return [];
@@ -348,15 +328,12 @@ export default function ArbitrageMatrix() {
                       if (isAllSelected) {
                         setTempSelectedExchanges([]);
                       } else {
-                        const availableExchanges = filteredExchanges.filter(exchange => 
-                          exchangesWithSpotMarkets.has(exchange.id)
-                        );
-                        setTempSelectedExchanges(availableExchanges);
+                        setTempSelectedExchanges(filteredExchanges);
                       }
                     } else {
                       const regularSelections = newValue
-                        .filter(item => !item.isSelectAll && item.hasSpotMarkets !== false)
-                        .map(item => ({ ...item, hasSpotMarkets: undefined, isSelectAll: undefined })) as Exchange[];
+                        .filter(item => !item.isSelectAll)
+                        .map(item => ({ ...item, isSelectAll: undefined })) as Exchange[];
                       setTempSelectedExchanges(regularSelections);
                     }
                   }}
@@ -404,42 +381,16 @@ export default function ArbitrageMatrix() {
                       ? isAllSelected 
                       : tempSelectedExchanges.some(ex => ex.id === option.id);
                     
-                    const hasSpotMarkets = option.hasSpotMarkets !== false;
-                    const isDisabled = !hasSpotMarkets && !option.isSelectAll;
-                    
                     return (
-                      <li {...props} style={{ 
-                        ...props.style, 
-                        opacity: isDisabled ? 0.5 : 1,
-                        cursor: isDisabled ? 'not-allowed' : 'default'
-                      }}>
+                      <li {...props}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                           <Checkbox
                             style={{ marginRight: 8 }}
                             checked={isSelected}
                             indeterminate={option.isSelectAll ? isIndeterminate : false}
-                            disabled={isDisabled}
                           />
                           <ListItemText 
-                            primary={
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <span style={{ 
-                                  fontStyle: isDisabled ? 'italic' : 'normal',
-                                  color: isDisabled ? theme.palette.text.disabled : 'inherit'
-                                }}>
-                                  {option.name}
-                                </span>
-                                {isDisabled && (
-                                  <span style={{ 
-                                    fontSize: '0.75rem',
-                                    color: theme.palette.text.disabled,
-                                    fontStyle: 'italic'
-                                  }}>
-                                    N/A
-                                  </span>
-                                )}
-                              </Box>
-                            }
+                            primary={option.name}
                             sx={{
                               fontWeight: option.isSelectAll ? 600 : 'normal',
                               color: option.isSelectAll ? theme.palette.primary.main : 'inherit'

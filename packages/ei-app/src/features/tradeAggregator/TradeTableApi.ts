@@ -66,20 +66,6 @@ export const cexApi = createApi({
         ),
       keepUnusedDataFor: 0,
     }),
-    getExchangesWithTickersFromDb: build.query<Exchange[], void>({
-      query: () => ({ 
-        url: "/exchanges", 
-        method: "get",
-        params: { includeTickers: true }
-      }),
-      transformResponse: (response: Exchange[]) =>
-        response.filter(e =>
-          e.centralized &&
-          !e.name.toLowerCase().includes("futures") &&
-          !e.name.toLowerCase().includes("derivative")
-        ),
-      keepUnusedDataFor: 0,
-    }),
     getCountries: build.query<string[], void>({
       query: () => ({ url: "/api/countries", method: "get" })
     }),
@@ -197,5 +183,4 @@ export const {
   useLazyGetExchangesTickerQuery,
   useGetCoinGeckoPricesQuery, 
   useGetExchangesWithTickersQuery,
-  useGetExchangesWithTickersFromDbQuery 
 } = cexApi;
