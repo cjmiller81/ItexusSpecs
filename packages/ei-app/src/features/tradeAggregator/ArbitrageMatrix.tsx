@@ -26,10 +26,11 @@ import {
 } from '@mui/material';
 import { keyframes } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { Exchange, useGetExchangesQuery, useGetCountriesQuery, useLazyGetExchangesTickerQuery } from './TradeTableApi';
+import { Exchange, useGetExchangesWithTickersFromDbQuery, useGetCountriesQuery, useLazyGetExchangesTickerQuery } from './TradeTableApi';
 
 interface ExtendedExchange extends Exchange {
   isSelectAll?: boolean;
+  hasSpotMarkets?: boolean;
 }
 
 interface TradingPair {
@@ -48,6 +49,7 @@ const rotate = keyframes`
     transform: rotate(360deg);
   }
 `;
+
 
 const pulseGlow = keyframes`
   0%, 100% {
@@ -72,7 +74,7 @@ export default function ArbitrageMatrix() {
   const theme = useTheme();
   const AllCountries = "All Countries";
   
-  const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
+  const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesWithTickersFromDbQuery();
   const { data: countries, isLoading: isCountriesLoading } = useGetCountriesQuery();
   const [getExchangesTicker] = useLazyGetExchangesTickerQuery();
   
@@ -86,9 +88,20 @@ export default function ArbitrageMatrix() {
   const [commonTradingPairs, setCommonTradingPairs] = useState<TradingPair[]>([]);
   const [isLoadingTradingPairs, setIsLoadingTradingPairs] = useState<boolean>(false);
   const [exchangeDataCache, setExchangeDataCache] = useState<Map<string, any>>(new Map());
+  const [exchangesWithSpotMarkets, setExchangesWithSpotMarkets] = useState<Set<string>>(new Set());
   
   useEffect(() => {
     if (coinGeckoExchangesInitial) {
+      const spotMarketsSet = new Set<string>();
+      
+      coinGeckoExchangesInitial.forEach(exchange => {
+        if (exchange.tickers && Array.isArray(exchange.tickers) && exchange.tickers.length > 0) {
+          spotMarketsSet.add(exchange.id);
+        }
+      });
+      
+      setExchangesWithSpotMarkets(spotMarketsSet);
+      
       setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => 
         selectedCountry === AllCountries || x.country === selectedCountry
       ));
@@ -111,11 +124,31 @@ export default function ArbitrageMatrix() {
       country: null,
       url: '',
       centralized: true,
-      isSelectAll: true
+      isSelectAll: true,
+      hasSpotMarkets: true
     };
     
-    return [selectAllOption, ...filteredExchanges];
-  }, [filteredExchanges, isAllSelected]);
+    const exchangesWithSpotInfo = filteredExchanges.map(exchange => ({
+      ...exchange,
+      hasSpotMarkets: exchangesWithSpotMarkets.has(exchange.id)
+    }));
+    
+    return [selectAllOption, ...exchangesWithSpotInfo];
+  }, [filteredExchanges, isAllSelected, exchangesWithSpotMarkets]);
+
+  const filteredCountries = useMemo(() => {
+    if (!coinGeckoExchangesInitial) return [];
+    
+    const countryCounts = coinGeckoExchangesInitial.reduce((acc, exchange) => {
+      if (exchange.country) {
+        acc[exchange.country] = (acc[exchange.country] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return Object.keys(countryCounts).filter(country => countryCounts[country] >= 2);
+  }, [coinGeckoExchangesInitial]);
+
 
   const handleCountrySelect = (country: string) => {
     setSelectedCountry(country);
@@ -315,10 +348,15 @@ export default function ArbitrageMatrix() {
                       if (isAllSelected) {
                         setTempSelectedExchanges([]);
                       } else {
-                        setTempSelectedExchanges(filteredExchanges);
+                        const availableExchanges = filteredExchanges.filter(exchange => 
+                          exchangesWithSpotMarkets.has(exchange.id)
+                        );
+                        setTempSelectedExchanges(availableExchanges);
                       }
                     } else {
-                      const regularSelections = newValue.filter(item => !item.isSelectAll) as Exchange[];
+                      const regularSelections = newValue
+                        .filter(item => !item.isSelectAll && item.hasSpotMarkets !== false)
+                        .map(item => ({ ...item, hasSpotMarkets: undefined, isSelectAll: undefined })) as Exchange[];
                       setTempSelectedExchanges(regularSelections);
                     }
                   }}
@@ -365,16 +403,42 @@ export default function ArbitrageMatrix() {
                       ? isAllSelected 
                       : tempSelectedExchanges.some(ex => ex.id === option.id);
                     
+                    const hasSpotMarkets = option.hasSpotMarkets !== false;
+                    const isDisabled = !hasSpotMarkets && !option.isSelectAll;
+                    
                     return (
-                      <li {...props}>
+                      <li {...props} style={{ 
+                        ...props.style, 
+                        opacity: isDisabled ? 0.5 : 1,
+                        cursor: isDisabled ? 'not-allowed' : 'default'
+                      }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                           <Checkbox
                             style={{ marginRight: 8 }}
                             checked={isSelected}
                             indeterminate={option.isSelectAll ? isIndeterminate : false}
+                            disabled={isDisabled}
                           />
                           <ListItemText 
-                            primary={option.name}
+                            primary={
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <span style={{ 
+                                  fontStyle: isDisabled ? 'italic' : 'normal',
+                                  color: isDisabled ? theme.palette.text.disabled : 'inherit'
+                                }}>
+                                  {option.name}
+                                </span>
+                                {isDisabled && (
+                                  <span style={{ 
+                                    fontSize: '0.75rem',
+                                    color: theme.palette.text.disabled,
+                                    fontStyle: 'italic'
+                                  }}>
+                                    N/A
+                                  </span>
+                                )}
+                              </Box>
+                            }
                             sx={{
                               fontWeight: option.isSelectAll ? 600 : 'normal',
                               color: option.isSelectAll ? theme.palette.primary.main : 'inherit'
@@ -438,7 +502,7 @@ export default function ArbitrageMatrix() {
                 <Autocomplete
                   disableClearable
                   size="small"
-                  options={countries || []}
+                  options={[AllCountries, ...filteredCountries]}
                   loading={isCountriesLoading}
                   getOptionLabel={(option) => option}
                   value={selectedCountry}
