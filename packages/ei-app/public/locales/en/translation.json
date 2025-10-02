@@ -180,7 +180,7 @@
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
     "VerificationCode": "Verification code",
-    "NewPasswordMessage": "New password has been set.",
+    "NewPasswordMessage": "New password accepted. Please enter your Web3 wallet address in the Wallets tab, or proceed directly to the <a href=\"/\">Home page</a>.",
     "ApplicationUnlinked": "Application unlinked.",
     "ApplicationLinked": "Application linked.",
     "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
@@ -209,7 +209,7 @@
     "Add": "Add",
     "Cancel": "Cancel",
     "SelectService*": "Select Service *",
-    "TradeAggregatorDex": "Trade Aggregator/DEX",
+    "TradeAggregatorDex": "Trade Aggregator: Decentralized Exchange",
     "DexAggregatorTourSectionTitle": "Trade Aggregator/DEX",
     "DexAggregatorTourSectionText": "You are in the Trade Aggregator/DEX section",
     "DexAggregatorTourManualPositionText": "You may add a manual position to your chosen wallet",
@@ -762,5 +762,13 @@
     "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan": "You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan",
     "DEX quote requests are not available in {{plan}} plan": "DEX quote requests are not available in {{plan}} plan",
     "This feature is not available in your current plan": "This feature is not available in your current plan"
+  },
+  "Social":{
+    "Telegram":"Telegram",
+    "Twitter": "X",
+    "Discord": "Discord",
+    "GitHub": "GitHub",
+    "Education": "Education",
+    "Blog": "Blog"
   }
 }

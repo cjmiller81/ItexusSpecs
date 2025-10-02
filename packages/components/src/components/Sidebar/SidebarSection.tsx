@@ -1,4 +1,4 @@
-import { Box, Collapse, ListItemButton, ListItemText, ListSubheader, useTheme } from "@mui/material";
+import { Box, Collapse, ListItemButton, ListItemText, ListSubheader, useTheme, Typography } from "@mui/material";
 import List from "@mui/material/List";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarListItem } from "./types";
@@ -6,16 +6,51 @@ import { AppLink } from "../common";
 
 interface Props {
   sectionName: string;
-  items: (SidebarListItem & { open: boolean })[];
+  items: (SidebarListItem & { open?: boolean })[];
   open: boolean;
   toggleSide: Function;
   //eslint-disable-next-line no-unused-vars
   onSetItemOpen: (title: string, open: boolean) => void;
   icon?: React.ReactNode;
+  isDisclaimer?: boolean;
 }
 
-export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide }: Props) => {
+export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggleSide, isDisclaimer }: Props) => {
   const theme = useTheme();
+  
+  // Special handling for disclaimer section
+  if (isDisclaimer) {
+    return (
+      <Box sx={{ p: 1.5 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: "bold",
+            fontSize: "0.75rem",
+            color: theme.palette.text.secondary,
+            display: "block",
+            mb: 0.5
+          }}
+        >
+          Disclaimer
+        </Typography>
+        <Typography
+          variant="caption"
+          sx={{
+            fontSize: "0.7rem",
+            lineHeight: 1.3,
+            color: theme.palette.text.primary,
+            display: "block",
+            whiteSpace: "normal",
+            wordWrap: "break-word"
+          }}
+        >
+          Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <List
       sx={{ width: "100%", bgcolor: "background.paper", pb: 0, overflowX: "hidden" }}
@@ -101,8 +136,8 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
           <Box key={index}>
             <SidebarItem
               key={index}
-              item={item}
-              open={item.open}
+              item={{...item, open: item.open || false}}
+              open={item.open || false}
               setOpen={open => onSetItemOpen(item.title, open)}
               isSidebarOpened={open}
             />

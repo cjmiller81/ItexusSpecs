@@ -140,7 +140,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
+          href: "/social/telegram",
         },
         {
           title: t("X", { ns: "SideBar" }),
@@ -152,19 +152,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
-        },
-        {
-          title: t("Reddit", { ns: "SideBar" }),
-          icon: (
-            <RedditIcon
-              width="24px"
-              height="24px"
-              fill={fillColor}
-              stroke={fillColor}
-            />
-          ),
-          href: "/#",
+          href: "/social/twitter",
         },
       ],
     },
@@ -184,7 +172,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
+          href: "/openSource/discord",
         },
         {
           title: t("GitHub", { ns: "SideBar" }),
@@ -196,7 +184,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
               stroke={fillColor}
             />
           ),
-          href: "/#",
+          href: "/openSource/github",
         },
       ],
     },
@@ -235,6 +223,20 @@ function getHelpItems(): SidebarListItem[] {
   ];
 }
 
+function getDisclaimerItems(): SidebarListItem[] {
+  return [
+    {
+      title: "Disclaimer",
+      children: [
+        {
+          title: "Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.",
+          href: "/support",
+        },
+      ],
+    },
+  ];
+}
+
 export function getSidebarMenuItems(theme: Theme, hasPageAccess: (pagePath: string) => boolean): SidebarItems[] {
   return [
     {
@@ -257,6 +259,11 @@ export function getSidebarMenuItems(theme: Theme, hasPageAccess: (pagePath: stri
     {
       title: t("Help", {ns: "Sidebar"}),
       sidebarListItems: getHelpItems(),
+    },
+    {
+      title: "",
+      sidebarListItems: getDisclaimerItems(),
+      isDisclaimer: true,
     },
   ];
 }

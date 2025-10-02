@@ -32,7 +32,7 @@ export default function RootLayout({ children }: IRootProps) {
 
   return (
     <OryAuthGateway 
-    changePasswordRoute={`${window.location.origin}/profile/security?requireChangePassword=true`}
+    changePasswordRoute={`${window.location.origin}/`}
     customTranslations={customTranslations}>
       <StoreProvider>
         <PersistGate

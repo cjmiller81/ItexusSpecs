@@ -188,12 +188,12 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     setNewPasswordLoading(true)
     onChangePassword(passsword)
       .then(() => {
-        dispatch(addMessage(t("NewPasswordMessage")))
+        dispatch(addMessage({ message: t("NewPasswordMessage"), autoClose: false }))
         resetForm()
       })
       .catch(error => {
-        if (error.response.status === 400) dispatch(addError(t("invalidPasswordFormat", { ns: "ErrorMessages" })))
-        else dispatch(addError(error?.response?.data?.error?.reason))
+        if (error.response.status === 400) dispatch(addError({ message: t("invalidPasswordFormat", { ns: "ErrorMessages" }) }))
+        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
       })
       .finally(() => {
         setNewPasswordLoading(false)
@@ -204,11 +204,11 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     setCodeLoading(true)
     onTotpSubmit(code)
       .then(() => {
-        dispatch(addMessage(t("ApplicationLinked")))
+        dispatch(addMessage({ message: t("ApplicationLinked") }))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "ErrorMessages" })))
-        else dispatch(addError(error?.response?.data?.error?.reason))
+        if (error?.response?.status === 400) dispatch(addError({ message: t("invalidCode", { ns: "ErrorMessages" }) }))
+        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
       })
       .finally(() => {
         setCodeLoading(false)
@@ -219,11 +219,11 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
     setCodeLoading(true)
     onTotpUnlink()
       .then(() => {
-        dispatch(addMessage(t("ApplicationUnlinked")))
+        dispatch(addMessage({ message: t("ApplicationUnlinked") }))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError(t("invalidCode", { ns: "ErrorMessages" })))
-        else dispatch(addError(error?.response?.data?.error?.reason))
+        if (error?.response?.status === 400) dispatch(addError({ message: t("invalidCode", { ns: "ErrorMessages" }) }))
+        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
       })
       .finally(() => {
         setCodeLoading(false)

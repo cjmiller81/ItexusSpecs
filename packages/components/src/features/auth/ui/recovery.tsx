@@ -27,15 +27,30 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
 
   const handleError = useCallback(
     (error: AxiosError) => {
+      if (error.response?.status === 410) {
+          const data = error.response.data as { error?: { details?: { redirect_to?: string } } }
+          const redirectTo = data?.error?.details?.redirect_to
+
+          if (redirectTo) {
+            const returnTo = window.location.origin
+
+            const redirectUrl = new URL(redirectTo)
+            redirectUrl.searchParams.set("return_to", returnTo)
+
+            window.location.replace(redirectUrl.toString())
+            return
+          }
+        }
+
       const forward = HandleError(getFlow, setFlow, "/ui/registration", true)
 
-      // old Kratos versions still use 422
       if (error.response?.status === 422) {
         const data: any = error.response.data
         if (data?.redirect_browser_to) {
           data.redirect_browser_to = `${window.location.origin}${data.redirect_browser_to}`
         }
       }
+
       return forward(error)
     },
     [getFlow],

@@ -96,7 +96,7 @@ export default function Support() {
                 lineHeight: 1.5
               }}
             >
-              Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see our policies and terms below for further information.
+              Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.
             </Typography>
           </Box>
         </CardContent>

@@ -19,10 +19,11 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { fetchWallets, fetchWalletsPortfolio, useOry } from "components";
+import { fetchWallets, fetchWalletsPortfolio, useOry, PasswordResetModal } from "components";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/router";
 
 const TOUR_ID = "home_v1";
 
@@ -64,10 +65,12 @@ export default function HomePage() {
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
   const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData)
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
     moment().startOf("day").toDate(),
     moment().endOf("day").toDate(),
   ]);
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
 
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
@@ -82,6 +85,20 @@ export default function HomePage() {
   })
   const newsRef = useRef(news);
   const retryNewsRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Check for password reset requirement
+  useEffect(() => {
+    // Check for postRecoveryRedirect cookie - this indicates user came from recovery flow
+    const recoveryCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('postRecoveryRedirect='));
+    
+    if (recoveryCookie) {
+      setShowPasswordResetModal(true);
+    } else {
+      setShowPasswordResetModal(false);
+    }
+  }, []);
 
   useEffect(() => {
   newsRef.current = news;
@@ -373,6 +390,15 @@ useEffect(() => {
         </Grid>
       </Grid>
       </Box>
+      <PasswordResetModal
+        open={showPasswordResetModal}
+        onClose={() => setShowPasswordResetModal(false)}
+        onSuccess={() => {
+          setShowPasswordResetModal(false);
+          // Clear the recovery cookie to prevent showing modal again
+          document.cookie = 'postRecoveryRedirect=; path=/; max-age=0';
+        }}
+      />
     </TourProvider>
   );
 }
