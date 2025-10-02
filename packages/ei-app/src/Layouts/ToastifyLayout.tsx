@@ -9,17 +9,29 @@ export default function ToastifyLayout({ children }: BoxProps) {
   const dispatch = useAppDispatch()
 
   if (errors.length) {
-    errors.forEach((error: string) => {
-      toast.error(error)
-    })
+    errors.forEach((errorObj: { message: string; autoClose?: boolean }) => {
+      const error = typeof errorObj === 'string' ? errorObj : errorObj.message;
+      const autoClose = typeof errorObj === 'string' ? true : (errorObj.autoClose !== false);
+
+      toast.error(error, {
+        autoClose: autoClose ? 5000 : false,
+        position: "top-center"
+      });
+    });
 
     dispatch(clearErrors())
   }
 
   if (messages.length) {
-    messages.forEach((message: string) => {
-      toast.success(message)
-    })
+    messages.forEach((messageObj: { message: string; autoClose?: boolean }) => {
+      const message = typeof messageObj === 'string' ? messageObj : messageObj.message;
+      const autoClose = typeof messageObj === 'string' ? true : (messageObj.autoClose !== false);
+
+      toast.success(message, {
+        autoClose: autoClose ? 5000 : false,
+        position: "top-center"
+      });
+    });
 
     dispatch(clearMessages())
   }
@@ -34,7 +46,7 @@ export default function ToastifyLayout({ children }: BoxProps) {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer position="top-center" />
       {children}
     </>
   )

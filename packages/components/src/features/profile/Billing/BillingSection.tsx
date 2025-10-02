@@ -100,7 +100,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
     if (!stripe || !elements) return;
   
     if (!billing?.invoice_settings?.default_payment_method) {
-      dispatch(addMessage(t("NoDefaultCardError")));
+      dispatch(addMessage({ message: t("NoDefaultCardError") }));
       return;
     }
  
@@ -117,20 +117,20 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       ).unwrap();
   
       if (!paymentIntent?.id) {
-        dispatch(addMessage(t("PaymentError")));
+        dispatch(addMessage({ message: t("PaymentError") }));
         return;
       }
   
       if (paymentIntent.status === "succeeded") {
-        dispatch(addMessage(t("PaymentSuccess")));
+        dispatch(addMessage({ message: t("PaymentSuccess") }));
   
       } else if (paymentIntent.status === "requires_action") {
-        dispatch(addMessage(t("PaymentRequiresAction")));
+        dispatch(addMessage({ message: t("PaymentRequiresAction") }));
       } else {
-        dispatch(addMessage(t("PaymentPending")));
+        dispatch(addMessage({ message: t("PaymentPending") }));
       }
     } catch (err) {
-      dispatch(addMessage(t("PaymentError")));
+      dispatch(addMessage({ message: t("PaymentError") }));
     }
   };
   
@@ -170,7 +170,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
               })
             ).unwrap();
 
-            dispatch(addMessage(t("PlanDowngraded")));
+            dispatch(addMessage({ message: t("PlanDowngraded") }));
             setSelectedPlanId(newPlan.id);
           }
         }
@@ -185,7 +185,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           );
 
           if (existingItem) {
-            dispatch(addMessage(t("PlanAlreadyActive")));
+            dispatch(addMessage({ message: t("PlanAlreadyActive") }));
           } else {
             await dispatch(
               updateSubscriptionAsync({
@@ -195,7 +195,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
               })
             ).unwrap();
 
-              dispatch(addMessage(t("PlanUpgraded")));
+              dispatch(addMessage({ message: t("PlanUpgraded") }));
               setSelectedPlanId(newPlan.id);
             }
           }
@@ -207,7 +207,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       }
     } catch (err) {
       console.error("Plan change failed:", err);
-      dispatch(addMessage(t("PlanChangeError")));
+      dispatch(addMessage({ message: t("PlanChangeError") }));
     }
   };
 
@@ -229,21 +229,21 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       ).unwrap();
   
       if (!paymentIntent?.id) {
-        dispatch(addMessage(t("PaymentError")));
+        dispatch(addMessage({ message: t("PaymentError") }));
         return;
       }
   
       if (paymentIntent.status === "succeeded") {
-        dispatch(addMessage(t("PaymentSuccess")));
+        dispatch(addMessage({ message: t("PaymentSuccess") }));
   
       } else if (paymentIntent.status === "requires_action") {
-        dispatch(addMessage(t("PaymentRequiresAction")));
+        dispatch(addMessage({ message: t("PaymentRequiresAction") }));
       } else {
-        dispatch(addMessage(t("PaymentPending")));
+        dispatch(addMessage({ message: t("PaymentPending") }));
       }
     } catch (err) {
       console.error("Failed to create payment intent with proration", err);
-      dispatch(addMessage(t("PaymentError")));
+      dispatch(addMessage({ message: t("PaymentError") }));
     }
   };
   
@@ -305,9 +305,9 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         }))
       );
   
-      dispatch(addMessage(t("DefaultCardUpdated")));
+      dispatch(addMessage({ message: t("DefaultCardUpdated") }));
     } catch (err) {
-      dispatch(addMessage(t("DefaultCardUpdateError")));
+      dispatch(addMessage({ message: t("DefaultCardUpdateError") }));
     }
   };
 
@@ -320,7 +320,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           }          
             return updatedCards;
         });
-        dispatch(addMessage(t("CardAddedMessage")));
+        dispatch(addMessage({ message: t("CardAddedMessage") }));
     }
     setPaymentMethodModal(false);
 };
@@ -345,9 +345,9 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         }
         return updatedCards;
       });
-      dispatch(addMessage(t("CardDeletedMessage")));
+      dispatch(addMessage({ message: t("CardDeletedMessage") }));
     } catch (error) {
-      dispatch(addMessage(t("CardDeleteErrorMessage")));
+      dispatch(addMessage({ message: t("CardDeleteErrorMessage") }));
     }
   
     setCardToDeleteIndex(undefined);
@@ -361,7 +361,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       ...prev.slice(cardToEditIndex + 1),
     ]);
     setCardToEditIndex(undefined);
-    dispatch(addMessage(t("CardEditedMessage")));
+    dispatch(addMessage({ message: t("CardEditedMessage") }));
   };
 
   const plansToDisplay = plans.reduce<PlanModel[]>((acc, plan) => {

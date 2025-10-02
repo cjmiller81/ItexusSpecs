@@ -180,7 +180,7 @@
     "PhoneNumber": "Phone number",
     "EnableTOTPAuthenticationApps": "Enable TOTP Authentication Apps",
     "VerificationCode": "Verification code",
-    "NewPasswordMessage": "New password has been set.",
+    "NewPasswordMessage": "New password accepted. Please enter your Web3 wallet address in the Wallets tab, or proceed directly to the <a href=\"/\">Home page</a>.",
     "ApplicationUnlinked": "Application unlinked.",
     "ApplicationLinked": "Application linked.",
     "AddAuthApp": "Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are",
