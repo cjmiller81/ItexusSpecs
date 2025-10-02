@@ -140,15 +140,17 @@ export function TradeTable() {
   const coinId = selectedTradingPair ? getCoinIdFromBackend(selectedTradingPair.base) : null;
   
   const hasPriceInCoinGecko = React.useMemo(() => {
-    if (!selectedTradingPair || !coinGeckoExchangesWithTickers?.tickers) return false;
+    if (!selectedTradingPair || !coinGeckoExchangesWithTickers?.tickers || !backendExchangeData) return false;
+    
+    const originalFields = getOriginalBaseTargetFromBackend(selectedTradingPair.base, selectedTradingPair.target);
+    if (!originalFields) return false;
     
     return coinGeckoExchangesWithTickers.tickers.some(ticker => {
-      const { base, target } = getCanonicalNames(ticker);
-      return base === selectedTradingPair.base && 
-             target === selectedTradingPair.target && 
+      return ticker.base.toLowerCase() === originalFields.base.toLowerCase() && 
+             ticker.target.toLowerCase() === originalFields.target.toLowerCase() && 
              ticker.last > 0;
     });
-  }, [selectedTradingPair, coinGeckoExchangesWithTickers]);
+  }, [selectedTradingPair, coinGeckoExchangesWithTickers, backendExchangeData]);
   
   const queryParams = React.useMemo(() => {
     if (!coinId || !selectedExchange?.id || !selectedTradingPair || hasPriceInCoinGecko || !tradeData.mkt || !selectedTradingPair.base || !selectedTradingPair.target) {
@@ -229,22 +231,25 @@ export function TradeTable() {
   
   useEffect(() => {
     const fetchTopTradingPairs = async () => {
-      if (!selectedExchange || !coinGeckoExchangesWithTickers) return;
+      if (!selectedExchange || !backendExchangeData) return;
 
       try {
         const pairsMap = new Map();
-        coinGeckoExchangesWithTickers.tickers?.forEach(ticker => {
+        backendExchangeData.forEach(exchange => {
+          exchange.tickers?.forEach(ticker => {
             const { base, target } = getCanonicalNames(ticker);
             const pair = `${base}/${target}`;
+            
             if (!pairsMap.has(pair)) {
               pairsMap.set(pair, {
                 base: base,
                 target: target,
                 last: ticker.last,
-                volume: ticker.converted_volume.usd,
+                volume: ticker.converted_volume?.usd || 0,
                 pair: pair
               });
             }
+          });
         });
 
         const pairs = Array.from(pairsMap.values());
@@ -252,6 +257,7 @@ export function TradeTable() {
         const topPairs = [...pairs]
           .sort((a, b) => b.volume - a.volume)
           .slice(0, 10);
+        
         setTopTradingPairs(topPairs);
 
         if (demoRequested) {
@@ -264,7 +270,7 @@ export function TradeTable() {
     };
 
     fetchTopTradingPairs();
-  }, [selectedExchange, coinGeckoExchangesWithTickers, demoRequested]);
+  }, [selectedExchange, backendExchangeData, demoRequested]);
 
   useEffect(() => {
     const fetchAllTradingPairs = async () => {
@@ -329,7 +335,10 @@ export function TradeTable() {
 
   useEffect(() => {
     if (coinGeckoPrices && selectedTradingPair && tradeData.symbol && selectedExchange?.id) {
-      const uniqueKey = `${selectedTradingPair.base}_${selectedTradingPair.target}_${selectedExchange.id}`;
+      const originalFields = getOriginalBaseTargetFromBackend(selectedTradingPair.base, selectedTradingPair.target);
+      if (!originalFields) return;
+      
+      const uniqueKey = `${originalFields.base}_${originalFields.target}_${selectedExchange.id}`;
       const priceData = coinGeckoPrices[uniqueKey];
       const currentPrice = priceData?.usd;
       
@@ -354,6 +363,39 @@ export function TradeTable() {
       }
     }
   }, [coinGeckoPrices, selectedTradingPair, tradeData.symbol, selectedExchange?.id]);
+
+  useEffect(() => {
+    if (selectedTradingPair && coinGeckoExchangesWithTickers?.tickers && backendExchangeData) {
+      const originalFields = getOriginalBaseTargetFromBackend(selectedTradingPair.base, selectedTradingPair.target);
+      if (originalFields) {
+        const ticker = coinGeckoExchangesWithTickers.tickers.find(t => 
+          t.base.toLowerCase() === originalFields.base.toLowerCase() && 
+          t.target.toLowerCase() === originalFields.target.toLowerCase() && 
+          t.last > 0
+        );
+        
+        if (ticker && ticker.last !== selectedTradingPair.last) {
+          const updatedSelectedPair = {
+            ...selectedTradingPair,
+            last: ticker.last
+          };
+          setSelectedTradingPair(updatedSelectedPair);
+          
+          setTradingPairs(prevPairs => 
+            prevPairs.map(pair => {
+              if (pair.pair === selectedTradingPair.pair) {
+                return {
+                  ...pair,
+                  last: ticker.last
+                };
+              }
+              return pair;
+            })
+          );
+        }
+      }
+    }
+  }, [selectedTradingPair, coinGeckoExchangesWithTickers, backendExchangeData]);
 
   const handleTradingPairSelect = (pair: string | null) => {
     if (pair) {
