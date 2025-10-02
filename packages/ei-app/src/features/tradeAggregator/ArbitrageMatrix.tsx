@@ -125,8 +125,10 @@ export default function ArbitrageMatrix() {
       }
       return acc;
     }, {} as Record<string, number>);
-    
-    return Object.keys(countryCounts).filter(country => countryCounts[country] >= 2);
+
+    return Object.keys(countryCounts)
+      .filter(country => countryCounts[country] >= 2)
+      .sort();
   }, [coinGeckoExchangesInitial]);
 
 
