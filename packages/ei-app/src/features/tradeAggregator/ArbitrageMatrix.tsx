@@ -49,6 +49,7 @@ const rotate = keyframes`
   }
 `;
 
+
 const pulseGlow = keyframes`
   0%, 100% {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
@@ -71,11 +72,9 @@ export default function ArbitrageMatrix() {
   const { t } = useTranslation(["TradeTable"]);
   const theme = useTheme();
   const AllCountries = "All Countries";
-  
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const { data: countries, isLoading: isCountriesLoading } = useGetCountriesQuery();
   const [getExchangesTicker] = useLazyGetExchangesTickerQuery();
-  
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const [selectedExchanges, setSelectedExchanges] = useState<Exchange[]>([]);
   const [tempSelectedExchanges, setTempSelectedExchanges] = useState<Exchange[]>([]);
@@ -116,6 +115,22 @@ export default function ArbitrageMatrix() {
     
     return [selectAllOption, ...filteredExchanges];
   }, [filteredExchanges, isAllSelected]);
+
+  const filteredCountries = useMemo(() => {
+    if (!coinGeckoExchangesInitial) return [];
+    
+    const countryCounts = coinGeckoExchangesInitial.reduce((acc, exchange) => {
+      if (exchange.country) {
+        acc[exchange.country] = (acc[exchange.country] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.keys(countryCounts)
+      .filter(country => countryCounts[country] >= 2)
+      .sort();
+  }, [coinGeckoExchangesInitial]);
+
 
   const handleCountrySelect = (country: string) => {
     setSelectedCountry(country);
@@ -318,7 +333,9 @@ export default function ArbitrageMatrix() {
                         setTempSelectedExchanges(filteredExchanges);
                       }
                     } else {
-                      const regularSelections = newValue.filter(item => !item.isSelectAll) as Exchange[];
+                      const regularSelections = newValue
+                        .filter(item => !item.isSelectAll)
+                        .map(item => ({ ...item, isSelectAll: undefined })) as Exchange[];
                       setTempSelectedExchanges(regularSelections);
                     }
                   }}
@@ -439,7 +456,7 @@ export default function ArbitrageMatrix() {
                 <Autocomplete
                   disableClearable
                   size="small"
-                  options={countries || []}
+                  options={[AllCountries, ...filteredCountries]}
                   loading={isCountriesLoading}
                   getOptionLabel={(option) => option}
                   value={selectedCountry}

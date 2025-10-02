@@ -182,5 +182,5 @@ export const {
   useGetExchangesTickerQuery, 
   useLazyGetExchangesTickerQuery,
   useGetCoinGeckoPricesQuery, 
-  useGetExchangesWithTickersQuery 
+  useGetExchangesWithTickersQuery,
 } = cexApi;
