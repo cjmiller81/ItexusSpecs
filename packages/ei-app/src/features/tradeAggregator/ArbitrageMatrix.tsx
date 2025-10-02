@@ -366,7 +366,8 @@ export default function ArbitrageMatrix() {
                   disableCloseOnSelect
                   ListboxProps={{
                     style: {
-                      maxHeight: '400px',
+                      maxHeight: "60vh",
+                      overflow: 'auto',
                     },
                   }}
                   PaperComponent={({ children }) => (
