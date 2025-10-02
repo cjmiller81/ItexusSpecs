@@ -40,6 +40,8 @@ export type CoinGeckoTicker = {
   token_info_url: string;
   coin_id: string;
   target_coin_id: string;
+  canonical_base?: string;
+  canonical_target?: string;
 }
 
 
