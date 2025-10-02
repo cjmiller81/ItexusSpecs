@@ -19,7 +19,7 @@ appAxios.interceptors.response.use(
 
     if (originalRequest) {
       if (_error.response?.status === 500) {
-        appStore.dispatch(addError(i18next.t("somethingWentWrong", { ns: "ErrorMessages" })))
+        appStore.dispatch(addError({ message: i18next.t("somethingWentWrong", { ns: "ErrorMessages" }) }))
       } else if (_error.response?.status === 404) {
         return Promise.resolve(_error.response);
       }

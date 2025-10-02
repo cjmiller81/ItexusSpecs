@@ -3,8 +3,8 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import { createAppSlice } from "./createAppSlice"
 
 export interface UiState {
-  errors: string[]
-  messages: string[]
+  errors: Array<{ message: string; autoClose?: boolean }>
+  messages: Array<{ message: string; autoClose?: boolean }>
   warnings: string[]
   sidebarOpened: boolean
   mode: PaletteMode
@@ -33,10 +33,10 @@ export const uiSlice = createAppSlice({
     clearWarnings: create.reducer(state => {
       state.warnings = []
     }),
-    addError: create.reducer((state, action: PayloadAction<string>) => {
+    addError: create.reducer((state, action: PayloadAction<{ message: string; autoClose?: boolean }>) => {
       state.errors.push(action.payload)
     }),
-    addMessage: create.reducer((state, action: PayloadAction<string>) => {
+    addMessage: create.reducer((state, action: PayloadAction<{ message: string; autoClose?: boolean }>) => {
       state.messages.push(action.payload)
     }),
     addWarning: create.reducer((state, action: PayloadAction<string>) => {

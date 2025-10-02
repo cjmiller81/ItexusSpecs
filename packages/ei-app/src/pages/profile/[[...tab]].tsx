@@ -129,8 +129,8 @@ export default function ProfilePage() {
       .then(url => onUpdateAvatar(url))
       .catch((error: any) => {
         const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError(reason))
-        else dispatch(addError(t("AvatarUploadingError")))
+        if (reason) dispatch(addError({ message: reason }))
+        else dispatch(addError({ message: t("AvatarUploadingError") }))
       })
       .finally(() => setIsAvatarUploading(false))
   }
@@ -141,8 +141,8 @@ export default function ProfilePage() {
       .then()
       .catch((error: any) => {
         const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError(reason))
-        else dispatch(addError(t("ProfileUpdatingError")))
+        if (reason) dispatch(addError({ message: reason }))
+        else dispatch(addError({ message: t("ProfileUpdatingError") }))
       })
       .finally(() => setIsProfileDetailsUpdating(false))
   }

@@ -319,10 +319,10 @@ export default function CallOptionSet() {
           account.accountNumber,
           response.strategyId,
           (status) => {
-            dispatch(addMessage(`Strategy state: ${status.state}`));
+            dispatch(addMessage({ message: `Strategy state: ${status.state}` }));
           },
           (errorMsg) => {
-            dispatch(addError(errorMsg));
+            dispatch(addError({ message: errorMsg }));
           }
         );
       }
@@ -330,9 +330,9 @@ export default function CallOptionSet() {
       console.error("Error sending order:", error);
       
       if (error.status === 400) {
-        dispatch(addError("Error submitting set!"));
+        dispatch(addError({ message: "Error submitting set!" }));
       } else {
-        dispatch(addError(error.message || "Failed to send order"));
+        dispatch(addError({ message: error.message || "Failed to send order" }));
       }
     }
   };
