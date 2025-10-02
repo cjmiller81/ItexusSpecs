@@ -178,4 +178,11 @@ export const cexApi = createApi({
   }),
 });
 
-export const { useGetExchangesQuery, useGetCountriesQuery, useGetExchangesTickerQuery, useGetCoinGeckoPricesQuery, useGetExchangesWithTickersQuery } = cexApi;
+export const { 
+  useGetExchangesQuery, 
+  useGetCountriesQuery, 
+  useGetExchangesTickerQuery, 
+  useLazyGetExchangesTickerQuery,
+  useGetCoinGeckoPricesQuery, 
+  useGetExchangesWithTickersQuery 
+} = cexApi;
