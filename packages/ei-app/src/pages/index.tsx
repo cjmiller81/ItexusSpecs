@@ -92,12 +92,14 @@ export default function HomePage() {
       .split('; ')
       .find(row => row.startsWith('postRecoveryRedirect='));
     
-    if (recoveryCookie) {
+    const requiresPasswordChange = router.query.requireChangePassword === 'true';
+    
+    if (recoveryCookie || requiresPasswordChange) {
       setShowPasswordResetModal(true);
     } else {
       setShowPasswordResetModal(false);
     }
-  }, []);
+  }, [router.query.requireChangePassword]);
 
   useEffect(() => {
   newsRef.current = news;
@@ -399,6 +401,9 @@ useEffect(() => {
         onSuccess={() => {
           setShowPasswordResetModal(false);
           document.cookie = 'postRecoveryRedirect=; path=/; max-age=0';
+          if (router.query.requireChangePassword) {
+            router.replace('/', undefined, { shallow: true });
+          }
         }}
         onWelcomeModalOpen={(isOpen) => setShowWelcomeModal(isOpen)}
       />
