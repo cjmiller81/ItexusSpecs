@@ -100,6 +100,7 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
         }
 
         if (data.state === "passed_challenge") {
+          document.cookie = `postRecoveryRedirect=${encodeURIComponent(changePasswordRoute)}; path=/;`
           window.location.replace(changePasswordRoute)
           return
         }
