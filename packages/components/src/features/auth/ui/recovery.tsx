@@ -88,7 +88,6 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
         updateRecoveryFlowBody: values
       })
       .then(({ data }) => {
-        console.log("recovery submitFlow data:", data)
         /*
          * Kratos ≥ 0.11 returns 200 OK with a state field.
          *  ─ "sent_email"       -> stay on page, show message / ask for code
