@@ -70,9 +70,6 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
         <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
           {t('AboutBetaTest')}
         </Typography>
-        <Typography variant="body1" paragraph>
-          {t('BetaHasThreeParts')}
-        </Typography>
 
         <List dense>
           <ListItem>
