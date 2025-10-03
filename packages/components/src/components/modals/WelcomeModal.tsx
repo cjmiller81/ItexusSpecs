@@ -21,6 +21,30 @@ interface WelcomeModalProps {
   onClose: () => void;
 }
 
+const SurveyButton = () => {
+  return (
+    <Button
+      variant="contained"
+      size="small"
+      sx={{
+        ml: 2,
+        textTransform: "none",
+        backgroundColor: "#109EEF",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
+      }}
+      onClick={() => {
+        // Open survey link in new tab: https://forms.gle/NhcLMGVZZyphnsK8A
+        window.open("https://forms.gle/NhcLMGVZZyphnsK8A", "_blank");
+      }}
+    >
+      Beta Survey
+    </Button>
+  );
+};
+
 export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => {
   const { t } = useTranslation('WelcomeModal');
 
@@ -58,36 +82,19 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             <ListItemText
               primary={
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('ExploreEntryPortal')}
-                </Typography>
-              }
-              secondary={
-                <>
-                  <Typography variant="body2">{t('ExploreEntryPortalDesc1')}</Typography>
-                  <Typography variant="body2">{t('ExploreEntryPortalDesc2')}</Typography>
-                </>
-              }
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <CheckCircleOutlineIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                   {t('UseWebApp')}
                 </Typography>
               }
               secondary={
                 <>
-                  <Typography variant="body2">{t('WalletsDesc')}</Typography>
-                  <Typography variant="body2">{t('DEXTradeAggregatorDesc')}</Typography>
-                  <Typography variant="body2">{t('CEXTradeAggregatorDesc')}</Typography>
+                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>{t('Profile')}</Typography>
                   <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>{t('AnalyticsPlatforms')}</Typography>
                   <Typography variant="body2">{t('InvestingDesc')}</Typography>
                   <Typography variant="body2">{t('IncomeDesc')}</Typography>
                   <Typography variant="body2">{t('TradingDesc')}</Typography>
+                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>{t('Tools')}</Typography>
+                  <Typography variant="body2">{t('DEXTradeAggregatorDesc')}</Typography>
+                  <Typography variant="body2">{t('CEXTradeAggregatorDesc')}</Typography>
                 </>
               }
             />
@@ -99,7 +106,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             <ListItemText
               primary={
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('GiveUsFeedback')}
+                  {t('GiveUsFeedback')} <SurveyButton />
                 </Typography>
               }
               secondary={
@@ -154,36 +161,6 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
                 </Typography>
               }
               secondary={t('FreeTrialDesc')}
-            />
-          </ListItem>
-        </List>
-
-        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-          {t('NextSteps')}
-        </Typography>
-        <List dense>
-          <ListItem>
-            <ListItemIcon>
-              <CheckCircleOutlineIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('NextStep1')}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <CheckCircleOutlineIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('NextStep2')}
-            />
-          </ListItem>
-          <ListItem>
-            <ListItemIcon>
-              <CheckCircleOutlineIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('NextStep3')}
             />
           </ListItem>
         </List>
