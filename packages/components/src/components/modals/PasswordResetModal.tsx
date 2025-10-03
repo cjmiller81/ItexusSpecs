@@ -4,7 +4,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Box,
   Typography,
   InputAdornment,
@@ -13,7 +12,7 @@ import { LoadingButton } from '@mui/lab';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useTranslation } from 'react-i18next';
-import { useOry, addError, addMessage, useAppDispatch, AppFormTextField } from 'components';
+import { useOry, addError, addMessage, useAppDispatch, AppFormTextField, WelcomeModal } from 'components';
 import { Formik, Form } from 'formik';
 import { InferType, object, string } from 'yup';
 import i18n from 'i18next';
@@ -31,12 +30,14 @@ interface PasswordResetModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  onWelcomeModalOpen?: (isOpen: boolean) => void;
 }
 
 export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
   open,
   onClose,
   onSuccess,
+  onWelcomeModalOpen,
 }) => {
   const { t } = useTranslation('SecurityContainer');
   const dispatch = useAppDispatch();
@@ -45,8 +46,8 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
   const [newPasswordLoading, setNewPasswordLoading] = useState(false);
   const [settingsFlowCreating, setSettingsFlowCreating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
-  // Create settings flow when modal opens
   useEffect(() => {
     if (open) {
       setSettingsFlowCreating(true);
@@ -70,7 +71,8 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
       .then(() => {
         dispatch(addMessage({ message: 'New password accepted.', autoClose: false }));
         resetForm();
-        onSuccess();
+        setShowWelcomeModal(true);
+        onWelcomeModalOpen?.(true); 
       })
       .catch(error => {
         if (error?.response?.status === 400) {
@@ -85,19 +87,31 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
   };
 
   const handleClose = (event: {}, reason: string) => {
-    // Modal cannot be closed by user - only through success
     if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
       return;
     }
   };
 
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false);
+    onWelcomeModalOpen?.(false);
+    onSuccess();
+  };
+
   return (
+    <>
     <Dialog
       open={open}
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
       disableEscapeKeyDown
+      sx={{
+        zIndex: 10000,
+        '& .MuiDialog-paper': {
+          borderRadius: 2,
+        },
+      }}
     >
       <DialogTitle>
         <Typography variant="h6" component="div">
@@ -161,5 +175,11 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
         </Box>
       </DialogContent>
     </Dialog>
+
+    <WelcomeModal
+      open={showWelcomeModal}
+      onClose={handleWelcomeModalClose}
+    />
+    </>
   );
 };

@@ -56,13 +56,13 @@ export const BillingContainer = ({ ...props }: StackProps) => {
           const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
           
           const activeSubscription = subscriptionsData
-            ?.filter((sub) => sub.status === "active")
+            ?.filter((sub) => sub.status === "active" || sub.status === "trialing")
             ?.sort((a, b) => b.created - a.created)[0];
 
-          if (activeSubscription?.items.data[0]?.price?.id) {
+          if (activeSubscription?.items?.data?.[0]?.price?.id) {
             setSelectedPlanId(activeSubscription.items.data[0].price.id);
           }
-          if (activeSubscription.items.data[0]?.price?.product) {
+          if (activeSubscription?.items?.data?.[0]?.price?.product) {
             const productData = await dispatch(fetchProductAsync(activeSubscription.items.data[0].price.product)).unwrap();
             dispatch(setProduct(productData));
           }
@@ -157,7 +157,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         if (newPlan.unit_amount < currentPlan.unit_amount) {
           const activeSubscription = subscriptionsData?.[0];
 
-          if (activeSubscription) {
+          if (activeSubscription?.items?.data) {
             const existingItem = activeSubscription.items.data.find(
               item => item.price.id === newPlan.id
             );
@@ -177,7 +177,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         else {
           const activeSubscription = subscriptionsData?.[0];
 
-          if (activeSubscription) {
+          if (activeSubscription?.items?.data) {
             await handleCreatePaymentIntentWithProrations(newPlan, activeSubscription);
 
             const existingItem = activeSubscription.items.data.find(
@@ -249,8 +249,11 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   
   const calculateProrationAmount = (activeSubscription: any, newPlan: any) => {
     try {
+      if (!activeSubscription?.items?.data?.[0]) {
+        return newPlan?.unit_amount || 0;
+      }
   
-      const currentPlanAmount = activeSubscription.items.data?.[0]?.price?.unit_amount || 0;
+      const currentPlanAmount = activeSubscription.items.data[0]?.price?.unit_amount || 0;
       const newPlanAmount = newPlan?.unit_amount;
 
       if (currentPlanAmount === 0) {
@@ -261,14 +264,14 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         throw new Error('Invalid current plan or new plan amount');
       }
   
-      const currentPeriodEnd = new Date(activeSubscription.items.data?.[0].current_period_end).getTime();
+      const currentPeriodEnd = new Date(activeSubscription.items.data[0].current_period_end).getTime();
 
       const currentDate = Date.now();
       const currentPeriodEndMs = currentPeriodEnd * 1000;
 
       const daysLeft = Math.max((currentPeriodEndMs - currentDate) / (1000 * 60 * 60 * 24), 0);
 
-      const currentPeriodStart = new Date(activeSubscription.items.data?.[0].current_period_start).getTime(); ;
+      const currentPeriodStart = new Date(activeSubscription.items.data[0].current_period_start).getTime();
       const countOfDayInMonth = Math.max((currentPeriodEndMs - currentPeriodStart) / (1000 * 60 * 60 * 24), 0);
       const dailyRate = newPlanAmount / countOfDayInMonth;
 
