@@ -33,9 +33,9 @@ const StartTourButton = () => {
     <Button
       variant="contained"
       size="small"
-      sx={{ 
-        ml: 2, 
-        textTransform: "none", 
+      sx={{
+        ml: 2,
+        textTransform: "none",
         backgroundColor: "#109EEF",
         color: "white",
         "&:hover": {
@@ -49,6 +49,30 @@ const StartTourButton = () => {
       }}
     >
       Start Tour
+    </Button>
+  );
+};
+
+const SurveyButton = () => {
+  return (
+    <Button
+      variant="contained"
+      size="small"
+      sx={{
+        ml: 2,
+        textTransform: "none",
+        backgroundColor: "#109EEF",
+        color: "white",
+        "&:hover": {
+          backgroundColor: "#0E8BD6"
+        }
+      }}
+      onClick={() => {
+        // Open survey link in new tab: https://forms.gle/NhcLMGVZZyphnsK8A
+        window.open("https://forms.gle/NhcLMGVZZyphnsK8A", "_blank");
+      }}
+    >
+      Survey Link
     </Button>
   );
 };
@@ -91,9 +115,9 @@ export default function HomePage() {
     const recoveryCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('postRecoveryRedirect='));
-    
+
     const requiresPasswordChange = router.query.requireChangePassword === 'true';
-    
+
     if (recoveryCookie || requiresPasswordChange) {
       setShowPasswordResetModal(true);
     } else {
@@ -276,8 +300,8 @@ useEffect(() => {
       }}
     >
       <Box id="homepage">
-        <TourStateSync 
-          totalSteps={steps.length} 
+        <TourStateSync
+          totalSteps={steps.length}
           showPasswordResetModal={showPasswordResetModal}
           showWelcomeModal={showWelcomeModal}
         />
@@ -288,6 +312,7 @@ useEffect(() => {
             {t("Welcome", { userName: firstName })}
           </Typography>
           <StartTourButton />
+          <SurveyButton />
         </Box>
 
       <Grid
@@ -411,27 +436,27 @@ useEffect(() => {
   );
 }
 
-const TourStateSync = ({ 
-  totalSteps, 
+const TourStateSync = ({
+  totalSteps,
   showPasswordResetModal,
   showWelcomeModal
-}: { 
-  totalSteps: number; 
+}: {
+  totalSteps: number;
   showPasswordResetModal: boolean;
   showWelcomeModal: boolean;
 }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
   const [tourWasOpened, setTourWasOpened] = useState(false);
-  
-  
+
+
   useEffect(() => {
     try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
     if (currentStep >= totalSteps - 1) {
       try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
     }
   }, [currentStep, totalSteps]);
-  
+
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
       try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
@@ -439,12 +464,12 @@ const TourStateSync = ({
       setTourWasOpened(true);
     }
   }, [isOpen, currentStep, tourWasOpened]);
-  
+
   useEffect(() => {
     const recoveryCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('postRecoveryRedirect='));
-    
+
     if (recoveryCookie) {
       try {
         localStorage.removeItem(`EI_TOUR_${TOUR_ID}_VIEWED`);
@@ -452,36 +477,36 @@ const TourStateSync = ({
       } catch { /* noop */ }
     }
   }, []);
-  
+
 
   useEffect(() => {
     if (currentStep === 0 && !isOpen) {
       // Don't mark as viewed on initial load
     }
   }, []);
-  
+
   useEffect(() => {
     const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
     const hasOpenModals = showPasswordResetModal || showWelcomeModal;
-    
+
     if (hasOpenModals) {
       return;
     }
-    
+
     if (!viewed && !isOpen) {
       const timer = setTimeout(() => {
         const stillNoModals = !showPasswordResetModal && !showWelcomeModal;
         const stillNotViewed = localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) !== "1";
-        
+
         if (stillNoModals && stillNotViewed && !isOpen) {
           if (!isNaN(savedStep)) setCurrentStep(savedStep);
           setIsOpen(true);
         }
       }, 800);
-      
+
       return () => clearTimeout(timer);
     }
   }, [showPasswordResetModal, showWelcomeModal, viewed, isOpen, setCurrentStep, setIsOpen]);
-  
+
   return null;
 };
