@@ -421,15 +421,15 @@ const TourStateSync = ({
   
   
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch {  }
+    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
     if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch {  }
+      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
     }
   }, [currentStep, totalSteps]);
   
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch {  }
+      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
     } else if (isOpen) {
       setTourWasOpened(true);
     }
@@ -451,6 +451,7 @@ const TourStateSync = ({
 
   useEffect(() => {
     if (currentStep === 0 && !isOpen) {
+      // Don't mark as viewed on initial load
     }
   }, []);
   
