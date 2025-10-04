@@ -13,6 +13,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useTranslation } from 'react-i18next';
 import { useOry, addError, addMessage, useAppDispatch, AppFormTextField, WelcomeModal } from 'components';
+import { parseOryErrorMessage } from '../../utils/parseOryErrors';
 import { Formik, Form } from 'formik';
 import { InferType, object, string } from 'yup';
 import i18n from 'i18next';
@@ -75,11 +76,8 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
         onWelcomeModalOpen?.(true); 
       })
       .catch(error => {
-        if (error?.response?.status === 400) {
-          dispatch(addError({ message: t("invalidPasswordFormat", { ns: "ErrorMessages" }), autoClose: false }));
-        } else {
-          dispatch(addError({ message: error?.response?.data?.error?.reason, autoClose: false }));
-        }
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setNewPasswordLoading(false);

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next"
 import { InferType, boolean, object, string } from "yup"
 import { AppFormSwitchField, AppFormTextField } from "../../components"
 import { addError, addMessage, addWarning, useAppDispatch } from "../../slices"
+import { parseOryErrorMessage } from "../../utils/parseOryErrors"
 import { NodeImage, useOry } from "../auth"
 import { ProfileContainer } from "./ProfileContainer"
 
@@ -192,8 +193,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         resetForm()
       })
       .catch(error => {
-        if (error.response.status === 400) dispatch(addError({ message: t("invalidPasswordFormat", { ns: "ErrorMessages" }) }))
-        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setNewPasswordLoading(false)
@@ -207,8 +208,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         dispatch(addMessage({ message: t("ApplicationLinked") }))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError({ message: t("invalidCode", { ns: "ErrorMessages" }) }))
-        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setCodeLoading(false)
@@ -222,8 +223,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         dispatch(addMessage({ message: t("ApplicationUnlinked") }))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError({ message: t("invalidCode", { ns: "ErrorMessages" }) }))
-        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setCodeLoading(false)
