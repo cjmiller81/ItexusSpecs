@@ -339,6 +339,7 @@ export default function ArbitrageMatrix() {
                       setTempSelectedExchanges(regularSelections);
                     }
                   }}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
                   onInputChange={(event, newInputValue) => {
                     setSearchText(newInputValue);
                   }}
