@@ -7,10 +7,12 @@ import {
   Box,
   Typography,
   InputAdornment,
+  IconButton,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useOry, addError, addMessage, useAppDispatch, AppFormTextField, WelcomeModal } from 'components';
 import { parseOryErrorMessage } from '../../utils/parseOryErrors';
@@ -48,9 +50,11 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
   const [settingsFlowCreating, setSettingsFlowCreating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [hasExpiredFlow, setHasExpiredFlow] = useState(false);
 
   useEffect(() => {
     if (open) {
+      setHasExpiredFlow(false);
       setSettingsFlowCreating(true);
       createSettingsFow()
         .then(() => {
@@ -77,6 +81,14 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
       })
       .catch(error => {
         const errorMessage = parseOryErrorMessage(error);
+        
+        if (errorMessage.includes('session is too old') || 
+            errorMessage.includes('too old and thus not allowed') ||
+            errorMessage.includes('expired') ||
+            error?.response?.status === 410) {
+          setHasExpiredFlow(true);
+        }
+        
         dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
@@ -88,6 +100,12 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
     if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
       return;
     }
+  };
+
+  const handleCloseWithX = () => {
+    onClose();
+    setShowWelcomeModal(true);
+    onWelcomeModalOpen?.(true);
   };
 
   const handleWelcomeModalClose = () => {
@@ -111,10 +129,23 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
         },
       }}
     >
-      <DialogTitle>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h6" component="div">
           {t('ChangePassword')}
         </Typography>
+        {hasExpiredFlow && (
+          <IconButton
+            onClick={handleCloseWithX}
+            sx={{ 
+              color: 'text.secondary',
+              '&:hover': {
+                backgroundColor: 'action.hover'
+              }
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
       </DialogTitle>
       
       <DialogContent>
