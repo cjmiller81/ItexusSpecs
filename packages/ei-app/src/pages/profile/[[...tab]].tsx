@@ -19,32 +19,16 @@ import { useTranslation } from "react-i18next"
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js"
 import { TourProvider, useTour, StepType } from "@reactour/tour"
+import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButton"
 
 const TOUR_ID = "profile_v1";
 
 const StartTourButton = () => {
-  const { setIsOpen, setCurrentStep } = useTour();
   return (
-    <Button
-      variant="contained"
-      size="small"
-      sx={{ 
-        ml: 2, 
-        textTransform: "none", 
-        backgroundColor: "#109EEF",
-        color: "white",
-        "&:hover": {
-          backgroundColor: "#0E8BD6"
-        }
-      }}
-      onClick={() => {
-        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
-        setIsOpen(true);
-      }}
-    >
-      Start Tour
-    </Button>
+    <AnimatedStartTourButton 
+      tourId={TOUR_ID}
+      sx={{ ml: 2 }}
+    />
   );
 };
 
