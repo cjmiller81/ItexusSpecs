@@ -290,192 +290,7 @@ export default function ArbitrageMatrix() {
       <Grid container spacing={2} direction="column">
         <Grid item>
           <Grid container spacing={2} alignItems="flex-start" sx={{ alignItems: 'flex-start' }}>
-            <Grid item>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: '0.9rem',
-                  marginBottom: 1,
-                  marginTop:"16px",
-                  color: theme.palette.mode === 'dark'
-                    ? 'rgba(255, 255, 255, 0.7)'
-                    : 'rgba(0, 0, 0, 0.7)',
-                }}
-              >
-                {t("SelectExchange")}:
-              </Typography>
-              <FormControl size="small" sx={{ minWidth: 250 }}>
-                <Autocomplete<ExtendedExchange, true, false, false>
-                  multiple
-                  size="small"
-                  open={exchangeDropdownOpen}
-                  onOpen={handleExchangeDropdownOpen}
-                  onClose={(event, reason) => {
-                    if (reason === 'blur') {
-                      return;
-                    }
-                  }}
-                  options={optionsWithSelectAll}
-                  loading={isCoinGeckoExchangesLoading}
-                  getOptionLabel={(option) => option.name}
-                  value={tempSelectedExchanges}
-                  onChange={(event, newValue) => {
-                    if (newValue.length === 0 && selectedExchanges.length > 0) {
-                      handleExchangeCancel();
-                      return;
-                    }
-
-                    const selectAllOption = newValue.find(item => item.isSelectAll);
-                    if (selectAllOption) {
-                      if (isAllSelected) {
-                        setTempSelectedExchanges([]);
-                      } else {
-                        setTempSelectedExchanges(filteredExchanges);
-                      }
-                    } else {
-                      const regularSelections = newValue
-                        .filter(item => !item.isSelectAll)
-                        .map(item => ({ ...item, isSelectAll: undefined })) as Exchange[];
-                      setTempSelectedExchanges(regularSelections);
-                    }
-                  }}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onInputChange={(event, newInputValue) => {
-                    setSearchText(newInputValue);
-                  }}
-                  disableCloseOnSelect
-                  ListboxProps={{
-                    style: {
-                      maxHeight: "60vh",
-                      overflow: 'auto',
-                    },
-                  }}
-                  PaperComponent={({ children }) => (
-                    <Paper>
-                      {children}
-                      <Divider />
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, p: 1 }}>
-                        <Button 
-                          size="small" 
-                          onClick={handleExchangeCancel}
-                          sx={{ 
-                            textTransform: 'none',
-                            color: 'white'
-                          }}
-                        >
-                          {t("Cancel", { ns: "Common" }) || "Cancel"}
-                        </Button>
-                        <Button 
-                          size="small" 
-                          variant="contained" 
-                          onClick={handleExchangeOk}
-                          sx={{ 
-                            textTransform: 'none',
-                            color: 'white'
-                          }}
-                        >
-                          {t("OK", { ns: "Common" }) || "OK"}
-                        </Button>
-                      </Box>
-                    </Paper>
-                  )}
-                  renderOption={(props, option) => {
-                    const isSelected = option.isSelectAll 
-                      ? isAllSelected 
-                      : tempSelectedExchanges.some(ex => ex.id === option.id);
-                    
-                    return (
-                      <li {...props}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                          <Checkbox
-                            style={{ marginRight: 8 }}
-                            checked={isSelected}
-                            indeterminate={option.isSelectAll ? isIndeterminate : false}
-                          />
-                          <ListItemText 
-                            primary={option.name}
-                            sx={{
-                              fontWeight: option.isSelectAll ? 600 : 'normal',
-                              color: option.isSelectAll ? theme.palette.primary.main : 'inherit'
-                            }}
-                          />
-                        </Box>
-                        {option.isSelectAll && (
-                          <Divider sx={{ mt: 1, mb: 0.5 }} />
-                        )}
-                      </li>
-                    );
-                  }}
-                  renderTags={() => null}
-                  renderInput={(params) => {
-                    let displayText = t("SelectExchange");
-                    
-                    if (selectedExchanges.length === 1) {
-                      displayText = selectedExchanges[0].name;
-                    } else if (selectedExchanges.length > 1) {
-                      displayText = `${selectedExchanges.length} ${t('ExchangesSelected')}`;
-                    }
-                    
-                    return (
-                      <TextField
-                        {...params}
-                        placeholder={displayText}
-                        InputProps={{
-                          ...params.InputProps,
-                          readOnly: true,
-                          sx: {
-                            color: 'white',
-                            '& input::placeholder': {
-                              color:theme.palette.mode === 'dark'? 'white': "black",
-                              opacity: 1,
-                            },
-                          },
-                        }}
-                      />
-                    );
-                  }}
-                  sx={{ width: 300 }}
-                />
-              </FormControl>
-            </Grid>
-
-            <Grid item>
-              <Typography
-                variant="body2"
-                sx={{
-                  fontSize: '0.9rem',
-                  marginBottom: 1,
-                  marginTop:"16px",
-                  color: theme.palette.mode === 'dark'
-                    ? 'rgba(255, 255, 255, 0.7)'
-                    : 'rgba(0, 0, 0, 0.7)',
-                }}
-              >
-                {t("FilterbyCountry")}:
-              </Typography>
-              <FormControl size="small" sx={{ minWidth: 200 }}>
-                <Autocomplete
-                  disableClearable
-                  size="small"
-                  options={[AllCountries, ...filteredCountries]}
-                  loading={isCountriesLoading}
-                  getOptionLabel={(option) => option}
-                  value={selectedCountry}
-                  onChange={(event, newValue) => {
-                    handleCountrySelect(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      placeholder={t("SelectCountry")}
-                    />
-                  )}
-                  sx={{ width: 200 }}
-                />
-              </FormControl>
-            </Grid>
-
-            <Grid item xs>
+            <Grid item flexDirection={"row"} xs>
               <Paper
                 elevation={2}
                 sx={{
@@ -493,39 +308,221 @@ export default function ArbitrageMatrix() {
                   justifyContent: 'flex-start',
                 }}
               >
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontSize: '0.9rem',
-                    marginBottom: 1,
-                    color: theme.palette.mode === 'light'? "black" : 'white',
-                  }}
-                >
-                  {t("TradingPair")}:
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <Autocomplete
-                      size="small"
-                      options={commonTradingPairs}
-                      disabled={selectedExchanges.length === 0}
-                      loading={isLoadingTradingPairs}
-                      getOptionLabel={(option) => option.pair}
-                      value={selectedTradingPair}
-                      onChange={(event, newValue) => {
-                        // handleTradingPairSelect(newValue);
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 3 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginBottom: 1,
+                        color: theme.palette.mode === 'light'? "black" : 'white',
                       }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          placeholder={t("SelectTradingPair")}
-                        />
-                      )}
-                      sx={{ width: 200 }}
-                    />
-                  </FormControl>
+                    >
+                      {t("TradingPair")}:
+                    </Typography>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        size="small"
+                        options={commonTradingPairs}
+                        disabled={selectedExchanges.length === 0}
+                        loading={isLoadingTradingPairs}
+                        getOptionLabel={(option) => option.pair}
+                        value={selectedTradingPair}
+                        onChange={(event, newValue) => {
+                          // handleTradingPairSelect(newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectTradingPair")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginBottom: 1,
+                        color: theme.palette.mode === 'light'? "black" : 'white',
+                      }}
+                    >
+                      {t("SelectExchange")}:
+                    </Typography>
+                    <FormControl size="small" sx={{ minWidth: 250 }}>
+                      <Autocomplete<ExtendedExchange, true, false, false>
+                        multiple
+                        size="small"
+                        open={exchangeDropdownOpen}
+                        onOpen={handleExchangeDropdownOpen}
+                        onClose={(event, reason) => {
+                          if (reason === 'blur') {
+                            return;
+                          }
+                        }}
+                        options={optionsWithSelectAll}
+                        loading={isCoinGeckoExchangesLoading}
+                        getOptionLabel={(option) => option.name}
+                        value={tempSelectedExchanges}
+                        onChange={(event, newValue) => {
+                          if (newValue.length === 0 && selectedExchanges.length > 0) {
+                            handleExchangeCancel();
+                            return;
+                          }
+
+                          const selectAllOption = newValue.find(item => item.isSelectAll);
+                          if (selectAllOption) {
+                            if (isAllSelected) {
+                              setTempSelectedExchanges([]);
+                            } else {
+                              setTempSelectedExchanges(filteredExchanges);
+                            }
+                          } else {
+                            const regularSelections = newValue
+                              .filter(item => !item.isSelectAll)
+                              .map(item => ({ ...item, isSelectAll: undefined })) as Exchange[];
+                            setTempSelectedExchanges(regularSelections);
+                          }
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value.id}
+                        onInputChange={(event, newInputValue) => {
+                          setSearchText(newInputValue);
+                        }}
+                        disableCloseOnSelect
+                        ListboxProps={{
+                          style: {
+                            maxHeight: "60vh",
+                            overflow: 'auto',
+                          },
+                        }}
+                        PaperComponent={({ children }) => (
+                          <Paper>
+                            {children}
+                            <Divider />
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, p: 1 }}>
+                              <Button 
+                                size="small" 
+                                onClick={handleExchangeCancel}
+                                sx={{ 
+                                  textTransform: 'none',
+                                  color: 'white'
+                                }}
+                              >
+                                {t("Cancel", { ns: "Common" }) || "Cancel"}
+                              </Button>
+                              <Button 
+                                size="small" 
+                                variant="contained" 
+                                onClick={handleExchangeOk}
+                                sx={{ 
+                                  textTransform: 'none',
+                                  color: 'white'
+                                }}
+                              >
+                                {t("OK", { ns: "Common" }) || "OK"}
+                              </Button>
+                            </Box>
+                          </Paper>
+                        )}
+                        renderOption={(props, option) => {
+                          const isSelected = option.isSelectAll 
+                            ? isAllSelected 
+                            : tempSelectedExchanges.some(ex => ex.id === option.id);
+                          
+                          return (
+                            <li {...props}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                                <Checkbox
+                                  style={{ marginRight: 8 }}
+                                  checked={isSelected}
+                                  indeterminate={option.isSelectAll ? isIndeterminate : false}
+                                />
+                                <ListItemText 
+                                  primary={option.name}
+                                  sx={{
+                                    fontWeight: option.isSelectAll ? 600 : 'normal',
+                                    color: option.isSelectAll ? theme.palette.primary.main : 'inherit'
+                                  }}
+                                />
+                              </Box>
+                              {option.isSelectAll && (
+                                <Divider sx={{ mt: 1, mb: 0.5 }} />
+                              )}
+                            </li>
+                          );
+                        }}
+                        renderTags={() => null}
+                        renderInput={(params) => {
+                          let displayText = t("SelectExchange");
+                          
+                          if (selectedExchanges.length === 1) {
+                            displayText = selectedExchanges[0].name;
+                          } else if (selectedExchanges.length > 1) {
+                            displayText = `${selectedExchanges.length} ${t('ExchangesSelected')}`;
+                          }
+                          
+                          return (
+                            <TextField
+                              {...params}
+                              placeholder={displayText}
+                              InputProps={{
+                                ...params.InputProps,
+                                readOnly: true,
+                                sx: {
+                                  color: 'white',
+                                  '& input::placeholder': {
+                                    color:theme.palette.mode === 'dark'? 'white': "black",
+                                    opacity: 1,
+                                  },
+                                },
+                              }}
+                            />
+                          );
+                        }}
+                        sx={{ width: 300 }}
+                      />
+                    </FormControl>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginBottom: 1,
+                        color: theme.palette.mode === 'light'? "black" : 'white',
+                      }}
+                    >
+                      {t("FilterExchangeByCountry")}:
+                    </Typography>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        disableClearable
+                        size="small"
+                        options={[AllCountries, ...filteredCountries]}
+                        loading={isCountriesLoading}
+                        getOptionLabel={(option) => option}
+                        value={selectedCountry}
+                        onChange={(event, newValue) => {
+                          handleCountrySelect(newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Box>
+                </Box>
                   
-                  {selectedTradingPair && (
+                  {/* {selectedTradingPair && (
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, ml: 1 }}>
                       <Box>
                         <Typography
@@ -611,21 +608,7 @@ export default function ArbitrageMatrix() {
                         </Typography>
                       </Box>
                     </Box>
-                  )}
-                  
-                  {!selectedTradingPair && (
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: '0.8rem',
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      {t("SelectTradingPairToCiewArbitrageOpportunities")}
-                    </Typography>
-                  )}
-                </Box>
+                  )} */}
               </Paper>
             </Grid>
           </Grid>
@@ -646,7 +629,6 @@ export default function ArbitrageMatrix() {
             }}
           >
             <CardContent sx={{ p: 3 }}>
-              {/* ВРЕМЕННО ОТКЛЮЧЕНО: Показываем Chip вместо таблицы */}
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
                 <Chip
                   icon={
