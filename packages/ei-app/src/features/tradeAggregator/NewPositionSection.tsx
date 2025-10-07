@@ -751,10 +751,10 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               textTransform: "none",
               fontWeight: 500,
               fontSize: "0.875rem",
-              backgroundColor: activeTab === "swap" ? "#1e88e5" : undefined,
+              backgroundColor: activeTab === "swap" ? "#219a83" : undefined,
               color: activeTab === "swap" ? "#fff" : undefined,
               "&:hover": {
-                backgroundColor: activeTab === "swap" ? "#1565c0" : undefined,
+                backgroundColor: activeTab === "swap" ? "#219a83" : undefined,
               },
             }}
           >
@@ -772,10 +772,10 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               textTransform: "none",
               fontWeight: 500,
               fontSize: "0.875rem",
-              backgroundColor: activeTab === "bridge" ? "#1e88e5" : undefined,
+              backgroundColor: activeTab === "bridge" ? "#219a83" : undefined,
               color: activeTab === "bridge" ? "#fff" : undefined,
               "&:hover": {
-                backgroundColor: activeTab === "bridge" ? "#1565c0" : undefined,
+                backgroundColor: activeTab === "bridge" ? "#219a83" : undefined,
               },
             }}
           >
@@ -1257,13 +1257,13 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           onClick={handleFetchQuotes}
                           disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
                           sx={{
-                            backgroundColor: "#1e88e5",
+                            backgroundColor: "#219a83",
                             color: "#fff",
                             textTransform: "none",
                             fontWeight: 500,
                             fontSize: "0.875rem",
                             "&:hover": {
-                              backgroundColor: "#1565c0",
+                              backgroundColor: "#219a83",
                           },
                          }}
                          startIcon={
@@ -1347,7 +1347,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 key={index}
                                 sx={{
                                   ...(isBest && {
-                                    borderLeft: "4px solid #1e88e5",
+                                    borderLeft: "4px solid #219a83",
                                      backgroundColor:
                                       theme.palette.mode === "light"
                                         ? "rgba(74, 158, 255, 0.08)"
@@ -1362,7 +1362,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       style={{
-                                        color: "#1e88e5",
+                                        color: "#219a83",
                                         textDecoration: "underline",
                                       }}
                                     >
@@ -1398,7 +1398,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                       }
                                       size="small"
                                       sx={{
-                                        backgroundColor: "#1e88e5",
+                                        backgroundColor: "#219a83",
                                         color: "#fff",
                                         fontWeight: 600,
                                         borderRadius: "999px",

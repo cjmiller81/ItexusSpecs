@@ -262,7 +262,7 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
           ...base, 
           borderRadius: 12, 
           padding: "24px", 
-          background: "#ffffff", 
+          background: "#f7f5f2",
           color: "#1a1a1a", 
           minWidth: 300, 
           maxWidth: 400,
@@ -625,11 +625,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             maxWidth: 250,
             maxHeight: 32,
             marginRight: 1,
-            backgroundColor: "#03A9F4",
+            backgroundColor: "#219a83",
             color: theme.palette.mode === "dark" ? "#363640" : "white",
             fontWeight: 600,
             textAlign: "center",
-            borderColor: "#03A9F4",
+            borderColor: "#219a83",
             "@media (max-width: 1030px) and (min-width: 900px)": {
               width: "210px",
               minWidth: 200,
@@ -769,10 +769,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         top: '10px',
                         right: '40px',
                         maxWidth: '350px',
-                        background: 'linear-gradient(135deg, #3798ddff 0%, #2723edff 100%)',
+                        background: 'linear-gradient(135deg, #219a83 0%, #1a7a6b 100%)',
                         borderRadius: '8px',
                         padding: '12px 16px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        boxShadow: '0 2px 8px rgba(33, 154, 131, 0.2)',
                         zIndex: 1000,
                       }}
                     >
@@ -794,7 +794,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                           onClick={handleDismissGuidanceBanner}
                           size="small"
                           sx={{
-                            color: '#1976d2',
+                            color: '#219a83',
                             p: 0.5,
                             ml: 1,
                             flexShrink: 0

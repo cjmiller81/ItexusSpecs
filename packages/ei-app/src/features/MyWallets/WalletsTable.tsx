@@ -11,7 +11,7 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
     overflowX: "hidden",
   },
   "& .MuiDataGrid-footerContainer": {
-  backgroundColor: "#fff",
+  backgroundColor: "#f7f5f2",
   borderTop: "none",
   height: "40px",
 },

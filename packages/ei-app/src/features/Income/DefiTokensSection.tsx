@@ -123,7 +123,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "#aaaaaa !important"
+    backgroundColor: "#f7f5f2 !important"
   };
 
   return (
@@ -222,7 +222,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
         </StyledAccordionSummary>
         <AccordionDetails
           sx={{
-            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa !important",
+            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2 !important",
             width: sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)",
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",
@@ -246,7 +246,7 @@ const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps)
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   transition: "none",
-  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
   borderTopLeftRadius: "10px",
   borderTopRightRadius: "10px",
   minHeight: "64px",

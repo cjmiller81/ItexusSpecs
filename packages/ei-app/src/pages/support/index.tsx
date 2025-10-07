@@ -54,8 +54,8 @@ export default function Support() {
                 key={item.key}
                 onClick={() => setSelectedSection(item.key as typeof selectedSection)}
                 sx={{
-                  "&:hover": { backgroundColor: "#1e90ff", borderRadius: "6px" },
-                  backgroundColor: selectedSection === item.key ? "#1e90ff" : "transparent",
+                  "&:hover": { backgroundColor: "#219a83", borderRadius: "6px" },
+                  backgroundColor: selectedSection === item.key ? "#219a83" : "transparent",
                   borderRadius: "6px",
                 }}
               >

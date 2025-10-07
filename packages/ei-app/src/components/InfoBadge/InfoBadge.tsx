@@ -18,7 +18,7 @@ const InfoBadgeContainer = styled(Box)(({ theme }) => ({
 }));
 
 const StyledInfoBadge = styled(Button)<{ $isHovered?: boolean }>(({ theme, $isHovered }) => ({
-  background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+  background: 'linear-gradient(135deg, #219a83, #1a7a6b)', // Green gradient
   color: 'white',
   padding: '6px 12px',
   borderRadius: '20px',
@@ -36,9 +36,9 @@ const StyledInfoBadge = styled(Button)<{ $isHovered?: boolean }>(({ theme, $isHo
   minWidth: 'auto',
   '&:hover': {
     transform: 'translateY(-1px)',
-    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+    boxShadow: '0 4px 12px rgba(33, 154, 131, 0.3)', // Green shadow
     animation: 'none',
-    background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    background: 'linear-gradient(135deg, #219a83, #1a7a6b)', // Green gradient
   },
 }));
 
@@ -60,6 +60,13 @@ const BadgeTooltip = styled(Box)<{ $isHovered?: boolean }>(({ theme, $isHovered 
   transition: 'all 0.2s ease',
   zIndex: 100,
   border: $isHovered ? 'none' : '2px solid white',
+  '& a': {
+    color: '#219a83 !important', // Green accent color for all links
+    textDecoration: 'underline',
+    '&:hover': {
+      color: '#1a7a6b !important', // Darker green on hover
+    },
+  },
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -72,7 +79,7 @@ const BadgeTooltip = styled(Box)<{ $isHovered?: boolean }>(({ theme, $isHovered 
 }));
 
 const TooltipLink = styled('a')(({ theme }) => ({
-  color: '#60a5fa',
+  color: '#219a83', // Green accent color
   textDecoration: 'none',
   '&:hover': {
     textDecoration: 'underline',

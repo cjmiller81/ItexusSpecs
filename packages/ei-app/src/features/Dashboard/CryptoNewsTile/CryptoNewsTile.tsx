@@ -40,7 +40,7 @@ export const CryptoNewsTile: FC<Props> = ({
   };
   const theme = useTheme();
   const sources: MarketType[] = ["crypto", "forex", "stock", "index", "futures"];
-  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa";
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#f7f5f2";
 
   return (
     <DashboardTile

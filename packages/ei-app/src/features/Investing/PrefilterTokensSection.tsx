@@ -104,7 +104,7 @@ export default function PrefilterTokensSection({
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "#aaaaaa"
+    backgroundColor: "#f7f5f2"
   };
 
   const onExport = () => {
@@ -196,7 +196,7 @@ export default function PrefilterTokensSection({
           borderTopRightRadius: "10px",
           borderBottomLeftRadius: "10px",
           borderBottomRightRadius: "10px", 
-          backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+          backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
           "&.MuiAccordionSummary-root:hover": {
             cursor: "default",
           },
@@ -254,7 +254,7 @@ export default function PrefilterTokensSection({
       </StyledAccordionSummary>
       <AccordionDetails
         sx={{
-          backgroundColor: theme.palette.mode === "dark" ? "#363640 !important" : "#aaaaaa !important",
+          backgroundColor: theme.palette.mode === "dark" ? "#363640 !important" : "#f7f5f2 !important",
           width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
           borderBottomLeftRadius: "10px",

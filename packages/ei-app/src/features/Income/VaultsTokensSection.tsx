@@ -146,7 +146,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "#aaaaaa !important"
+    backgroundColor: "#f7f5f2 !important"
   };
 
   return (
@@ -236,7 +236,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
         </StyledAccordionSummary>
         <AccordionDetails
           sx={{
-            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
             width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",

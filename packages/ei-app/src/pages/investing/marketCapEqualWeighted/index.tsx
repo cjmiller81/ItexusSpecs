@@ -309,7 +309,7 @@ export default function MarketCapEqualWeightedPage() {
           ...base, 
           borderRadius: 12, 
           padding: "32px 24px 24px 24px", 
-          background: "#ffffff", 
+          background: "#f7f5f2",
           color: "#1a1a1a", 
           minWidth: 400, 
           maxWidth: 500,
@@ -339,11 +339,11 @@ export default function MarketCapEqualWeightedPage() {
               title="What's Market Cap Investing"
               tooltipContent={
                 <>
-                  <strong style={{ color: '#60a5fa' }}>{t("MarketCapExplained")}</strong>
+                  <strong style={{ color: '#219a83' }}>{t("MarketCapExplained")}</strong>
                   <br /><br />
-                  {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
+                  {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#219a83', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
                   <br /><br />
-                  {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa', textDecoration: 'underline' }}>{t("Article")}</a>
+                  {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#219a83', textDecoration: 'underline' }}>{t("Article")}</a>
                 </>
               }
             />

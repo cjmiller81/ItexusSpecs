@@ -99,12 +99,12 @@ export const IndexModelingSection = ({
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "transparent",
+    backgroundColor: "#f7f5f2",
     "& .MuiAccordionDetails-root .MuiTypography-root": {
-      backgroundColor: "transparent !important"
+      backgroundColor: "#f7f5f2 !important"
     },
     "& .MuiTypography-root": {
-      backgroundColor: "transparent !important"
+      backgroundColor: "#f7f5f2 !important" 
     }
   };
 
@@ -115,10 +115,10 @@ export const IndexModelingSection = ({
       sx={{
         ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
         "& .MuiAccordionDetails-root .MuiTypography-root": {
-          backgroundColor: "transparent !important"
+          backgroundColor: theme.palette.mode === "dark" ? "transparent !important" : "transparent !important"
         },
         "& .MuiTypography-root": {
-          backgroundColor: "transparent !important"
+          backgroundColor: theme.palette.mode === "dark" ? "transparent !important" : "#f7f5f2 !important"
         }
       }}
       title={title}
@@ -167,7 +167,7 @@ export const IndexModelingSection = ({
             >
               <Typography 
                 sx={{ 
-                  color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                  color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83", 
                   fontSize: "15px",
                   fontWeight: 600
                 }}
@@ -175,9 +175,9 @@ export const IndexModelingSection = ({
                 {t("HowTheTokensInputImpactsYourIndex")}
               </Typography>
               {isInfoPanelExpanded ? (
-                <ExpandLessIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2",  }} />
+                <ExpandLessIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83",  }} />
               ) : (
-                <ExpandMoreIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2",  }} />
+                <ExpandMoreIcon sx={{ fontSize: "16px", color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83",  }} />
               )}
             </Box>
             
@@ -188,7 +188,7 @@ export const IndexModelingSection = ({
                   p: 2,
                   borderRadius: "8px",
                   backgroundColor: theme.palette.mode === "dark" ? "rgba(25, 118, 210, 0.1)" : "rgba(25, 118, 210, 0.05)",
-                  borderLeft: theme.palette.mode === "dark" ? "4px solid #03a9f4" : "4px solid #1976d2", 
+                  borderLeft: theme.palette.mode === "dark" ? "4px solid #03a9f4" : "4px solid #219a83", 
                   borderTop: "1px solid rgba(25, 118, 210, 0.2)",
                   borderRight: "1px solid rgba(25, 118, 210, 0.2)",
                   borderBottom: "1px solid rgba(25, 118, 210, 0.2)",
@@ -203,7 +203,7 @@ export const IndexModelingSection = ({
                     right: "8px",
                     width: "24px",
                     height: "24px",
-                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83", 
                     "&:hover": {
                       backgroundColor: "rgba(25, 118, 210, 0.1)",
                     },
@@ -213,7 +213,7 @@ export const IndexModelingSection = ({
                 </IconButton>
                 <Typography 
                   sx={{ 
-                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83", 
                     fontSize: "15px",
                     fontWeight: 600,
                     mb: 1,
@@ -253,7 +253,7 @@ export const IndexModelingSection = ({
                     href="https://www.investopedia.com/terms/c/capitalizationweightedindex.asp" 
                     target="_blank"
                     style={{ 
-                      color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                      color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83", 
                       textDecoration: "underline",
                       fontWeight: 500
                     }}
@@ -271,7 +271,7 @@ export const IndexModelingSection = ({
                   alignItems:"center",
                   borderRadius: "8px",
                   backgroundColor: theme.palette.mode === "dark" ? "rgba(25, 118, 210, 0.1)" : "rgba(25, 118, 210, 0.05)",
-                  borderLeft: theme.palette.mode === "dark" ? "4px solid #03a9f4" : "4px solid #1976d2",
+                  borderLeft: theme.palette.mode === "dark" ? "4px solid #03a9f4" : "4px solid #219a83",
                   borderTop: "1px solid rgba(25, 118, 210, 0.2)",
                   borderRight: "1px solid rgba(25, 118, 210, 0.2)",
                   borderBottom: "1px solid rgba(25, 118, 210, 0.2)"
@@ -279,7 +279,7 @@ export const IndexModelingSection = ({
               >
                 <Typography 
                   sx={{ 
-                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#1976d2", 
+                    color: theme.palette.mode === "dark" ? "#03a9f4" : "#219a83", 
                     fontSize: "14px",
                     fontWeight: 600,
                     mb: 1,
@@ -351,10 +351,10 @@ const MainContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2),
   display: "flex",
   width: "100%",
-  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "transparent",
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
   pointerEvents: "auto",
   "& .MuiTypography-root": {
-    backgroundColor: "transparent !important"
+    backgroundColor: theme.palette.mode === "dark" ? "transparent !important" : "#f7f5f2 !important"
   },
   [theme.breakpoints.between("xs", "sm")]: {
     flexDirection: "column",
@@ -371,12 +371,12 @@ const StyledIndexModelingTable = styled(StyledWalletsTable)(() => ({
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
   transition: "none",
-  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "transparent",
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
   borderTopLeftRadius: "10px",
   borderTopRightRadius: "10px",
   minHeight: "64px",
   "& .MuiTypography-root": {
-    backgroundColor: "transparent !important"
+    backgroundColor: theme.palette.mode === "dark" ? "transparent !important" : "#f7f5f2"
   },
   "&.Mui-expanded": {
     borderBottomLeftRadius: "0px",

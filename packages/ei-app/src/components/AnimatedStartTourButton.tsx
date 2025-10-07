@@ -5,10 +5,10 @@ import { useTour } from '@reactour/tour';
 
 const pulseGlow = keyframes`
   0%, 100% {
-    box-shadow: 0 0 20px rgba(16, 158, 239, 0.3);
+    box-shadow: 0 0 20px rgba(33, 154, 131, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(16, 158, 239, 0.5);
+    box-shadow: 0 0 30px rgba(33, 154, 131, 0.5);
   }
 `;
 
@@ -56,14 +56,14 @@ export const AnimatedStartTourButton: React.FC<AnimatedStartTourButtonProps> = (
       size={size}
       sx={{
         textTransform: "none",
-        backgroundColor: "#109EEF",
+        backgroundColor: "#219a83",
         color: "white",
         position: 'relative',
         overflow: 'hidden',
         animation: `${pulseGlow} 3s ease-in-out infinite`,
         backdropFilter: 'blur(8px)',
         '&:hover': {
-          backgroundColor: "#0E8BD6"
+          backgroundColor: "#1a7a6b" // Darker green on hover
         },
         '&::before': {
           content: '""',

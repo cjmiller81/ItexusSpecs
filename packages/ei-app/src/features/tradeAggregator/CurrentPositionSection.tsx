@@ -489,7 +489,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 onChange={handleWalletSelect}
                 renderValue={selected => (selected ? selectedWallet?.walletName : t("AddSavedWallet"))}
                 sx={{
-                  backgroundColor: "#109EEF",
+                  backgroundColor: "#219a83",
                   fontSize: "11px",
                   color: "white",
                   width: "100%",
@@ -510,10 +510,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                             <Button
                               id="manual_position_btn"
                               sx={{
-                                backgroundColor: "white",
+                                backgroundColor: "#f7f5f2", // Warm off-white
                                 width: "100%",
                                 height: "40px",
-                                color: "#1e90ff",
+                                color: "#219a83",
                                 justifyContent: "flex-start",
                                 paddingLeft: "15px",
                                 fontSize: "11px bold",
@@ -527,18 +527,18 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                               <Button
                                 id="manual_position_btn"
                                 sx={{
-                                  backgroundColor: "white",
+                                  backgroundColor: "#f7f5f2",
                                   width: "100%",
                                   height: "40px",
-                                  color: "#1e88e5",
+                                  color: "#219a83",
                                   justifyContent: "flex-start",
                                   paddingLeft: "15px",
                                   fontSize: "11px bold",
-                                  borderColor: "#1e88e5",
+                                  borderColor: "#219a83",
                                   "&.Mui-disabled": {
                                     backgroundColor: "transparent",
-                                    borderColor: "#1e88e5",
-                                    color: "#1e88e5",
+                                    borderColor: "#219a83",
+                                    color: "#219a83",
                                   },
                                 }}
                                 variant="outlined"
@@ -571,10 +571,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   }}
                 >
                   <Box sx={{ padding:"8px" }}>
-                    <Typography sx={{ fontSize: '15px', fontWeight: 600, mb: 1, color: '#00a8ff' }}>
+                    <Typography sx={{ fontSize: '15px', fontWeight: 600, mb: 1, color: '#219a83' }}>
                       {t("HowToUseADDTEMPORARYPOSITION")}
                     </Typography>
-                    <Typography sx={{ fontSize: '14px', color: '#d1d5db', lineHeight: 1.4 }}>
+                    <Typography sx={{ fontSize: '14px', color: '#9ca3af', lineHeight: 1.4 }}>
                       {t("ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet")}
                     </Typography>
                   </Box>
@@ -590,11 +590,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                       <Box key={step.n} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 0.5 }}>
                         <Box sx={{
                           width: '18px', height: '18px', borderRadius: '50%',
-                          background: '#00a8ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: '#219a83', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '14px', fontWeight: 600, flexShrink: 0
                         }}>{step.n}</Box>
                         <Box sx={{ flex: 1 }}>
-                          <Typography sx={{ fontSize: '15px', fontWeight: 450, color: '#e5e7eb', mb: 0.25 }}>{step.t}</Typography>
+                          <Typography sx={{ fontSize: '15px', fontWeight: 450, color: theme.palette.mode === "dark" ?'#e5e7eb': '#6c7179ff', mb: 0.25 }}>{step.t}</Typography>
                           <Typography sx={{ fontSize: '14px', color: '#9ca3af', lineHeight: 1 }}>{step.d}</Typography>
                         </Box>
                       </Box>
@@ -602,8 +602,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   </Box>
 
                   <Box sx={{padding:"8px"}}>
-                    <Typography sx={{ fontSize: '14px', color: '#d1d5db', mb: 0.5 }}>
-                      Click <Box component="span" sx={{ color: '#00a8ff', fontWeight: 500 }}>&quot;Clear&quot;</Box> to remove the position.
+                    <Typography sx={{ fontSize: '14px', color: theme.palette.mode === "dark" ?'#d1d5db': '#6c7179ff', mb: 0.5 }}>
+                      Click <Box component="span" sx={{ color: '#219a83', fontWeight: 500 }}>&quot;Clear&quot;</Box> to remove the position.
                     </Typography>
                     <Typography sx={{ fontSize: '13px', color: '#9ca3af', fontStyle: 'italic' }}>
                       {t("NOTEThisWillAlsoRequireYouToReloadSelectedWallet")}
@@ -907,7 +907,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
     border: theme.palette.mode === "light" ?"1px solid black": "1px solid white",
   },
   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
-    backgroundColor: theme.palette.mode === "light" ? "#109EEF" : darken(theme.palette.primary.main, 0.2),
+    backgroundColor: theme.palette.mode === "light" ? "#219a83" : darken(theme.palette.primary.main, 0.2),
   },
   "& .unsupported-chain-row": {
     cursor: "not-allowed",

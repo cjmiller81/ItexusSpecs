@@ -110,8 +110,8 @@ export const WalletWorthTile: FC<Props> = ({
                 textTransform: "none",
                 "&.Mui-selected": {
                   color: "white",
-                  backgroundColor: "#1976d2",
-                  "&:hover": { backgroundColor: "#1565c0" },
+                  backgroundColor: "#219a83",
+                  "&:hover": { backgroundColor: "#219a83" },
                 },
               }}
             >
@@ -123,8 +123,8 @@ export const WalletWorthTile: FC<Props> = ({
                 textTransform: "none",
                 "&.Mui-selected": {
                   color: "white",
-                  backgroundColor: "#1976d2",
-                  "&:hover": { backgroundColor: "#1565c0" },
+                  backgroundColor: "#219a83",
+                  "&:hover": { backgroundColor: "#219a83" },
                 },
               }}
             >

@@ -392,7 +392,7 @@ export const IndexResultsSection = ({
                 onChange={handleWalletSelect}
                 renderValue={selected => (selected ? selectedWallet?.walletName : t("AddSavedWallet"))}
                 sx={{
-                  backgroundColor: "#109EEF",
+                  backgroundColor: "#219a83",
                   fontSize: "11px",
                   color: "white",
                   width: "98%",
@@ -412,10 +412,10 @@ export const IndexResultsSection = ({
               {selectedWallet?(<>
               <Button
                 sx={{
-                  backgroundColor: "white",
+                  backgroundColor: "#f7f5f2", // Warm off-white
                   width: "98%",
                   height: "40px",
-                  color: "#1e90ff",
+                  color: "#219a83",
                   justifyContent: "flex-start",
                   paddingLeft: "15px",
                   fontSize: "11px bold",
@@ -428,18 +428,18 @@ export const IndexResultsSection = ({
               ) : (
                 <Button
                   sx={{
-                    backgroundColor: "white",
+                    backgroundColor: "#f7f5f2",
                     width: "98%",
                     height: "40px",
-                    color: "#1e90ff",
+                    color: "#219a83",
                     justifyContent: "flex-start",
                     paddingLeft: "15px",
                     fontSize: "11px bold",
-                    borderColor: "#1e90ff",
+                    borderColor: "#219a83",
                     "&.Mui-disabled": {
                       backgroundColor: "transparent",
-                      borderColor: "#1e90ff",
-                      color: "#1e90ff",
+                      borderColor: "#219a83",
+                      color: "#219a83",
                     },
                   }}
                   variant="outlined"

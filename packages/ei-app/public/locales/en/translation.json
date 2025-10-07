@@ -11,7 +11,8 @@
     "Selected": "selected",
     "ToggleView": "Toggle View",
     "Position": "Position",
-    "Type": "Type"
+    "Type": "Type",
+    "ToogleView": "Toogle View"
   },
   "PrefilterTokensSection": {
     "PrefilterTokens": "Prefilter Tokens"
@@ -620,7 +621,7 @@
     "TradingChartsTourToolsText": "Charting tools for technical analysis",
     "TradingChartsTourTimelineText": "Choose your timeline preferences",
     "TradingChartsTourHelpTitle": "Need Help?",
-    "TradingChartsTourHelpText": "For charting information and education, please see TradingView's <a href='https://www.tradingview.com/support/knowledge-base/' target='_blank' rel='noopener noreferrer' style='color: #109EEF; text-decoration: underline;'>Knowledge Base</a>"
+    "TradingChartsTourHelpText": "For charting information and education, please see TradingView's <a href='https://www.tradingview.com/support/knowledge-base/' target='_blank' rel='noopener noreferrer' style='color: #219a83; text-decoration: underline;'>Knowledge Base</a>"
   },
   "UpdatesTile": {
     "ViewLastRelease": "We’re constantly working to improve the Elan Insights experience, learn more about our latest release",

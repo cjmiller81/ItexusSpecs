@@ -109,7 +109,7 @@ const CryptoCalendar: React.FC<Props> = ({
       event.currentTarget.scrollHeight === event.currentTarget.scrollTop + event.currentTarget.clientHeight;
   };
 
-  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#aaaaaa"; // Fixed code style
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#f7f5f2";
   return (
     <DashboardTile
       title={title}

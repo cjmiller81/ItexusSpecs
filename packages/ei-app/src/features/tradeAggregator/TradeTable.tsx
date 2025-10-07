@@ -671,10 +671,10 @@ export function TradeTable() {
                textTransform: "none",
                fontWeight: 500,
                fontSize: "0.875rem",
-               backgroundColor: activeTab === "Trading Pairs" ? "#1e88e5" : undefined,
+               backgroundColor: activeTab === "Trading Pairs" ? "#219a83" : undefined,
                color: activeTab === "Trading Pairs" ? "#fff" : undefined,
                "&:hover": {
-                 backgroundColor: activeTab === "Trading Pairs" ? "#1565c0" : undefined,
+                 backgroundColor: activeTab === "Trading Pairs" ? "#219a83" : undefined,
                },
              }}>
                {t("TradingPairs")}
@@ -690,10 +690,10 @@ export function TradeTable() {
                textTransform: "none",
                fontWeight: 500,
                fontSize: "0.875rem",
-               backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
+               backgroundColor: activeTab === "Arbitrage Matrix" ? "#219a83" : undefined,
                color: activeTab === "Arbitrage Matrix" ? "#fff" : undefined,
                "&:hover": {
-                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
+                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#219a83" : undefined,
                },
              }}>
                {t("ArbitrageMatrix")}
@@ -720,11 +720,11 @@ export function TradeTable() {
                   padding: "2px 10px",
                   fontSize: "12px",
                   fontWeight: 600,
-                  backgroundColor: "#1866aaff",
+                  backgroundColor: "#219a83",
                   color: "#fff",
                   border: "1px solid #fff",
                   boxShadow: "none",
-                  '&:hover': { backgroundColor: "#13549eff", boxShadow: "none" }
+                  '&:hover': { backgroundColor: "#219a83", boxShadow: "none" }
                 }}
                 onClick={handleDemoClick}
               >
@@ -1104,8 +1104,8 @@ export function TradeTable() {
                               borderRadius: "6px",
                               height: "37px",
                                ...(tradeData.symbol && {
-                                backgroundColor: "#1e88e5",
-                                "&:hover": { backgroundColor: "#1e88e5", },
+                                backgroundColor: "#219a83",
+                                "&:hover": { backgroundColor: "#219a83", },
                               }),
                               color: "white",
                             }}
@@ -1288,7 +1288,7 @@ export function TradeTable() {
             p: 3,
             borderRadius: 3,
             maxWidth: 360,
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7f5f2',
             color: '#1a1a1a',
             ...(tourStep === 6 ? { mb: '15px' } : { mt: '15px' })
           }
@@ -1334,7 +1334,7 @@ export function TradeTable() {
             <Button
               variant="contained"
               onClick={resetTour}
-              sx={{ background: '#ffffff', color: '#4a5568', border: '1px solid #e2e8f0', boxShadow: 'none', textTransform: 'none', '&:hover': { background: '#f7fafc', boxShadow: 'none' } }}
+              sx={{ background: '#f7f5f2', color: '#4a5568', border: '1px solid #e2e8f0', boxShadow: 'none', textTransform: 'none', '&:hover': { background: '#f0ece5', boxShadow: 'none' } }}
             >
               Skip
             </Button>

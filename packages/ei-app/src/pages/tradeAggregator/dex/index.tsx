@@ -165,7 +165,7 @@ export default function Dex() {
           ...base, 
           borderRadius: 12, 
           padding: "32px 24px 24px 24px", 
-          background: "#ffffff", 
+          background: "#f7f5f2",
           color: "#1a1a1a", 
           minWidth: 400, 
           maxWidth: 500,
