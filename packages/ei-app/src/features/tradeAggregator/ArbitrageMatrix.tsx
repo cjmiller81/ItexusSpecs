@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -22,22 +22,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
+  CircularProgress,
 } from '@mui/material';
 import { keyframes } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { Exchange, useGetExchangesQuery, useGetCountriesQuery, useLazyGetExchangesTickerQuery } from './TradeTableApi';
+import { Exchange, TradingPair as ApiTradingPair, useGetExchangesQuery, useGetTradingPairsQuery } from './TradeTableApi';
 
 interface ExtendedExchange extends Exchange {
   isSelectAll?: boolean;
-}
-
-interface TradingPair {
-  base: string;
-  target: string;
-  last: number;
-  volume: number;
-  pair: string;
 }
 
 const rotate = keyframes`
@@ -73,32 +65,36 @@ export default function ArbitrageMatrix() {
   const theme = useTheme();
   const AllCountries = "All Countries";
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
-  const { data: countries, isLoading: isCountriesLoading } = useGetCountriesQuery();
-  const [getExchangesTicker] = useLazyGetExchangesTickerQuery();
-  const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
+  const { data: tradingPairsFromApi, isLoading: isTradingPairsLoading } = useGetTradingPairsQuery();
   const [selectedExchanges, setSelectedExchanges] = useState<Exchange[]>([]);
   const [tempSelectedExchanges, setTempSelectedExchanges] = useState<Exchange[]>([]);
   const [exchangeDropdownOpen, setExchangeDropdownOpen] = useState<boolean>(false);
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
-  const [selectedTradingPair, setSelectedTradingPair] = useState<TradingPair | null>(null);
+  const [selectedTradingPair, setSelectedTradingPair] = useState<ApiTradingPair | null>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const [commonTradingPairs, setCommonTradingPairs] = useState<TradingPair[]>([]);
-  const [isLoadingTradingPairs, setIsLoadingTradingPairs] = useState<boolean>(false);
-  const [exchangeDataCache, setExchangeDataCache] = useState<Map<string, any>>(new Map());
-  
-  useEffect(() => {
-    if (coinGeckoExchangesInitial) {
-      setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => 
-        selectedCountry === AllCountries || x.country === selectedCountry
-      ));
-    }
-  }, [coinGeckoExchangesInitial, selectedCountry]);
 
   const filteredExchanges = useMemo(() => {
-    return coinGeckoExchanges?.filter(exchange =>
+    let exchanges = coinGeckoExchangesInitial || [];
+
+    if (selectedTradingPair) {
+      const supportedExchangeIds = selectedTradingPair.exchanges.map(ex => ex.exchange_id);
+      exchanges = exchanges.filter(exchange => 
+        supportedExchangeIds.includes(exchange.id)
+      );
+    }
+    
+    if (selectedCountry !== AllCountries) {
+      exchanges = exchanges.filter(exchange => 
+        exchange.country === selectedCountry
+      );
+    }
+    
+    exchanges = exchanges.filter(exchange =>
       exchange.name.toLowerCase().includes(searchText.toLowerCase())
-    ) || [];
-  }, [coinGeckoExchanges, searchText]);
+    );
+    
+    return exchanges;
+  }, [coinGeckoExchangesInitial, searchText, selectedTradingPair, selectedCountry]);
 
   const isAllSelected = tempSelectedExchanges.length === filteredExchanges.length && filteredExchanges.length > 0;
   const isIndeterminate = tempSelectedExchanges.length > 0 && tempSelectedExchanges.length < filteredExchanges.length;
@@ -119,7 +115,16 @@ export default function ArbitrageMatrix() {
   const filteredCountries = useMemo(() => {
     if (!coinGeckoExchangesInitial) return [];
     
-    const countryCounts = coinGeckoExchangesInitial.reduce((acc, exchange) => {
+    let exchanges = coinGeckoExchangesInitial;
+    
+    if (selectedTradingPair) {
+      const supportedExchangeIds = selectedTradingPair.exchanges.map(ex => ex.exchange_id);
+      exchanges = exchanges.filter(exchange => 
+        supportedExchangeIds.includes(exchange.id)
+      );
+    }
+    
+    const countryCounts = exchanges.reduce((acc, exchange) => {
       if (exchange.country) {
         acc[exchange.country] = (acc[exchange.country] || 0) + 1;
       }
@@ -129,21 +134,12 @@ export default function ArbitrageMatrix() {
     return Object.keys(countryCounts)
       .filter(country => countryCounts[country] >= 2)
       .sort();
-  }, [coinGeckoExchangesInitial]);
+  }, [coinGeckoExchangesInitial, selectedTradingPair]);
 
 
   const handleCountrySelect = (country: string) => {
     setSelectedCountry(country);
-    if (country !== AllCountries) {
-      setSelectedExchanges(prev => 
-        prev.filter(ex => ex.country === country)
-      );
-    }
   }; 
-
-  // const handleTradingPairSelect = (pair: TradingPair | null) => {
-  //   setSelectedTradingPair(pair);
-  // };
 
   const handleExchangeDropdownOpen = () => {
     setTempSelectedExchanges(selectedExchanges);
@@ -155,135 +151,15 @@ export default function ArbitrageMatrix() {
     setSearchText('');
   };
 
-  const handleExchangeOk = async () => {
+  const handleExchangeOk = () => {
     setSelectedExchanges(tempSelectedExchanges);
     handleExchangeDropdownClose();
-    
-    if (tempSelectedExchanges.length > 0) {
-      await fetchExchangesData(tempSelectedExchanges);
-    }
   };
 
   const handleExchangeCancel = () => {
-    setTempSelectedExchanges([]);
-    setSelectedExchanges([]);
-    setExchangeDataCache(new Map());
-    setCommonTradingPairs([]);
+    setTempSelectedExchanges(selectedExchanges);
     handleExchangeDropdownClose();
   };
-
-  const fetchExchangesData = async (exchanges: Exchange[]) => {
-    setIsLoadingTradingPairs(true);
-    setCommonTradingPairs([]);
-    
-    try {
-      const exchangesToFetch = exchanges.filter(exchange => !exchangeDataCache.has(exchange.id));
-      
-      if (exchangesToFetch.length > 0) {
-        for (const exchange of exchangesToFetch) {
-          try {
-            const result = await getExchangesTicker(exchange.id);
-            
-            if ('data' in result && result.data) {
-              const exchangeData = Array.isArray(result.data) ? result.data[0] : result.data;
-              
-              setExchangeDataCache(prevCache => {
-                const newCache = new Map(prevCache);
-                newCache.set(exchange.id, exchangeData);
-                return newCache;
-              });
-            } else {
-              console.error(`Failed to fetch data for ${exchange.name}:`, result.error);
-            }
-            
-            await new Promise(resolve => setTimeout(resolve, 100));
-          } catch (error) {
-            console.error(`Error fetching data for ${exchange.name}:`, error);
-          }
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-      
-      setExchangeDataCache(currentCache => {
-        processExchangesDataWithCache(exchanges, currentCache);
-        return currentCache;
-      });
-    } catch (error) {
-      console.error('Failed to fetch exchanges data:', error);
-      setIsLoadingTradingPairs(false);
-    }
-  };
-
-  const processExchangesDataWithCache = (exchanges: Exchange[], cache: Map<string, any>) => {
-    const successfulResults = exchanges
-      .map(exchange => ({
-        exchange,
-        data: cache.get(exchange.id)
-      }))
-      .filter(result => result.data !== null && result.data !== undefined);
-
-    if (successfulResults.length === 0) {
-      setCommonTradingPairs([]);
-      setIsLoadingTradingPairs(false);
-      return;
-    }
-
-    if (successfulResults.length !== exchanges.length) {
-      setCommonTradingPairs([]);
-      setIsLoadingTradingPairs(false);
-      return;
-    }
-
-    const allPairsMap = new Map<string, TradingPair>();
-    
-    successfulResults.forEach(({ data }) => {
-      if (data?.tickers && Array.isArray(data.tickers)) {
-        data.tickers.forEach((ticker: any) => {
-          const pair = `${ticker.base}/${ticker.target}`;
-          if (!allPairsMap.has(pair)) {
-            allPairsMap.set(pair, {
-              base: ticker.base,
-              target: ticker.target,
-              last: ticker.last,
-              volume: ticker.converted_volume?.usd || 0,
-              pair: pair
-            });
-          }
-        });
-      }
-    });
-
-    const commonPairs: TradingPair[] = [];
-    
-    allPairsMap.forEach((pair) => {
-      const existsOnAllSelectedExchanges = exchanges.every(selectedExchange => {
-        const exchangeData = cache.get(selectedExchange.id);
-        if (!exchangeData?.tickers || !Array.isArray(exchangeData.tickers)) return false;
-        return exchangeData.tickers.some((ticker: any) => 
-          `${ticker.base}/${ticker.target}` === pair.pair
-        );
-      });
-
-      if (existsOnAllSelectedExchanges) {
-        commonPairs.push(pair);
-      }
-    });
-
-    commonPairs.sort((a, b) => b.volume - a.volume);
-    
-    setCommonTradingPairs(commonPairs);
-    setIsLoadingTradingPairs(false);
-  };
-
-  useEffect(() => {
-    setSelectedTradingPair(null);
-    
-    if (selectedExchanges.length === 0) {
-      setCommonTradingPairs([]);
-      setIsLoadingTradingPairs(false);
-    }
-  }, [selectedExchanges]);  
 
   return (
     <Box sx={{ height: "100%", p: 1 }}>
@@ -323,20 +199,37 @@ export default function ArbitrageMatrix() {
                     <FormControl size="small" sx={{ minWidth: 200 }}>
                       <Autocomplete
                         size="small"
-                        options={commonTradingPairs}
-                        disabled={selectedExchanges.length === 0}
-                        loading={isLoadingTradingPairs}
-                        getOptionLabel={(option) => option.pair}
                         value={selectedTradingPair}
                         onChange={(event, newValue) => {
-                          // handleTradingPairSelect(newValue);
+                          if (newValue) {
+                            const exchangeNames = newValue.exchanges.map(ex => ex.name).sort();
+                          }
+                          
+                          setSelectedTradingPair(newValue);
+                          setSelectedExchanges([]);
+                          setTempSelectedExchanges([]);
+                          setSelectedCountry(AllCountries);
                         }}
+                        options={tradingPairsFromApi || []}
+                        getOptionLabel={(option) => option.pair}
+                        isOptionEqualToValue={(option, value) => option.pair === value.pair}
                         renderInput={(params) => (
                           <TextField
                             {...params}
                             placeholder={t("SelectTradingPair")}
+                            InputProps={{
+                              ...params.InputProps,
+                              readOnly: true,
+                            }}
                           />
                         )}
+                        loading={isTradingPairsLoading}
+                        loadingText={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}>
+                            <Typography variant="body2">Loading...</Typography>
+                            <CircularProgress size={16} />
+                          </Box>
+                        }
                         sx={{ width: 200 }}
                       />
                     </FormControl>
@@ -357,6 +250,7 @@ export default function ArbitrageMatrix() {
                       <Autocomplete<ExtendedExchange, true, false, false>
                         multiple
                         size="small"
+                        disabled={!selectedTradingPair}
                         open={exchangeDropdownOpen}
                         onOpen={handleExchangeDropdownOpen}
                         onClose={(event, reason) => {
@@ -368,7 +262,14 @@ export default function ArbitrageMatrix() {
                         loading={isCoinGeckoExchangesLoading}
                         getOptionLabel={(option) => option.name}
                         value={tempSelectedExchanges}
-                        onChange={(event, newValue) => {
+                        onChange={(event, newValue, reason) => {
+                          if (reason === 'clear') {
+                            setTempSelectedExchanges([]);
+                            setSelectedExchanges([]);
+                            handleExchangeDropdownClose();
+                            return;
+                          }
+
                           if (newValue.length === 0 && selectedExchanges.length > 0) {
                             handleExchangeCancel();
                             return;
@@ -503,8 +404,8 @@ export default function ArbitrageMatrix() {
                       <Autocomplete
                         disableClearable
                         size="small"
+                        disabled={!selectedTradingPair}
                         options={[AllCountries, ...filteredCountries]}
-                        loading={isCountriesLoading}
                         getOptionLabel={(option) => option}
                         value={selectedCountry}
                         onChange={(event, newValue) => {
@@ -522,7 +423,7 @@ export default function ArbitrageMatrix() {
                   </Box>
                 </Box>
                   
-                  {/* {selectedTradingPair && (
+                   {selectedTradingPair && (
                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, ml: 1 }}>
                       <Box>
                         <Typography
@@ -608,7 +509,7 @@ export default function ArbitrageMatrix() {
                         </Typography>
                       </Box>
                     </Box>
-                  )} */}
+                  )}
               </Paper>
             </Grid>
           </Grid>
@@ -629,65 +530,8 @@ export default function ArbitrageMatrix() {
             }}
           >
             <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-                <Chip
-                  icon={
-                    <Box
-                      component="svg"
-                      viewBox="0 0 16 16"
-                      sx={{ 
-                        animation: `${rotate} 4s linear infinite`,
-                        width: '12px',
-                        height: '12px',
-                        fill: '#60a5fa'
-                      }}
-                    >
-                      <path d="M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0z"/>
-                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
-                    </Box>
-                  }
-                  label="Arbitrage Matrix Coming Soon"
-                  sx={{
-                    background:
-                      theme.palette.mode === 'light'
-                        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%)'
-                        : 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.2) 100%)',
-                    border: '1px solid rgba(59, 130, 246, 0.4)',
-                    borderRadius: '20px',
-                    color: theme.palette.mode === 'light' ? theme.palette.primary.dark : '#60a5fa',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    fontSize: '13px',
-                    animation: `${pulseGlow} 3s ease-in-out infinite`,
-                    backdropFilter: 'blur(8px)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: '-100%',
-                      width: '100%',
-                      height: '100%',
-                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-                      animation: `${shimmer} 2s infinite`,
-                      zIndex: 0,
-                    },
-                    '& .MuiChip-label': {
-                      position: 'relative',
-                      zIndex: 1,
-                    },
-                    '& .MuiChip-icon': {
-                      position: 'relative',
-                      zIndex: 1,
-                    }
-                  }}
-                />
-              </Box>
 
-              {/* ЗАКОММЕНТИРОВАНО: Вся логика таблицы арбитража (понадобится позже) */}
-              {/* {selectedExchanges.length === 0 ? (
+              {selectedExchanges.length === 0 ? (
                 <Box
                   sx={{
                     height: '100%',
@@ -744,7 +588,7 @@ export default function ArbitrageMatrix() {
                         : 'rgba(0, 0, 0, 0.9)',
                     }}
                   >
-                    {t('TradeTable.SelectTradingPairMessage')}
+                    {t('SelectTradingPairMessage')}
                   </Typography>
                   <Typography
                     variant="body1"
@@ -754,7 +598,7 @@ export default function ArbitrageMatrix() {
                         : 'rgba(0, 0, 0, 0.7)',
                     }}
                   >
-                    {t('TradeTable.PleaseSelectTradingPairMessage')}
+                    {t('PleaseSelectTradingPairMessage')}
                   </Typography>
                 </Box>
               ) : (
@@ -891,7 +735,7 @@ export default function ArbitrageMatrix() {
                     </Table>
                   </TableContainer>
                 </Box>
-              )} */}
+              )} 
             </CardContent>
           </Card>
         </Grid>

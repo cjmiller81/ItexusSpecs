@@ -335,7 +335,7 @@
     "FilterExchangeByCountry": "Filter Exchange by Country",
     "SelectExchangesFirst": "Select exchanges first",
     "NoExchangesSelected": "No Exchanges Selected",
-    "PleaseSelectExchangesToViewArbitrageMatrix": "Please select exchanges from the dropdown above to view the arbitrage matrix",
+    "PleaseSelectExchangesToViewArbitrageMatrix": "Please select trading pair and exchanges from the dropdown above to view the arbitrage matrix",
     "SelectedExchanges": "Selected Exchanges",
     "ExchangesSelected": "Exchanges Selected",
     "SelectTradingPairTooltip": "Please select a trading pair from the list to populate the arbitrage matrix below",
