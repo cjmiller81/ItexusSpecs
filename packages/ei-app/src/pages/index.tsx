@@ -45,10 +45,10 @@ const SurveyButton = () => {
       sx={{
         ml: 2,
         textTransform: "none",
-        backgroundColor: "#109EEF",
+        backgroundColor: "#219a83",
         color: "white",
         "&:hover": {
-          backgroundColor: "#0E8BD6"
+          backgroundColor: "#219a83"
         }
       }}
       onClick={() => {
@@ -278,7 +278,7 @@ useEffect(() => {
     <TourProvider
       steps={steps}
       styles={{
-        popover: (base) => ({ ...base, borderRadius: 12, padding: 16, background: "#ffffff", color: "#1a1a1a" }),
+        popover: (base) => ({ ...base, borderRadius: 12, padding: 16, background: "#f7f5f2", color: "#1a1a1a" }),
         maskArea: (base) => ({ ...base, rx: 10 }),
         badge: (base) => ({ ...base, display: "none" }),
       }}

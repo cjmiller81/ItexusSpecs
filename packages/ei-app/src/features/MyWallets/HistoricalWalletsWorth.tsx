@@ -123,9 +123,9 @@ export const HistoricalWalletsWorth = ({
               sx={{
                 "&.Mui-selected": {
                   color: "white",
-                  backgroundColor: "#1976d2",
+                  backgroundColor: "#219a83",
                   "&:hover": {
-                    backgroundColor: "#1565c0",
+                    backgroundColor: "#219a83",
                   },
                 },
               }}
@@ -137,9 +137,9 @@ export const HistoricalWalletsWorth = ({
               sx={{
                 "&.Mui-selected": {
                   color: "white",
-                  backgroundColor: "#1976d2",
+                  backgroundColor: "#219a83",
                   "&:hover": {
-                    backgroundColor: "#1565c0",
+                    backgroundColor: "#219a83",
                   },
                 },
               }}

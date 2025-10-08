@@ -34,7 +34,7 @@ declare module "@mui/material/Typography" {
 
 const darkPalette: PaletteOptions = {
   primary: {
-    main: "#26BAFC",
+    main: "#219a83",
     light: "#2F4355",
   },
   success: {
@@ -53,7 +53,7 @@ const darkPalette: PaletteOptions = {
 
 const darkEIPalette: PaletteOptions = {
   primary: {
-    main: "#26BAFC",
+    main: "#219a83",
     light: "#2F4355",
   },
   success: {
@@ -72,7 +72,7 @@ const darkEIPalette: PaletteOptions = {
 
 const lightPalette: PaletteOptions = {
   primary: {
-    main: "#03A9F4",
+    main: "#219a83",
     light: "#E0F4FD",
   },
   success: {
@@ -84,14 +84,14 @@ const lightPalette: PaletteOptions = {
     main: "#F64336",
   },
   background: {
-    paper: "#e2e2e2",
-    default: "#F5F5F5",
+    paper: "#f7f5f2", // Warm off-white for main cards
+    default: "#e5ddd5", // Warmest beige
   },
 };
 
 const lightEIPalette: PaletteOptions = {
   primary: {
-    main: "#03A9F4",
+    main: "#219a83",
     light: "#CDEFFD",
   },
   success: {
@@ -103,8 +103,8 @@ const lightEIPalette: PaletteOptions = {
     main: "#F44336",
   },
   background: {
-    paper: "#FAFAFA",
-    default: "#e2e2e2",
+    paper: "#f7f5f2", // Warm off-white for main cards
+    default: "#e5ddd5", // Warmest beige
   },
 };
 

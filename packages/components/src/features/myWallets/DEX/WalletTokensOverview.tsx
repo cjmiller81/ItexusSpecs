@@ -71,7 +71,7 @@ const networkMap: Record<string, string> = {
           maxWidth: "100%", 
           minWidth: 0, 
           boxSizing: "border-box",
-          backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "white",
+          backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "#f7f5f2",
         }}>
           <TableContainer component={Paper} elevation={0} sx={{ backgroundColor: 'transparent' }}>
             <Table size="small">

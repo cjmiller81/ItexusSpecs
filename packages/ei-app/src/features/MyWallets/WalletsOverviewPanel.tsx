@@ -31,7 +31,7 @@ const OverviewBlock: React.FC<OverviewBlockProps> = ({
   return (
     <Box
       sx={{
-        backgroundColor: theme.palette.mode === "dark" ? "#232628" : "lightgray",
+        backgroundColor: theme.palette.mode === "dark" ? "#232628" : "#f0ece5",
         borderRadius: "8px",
         padding: prominent ? "14px 20px" : compact ? "6px 16px" : "8px 18px",
         marginBottom: "13px",
@@ -108,7 +108,7 @@ export const WalletsOverviewPanel: React.FC<WalletsOverviewPanelProps> = ({ id }
         minHeight: "520px",
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-        backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+        backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
         padding: 2,
         overflow: "hidden",
         wordBreak: "break-word",
@@ -123,7 +123,7 @@ export const WalletsOverviewPanel: React.FC<WalletsOverviewPanelProps> = ({ id }
         title={t("TotalValue")}
         value={formatCurrencyWithSymbol(aggregateValues.totalValue)}
         subtitle={`${selectedWallets?.length || 0} wallets selected`}
-        iconColor="#4090d7ff"
+        iconColor="#219a83"
         Icon={AccountBalanceWalletIcon}
         prominent
       />

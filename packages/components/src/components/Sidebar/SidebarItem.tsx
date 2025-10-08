@@ -97,10 +97,10 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                       justifyContent: "flex-start",
                       borderRadius: "8px",
                       "&.Mui-selected:hover": {
-                        backgroundColor: "#1e88e5",
+                        backgroundColor: "#219a83",
                       },
                       "&.Mui-selected": {
-                        backgroundColor: "#1e88e5",
+                        backgroundColor: "#219a83",
                         color: theme.palette.primary.main,
                         fontWeight: 600,
                       },
