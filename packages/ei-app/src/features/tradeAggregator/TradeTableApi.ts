@@ -54,6 +54,21 @@ export type CoinGeckoPrice = {
   };
 }
 
+export type TradingPairExchange = {
+  exchange_id: string;
+  name: string;
+  country: string;
+  centralized: boolean;
+}
+
+export type TradingPair = {
+  base: string;
+  target: string;
+  pair: string;
+  exchange_count: number;
+  exchanges: TradingPairExchange[];
+}
+
 export const cexApi = createApi({
   reducerPath: "cex",
   baseQuery: axiosBaseQuery(),
@@ -174,6 +189,11 @@ export const cexApi = createApi({
         return { error: { status: 'CUSTOM_ERROR', data: 'Max retries reached' } };
       },
       keepUnusedDataFor: 0,
+    }),
+
+    getTradingPairs: build.query<TradingPair[], void>({
+      query: () => ({ url: "/trading-pairs", method: "get" }),
+      keepUnusedDataFor: 300, // Cache for 5 minutes
     })
   }),
 });
@@ -185,4 +205,5 @@ export const {
   useLazyGetExchangesTickerQuery,
   useGetCoinGeckoPricesQuery, 
   useGetExchangesWithTickersQuery,
+  useGetTradingPairsQuery,
 } = cexApi;
