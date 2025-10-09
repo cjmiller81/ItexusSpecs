@@ -24,6 +24,13 @@ import {
   TableRow,
   CircularProgress,
 } from '@mui/material';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
+import SearchIcon from '@mui/icons-material/Search';
+import StoreIcon from '@mui/icons-material/Store';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import NearMeIcon from '@mui/icons-material/NearMe';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { keyframes } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import { Exchange, TradingPair as ApiTradingPair, useGetExchangesQuery, useGetTradingPairsQuery } from './TradeTableApi';
@@ -165,7 +172,7 @@ export default function ArbitrageMatrix() {
     <Box sx={{ height: "100%", p: 1 }}>
       <Grid container spacing={2} direction="column">
         <Grid item>
-          <Grid container spacing={2} alignItems="flex-start" sx={{ alignItems: 'flex-start' }}>
+          <Grid container spacing={2} alignItems="center" sx={{ alignItems: 'center' }}>
             <Grid item flexDirection={"row"} xs>
               <Paper
                 elevation={2}
@@ -184,7 +191,7 @@ export default function ArbitrageMatrix() {
                   justifyContent: 'flex-start',
                 }}
               >
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 3 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography
                       variant="body2"
@@ -246,7 +253,7 @@ export default function ArbitrageMatrix() {
                     >
                       {t("SelectExchange")}:
                     </Typography>
-                    <FormControl size="small" sx={{ minWidth: 250 }}>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
                       <Autocomplete<ExtendedExchange, true, false, false>
                         multiple
                         size="small"
@@ -384,7 +391,7 @@ export default function ArbitrageMatrix() {
                             />
                           );
                         }}
-                        sx={{ width: 300 }}
+                        sx={{ width: 250 }}
                       />
                     </FormControl>
                   </Box>
@@ -421,95 +428,121 @@ export default function ArbitrageMatrix() {
                       />
                     </FormControl>
                   </Box>
-                </Box>
-                  
-                   {selectedTradingPair && (
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, ml: 1 }}>
-                      <Box>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 'bold',
-                            mb: 0.5,
-                            color: theme.palette.mode === 'light' ? 'black' : 'white',
-                            fontSize: '0.9rem',
-                          }}
-                        >
-                          How to Read This Matrix
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.3 }}>
-                          <Box
-                            sx={{
-                              width: 12,
-                              height: 12,
-                              backgroundColor: 'rgba(76, 175, 80, 0.3)',
-                              border: '1px solid #4caf50',
-                              borderRadius:"2px",
-                              mr: 0.8,
-                            }}
-                          />
-                          <Typography
-                            sx={{
-                              fontSize: '0.7rem',
-                              color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-                            }}
-                          >
-                            Green = Profitable arbitrage opportunity
+
+                  {selectedTradingPair && selectedExchanges.length > 0 ? (
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <HelpOutlineIcon sx={{ fontSize: 18}} />
+                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                            {t("HowToReadThisMatrix")}
                           </Typography>
                         </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Box
-                            sx={{
-                              width: 12,
-                              height: 12,
-                              backgroundColor: 'rgba(244, 67, 54, 0.3)',
-                              border: '1px solid #f44336',
-                              mr: 0.8,
-                              borderRadius:"2px",
-                            }}
-                          />
-                          <Typography
-                            sx={{
-                              fontSize: '0.7rem',
-                              color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-                            }}
-                          >
-                            Red = Loss (sell price lower than buy price)
-                          </Typography>
+
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: "10px" }}>
+                            <Box sx={{ width: 16, height: 16, backgroundColor: '#4caf50' }} />
+                            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                              {t("ProfitableArbitrageOpportunity")}
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box sx={{ width: 16, height: 16, backgroundColor: '#f44336', }} />
+                            <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                              {t("LossSellPriceLowerThanBuyPrice")}
+                            </Typography>
+                          </Box>
                         </Box>
                       </Box>
 
-                      <Box>
-                        <Typography
-                          sx={{
-                            fontSize: '0.9rem',
-                            fontWeight: 'bold',
-                            color: theme.palette.mode === 'light' ? 'black' : 'white',
-                            mb: 0.5,
-                          }}
-                        >
-                          {t("ExampleBuy")}
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '5', minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <NearMeIcon sx={{ fontSize: 18,}} />
+                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                            {t("ReadingExample")}
+                          </Typography>
+                        </Box>
+                        <Card sx={{ px: 1.2, py: 0.6, borderRadius: 1, backgroundColor: alpha(theme.palette.primary.main, 0.12), border: `1px solid ${theme.palette.primary.main}`, display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          <InfoOutlinedIcon sx={{ fontSize: 16,}} />
+                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                            {t("ExampleBuyBTCOnBybitSellOnGate")}
+                          </Typography>
+                        </Card>
+                        <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                          {t("FindIntersectionOfBuyExchange")}
                         </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: '0.75rem',
-                            color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-                            mb: 0.3,
-                          }}
-                        >
-                          {t("FindTheIntersectionOfYour")}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            fontSize: '0.7rem',
-                            color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-                          }}
-                        >
-                          <strong>{t("Note")}</strong> {t("ProfitsShownExcludeTradingDees")}
+                      </Box>
+
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <WarningAmberIcon sx={{ fontSize: 18, }} />
+                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                            {t("ImportantNote")}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                          {t("ProfitsShownExcludeTradingFees")}
                         </Typography>
                       </Box>
                     </Box>
+                  ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                      <Card
+                        sx={{
+                          backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                          borderRadius: 2,
+                          px: 2,
+                          py: 1.5,
+                          display: 'flex',
+                          alignItems: 'center',
+                          border: `1px solid ${theme.palette.primary.main}`,
+                          gap: 1.5,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: '50%',
+                            backgroundColor: theme.palette.primary.main,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold',
+                            color: "white",
+                            fontSize: '1.1rem',
+                          }}
+                        >
+                          {selectedTradingPair ? 2 : 1}
+                        </Box>
+                        <Box>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: theme.palette.primary.main,
+                              fontSize: '0.75rem',
+                              fontWeight: 500,
+                              lineHeight: 1,
+                            }}
+                          >
+                            {selectedTradingPair ? 'STEP 2' : 'STEP 1'}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontSize: '0.875rem',
+                              fontWeight: 600,
+                              lineHeight: 1.2,
+                            }}
+                          >
+                            {selectedTradingPair ? 'Choose Exchanges' : 'Select Trading Pair'}
+                          </Typography>
+                        </Box>
+                      </Card>
+                    </Box>
                   )}
+                </Box>
               </Paper>
             </Grid>
           </Grid>
@@ -531,7 +564,7 @@ export default function ArbitrageMatrix() {
           >
             <CardContent sx={{ p: 3 }}>
 
-              {selectedExchanges.length === 0 ? (
+              {selectedTradingPair === null ? (
                 <Box
                   sx={{
                     height: '100%',
@@ -540,33 +573,94 @@ export default function ArbitrageMatrix() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
+                    gap: 3,
                   }}
                 >
-                  <Typography
-                    variant="h5"
+                  <Box
                     sx={{
-                      mb: 2,
+                      width: 60,
+                      height: 60,
+                      borderRadius: '50%',
+                      backgroundColor: alpha(theme.palette.primary.main, 0.3),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      
+                    }}
+                  >
+                    <SignalCellularAltIcon sx={{ fontSize: 45, color: theme.palette.primary.main }} />
+                  </Box>
+
+                  <Typography
+                    variant="h4"
+                    sx={{
                       fontWeight: 600,
                       color: theme.palette.mode === 'dark'
                         ? 'rgba(255, 255, 255, 0.9)'
                         : 'rgba(0, 0, 0, 0.9)',
                     }}
                   >
-                    {t("NoExchangesSelected")}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: theme.palette.mode === 'dark'
-                        ? 'rgba(255, 255, 255, 0.7)'
-                        : 'rgba(0, 0, 0, 0.7)',
-                    }}
-                  >
-                    {t("PleaseSelectExchangesToViewArbitrageMatrix")}
+                    {t("SelectATradingPairToBegin")}
                   </Typography>
 
+                  <Card
+                    sx={{
+                      maxWidth: 400,
+                      backgroundColor: theme.palette.mode === 'dark' 
+                        ? 'rgba(255, 255, 255, 0.05)' 
+                        : 'rgba(0, 0, 0, 0.02)',
+                      borderLeft: `6px solid ${theme.palette.primary.main}`,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <CardContent sx={{ p: 3, textAlign: 'left' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Box
+                          sx={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: '20%',
+                            backgroundColor: alpha(theme.palette.primary.main, 0.3),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            mr: 1,
+                          }}
+                        >
+                          <SearchIcon 
+                            sx={{ 
+                              fontSize: 22, 
+                              color: theme.palette.primary.main,
+                            }} 
+                          />
+                        </Box>
+                        <Typography
+                          variant="h7"
+                          sx={{
+                            fontWeight: 600,
+                            color: theme.palette.mode === 'dark'
+                              ? 'rgba(255, 255, 255, 0.9)'
+                              : 'rgba(0, 0, 0, 0.9)',
+                          }}
+                        >
+                          {t("ChooseYourPair")}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {t("ChooseCryptocurrencyTradingPair")}
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 </Box>
-              ) : selectedTradingPair === null ? (
+              ) : selectedExchanges.length === 0 ? (
                 <Box
                   sx={{
                     height: '100%',
@@ -575,31 +669,103 @@ export default function ArbitrageMatrix() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
+                    gap: 3,
                   }}
                 >
+                  <Box
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: '50%',
+                      backgroundColor: alpha(theme.palette.primary.main, 0.3),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <StoreIcon sx={{ fontSize: 45, color: theme.palette.primary.main }} />
+                  </Box>
 
                   <Typography
-                    variant="h5"
+                    variant="h4"
                     sx={{
-                      mb: 2,
                       fontWeight: 600,
                       color: theme.palette.mode === 'dark'
                         ? 'rgba(255, 255, 255, 0.9)'
                         : 'rgba(0, 0, 0, 0.9)',
                     }}
                   >
-                    {t('SelectTradingPairMessage')}
+                    {t("SelectExchangesToCompare")}
                   </Typography>
-                  <Typography
-                    variant="body1"
+
+                  <Card
                     sx={{
-                      color: theme.palette.mode === 'dark'
-                        ? 'rgba(255, 255, 255, 0.7)'
-                        : 'rgba(0, 0, 0, 0.7)',
+                      maxWidth: 400,
+                      backgroundColor: theme.palette.mode === 'dark' 
+                        ? 'rgba(255, 255, 255, 0.05)' 
+                        : 'rgba(0, 0, 0, 0.02)',
+                      borderLeft: `6px solid ${theme.palette.primary.main}`,
+                      borderRadius: 2,
                     }}
                   >
-                    {t('PleaseSelectTradingPairMessage')}
-                  </Typography>
+                    <CardContent sx={{ p: 3, textAlign: 'left' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Box
+                          sx={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: '20%',
+                            backgroundColor: alpha(theme.palette.primary.main, 0.3),
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            mr: 1,
+                          }}
+                        >
+                          <StoreIcon 
+                            sx={{ 
+                              fontSize: 22, 
+                              color: theme.palette.primary.main,
+                            }} 
+                          />
+                        </Box>
+                        <Typography
+                          variant="h7"
+                          sx={{
+                            fontWeight: 600,
+                            color: theme.palette.mode === 'dark'
+                              ? 'rgba(255, 255, 255, 0.9)'
+                              : 'rgba(0, 0, 0, 0.9)',
+                          }}
+                        >
+                          {t("SelectExchanges")}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                          lineHeight: 1.6,
+                          mb: 0.5,
+                        }}
+                      >
+                        {t("SelectExchangesYouWantToPriceAgainst")}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        <strong style={{ fontWeight: 900 }}>{t("ProTip")}</strong> {t("UseTheFilterExchangeByCountry")}
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 </Box>
               ) : (
                 <Box>
@@ -612,17 +778,7 @@ export default function ArbitrageMatrix() {
                       textAlign: 'left',
                     }}
                   >
-                    {t('TradeTable.ArbitrageMatrixTitle')} {selectedTradingPair?.pair}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mb: 2,
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      textAlign: 'left',
-                    }}
-                  >
-                    {t('TradeTable.ArbitrageMatrixSubtitle')}
+                    {t('ArbitrageMatrixTitle')} {selectedTradingPair?.pair}
                   </Typography>
                   
                   <TableContainer
