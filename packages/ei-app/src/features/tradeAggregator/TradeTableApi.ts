@@ -42,6 +42,11 @@ export type CoinGeckoTicker = {
   target_coin_id: string;
   canonical_base?: string;
   canonical_target?: string;
+  market?: {
+    name: string;
+    identifier: string;
+    has_trading_incentive?: boolean;
+  };
 }
 
 
@@ -53,6 +58,147 @@ export type CoinGeckoPrice = {
     exchangeId: string;
   };
 }
+
+export type ArbitrageMatrixPrice = {
+  exchangeId: string;
+  exchangeName: string;
+  price: number;
+  base: string;
+  target: string;
+  timestamp: number;
+}
+
+export const fetchArbitrageMatrixPrices = async (
+  base: string, 
+  target: string, 
+  exchangeIds: string[]
+): Promise<ArbitrageMatrixPrice[]> => {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  let coin: any = null;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    try {
+      const coinSearchResponse = await fetch(`https://api.coingecko.com/api/v3/search?query=${base.toLowerCase()}`);
+      
+      if (!coinSearchResponse.ok) {
+        if (coinSearchResponse.status === 429 && attempt < 5) {
+          const delayTime = 15000 * attempt;
+          await delay(delayTime);
+          continue;
+        }
+        throw new Error(`Search API error: ${coinSearchResponse.status}`);
+      }
+      
+      const searchData = await coinSearchResponse.json();
+      coin = searchData.coins?.find((c: any) => c.symbol.toLowerCase() === base.toLowerCase());
+      
+      if (!coin) {
+        throw new Error(`Coin ${base} not found`);
+      }
+      
+      break; 
+      
+    } catch (error: any) {
+      if (attempt === 5) {
+        console.error('❌ Error searching for coin:', error);
+        throw error;
+      }
+      
+      const isRateLimitError = error?.message?.includes('429');
+      if (isRateLimitError) {
+        const delayTime = 15000 * attempt;
+        await delay(delayTime);
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  const allTickers: any[] = [];
+  const pagesToFetch = 4;
+  const perPage = 100;
+
+  const fetchPage = async (page: number): Promise<any[]> => {
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      try {
+        const timestamp = Date.now();
+        const tickersResponse = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${coin.id}/tickers?page=${page}&per_page=${perPage}&_t=${timestamp}`
+        );
+
+        if (!tickersResponse.ok) {
+          if (tickersResponse.status === 429 && attempt < 5) {
+            const delayTime = 15000 * attempt;
+            await delay(delayTime);
+            continue;
+          }
+          throw new Error(`Tickers API error: ${tickersResponse.status}`);
+        }
+
+        const tickerData = await tickersResponse.json();
+        return tickerData.tickers || [];
+
+      } catch (error: any) {
+        if (attempt === 5) {
+          console.error(`❌ Error fetching page ${page}:`, error);
+          throw error;
+        }
+        
+        const isRateLimitError = error?.message?.includes('429');
+        const isNetworkError = error?.code === 'ERR_NETWORK';
+        
+        if (isRateLimitError || isNetworkError) {
+          const delayTime = isRateLimitError ? 15000 * attempt : 10000 * attempt;
+          await delay(delayTime);
+          continue;
+        }
+        
+        throw error;
+      }
+    }
+    return [];
+  };
+
+  const pagePromises: Promise<any[]>[] = [];
+  for (let page = 1; page <= pagesToFetch; page++) {
+    pagePromises.push(fetchPage(page));
+  }
+
+  const allPages = await Promise.all(pagePromises);
+  allPages.forEach(pageTickers => {
+    if (pageTickers.length > 0) {
+      allTickers.push(...pageTickers);
+    }
+  });
+
+  const results: ArbitrageMatrixPrice[] = [];
+  const exchangeIdsSet = new Set(exchangeIds.map(id => id.toLowerCase()));
+
+  allTickers.forEach((ticker: any) => {
+    const marketIdentifier = ticker.market?.identifier?.toLowerCase();
+    
+    if (
+      ticker.base.toLowerCase() === base.toLowerCase() && 
+      ticker.target.toLowerCase() === target.toLowerCase() &&
+      marketIdentifier &&
+      exchangeIdsSet.has(marketIdentifier)
+    ) {
+      const existingResult = results.find(r => r.exchangeId === marketIdentifier);
+      if (!existingResult) {
+        results.push({
+          exchangeId: marketIdentifier,
+          exchangeName: ticker.market?.name || marketIdentifier,
+          price: ticker.last,
+          base: base,
+          target: target,
+          timestamp: Date.now()
+        });
+      }
+    }
+  });
+
+  return results;
+};
 
 export type TradingPairExchange = {
   exchange_id: string;
@@ -193,17 +339,18 @@ export const cexApi = createApi({
 
     getTradingPairs: build.query<TradingPair[], void>({
       query: () => ({ url: "/trading-pairs", method: "get" }),
-      keepUnusedDataFor: 300, // Cache for 5 minutes
-    })
+      keepUnusedDataFor: 300,
+    }),
+
   }),
 });
 
 export const { 
-  useGetExchangesQuery, 
-  useGetCountriesQuery, 
-  useGetExchangesTickerQuery, 
-  useLazyGetExchangesTickerQuery,
-  useGetCoinGeckoPricesQuery, 
-  useGetExchangesWithTickersQuery,
-  useGetTradingPairsQuery,
+    useGetExchangesQuery, 
+    useGetCountriesQuery, 
+    useGetExchangesTickerQuery, 
+    useLazyGetExchangesTickerQuery,
+    useGetCoinGeckoPricesQuery, 
+    useGetExchangesWithTickersQuery,
+    useGetTradingPairsQuery,
 } = cexApi;
