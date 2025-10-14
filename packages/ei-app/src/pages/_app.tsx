@@ -13,6 +13,7 @@ import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
 import "../libs/axios/axios"
 import { SessionWatcher } from "../../../components/src/components/common/SessionWatcher"
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)
@@ -48,6 +49,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <SessionWatcher />
           <Component {...pageProps} />
         </RootLayout>
+      )}
+      {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GA_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       )}
     </>
   )

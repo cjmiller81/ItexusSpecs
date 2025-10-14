@@ -68,6 +68,7 @@
     "@mui/system": "^5.15.15",
     "@mui/x-data-grid": "^6.19.6",
     "@mui/x-date-pickers": "^6.19.6",
+    "@next/third-parties": "^15.5.4",
     "@ory/client": "1.9.0",
     "@ory/elements": "^0.2.0",
     "@ory/integrations": "^1.1.5",
