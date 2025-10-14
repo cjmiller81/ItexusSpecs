@@ -33,7 +33,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { keyframes } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { Exchange, TradingPair as ApiTradingPair, useGetExchangesQuery, useGetTradingPairsQuery } from './TradeTableApi';
+import { Exchange, TradingPair as ApiTradingPair, useGetExchangesQuery, useGetTradingPairsQuery, ArbitrageMatrixPrice, fetchArbitrageMatrixPrices } from './TradeTableApi';
+import { formatPrice } from '../../utils/arbitrageCalculations';
+import { ArbitrageMatrixCell } from '../../components/ArbitrageMatrixCell';
+import { nativeBarSx } from 'components';
+import { useAppSelector } from '@/libs/redux/Store';
 
 interface ExtendedExchange extends Exchange {
   isSelectAll?: boolean;
@@ -70,6 +74,7 @@ const shimmer = keyframes`
 export default function ArbitrageMatrix() {
   const { t } = useTranslation(["TradeTable"]);
   const theme = useTheme();
+  const { sidebarOpened } = useAppSelector(store => store.ui);
   const AllCountries = "All Countries";
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const { data: tradingPairsFromApi, isLoading: isTradingPairsLoading } = useGetTradingPairsQuery();
@@ -79,6 +84,36 @@ export default function ArbitrageMatrix() {
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
   const [selectedTradingPair, setSelectedTradingPair] = useState<ApiTradingPair | null>(null);
   const [searchText, setSearchText] = useState<string>('');
+  const [arbitragePrices, setArbitragePrices] = useState<ArbitrageMatrixPrice[]>([]);
+  const [isMatrixPricesLoading, setIsMatrixPricesLoading] = useState(false);
+  const [matrixPricesError, setMatrixPricesError] = useState<any>(null);
+  const [exchangesWithoutPrices, setExchangesWithoutPrices] = useState<string[]>([]);
+
+  // Функция для получения цен арбитражной матрицы
+  const handleFetchArbitrageMatrixPrices = async (base: string, target: string, exchangeIds: string[]) => {
+    setIsMatrixPricesLoading(true);
+    setMatrixPricesError(null);
+
+    try {
+      const results = await fetchArbitrageMatrixPrices(base, target, exchangeIds);
+      setArbitragePrices(results);
+
+      // Определяем биржи без цен
+      const exchangesWithPricesIds = results.map(price => price.exchangeId);
+      const exchangesWithoutPricesIds = exchangeIds.filter(id => !exchangesWithPricesIds.includes(id));
+      const exchangesWithoutPricesNames = exchangesWithoutPricesIds.map(id => {
+        const exchange = selectedExchanges.find(ex => ex.id === id);
+        return exchange ? exchange.name : id;
+      });
+      setExchangesWithoutPrices(exchangesWithoutPricesNames);
+
+    } catch (error) {
+      console.error('❌ Error fetching prices:', error);
+      setMatrixPricesError(error);
+    } finally {
+      setIsMatrixPricesLoading(false);
+    }
+  };
 
   const filteredExchanges = useMemo(() => {
     let exchanges = coinGeckoExchangesInitial || [];
@@ -161,6 +196,17 @@ export default function ArbitrageMatrix() {
   const handleExchangeOk = () => {
     setSelectedExchanges(tempSelectedExchanges);
     handleExchangeDropdownClose();
+
+    setArbitragePrices([]);
+    setExchangesWithoutPrices([]);
+    
+    if (selectedTradingPair && tempSelectedExchanges.length > 0) {
+      handleFetchArbitrageMatrixPrices(
+        selectedTradingPair.base,
+        selectedTradingPair.target,
+        tempSelectedExchanges.map(ex => ex.id)
+      );
+    }
   };
 
   const handleExchangeCancel = () => {
@@ -168,30 +214,78 @@ export default function ArbitrageMatrix() {
     handleExchangeDropdownClose();
   };
 
+  const exchangesWithPrices = useMemo(() => {
+    if (arbitragePrices.length === 0) return selectedExchanges;
+    
+    const exchangesWithPricesIds = arbitragePrices.map(price => price.exchangeId);
+    return selectedExchanges.filter(exchange => exchangesWithPricesIds.includes(exchange.id));
+  }, [selectedExchanges, arbitragePrices]);
+
+  const getExchangePrice = (exchangeId: string): React.ReactNode => {
+    const priceData = arbitragePrices.find(price => price.exchangeId === exchangeId);
+    
+    if (priceData && priceData.price) {
+      return formatPrice(priceData.price);
+    }
+    
+    if (isMatrixPricesLoading) {
+      return <CircularProgress size={12} sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)' }} />;
+    }
+    
+    return <Typography variant="caption" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)' }}>-</Typography>;
+  };
+
   return (
-    <Box sx={{ height: "100%", p: 1 }}>
-      <Grid container spacing={2} direction="column">
+       <Grid container spacing={1} direction="column" sx={{ 
+         height: '84vh',
+         width: '100%',
+         display: 'flex',
+         flexDirection: 'column',
+         '@media (min-width: 1920px)': {
+           width: sidebarOpened ? '84vw' : '93vw',
+           height: '75vh',
+         },
+         '@media (min-width: 2560px)': {
+           width: sidebarOpened ? '86vw' : '94vw'
+           ,
+           height: '90vh',
+         },
+         '@media (min-width: 3840px)': {
+           width:'100vw',
+           height: '90vh',
+         }
+       }}>
         <Grid item>
-          <Grid container spacing={2} alignItems="center" sx={{ alignItems: 'center' }}>
-            <Grid item flexDirection={"row"} xs>
+            <Grid item flexDirection={"row"} xs sx={{ width: '100%' }}>
               <Paper
                 elevation={2}
                 sx={{
-                  p: 2,
+                  p: 1.5,
                   backgroundColor: alpha(
                     theme.palette.mode === 'light'
                       ? "#fff"
                       : theme.palette.grey[900],
-                    0.9
+                    1
                   ),
                   borderRadius: 2,
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
+                  width: '100%',
+                  maxWidth: '100%',
                 }}
               >
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                 <Box sx={{ 
+                   display: 'flex', 
+                   flexDirection: 'row', 
+                   alignItems: 'center', 
+                   gap: 3,
+                   overflowX: 'auto',
+                   minWidth: 0,
+                   pb: 1,
+                   ...nativeBarSx
+                 }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                     <Typography
                       variant="body2"
@@ -322,17 +416,21 @@ export default function ArbitrageMatrix() {
                               >
                                 {t("Cancel", { ns: "Common" }) || "Cancel"}
                               </Button>
-                              <Button 
-                                size="small" 
-                                variant="contained" 
-                                onClick={handleExchangeOk}
-                                sx={{ 
-                                  textTransform: 'none',
-                                  color: 'white'
-                                }}
-                              >
-                                {t("OK", { ns: "Common" }) || "OK"}
-                              </Button>
+                               <Button 
+                                 size="small" 
+                                 variant="contained" 
+                                 onClick={handleExchangeOk}
+                                 sx={{ 
+                                   textTransform: 'none',
+                                   color: 'white'
+                                 }}
+                               >
+                                 {isMatrixPricesLoading ? (
+                                   <CircularProgress size={16} sx={{ color: 'white' }} />
+                                 ) : (
+                                   t("OK", { ns: "Common" }) || "OK"
+                                 )}
+                               </Button>
                             </Box>
                           </Paper>
                         )}
@@ -429,9 +527,17 @@ export default function ArbitrageMatrix() {
                     </FormControl>
                   </Box>
 
-                  {selectedTradingPair && selectedExchanges.length > 0 ? (
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 0 }}>
+                   {selectedTradingPair && exchangesWithPrices.length > 0 ? (
+                     <Box sx={{ 
+                       display: 'flex', 
+                       alignItems: 'flex-start', 
+                       gap: 1,
+                       overflowX: 'auto',
+                       minWidth: 0,
+                       pb: 1,
+                       ...nativeBarSx
+                     }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 200 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <HelpOutlineIcon sx={{ fontSize: 18}} />
                           <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -456,7 +562,7 @@ export default function ArbitrageMatrix() {
                         </Box>
                       </Box>
 
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '5', minWidth: 0 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '5', minWidth: 200 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <NearMeIcon sx={{ fontSize: 18,}} />
                           <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -474,7 +580,7 @@ export default function ArbitrageMatrix() {
                         </Typography>
                       </Box>
 
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 0 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 200 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <WarningAmberIcon sx={{ fontSize: 18, }} />
                           <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -545,24 +651,35 @@ export default function ArbitrageMatrix() {
                 </Box>
               </Paper>
             </Grid>
-          </Grid>
+
         </Grid>
 
-        <Grid item sx={{ flex: 1 }}>
-          <Card
-            sx={{
-              height: '100%',
-              minHeight: 400,
-             backgroundColor: alpha(
-                    theme.palette.mode === 'light'
-                      ? "#fff"
-                      : theme.palette.grey[900],
-                    0.9
-                  ),
-              borderRadius: 2,
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
+         <Grid item sx={{ flex: 1, width: '100%', minHeight: 0 }}>
+            <Card
+              sx={{
+                height: '100%',
+                minHeight: selectedTradingPair && selectedExchanges.length > 0 ? 350 : 200,
+                width: '100%',
+                maxWidth: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+               backgroundColor: alpha(
+                      theme.palette.mode === 'light'
+                        ? "#fff"
+                        : theme.palette.grey[900],
+                      0.9
+                    ),
+               borderRadius: 2,
+              }}
+            >
+            <CardContent sx={{ 
+              p: selectedTradingPair && selectedExchanges.length > 0 ? 2 : 1, 
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              minHeight: 0
+            }}>
 
               {selectedTradingPair === null ? (
                 <Box
@@ -767,135 +884,165 @@ export default function ArbitrageMatrix() {
                     </CardContent>
                   </Card>
                 </Box>
-              ) : (
-                <Box>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      mb: 1,
-                      fontWeight: 600,
-                      color: 'white',
-                      textAlign: 'left',
-                    }}
-                  >
-                    {t('ArbitrageMatrixTitle')} {selectedTradingPair?.pair}
-                  </Typography>
-                  
-                  <TableContainer
-                    sx={{
-                      border:`1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell 
-                            sx={{ 
-                              color: theme.palette.mode === 'light' ? 'black' : 'white', 
-                              fontWeight: 'bold',
-                              backgroundColor: 'transparent',
-                              border: `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
-                            }}
-                          ></TableCell>
-                          {selectedExchanges.map((exchange) => (
-                            <TableCell 
-                              key={exchange.id} 
-                              sx={{ 
-                                color: theme.palette.mode === 'light' ? 'black' : 'white', 
-                                fontWeight: 'bold', 
-                                textAlign: 'center',
-                                backgroundColor: 'transparent',
-                                border: `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
-                              }}
-                            >
-                              {exchange.name}
-                              <br />
-                              <Typography variant="caption" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)' }}>
-                                SN/A
-                              </Typography>
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {selectedExchanges.map((rowExchange) => (
-                          <TableRow key={rowExchange.id}>
-                            <TableCell 
-                              sx={{ 
-                                color: theme.palette.mode === 'light' ? 'black' : 'white', 
-                                fontWeight: 'bold',
-                                backgroundColor: 'transparent',
-                                border: 'none',
-                              }}
-                            >
-                              {rowExchange.name}
-                              <br />
-                              <Typography variant="caption" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)' }}>
-                                SN/A
-                              </Typography>
-                            </TableCell>
-                            {selectedExchanges.map((colExchange, index) => (
-                              <TableCell 
-                                key={colExchange.id} 
-                                sx={{ 
-                                  textAlign: 'center',
-                                  border: 'none',
-                                  borderLeft: index === 0 ? `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}` : 'none',
-                                  p: 0,
-                                  minHeight: 80,
-                                  height: 80,
-                                }}
-                              >
-                                {rowExchange.id === colExchange.id ? (
-                                  <Box
-                                    sx={{
-                                      backgroundColor: 'transparent',
-                                      height: '100%',
-                                      width: '100%',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      py: 1,
-                                    }}
-                                  >
-                                    <Typography sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)' }}>-</Typography>
-                                  </Box>
-                                ) : (
-                                  <Box
-                                    sx={{
-                                      backgroundColor: theme.palette.mode === 'light' ? 'rgba(13, 13, 14, 0.1)' : 'rgba(8, 8, 17, 0.1)',
-                                      height: '65%',
-                                      width: '85%',
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                      py: 1,
-                                      margin: 'auto',
-                                    }}
-                                  >
-                                    <Typography sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)' }}>
-                                      -$0.00
-                                    </Typography>
-                                    <Typography variant="caption" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)' }}>
-                                      0%
-                                    </Typography>
-                                  </Box>
-                                )}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              )} 
+               ) : (
+                  <Box sx={{ 
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flex: 1,
+                    minHeight: 0
+                  }}>
+                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                     <Typography
+                       variant="h6"
+                       sx={{
+                         fontWeight: 600,
+                         color: 'white',
+                         textAlign: 'left',
+                       }}
+                     >
+                       {t('ArbitrageMatrixTitle')} {selectedTradingPair?.pair}
+                     </Typography>
+                     {isMatrixPricesLoading && (
+                       <CircularProgress size={20} sx={{ color: 'white' }} />
+                     )}
+                   </Box>
+                   
+                   {isMatrixPricesLoading ? (
+                     <Box sx={{ 
+                       display: 'flex', 
+                       justifyContent: 'center', 
+                       alignItems: 'center', 
+                       flex: 1,
+                       minHeight: 200
+                     }}>
+                       <Box sx={{ textAlign: 'center' }}>
+                         <CircularProgress size={40} />
+                       </Box>
+                     </Box>
+                   ) : exchangesWithPrices.length === 0 ? (
+                     <Box sx={{ 
+                       display: 'flex', 
+                       justifyContent: 'center', 
+                       alignItems: 'center', 
+                       flex: 1,
+                       minHeight: 200
+                     }}>
+                       <Typography variant="body1" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)' }}>
+                         {t('NoPricesAvailable') || 'No prices available for selected exchanges'}
+                       </Typography>
+                     </Box>
+                   ) : (
+                   <TableContainer
+                     sx={{
+                       flex: 1,
+                       minHeight: 0,
+                       width: '100%',
+                       maxWidth: '100%',
+                       border:`1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
+                       borderRadius: 1,
+                       overflow: 'auto',
+                       ...nativeBarSx
+                     }}
+                   >
+                     <Table size="small" stickyHeader >
+                       <TableHead>
+                         <TableRow>
+                             <TableCell 
+                               sx={{ 
+                                 color: theme.palette.mode === 'light' ? 'black' : 'white', 
+                                 fontWeight: 'bold',
+                                 backgroundColor: alpha(theme.palette.background.paper, 0.95),
+                                 border: `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
+                                 position: 'sticky',
+                                 left: 0,
+                                 top: 0,
+                                 zIndex: 3,
+                               }}
+                           ></TableCell>
+                           {exchangesWithPrices.map((exchange) => (
+                             <TableCell 
+                               key={exchange.id} 
+                               sx={{ 
+                                 color: theme.palette.mode === 'light' ? 'black' : 'white', 
+                                 fontWeight: 'bold', 
+                                 textAlign: 'center',
+                                 backgroundColor: alpha(theme.palette.background.paper, 0.95),
+                                 border: `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
+                                 position: 'sticky',
+                                 zIndex: 1,
+                               }}
+                             >
+                               {exchange.name}
+                               <br />
+                               <Typography variant="caption" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)' }}>
+                                 {getExchangePrice(exchange.id)}
+                               </Typography>
+                             </TableCell>
+                           ))}
+                         </TableRow>
+                       </TableHead>
+                       <TableBody>
+                         {exchangesWithPrices.map((rowExchange) => (
+                           <TableRow key={rowExchange.id}>
+                             <TableCell 
+                               sx={{ 
+                                 color: theme.palette.mode === 'light' ? 'black' : 'white', 
+                                 fontWeight: 'bold',
+                                 backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                                 border: 'none',
+                                 position: 'sticky',
+                                 left: 0,
+                                 zIndex: 2,
+                                 borderRight: `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
+                               }}
+                             >
+                               {rowExchange.name}
+                               <br />
+                               <Typography variant="caption" sx={{ color: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)' }}>
+                                 {getExchangePrice(rowExchange.id)}
+                               </Typography>
+                             </TableCell>
+                             {exchangesWithPrices.map((colExchange, index) => (
+                               <TableCell 
+                                 key={colExchange.id} 
+                                 sx={{ 
+                                   textAlign: 'center',
+                                   border: 'none',
+                                   borderLeft: index === 0 ? `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}` : 'none',
+                                   p: 1,
+                                 }}
+                               >
+                                 <ArbitrageMatrixCell
+                                   buyExchangeId={rowExchange.id}
+                                   sellExchangeId={colExchange.id}
+                                   arbitragePrices={arbitragePrices}
+                                   isDiagonal={rowExchange.id === colExchange.id}
+                                 />
+                               </TableCell>
+                             ))}
+                           </TableRow>
+                         ))}
+                       </TableBody>
+                     </Table>
+                   </TableContainer>
+                   )}
+                   
+                   {!isMatrixPricesLoading && exchangesWithoutPrices.length > 0 && (
+                     <Box sx={{ mt: 2, p: 2, backgroundColor: theme.palette.warning.light, borderRadius: 1 }}>
+                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                         <WarningAmberIcon sx={{ color: theme.palette.warning.contrastText }} />
+                         <Typography variant="body2" sx={{ color: theme.palette.warning.contrastText }}>
+                           Price not available for: {exchangesWithoutPrices.join(', ')}
+                         </Typography>
+                       </Box>
+                     </Box>
+                   )}
+                 </Box>
+               )} 
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-    </Box>
   );
 }
