@@ -1,0 +1,2 @@
+export { CryptoNewsAPIFeed } from './CryptoNewsAPIFeed';
+
