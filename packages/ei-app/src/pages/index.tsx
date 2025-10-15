@@ -7,6 +7,7 @@ import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
 import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
+import { CryptoNewsAPIFeed } from "@/features/Dashboard/CryptoNewsAPIFeed";
 import { useGetPoolsQuery } from "@/features/Income/DefiApi";
 import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
@@ -400,6 +401,12 @@ useEffect(() => {
                 onFetchPage={fetchLookupPage}
               />
             </Box>
+          </Grid>
+
+           <Grid
+            item
+            xs={12}>
+            <CryptoNewsAPIFeed />
           </Grid>
         </Grid>
       </Grid>
