@@ -73,131 +73,69 @@ export const fetchArbitrageMatrixPrices = async (
   target: string, 
   exchangeIds: string[]
 ): Promise<ArbitrageMatrixPrice[]> => {
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  
-  let coin: any = null;
-  for (let attempt = 1; attempt <= 5; attempt++) {
-    try {
-      const coinSearchResponse = await fetch(`https://api.coingecko.com/api/v3/search?query=${base.toLowerCase()}`);
-      
-      if (!coinSearchResponse.ok) {
-        if (coinSearchResponse.status === 429 && attempt < 5) {
-          const delayTime = 15000 * attempt;
-          await delay(delayTime);
-          continue;
-        }
-        throw new Error(`Search API error: ${coinSearchResponse.status}`);
-      }
-      
-      const searchData = await coinSearchResponse.json();
-      coin = searchData.coins?.find((c: any) => c.symbol.toLowerCase() === base.toLowerCase());
-      
-      if (!coin) {
-        throw new Error(`Coin ${base} not found`);
-      }
-      
-      break; 
-      
-    } catch (error: any) {
-      if (attempt === 5) {
-        console.error('❌ Error searching for coin:', error);
-        throw error;
-      }
-      
-      const isRateLimitError = error?.message?.includes('429');
-      if (isRateLimitError) {
-        const delayTime = 15000 * attempt;
-        await delay(delayTime);
-        continue;
-      }
-      throw error;
-    }
-  }
-
-  const allTickers: any[] = [];
-  const pagesToFetch = 4;
-  const perPage = 100;
-
-  const fetchPage = async (page: number): Promise<any[]> => {
-    for (let attempt = 1; attempt <= 5; attempt++) {
-      try {
-        const timestamp = Date.now();
-        const tickersResponse = await fetch(
-          `https://api.coingecko.com/api/v3/coins/${coin.id}/tickers?page=${page}&per_page=${perPage}&_t=${timestamp}`
-        );
-
-        if (!tickersResponse.ok) {
-          if (tickersResponse.status === 429 && attempt < 5) {
-            const delayTime = 15000 * attempt;
-            await delay(delayTime);
-            continue;
-          }
-          throw new Error(`Tickers API error: ${tickersResponse.status}`);
-        }
-
-        const tickerData = await tickersResponse.json();
-        return tickerData.tickers || [];
-
-      } catch (error: any) {
-        if (attempt === 5) {
-          console.error(`❌ Error fetching page ${page}:`, error);
-          throw error;
-        }
-        
-        const isRateLimitError = error?.message?.includes('429');
-        const isNetworkError = error?.code === 'ERR_NETWORK';
-        
-        if (isRateLimitError || isNetworkError) {
-          const delayTime = isRateLimitError ? 15000 * attempt : 10000 * attempt;
-          await delay(delayTime);
-          continue;
-        }
-        
-        throw error;
-      }
-    }
-    return [];
-  };
-
-  const pagePromises: Promise<any[]>[] = [];
-  for (let page = 1; page <= pagesToFetch; page++) {
-    pagePromises.push(fetchPage(page));
-  }
-
-  const allPages = await Promise.all(pagePromises);
-  allPages.forEach(pageTickers => {
-    if (pageTickers.length > 0) {
-      allTickers.push(...pageTickers);
-    }
-  });
-
-  const results: ArbitrageMatrixPrice[] = [];
-  const exchangeIdsSet = new Set(exchangeIds.map(id => id.toLowerCase()));
-
-  allTickers.forEach((ticker: any) => {
-    const marketIdentifier = ticker.market?.identifier?.toLowerCase();
+  try {
+    const coinSearchResponse = await fetch(`https://api.coingecko.com/api/v3/search?query=${base.toLowerCase()}`);
     
-    if (
-      ticker.base.toLowerCase() === base.toLowerCase() && 
-      ticker.target.toLowerCase() === target.toLowerCase() &&
-      marketIdentifier &&
-      exchangeIdsSet.has(marketIdentifier)
-    ) {
-      const existingResult = results.find(r => r.exchangeId === marketIdentifier);
-      if (!existingResult) {
-        results.push({
-          exchangeId: marketIdentifier,
-          exchangeName: ticker.market?.name || marketIdentifier,
-          price: ticker.last,
-          base: base,
-          target: target,
-          timestamp: Date.now()
-        });
-      }
+    if (!coinSearchResponse.ok) {
+      throw new Error(`Search API error: ${coinSearchResponse.status}`);
     }
-  });
+    
+    const searchData = await coinSearchResponse.json();
+    const coin = searchData.coins?.find((c: any) => c.symbol.toLowerCase() === base.toLowerCase());
+    
+    if (!coin) {
+      throw new Error(`Coin ${base} not found`);
+    }
 
-  return results;
+    const API_BASE_URL = process.env.BACKEND_API_URL;
+    const response = await fetch(`${API_BASE_URL}/coins/${coin.id}/tickers`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        target: target,
+        exchangeIds: exchangeIds
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Backend API error: ${response.status}`);
+    }
+
+    const tickers = await response.json();
+      
+    const results: ArbitrageMatrixPrice[] = [];
+    const exchangeIdsSet = new Set(exchangeIds.map(id => id.toLowerCase()));
+
+    tickers.forEach((ticker: any) => {
+      const marketIdentifier = ticker.market?.identifier?.toLowerCase();
+      
+      if (
+        ticker.base.toLowerCase() === base.toLowerCase() && 
+        ticker.target.toLowerCase() === target.toLowerCase() &&
+        marketIdentifier &&
+        exchangeIdsSet.has(marketIdentifier)
+      ) {
+        const existingResult = results.find(r => r.exchangeId === marketIdentifier);
+        if (!existingResult) {
+          results.push({
+            exchangeId: marketIdentifier,
+            exchangeName: ticker.market?.name || marketIdentifier,
+            price: ticker.last,
+            base: base,
+            target: target,
+            timestamp: Date.now()
+          });
+        }
+      }
+    });
+
+    return results;
+  } catch (error) {
+    console.error('❌ Error fetching arbitrage matrix prices:', error);
+    throw error;
+  }
 };
 
 export type TradingPairExchange = {
