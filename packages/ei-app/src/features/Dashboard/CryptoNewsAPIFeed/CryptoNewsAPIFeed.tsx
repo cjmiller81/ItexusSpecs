@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import ArticleIcon from '@mui/icons-material/Article';
 
-// Данные для демонстрации (позже можно заменить на реальный API)
 const mockData = [
   {
     "news_url": "https://u.today/crypto-market-prediction-bitcoins-btc-catastrophic-move-ethereum-eth-to-nosedive-to-3000-can-xrp?utm_source=snapi",
@@ -229,7 +228,7 @@ export function CryptoNewsAPIFeed() {
             }}
           >
             <Typography variant="h6">
-              No articles found for "{query}".
+              No articles found for &quot;{query}&quot;.
             </Typography>
           </Box>
         ) : (
