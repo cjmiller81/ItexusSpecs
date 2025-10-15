@@ -16,7 +16,7 @@ const shimmer = keyframes`
   0% {
     left: -100%;
   }
-  100% {
+  50%, 100% {
     left: 100%;
   }
 `;
@@ -72,7 +72,7 @@ export const AnimatedStartTourButton: React.FC<AnimatedStartTourButtonProps> = (
           left: '-100%',
           width: '100%',
           height: '100%',
-          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
           animation: `${shimmer} 2s infinite`,
           zIndex: 0,
         },
