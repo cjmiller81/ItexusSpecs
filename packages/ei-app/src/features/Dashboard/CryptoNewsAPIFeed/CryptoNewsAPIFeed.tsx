@@ -12,6 +12,7 @@ import {
   Paper,
 } from "@mui/material";
 import ArticleIcon from '@mui/icons-material/Article';
+import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 
 const mockData = [
   {
@@ -218,21 +219,25 @@ export function CryptoNewsAPIFeed() {
       </Box>
 
       {/* News Items */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {filteredItems.length === 0 ? (
-          <Box 
-            sx={{ 
-              textAlign: 'center', 
-              py: 8,
-              color: theme.palette.text.secondary 
-            }}
-          >
-            <Typography variant="h6">
-              No articles found for &quot;{query}&quot;.
-            </Typography>
-          </Box>
-        ) : (
-          filteredItems.map((article, index) => (
+      <SimpleBarStyled
+        sx={{
+          height: "400px",
+        }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {filteredItems.length === 0 ? (
+            <Box 
+              sx={{ 
+                textAlign: 'center', 
+                py: 8,
+                color: theme.palette.text.secondary 
+              }}
+            >
+              <Typography variant="h6">
+                No articles found for &quot;{query}&quot;.
+              </Typography>
+            </Box>
+          ) : (
+            filteredItems.map((article, index) => (
             <Card
               key={`${article.news_url}-${index}`}
               component="a"
@@ -342,7 +347,8 @@ export function CryptoNewsAPIFeed() {
             </Card>
           ))
         )}
-      </Box>
+        </Box>
+      </SimpleBarStyled>
 
       {/* Results Counter */}
       {query && (
