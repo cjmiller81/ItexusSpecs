@@ -897,7 +897,6 @@ export default function ArbitrageMatrix() {
                        variant="h6"
                        sx={{
                          fontWeight: 600,
-                         color: 'white',
                          textAlign: 'left',
                        }}
                      >
