@@ -294,6 +294,12 @@ useEffect(() => {
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "8px",
                     minHeight: "36px",
+                    backgroundColor: alpha(
+                      theme.palette.mode === 'light'
+                        ? "#fff"
+                        : theme.palette.grey[800],
+                      1
+                    ),
                   }
                 }}
               />
@@ -327,6 +333,12 @@ useEffect(() => {
                 sx={{
                   minHeight: "36px",
                   borderRadius: "8px",
+                  backgroundColor: alpha(
+                    theme.palette.mode === 'light'
+                      ? "#fff"
+                      : theme.palette.grey[800],
+                    1
+                  ),
                   ".MuiSelect-select": {
                     paddingTop: "8px",
                     paddingBottom: "8px",
@@ -433,6 +445,12 @@ useEffect(() => {
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "8px",
                           minHeight: "36px",
+                          backgroundColor: alpha(
+                            theme.palette.mode === 'light'
+                              ? "#fff"
+                              : theme.palette.grey[800],
+                            1
+                          ),
                         },
                         "& .MuiInputBase-input": {
                           fontSize: 12,
@@ -460,6 +478,12 @@ useEffect(() => {
                         "& .MuiOutlinedInput-root": {
                           borderRadius: "8px",
                           minHeight: "36px",
+                          backgroundColor: alpha(
+                            theme.palette.mode === 'light'
+                              ? "#fff"
+                              : theme.palette.grey[800],
+                            1
+                          ),
                         },
                         "& .MuiInputBase-input": {
                           fontSize: 12,

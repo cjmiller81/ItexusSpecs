@@ -60,6 +60,7 @@ const Button = styled(ButtonBase)(({ theme }) => ({
   justifyContent: "space-between",
   position: "relative",
   width: "100%",
+  backgroundColor: theme.palette.mode === 'light' ? "#fff" : theme.palette.grey[800],
   "&:hover": {
     border: "1px solid rgba(255, 255, 255, 0.87)",
   },
