@@ -1,6 +1,6 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { useGetCalendarEventsQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
-import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
+import NewCryptoCalendar from "@/features/Dashboard/CryptoCalendar/NewCryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
 import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
 import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
@@ -76,8 +76,8 @@ export default function HomePage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
-    moment().startOf("day").toDate(),
-    moment().endOf("day").toDate(),
+    moment.utc().startOf("day").toDate(),
+    moment.utc().add(7, "days").endOf("day").toDate(),
   ]);
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
@@ -358,7 +358,7 @@ useEffect(() => {
             item
             xs={12}
             md={6}
-            lg={4}
+            lg={6}
             id="ei-income-card">
             <IncomeTile
               loading={isPoolsLoading}
@@ -379,34 +379,26 @@ useEffect(() => {
             />
           </Grid>
 
+
           <Grid
             item
             xs={12}
-            md={12}
-            lg={2}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: isMediumScreen ? "row" : "column",
-                gap: 2,
-              }}>
-              <CryptoCalendar
-                loading={false}
-                title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-                icon={<CalendarMonthOutlinedIcon />}
-                calendarData={calendarEvents?.body || []}
-                setSelectedDate={setSelectedDate}
-                selectedDate={selectedDate}
-                sx={{ flex: isMediumScreen ? 4 : 1 }}
-                onFetchPage={fetchLookupPage}
-              />
-            </Box>
-          </Grid>
-
-           <Grid
-            item
-            xs={12}>
+            md={6}>
             <CryptoNewsAPIFeed />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={6}>
+            <NewCryptoCalendar
+              loading={false}
+              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+              icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
+              calendarData={calendarEvents?.body || []}
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+              onFetchPage={fetchLookupPage}
+            />
           </Grid>
         </Grid>
       </Grid>

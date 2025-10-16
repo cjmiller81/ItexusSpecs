@@ -9,6 +9,8 @@ import { AppInputProps } from "../AppInputProps";
 import { ListOnItemsRenderedProps } from "react-window";
 import { IconButton, TextField } from "@mui/material";
 import Search from "@mui/icons-material/Search";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { ListboxComponent } from "./ListBoxComponent";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -33,9 +35,10 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
   color: "#24292e",
   backgroundColor: "#fff",
   boxShadow: `0 8px 24px ${"rgba(149, 157, 165, 0.2)"}`,
-  borderRadius: 4,
+  borderRadius: 8,
   width: 190,
   fontSize: "0.8125rem",
+  zIndex: 1300,
   ...theme.applyStyles("dark", {
     boxShadow: `0 4px 24px ${"rgb(1, 4, 9)"}`,
     backgroundColor: "#363640",
@@ -45,18 +48,23 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
 const Button = styled(ButtonBase)(({ theme }) => ({
   fontSize: 12,
   alignItems: "center",
-  border: "1px solid #71797E",
-  minHeight: "30px",
-  borderRadius: "4px",
-  paddingLeft: "5px",
+  border: "1px solid rgba(255, 255, 255, 0.23)",
+  minHeight: "36px",
+  height: "38px",
+  borderRadius: "8px",
+  paddingLeft: "8px",
+  paddingRight: "8px",
   whiteSpace: "nowrap",
   textOverflow: "ellipsis",
   display: "flex",
   justifyContent: "space-between",
   position: "relative",
+  width: "100%",
+  "&:hover": {
+    border: "1px solid rgba(255, 255, 255, 0.87)",
+  },
   "&:active, &:focus": {
-    border: "2px solid #15c4ff",
-    maxHeight: "30px",
+    border: "1px solid #15c4ff",
   },
   ...theme.applyStyles("dark", {
     color: "#FFFFFF",
@@ -172,7 +180,10 @@ export function CoinsLookup({
       <Button
         disableRipple
         onClick={handleClick}>
-        <label>{nameOfButton}</label>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+              <MonetizationOnIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+              <label style={{ marginTop: "2px" }}>{nameOfButton}</label>
+            </Box>
         <IconContainer>
           {hasSelectedItems ? (
             <IconButton
@@ -198,7 +209,7 @@ export function CoinsLookup({
             <Box
               sx={t => ({
                 borderBottom: `1px solid ${"#30363d"}`,
-                padding: "8px 10px",
+                padding: 0,
                 fontWeight: 600,
                 ...t.applyStyles("light", {
                   borderBottom: `1px solid ${"#eaecef"}`,
@@ -209,6 +220,23 @@ export function CoinsLookup({
                 " .MuiInputBase-root": {
                   display: "flex",
                   flexWrap: "nowrap",
+                  backgroundColor: "transparent",
+                  border: "none",
+                  boxShadow: "none",
+                },
+                " .MuiOutlinedInput-root": {
+                  backgroundColor: "transparent",
+                  border: "none",
+                  boxShadow: "none",
+                  "& fieldset": {
+                    border: "none",
+                  },
+                  "&:hover fieldset": {
+                    border: "none",
+                  },
+                  "&.Mui-focused fieldset": {
+                    border: "none",
+                  },
                 },
               }}
               multiple
@@ -230,11 +258,39 @@ export function CoinsLookup({
                 <TextField
                   placeholder={t("Search")}
                   {...params}
+                  size="small"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      display: "flex",
+                      alignItems: "center",
+                      height: 36,
+                      backgroundColor: "transparent",
+                      border: "none",
+                      boxShadow: "none",
+                      "& fieldset": { border: "none" },
+                      "&:hover fieldset": { border: "none" },
+                      "&.Mui-focused fieldset": { border: "none" },
+                    },
+                    "& .MuiInputBase-input": {
+                      padding: "0 8px",
+                      display: "flex",
+                      alignItems: "center",
+                      height: "auto",
+                      lineHeight: 1.2,
+                    },
+                  }}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
-                      <Box sx={{ display: "flex", flexWrap: "nowrap" }}>
-                        <Search />
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          pr: 1,
+                        }}
+                      >
+                        <Search sx={{ fontSize: 18, color: "text.secondary" }} />
                       </Box>
                     ),
                   }}
