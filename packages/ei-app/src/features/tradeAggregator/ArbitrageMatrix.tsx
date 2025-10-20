@@ -89,7 +89,6 @@ export default function ArbitrageMatrix() {
   const [matrixPricesError, setMatrixPricesError] = useState<any>(null);
   const [exchangesWithoutPrices, setExchangesWithoutPrices] = useState<string[]>([]);
 
-  // Функция для получения цен арбитражной матрицы
   const handleFetchArbitrageMatrixPrices = async (base: string, target: string, exchangeIds: string[]) => {
     setIsMatrixPricesLoading(true);
     setMatrixPricesError(null);
@@ -98,7 +97,6 @@ export default function ArbitrageMatrix() {
       const results = await fetchArbitrageMatrixPrices(base, target, exchangeIds);
       setArbitragePrices(results);
 
-      // Определяем биржи без цен
       const exchangesWithPricesIds = results.map(price => price.exchangeId);
       const exchangesWithoutPricesIds = exchangeIds.filter(id => !exchangesWithPricesIds.includes(id));
       const exchangesWithoutPricesNames = exchangesWithoutPricesIds.map(id => {
@@ -177,6 +175,12 @@ export default function ArbitrageMatrix() {
       .filter(country => countryCounts[country] >= 2)
       .sort();
   }, [coinGeckoExchangesInitial, selectedTradingPair]);
+
+  const orderedFilteredCountries = useMemo(() => {
+    const unique = Array.from(new Set(filteredCountries));
+    const rest = unique.filter(c => c !== 'United States');
+    return [AllCountries, 'United States', ...rest];
+  }, [filteredCountries]);
 
 
   const handleCountrySelect = (country: string) => {
@@ -510,7 +514,7 @@ export default function ArbitrageMatrix() {
                         disableClearable
                         size="small"
                         disabled={!selectedTradingPair}
-                        options={[AllCountries, ...filteredCountries]}
+                        options={orderedFilteredCountries}
                         getOptionLabel={(option) => option}
                         value={selectedCountry}
                         onChange={(event, newValue) => {
