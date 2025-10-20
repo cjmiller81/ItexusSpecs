@@ -159,7 +159,8 @@ const CryptoCalendar: React.FC<Props> = ({
               displayEmpty
               renderValue={getRenderValue}
               sx={{
-                minHeight: "30px",
+                minHeight: "38px",
+                borderRadius: "8px",
                 ".MuiSelect-select": {
                   paddingTop: "4px",
                   textOverflow: "clip",
@@ -185,7 +186,7 @@ const CryptoCalendar: React.FC<Props> = ({
               theme.palette.mode === "dark"
                 ? "transparent !important"
                 : "#fff !important",
-            height: "519px",
+            height: "512px",
             "@media (min-width: 1200px) and (max-width: 1800px)": {
               height: "483px",
             },
