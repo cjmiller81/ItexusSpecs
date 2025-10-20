@@ -67,6 +67,8 @@ const NewCryptoCalendar: React.FC<Props> = ({
   const [activeKeyword, setActiveKeyword] = useState<string>("");
   const [initialCalendarData, setInitialCalendarData] = useState<CalendarEvent[]>([]);
   const [initialWeekCount, setInitialWeekCount] = useState<number>(0);
+  const categoryControlRef = useRef<HTMLDivElement | null>(null);
+  const [useShortCategoryLabel, setUseShortCategoryLabel] = useState<boolean>(false);
   const currentUtcDayRef = useRef<number>(moment.utc().startOf("day").valueOf());
   const shouldRefreshCountersRef = useRef<boolean>(false);
   const { data: items } = useGetCategoriesQuery();
@@ -77,6 +79,17 @@ const NewCryptoCalendar: React.FC<Props> = ({
       setCategoriesData(items);
     }
   }, [items]);
+
+useEffect(() => {
+  const measure = () => {
+    const width = categoryControlRef.current?.offsetWidth || 0;
+    // если места мало, используем короткий лейбл
+    setUseShortCategoryLabel(width < 140);
+  };
+  measure();
+  window.addEventListener('resize', measure);
+  return () => window.removeEventListener('resize', measure);
+}, []);
 
 useEffect(() => {
   if (calendarData.length === 0) return;
@@ -153,12 +166,13 @@ useEffect(() => {
 
   const getRenderValue = (selected: string[]) => {
     if (selected.length === 0) {
-      return t("Category");
+      return useShortCategoryLabel ? "Categ.." : t("Category");
     }
     if (selected.length === 1) {
       const selectedCategory = categories.find(category => category.id.toString() === selected[0]);
       return selectedCategory ? selectedCategory.name : "";
-    } else return `${selected.length} ${t("Selected", { ns: "Common" })}`;
+    }
+    return `${selected.length} ${useShortCategoryLabel ? "Sel" : t("Selected", { ns: "Common" })}`;
   };
 
   const handleCategorySelect = (event: SelectChangeEvent<string[]>) => {
@@ -275,7 +289,7 @@ useEffect(() => {
         }}>
           <Box sx={{ borderRadius: "10px", backgroundColor: alpha(theme.palette.background.paper, 0.6), p: 2, border: `1px solid ${theme.palette.divider}`, }}>
           <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-            <FormControl sx={{ flex: 0.8 }}>
+            <FormControl sx={{ flex: 0.7 }}>
               <TextField
                 fullWidth
                 size="small"
@@ -293,7 +307,7 @@ useEffect(() => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "8px",
-                    minHeight: "36px",
+                    minHeight: "38px",
                     backgroundColor: alpha(
                       theme.palette.mode === 'light'
                         ? "#fff"
@@ -305,14 +319,14 @@ useEffect(() => {
               />
             </FormControl>
 
-            <FormControl sx={{ flex: 0.8 }}>
+            <FormControl sx={{ flex: 0.7 }} ref={categoryControlRef}>
               <Select
                 startAdornment={
                   <FilterListIcon sx={{ 
-                    fontSize: 16, 
+                    fontSize: 14, 
                     color: "text.secondary", 
-                    mr: 1,
-                    ml: 0.5
+                    mr: 0.5,
+                    flexShrink: 0
                   }} />
                 }
                 endAdornment={
@@ -320,7 +334,7 @@ useEffect(() => {
                     <IconButton
                       onClick={handleResetCategories}
                       size="small"
-                      sx={{ mr: 1, p: 0 }}>
+                      sx={{ mr: 0.5, p: 0, flexShrink: 0 }}>
                       <ClearIcon fontSize="small" />
                     </IconButton>
                   ) : null
@@ -331,8 +345,9 @@ useEffect(() => {
                 displayEmpty
                 renderValue={getRenderValue}
                 sx={{
-                  minHeight: "36px",
+                  minHeight: "38px",
                   borderRadius: "8px",
+                  paddingLeft: '8px',
                   backgroundColor: alpha(
                     theme.palette.mode === 'light'
                       ? "#fff"
@@ -340,16 +355,21 @@ useEffect(() => {
                     1
                   ),
                   ".MuiSelect-select": {
-                    paddingTop: "8px",
-                    paddingBottom: "8px",
-                    paddingLeft: "8px",
-                    fontSize: 12,
+                    paddingTop: "6px",
+                    paddingBottom: "6px",
+                    paddingRight: "4px",
+                    fontSize: 11,
                     display: "flex",
                     alignItems: "center",
-                    marginTop: "2px"
+                    marginTop: "2px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    minWidth: 0
                   },
                   "& .MuiSelect-icon": {
-                    right: "8px",
+                    right: "4px",
+                    fontSize: "16px"
                   }
                 }}>
                 {filteredCategories.map(category => (
@@ -362,7 +382,7 @@ useEffect(() => {
               </Select>
             </FormControl>
 
-            <FormControl sx={{ flex: 0.8 }}>
+            <FormControl sx={{ flex: 0.7 }}>
               <CoinsLookupVirtualized
                 pageSize={50}
                 onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
@@ -428,7 +448,7 @@ useEffect(() => {
               />
             </FormControl>
 
-            <Box sx={{ flex: 1.4, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ flex: 1.5, display: "flex", alignItems: "center", gap: 1 }}>
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DatePicker
                   label="From"

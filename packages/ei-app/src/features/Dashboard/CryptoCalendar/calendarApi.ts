@@ -6,6 +6,7 @@
     reducerPath: "calendarEventsApi",
     baseQuery: fetchBaseQuery({
       baseUrl: process.env.BACKEND_API_URL,
+      credentials: 'include',
     }),
     endpoints: builder => ({
       getCalendarEvents: builder.query<CalendarResponse, { page: number; max: number; fromDate: Date; toDate: Date }>({
@@ -29,6 +30,7 @@ export const categoriesEventsApi = createApi({
   reducerPath: "categoriesEventsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.BACKEND_API_URL,
+    credentials: 'include',
   }),
   endpoints: (builder) => ({
     getCategories: builder.query<CategoriesResponse, void>({

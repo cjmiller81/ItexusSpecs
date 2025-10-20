@@ -89,7 +89,6 @@ export default function ArbitrageMatrix() {
   const [matrixPricesError, setMatrixPricesError] = useState<any>(null);
   const [exchangesWithoutPrices, setExchangesWithoutPrices] = useState<string[]>([]);
 
-  // Функция для получения цен арбитражной матрицы
   const handleFetchArbitrageMatrixPrices = async (base: string, target: string, exchangeIds: string[]) => {
     setIsMatrixPricesLoading(true);
     setMatrixPricesError(null);
@@ -98,7 +97,6 @@ export default function ArbitrageMatrix() {
       const results = await fetchArbitrageMatrixPrices(base, target, exchangeIds);
       setArbitragePrices(results);
 
-      // Определяем биржи без цен
       const exchangesWithPricesIds = results.map(price => price.exchangeId);
       const exchangesWithoutPricesIds = exchangeIds.filter(id => !exchangesWithPricesIds.includes(id));
       const exchangesWithoutPricesNames = exchangesWithoutPricesIds.map(id => {

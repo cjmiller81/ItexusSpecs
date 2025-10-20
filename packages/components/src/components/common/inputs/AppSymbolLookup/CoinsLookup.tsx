@@ -181,20 +181,20 @@ export function CoinsLookup({
       <Button
         disableRipple
         onClick={handleClick}>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-              <MonetizationOnIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-              <label style={{ marginTop: "2px" }}>{nameOfButton}</label>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 0, flex: 1 }}>
+              <MonetizationOnIcon sx={{ fontSize: 14, color: "text.secondary", flexShrink: 0 }} />
+              <label style={{ marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{nameOfButton}</label>
             </Box>
-        <IconContainer>
+        <IconContainer sx={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
           {hasSelectedItems ? (
             <IconButton
               onClick={handleClearSelection}
               size="small"
-              sx={{ ml: 1, maxWidth: "13px", maxHeight: "15px" }}>
+              sx={{ ml: 0.5, maxWidth: "13px", maxHeight: "15px" }}>
               <ClearIcon sx={{ maxWidth: "17px" }} />
             </IconButton>
           ) : (
-            <span style={{ marginLeft: "40px", marginTop: "3px" }}>
+            <span style={{ marginLeft: "4px", marginTop: "3px", fontSize: "16px" }}>
               {isOpen ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
             </span>
           )}

@@ -1,6 +1,7 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { useGetCalendarEventsQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import NewCryptoCalendar from "@/features/Dashboard/CryptoCalendar/NewCryptoCalendar";
+import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
 import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
 import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
@@ -358,7 +359,7 @@ useEffect(() => {
             item
             xs={12}
             md={6}
-            lg={6}
+            lg={5}
             id="ei-income-card">
             <IncomeTile
               loading={isPoolsLoading}
@@ -371,14 +372,28 @@ useEffect(() => {
             item
             xs={12}
             md={6}
-            lg={6}
+            lg={5}
             id="ei-tools-section">
             <TradingViewTile
               icon={<SyncAltIcon />}
               title={t("TradingTile")}
             />
           </Grid>
-
+          <Grid
+            item
+            xs={12}
+            md={12}
+            lg={2}>
+            <CryptoCalendar
+              loading={false}
+              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+              icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
+              calendarData={calendarEvents?.body || []}
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+              onFetchPage={fetchLookupPage}
+            />
+          </Grid>
 
           <Grid
             item
