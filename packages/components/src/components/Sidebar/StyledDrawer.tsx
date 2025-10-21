@@ -34,10 +34,16 @@ export const StyledDrawer: any = styled(MuiDrawer, {
   boxSizing: "border-box",
   ...(open && {
     ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...openedMixin(theme),
+      backgroundColor: theme.palette.mode === "light" ? "#363640" : theme.palette.background.paper,
+    },
   }),
   ...(!open && {
     ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...closedMixin(theme),
+      backgroundColor: theme.palette.mode === "light" ? "#363640" : theme.palette.background.paper,
+    },
   }),
 }));
