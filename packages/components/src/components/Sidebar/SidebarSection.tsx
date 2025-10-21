@@ -27,7 +27,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
           sx={{
             fontWeight: "bold",
             fontSize: "0.75rem",
-            color: theme.palette.text.secondary,
+            color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.secondary,
             display: "block",
             mb: 0.5
           }}
@@ -39,7 +39,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
           sx={{
             fontSize: "0.7rem",
             lineHeight: 1.3,
-            color: theme.palette.text.primary,
+            color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
             display: "block",
             whiteSpace: "normal",
             wordWrap: "break-word"
@@ -53,7 +53,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
 
   return (
     <List
-      sx={{ width: "100%", bgcolor: "background.paper", pb: 0, overflowX: "hidden" }}
+      sx={{ width: "100%", bgcolor: theme.palette.mode === "light" ? "#363640" : "background.paper", pb: 0, overflowX: "hidden" }}
       component="nav"
       onClick={() => toggleSide(true)}
       aria-labelledby="tools-subheader"
@@ -68,6 +68,8 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
               px: 2,
               py: 0.5,
               lineHeight: 1.2,
+              backgroundColor: "#363640",
+              color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.secondary,
             }}
             component="div"
             id="tools-subheader"
@@ -77,6 +79,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
+                backgroundColor: "#363640"
               }}
             >
               <span>{sectionName}</span>
@@ -114,8 +117,12 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                 passHref
                 href={item.href}
                 shallow>
-                <ListItemButton sx={{ pl: 1.5, justifyContent: "flex-start" }}>
-                  {item.icon && <span style={{ marginRight: "12px", marginTop: "2px" }}>{item.icon}</span>}
+                <ListItemButton sx={{ 
+                  pl: 1.5, 
+                  justifyContent: "flex-start",
+                  borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
+                }}>
+                  {item.icon && <span style={{ marginRight: "12px", marginTop: "2px", color: theme.palette.mode === "light" ? "#ffffff" : "inherit" }}>{item.icon}</span>}
                   <ListItemText
                     primary={item.title}
                     primaryTypographyProps={{
@@ -123,6 +130,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                       sx: {
                         fontSize: "15px ",
                         fontWeight: 600,
+                        color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
                       }
                     }}
                     sx={{ textAlign: "left" }}

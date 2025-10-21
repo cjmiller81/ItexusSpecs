@@ -36,7 +36,20 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
           minHeight: 48,
           paddingLeft: 1.5,
           paddingRight: 2.5,
-          borderRadius: "8px",
+          borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
+          "&.Mui-selected": {
+            backgroundColor: theme.palette.mode === "light" ? "#3e4d4c" : theme.palette.primary.main,
+            color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.primary.contrastText,
+            "&::before": theme.palette.mode === "light" ? {
+              content: '""',
+              position: "absolute",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: "4px",
+              backgroundColor: "#219a83",
+            } : {},
+          },
         }}
         onClick={() => setOpen(!open)}>
         {item.icon && (
@@ -45,13 +58,20 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               minWidth: 0,
               mr: 1.5,
               justifyContent: "center",
+              color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
             }}>
             {item.icon}
           </ListItemIcon>
         )}
         <ListItemText
           primary={item.title}
-          sx={{ opacity: 1, textAlign: "left" }}
+          sx={{ 
+            opacity: 1, 
+            textAlign: "left",
+            "& .MuiListItemText-primary": {
+              color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+            }
+          }}
           primaryTypographyProps={{
             variant: "body1",
               sx: {
@@ -60,7 +80,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
             }
           }}
         />
-        {item.children ? open ? <ExpandLess /> : <ExpandMore /> : null}
+        {item.children ? open ? <ExpandLess sx={{ color: theme.palette.mode === "light" ? "#ffffff" : undefined }} /> : <ExpandMore sx={{ color: theme.palette.mode === "light" ? "#ffffff" : undefined }} /> : null}
       </StyledListItemButton>
 
       {item.children && (
@@ -95,14 +115,23 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                     sx={{
                       pl: 3,
                       justifyContent: "flex-start",
-                      borderRadius: "8px",
+                      borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
                       "&.Mui-selected:hover": {
-                        backgroundColor: "#219a83",
+                        backgroundColor: theme.palette.mode === "light" ? "#3e4d4c" : "#219a83",
                       },
                       "&.Mui-selected": {
-                        backgroundColor: "#219a83",
-                        color: theme.palette.primary.main,
+                        backgroundColor: theme.palette.mode === "light" ? "#3e4d4c" : "#219a83",
+                        color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.primary.main,
                         fontWeight: 600,
+                        "&::before": theme.palette.mode === "light" ? {
+                          content: '""',
+                          position: "absolute",
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: "4px",
+                          backgroundColor: "#219a83",
+                        } : {},
                       },
                     }}
                   >
@@ -114,7 +143,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                         sx: {
                           fontSize: "14px",
                           fontWeight: 420,
-                          color: isChildSelected ? "#FFFFFF" : theme.palette.mode === "light" ? "#707070" : "lightgray",
+                          color: isChildSelected ? "#FFFFFF" : theme.palette.mode === "light" ? "#ffffff" : "lightgray",
                         }
                       }}
                     />
