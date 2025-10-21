@@ -38,9 +38,10 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
           paddingRight: 2.5,
           borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
           "&.Mui-selected": {
-            backgroundColor: theme.palette.mode === "light" ? "#3e4d4c" : theme.palette.primary.main,
-            color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.primary.contrastText,
-            "&::before": theme.palette.mode === "light" ? {
+            backgroundColor: "#3e4d4c",
+            color: "#ffffff",
+            fontWeight: 600,
+            "&::before": {
               content: '""',
               position: "absolute",
               left: 0,
@@ -48,7 +49,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               bottom: 0,
               width: "4px",
               backgroundColor: "#219a83",
-            } : {},
+            },
           },
         }}
         onClick={() => setOpen(!open)}>
@@ -117,13 +118,13 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                       justifyContent: "flex-start",
                       borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
                       "&.Mui-selected:hover": {
-                        backgroundColor: theme.palette.mode === "light" ? "#3e4d4c" : "#219a83",
+                        backgroundColor: "#3e4d4c",
                       },
                       "&.Mui-selected": {
-                        backgroundColor: theme.palette.mode === "light" ? "#3e4d4c" : "#219a83",
-                        color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.primary.main,
+                        backgroundColor: "#3e4d4c",
+                        color: "#ffffff",
                         fontWeight: 600,
-                        "&::before": theme.palette.mode === "light" ? {
+                        "&::before": {
                           content: '""',
                           position: "absolute",
                           left: 0,
@@ -131,7 +132,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                           bottom: 0,
                           width: "4px",
                           backgroundColor: "#219a83",
-                        } : {},
+                        },
                       },
                     }}
                   >
@@ -154,8 +155,8 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                           ml: 2,
                           px: 1,
                           py: 0.2,
-                          backgroundColor: theme.palette.mode === "light" ? "#e0e0e0" : "#424242",
-                          color: theme.palette.mode === "light" ? "#333" : "lightgray",
+                          backgroundColor: "#424242",
+                          color: "lightgray",
                           borderRadius: "4px",
                           fontSize: "10px",
                           fontWeight: 500,

@@ -90,10 +90,8 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                     px: 0.7,
                     py: 0.3,
                     marginLeft:"25%",
-                    backgroundColor:
-                      theme.palette.mode === "light" ? "#e0e0e0" : "#424242",
-                    color:
-                      theme.palette.mode === "light" ? "#333" : "lightgray",
+                    backgroundColor:"#424242",
+                    color: "lightgray",
                     borderRadius: "4px",
                     fontSize: "9px",
                     fontWeight: 500,
