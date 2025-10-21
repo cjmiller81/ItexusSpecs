@@ -122,12 +122,20 @@ export const HistoricalWalletsWorth = ({
               value="growth"
               sx={{
                 "&.Mui-selected": {
-                  color: "white",
-                  backgroundColor: "#219a83",
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
                   "&:hover": {
-                    backgroundColor: "#219a83",
+                    backgroundColor: "#f7f5f2",
                   },
                 },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": {
+                    backgroundColor: "#e5ddd5",
+                  },
+                },
+                borderColor: "#e5ddd5",
               }}
             >
               {t("Growth")}
@@ -136,12 +144,20 @@ export const HistoricalWalletsWorth = ({
               value="value"
               sx={{
                 "&.Mui-selected": {
-                  color: "white",
-                  backgroundColor: "#219a83",
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
                   "&:hover": {
-                    backgroundColor: "#219a83",
+                    backgroundColor: "#f7f5f2",
                   },
                 },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": {
+                    backgroundColor: "#e5ddd5",
+                  },
+                },
+                borderColor: "#e5ddd5",
               }}
             >
               {t("Value")}
@@ -384,7 +400,7 @@ export const HistoricalWalletsWorth = ({
 
 export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   flexDirection: "row",
-  backgroundColor:"transparent",
+   backgroundColor: theme.palette.mode === 'light' ? "#f7f5f2" : "transparent",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },

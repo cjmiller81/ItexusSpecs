@@ -62,7 +62,6 @@ const networkMap: Record<string, string> = {
     "avalanche": "Avalanche"
 };
 
-
   return (
     <Box mt={2} sx={{ width: "100%", maxWidth: "100%", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}>
       <Card elevation={3} sx={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
@@ -71,7 +70,7 @@ const networkMap: Record<string, string> = {
           maxWidth: "100%", 
           minWidth: 0, 
           boxSizing: "border-box",
-          backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "#f7f5f2",
+          backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "#f0ece5",
         }}>
           <TableContainer component={Paper} elevation={0} sx={{ backgroundColor: 'transparent' }}>
             <Table size="small">

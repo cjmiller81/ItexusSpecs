@@ -388,7 +388,7 @@ export default function MyWalletsPage() {
             borderRadius: "10px",
             boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
             backgroundColor:
-              theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+              theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
             padding: 2,
             paddingTop:"20px"
           }}
