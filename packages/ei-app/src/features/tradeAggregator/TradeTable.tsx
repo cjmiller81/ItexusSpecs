@@ -84,6 +84,12 @@ export function TradeTable() {
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
+  const orderedCountries = React.useMemo(() => {
+    const source = countries || [];
+    const unique = Array.from(new Set(source));
+    const rest = unique.filter((c) => c !== AllCountries && c !== "United States");
+    return [AllCountries, "United States", ...rest];
+  }, [countries]);
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
   const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken, {
@@ -792,7 +798,7 @@ export function TradeTable() {
                       <Autocomplete
                         disableClearable
                         size="small"
-                        options={countries || []}
+                        options={orderedCountries}
                         loading={isCoutriesLoading}
                         getOptionLabel={(option) => option} 
                         value={selectedCountry}

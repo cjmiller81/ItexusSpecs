@@ -176,6 +176,12 @@ export default function ArbitrageMatrix() {
       .sort();
   }, [coinGeckoExchangesInitial, selectedTradingPair]);
 
+  const orderedFilteredCountries = useMemo(() => {
+    const unique = Array.from(new Set(filteredCountries));
+    const rest = unique.filter(c => c !== 'United States');
+    return [AllCountries, 'United States', ...rest];
+  }, [filteredCountries]);
+
 
   const handleCountrySelect = (country: string) => {
     setSelectedCountry(country);
@@ -508,7 +514,7 @@ export default function ArbitrageMatrix() {
                         disableClearable
                         size="small"
                         disabled={!selectedTradingPair}
-                        options={[AllCountries, ...filteredCountries]}
+                        options={orderedFilteredCountries}
                         getOptionLabel={(option) => option}
                         value={selectedCountry}
                         onChange={(event, newValue) => {

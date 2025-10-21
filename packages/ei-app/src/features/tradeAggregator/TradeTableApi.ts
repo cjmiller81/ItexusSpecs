@@ -93,6 +93,7 @@ export const fetchArbitrageMatrixPrices = async (
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         target: target,
         exchangeIds: exchangeIds
