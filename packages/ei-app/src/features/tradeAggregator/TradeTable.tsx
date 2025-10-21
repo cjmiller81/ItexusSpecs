@@ -659,7 +659,7 @@ export function TradeTable() {
           minHeight: "calc(100vh - 40%)",
           boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
           backgroundColor:
-            theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+            theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
             padding: 2,
           }}
       >
@@ -671,16 +671,18 @@ export function TradeTable() {
              color="primary"
              onClick={() => setActiveTab("Trading Pairs")}
              startIcon={<SwapVertIcon sx={{ 
-               color: activeTab === "Trading Pairs" ? "#fff" : undefined 
+               color: activeTab === "Trading Pairs" ? "#000" : "#000" 
              }} />}
              sx={{
                textTransform: "none",
                fontWeight: 500,
                fontSize: "0.875rem",
-               backgroundColor: activeTab === "Trading Pairs" ? "#219a83" : undefined,
-               color: activeTab === "Trading Pairs" ? "#fff" : undefined,
+               backgroundColor: activeTab === "Trading Pairs" ? "#f7f5f2" : "#e5ddd5",
+               color: activeTab === "Trading Pairs" ? "#000" : "#000",
+               borderColor: "#e5ddd5",
                "&:hover": {
-                 backgroundColor: activeTab === "Trading Pairs" ? "#219a83" : undefined,
+                 backgroundColor: activeTab === "Trading Pairs" ? "#f7f5f2" : "#e5ddd5",
+                 borderColor: "#e5ddd5",
                },
              }}>
                {t("TradingPairs")}
@@ -691,15 +693,19 @@ export function TradeTable() {
              variant={activeTab === "Arbitrage Matrix" ? "contained" : "outlined"}
              color="primary"
              onClick={() => setActiveTab("Arbitrage Matrix")}
-             startIcon={<TrendingUpIcon />}
+             startIcon={<TrendingUpIcon sx={{ 
+               color: activeTab === "Arbitrage Matrix" ? "#000" : "#000" 
+             }} />}
              sx={{
                textTransform: "none",
                fontWeight: 500,
                fontSize: "0.875rem",
-               backgroundColor: activeTab === "Arbitrage Matrix" ? "#219a83" : undefined,
-               color: activeTab === "Arbitrage Matrix" ? "#fff" : undefined,
+               backgroundColor: activeTab === "Arbitrage Matrix" ? "#f7f5f2" : "#e5ddd5",
+               color: activeTab === "Arbitrage Matrix" ? "#000" : "#000",
+               borderColor: "#e5ddd5",
                "&:hover": {
-                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#219a83" : undefined,
+                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#f7f5f2" : "#e5ddd5",
+                 borderColor: "#e5ddd5",
                },
              }}>
                {t("ArbitrageMatrix")}

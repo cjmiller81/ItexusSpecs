@@ -32,7 +32,7 @@ export const AppChart = ({ optionsOverrides, series, height, ...props }: Props) 
       },
     },
     chart: {
-      background: theme.palette.mode === "dark" ? "transparent" : "#e2e2e2",
+      background: "transparent",
       foreColor: theme.palette.text.primary,
       toolbar: {
         tools: {

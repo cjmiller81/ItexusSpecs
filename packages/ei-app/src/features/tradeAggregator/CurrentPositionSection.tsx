@@ -473,7 +473,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               marginLeft: "8px",
               marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
               marginTop: { lg: "0%", md: "1.5%", xs: "4%" },
-              backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+              backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
             }}>
 
              <Grid

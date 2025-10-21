@@ -20,12 +20,12 @@ export const DexWalletsTable = styled(BasicTable, {
     backgroundColor:
       theme.palette.mode === "dark"
         ? "#1f2937"
-        : "transparent",
+        : "#f7f5f2",
   }, 
     "& .MuiDataGrid-row.Mui-selected": {
     backgroundColor: theme.palette.mode === "dark"
         ? "#1f2937"
-        : "white", 
+        : "#f0ece5", 
     },
   "&.MuiDataGrid-root.MuiDataGrid-withBorderColor": {
     borderWidth: "1px",

@@ -737,7 +737,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
         borderRadius: "10px",
         boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
         backgroundColor:
-          theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+          theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
         padding: 2,
       }}
     >
@@ -751,10 +751,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               textTransform: "none",
               fontWeight: 500,
               fontSize: "0.875rem",
-              backgroundColor: activeTab === "swap" ? "#219a83" : undefined,
-              color: activeTab === "swap" ? "#fff" : undefined,
+              backgroundColor: activeTab === "swap" ? "#f7f5f2" : "#e5ddd5",
+              color: activeTab === "swap" ? "#000" : "#000",
+              borderColor: "#e5ddd5",
               "&:hover": {
-                backgroundColor: activeTab === "swap" ? "#219a83" : undefined,
+                backgroundColor: activeTab === "swap" ? "#f7f5f2" : "#e5ddd5",
+                borderColor: "#e5ddd5",
               },
             }}
           >
@@ -772,10 +774,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               textTransform: "none",
               fontWeight: 500,
               fontSize: "0.875rem",
-              backgroundColor: activeTab === "bridge" ? "#219a83" : undefined,
-              color: activeTab === "bridge" ? "#fff" : undefined,
+              backgroundColor: activeTab === "bridge" ? "#f7f5f2" : "#e5ddd5",
+              color: activeTab === "bridge" ? "#000" : "#000",
+              borderColor: "#e5ddd5",
               "&:hover": {
-                backgroundColor: activeTab === "bridge" ? "#219a83" : undefined,
+                backgroundColor: activeTab === "bridge" ? "#f7f5f2" : "#e5ddd5",
+                borderColor: "#e5ddd5",
               },
             }}
           >
