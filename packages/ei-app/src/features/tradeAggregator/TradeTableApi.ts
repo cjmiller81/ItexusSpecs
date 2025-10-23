@@ -7,6 +7,7 @@ export type Exchange = {
   name: string;
   url: string;
   centralized: boolean;
+  trade_volume_24h_btc: number | null;
   tickers?: CoinGeckoTicker[];
 }
 

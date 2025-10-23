@@ -230,8 +230,17 @@ export function TradeTable() {
 
   useEffect(() => {
     if (coinGeckoExchangesInitial) {
-      setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => selectedCountry == AllCountries 
-        || x.country == selectedCountry));
+      const filtered = coinGeckoExchangesInitial.filter(x => selectedCountry == AllCountries 
+        || x.country == selectedCountry);
+      
+      const sorted = [...filtered].sort((a, b) => {
+        if (a.trade_volume_24h_btc === null && b.trade_volume_24h_btc === null) return 0;
+        if (a.trade_volume_24h_btc === null) return 1;
+        if (b.trade_volume_24h_btc === null) return -1;
+        return b.trade_volume_24h_btc - a.trade_volume_24h_btc;
+      });
+      
+      setCoinGeckoExchanges(sorted);
     }
   }, [coinGeckoExchangesInitial, selectedCountry]);
   
