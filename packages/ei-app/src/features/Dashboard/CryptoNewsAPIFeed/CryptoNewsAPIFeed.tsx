@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -10,84 +10,23 @@ import {
   useTheme,
   alpha,
   Paper,
+  CircularProgress,
+  Button,
 } from "@mui/material";
 import ArticleIcon from '@mui/icons-material/Article';
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import {
+  fetchNewsByTickerAsync,
+  fetchNewsByCategoryAsync,
+  clearNewsByTicker,
+  clearNewsByCategory,
+  setCurrentPage,
+} from "@/slices/cryptoNewsSlice";
 
-const mockData = [
-  {
-    "news_url": "https://u.today/crypto-market-prediction-bitcoins-btc-catastrophic-move-ethereum-eth-to-nosedive-to-3000-can-xrp?utm_source=snapi",
-    "image_url": "https://crypto.snapi.dev/images/v1/w/c/w/s9556-795866.jpg",
-    "title": "Crypto Market Prediction: Bitcoin's (BTC) Catastrophic Move, Ethereum (ETH) to Nosedive to $3,000? Can XRP Reach $3 Again in 2025?",
-    "text": "The market is getting ready for a proper move toward values that were previously lost; however, the buy-side volume we had is nowhere near the threshold needed to see prices like $3 for XRP, $4,000 for Ethereum and $120,000 for Bitcoin.",
-    "source_name": "UToday",
-    "date": "Tue, 14 Oct 2025 20:01:00 -0400",
-    "topics": ["priceforecast", "pricemovement"],
-    "sentiment": "Negative",
-    "type": "Article",
-    "tickers": ["BTC", "ETH", "XRP"]
-  },
-  {
-    "news_url": "https://www.tokenpost.com/news/people/17115",
-    "image_url": "https://crypto.snapi.dev/images/v1/a/t/d/btc74-571641-795860.jpg",
-    "title": "Jerome Powell's Dovish Shift Sparks Bitcoin Rally Amid Fed Rate Cut Expectations",
-    "text": "Federal Reserve Chair Jerome Powell has signaled a dovish turn in monetary policy, emphasizing rising risks in the U.S. labor market a move that has fueled optimism for another Fed rate cut this month and triggered a rebound in Bitcoin prices. Speaking at the Annual Meeting of the National Association for Business Economics, Powell noted that the outlook for employment and inflation has remained largely unchanged since September.",
-    "source_name": "Tokenpost",
-    "date": "Tue, 14 Oct 2025 19:59:20 -0400",
-    "topics": ["regulations", "pricemovement"],
-    "sentiment": "Positive",
-    "type": "Article",
-    "tickers": ["BTC"]
-  },
-  {
-    "news_url": "https://www.tokenpost.com/news/investing/17111",
-    "image_url": "https://crypto.snapi.dev/images/v1/placeholders/crypto/crypto82.jpg",
-    "title": "Grayscale's Massive Bitcoin, Ethereum, and Solana Deposits Spark Market Sell-Off Fears",
-    "text": "The cryptocurrency market is reeling after Grayscale, one of the largest digital asset management firms, made massive deposits of Bitcoin (BTC), Ethereum (ETH), and Solana (SOL) to Coinbase Prime on October 14. According to on-chain data shared by Lookonchain, Grayscale transferred 1,856 BTC, 29,718 ETH, and 10,516 SOLworth roughly $358 millionprompting widespread speculation of a potential sell-off amid the ongoing market downturn.",
-    "source_name": "Tokenpost",
-    "date": "Tue, 14 Oct 2025 19:47:33 -0400",
-    "topics": [],
-    "sentiment": "Negative",
-    "type": "Article",
-    "tickers": ["BTC", "ETH", "SOL"]
-  },
-  {
-    "news_url": "https://www.theblock.co/post/374673/bitcoin-jesus-roger-ver-deal-doj-pays-50-million-resolve-tax-case",
-    "image_url": "https://crypto.snapi.dev/images/v1/8/j/u/btc67-571665-795853.jpg",
-    "title": "Roger Ver admits failing to report bitcoin holdings, DOJ drops indictment after $50 million settlement",
-    "text": "Roger Ver admitted to willfully failing to report his bitcoin holdings when he renounced U.S. citizenship in 2014, according to the DOJ.",
-    "source_name": "The Block",
-    "date": "Tue, 14 Oct 2025 19:47:02 -0400",
-    "topics": ["pricemovement"],
-    "sentiment": "Negative",
-    "type": "Article",
-    "tickers": ["BTC"]
-  },
-  {
-    "news_url": "https://www.tokenpost.com/news/investing/17109",
-    "image_url": "https://crypto.snapi.dev/images/v1/placeholders/crypto/crypto30.jpg",
-    "title": "XRP Faces Bearish Outlook as Death Cross Forms Against Bitcoin",
-    "text": "XRP has officially confirmed a death cross against Bitcoin, signaling a potentially bearish phase for the cryptocurrency. The 23-day moving average has fallen below the 200-day average, a technical pattern traders often view as a warning sign of further downside.",
-    "source_name": "Tokenpost",
-    "date": "Tue, 14 Oct 2025 19:43:19 -0400",
-    "topics": ["tanalysis"],
-    "sentiment": "Negative",
-    "type": "Article",
-    "tickers": ["BTC", "XRP"]
-  },
-  {
-    "news_url": "https://www.tokenpost.com/news/investing/17108",
-    "image_url": "https://crypto.snapi.dev/images/v1/n/u/d/btcv25gvgfre-594582-795848.jpg",
-    "title": "Bitcoin and Crypto Markets Rebound as Fed Signals End of Tightening Cycle",
-    "text": "Crypto markets experienced sharp declines on Tuesday, but signs of relief from the U.S. Federal Reserve and investor optimism helped digital assets recover from their worst levels. Bitcoin (BTC) dropped to $109,800 after reaching nearly $116,000 overnight but rebounded to around $112,600, marking a 2.8% loss in the past 24 hours.",
-    "source_name": "Tokenpost",
-    "date": "Tue, 14 Oct 2025 19:40:48 -0400",
-    "topics": [],
-    "sentiment": "Positive",
-    "type": "Article",
-    "tickers": ["BTC"]
-  }
-];
+// Items per page constant
+// Note: Backend currently only supports items=3
+const ITEMS_PER_PAGE = 3;
 
 // Inline SVG fallback placeholder
 const FALLBACK_SVG = encodeURIComponent(
@@ -142,16 +81,102 @@ function SafeImage({ src, alt }: SafeImageProps) {
 
 export function CryptoNewsAPIFeed() {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  
   const [query, setQuery] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+  
+  const { 
+    newsByTicker,
+    newsByCategory, 
+    loading, 
+    error, 
+    currentPage,
+    totalPages 
+  } = useAppSelector((state) => state.cryptoNews);
 
-  const filteredItems = useMemo(() => {
-    const q = query.toUpperCase().trim();
-    if (!q) return mockData;
-    const parts = q.split(",").map((p) => p.trim()).filter(Boolean);
-    return mockData.filter((article) => 
-      parts.some((p) => (article.tickers || []).some((t) => t.toUpperCase() === p))
-    );
-  }, [query]);
+  useEffect(() => {
+    dispatch(fetchNewsByCategoryAsync({
+      section: "general",
+      items: ITEMS_PER_PAGE,
+      page: 1,
+    }));
+    
+    return () => {
+      dispatch(clearNewsByCategory());
+    };
+  }, [dispatch]);
+
+  const handleSearch = () => {
+    if (!query.trim()) {
+      setHasSearched(false);
+      dispatch(clearNewsByTicker());
+      dispatch(setCurrentPage(1));
+      dispatch(fetchNewsByCategoryAsync({
+        section: "general",
+        items: ITEMS_PER_PAGE,
+        page: 1,
+      }));
+      return;
+    }
+
+    const tickers = query
+      .toUpperCase()
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .join(",");
+
+    if (tickers) {
+      setHasSearched(true);
+      dispatch(clearNewsByCategory());
+      dispatch(setCurrentPage(1));
+      dispatch(fetchNewsByTickerAsync({
+        tickers,
+        items: ITEMS_PER_PAGE,
+        page: 1,
+      }));
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleLoadMore = () => {
+    const nextPage = currentPage + 1;
+    dispatch(setCurrentPage(nextPage));
+
+    if (hasSearched && query.trim()) {
+      const tickers = query
+        .toUpperCase()
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .join(",");
+
+      dispatch(fetchNewsByTickerAsync({
+        tickers,
+        items: ITEMS_PER_PAGE,
+        page: nextPage,
+      }));
+    } else {
+      dispatch(fetchNewsByCategoryAsync({
+        section: "general",
+        items: ITEMS_PER_PAGE,
+        page: nextPage,
+      }));
+    }
+  };
+
+  const articles = useMemo(() => {
+    if (hasSearched && newsByTicker) {
+      return newsByTicker.data || [];
+    }
+    return newsByCategory?.data || [];
+  }, [hasSearched, newsByTicker, newsByCategory]);
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
@@ -179,21 +204,22 @@ export function CryptoNewsAPIFeed() {
         borderRadius: 2,
       }}
     >
-      {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 1.5 }}>
         <ArticleIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Crypto News Feed
         </Typography>
       </Box>
-      {/* Search Input */}
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+          onBlur={handleSearch}
           placeholder="Get news for one or multiple crypto symbols… e.g., BTC, ETH, XRP"
           variant="outlined"
+          disabled={loading}
           sx={{
             '& .MuiOutlinedInput-root': {
               backgroundColor: alpha(theme.palette.background.paper, 0.6),
@@ -214,17 +240,43 @@ export function CryptoNewsAPIFeed() {
             color: theme.palette.text.secondary 
           }}
         >
-          Separate symbols with commas. Exact ticker matches only.
+          Separate symbols with commas. Exact ticker matches only. Press Enter or blur to search.
         </Typography>
       </Box>
 
-      {/* News Items */}
+      {error && (
+        <Box 
+          sx={{ 
+            mb: 2, 
+            p: 2, 
+            backgroundColor: alpha(theme.palette.error.main, 0.1),
+            borderRadius: 1,
+            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`
+          }}
+        >
+          <Typography variant="body2" color="error">
+            {error}
+          </Typography>
+        </Box>
+      )}
+
       <SimpleBarStyled
         sx={{
           height: "400px",
         }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {filteredItems.length === 0 ? (
+          {loading && articles.length === 0 ? (
+            <Box 
+              sx={{ 
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                py: 8
+              }}
+            >
+              <CircularProgress size={40} />
+            </Box>
+          ) : articles.length === 0 ? (
             <Box 
               sx={{ 
                 textAlign: 'center', 
@@ -233,11 +285,13 @@ export function CryptoNewsAPIFeed() {
               }}
             >
               <Typography variant="h6">
-                No articles found for &quot;{query}&quot;.
+                {query.trim() 
+                  ? `No articles found for "${query}".`
+                  : "No articles available."}
               </Typography>
             </Box>
           ) : (
-            filteredItems.map((article, index) => (
+            articles.map((article, index) => (
             <Card
               key={`${article.news_url}-${index}`}
               component="a"
@@ -257,12 +311,9 @@ export function CryptoNewsAPIFeed() {
                 }
               }}
             >
-              {/* Image */}
               <SafeImage src={article.image_url} alt={article.title} />
 
-              {/* Content */}
               <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                {/* Title */}
                 <Typography 
                   variant="h6" 
                   sx={{ 
@@ -280,7 +331,6 @@ export function CryptoNewsAPIFeed() {
                   {article.title}
                 </Typography>
 
-                {/* Description */}
                 <Typography 
                   variant="body2" 
                   sx={{ 
@@ -294,7 +344,6 @@ export function CryptoNewsAPIFeed() {
                   {article.text}
                 </Typography>
 
-                {/* Tickers */}
                 {article.tickers?.length > 0 && (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                     {article.tickers.map((ticker, idx) => (
@@ -312,7 +361,6 @@ export function CryptoNewsAPIFeed() {
                   </Box>
                 )}
 
-                {/* Footer: Source, Date, Sentiment */}
                 <Box 
                   sx={{ 
                     display: 'flex', 
@@ -350,14 +398,33 @@ export function CryptoNewsAPIFeed() {
         </Box>
       </SimpleBarStyled>
 
-      {/* Results Counter */}
-      {query && (
-        <Box sx={{ mt: 3, textAlign: 'center' }}>
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-            Showing {filteredItems.length} of {mockData.length} articles
-          </Typography>
-        </Box>
-      )}
+      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+        {articles.length > 0 && currentPage < totalPages && (
+          <Button
+            variant="outlined"
+            onClick={handleLoadMore}
+            disabled={loading}
+            sx={{
+              minWidth: 200,
+              borderColor: theme.palette.primary.main,
+              color: theme.palette.primary.main,
+              '&:hover': {
+                borderColor: theme.palette.primary.dark,
+                backgroundColor: alpha(theme.palette.primary.main, 0.1),
+              }
+            }}
+          >
+            {loading ? (
+              <>
+                <CircularProgress size={16} sx={{ mr: 1 }} />
+                Loading...
+              </>
+            ) : (
+              `Load More`
+            )}
+          </Button>
+        )}
+      </Box>
     </Paper>
   );
 }

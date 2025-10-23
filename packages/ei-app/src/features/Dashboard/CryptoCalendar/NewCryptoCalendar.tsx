@@ -83,7 +83,6 @@ const NewCryptoCalendar: React.FC<Props> = ({
 useEffect(() => {
   const measure = () => {
     const width = categoryControlRef.current?.offsetWidth || 0;
-    // если места мало, используем короткий лейбл
     setUseShortCategoryLabel(width < 140);
   };
   measure();
@@ -533,7 +532,7 @@ useEffect(() => {
         <SimpleBarStyled
           sx={{
             backgroundColor: theme.palette.mode === "dark" ? "transparent !important" : "#fff !important",
-            height: "424px",
+            height: "473px",
           }}>
           {filteredEvents.length > 0 ? (
             <Box sx={{ p: 2 }}>
