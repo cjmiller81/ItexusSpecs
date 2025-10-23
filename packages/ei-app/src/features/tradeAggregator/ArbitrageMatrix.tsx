@@ -114,7 +114,7 @@ export default function ArbitrageMatrix() {
   };
 
   const filteredExchanges = useMemo(() => {
-    let exchanges = coinGeckoExchangesInitial || [];
+    let exchanges = [...(coinGeckoExchangesInitial || [])];
 
     if (selectedTradingPair) {
       const supportedExchangeIds = selectedTradingPair.exchanges.map(ex => ex.exchange_id);
@@ -133,6 +133,14 @@ export default function ArbitrageMatrix() {
       exchange.name.toLowerCase().includes(searchText.toLowerCase())
     );
     
+    // Sort by trade_volume_24h_btc: highest to lowest, nulls at the end
+    exchanges.sort((a, b) => {
+      if (a.trade_volume_24h_btc === null && b.trade_volume_24h_btc === null) return 0;
+      if (a.trade_volume_24h_btc === null) return 1;  // a goes to end
+      if (b.trade_volume_24h_btc === null) return -1; // b goes to end
+      return b.trade_volume_24h_btc - a.trade_volume_24h_btc; // descending
+    });
+    
     return exchanges;
   }, [coinGeckoExchangesInitial, searchText, selectedTradingPair, selectedCountry]);
 
@@ -146,7 +154,8 @@ export default function ArbitrageMatrix() {
       country: null,
       url: '',
       centralized: true,
-      isSelectAll: true
+      isSelectAll: true,
+      trade_volume_24h_btc: null
     };
     
     return [selectAllOption, ...filteredExchanges];
@@ -349,6 +358,39 @@ export default function ArbitrageMatrix() {
                         color: theme.palette.mode === 'light'? "black" : 'white',
                       }}
                     >
+                      {t("FilterExchangeByCountry")}:
+                    </Typography>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        disableClearable
+                        size="small"
+                        disabled={!selectedTradingPair}
+                        options={orderedFilteredCountries}
+                        getOptionLabel={(option) => option}
+                        value={selectedCountry}
+                        onChange={(event, newValue) => {
+                          handleCountrySelect(newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginBottom: 1,
+                        color: theme.palette.mode === 'light'? "black" : 'white',
+                      }}
+                    >
                       {t("SelectExchange")}:
                     </Typography>
                     <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -494,39 +536,6 @@ export default function ArbitrageMatrix() {
                           );
                         }}
                         sx={{ width: 250 }}
-                      />
-                    </FormControl>
-                  </Box>
-
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: '0.9rem',
-                        marginBottom: 1,
-                        color: theme.palette.mode === 'light'? "black" : 'white',
-                      }}
-                    >
-                      {t("FilterExchangeByCountry")}:
-                    </Typography>
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                      <Autocomplete
-                        disableClearable
-                        size="small"
-                        disabled={!selectedTradingPair}
-                        options={orderedFilteredCountries}
-                        getOptionLabel={(option) => option}
-                        value={selectedCountry}
-                        onChange={(event, newValue) => {
-                          handleCountrySelect(newValue);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t("SelectCountry")}
-                          />
-                        )}
-                        sx={{ width: 200 }}
                       />
                     </FormControl>
                   </Box>
