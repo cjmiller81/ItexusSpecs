@@ -745,44 +745,6 @@ export function TradeTable() {
             </Grid>
             <Grid item sx={{ width: "100%" }}>
               <Grid container alignItems="center" direction="row" spacing={2}>
-                <Grid item id="step-1" container alignItems="center" sx={{ width: "auto" }}>
-                  <Grid item>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontSize: '0.9rem',
-                        marginRight:"10px",
-                        color: (theme) =>
-                          theme.palette.mode === 'dark'
-                            ? 'rgba(255, 255, 255, 0.7)'
-                            : 'rgba(0, 0, 0, 0.7)',
-                      }}
-                    >
-                      {t("SelectExchange")}:
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                      <Autocomplete
-                        size="small"
-                        options={coinGeckoExchanges || []}
-                        loading={isCoinGeckoExchangesLoading}
-                        getOptionLabel={(option) => option.name} 
-                        value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
-                        onChange={(event, newValue) => {
-                          handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t("SelectExchange")}
-                          />
-                        )}
-                        sx={{ width: 200 }}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
                 <Grid item container alignItems="center" sx={{ width: "auto" }}>
                   <Grid item>
                     <Typography
@@ -815,6 +777,44 @@ export function TradeTable() {
                           <TextField
                             {...params}
                             placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid item id="step-1" container alignItems="center" sx={{ width: "auto" }}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginRight:"10px",
+                        color: (theme) =>
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                      }}
+                    >
+                      {t("SelectExchange")}:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        size="small"
+                        options={coinGeckoExchanges || []}
+                        loading={isCoinGeckoExchangesLoading}
+                        getOptionLabel={(option) => option.name} 
+                        value={coinGeckoExchanges?.find(ex => ex.id === selectedExchange?.id) || null}
+                        onChange={(event, newValue) => {
+                          handleExchangeSelect({ target: { value: newValue?.id }} as SelectChangeEvent<string>);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectExchange")}
                           />
                         )}
                         sx={{ width: 200 }}

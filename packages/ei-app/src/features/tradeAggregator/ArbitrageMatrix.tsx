@@ -349,6 +349,39 @@ export default function ArbitrageMatrix() {
                         color: theme.palette.mode === 'light'? "black" : 'white',
                       }}
                     >
+                      {t("FilterExchangeByCountry")}:
+                    </Typography>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        disableClearable
+                        size="small"
+                        disabled={!selectedTradingPair}
+                        options={orderedFilteredCountries}
+                        getOptionLabel={(option) => option}
+                        value={selectedCountry}
+                        onChange={(event, newValue) => {
+                          handleCountrySelect(newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginBottom: 1,
+                        color: theme.palette.mode === 'light'? "black" : 'white',
+                      }}
+                    >
                       {t("SelectExchange")}:
                     </Typography>
                     <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -494,39 +527,6 @@ export default function ArbitrageMatrix() {
                           );
                         }}
                         sx={{ width: 250 }}
-                      />
-                    </FormControl>
-                  </Box>
-
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: '0.9rem',
-                        marginBottom: 1,
-                        color: theme.palette.mode === 'light'? "black" : 'white',
-                      }}
-                    >
-                      {t("FilterExchangeByCountry")}:
-                    </Typography>
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                      <Autocomplete
-                        disableClearable
-                        size="small"
-                        disabled={!selectedTradingPair}
-                        options={orderedFilteredCountries}
-                        getOptionLabel={(option) => option}
-                        value={selectedCountry}
-                        onChange={(event, newValue) => {
-                          handleCountrySelect(newValue);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t("SelectCountry")}
-                          />
-                        )}
-                        sx={{ width: 200 }}
                       />
                     </FormControl>
                   </Box>
