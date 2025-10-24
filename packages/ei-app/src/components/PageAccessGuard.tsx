@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { Box, Typography, Button, Paper } from '@mui/material';
+import { Box, Typography, Button, Paper, CircularProgress } from '@mui/material';
 import { Lock, ArrowBack } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useSubscription } from 'components';
@@ -16,11 +16,28 @@ export function PageAccessGuard({
   requiredPage, 
   fallbackComponent 
 }: PageAccessGuardProps) {
-  const { hasPageAccess, subscription } = useSubscription();
+  const { hasPageAccess, subscription, isLoading } = useSubscription();
   const router = useRouter();
   const { t } = useTranslation();
 
-  // Check if user has access to the required page
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60vh',
+        }}
+      >
+        <CircularProgress 
+          size={60} 
+          sx={{ color: '#219a83' }}
+        />
+      </Box>
+    );
+  }
+
   if (!hasPageAccess(requiredPage)) {
     if (fallbackComponent) {
       return <>{fallbackComponent}</>;

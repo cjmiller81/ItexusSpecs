@@ -12,5 +12,5 @@ export const NETWORK_CONFIGS: Record<string, string> = {
 } as const;
 
 export const getNetworkConfig = (network: string): string => {
-  return NETWORK_CONFIGS[network] || "Неизвестно";
+  return NETWORK_CONFIGS[network] || "";
 };
