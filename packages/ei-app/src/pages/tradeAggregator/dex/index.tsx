@@ -85,14 +85,14 @@ export default function Dex() {
       {
         selector: "#token_list",
         content: () => (
-          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourTokenTradeText")}</Typography>
+          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourTokenTradeText")}</Typography>
         ),
         position: "right"
       },
       {
         selector: "#quantity_input",
         content: () => (
-          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourTradeQuantityText")}</Typography>
+          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourTradeQuantityText")}</Typography>
         ),
         position: "left"
       },
@@ -126,7 +126,7 @@ export default function Dex() {
       {
         selector: "#execute_section",
         content: () => (
-          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourExecuteText")}</Typography>
+          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourExecuteText")}</Typography>
         ),
         position: "bottom"
       }
@@ -164,21 +164,86 @@ export default function Dex() {
         popover: (base) => ({ 
           ...base, 
           borderRadius: 12, 
-          padding: "32px 24px 24px 24px", 
-          background: "#f7f5f2",
-          color: "#1a1a1a", 
-          minWidth: 400, 
-          maxWidth: 500,
-          paddingTop: "40px"
+          padding: 16, 
+          background: "#f7f5f2", 
+          color: "#6b7280",
+          fontSize: "0.95rem",
+          lineHeight: 1.8
         }),
         maskArea: (base) => ({ ...base, rx: 10 }),
-        badge: (base) => ({ ...base, display: "none" }),
-        close: (base) => ({ 
-          ...base, 
-          top: "12px", 
-          right: "12px",
-          zIndex: 1000
-        }),
+      }}
+      showBadge={false}
+      components={{
+        Content: (props: any) => {
+          const step = steps[props.currentStep];
+          const content = typeof step?.content === 'function' ? step.content() : step?.content;
+          
+          return (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+                <Box sx={{
+                  width: 30, 
+                  height: 30, 
+                  borderRadius: '50%',
+                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                  color: '#fff',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 700, 
+                  fontSize: 14,
+                  flexShrink: 0,
+                  marginTop: "-2px"
+                }}>
+                  {(props.currentStep ?? 0) + 1}
+                </Box>
+                <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
+                  {content}
+                </Box>
+              </Box>
+            </Box>
+          );
+        },
+        Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+            <Box sx={{ display: 'flex', gap: '6px' }}>
+              {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              {currentStep > 0 && (
+                <Button
+                  variant="contained"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  sx={{ 
+                    background: '#f7f5f2', 
+                    color: '#4a5568', 
+                    border: '1px solid #e2e8f0', 
+                    boxShadow: 'none', 
+                    textTransform: 'none',
+                    '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                  }}
+                >
+                  Prior
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                onClick={() => {
+                  if (currentStep === (steps?.length || 0) - 1) {
+                    setIsOpen(false);
+                  } else {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+                sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+              >
+                {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+          </Box>
+        )
       }}
     >
       <>

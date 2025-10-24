@@ -197,9 +197,9 @@ useEffect(() => {
     {
       selector: "#ei-logo",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("WelcomeToElanInsights")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("CryptoDataMiningAnalyticsDecisionModeling")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("WelcomeToElanInsights")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("CryptoDataMiningAnalyticsDecisionModeling")}</Typography>
         </Box>
       ),
       position: "bottom"
@@ -207,9 +207,9 @@ useEffect(() => {
     {
       selector: "#ei-profile-button",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ProfileSettings")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("ClickHereToAccessYourProfile")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ProfileSettings")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("ClickHereToAccessYourProfile")}</Typography>
         </Box>
       ),
       position: "bottom"
@@ -217,16 +217,16 @@ useEffect(() => {
     {
       selector: "#ei-news-filter",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("FilterNewsAndCalendarEvents")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsAndCalendarEvents")}</Typography>
       ),
       position: "right"
     },
     {
       selector: "#ei-platform-menu",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("PlatformStrategies")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("PlatformsContainStrategies")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("PlatformStrategies")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("PlatformsContainStrategies")}</Typography>
         </Box>
       ),
       position: "right"
@@ -234,9 +234,9 @@ useEffect(() => {
     {
       selector: "#ei-tools-section",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("AdvancedTools")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("ToolsEnableCustomizedAnalysis")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("AdvancedTools")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("ToolsEnableCustomizedAnalysis")}</Typography>
         </Box>
       ),
       position: "left"
@@ -244,30 +244,30 @@ useEffect(() => {
     {
       selector: "#ei-investing-card",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
       ),
       position: "top"
     },
     {
       selector: "#ei-income-card",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
       ),
       position: "top"
     },
     {
       selector: "#ei-theme-toggle",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
       ),
       position: "left"
     },
     {
       selector: "#homepage",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ThankYouTitle")}</Typography>
-          <Typography sx={{ color: "#4a5568", whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ThankYouTitle")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
         </Box>
       ),
       position: "top"
@@ -279,11 +279,92 @@ useEffect(() => {
   return (
     <TourProvider
       steps={steps}
-      styles={{
-        popover: (base) => ({ ...base, borderRadius: 12, padding: 16, background: "#f7f5f2", color: "#1a1a1a" }),
-        maskArea: (base) => ({ ...base, rx: 10 }),
-        badge: (base) => ({ ...base, display: "none" }),
-      }}
+        styles={{
+          popover: (base) => ({ 
+            ...base, 
+            borderRadius: 12, 
+            padding: 16, 
+            background: "#f7f5f2", 
+            color: "#6b7280",
+            fontSize: "0.95rem",
+            lineHeight: 1.8
+          }),
+          maskArea: (base) => ({ ...base, rx: 10 }),
+        }}
+        showBadge={false}
+        components={{
+          Content: (props: any) => {
+            const step = steps[props.currentStep];
+            // @ts-ignore - content() signature varies
+            const content = typeof step?.content === 'function' ? step.content() : step?.content;
+            
+            return (
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+                  <Box sx={{
+                    width: 30, 
+                    height: 30, 
+                    borderRadius: '50%',
+                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                    color: '#fff',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontWeight: 700, 
+                    fontSize: 14,
+                    flexShrink: 0,
+                    marginTop: "-2px"
+                  }}>
+                    {(props.currentStep ?? 0) + 1}
+                  </Box>
+                  <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
+                    {content || null}
+                  </Box>
+                </Box>
+              </Box>
+            );
+          },
+          Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+              <Box sx={{ display: 'flex', gap: '6px' }}>
+                {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                  <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                {currentStep > 0 && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    sx={{ 
+                      background: '#f7f5f2', 
+                      color: '#4a5568', 
+                      border: '1px solid #e2e8f0', 
+                      boxShadow: 'none', 
+                      textTransform: 'none',
+                      '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                    }}
+                  >
+                    Prior
+                  </Button>
+                )}
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    if (currentStep === (steps?.length || 0) - 1) {
+                      setIsOpen(false);
+                    } else {
+                      setCurrentStep(currentStep + 1);
+                    }
+                  }}
+                  sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+                >
+                  {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+                </Button>
+              </Box>
+            </Box>
+          )
+        }}
     >
       <Box id="homepage">
         <TourStateSync

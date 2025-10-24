@@ -26,6 +26,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import NorthEastIcon from "@mui/icons-material/NorthEast";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getTradablePairs,  useAppDispatch } from 'components';
 import { formatVolume} from '@/utils/utils';
 import EditIcon from "@mui/icons-material/Edit";
@@ -1306,6 +1307,31 @@ export function TradeTable() {
           }
         }}
       >
+        <Box sx={{ position: 'relative' }}>
+          <Button
+            variant="contained"
+            onClick={resetTour}
+            sx={{ 
+              position: 'absolute',
+              top: -12,
+              right: -12,
+              background: '#f7f5f2', 
+              color: '#4a5568', 
+              border: '1px solid #e2e8f0', 
+              boxShadow: 'none', 
+              textTransform: 'none', 
+              minWidth: 'auto',
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              padding: 0,
+              fontSize: 20,
+              '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+            }}
+          >
+            ×
+          </Button>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
           <Box sx={{
             width: 32, height: 32, borderRadius: '50%',
@@ -1342,14 +1368,25 @@ export function TradeTable() {
               <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= tourStep ? '#3b82f6' : '#e2e8f0' }} />
             ))}
           </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              variant="contained"
-              onClick={resetTour}
-              sx={{ background: '#f7f5f2', color: '#4a5568', border: '1px solid #e2e8f0', boxShadow: 'none', textTransform: 'none', '&:hover': { background: '#f0ece5', boxShadow: 'none' } }}
-            >
-              Skip
-            </Button>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            {tourStep > 0 && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setTourStep((prev) => prev - 1);
+                }}
+                sx={{ 
+                  background: '#f7f5f2', 
+                  color: '#4a5568', 
+                  border: '1px solid #e2e8f0', 
+                  boxShadow: 'none', 
+                  textTransform: 'none',
+                  '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                }}
+              >
+                Prior
+              </Button>
+            )}
             <Button
               variant="contained"
               onClick={() => {
