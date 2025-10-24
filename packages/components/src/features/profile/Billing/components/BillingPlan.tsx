@@ -92,7 +92,13 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
 
   return (
     <Grid item xs={12} sm={6} md={3}>
-      <Card sx={{ height: "100%", py: 3, px: 2, borderRadius: theme.shape.borderRadius }}>
+      <Card sx={{ 
+        height: "100%", 
+        py: 3, 
+        px: 2, 
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: theme.palette.mode === "light" ? "#f0ece5" : "transparent"
+      }}>
         <Stack spacing={2}>
 
         <Stack direction="row" justifyContent="space-between">

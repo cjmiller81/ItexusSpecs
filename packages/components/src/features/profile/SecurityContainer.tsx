@@ -265,6 +265,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         <ProfileContainer
           width={"100%"}
           title="Change Password"
+          contentBgColor="#f0ece5"
           sx={{ display: "flex", flexDirection: "column" }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <AppFormTextField
@@ -331,6 +332,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         <Box sx={{ width: "100%" }}>
           <ProfileContainer
             title={t("AddAuthenticatorApp")}
+            contentBgColor="#f0ece5"
             sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <Formik<TotpAuthenticatorModel>
               initialValues={{
