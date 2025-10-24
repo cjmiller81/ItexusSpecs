@@ -11,7 +11,7 @@ interface WalletTokensOverviewProps {
   showDust?: boolean;
 }
 
-const WalletTokensOverview: React.FC<WalletTokensOverviewProps> = ({ 
+const WalletTokensOverview: React.FC<WalletTokensOverviewProps> = ({
   walletAddress,
   tokens: externalTokens,
   showDust = false 

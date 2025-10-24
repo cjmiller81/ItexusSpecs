@@ -152,7 +152,7 @@ const WalletNftOverview: React.FC<WalletNftOverviewProps> = ({ walletAddress }) 
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
+              <TableBody sx={{backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "#f0ece5",}}>
                 {rows.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell sx={{ pl: 1.5 }}>

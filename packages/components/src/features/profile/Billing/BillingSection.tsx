@@ -456,6 +456,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
         <ProfileContainer
           mt={3}
+          contentBgColor="#f0ece5"
           endAdortment={
             <Button
               onClick={() => setPaymentMethodModal(true)}

@@ -31,6 +31,7 @@ export const ProfilePicture = ({onAvatarChanged, isAvatarUploading, defaultAvata
   return (
     <ProfileContainer
       title="Profile Picture"
+      contentBgColor="#f0ece5"
       {...props}>
       <Box
         sx={{

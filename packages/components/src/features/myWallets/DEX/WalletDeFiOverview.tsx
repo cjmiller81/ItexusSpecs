@@ -296,7 +296,7 @@ const getPositionName = (position: DeFiPosition): { name: string; tokens: string
                       </TableRow>
                     </TableHead>
 
-                    <TableBody>
+                    <TableBody sx={{backgroundColor: theme.palette.mode === "dark" ? "#363f4cff" : "#f0ece5",}}>
                       {positions.map((pos) => {
                         const { name, tokens } = getPositionName(pos);
                         const { supplied, claimable } = calculateValues(pos);
