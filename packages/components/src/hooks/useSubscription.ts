@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import { 
@@ -10,6 +10,32 @@ import { RootState } from 'components';
 
 export function useSubscription() {
   const billing = useSelector((state: RootState) => state.billing);
+  const [delayComplete, setDelayComplete] = useState(false);
+  
+  const hasData = useMemo(() => {
+    return billing.billing !== null && billing.subscriptions !== null;
+  }, [billing.billing, billing.subscriptions]);
+  
+  useEffect(() => {
+    if (hasData && !delayComplete) {
+      const timer = setTimeout(() => {
+        setDelayComplete(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [hasData, delayComplete]);
+  
+  const isLoading = useMemo(() => {
+    if (!hasData) {
+      return true;
+    }
+    
+    if (!delayComplete) {
+      return true;
+    }
+    
+    return false;
+  }, [hasData, delayComplete]);
   
   const subscription = useMemo((): UserSubscription => {
     // Get subscription data from billing state
@@ -120,5 +146,6 @@ export function useSubscription() {
     isFreePlan: subscription.plan.id === DEFAULT_FREE_PLAN.id,
     isActiveSubscription: subscription.isActive,
     planName: subscription.plan.name,
+    isLoading,
   };
 }

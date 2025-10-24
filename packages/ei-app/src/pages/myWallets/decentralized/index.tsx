@@ -91,7 +91,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   useEffect(() => {
     const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
     if (!viewed) {
-      openAllAccordions(); // Открываем аккордеоны при автоматическом запуске тура
+      openAllAccordions();
       if (!isNaN(savedStep)) setCurrentStep(savedStep);
       setIsOpen(true);
     }
