@@ -176,6 +176,7 @@ export default function Dex() {
       components={{
         Content: (props: any) => {
           const step = steps[props.currentStep];
+          // @ts-ignore - content() signature varies
           const content = typeof step?.content === 'function' ? step.content() : step?.content;
           
           return (
@@ -198,7 +199,7 @@ export default function Dex() {
                   {(props.currentStep ?? 0) + 1}
                 </Box>
                 <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
-                  {content}
+                  {content || null}
                 </Box>
               </Box>
             </Box>
