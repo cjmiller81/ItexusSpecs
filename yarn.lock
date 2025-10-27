@@ -7866,6 +7866,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/third-parties@npm:^16.0.0":
+  version: 16.0.0
+  resolution: "@next/third-parties@npm:16.0.0"
+  dependencies:
+    third-party-capital: "npm:1.0.20"
+  peerDependencies:
+    next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0-beta.0
+    react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+  checksum: 10c0/3d91eeec5d7797c90170766d0b30fcc0f29df43b519843ab4569f2a4f0fb980c7954cc3e33651066fae00c8712799fbd459c7c68f0e475a102d2beecba7048a7
+  languageName: node
+  linkType: hard
+
 "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1":
   version: 5.1.1-v1
   resolution: "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1"
@@ -16213,6 +16225,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ei-app@workspace:packages/ei-app"
   dependencies:
+    "@next/third-parties": "npm:^16.0.0"
     "@reactour/tour": "npm:^3.7.0"
     "@testing-library/jest-dom": "npm:^6.6.3"
     jest: "npm:^29.7.0"

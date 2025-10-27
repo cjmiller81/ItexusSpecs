@@ -18,6 +18,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@next/third-parties": "^16.0.0",
     "@reactour/tour": "^3.7.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.4"

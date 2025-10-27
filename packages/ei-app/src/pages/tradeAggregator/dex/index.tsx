@@ -9,9 +9,10 @@ import { PageAccessGuard } from "@/components/PageAccessGuard";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
-import { useSubscription } from "components";
+import { useSubscription, useTourMigration } from "components";
 
 const TOUR_ID = "dex_aggregator_v1";
+const TOUR_NAME = "dex_aggregator";
 
 const StartTourButton = () => {
   return (
@@ -24,26 +25,29 @@ const StartTourButton = () => {
 
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
   
+  const {
+    migrationCompleted,
+    manuallyClosedInSession,
+    viewed,
+    reactourSettings,
+  } = useTourMigration({
+    tourId: TOUR_ID,
+    tourName: TOUR_NAME,
+    isOpen,
+    currentStep,
+    totalSteps,
+  });
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
-  
-  useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
-  }, [isOpen]);
-  
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    if (!viewed) {
-      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+    if (!migrationCompleted || manuallyClosedInSession) return;
+
+    if (!viewed && !isOpen) {
+      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, []);
+  }, [viewed, isOpen, migrationCompleted, manuallyClosedInSession, setCurrentStep, setIsOpen, reactourSettings]);
   
   return null;
 };

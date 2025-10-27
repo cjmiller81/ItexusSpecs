@@ -7,8 +7,10 @@ import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButto
 import { useState, useEffect, useMemo } from "react";
 import { PageAccessGuard } from "@/components/PageAccessGuard";
 import Image from "next/image";
+import { useTourMigration } from "components";
 
-const TOUR_ID = "trading_v1";
+const TOUR_ID = "charts_v1";
+const TOUR_NAME = "charts";
 
 const StartTourButton = () => {
   return (
@@ -21,34 +23,37 @@ const StartTourButton = () => {
 
 const TourStateSync = ({ totalSteps, themeMode }: { totalSteps: number; themeMode: string }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
   
+  const {
+    migrationCompleted,
+    manuallyClosedInSession,
+    viewed,
+    savedStep,
+    reactourSettings,
+  } = useTourMigration({
+    tourId: TOUR_ID,
+    tourName: TOUR_NAME,
+    isOpen,
+    currentStep,
+    totalSteps,
+  });
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
-  
-  useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
-  }, [isOpen]);
-  
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    if (!viewed) {
-      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+    if (!migrationCompleted || manuallyClosedInSession) return;
+
+    if (!viewed && !isOpen) {
+      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, []);
+  }, [viewed, isOpen, migrationCompleted, manuallyClosedInSession, setCurrentStep, setIsOpen, reactourSettings]);
 
-  // Force tour refresh when theme changes
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && migrationCompleted) {
       setIsOpen(false);
       setTimeout(() => {
-        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-        setCurrentStep(savedStep);
+        const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+        setCurrentStep(stepFromDb);
         setIsOpen(true);
       }, 100);
     }

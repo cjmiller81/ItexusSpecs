@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { keyframes } from '@mui/system';
 import { useTour } from '@reactour/tour';
+import { useAppSelector, useAppDispatch, fetchReactourSettingsAsync } from 'components';
 
 const pulseGlow = keyframes`
   0%, 100% {
@@ -39,14 +40,24 @@ export const AnimatedStartTourButton: React.FC<AnimatedStartTourButtonProps> = (
   onClick
 }) => {
   const { setIsOpen, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (onClick) {
       onClick();
     } else {
-      const savedStep = Number(localStorage.getItem(`EI_TOUR_${tourId}_STEP`) || 0);
-      setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
-      setIsOpen(true);
+      try {
+        const latestSettings = await dispatch(fetchReactourSettingsAsync()).unwrap();
+        
+        const savedStep = latestSettings?.tours[`EI_TOUR_${tourId}_STEP`] || 0;
+        
+        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+        setIsOpen(true);
+      } catch (error) {
+        setCurrentStep(0);
+        setIsOpen(true);
+      }
     }
   };
 

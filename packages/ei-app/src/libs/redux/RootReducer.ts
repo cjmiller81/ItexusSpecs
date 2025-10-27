@@ -5,7 +5,7 @@ import { exchangesApi } from "@/features/Investing/exchangesApi";
 import { calendarEventsApi, categoriesEventsApi } from "@/features/Dashboard/CryptoCalendar/calendarApi";
 import { defisApi } from "@/features/Income/DefiApi";
 import { combineReducers } from "@reduxjs/toolkit";
-import { billingSlice, krakenSlice, uiSlice, walletsSlice, dexReducer } from "components";
+import { billingSlice, krakenSlice, uiSlice, walletsSlice, dexReducer, reactourSlice } from "components";
 import { getPersistConfig } from "redux-deep-persist";
 import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -26,6 +26,7 @@ export const rootReducer = combineReducers({
   kraken: krakenSlice.reducer,
   dex: dexReducer,
   billing: billingSlice.reducer,
+  reactour: reactourSlice.reducer,
   cryptoNews: cryptoNewsSlice.reducer,
   walletWorthChart: walletWorthChartSlice.reducer,
   marketCapEqualWeightChart: marketCapEqualWeightChartSlice.reducer,

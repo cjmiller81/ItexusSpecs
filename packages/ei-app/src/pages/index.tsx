@@ -21,14 +21,21 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { fetchWallets, fetchWalletsPortfolio, useOry, PasswordResetModal } from "components";
+import { 
+  fetchWallets, 
+  fetchWalletsPortfolio, 
+  useOry, 
+  PasswordResetModal,
+  useTourMigration
+} from "components";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 
 const TOUR_ID = "home_v1";
+const TOUR_NAME = "home";
 
 const StartTourButton = () => {
   return (
@@ -274,8 +281,6 @@ useEffect(() => {
     }
   ];
 
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
-
   return (
     <TourProvider
       steps={steps}
@@ -444,67 +449,47 @@ const TourStateSync = ({
   showWelcomeModal: boolean;
 }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
-  const [tourWasOpened, setTourWasOpened] = useState(false);
-
-
-  useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
-
-  useEffect(() => {
-    if (!isOpen && tourWasOpened) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    } else if (isOpen) {
-      setTourWasOpened(true);
-    }
-  }, [isOpen, currentStep, tourWasOpened]);
+  
+  const {
+    migrationCompleted,
+    manuallyClosedInSession,
+    viewed,
+    savedStep,
+    reactourSettings,
+    resetTour,
+  } = useTourMigration({
+    tourId: TOUR_ID,
+    tourName: TOUR_NAME,
+    isOpen,
+    currentStep,
+    totalSteps,
+  });
 
   useEffect(() => {
+    if (!migrationCompleted) return;
+    
     const recoveryCookie = document.cookie
       .split('; ')
       .find(row => row.startsWith('postRecoveryRedirect='));
 
     if (recoveryCookie) {
-      try {
-        localStorage.removeItem(`EI_TOUR_${TOUR_ID}_VIEWED`);
-        localStorage.removeItem(`EI_TOUR_${TOUR_ID}_STEP`);
-      } catch { /* noop */ }
+      resetTour();
     }
-  }, []);
-
+  }, [migrationCompleted, resetTour]);
 
   useEffect(() => {
-    if (currentStep === 0 && !isOpen) {
-      // Don't mark as viewed on initial load
-    }
-  }, []);
-
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
+    if (!migrationCompleted || manuallyClosedInSession) return;
+    
     const hasOpenModals = showPasswordResetModal || showWelcomeModal;
-
-    if (hasOpenModals) {
-      return;
+    
+    if (!hasOpenModals && !viewed && !isOpen) {
+      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) {
+        setCurrentStep(stepFromDb);
+      }
+      setIsOpen(true);
     }
-
-    if (!viewed && !isOpen) {
-      const timer = setTimeout(() => {
-        const stillNoModals = !showPasswordResetModal && !showWelcomeModal;
-        const stillNotViewed = localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) !== "1";
-
-        if (stillNoModals && stillNotViewed && !isOpen) {
-          if (!isNaN(savedStep)) setCurrentStep(savedStep);
-          setIsOpen(true);
-        }
-      }, 800);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showPasswordResetModal, showWelcomeModal, viewed, isOpen, setCurrentStep, setIsOpen]);
+  }, [showPasswordResetModal, showWelcomeModal, viewed, isOpen, setCurrentStep, setIsOpen, migrationCompleted, manuallyClosedInSession, reactourSettings]);
 
   return null;
 };

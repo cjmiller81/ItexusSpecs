@@ -5,29 +5,35 @@ import { Box, Typography, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { setAccordionState } from "components";
+import { setAccordionState, useTourMigration, fetchReactourSettingsAsync } from "components";
 
-const TOUR_ID = "income_v1";
+const TOUR_ID = "liquidity_pools_v1";
+const TOUR_NAME = "liquidity_pools";
 
 const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
   
   const openAllAccordions = () => {
-    const accordionKeys = [
-      'DefiTokensSection'
-    ];
-    
+    const accordionKeys = ['DefiTokensSection'];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
   };
   
-  const handleClick = () => {
+  const handleClick = async () => {
     openAllAccordions();
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
-    setIsOpen(true);
+    
+    try {
+      const latestSettings = await dispatch(fetchReactourSettingsAsync()).unwrap();
+      const savedStep = latestSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch tour data:', error);
+      setCurrentStep(0);
+      setIsOpen(true);
+    }
   };
   
   return (
@@ -42,37 +48,37 @@ const StartTourButton = () => {
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  
+  const {
+    migrationCompleted,
+    manuallyClosedInSession,
+    viewed,
+    reactourSettings,
+  } = useTourMigration({
+    tourId: TOUR_ID,
+    tourName: TOUR_NAME,
+    isOpen,
+    currentStep,
+    totalSteps,
+  });
   
   const openAllAccordions = () => {
-    const accordionKeys = [
-      'DefiTokensSection'
-    ];
-    
+    const accordionKeys = ['DefiTokensSection'];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
   };
-  
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
-  
-  useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
-  }, [isOpen]);
-  
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    if (!viewed) {
+    if (!migrationCompleted || manuallyClosedInSession) return;
+
+    if (!viewed && !isOpen) {
       openAllAccordions();
-      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, []);
+  }, [viewed, isOpen, migrationCompleted, manuallyClosedInSession, reactourSettings, setCurrentStep, setIsOpen]);
   
   return null;
 };
