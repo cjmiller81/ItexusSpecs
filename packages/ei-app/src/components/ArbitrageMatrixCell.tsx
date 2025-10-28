@@ -23,7 +23,7 @@ export const ArbitrageMatrixCell: React.FC<ArbitrageMatrixCellProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '60px',
+          height: '55px',
           width: '100%',
           backgroundColor: 'transparent'
         }}
@@ -55,7 +55,7 @@ export const ArbitrageMatrixCell: React.FC<ArbitrageMatrixCellProps> = ({
         border: `1px solid ${colors.border}`,
         padding: '8px',
         borderRadius: '4px',
-        height: '60px',
+        height: '55px',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',

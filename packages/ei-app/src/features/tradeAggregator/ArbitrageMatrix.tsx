@@ -38,6 +38,7 @@ import { formatPrice } from '../../utils/arbitrageCalculations';
 import { ArbitrageMatrixCell } from '../../components/ArbitrageMatrixCell';
 import { nativeBarSx } from 'components';
 import { useAppSelector } from '@/libs/redux/Store';
+import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 
 interface ExtendedExchange extends Exchange {
   isSelectAll?: boolean;
@@ -249,29 +250,29 @@ export default function ArbitrageMatrix() {
   };
 
   return (
-       <Grid container spacing={1} direction="column" sx={{ 
-         height: '84vh',
-         width: '100%',
-         display: 'flex',
-         flexDirection: 'column',
-         '@media (min-width: 1920px)': {
-           width: sidebarOpened ? '84vw' : '93vw',
-           height: '75vh',
-         },
-         '@media (min-width: 2560px)': {
-           width: sidebarOpened ? '86vw' : '94vw'
-           ,
-           height: '90vh',
-         },
-         '@media (min-width: 3840px)': {
-           width:'100vw',
-           height: '90vh',
-         }
-       }}>
-        <Grid item>
+     <Box sx={{ 
+       display: 'flex',
+       flexDirection: 'column',
+       pb: 2
+     }}> 
+     <Grid container spacing={1} direction="column" sx={{ 
+       width: '100%',
+       display: 'flex',
+       flexDirection: 'column',
+       '@media (min-width: 1920px)': {
+         width: sidebarOpened ? '84vw' : '93vw',
+       },
+       '@media (min-width: 2560px)': {
+         width: sidebarOpened ? '86vw' : '94vw',
+       },
+       '@media (min-width: 3840px)': {
+         width:'100vw',
+       }
+     }}>
+      <Grid item>
             <Grid item flexDirection={"row"} xs sx={{ width: '100%' }}>
               <Paper
-                elevation={2}
+                elevation={1}
                 sx={{
                   p: 1.5,
                   backgroundColor: alpha(
@@ -281,10 +282,9 @@ export default function ArbitrageMatrix() {
                     1
                   ),
                   borderRadius: 2,
-                  height: '100%',
+                  paddingBottom: 0,
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'flex-start',
                   width: '100%',
                   maxWidth: '100%',
                 }}
@@ -292,11 +292,10 @@ export default function ArbitrageMatrix() {
                  <Box sx={{ 
                    display: 'flex', 
                    flexDirection: 'row', 
-                   alignItems: 'center', 
+                   alignItems: 'flex-start', 
                    gap: 3,
                    overflowX: 'auto',
                    minWidth: 0,
-                   pb: 1,
                    ...nativeBarSx
                  }}>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -540,69 +539,68 @@ export default function ArbitrageMatrix() {
                     </FormControl>
                   </Box>
 
-                   {selectedTradingPair && exchangesWithPrices.length > 0 ? (
-                     <Box sx={{ 
-                       display: 'flex', 
-                       alignItems: 'flex-start', 
-                       gap: 1,
-                       overflowX: 'auto',
-                       minWidth: 0,
-                       pb: 1,
-                       ...nativeBarSx
-                     }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 200 }}>
+                    {selectedTradingPair && exchangesWithPrices.length > 0 ? (
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'stretch', 
+                        gap: 4,
+                        minWidth: 0,
+                        paddingRight: 1,
+                        paddingBottom: 1,
+                        ...nativeBarSx
+                      }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '2.8', minWidth: 200, 
+                        backgroundColor: alpha(theme.palette.background.paper, 0.95), padding:2, boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <HelpOutlineIcon sx={{ fontSize: 18}} />
-                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                          <InfoOutlinedIcon sx={{ fontSize: 16, color: "lightblue"}} />
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
                             {t("HowToReadThisMatrix")}
                           </Typography>
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: "10px" }}>
-                            <Box sx={{ width: 16, height: 16, backgroundColor: '#4caf50' }} />
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box sx={{ width: 12, height: 12, backgroundColor: '#4caf50' }} />
                             <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                              {t("ProfitableArbitrageOpportunity")}
+                              {t("ExchangeTradingAtDiscountToComparableExchange")}
                             </Typography>
                           </Box>
 
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ width: 16, height: 16, backgroundColor: '#f44336', }} />
+                            <Box sx={{ width: 12, height: 12, backgroundColor: '#f44336', }} />
                             <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                              {t("LossSellPriceLowerThanBuyPrice")}
+                              {t("ExchangeTradingAtPremiumToComparableExchange")}
                             </Typography>
                           </Box>
+
+                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <PanToolAltIcon/>
+                            <Typography variant="caption" sx={{ color:"gray", fontStyle: "italic" }}>
+                              {t("HoverForMoreDetails")}
+                            </Typography>
+                          </Box>
+                          
                         </Box>
                       </Box>
 
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '5', minWidth: 200 }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '3.8', minWidth: 200,
+                        backgroundColor: alpha(theme.palette.background.paper, 0.95), padding:2, boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <NearMeIcon sx={{ fontSize: 18,}} />
-                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                            {t("ReadingExample")}
-                          </Typography>
-                        </Box>
-                        <Card sx={{ px: 1.2, py: 0.6, borderRadius: 1, backgroundColor: alpha(theme.palette.primary.main, 0.12), border: `1px solid ${theme.palette.primary.main}`, display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                          <InfoOutlinedIcon sx={{ fontSize: 16,}} />
-                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                            {t("ExampleBuyBTCOnBybitSellOnGate")}
-                          </Typography>
-                        </Card>
-                        <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                          {t("FindIntersectionOfBuyExchange")}
-                        </Typography>
-                      </Box>
-
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '4', minWidth: 200 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <WarningAmberIcon sx={{ fontSize: 18, }} />
-                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                          <WarningAmberIcon sx={{ fontSize: 18, color: theme.palette.warning.light}} />
+                          <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
                             {t("ImportantNote")}
                           </Typography>
                         </Box>
                         <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                          {t("ProfitsShownExcludeTradingFees")}
+                          {t("PriceDifferentialsExcludeTransactionFees")}
                         </Typography>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <PanToolAltIcon/>
+                            <Typography variant="caption" sx={{ color:"gray", fontStyle: "italic" }}>
+                              {t("HoverForMoreDetails")}
+                            </Typography>
+                          </Box>
                       </Box>
                     </Box>
                   ) : (
@@ -664,14 +662,11 @@ export default function ArbitrageMatrix() {
                 </Box>
               </Paper>
             </Grid>
-
         </Grid>
 
-         <Grid item sx={{ flex: 1, width: '100%', minHeight: 0 }}>
+         <Grid item sx={{ width: '100%' }}>
             <Card
               sx={{
-                height: '100%',
-                minHeight: selectedTradingPair && selectedExchanges.length > 0 ? 350 : 200,
                 width: '100%',
                 maxWidth: '100%',
                 display: 'flex',
@@ -687,23 +682,23 @@ export default function ArbitrageMatrix() {
             >
             <CardContent sx={{ 
               p: selectedTradingPair && selectedExchanges.length > 0 ? 2 : 1, 
+              paddingBottom: 0,
               width: '100%',
               display: 'flex',
-              flexDirection: 'column',
-              flex: 1,
-              minHeight: 0
+              flexDirection: 'column'
             }}>
 
               {selectedTradingPair === null ? (
                 <Box
                   sx={{
-                    height: '100%',
+                    minHeight: 400,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
                     gap: 3,
+                    py: 4
                   }}
                 >
                   <Box
@@ -793,13 +788,14 @@ export default function ArbitrageMatrix() {
               ) : selectedExchanges.length === 0 ? (
                 <Box
                   sx={{
-                    height: '100%',
+                    minHeight: 400,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
                     gap: 3,
+                    py: 4
                   }}
                 >
                   <Box
@@ -901,11 +897,9 @@ export default function ArbitrageMatrix() {
                   <Box sx={{ 
                     width: '100%',
                     display: 'flex',
-                    flexDirection: 'column',
-                    flex: 1,
-                    minHeight: 0
+                    flexDirection: 'column'
                   }}>
-                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                      <Typography
                        variant="h6"
                        sx={{
@@ -918,6 +912,15 @@ export default function ArbitrageMatrix() {
                      {isMatrixPricesLoading && (
                        <CircularProgress size={20} sx={{ color: 'white' }} />
                      )}
+
+                    <Box sx={{
+                      backgroundColor: alpha(theme.palette.background.paper, 0.95), 
+                      padding: 1, 
+                      marginLeft: 'auto',
+                      boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)'
+                    }}>
+                        <Typography variant="body2">{t("ReadAsRow")}</Typography>
+                    </Box>
                    </Box>
                    
                    {isMatrixPricesLoading ? (
@@ -947,8 +950,16 @@ export default function ArbitrageMatrix() {
                    ) : (
                    <TableContainer
                      sx={{
-                       flex: 1,
-                       minHeight: 0,
+                       maxHeight: '50vh',
+                        '@media (min-width: 1920px)': {
+                            maxHeight: exchangesWithoutPrices.length > 0 ? '37.7vh' : '42vh',
+                          },
+                          '@media (min-width: 2560px)': {
+                            maxHeight: '67vh',
+                          },
+                          '@media (min-width: 3840px)': {
+                            maxHeight:exchangesWithoutPrices.length > 0 ?'71vh' : '75vh',
+                          },
                        width: '100%',
                        maxWidth: '100%',
                        border:`1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}`,
@@ -1041,7 +1052,7 @@ export default function ArbitrageMatrix() {
                    )}
                    
                    {!isMatrixPricesLoading && exchangesWithoutPrices.length > 0 && (
-                     <Box sx={{ mt: 2, p: 2, backgroundColor: theme.palette.warning.light, borderRadius: 1 }}>
+                     <Box sx={{ mt: 1, p: 1, backgroundColor: theme.palette.warning.light, borderRadius: 1 }}>
                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                          <WarningAmberIcon sx={{ color: theme.palette.warning.contrastText }} />
                          <Typography variant="body2" sx={{ color: theme.palette.warning.contrastText }}>
@@ -1051,10 +1062,39 @@ export default function ArbitrageMatrix() {
                      </Box>
                    )}
                  </Box>
-               )} 
+              )} 
+           </CardContent>
+         </Card>
+       </Grid>
+
+       {selectedTradingPair && selectedExchanges.length > 0 && (
+         <Grid item>
+           <Card sx={{ 
+             width: '100%',
+             backgroundColor: alpha(theme.palette.background.paper, 0.95),
+             border: `1px solid gray`,
+             borderRadius: 2,
+             
+           }}>
+            <CardContent sx={{ paddingLeft: 2,paddingBottom: 0}}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <WarningAmberIcon sx={{ color: theme.palette.warning.light, fontSize: 24 }} />
+                <Typography variant="h6" sx={{ fontWeight: 700,}}>
+                  {t("Disclaimer")}
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ 
+                opacity: 0.8,
+                lineHeight: 1.6,
+                textAlign: 'justify'
+              }}>
+                {t("DisclaimerText")}
+              </Typography>
             </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-  );
+           </Card>
+         </Grid>
+       )}
+     </Grid>
+     </Box>
+ );
 }
