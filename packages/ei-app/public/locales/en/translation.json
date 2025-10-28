@@ -349,11 +349,14 @@
     "HowToReadThisMatrix": "How to Read This Matrix",
     "ProfitableArbitrageOpportunity": "Profitable arbitrage opportunity",
     "LossSellPriceLowerThanBuyPrice": "Loss (sell price lower than buy price)",
+    "ExchangeTradingAtDiscountToComparableExchange": "Exchange trading at discount to comparable exchange",
+    "ExchangeTradingAtPremiumToComparableExchange": "Exchange trading at premium to comparable exchange",
+    "HoverForMoreDetails": "Hover for more details",
     "ReadingExample": "Reading Example",
     "ExampleBuyBTCOnBybitSellOnGate": "Example: Buy BTC on Bybit → Sell on Gate.io",
     "FindIntersectionOfBuyExchange": "Find the intersection of your buy exchange (row) \nand sell exchange (column) to see profit potential",
-    "ImportantNote": "Important Note",
-    "ProfitsShownExcludeTradingFees": "Profits shown exclude trading fees and transfer costs.\n Always factor in these expenses when executing arbitrage trades",
+    "ImportantNote": "Important Note: Prices are NOT streaming real-time",
+    "PriceDifferentialsExcludeTransactionFees": "Price differentials exclude transaction fees, transfer costs, and execution delays. It does not constitute a trading recommendation; users must conduct their own due diligence.",
     "SelectATradingPairToBegin": "Select a Trading Pair to Begin",
     "ChooseYourPair": "Choose Your Pair",
     "ChooseCryptocurrencyTradingPair": "Choose a cryptocurrency trading pair from the dropdown above to view arbitrage opportunities across multiple exchanges. This filters exchanges that support your chosen pair",
@@ -361,7 +364,10 @@
     "SelectExchanges": "Select Exchanges",
     "SelectExchangesYouWantToPriceAgainst": "Select the Exchanges you want to price against from the dropdown. Pro Tip: Use the \"Filter Exchange by Country\" to focus on exchanges in your region",
     "UseTheFilterExchangeByCountry": "Use the 'Filter Exchange by Country' to focus on exchanges in your region.",
-    "ProTip": "Pro Tip:"
+    "ProTip": "Pro Tip:",
+    "ReadAsRow":"💡 Read as: Rows ('Exchange A') minus Columns ('Exchange B')",
+    "Disclaimer": "Disclaimer",
+    "DisclaimerText": "The Arbitrage Matrix displays token price differences between centralized exchanges for informational and educational purposes only. This data does not constitute a trading signal, recommendation, or investment advice to acquire, transfer, or engage in any trading activity. Elan Insights does not hold user funds, execute trades, or provide investment advisory services. Price differentials shown are illustrative and do not include transaction fees, network costs, execution delays, slippage, or other material factors that may impact actual outcomes. Users are solely responsible for evaluating the feasibility, risks, and legal compliance of any strategy in their jurisdiction. Past price differentials do not guarantee future results."
   },
   "IndexResultsSection": {
     "Tokens": "Tokens",
