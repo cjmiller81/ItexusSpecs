@@ -552,7 +552,7 @@ export default function ArbitrageMatrix() {
                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '2.8', minWidth: 200, 
                         backgroundColor: alpha(theme.palette.background.paper, 0.95), padding:2, boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <InfoOutlinedIcon sx={{ fontSize: 16}} />
+                          <InfoOutlinedIcon sx={{ fontSize: 16, color: "lightblue"}} />
                           <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
                             {t("HowToReadThisMatrix")}
                           </Typography>
@@ -586,7 +586,7 @@ export default function ArbitrageMatrix() {
                       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '3.8', minWidth: 200,
                         backgroundColor: alpha(theme.palette.background.paper, 0.95), padding:2, boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <WarningAmberIcon sx={{ fontSize: 18, }} />
+                          <WarningAmberIcon sx={{ fontSize: 18, color: theme.palette.warning.light}} />
                           <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
                             {t("ImportantNote")}
                           </Typography>
@@ -952,13 +952,13 @@ export default function ArbitrageMatrix() {
                      sx={{
                        maxHeight: '50vh',
                         '@media (min-width: 1920px)': {
-                            maxHeight: '42vh',
+                            maxHeight: exchangesWithoutPrices.length > 0 ? '37.7vh' : '42vh',
                           },
                           '@media (min-width: 2560px)': {
                             maxHeight: '67vh',
                           },
                           '@media (min-width: 3840px)': {
-                            maxHeight:'75vh',
+                            maxHeight:exchangesWithoutPrices.length > 0 ?'71vh' : '75vh',
                           },
                        width: '100%',
                        maxWidth: '100%',
@@ -1078,7 +1078,7 @@ export default function ArbitrageMatrix() {
            }}>
             <CardContent sx={{ paddingLeft: 2,paddingBottom: 0}}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <WarningAmberIcon sx={{ color: theme.palette.warning.main, fontSize: 24 }} />
+                <WarningAmberIcon sx={{ color: theme.palette.warning.light, fontSize: 24 }} />
                 <Typography variant="h6" sx={{ fontWeight: 700,}}>
                   {t("Disclaimer")}
                 </Typography>
