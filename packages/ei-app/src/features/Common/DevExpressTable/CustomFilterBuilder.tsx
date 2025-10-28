@@ -31,10 +31,8 @@ import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
-import ReactDOM from "react-dom";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Autocomplete } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 import { TourProvider, useTour } from "@reactour/tour";
@@ -378,6 +376,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
+  const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery();
+  const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
+  const [customChains, setCustomChains] = useState<string[]>([]);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [customExchanges, setCustomExchanges] = useState<string[]>([]);
+  
+  const allSymbolOptionsRef = useRef<string[]>([]);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const startTourRef = useRef<(() => void) | null>(null);
   const filterBuilderRef = useRef<any>(null);
@@ -529,17 +537,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setShowGuidanceBanner(true);
     }
   };
-
-  const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
-  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
-  const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery();
-  const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
-  const [customChains, setCustomChains] = useState<string[]>([]);
-  const [customCategories, setCustomCategories] = useState<string[]>([]);
-  const [customExchanges, setCustomExchanges] = useState<string[]>([]);
-  
-  const allSymbolOptionsRef = useRef<string[]>([]);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     allSymbolOptionsRef.current = allSymbolOptions;
