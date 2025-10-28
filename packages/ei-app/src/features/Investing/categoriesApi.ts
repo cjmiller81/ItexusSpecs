@@ -5,6 +5,7 @@ export const categoriesApi = createApi({
   reducerPath: "categoriesApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.BACKEND_API_URL,
+    credentials: 'include',
   }),
   endpoints: builder => ({
     getCategories: builder.query<ICategory[], void>({

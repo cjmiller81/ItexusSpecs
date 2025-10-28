@@ -31,12 +31,18 @@ import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
+import ReactDOM from "react-dom";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import { Autocomplete } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { CustomDeleteIcon } from "@/components/CustomDeleteIcon";
 import { TourProvider, useTour } from "@reactour/tour";
 import { FeatureAccessGuard } from "components";
+import { useGetChainsQuery } from "@/features/Investing/chainsApi";
+import { useGetCategoriesQuery } from "@/features/Investing/categoriesApi";
+import { useGetExchangesQuery } from "@/features/Investing/exchangesApi";
+import { iconsApi, iconsAbortableApi } from "@/services/iconsService";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
@@ -374,6 +380,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
   
   const startTourRef = useRef<(() => void) | null>(null);
+  const filterBuilderRef = useRef<any>(null);
 
   const tourSteps = [
     {
@@ -523,6 +530,237 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   };
 
+  const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery();
+  const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
+  const [customChains, setCustomChains] = useState<string[]>([]);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [customExchanges, setCustomExchanges] = useState<string[]>([]);
+  
+  const allSymbolOptionsRef = useRef<string[]>([]);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  useEffect(() => {
+    allSymbolOptionsRef.current = allSymbolOptions;
+  }, [allSymbolOptions]);
+  
+  const extractValuesFromFilter = (filter: any, dataField: string): string[] => {
+    if (!filter || !Array.isArray(filter)) return [];
+    
+    const values: string[] = [];
+    
+    const traverse = (item: any) => {
+      if (Array.isArray(item)) {
+        if (item.length === 3 && typeof item[0] === 'string' && item[0] === dataField) {
+          const value = item[2];
+          if (value && typeof value === 'string') {
+            values.push(value);
+          }
+        } else {
+          item.forEach(subItem => traverse(subItem));
+        }
+      }
+    };
+    
+    traverse(filter);
+    return values;
+  };
+
+  useEffect(() => {
+    if (filterBuilderOpen && filterValue) {
+      const filterSymbols = extractValuesFromFilter(filterValue, 'sym');
+      
+      if (filterSymbols.length > 0) {
+        const symbolsArray = filterSymbols.map(sym => sym.toUpperCase());
+        setAllSymbolOptions(symbolsArray);
+        allSymbolOptionsRef.current = symbolsArray;
+      }
+    }
+  }, [filterBuilderOpen]);
+
+  const searchTokensDynamically = async (searchText: string, component?: any) => {
+    if (!searchText || searchText.length < 2) {
+      return;
+    }
+    
+    try {
+      const result = await iconsAbortableApi.getIcons(
+        searchText,
+        0,
+        50,
+        undefined,
+        0 
+      );
+      
+      if (result.items.length > 0) {
+        const newSymbols = result.items.map(item => item.sym.toUpperCase());
+        
+        const combined = [...allSymbolOptionsRef.current, ...newSymbols];
+        const uniqueSymbols = Array.from(new Set(combined));
+        allSymbolOptionsRef.current = uniqueSymbols;
+        
+        if (component) {
+          component.option('dataSource', uniqueSymbols);
+          if (!component.option('opened')) {
+            component.open();
+          }
+        }
+      }
+    } catch (error) {
+      // Silently handle error
+    }
+  };
+
+
+  const processedFields = useMemo(() => {
+    return filterBuilderFields.map(field => {
+      if (field.dataField === "sym") {
+        return {
+          ...field,
+          lookup: {
+            dataSource: allSymbolOptions,
+            allowClearing: true,
+          },
+          editorOptions: {
+            searchEnabled: true,
+            searchMode: "contains",
+            showClearButton: true,
+            acceptCustomValue: true,
+            minSearchLength: 0,
+            showDropDownButton: true,
+            openOnFieldClick: true,
+          },
+          calculateFilterExpression: function(this: any, filterValue: any, selectedFilterOperation: any) {
+            if (!filterValue) {
+              return "";
+            }
+            return [this.dataField, selectedFilterOperation || "=", filterValue];
+          },
+        };
+      }
+      
+      if (field.dataField === "chainsFormatted" && chains) {
+        let chainsOptions = chains.map(c => c.name);
+        
+        customChains.forEach(chain => {
+          if (!chainsOptions.includes(chain)) {
+            chainsOptions.push(chain);
+          }
+        });
+        
+        if (filterValue) {
+          const filterChains = extractValuesFromFilter(filterValue, 'chainsFormatted');
+          filterChains.forEach(chain => {
+            if (!chainsOptions.includes(chain)) {
+              chainsOptions.push(chain);
+            }
+          });
+        }
+        
+        return {
+          ...field,
+          lookup: {
+            dataSource: chainsOptions,
+            allowClearing: true,
+          },
+          editorOptions: {
+            searchEnabled: true,
+            searchMode: "contains",
+            showClearButton: true,
+            acceptCustomValue: true,
+          },
+          calculateFilterExpression: function(this: any, filterValue: any, selectedFilterOperation: any) {
+            if (!filterValue) {
+              return "";
+            }
+            return [this.dataField, selectedFilterOperation || "=", filterValue];
+          },
+        };
+      }
+      
+      if (field.dataField === "categoriesFormatted" && categories) {
+        let categoriesOptions = categories.map(c => c.name);
+        
+        customCategories.forEach(category => {
+          if (!categoriesOptions.includes(category)) {
+            categoriesOptions.push(category);
+          }
+        });
+        
+        if (filterValue) {
+          const filterCategories = extractValuesFromFilter(filterValue, 'categoriesFormatted');
+          filterCategories.forEach(category => {
+            if (!categoriesOptions.includes(category)) {
+              categoriesOptions.push(category);
+            }
+          });
+        }
+        
+        return {
+          ...field,
+          lookup: {
+            dataSource: categoriesOptions,
+            allowClearing: true,
+          },
+          editorOptions: {
+            searchEnabled: true,
+            searchMode: "contains",
+            showClearButton: true,
+            acceptCustomValue: true,
+          },
+          calculateFilterExpression: function(this: any, filterValue: any, selectedFilterOperation: any) {
+            if (!filterValue) {
+              return "";
+            }
+            return [this.dataField, selectedFilterOperation || "=", filterValue];
+          },
+        };
+      }
+      
+      if (field.dataField === "exchangesFormatted" && exchanges) {
+        let exchangesOptions = exchanges.map(e => e.name);
+        
+        customExchanges.forEach(exchange => {
+          if (!exchangesOptions.includes(exchange)) {
+            exchangesOptions.push(exchange);
+          }
+        });
+        
+        if (filterValue) {
+          const filterExchanges = extractValuesFromFilter(filterValue, 'exchangesFormatted');
+          filterExchanges.forEach(exchange => {
+            if (!exchangesOptions.includes(exchange)) {
+              exchangesOptions.push(exchange);
+            }
+          });
+        }
+        
+        return {
+          ...field,
+          lookup: {
+            dataSource: exchangesOptions,
+            allowClearing: true,
+          },
+          editorOptions: {
+            searchEnabled: true,
+            searchMode: "contains",
+            showClearButton: true,
+            acceptCustomValue: true,
+          },
+          calculateFilterExpression: function(this: any, filterValue: any, selectedFilterOperation: any) {
+            if (!filterValue) {
+              return "";
+            }
+            return [this.dataField, selectedFilterOperation || "=", filterValue];
+          },
+        };
+      }
+      
+      return field;
+    });
+  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, customChains, customCategories, customExchanges]);
+
   const handleSaveFilter = () => {
     if (!filterName) return;
     if (selectedSavedFilter) {
@@ -619,6 +857,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           fullWidth
           size="small"
           displayEmpty
+          value={selectedSavedFilter?.id || ''}
           onChange={handleApplyFilterChange}
           sx={{
             minWidth: 250,
@@ -755,9 +994,208 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         },
                       }}>
                       <FilterBuilderDef
+                        ref={filterBuilderRef}
                         value={filterValue as any[]}
-                        fields={filterBuilderFields}
+                        fields={processedFields}
                         onValueChanged={handleFilterValueChanged}
+                        onEditorPreparing={(e: any) => {
+                          const isSymbolField = e.dataField === "sym";
+                          const isChainsField = e.dataField === "chainsFormatted";
+                          const isCategoriesField = e.dataField === "categoriesFormatted";
+                          const isExchangesField = e.dataField === "exchangesFormatted";
+                          const isLookupField = isSymbolField || isChainsField || isCategoriesField || isExchangesField;
+                          
+                          if (e.editorName === "dxSelectBox" && isLookupField) {
+                            const originalOptions = e.editorOptions || {};
+                            
+                            let currentDataSource = originalOptions.dataSource;
+                            if (isSymbolField) {
+                              currentDataSource = allSymbolOptionsRef.current;
+                            }
+                            
+                            e.editorOptions = {
+                              ...originalOptions,
+                              dataSource: currentDataSource,
+                              acceptCustomValue: true,
+                              onInput: (args: any) => {
+                                if (isSymbolField) {
+                                  const searchText = args.event?.target?.value;
+                                  const component = args.component;
+                                  
+                                  if (searchTimeoutRef.current) {
+                                    clearTimeout(searchTimeoutRef.current);
+                                  }
+                                  
+                                  if (searchText && searchText.length >= 2) {
+                                    searchTimeoutRef.current = setTimeout(() => {
+                                      searchTokensDynamically(searchText, component);
+                                    }, 300);
+                                  }
+                                }
+                              },
+                              onValueChanged: (args: any) => {
+                                if (args.value && args.event) {
+                                  setTimeout(() => {
+                                    if (filterBuilderRef.current?.instance) {
+                                      const fbInstance = filterBuilderRef.current.instance;
+                                      let currentFilter = fbInstance.option('value') || [];
+                                      
+                                      const newCondition = [e.dataField, e.filterOperation || 'contains', args.value];
+                                      
+                                      const replaceOrAddCondition = (filter: any, dataField: string, newCond: any): any => {
+                                        if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                        
+                                        if (typeof filter[0] === 'string') {
+                                          if (filter[0] === dataField) return newCond;
+                                          return [filter, 'and', newCond];
+                                        }
+                                        
+                                        let replaced = false;
+                                        const result = filter.map((item) => {
+                                          if (Array.isArray(item) && typeof item[0] === 'string' && item[0] === dataField) {
+                                            replaced = true;
+                                            return newCond;
+                                          }
+                                          return item;
+                                        });
+                                        
+                                        if (replaced) return result;
+                                        return [...filter, 'and', newCond];
+                                      };
+                                      
+                                      const updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, newCondition);
+                                      fbInstance.option('value', updatedFilter);
+                                    }
+                                    
+                                    const filterBuilderEl = document.querySelector('.dx-filterbuilder');
+                                    if (filterBuilderEl) {
+                                      (filterBuilderEl as HTMLElement).click();
+                                      
+                                      if (isSymbolField) {
+                                        setTimeout(() => {
+                                          if (!allSymbolOptionsRef.current.includes(args.value)) {
+                                            allSymbolOptionsRef.current = [...allSymbolOptionsRef.current, args.value];
+                                          }
+                                          setAllSymbolOptions(allSymbolOptionsRef.current);
+                                        }, 100);
+                                      }
+                                    }
+                                  }, 100);
+                                }
+                              },
+                              onEnterKey: (args: any) => {
+                                if (searchTimeoutRef.current) {
+                                  clearTimeout(searchTimeoutRef.current);
+                                  searchTimeoutRef.current = null;
+                                }
+                                
+                                const component = args.component;
+                                const inputText = component.option('text');
+                                const currentValue = component.option('value');
+                                
+                                if (inputText && inputText !== currentValue) {
+                                  const customValue = isSymbolField ? inputText.toUpperCase() : inputText;
+                                  
+                                  let currentDS = component.option('dataSource');
+                                  
+                                  if (!Array.isArray(currentDS)) {
+                                    currentDS = isSymbolField ? allSymbolOptionsRef.current : [];
+                                  }
+                                  
+                                  if (!currentDS.includes(customValue)) {
+                                    const newDS = [...currentDS, customValue];
+                                    
+                                    if (isSymbolField) {
+                                      allSymbolOptionsRef.current = newDS;
+                                    } else if (isChainsField) {
+                                      setCustomChains(prev => [...prev, customValue]);
+                                    } else if (isCategoriesField) {
+                                      setCustomCategories(prev => [...prev, customValue]);
+                                    } else if (isExchangesField) {
+                                      setCustomExchanges(prev => [...prev, customValue]);
+                                    }
+                                    
+                                    component.option('dataSource', newDS);
+                                  }
+                                  
+                                  if (e.setValue) {
+                                    setTimeout(() => {
+                                      if (filterBuilderRef.current?.instance) {
+                                        const fbInstance = filterBuilderRef.current.instance;
+                                        let currentFilter = fbInstance.option('value') || [];
+                                        const newCondition = [e.dataField, e.filterOperation || 'contains', customValue];
+                                        
+                                        const replaceOrAddCondition = (filter: any, dataField: string, newCond: any): any => {
+                                          if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                          
+                                          if (typeof filter[0] === 'string') {
+                                            if (filter[0] === dataField) return newCond;
+                                            return [filter, 'and', newCond];
+                                          }
+                                          
+                                          let replaced = false;
+                                          const result = filter.map((item) => {
+                                            if (Array.isArray(item) && typeof item[0] === 'string' && item[0] === dataField) {
+                                              replaced = true;
+                                              return newCond;
+                                            }
+                                            return item;
+                                          });
+                                          
+                                          if (replaced) return result;
+                                          return [...filter, 'and', newCond];
+                                        };
+                                        
+                                        const updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, newCondition);
+                                        fbInstance.option('value', updatedFilter);
+                                      }
+                                      
+                                      setTimeout(() => {
+                                        const filterBuilderEl = document.querySelector('.dx-filterbuilder');
+                                        if (filterBuilderEl) {
+                                          (filterBuilderEl as HTMLElement).click();
+                                          
+                                          setTimeout(() => {
+                                            if (isSymbolField) {
+                                              setAllSymbolOptions(allSymbolOptionsRef.current);
+                                            }
+                                          }, 100);
+                                        }
+                                      }, 50);
+                                    }, 200);
+                                  }
+                                }
+                              },
+                              onCustomItemCreating: (args: any) => {
+                                const customValue = isSymbolField ? args.text.toUpperCase() : args.text;
+                                
+                                let currentDS = args.component.option('dataSource');
+                                
+                                if (!Array.isArray(currentDS)) {
+                                  currentDS = isSymbolField ? allSymbolOptionsRef.current : [];
+                                }
+                                
+                                if (!currentDS.includes(customValue)) {
+                                  const newDS = [...currentDS, customValue];
+                                  
+                                  if (isSymbolField) {
+                                    allSymbolOptionsRef.current = newDS;
+                                  } else if (isChainsField) {
+                                    setCustomChains(prev => [...prev, customValue]);
+                                  } else if (isCategoriesField) {
+                                    setCustomCategories(prev => [...prev, customValue]);
+                                  } else if (isExchangesField) {
+                                    setCustomExchanges(prev => [...prev, customValue]);
+                                  }
+                                  
+                                  args.component.option('dataSource', newDS);
+                                }
+                                
+                                args.customItem = customValue;
+                              },
+                            };
+                          }
+                        }}
                       />
                     </Box>
                   </Box>
@@ -1105,6 +1543,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                   <Select
                     fullWidth
                     size="small"
+                    value={selectedSavedFilter?.id || ''}
                     onChange={handleSavedFilterChange}
                     renderValue={_value => {
                       return <ListItemText primary={mapFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)} />;

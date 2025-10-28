@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
 
 const subtlePulse = keyframes`
-  0%, 100% { 
-    transform: scale(1); 
-  }
-  50% { 
-    transform: scale(1.05); 
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 `;
 
-const InfoBadgeContainer = styled(Box)(({ theme }) => ({
+const InfoBadgeContainer = styled(Box)({
   position: 'relative',
   display: 'inline-block',
   zIndex: 100,
-}));
+});
 
-const StyledInfoBadge = styled(Button)<{ $isHovered?: boolean }>(({ theme, $isHovered }) => ({
+const StyledInfoBadge = styled(Button, {
+  shouldForwardProp: (prop) => prop !== '$isHovered',
+})<{ $isHovered?: boolean }>(({ $isHovered }) => ({
   background: 'linear-gradient(135deg, #219a83, #1a7a6b)', // Green gradient
   color: 'white',
   padding: '6px 12px',
@@ -31,8 +29,9 @@ const StyledInfoBadge = styled(Button)<{ $isHovered?: boolean }>(({ theme, $isHo
   border: $isHovered ? 'none' : '2px solid white',
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'center',
   gap: '6px',
-  textTransform: 'none',
+   textTransform: 'none',
   minWidth: 'auto',
   '&:hover': {
     transform: 'translateY(-1px)',
@@ -42,48 +41,27 @@ const StyledInfoBadge = styled(Button)<{ $isHovered?: boolean }>(({ theme, $isHo
   },
 }));
 
-const BadgeTooltip = styled(Box)<{ $isHovered?: boolean }>(({ theme, $isHovered }) => ({
+const BadgeTooltip = styled(Box, {
+  shouldForwardProp: (prop) => prop !== '$isHovered',
+})<{ $isHovered?: boolean; theme?: any }>(({ theme, $isHovered }) => ({
   position: 'absolute',
   top: '120%',
   left: '50%',
   transform: 'translateX(-50%)',
   background: theme.palette.mode === 'dark' ? '#1f2937' : '#ffffff',
-  color: theme.palette.mode === 'dark' ? 'white' : '#1f2937',
+  color: theme.palette.mode === 'dark' ? '#ffffff' : '#1f2937',
   padding: '16px',
   borderRadius: '8px',
   width: '320px',
   fontSize: '14px',
   fontWeight: 400,
-  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+  boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
   opacity: 0,
   visibility: 'hidden',
   transition: 'all 0.2s ease',
   zIndex: 100,
   border: $isHovered ? 'none' : '2px solid white',
-  '& a': {
-    color: '#219a83 !important', // Green accent color for all links
-    textDecoration: 'underline',
-    '&:hover': {
-      color: '#1a7a6b !important', // Darker green on hover
-    },
-  },
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    bottom: '100%',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    border: '6px solid transparent',
-    borderBottomColor: theme.palette.mode === 'dark' ? '#1f2937' : '#ffffff',
-  },
-}));
-
-const TooltipLink = styled('a')(({ theme }) => ({
-  color: '#219a83', // Green accent color
-  textDecoration: 'none',
-  '&:hover': {
-    textDecoration: 'underline',
-  },
+  textAlign: 'center',
 }));
 
 interface InfoBadgeProps {
@@ -93,6 +71,7 @@ interface InfoBadgeProps {
 
 export const InfoBadge: React.FC<InfoBadgeProps> = ({ title, tooltipContent }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const theme = useTheme();
 
   return (
     <InfoBadgeContainer
@@ -100,18 +79,22 @@ export const InfoBadge: React.FC<InfoBadgeProps> = ({ title, tooltipContent }) =
       onMouseLeave={() => setIsHovered(false)}
     >
       <StyledInfoBadge $isHovered={isHovered}>
-        <span>ℹ️</span>
-        <span>{title}</span>
-        <BadgeTooltip
-          $isHovered={isHovered}
-          sx={{
-            opacity: isHovered ? 1 : 0,
-            visibility: isHovered ? 'visible' : 'hidden',
-          }}
-        >
-          {tooltipContent}
-        </BadgeTooltip>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+          <span>ℹ️</span>
+          <span>{title}</span>
+        </Box>
       </StyledInfoBadge>
+
+      <BadgeTooltip
+        $isHovered={isHovered}
+        theme={theme}
+        sx={{
+          opacity: isHovered ? 1 : 0,
+          visibility: isHovered ? 'visible' : 'hidden',
+        }}
+      >
+        {tooltipContent}
+      </BadgeTooltip>
     </InfoBadgeContainer>
   );
 };
