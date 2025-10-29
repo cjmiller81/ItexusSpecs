@@ -570,8 +570,14 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       
       if (filterSymbols.length > 0) {
         const symbolsArray = filterSymbols.map(sym => sym.toUpperCase());
-        setAllSymbolOptions(symbolsArray);
-        allSymbolOptionsRef.current = symbolsArray;
+        
+        symbolsArray.forEach(sym => {
+          if (!allSymbolOptionsRef.current.includes(sym)) {
+            allSymbolOptionsRef.current.push(sym);
+          }
+        });
+        
+        setAllSymbolOptions([...allSymbolOptionsRef.current]);
       }
     }
   }, [filterBuilderOpen]);
@@ -593,9 +599,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       if (result.items.length > 0) {
         const newSymbols = result.items.map(item => item.sym.toUpperCase());
         
-        const combined = [...allSymbolOptionsRef.current, ...newSymbols];
-        const uniqueSymbols = Array.from(new Set(combined));
-        allSymbolOptionsRef.current = uniqueSymbols;
+        const existingSymbols = allSymbolOptionsRef.current.filter(sym => !newSymbols.includes(sym));
+        const uniqueSymbols = [...newSymbols, ...existingSymbols];
         
         if (component) {
           component.option('dataSource', uniqueSymbols);
@@ -1038,29 +1043,88 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       let currentFilter = fbInstance.option('value') || [];
                                       
                                       const newCondition = [e.dataField, e.filterOperation || 'contains', args.value];
+                                      const oldValue = e.value;
                                       
-                                      const replaceOrAddCondition = (filter: any, dataField: string, newCond: any): any => {
-                                        if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                      const getCurrentOperator = (filter: any): string => {
+                                        if (!Array.isArray(filter)) return 'and';
                                         
-                                        if (typeof filter[0] === 'string') {
-                                          if (filter[0] === dataField) return newCond;
-                                          return [filter, 'and', newCond];
+                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                          const innerOp = getCurrentOperator(filter[1]);
+                                          return innerOp === 'or' ? '!or' : '!and';
                                         }
                                         
-                                        let replaced = false;
-                                        const result = filter.map((item) => {
-                                          if (Array.isArray(item) && typeof item[0] === 'string' && item[0] === dataField) {
-                                            replaced = true;
-                                            return newCond;
+                                        for (const item of filter) {
+                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                            return item;
+                                          }
+                                        }
+                                        return 'and';
+                                      };
+                                      
+                                      const replaceAllOperators = (filter: any, newOperator: string): any => {
+                                        if (!Array.isArray(filter)) return filter;
+                                        
+                                        const isNot = newOperator.startsWith('!');
+                                        const baseOp = isNot ? newOperator.substring(1) : newOperator;
+                                        
+                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                          const innerFilter = filter[1].map(item => {
+                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                              return baseOp;
+                                            }
+                                            return item;
+                                          });
+                                          return isNot ? ['!', innerFilter] : innerFilter;
+                                        }
+                                        
+                                        const result = filter.map(item => {
+                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                            return baseOp;
                                           }
                                           return item;
                                         });
                                         
-                                        if (replaced) return result;
-                                        return [...filter, 'and', newCond];
+                                        return isNot ? ['!', result] : result;
                                       };
                                       
-                                      const updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, newCondition);
+                                      const replaceOrAddCondition = (filter: any, dataField: string, operation: string, oldVal: any, newCond: any): any => {
+                                        if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                        
+                                        if (typeof filter[0] === 'string') {
+                                          if (filter[0] === dataField && filter[1] === operation && filter[2] === oldVal) {
+                                            return newCond;
+                                          }
+                                          return [filter, 'and', newCond];
+                                        }
+                                        
+                                        let replaced = false;
+                                        const result = [...filter];
+                                        
+                                        for (let i = 0; i < result.length; i++) {
+                                          const item = result[i];
+                                          if (Array.isArray(item) && typeof item[0] === 'string' && 
+                                              item[0] === dataField && item[1] === operation && item[2] === oldVal) {
+                                            result[i] = newCond;
+                                            replaced = true;
+                                            break;
+                                          }
+                                        }
+                                        
+                                        if (replaced) return result;
+                                        
+                                        const currentOp = getCurrentOperator(filter);
+                                        return [...filter, currentOp, newCond];
+                                      };
+                                      
+                                      let updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, e.filterOperation || 'contains', oldValue, newCondition);
+                                      
+                                      const currentOp = getCurrentOperator(currentFilter);
+                                      const newOp = getCurrentOperator(updatedFilter);
+                                      
+                                      if (currentOp !== newOp && currentFilter.length > 0) {
+                                        updatedFilter = replaceAllOperators(updatedFilter, newOp);
+                                      }
+                                      
                                       fbInstance.option('value', updatedFilter);
                                     }
                                     
@@ -1073,7 +1137,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                           if (!allSymbolOptionsRef.current.includes(args.value)) {
                                             allSymbolOptionsRef.current = [...allSymbolOptionsRef.current, args.value];
                                           }
-                                          setAllSymbolOptions(allSymbolOptionsRef.current);
+                                          setAllSymbolOptions([...allSymbolOptionsRef.current]);
                                         }, 100);
                                       }
                                     }
@@ -1121,29 +1185,88 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                         const fbInstance = filterBuilderRef.current.instance;
                                         let currentFilter = fbInstance.option('value') || [];
                                         const newCondition = [e.dataField, e.filterOperation || 'contains', customValue];
+                                        const oldValue = e.value;
                                         
-                                        const replaceOrAddCondition = (filter: any, dataField: string, newCond: any): any => {
-                                          if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                        const getCurrentOperator = (filter: any): string => {
+                                          if (!Array.isArray(filter)) return 'and';
                                           
-                                          if (typeof filter[0] === 'string') {
-                                            if (filter[0] === dataField) return newCond;
-                                            return [filter, 'and', newCond];
+                                          if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                            const innerOp = getCurrentOperator(filter[1]);
+                                            return innerOp === 'or' ? '!or' : '!and';
                                           }
                                           
-                                          let replaced = false;
-                                          const result = filter.map((item) => {
-                                            if (Array.isArray(item) && typeof item[0] === 'string' && item[0] === dataField) {
-                                              replaced = true;
-                                              return newCond;
+                                          for (const item of filter) {
+                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                              return item;
+                                            }
+                                          }
+                                          return 'and';
+                                        };
+                                        
+                                        const replaceAllOperators = (filter: any, newOperator: string): any => {
+                                          if (!Array.isArray(filter)) return filter;
+                                          
+                                          const isNot = newOperator.startsWith('!');
+                                          const baseOp = isNot ? newOperator.substring(1) : newOperator;
+                                          
+                                          if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                            const innerFilter = filter[1].map(item => {
+                                              if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                                return baseOp;
+                                              }
+                                              return item;
+                                            });
+                                            return isNot ? ['!', innerFilter] : innerFilter;
+                                          }
+                                          
+                                          const result = filter.map(item => {
+                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                              return baseOp;
                                             }
                                             return item;
                                           });
                                           
-                                          if (replaced) return result;
-                                          return [...filter, 'and', newCond];
+                                          return isNot ? ['!', result] : result;
                                         };
                                         
-                                        const updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, newCondition);
+                                        const replaceOrAddCondition = (filter: any, dataField: string, operation: string, oldVal: any, newCond: any): any => {
+                                          if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                          
+                                          if (typeof filter[0] === 'string') {
+                                            if (filter[0] === dataField && filter[1] === operation && filter[2] === oldVal) {
+                                              return newCond;
+                                            }
+                                            return [filter, 'and', newCond];
+                                          }
+                                          
+                                          let replaced = false;
+                                          const result = [...filter];
+                                          
+                                          for (let i = 0; i < result.length; i++) {
+                                            const item = result[i];
+                                            if (Array.isArray(item) && typeof item[0] === 'string' && 
+                                                item[0] === dataField && item[1] === operation && item[2] === oldVal) {
+                                              result[i] = newCond;
+                                              replaced = true;
+                                              break;
+                                            }
+                                          }
+                                          
+                                          if (replaced) return result;
+                                          
+                                          const currentOp = getCurrentOperator(filter);
+                                          return [...filter, currentOp, newCond];
+                                        };
+                                        
+                                        let updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, e.filterOperation || 'contains', oldValue, newCondition);
+                                        
+                                        const currentOp = getCurrentOperator(currentFilter);
+                                        const newOp = getCurrentOperator(updatedFilter);
+                                        
+                                        if (currentOp !== newOp && currentFilter.length > 0) {
+                                          updatedFilter = replaceAllOperators(updatedFilter, newOp);
+                                        }
+                                        
                                         fbInstance.option('value', updatedFilter);
                                       }
                                       
@@ -1154,7 +1277,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                           
                                           setTimeout(() => {
                                             if (isSymbolField) {
-                                              setAllSymbolOptions(allSymbolOptionsRef.current);
+                                              setAllSymbolOptions([...allSymbolOptionsRef.current]);
                                             }
                                           }, 100);
                                         }
