@@ -26,7 +26,8 @@ import {
   fetchWalletsPortfolio, 
   useOry, 
   PasswordResetModal,
-  useTourMigration
+  updateTourStatusAsync,
+  fetchReactourSettingsAsync
 } from "components";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
@@ -449,47 +450,56 @@ const TourStateSync = ({
   showWelcomeModal: boolean;
 }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  
-  const {
-    migrationCompleted,
-    manuallyClosedInSession,
-    viewed,
-    savedStep,
-    reactourSettings,
-    resetTour,
-  } = useTourMigration({
-    tourId: TOUR_ID,
-    tourName: TOUR_NAME,
-    isOpen,
-    currentStep,
-    totalSteps,
-  });
+  const dispatch = useAppDispatch();
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
 
   useEffect(() => {
-    if (!migrationCompleted) return;
-    
-    const recoveryCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('postRecoveryRedirect='));
-
-    if (recoveryCookie) {
-      resetTour();
-    }
-  }, [migrationCompleted, resetTour]);
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
 
   useEffect(() => {
-    if (!migrationCompleted || manuallyClosedInSession) return;
+    if (!reactourSettings?.tours) return;
     
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
     const hasOpenModals = showPasswordResetModal || showWelcomeModal;
     
-    if (!hasOpenModals && !viewed && !isOpen) {
-      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
-      if (!isNaN(stepFromDb)) {
-        setCurrentStep(stepFromDb);
-      }
+    if (!viewed && !isOpen && !tourWasOpened && !hasOpenModals) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, [showPasswordResetModal, showWelcomeModal, viewed, isOpen, setCurrentStep, setIsOpen, migrationCompleted, manuallyClosedInSession, reactourSettings]);
+  }, [reactourSettings, isOpen, tourWasOpened, showPasswordResetModal, showWelcomeModal, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
+    }
+  }, [isOpen, tourWasOpened, dispatch]);
 
   return null;
 };

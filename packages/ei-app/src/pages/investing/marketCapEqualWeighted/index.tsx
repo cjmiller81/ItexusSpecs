@@ -15,7 +15,7 @@ import {
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
 import { defaultTotalTokensCount } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { setAccordionState, useTourMigration, fetchReactourSettingsAsync } from "components";
+import { setAccordionState, updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
 import { Wallet } from "@/models/Wallet/Wallet";
 import { Box, Stack, Typography, Button } from "@mui/material";
 import { InfoBadge } from "@/components/InfoBadge";
@@ -428,29 +428,55 @@ export default function MarketCapEqualWeightedPage() {
 
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  
-  const {
-    migrationCompleted,
-    manuallyClosedInSession,
-    viewed,
-    reactourSettings,
-  } = useTourMigration({
-    tourId: TOUR_ID,
-    tourName: TOUR_NAME,
-    isOpen,
-    currentStep,
-    totalSteps,
-  });
+  const dispatch = useAppDispatch();
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
 
   useEffect(() => {
-    if (!migrationCompleted || manuallyClosedInSession) return;
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
 
-    if (!viewed && !isOpen) {
-      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+  useEffect(() => {
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    
+    if (!viewed && !isOpen && !tourWasOpened) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
       if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, [viewed, isOpen, migrationCompleted, manuallyClosedInSession, reactourSettings, setCurrentStep, setIsOpen]);
+  }, [reactourSettings, isOpen, tourWasOpened, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
+    }
+  }, [isOpen, tourWasOpened, dispatch]);
   
   return null;
 };

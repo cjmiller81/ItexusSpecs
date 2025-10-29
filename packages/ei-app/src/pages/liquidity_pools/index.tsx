@@ -3,9 +3,9 @@ import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButton";
 import { Box, Typography, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
-import { useAppDispatch } from "@/libs/redux/Store";
-import { setAccordionState, useTourMigration, fetchReactourSettingsAsync } from "components";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { setAccordionState, updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
 
 const TOUR_ID = "liquidity_pools_v1";
 const TOUR_NAME = "liquidity_pools";
@@ -48,19 +48,8 @@ const StartTourButton = () => {
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
-  
-  const {
-    migrationCompleted,
-    manuallyClosedInSession,
-    viewed,
-    reactourSettings,
-  } = useTourMigration({
-    tourId: TOUR_ID,
-    tourName: TOUR_NAME,
-    isOpen,
-    currentStep,
-    totalSteps,
-  });
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
   
   const openAllAccordions = () => {
     const accordionKeys = ['DefiTokensSection'];
@@ -70,15 +59,51 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   };
 
   useEffect(() => {
-    if (!migrationCompleted || manuallyClosedInSession) return;
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
 
-    if (!viewed && !isOpen) {
+  useEffect(() => {
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    
+    if (!viewed && !isOpen && !tourWasOpened) {
       openAllAccordions();
-      const stepFromDb = reactourSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
       if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, [viewed, isOpen, migrationCompleted, manuallyClosedInSession, reactourSettings, setCurrentStep, setIsOpen]);
+  }, [reactourSettings, isOpen, tourWasOpened, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
+    }
+  }, [isOpen, tourWasOpened, dispatch]);
   
   return null;
 };
