@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import { Exchange, TradingPair as ApiTradingPair, useGetExchangesQuery, useGetTradingPairsQuery, ArbitrageMatrixPrice, fetchArbitrageMatrixPrices } from './TradeTableApi';
 import { formatPrice } from '../../utils/arbitrageCalculations';
 import { ArbitrageMatrixCell } from '../../components/ArbitrageMatrixCell';
+import { PopupTooltip } from '../../components/PopupTooltip';
 import { nativeBarSx } from 'components';
 import { useAppSelector } from '@/libs/redux/Store';
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
@@ -89,6 +90,9 @@ export default function ArbitrageMatrix() {
   const [isMatrixPricesLoading, setIsMatrixPricesLoading] = useState(false);
   const [matrixPricesError, setMatrixPricesError] = useState<any>(null);
   const [exchangesWithoutPrices, setExchangesWithoutPrices] = useState<string[]>([]);
+  const [isHowToReadHovered, setIsHowToReadHovered] = useState(false);
+  const [isImportantNoteHovered, setIsImportantNoteHovered] = useState(false);
+
 
   const handleFetchArbitrageMatrixPrices = async (base: string, target: string, exchangeIds: string[]) => {
     setIsMatrixPricesLoading(true);
@@ -275,6 +279,7 @@ export default function ArbitrageMatrix() {
                 elevation={1}
                 sx={{
                   p: 1.5,
+                  marginTop: 1,
                   backgroundColor: alpha(
                     theme.palette.mode === 'light'
                       ? "#fff"
@@ -282,7 +287,7 @@ export default function ArbitrageMatrix() {
                     1
                   ),
                   borderRadius: 2,
-                  paddingBottom: 0,
+                  paddingBottom: 1,
                   display: 'flex',
                   flexDirection: 'column',
                   width: '100%',
@@ -549,59 +554,145 @@ export default function ArbitrageMatrix() {
                         paddingBottom: 1,
                         ...nativeBarSx
                       }}>
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '2.8', minWidth: 200, 
-                        backgroundColor: alpha(theme.palette.background.paper, 0.95), padding:2, boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <InfoOutlinedIcon sx={{ fontSize: 16, color: "lightblue"}} />
-                          <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
-                            {t("HowToReadThisMatrix")}
+                      <PopupTooltip
+                        title={t("UnderstandingPriceDifferentials")}
+                        content={
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ width: 6, height: 6, minWidth: 6, minHeight: 6, backgroundColor: '#4caf50', borderRadius: '50%', flexShrink: 0 }} />
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray" }}>
+                                <span style={{ color: '#4caf50', fontWeight: 600 }}>Green Cells:</span> The row exchange is trading at a lower price (discount) compared to the column exchange.
+                              </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ width: 6, height: 6, minWidth: 6, minHeight: 6, backgroundColor: '#f44336', borderRadius: '50%', flexShrink: 0 }} />
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray" }}>
+                                <span style={{ color: '#f44336', fontWeight: 600 }}>Red Cells:</span> The row exchange is trading at a higher price (premium) compared to the column exchange.
+                              </Typography>
+                            </Box>
+                          </Box>
+                        }
+                        position="top"
+                        maxWidth={350}
+                        onHoverChange={setIsHowToReadHovered}
+                        sx={{ flex: '2.8' }}
+                      >
+                        <Box 
+                          sx={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'flex-start', 
+                            gap: 1, 
+                            width: '100%',
+                            height: '100%',
+                            minWidth: 200, 
+                            backgroundColor: alpha(theme.palette.background.paper, 0.95), 
+                            padding: 2, 
+                            boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)',
+                            border: isHowToReadHovered ? `2px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}` : '2px solid transparent',
+                            transition: 'border-color 0.2s ease-in-out',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <InfoOutlinedIcon sx={{ fontSize: 16, color: "lightblue"}} />
+                            <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
+                              {t("HowToReadThisMatrix")}
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ width: 12, height: 12, backgroundColor: '#4caf50', borderRadius: "3px" }} />
+                              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                                {t("ExchangeTradingAtDiscountToComparableExchange")}
+                              </Typography>
+                            </Box>
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box sx={{ width: 12, height: 12, backgroundColor: '#f44336', borderRadius: "3px" }} />
+                              <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                                {t("ExchangeTradingAtPremiumToComparableExchange")}
+                              </Typography>
+                            </Box>
+
+                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <PanToolAltIcon/>
+                              <Typography variant="caption" sx={{ color:"gray", fontStyle: "italic" }}>
+                                {t("HoverForMoreDetails")}
+                              </Typography>
+                            </Box>
+                            
+                          </Box>
+                        </Box>
+                      </PopupTooltip>
+
+                      <PopupTooltip
+                        title={t("TheoreticalSpreadsBasedOnSpotPricesAtSinglePointInTime")}
+                        content={
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                            <Typography variant="body2" sx={{ fontSize: '0.68rem',color: theme.palette.mode === 'light' ? "gray" : "lightgray", fontWeight: 500, mb: 0.3, lineHeight: 1.2}}>
+                              {t("TheyDoNotAccountFor")}
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray", lineHeight: 1.2 }}>
+                                • {t("TradingFeesAndCommissions")}
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray", lineHeight: 1.2 }}>
+                                • {t("NetworkTransferCosts")}
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray", lineHeight: 1.2 }}>
+                                • {t("WithdrawalAndDepositFees")}
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray", lineHeight: 1.2 }}>
+                                • {t("ExecutionDelaysAndSlippage")}
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '0.65rem', color: theme.palette.mode === 'light' ? "gray" : "lightgray", lineHeight: 1.2 }}>
+                                • {t("LiquidityConstraints")}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        }
+                        position="top"
+                        maxWidth={320}
+                        onHoverChange={setIsImportantNoteHovered}
+                        sx={{ flex: '3.8' }}
+                      >
+                        <Box 
+                          sx={{ 
+                            display: 'flex', 
+                            flexDirection: 'column', 
+                            alignItems: 'flex-start', 
+                            gap: 1, 
+                            width: '100%',
+                            height: '100%',
+                            minWidth: 200,
+                            backgroundColor: alpha(theme.palette.background.paper, 0.95), 
+                            padding: 2, 
+                            boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)',
+                            border: isImportantNoteHovered ? `2px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.2)'}` : '2px solid transparent',
+                            transition: 'border-color 0.2s ease-in-out',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <WarningAmberIcon sx={{ fontSize: 18, color: theme.palette.warning.light}} />
+                            <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
+                              {t("ImportantNote")}
+                            </Typography>
+                          </Box>
+                          <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                            {t("PriceDifferentialsExcludeTransactionFees")}
                           </Typography>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ width: 12, height: 12, backgroundColor: '#4caf50' }} />
-                            <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                              {t("ExchangeTradingAtDiscountToComparableExchange")}
-                            </Typography>
-                          </Box>
 
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ width: 12, height: 12, backgroundColor: '#f44336', }} />
-                            <Typography variant="caption" sx={{ opacity: 0.9 }}>
-                              {t("ExchangeTradingAtPremiumToComparableExchange")}
-                            </Typography>
-                          </Box>
-
-                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <PanToolAltIcon/>
-                            <Typography variant="caption" sx={{ color:"gray", fontStyle: "italic" }}>
-                              {t("HoverForMoreDetails")}
-                            </Typography>
-                          </Box>
-                          
+                              <PanToolAltIcon/>
+                              <Typography variant="caption" sx={{ color:"gray", fontStyle: "italic" }}>
+                                {t("HoverForMoreDetails")}
+                              </Typography>
+                            </Box>
                         </Box>
-                      </Box>
-
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, flex: '3.8', minWidth: 200,
-                        backgroundColor: alpha(theme.palette.background.paper, 0.95), padding:2, boxShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <WarningAmberIcon sx={{ fontSize: 18, color: theme.palette.warning.light}} />
-                          <Typography variant="body2" sx={{ fontWeight: 700, color: "gray" }}>
-                            {t("ImportantNote")}
-                          </Typography>
-                        </Box>
-                        <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                          {t("PriceDifferentialsExcludeTransactionFees")}
-                        </Typography>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <PanToolAltIcon/>
-                            <Typography variant="caption" sx={{ color:"gray", fontStyle: "italic" }}>
-                              {t("HoverForMoreDetails")}
-                            </Typography>
-                          </Box>
-                      </Box>
+                      </PopupTooltip>
                     </Box>
                   ) : (
                     <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
@@ -950,15 +1041,15 @@ export default function ArbitrageMatrix() {
                    ) : (
                    <TableContainer
                      sx={{
-                       maxHeight: '50vh',
+                       maxHeight: '49vh',
                         '@media (min-width: 1920px)': {
-                            maxHeight: exchangesWithoutPrices.length > 0 ? '37.7vh' : '42vh',
+                            maxHeight: exchangesWithoutPrices.length > 0 ? '37.2vh' : '41vh',
                           },
                           '@media (min-width: 2560px)': {
-                            maxHeight: '67vh',
+                            maxHeight: '66vh',
                           },
                           '@media (min-width: 3840px)': {
-                            maxHeight:exchangesWithoutPrices.length > 0 ?'71vh' : '75vh',
+                            maxHeight:exchangesWithoutPrices.length > 0 ?'70vh' : '74vh',
                           },
                        width: '100%',
                        maxWidth: '100%',
