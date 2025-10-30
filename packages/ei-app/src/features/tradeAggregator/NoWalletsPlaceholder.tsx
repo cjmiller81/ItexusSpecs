@@ -64,7 +64,7 @@ export const NoWalletsPlaceholder: React.FC = () => {
           lineHeight: 1.6,
         }}
       >
-        To start trading, you need to add a wallet first. Click the "+ADD YOUR FIRST WALLET" button above to get started.
+        To start trading, you need to add a wallet first. Click the &quot;+ADD YOUR FIRST WALLET&quot; button above to get started.
       </Typography>
     </Box>
   );
