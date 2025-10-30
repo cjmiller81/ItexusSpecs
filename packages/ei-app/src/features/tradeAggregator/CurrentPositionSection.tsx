@@ -21,6 +21,7 @@ import {
   InputAdornment,
   Typography,
 } from "@mui/material";
+import { keyframes } from '@mui/system';
 import {
   BasicTable,
   fetchWalletsPortfolio,
@@ -39,11 +40,30 @@ import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { iconsApi } from "@/services/iconsService";
 import SearchIcon from '@mui/icons-material/Search';
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
+import CustomSelectWalletOverlay from "@/components/CustomSelectWalletOverlay";
 import { filterDustTokens } from "components";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { isSupportedChain } from "@/utils/supportedChains";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+
+const pulseGlow = keyframes`
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(33, 154, 131, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(33, 154, 131, 0);
+  }
+`;
+
+const bounce = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+`;
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -142,6 +162,13 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
+  
+  const NoRowsOverlayComponent = () => {
+    if (wallets && wallets.length > 0 && !selectedWallet) {
+      return <CustomSelectWalletOverlay />;
+    }
+    return <CustomNoWalletOverlay />;
+  };
 
   useEffect(() => {
     if (wasManualSelection) return;
@@ -481,30 +508,120 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 xs={12}
                 md={4.5}
                 lg={4.6}
-                sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }  }}>
-              <Select
-                id="wallet_dropdown"
-                displayEmpty
-                value={selectedWallet?.walletId || ""}
-                onChange={handleWalletSelect}
-                renderValue={selected => (selected ? selectedWallet?.walletName : t("AddSavedWallet"))}
-                sx={{
-                  backgroundColor: "#219a83",
-                  fontSize: "11px",
-                  color: "white",
-                  width: "100%",
-                  maxHeight: "40px",
-                  marginBottom: "12px",
-                  "& .MuiSelect-icon": { color: "white" },
-                }}>
-                {wallets?.map(wallet => (
-                  <MenuItem
-                    key={wallet.walletId}
-                    value={wallet.walletId}>
-                    {wallet.walletName}
-                  </MenuItem>
-                ))}
-              </Select>
+                sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }, position: 'relative'  }}>
+              
+              {!selectedWallet && wallets && wallets.length > 0 && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '-30px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    animation: `${bounce} 2s ease-in-out infinite`,
+                    zIndex: 10,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      color: '#219a83',
+                    }}
+                  >
+                    Click Here
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      color: '#219a83',
+                    }}
+                  >
+                    ↓
+                  </Typography>
+                </Box>
+              )}
+
+              {!wallets || wallets.length === 0 ? (
+                <Select
+                  id="wallet_dropdown"
+                  displayEmpty
+                  value=""
+                  renderValue={() => t("AddSavedWallet")}
+                  sx={{
+                    backgroundColor: "transparent",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "#219a83",
+                    width: "100%",
+                    maxHeight: "40px",
+                    marginBottom: "12px",
+                    pointerEvents: 'none',
+                    cursor: 'not-allowed',
+                    "& .MuiSelect-icon": { color: "#219a83" },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#219a83",
+                    },
+                  }}
+                />
+              ) : !selectedWallet ? (
+                <Select
+                  id="wallet_dropdown"
+                  displayEmpty
+                  value=""
+                  onChange={handleWalletSelect}
+                  renderValue={() => t("AddSavedWallet")}
+                  sx={{
+                    backgroundColor: "#219a83",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "white",
+                    width: "100%",
+                    maxHeight: "40px",
+                    marginBottom: "12px",
+                    animation: `${pulseGlow} 2s ease-in-out infinite`,
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    "& .MuiSelect-icon": { color: "white" },
+                  }}
+                >
+                  {wallets?.map(wallet => (
+                    <MenuItem
+                      key={wallet.walletId}
+                      value={wallet.walletId}>
+                      {wallet.walletName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <Select
+                  id="wallet_dropdown"
+                  displayEmpty
+                  value={selectedWallet.walletId}
+                  onChange={handleWalletSelect}
+                  renderValue={selected => selectedWallet.walletName}
+                  sx={{
+                    backgroundColor: "#219a83",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "white",
+                    width: "100%",
+                    maxHeight: "40px",
+                    marginBottom: "12px",
+                    "& .MuiSelect-icon": { color: "white" },
+                  }}
+                >
+                  {wallets?.map(wallet => (
+                    <MenuItem
+                      key={wallet.walletId}
+                      value={wallet.walletId}>
+                      {wallet.walletName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
 
               {selectedWallet?(<>
                             <Button
@@ -655,6 +772,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     sx={{
                       ...tableScrollSx,
                       width: "100%",
+                      '& .MuiDataGrid-virtualScroller': {
+                        border: (!wallets || wallets.length === 0) ? '2px dashed #219a83' : 'none',
+                        borderRadius: (!wallets || wallets.length === 0) ? '8px' : '0',
+                        overflow: (!wallets || wallets.length === 0) ? 'hidden !important' : 'auto',
+                      },
                     }}
                   hideFooter
                   rowSelection={true}
@@ -666,7 +788,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   rows={filteredRows}
                   onRowSelectionModelChange={handleSelectionChange}
                   slots={{
-                    noRowsOverlay: CustomNoWalletOverlay,
+                    noRowsOverlay: NoRowsOverlayComponent,
                   }}
                                                                      getRowClassName={(params) => {
                      const isSupportedChainRow = params.row.chain && 

@@ -728,6 +728,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     }
   };
 
+  const isWalletSelected = selectedWallet !== null;
+
   return (
     <Grid
       container
@@ -739,14 +741,23 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
         backgroundColor:
           theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
         padding: 2,
+        position: 'relative',
       }}
     >
-      <Grid item container spacing={2} sx={{ marginBottom: 2 }}>
-        <Grid item>
-          <Button
-            variant={activeTab === "swap" ? "contained" : "outlined"}
-            color="primary"
-            onClick={() => setActiveTab("swap")}
+      <Box
+        sx={{
+          opacity: isWalletSelected ? 1 : 0.4,
+          pointerEvents: isWalletSelected ? 'auto' : 'none',
+          userSelect: isWalletSelected ? 'auto' : 'none',
+          filter: isWalletSelected ? 'none' : 'grayscale(50%)',
+        }}
+      >
+        <Grid item container spacing={2} sx={{ marginBottom: 2 }}>
+          <Grid item>
+            <Button
+              variant={activeTab === "swap" ? "contained" : "outlined"}
+              color="primary"
+              onClick={() => setActiveTab("swap")}
             sx={{
               textTransform: "none",
               fontWeight: 500,
@@ -1439,7 +1450,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
         ) : (
             <Typography sx={{ fontSize: "20px" }}> Coming soon...</Typography>
         )}
-      </Grid> 
+      </Grid>
+      </Box>
     </Grid>
   );
 };
