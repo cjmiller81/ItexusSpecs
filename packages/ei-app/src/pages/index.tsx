@@ -21,14 +21,22 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { fetchWallets, fetchWalletsPortfolio, useOry, PasswordResetModal } from "components";
+import { 
+  fetchWallets, 
+  fetchWalletsPortfolio, 
+  useOry, 
+  PasswordResetModal,
+  updateTourStatusAsync,
+  fetchReactourSettingsAsync
+} from "components";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 
 const TOUR_ID = "home_v1";
+const TOUR_NAME = "home";
 
 const StartTourButton = () => {
   return (
@@ -273,8 +281,6 @@ useEffect(() => {
       position: "top"
     }
   ];
-
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
 
   return (
     <TourProvider
@@ -525,67 +531,56 @@ const TourStateSync = ({
   showWelcomeModal: boolean;
 }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  const dispatch = useAppDispatch();
   const [tourWasOpened, setTourWasOpened] = useState(false);
-
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
 
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    const hasOpenModals = showPasswordResetModal || showWelcomeModal;
+    
+    if (!viewed && !isOpen && !tourWasOpened && !hasOpenModals) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
+      setIsOpen(true);
     }
-  }, [currentStep, totalSteps]);
+  }, [reactourSettings, isOpen, tourWasOpened, showPasswordResetModal, showWelcomeModal, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
 
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
     } else if (isOpen) {
       setTourWasOpened(true);
     }
-  }, [isOpen, currentStep, tourWasOpened]);
-
-  useEffect(() => {
-    const recoveryCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('postRecoveryRedirect='));
-
-    if (recoveryCookie) {
-      try {
-        localStorage.removeItem(`EI_TOUR_${TOUR_ID}_VIEWED`);
-        localStorage.removeItem(`EI_TOUR_${TOUR_ID}_STEP`);
-      } catch { /* noop */ }
-    }
-  }, []);
-
-
-  useEffect(() => {
-    if (currentStep === 0 && !isOpen) {
-      // Don't mark as viewed on initial load
-    }
-  }, []);
-
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    const hasOpenModals = showPasswordResetModal || showWelcomeModal;
-
-    if (hasOpenModals) {
-      return;
-    }
-
-    if (!viewed && !isOpen) {
-      const timer = setTimeout(() => {
-        const stillNoModals = !showPasswordResetModal && !showWelcomeModal;
-        const stillNotViewed = localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) !== "1";
-
-        if (stillNoModals && stillNotViewed && !isOpen) {
-          if (!isNaN(savedStep)) setCurrentStep(savedStep);
-          setIsOpen(true);
-        }
-      }, 800);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showPasswordResetModal, showWelcomeModal, viewed, isOpen, setCurrentStep, setIsOpen]);
+  }, [isOpen, tourWasOpened, dispatch]);
 
   return null;
 };

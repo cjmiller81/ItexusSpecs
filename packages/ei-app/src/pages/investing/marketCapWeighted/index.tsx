@@ -21,7 +21,7 @@ import {
   setTokens,
 } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { setAccordionState } from "components";
+import { setAccordionState, updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
 import { Wallet } from "@/models/Wallet/Wallet";
 import { Box, Stack, Typography, Button } from "@mui/material";
 import { AppAccordionSection } from "components";
@@ -56,30 +56,33 @@ const transformFilter = (filter: any): any => {
   });
 };
 
-const TOUR_ID = "investing_v1";
+const TOUR_ID = "mCap_v1";
+const TOUR_NAME = "mCap";
 
 const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
   
   const openAllAccordions = () => {
-    const accordionKeys = [
-      'WeightedPrefilterTokens',
-      'WeightedIndexModeling', 
-      'WeightedHistoricalWalletsWorth',
-      'IndexResultsSection'
-    ];
-    
+    const accordionKeys = ['WeightedPrefilterTokens', 'WeightedIndexModeling', 'WeightedHistoricalWalletsWorth', 'IndexResultsSection'];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
   };
   
-  const handleClick = () => {
+  const handleClick = async () => {
     openAllAccordions();
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
-    setIsOpen(true);
+    
+    try {
+      const latestSettings = await dispatch(fetchReactourSettingsAsync()).unwrap();
+      const savedStep = latestSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch tour data:', error);
+      setCurrentStep(0);
+      setIsOpen(true);
+    }
   };
   
   return (
@@ -493,22 +496,55 @@ export default function MarketCapWeightedPage() {
 
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  const dispatch = useAppDispatch();
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
-  }, [isOpen]);
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    if (!viewed) {
-      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    
+    if (!viewed && !isOpen && !tourWasOpened) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, []);
+  }, [reactourSettings, isOpen, tourWasOpened, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
+    }
+  }, [isOpen, tourWasOpened, dispatch]);
+  
   return null;
 };

@@ -7,8 +7,10 @@ import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButto
 import { useState, useEffect, useMemo } from "react";
 import { PageAccessGuard } from "@/components/PageAccessGuard";
 import Image from "next/image";
+import { updateTourStatusAsync, useAppDispatch, fetchReactourSettingsAsync, useAppSelector } from "components";
 
-const TOUR_ID = "trading_v1";
+const TOUR_ID = "charts_v1";
+const TOUR_NAME = "charts";
 
 const StartTourButton = () => {
   return (
@@ -21,38 +23,55 @@ const StartTourButton = () => {
 
 const TourStateSync = ({ totalSteps, themeMode }: { totalSteps: number; themeMode: string }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
-  
+  const dispatch = useAppDispatch();
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
-  
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
-  }, [isOpen]);
-  
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    if (!viewed) {
-      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    
+    if (!viewed && !isOpen && !tourWasOpened) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, []);
+  }, [reactourSettings, isOpen, tourWasOpened, setCurrentStep, setIsOpen]);
 
-  // Force tour refresh when theme changes
   useEffect(() => {
-    if (isOpen) {
-      setIsOpen(false);
-      setTimeout(() => {
-        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-        setCurrentStep(savedStep);
-        setIsOpen(true);
-      }, 100);
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
     }
-  }, [themeMode]);
+  }, [isOpen, tourWasOpened, dispatch]);
   
   return null;
 };

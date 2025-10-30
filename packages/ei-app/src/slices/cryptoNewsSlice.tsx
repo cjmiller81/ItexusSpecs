@@ -149,11 +149,6 @@ export const cryptoNewsSlice = createSlice({
       })
       .addCase(fetchNewsByTickerAsync.fulfilled, (state, action: PayloadAction<NewsResponse>) => {
         state.loading = false;
-        console.log('🔵 TICKER API Response:', {
-          total_pages: action.payload.total_pages,
-          total_items: action.payload.total_items,
-          data_count: action.payload.data?.length,
-        });
         // Append new data to existing data
         if (state.newsByTicker && state.currentPage > 1) {
           state.newsByTicker = {
@@ -169,7 +164,6 @@ export const cryptoNewsSlice = createSlice({
         }
         state.totalPages = action.payload.total_pages;
         state.totalItems = action.payload.total_items;
-        console.log('🔵 Updated state.totalPages to:', state.totalPages);
       })
       .addCase(fetchNewsByTickerAsync.rejected, (state, action) => {
         state.loading = false;
@@ -207,11 +201,6 @@ export const cryptoNewsSlice = createSlice({
       })
       .addCase(fetchNewsByCategoryAsync.fulfilled, (state, action: PayloadAction<NewsResponse>) => {
         state.loading = false;
-        console.log('🟢 CATEGORY API Response:', {
-          total_pages: action.payload.total_pages,
-          total_items: action.payload.total_items,
-          data_count: action.payload.data?.length,
-        });
         // Append new data to existing data
         if (state.newsByCategory && state.currentPage > 1) {
           state.newsByCategory = {
@@ -227,7 +216,6 @@ export const cryptoNewsSlice = createSlice({
         }
         state.totalPages = action.payload.total_pages;
         state.totalItems = action.payload.total_items;
-        console.log('🟢 Updated state.totalPages to:', state.totalPages);
       })
       .addCase(fetchNewsByCategoryAsync.rejected, (state, action) => {
         state.loading = false;
