@@ -25,21 +25,25 @@ export const vaultsFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.Name,
     dataField: DefiField.Name,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Boost,
     dataField: DefiField.Boost,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.PlatformId,
     dataField: DefiField.PlatformId,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.TVL,

@@ -642,7 +642,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         };
       }
       
-      if (field.dataField === "chainsFormatted" && chains) {
+      if ((field.dataField === "chainsFormatted" || field.dataField === "chain") && chains) {
         let chainsOptions = chains.map(c => c.name);
         
         customChains.forEach(chain => {
@@ -652,7 +652,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         });
         
         if (filterValue) {
-          const filterChains = extractValuesFromFilter(filterValue, 'chainsFormatted');
+          const filterChains = extractValuesFromFilter(filterValue, field.dataField);
           filterChains.forEach(chain => {
             if (!chainsOptions.includes(chain)) {
               chainsOptions.push(chain);
@@ -681,7 +681,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         };
       }
       
-      if (field.dataField === "categoriesFormatted" && categories) {
+      if ((field.dataField === "categoriesFormatted" || field.dataField === "category") && categories) {
         let categoriesOptions = categories.map(c => c.name);
         
         customCategories.forEach(category => {
@@ -691,7 +691,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         });
         
         if (filterValue) {
-          const filterCategories = extractValuesFromFilter(filterValue, 'categoriesFormatted');
+          const filterCategories = extractValuesFromFilter(filterValue, field.dataField);
           filterCategories.forEach(category => {
             if (!categoriesOptions.includes(category)) {
               categoriesOptions.push(category);
@@ -1002,8 +1002,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         onValueChanged={handleFilterValueChanged}
                         onEditorPreparing={(e: any) => {
                           const isSymbolField = e.dataField === "sym";
-                          const isChainsField = e.dataField === "chainsFormatted";
-                          const isCategoriesField = e.dataField === "categoriesFormatted";
+                          const isChainsField = e.dataField === "chainsFormatted" || e.dataField === "chain";
+                          const isCategoriesField = e.dataField === "categoriesFormatted" || e.dataField === "category";
                           const isExchangesField = e.dataField === "exchangesFormatted";
                           const isLookupField = isSymbolField || isChainsField || isCategoriesField || isExchangesField;
                           
