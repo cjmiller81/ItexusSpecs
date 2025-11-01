@@ -477,6 +477,18 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setShowGuidanceBanner(true);
     }
   }, [filterBuilderOpen]);
+  
+  useEffect(() => {
+    if (filterBuilderRef.current?.instance && filterValue !== undefined && filterValue !== null) {
+      const fbInstance = filterBuilderRef.current.instance;
+      const currentFbValue = fbInstance.option('value');
+      
+      if (!isDeepEqual(filterValue, currentFbValue)) {
+        fbInstance.option('value', filterValue);
+        fbInstance.repaint();
+      }
+    }
+  }, [filterValue]);
 
   useEffect(() => {
     if (!selectedSavedFilter) return;
@@ -1159,7 +1171,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 const inputText = component.option('text');
                                 const currentValue = component.option('value');
                                 
-                                if (inputText && inputText !== currentValue) {
+                                if (inputText) {
                                   const customValue = isSymbolField ? inputText.toUpperCase() : inputText;
                                   
                                   let currentDS = component.option('dataSource');
@@ -1317,6 +1329,52 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 }
                                 
                                 args.customItem = customValue;
+                                
+                                if (filterBuilderRef.current?.instance && e.setValue) {
+                                  const fbInstance = filterBuilderRef.current.instance;
+                                  let currentFilter = fbInstance.option('value') || [];
+                                  
+                                  const newCondition = [e.dataField, e.filterOperation || 'contains', customValue];
+                                  
+                                  const replaceOrAddCondition = (filter: any): any => {
+                                    if (!Array.isArray(filter) || filter.length === 0) return newCondition;
+                                    
+                                    if (typeof filter[0] === 'string' && filter[0] === e.dataField) {
+                                      return newCondition;
+                                    }
+                                    
+                                    const result = [...filter];
+                                    for (let i = 0; i < result.length; i++) {
+                                      if (Array.isArray(result[i]) && typeof result[i][0] === 'string') {
+                                        if (result[i][0] === e.dataField) {
+                                          result[i] = newCondition;
+                                          return result;
+                                        }
+                                      }
+                                    }
+                                    
+                                    return newCondition;
+                                  };
+                                  
+                                  const updatedFilter = replaceOrAddCondition(currentFilter);
+                                  
+                                  fbInstance.option('value', updatedFilter);
+                                  
+                                  setFilterValue(updatedFilter);
+                                  
+                                  setTimeout(() => {
+                                    const filterBuilderEl = document.querySelector('.dx-filterbuilder');
+                                    if (filterBuilderEl) {
+                                      (filterBuilderEl as HTMLElement).click();
+                                      
+                                      if (isSymbolField) {
+                                        setTimeout(() => {
+                                          setAllSymbolOptions([...allSymbolOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                    }
+                                  }, 100);
+                                }
                               },
                             };
                           }
