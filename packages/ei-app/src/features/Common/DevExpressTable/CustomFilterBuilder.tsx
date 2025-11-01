@@ -603,7 +603,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         const uniqueSymbols = [...newSymbols, ...existingSymbols];
         
         if (component) {
-          component.option('dataSource', uniqueSymbols);
+          component.option('dataSource', uniqueSymbols);       
           if (!component.option('opened')) {
             component.open();
           }
@@ -1023,6 +1023,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 if (isSymbolField) {
                                   const searchText = args.event?.target?.value;
                                   const component = args.component;
+                                  
+                                  const currentValue = component.option('value');
+                                  if (currentValue && searchText && searchText.toUpperCase() !== currentValue.toUpperCase()) {
+                                    component.option('value', searchText.toUpperCase());
+                                  }
                                   
                                   if (searchTimeoutRef.current) {
                                     clearTimeout(searchTimeoutRef.current);
