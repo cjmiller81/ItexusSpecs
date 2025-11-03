@@ -244,6 +244,19 @@ export default function TradingPage() {
           lineHeight: 1.8
         }),
         maskArea: (base) => ({ ...base, rx: 10 }),
+        close: (base) => ({
+          ...base,
+          width: 14,
+          height: 14,
+          padding: '10px',
+          boxSizing: 'content-box',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: 10,
+          right: 8,
+          cursor: 'pointer',
+        }),
       }}
       showBadge={false}
       components={{
