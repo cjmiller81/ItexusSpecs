@@ -67,21 +67,25 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.Symbol,
     dataField: DefiField.Symbol,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Project,
     dataField: DefiField.Project,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Category,
     dataField: DefiField.Category,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.TVL,
