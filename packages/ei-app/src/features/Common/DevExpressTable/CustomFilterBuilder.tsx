@@ -287,6 +287,16 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
         badge: (base) => ({ ...base, display: "none" }),
         close: (base) => ({ 
           ...base, 
+          width: 14,
+          height: 14,
+          padding: '10px',
+          boxSizing: 'content-box',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: 10,
+          right: 8,
+          cursor: 'pointer',
           zIndex: 100000000,
         }),
         controls: (base) => ({ 
