@@ -512,11 +512,24 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 };
 
   const handleApplyFilter = () => {
+    if (filterBuilderRef.current?.instance) {
+      const fbInstance = filterBuilderRef.current.instance;
+      const currentFbValue = fbInstance.option('value');
+      
+      if (currentFbValue && !isDeepEqual(currentFbValue, filterValue)) {
+        onApply(currentFbValue);
+        setFilterBuilderOpen(false);
+        return;
+      }
+    }
+    
     if (filterValue) {
       onApply(filterValue);
       setFilterBuilderOpen(false);
     }
-    else setFilterBuilderOpen(false);
+    else {
+      setFilterBuilderOpen(false);
+    }
   };
 
   const handleSavedFilterChange = (event: SelectChangeEvent<string>) => {
@@ -777,6 +790,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
   const handleSaveFilter = () => {
     if (!filterName) return;
+    
     if (selectedSavedFilter) {
       onUpdateFilter({
         id: selectedSavedFilter.id,
@@ -808,7 +822,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const handleApplyFilterChange = (event: SelectChangeEvent<string>) => {
     const predefinedFilter = sortedPredefinedFilters.find(filter => filter.id === event.target.value[0]);
     if (predefinedFilter) {
-      onApply([predefinedFilter.filter]);
+      onApply(predefinedFilter.filter);
       setSelectedSavedFilter(predefinedFilter);
       setFilterValue(predefinedFilter.filter);
       setFilterName(predefinedFilter.name);
@@ -1050,6 +1064,99 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       searchTokensDynamically(searchText, component);
                                     }, 300);
                                   }
+                                }
+                              },
+                              onClosed: (args: any) => {
+                                const component = args.component;
+                                const currentValue = component.option('value');
+                                const oldValue = e.value;
+                                
+                                if (currentValue && currentValue !== oldValue) {
+                                  
+                                  setTimeout(() => {
+                                    if (filterBuilderRef.current?.instance) {
+                                      const fbInstance = filterBuilderRef.current.instance;
+                                      let currentFilter = fbInstance.option('value') || [];
+                                      
+                                      const newCondition = [e.dataField, e.filterOperation || 'contains', currentValue];
+                                      
+                                      const getCurrentOperator = (filter: any): string => {
+                                        if (!Array.isArray(filter)) return 'and';
+                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                          const innerOp = getCurrentOperator(filter[1]);
+                                          return innerOp === 'or' ? '!or' : '!and';
+                                        }
+                                        for (const item of filter) {
+                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                            return item;
+                                          }
+                                        }
+                                        return 'and';
+                                      };
+                                      
+                                      const replaceAllOperators = (filter: any, newOperator: string): any => {
+                                        if (!Array.isArray(filter)) return filter;
+                                        const isNot = newOperator.startsWith('!');
+                                        const baseOp = isNot ? newOperator.substring(1) : newOperator;
+                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                          const innerFilter = filter[1].map(item => {
+                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                              return baseOp;
+                                            }
+                                            return item;
+                                          });
+                                          return isNot ? ['!', innerFilter] : innerFilter;
+                                        }
+                                        const result = filter.map(item => {
+                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                            return baseOp;
+                                          }
+                                          return item;
+                                        });
+                                        return isNot ? ['!', result] : result;
+                                      };
+                                      
+                                      const replaceOrAddCondition = (filter: any, dataField: string, operation: string, oldVal: any, newCond: any): any => {
+                                        if (!Array.isArray(filter) || filter.length === 0) return newCond;
+                                        if (typeof filter[0] === 'string') {
+                                          if (filter[0] === dataField && filter[1] === operation && filter[2] === oldVal) {
+                                            return newCond;
+                                          }
+                                          return [filter, 'and', newCond];
+                                        }
+                                        let replaced = false;
+                                        const result = [...filter];
+                                        for (let i = 0; i < result.length; i++) {
+                                          const item = result[i];
+                                          if (Array.isArray(item) && typeof item[0] === 'string' && 
+                                              item[0] === dataField && item[1] === operation && item[2] === oldVal) {
+                                            result[i] = newCond;
+                                            replaced = true;
+                                            break;
+                                          }
+                                        }
+                                        if (replaced) return result;
+                                        const currentOp = getCurrentOperator(filter);
+                                        return [...filter, currentOp, newCond];
+                                      };
+                                      
+                                      let updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, e.filterOperation || 'contains', oldValue, newCondition);
+                                      const currentOp = getCurrentOperator(currentFilter);
+                                      const newOp = getCurrentOperator(updatedFilter);
+                                      if (currentOp !== newOp && currentFilter.length > 0) {
+                                        updatedFilter = replaceAllOperators(updatedFilter, newOp);
+                                      }
+                                      
+                                      fbInstance.option('value', updatedFilter);
+                                      
+                                      if (isSymbolField && currentValue) {
+                                        if (!allSymbolOptionsRef.current.includes(currentValue)) {
+                                          allSymbolOptionsRef.current = [...allSymbolOptionsRef.current, currentValue];
+                                          setAllSymbolOptions([...allSymbolOptionsRef.current]);
+                                        }
+                                      }
+                                    }
+                                  }, 10);
                                 }
                               },
                               onValueChanged: (args: any) => {
