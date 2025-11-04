@@ -127,12 +127,11 @@ const TourManager = () => {
 };
 
 const TourPortalManager = ({ isTourOpen }: { 
-  isTourOpen: boolean
+  isTourOpen: boolean;
 }) => {
   const { setIsOpen, setCurrentStep, currentStep } = useTour();
 
   useEffect(() => {
-    
     if (isTourOpen) {
       setIsOpen(true);
       
@@ -166,12 +165,21 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
   const [isTourOpen, setIsTourOpen] = useState(false);
 
   const handleStartTour = () => {
-    setIsTourOpen(true);
+    setIsTourOpen(currentValue => {
+      if (currentValue) {
+        setTimeout(() => {
+          setIsTourOpen(true);
+        }, 100);
+        return false;
+      } else {
+        return true;
+      }
+    });
   };
 
   useEffect(() => {
     onStartTourRef.current = handleStartTour;
-  }, [onStartTourRef]);
+  });
 
   useEffect(() => {
     if (isModalOpen && !isTourOpen) {
@@ -259,17 +267,16 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
   return createPortal(
     <TourProvider
       steps={tourSteps}
-      showNavigation={true}
       showBadge={false}
       styles={{
         popover: (base) => ({ 
           ...base, 
           borderRadius: 12, 
-          padding: "24px", 
+          padding: 16, 
           background: "#f7f5f2",
-          color: "#1a1a1a", 
-          minWidth: 300, 
-          maxWidth: 400,
+          color: "#6b7280",
+          fontSize: "0.95rem",
+          lineHeight: 1.8,
           zIndex: 99999999,
         }),
         maskArea: (base) => ({ 
@@ -290,6 +297,78 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
           ...base, 
           zIndex: 99999999,
         }),
+      }}
+      components={{
+        Content: (props: any) => {
+          const step = tourSteps[props.currentStep];
+          const content = typeof step?.content === 'function' ? step.content() : step?.content;
+          
+          return (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+                <Box sx={{
+                  width: 30, 
+                  height: 30, 
+                  borderRadius: '50%',
+                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                  color: '#fff',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 700, 
+                  fontSize: 14,
+                  flexShrink: 0,
+                  marginTop: "-2px"
+                }}>
+                  {(props.currentStep ?? 0) + 1}
+                </Box>
+                <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
+                  {content || null}
+                </Box>
+              </Box>
+            </Box>
+          );
+        },
+        Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }: any) => (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+            <Box sx={{ display: 'flex', gap: '6px' }}>
+              {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              {currentStep > 0 && (
+                <Button
+                  variant="contained"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  sx={{ 
+                    background: '#f7f5f2', 
+                    color: '#4a5568', 
+                    border: '1px solid #e2e8f0', 
+                    boxShadow: 'none', 
+                    textTransform: 'none',
+                    '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                  }}
+                >
+                  Prior
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                onClick={() => {
+                  if (currentStep === (steps?.length || 0) - 1) {
+                    setIsOpen(false);
+                  } else {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+                sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+              >
+                {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+          </Box>
+        )
       }}
     >
       <TourPortalManager isTourOpen={isTourOpen} />
@@ -393,41 +472,41 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const tourSteps = [
     {
       selector: "#filter_builder_header",
-      content: (
-        <div>
-          <h3>Filter Builder</h3>
-          <p>You are in the Filter Builder (Income Platform)</p>
-        </div>
+      content: () => (
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>Filter Builder</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>You are in the Filter Builder (Income Platform)</Typography>
+        </Box>
       ),
       position: "bottom" as const,
     },
     {
       selector: "#instruction_videos",
-      content: (
-        <div>
-          <h3>Instruction Videos</h3>
-          <p>Filter Builder instruction videos to help you get started</p>
-        </div>
+      content: () => (
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>Instruction Videos</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>Filter Builder instruction videos to help you get started</Typography>
+        </Box>
       ),
       position: "right" as const,
     },
     {
       selector: "#custom_section",
-      content: (
-        <div>
-          <h3>Custom Filter Build</h3>
-          <p>Custom filter build section - create your own filters here</p>
-        </div>
+      content: () => (
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>Custom Filter Build</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>Custom filter build section - create your own filters here</Typography>
+        </Box>
       ),
       position: "bottom" as const,
     },
     {
       selector: "#saved_filters",
-      content: (
-        <div>
-          <h3>Saved Filters</h3>
-          <p>View your saved filters here</p>
-        </div>
+      content: () => (
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>Saved Filters</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>View your saved filters here</Typography>
+        </Box>
       ),
       position: "left" as const,
     },
