@@ -1,6 +1,6 @@
+import React, { FC } from "react";
 import { Box, Typography } from "@mui/material";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { FC } from "react";
 import Link from "next/link";
 
 interface SectionLinkProps {
