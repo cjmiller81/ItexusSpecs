@@ -13,6 +13,8 @@ export type DashboardTileProps = Omit<StackProps, 'title'> & {
   sectionLink?: {
     href: string;
     text?: string;
+    onClick?: () => void;
+    alwaysVisible?: boolean;
   };
 };
 
@@ -35,37 +37,46 @@ export const DashboardTile: FC<DashboardTileProps> = ({
       {...props}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      sx={{ position: 'relative' }}
+      sx={{ position: 'relative', height: '100%', ...props.sx }}
     >
       <Stack 
         direction="row" 
         alignItems="center" 
         justifyContent="space-between" 
-        gap={1}
+        gap={0.5}
+        sx={{ minHeight: '48px' }}
       >
         <Stack 
           direction="row" 
           alignItems="center" 
-          gap={1} 
+          gap={0.5} 
           flex="1 1 auto" 
           minWidth={0}
         >
-          {icon}
+          <Box 
+            sx={{
+              color: sectionLink && isHovered ? '#219a83' : 'inherit',
+              transition: 'color 0.2s ease-in-out',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {icon}
+          </Box>
           <Typography
             sx={{
               pt: "2px",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              fontSize: "1.020rem",
-              letterSpacing: "0.04em",
+              fontSize: "0.9rem",
+              letterSpacing: "0.02em",
+              color: sectionLink && isHovered ? '#219a83' : 'inherit',
+              transition: 'color 0.2s ease-in-out',
             }}
             variant="h6">
             {title}
           </Typography>
-          {sectionLink && isHovered && (
-            <SectionLink href={sectionLink.href} text={sectionLink.text} />
-        )}
           {afterTitleComponent}
           {loading && (
             <CircularProgress
@@ -76,11 +87,29 @@ export const DashboardTile: FC<DashboardTileProps> = ({
         </Stack>
 
         <Stack direction="row" alignItems="center" gap={1}>
+          {sectionLink && (isHovered || sectionLink.alwaysVisible) && (
+            <SectionLink 
+              href={sectionLink.href} 
+              text={sectionLink.text}
+              onClick={sectionLink.onClick}
+            />
+          )}
           {rightHeaderContent}
           {datePicker && <Box>{datePicker}</Box>}
         </Stack>
       </Stack>
-      <Paper sx={{ boxShadow: theme.shadows?.[8] }}>{children}</Paper>
+      <Paper 
+        sx={{ 
+          boxShadow: theme.shadows?.[8],
+          border: sectionLink && isHovered ? '2px solid #219a83' : '2px solid transparent',
+          transition: 'border-color 0.2s ease-in-out',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {children}
+      </Paper>
     </Stack>
   );
 };
