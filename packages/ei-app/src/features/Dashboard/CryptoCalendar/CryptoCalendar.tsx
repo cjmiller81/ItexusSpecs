@@ -1,6 +1,6 @@
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
-import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton, useTheme } from "@mui/material";
+import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton, useTheme, Dialog, CircularProgress, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CalendarEventTile from "./CalendarEventTile";
@@ -12,6 +12,8 @@ import { CustomDateSelector } from "./CustomDateSelector";
 import { CoinsLookupVirtualized, OnFetchResponse } from "components";
 import { CoinsLookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
 import moment from "moment";
+import CloseIcon from "@mui/icons-material/Close";
+import NewCryptoCalendar from "./NewCryptoCalendar";
 
 enum ThemeMode {
   LIGHT = "light",
@@ -44,6 +46,7 @@ const CryptoCalendar: React.FC<Props> = ({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [categoriesData, setCategoriesData] = useState<CategoriesResponse | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: items } = useGetCategoriesQuery();
   const theme = useTheme();
 
@@ -111,11 +114,18 @@ const CryptoCalendar: React.FC<Props> = ({
 
   const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#f7f5f2";
   return (
-    <DashboardTile
-      title={title}
-      icon={icon}
-      loading={loading}
-      sx={sx}>
+    <>
+      <DashboardTile
+        title={title}
+        icon={icon}
+        loading={loading}
+        sectionLink={{
+          href: "#",
+          text: "Expand View",
+          onClick: () => setIsModalOpen(true),
+          alwaysVisible: true
+        }}
+        sx={sx}>
       <Box sx={{ backgroundColor:
               theme.palette.mode === "dark"
                 ? "transparent !important"
@@ -192,7 +202,17 @@ const CryptoCalendar: React.FC<Props> = ({
             },
           }}
           onScroll={handleScroll}>
-          {filteredEvents.length > 0 ? (
+          {loading && calendarData.length === 0 ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "190px",
+              }}>
+              <CircularProgress size={40} />
+            </Box>
+          ) : filteredEvents.length > 0 ? (
             <Grid
               container
               spacing={0}>
@@ -223,10 +243,11 @@ const CryptoCalendar: React.FC<Props> = ({
                 marginTop: "190px",
                 marginLeft: "15px",
                 marginRight: "10px",
-
                 fontSize: "22px",
               }}>
-              {t("NoMoreСurrentEventsForThisDate", { ns: "CryptoCalendar" })}
+              <Typography variant="h6" color="text.secondary">
+                {t("NoMoreСurrentEventsForThisDate", { ns: "CryptoCalendar" })}
+              </Typography>
             </Box>
           )}
         </SimpleBarStyled>
@@ -254,6 +275,51 @@ const CryptoCalendar: React.FC<Props> = ({
         </Box>
       </Box>
     </DashboardTile>
+
+    <Dialog
+      open={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      maxWidth="md"
+      fullWidth
+      sx={{
+        '& .MuiBackdrop-root': {
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        },
+        '& .MuiDialog-paper': {
+          height: '85vh',
+          maxHeight: '85vh',
+          backgroundColor: theme.palette.background.default,
+        }
+      }}
+    >
+      <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <IconButton
+          onClick={() => setIsModalOpen(false)}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.text.primary,
+            zIndex: 1,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        
+        <Box sx={{ flex: 1, overflow: 'auto', p: 2, pt: 6 }}>
+          <NewCryptoCalendar
+            loading={loading}
+            title={title}
+            icon={icon}
+            calendarData={calendarData}
+            setSelectedDate={setSelectedDate}
+            selectedDate={selectedDate}
+            onFetchPage={onFetchPage}
+          />
+        </Box>
+      </Box>
+    </Dialog>
+  </>
   );
 };
 
