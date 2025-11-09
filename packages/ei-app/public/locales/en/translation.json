@@ -291,7 +291,8 @@
     "TableDisplaysTokenPositionsOnly": "Table displays token positions only",
     "HowToUseADDTEMPORARYPOSITION": "Using '+ADD TEMPORARY POSITION'",
     "ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet": "Use this tool to simulate a trade/holding not yet in your wallet, to plan or test strategies.",
-    "NOTEThisWillAlsoRequireYouToReloadSelectedWallet": "NOTE: This will also require you to reload the selected wallet"
+    "NOTEThisWillAlsoRequireYouToReloadSelectedWallet": "NOTE: This will also require you to reload the selected wallet",
+    "SelectSavedWAallet": "SELECT SAVED WALLET"
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
