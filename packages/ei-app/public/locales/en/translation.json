@@ -464,7 +464,14 @@
     "ChosenExchangesRankedByPerformance": "chosen exchanges ranked by performance.",
     "TargetedDEXComparison": "✓ Targeted DEX comparison",
     "SideBySidePerformanceAnalysis": "✓ Side-by-side performance analysis",
-    "BEST": "BEST"
+    "BEST": "BEST",
+    "Copy": "Copy",
+    "Clear": "Clear",
+    "DeepLinksNotice": "Deep links: Uniswap and 1inch links open with this exact swap pre-loaded",
+    "MarketDataUpdated": "Market data updated as of: {{value}}.",
+    "ExecutionPricesNotice": "Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions.",
+    "DexAdditionalFeesNotice": "DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX.",
+    "ComingSoon": "Coming soon..."
   },
   "SessionWatcher": {
     "SessionExpiringSoon": "Session Expiring Soon",
