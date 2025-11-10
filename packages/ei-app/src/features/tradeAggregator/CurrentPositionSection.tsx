@@ -550,7 +550,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   id="wallet_dropdown"
                   displayEmpty
                   value=""
-                  renderValue={() => t("AddSavedWallet")}
+                  renderValue={() => t("SelectSavedWAallet")}
                   sx={{
                     backgroundColor: "transparent",
                     fontSize: "12px",
@@ -573,7 +573,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   displayEmpty
                   value=""
                   onChange={handleWalletSelect}
-                  renderValue={() => t("AddSavedWallet")}
+                  renderValue={() => t("SelectSavedWAallet")}
                   sx={{
                     backgroundColor: "#219a83",
                     fontSize: "12px",
