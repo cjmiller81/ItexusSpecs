@@ -13,8 +13,7 @@ import {
 import { ICategory, IExchange, IPlatform, PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
-import * as XLSX from "xlsx";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
@@ -22,6 +21,7 @@ import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -30,6 +30,7 @@ type Props = Omit<AccordionProps, "children"> & {
   onSorterChanged: (sorter: any) => void;
   id?: string;
   filterType?: string;
+  exportFileName: string;
 };
 
 export default function PrefilterTokensSection({
@@ -39,6 +40,7 @@ export default function PrefilterTokensSection({
   persisKey,
   id,
   filterType = "market-cap",
+  exportFileName,
   ...props
 }: Props) {
   const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
@@ -49,6 +51,8 @@ export default function PrefilterTokensSection({
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [exchanges, setExchanges] = useState<IExchange[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const dataGridRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,79 +111,29 @@ export default function PrefilterTokensSection({
     backgroundColor: "#f7f5f2"
   };
 
-  const onExport = () => {
-    const updatedAssets = dataSource.items().map(asset => {
-      return {
-        symbol: asset.sym,
-        price: asset.price,
-        marketCap: asset.mCap ? asset.mCap : 0,
-        fullyDilutedValuation: asset.fulDilVal ? asset.fulDilVal : 0,
-        tokenomics: asset.tNom ? (asset.tNom * 100).toFixed(2) + "%" : "",
-        volume: asset.tVol ? asset.tVol : 0,
-        categories: asset.cats && Array.isArray(asset.cats) ? asset.cats.join(", ") : "",
-        chains: asset.chains && Array.isArray(asset.chains) && asset.chains[0] !== "" ? asset.chains.join(", ") : "",
-        exchanges: asset.exchanges && Array.isArray(asset.exchanges) ? asset.exchanges.join(", ") : "",
-      };
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-      header: [
-        "symbol",
-        "price",
-        "marketCap",
-        "fullyDilutedValuation",
-        "tokenomics",
-        "volume",
-        "categories",
-        "chains",
-        "exchanges",
-      ],
-    });
-
-    const columnWidth = { wch: 20 };
-    worksheet["!cols"] = [
-      columnWidth,
-      columnWidth,
-      columnWidth,
-      columnWidth,
-      columnWidth,
-      columnWidth,
-      columnWidth,
-      columnWidth,
-      columnWidth,
-    ];
-
-    for (let i = 2; i < updatedAssets.length + 2; i++) {
-      worksheet[`B${i}`].z = "$#,##0.00";
-      worksheet[`C${i}`].z = "$#,##0.00";
-      worksheet[`D${i}`].z = "$#,##0.00";
-      worksheet[`F${i}`].z = "#,##0";
-      worksheet[`G${i}`].z = "@";
-      worksheet[`H${i}`].z = "@";
-      worksheet[`I${i}`].z = "@";
+  const onExport = async () => {
+    if (isExporting) {
+      return;
     }
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(
-      worksheet,
-      [
-        [
-          "Symbol",
-          "Price",
-          "Market Cap",
-          "Fully Diluted Valuation",
-          "Tokenomics",
-          "Volume",
-          "Categories",
-          "Chains",
-          "Exchanges",
-        ],
-      ],
-      { origin: "A1" },
-    );
-    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
+    }
 
-    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export Prefilter tokens data:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -238,9 +192,10 @@ export default function PrefilterTokensSection({
           <FeatureAccessGuard feature="tableExport">
             <Button
               id="export_button"
+              disabled={isExporting}
               onClick={e => {
                 e.stopPropagation();
-                onExport();
+                void onExport();
               }}
               variant="outlined"
               sx={{ ml: 4, marginRight: "17px" }}>
@@ -271,6 +226,7 @@ export default function PrefilterTokensSection({
             dataSource={dataSource}
             onSorterChanged={onSorterChanged}
             filterType={filterType}
+            dataGridRef={dataGridRef}
           />
         )}
       </AccordionDetails>

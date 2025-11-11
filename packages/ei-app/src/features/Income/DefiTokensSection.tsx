@@ -18,8 +18,7 @@ import {
 import { PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
-import * as XLSX from "xlsx";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
@@ -27,19 +26,23 @@ import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   startTourButton?: React.ReactNode;
+  exportFileName: string;
 };
 
-export default function DefiTokensSection({ persisKey, startTourButton, ...props }: Props) {
+export default function DefiTokensSection({ persisKey, startTourButton, exportFileName, ...props }: Props) {
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
   const theme = useTheme();
   const { sidebarOpened } = useAppSelector(store => store.ui);
+  const dataGridRef = useRef<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
@@ -56,39 +59,29 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
     [poolsData],
   );
 
-  const onExport = () => {
-    const updatedAssets = allTokensSource.items().map(asset => {
-      return {
-        pool: asset.symbol || "N/A",
-        project: asset.project || "N/A",
-        chain: asset.chain || "N/A",
-        dex: asset.dex ? asset.dex.join(", ") : "N/A",
-        tvl: asset.tvlUsd ? `$${asset.tvlUsd}` : "$0.00",
-        apy: asset.apy ? `${asset.apy}%` : "0.00%",
-        apyMean30d: asset.apyMean30d ? `${asset.apyMean30d}%` : "0.00%",
-      };
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-      header: ["pool", "project", "chain", "dex", "tvl", "apy", "apyMean30d"],
-    });
-
-    const columnWidth = { wch: 20 };
-    worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
-
-    for (let i = 2; i < updatedAssets.length + 2; i++) {
-      worksheet[`E${i}`].z = "$#,##0.00";
-      worksheet[`F${i}`].z = "0.00%";
-      worksheet[`G${i}`].z = "0.00%";
+  const onExport = async () => {
+    if (isExporting) {
+      return;
     }
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], {
-      origin: "A1",
-    });
-    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
+    }
 
-    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export liquidity pools data:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -206,11 +199,12 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                  onExport();
+                  void onExport();
                 }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
                 id="income_export"
+                disabled={isExporting}
               >
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                   <DownloadIcon />
@@ -233,6 +227,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
             dexs={dexsData || []}
             onUpdate={() => {}}
             dataSource={allTokensSource}
+            dataGridRef={dataGridRef}
           />
         </AccordionDetails>
       </StatePersistedAccordion>

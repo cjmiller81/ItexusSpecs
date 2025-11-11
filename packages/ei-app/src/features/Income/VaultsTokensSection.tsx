@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,24 +18,27 @@ import {
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
-import * as XLSX from "xlsx";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   startTourButton?: React.ReactNode;
+  exportFileName: string;
 };
 
-export default function VaultsTokensSection({ persisKey, startTourButton, ...props }: Props) {
+export default function VaultsTokensSection({ persisKey, startTourButton, exportFileName, ...props }: Props) {
   const [vaults, setVaults] = useState<VaultsData[]>([]);
   const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
   const { t } = useTranslation(["Vaults", "Common"]);
   const { sidebarOpened } = useAppSelector(store => store.ui);
   const theme = useTheme();
+  const dataGridRef = useRef<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (!isVaultsLoading && vaultsData) {
@@ -78,40 +81,29 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
     return Math.max(score, 0);
   };
 
-  const onExport = () => {
-    const updatedAssets = filteredTokensSource.items().map(asset => {
-      const totalApy = asset.breakdowns?.totalApy ?? 0;
-      const apyValue = totalApy === "Infinity" || totalApy === Infinity ? 
-        "∞" : 
-        (typeof totalApy === 'number' ? (totalApy * 100).toFixed(2) : (parseFloat(totalApy) * 100).toFixed(2));
-      
-      return {
-        name: asset.name,
-        chain: asset.chain,
-        platform: asset.platformId,
-        tvl: asset.tvl ? `$${asset.tvl.toFixed(2)}` : "$0.00",
-        apy: `${apyValue}%`,
-        safety: calculateSafetyScore(asset.risks),
-      };
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-      header: ["name", "chain", "platform", "tvl", "apy", "safety"],
-    });
-
-    const columnWidth = { wch: 20 };
-    worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
-
-    for (let i = 2; i < updatedAssets.length + 2; i++) {
-      worksheet[`D${i}`].z = "$#,##0.00";
-      worksheet[`E${i}`].z = "0.00%";
+  const onExport = async () => {
+    if (isExporting) {
+      return;
     }
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Chain", "Platform", "TVL", "APY", "Safety"]], { origin: "A1" });
-    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
+    }
 
-    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export vaults data:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -221,11 +213,12 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                  onExport();
+                  void onExport();
                 }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
-                id="income_export">
+                id="income_export"
+                disabled={isExporting}>
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                   <DownloadIcon />
                   {t("Export")}
@@ -245,6 +238,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
             loading={isVaultsLoading}
             onUpdate={() => {}}
             dataSource={filteredTokensSource}
+            dataGridRef={dataGridRef}
           />
         </AccordionDetails>
       </StatePersistedAccordion>
