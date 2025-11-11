@@ -25,7 +25,7 @@ import {
 
 // Items per page constant
 // Note: Backend currently only supports items=3
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 100;
 
 // Inline SVG fallback placeholder
 const FALLBACK_SVG = encodeURIComponent(
