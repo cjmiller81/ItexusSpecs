@@ -15,6 +15,7 @@ interface ExportDataGridOptions {
 const DEFAULT_BATCH_SIZE = 1000;
 const MAX_SHEET_NAME_LENGTH = 31;
 
+// eslint-disable-next-line no-control-regex
 const INVALID_FILENAME_CHARS = /[<>:"/\\|?*\u0000-\u001F]+/g;
 const INVALID_SHEET_CHARS = /[\\/*?:[\]]+/g;
 
