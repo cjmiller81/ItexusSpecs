@@ -10,7 +10,7 @@ import { CryptoNewsAPIFeed } from "../CryptoNewsAPIFeed";
 
 type Props = Omit<DashboardTileProps, "children"> & {};
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 100;
 
 function formatDate(dateString: string) {
   const d = new Date(dateString);
