@@ -1,5 +1,6 @@
 import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import appAxios from "@/libs/axios/axios";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   AccordionDetails,
@@ -16,12 +17,12 @@ import {
   useTheme,
 } from "@mui/material";
 import { PageTitle, StatePersistedAccordion } from "components";
+import CustomStore from "devextreme/data/custom_store";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
 import * as XLSX from "xlsx";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
@@ -33,32 +34,171 @@ type Props = Omit<AccordionProps, "children"> & {
   startTourButton?: React.ReactNode;
 };
 
+const transformFilter = (filter: any): any => {
+  if (!filter || !Array.isArray(filter)) {
+    return filter;
+  }
+
+  if (filter.length === 3 && filter[1] === "between" && Array.isArray(filter[2])) {
+    const [field, , values] = filter;
+    const [minValue, maxValue] = values;
+
+    return [[field, ">=", minValue], "and", [field, "<=", maxValue]];
+  }
+
+  return filter.map((item: any) => (Array.isArray(item) ? transformFilter(item) : item));
+};
+
 export default function DefiTokensSection({ persisKey, startTourButton, ...props }: Props) {
-  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
   const theme = useTheme();
   const { sidebarOpened } = useAppSelector(store => store.ui);
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  const allTokensSource = useMemo(
-    () =>
-      new DataSource<PoolData, string>({
-        store: {
-          type: "array",
-          key: "pool",
-          data: poolsData ? poolsData.data : [],
-        },
-      }),
-    [poolsData],
-  );
+  const poolsDataSource = useMemo(() => {
+    const store = new CustomStore<PoolData, string>({
+      key: "pool",
+      load: async loadOptions => {
+        try {
+          const {
+            skip = 0,
+            take = 20,
+            sort,
+            filter,
+          } = loadOptions ?? {};
 
-  const onExport = () => {
-    const updatedAssets = allTokensSource.items().map(asset => {
-      return {
+          const normalizeSort = (value: unknown): Array<{ selector: string; desc: boolean }> | undefined => {
+            if (!value) return undefined;
+            if (Array.isArray(value)) {
+              const normalized = value
+                .map(item => {
+                  if (!item) return undefined;
+                  if (typeof item === "string") {
+                    return { selector: item, desc: false };
+                  }
+                  const anyItem = item as any;
+                  if (typeof anyItem.selector === "string") {
+                    return { selector: anyItem.selector, desc: !!anyItem.desc };
+                  }
+                  if (typeof anyItem.field === "string") {
+                    return { selector: anyItem.field, desc: !!anyItem.desc };
+                  }
+                  return undefined;
+                })
+                .filter((itm): itm is { selector: string; desc: boolean } => Boolean(itm));
+              return normalized.length > 0 ? normalized : undefined;
+            }
+            if (typeof value === "string") {
+              return [{ selector: value, desc: false }];
+            }
+            const anyValue = value as any;
+            if (anyValue && typeof anyValue.selector === "string") {
+              return [{ selector: anyValue.selector, desc: !!anyValue.desc }];
+            }
+            return undefined;
+          };
+
+          const sortArray = normalizeSort(sort) ?? [{ selector: "tvlUsd", desc: true }];
+          const sorter = JSON.stringify(sortArray);
+
+          let filterParam = "[]";
+          if (filter) {
+            try {
+              const transformed = transformFilter(filter);
+              filterParam = JSON.stringify(transformed ?? []);
+            } catch (error) {
+              filterParam = "[]";
+            }
+          }
+
+          const response = await appAxios.get("/api/defi/pools", {
+            params: {
+              sorter,
+              filter: filterParam,
+              skip,
+              take,
+            },
+            withCredentials: true,
+          });
+
+          const rawData = response.data ?? {};
+          const data: PoolData[] = rawData?.data ?? [];
+          const totalCount: number = rawData?.totalCount ?? data.length ?? 0;
+
+          return {
+            data,
+            totalCount,
+          };
+        } catch (error: any) {
+          if (error?.response?.status === 404) {
+            return {
+              data: [],
+              totalCount: 0,
+            };
+          }
+
+          console.error("Failed to load pools", error);
+          throw error;
+        }
+      },
+    });
+
+    return new DataSource<PoolData, string>({
+      store,
+      paginate: true,
+      pageSize: 20,
+    });
+  }, []);
+
+  const [isGridLoading, setIsGridLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const handler = (isLoading: boolean) => {
+      setIsGridLoading(isLoading);
+    };
+
+    poolsDataSource.on("loadingChanged", handler);
+    setIsGridLoading(poolsDataSource.isLoading());
+
+    return () => {
+      poolsDataSource.off("loadingChanged", handler);
+    };
+  }, [poolsDataSource]);
+
+  const onExport = useCallback(async () => {
+    const sorter = JSON.stringify([{ selector: "tvlUsd", desc: true }]);
+    let filter = "[]";
+
+    try {
+      if (currentFilter) {
+        const transformed = transformFilter(currentFilter);
+        filter = JSON.stringify(transformed ?? []);
+      }
+    } catch (error) {
+      console.error("Error transforming filter for export", error);
+      filter = "[]";
+    }
+
+    try {
+      const response = await appAxios.get("/api/defi/pools", {
+        params: {
+          sorter,
+          filter,
+          skip: 0,
+          take: 1000,
+        },
+        withCredentials: true,
+      });
+
+      const pools: PoolData[] = response.data?.data ?? [];
+
+      const updatedAssets = pools.map(asset => ({
         pool: asset.symbol || "N/A",
         project: asset.project || "N/A",
         chain: asset.chain || "N/A",
@@ -66,30 +206,32 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
         tvl: asset.tvlUsd ? `$${asset.tvlUsd}` : "$0.00",
         apy: asset.apy ? `${asset.apy}%` : "0.00%",
         apyMean30d: asset.apyMean30d ? `${asset.apyMean30d}%` : "0.00%",
-      };
-    });
+      }));
 
-    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-      header: ["pool", "project", "chain", "dex", "tvl", "apy", "apyMean30d"],
-    });
+      const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
+        header: ["pool", "project", "chain", "dex", "tvl", "apy", "apyMean30d"],
+      });
 
-    const columnWidth = { wch: 20 };
-    worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
+      const columnWidth = { wch: 20 };
+      worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
 
-    for (let i = 2; i < updatedAssets.length + 2; i++) {
-      worksheet[`E${i}`].z = "$#,##0.00";
-      worksheet[`F${i}`].z = "0.00%";
-      worksheet[`G${i}`].z = "0.00%";
+      for (let i = 2; i < updatedAssets.length + 2; i++) {
+        worksheet[`E${i}`].z = "$#,##0.00";
+        worksheet[`F${i}`].z = "0.00%";
+        worksheet[`G${i}`].z = "0.00%";
+      }
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], {
+        origin: "A1",
+      });
+      XLSX.utils.book_append_sheet(workbook, worksheet, "pools");
+
+      XLSX.writeFile(workbook, "pools.xlsx", { compression: true });
+    } catch (error) {
+      console.error("Failed to export pools", error);
     }
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], {
-      origin: "A1",
-    });
-    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
-
-    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
-  };
+  }, [currentFilter]);
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
@@ -123,12 +265,19 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "#f7f5f2 !important"
+    backgroundColor: "#f7f5f2 !important",
   };
+
+  const handleFilterValueChange = useCallback(
+    (filter: object[] | null | undefined) => {
+      setCurrentFilter(filter);
+    },
+    [],
+  );
 
   return (
     <>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 0 }}>
         <Typography
           variant="h4"
           component="div"
@@ -144,7 +293,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
         persistKey={persisKey}
         defaultExpanded
         sx={{
-          ... (theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
+          ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
           borderRadius: "10px",
           overflow: "hidden",
           "&.Mui-expanded": {
@@ -206,7 +355,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                  onExport();
+                   onExport();
                 }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
@@ -229,10 +378,11 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
           }}
         >
           <MemoizedDefiPoolsTable
-            loading={isPoolsLoading && isDexsLoading}
+            loading={isGridLoading}
             dexs={dexsData || []}
             onUpdate={() => {}}
-            dataSource={allTokensSource}
+            dataSource={poolsDataSource}
+            onFilterValueChange={handleFilterValueChange}
           />
         </AccordionDetails>
       </StatePersistedAccordion>

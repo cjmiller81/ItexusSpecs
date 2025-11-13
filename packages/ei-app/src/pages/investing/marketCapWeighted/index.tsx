@@ -53,7 +53,7 @@ const transformFilter = (filter: any): any => {
       return transformFilter(item);
     }
     return item;
-  });
+  }); 
 };
 
 const TOUR_ID = "mCap_v1";
