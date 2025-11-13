@@ -2,6 +2,15 @@ import DefiTokensSectionTest from "@/features/Income/DefiTokensSectionTest";
 import { PoolData } from "@/features/Income/Models/PoolData";
 import pocLpPools from "@/mocks/data/pocLpPools.json";
 import pocLpDexs from "@/mocks/data/pocLpDexs.json";
+import {
+  Box,
+  Button,
+  Chip,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { alpha, useTheme } from "@mui/material/styles";
+import { Fragment, useMemo, useState } from "react";
 
 const ACCORDION_KEY = "DefiTokensSectionPOC";
 
@@ -82,20 +91,173 @@ const normalizePool = (pool: unknown): PoolData => {
   };
 };
 
+const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins & Services"] as const;
+type MainTab = (typeof MAIN_TABS)[number];
+
+const QUICK_FILTERS: Record<MainTab, string[]> = {
+  "All DeFi": [],
+  Lending: [
+    "All Lending",
+    "Lending",
+    "CDP",
+    "NFT Lending",
+    "RWA Lending",
+    "Onchain Capital Allocation",
+    "Uncollateralized Lending",
+  ],
+  "Staking & Yield": [
+    "All Staking & Yield",
+    "Farm",
+    "Leveraged Farming",
+    "Liquid Restaking",
+    "Liquid Staking",
+    "Restaking",
+    "Staking Pool",
+    "Yield",
+    "Yield Aggregator",
+  ],
+  "Trading & Exchanges": [
+    "All Trading & Exchange",
+    "Basis Trading",
+    "Derivatives",
+    "DEX Aggregator",
+    "Dexs",
+    "Liquidity Manager",
+    "Options",
+    "Options Vaults",
+    "Prediction Market",
+    "Synthetics",
+  ],
+  "Stablecoins & Services": [
+    "All Stablecoins & Services",
+    "Algo-Stables",
+    "Bridge",
+    "Chain",
+    "Cross Chain Bridge",
+    "DOR",
+    "Dual-Token Stablecoin",
+    "Indexes",
+    "Insurances",
+    "NFT Marketplace",
+    "Partially Algorithmic Stablecoin",
+    "Payments",
+    "Reserve Currency",
+    "RWA",
+    "Services",
+  ],
+};
+
+const PrefilterMockSection = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+  const mutedText = isDark ? "rgba(229, 231, 235, 0.72)" : "rgba(55, 65, 81, 0.75)";
+  const highlightColor = "#10B981";
+  const [currentTab, setCurrentTab] = useState<MainTab>("Staking & Yield");
+  const quickFilters = QUICK_FILTERS[currentTab];
+  const defaultQuickFilter = useMemo(() => quickFilters?.[0] ?? "All", [quickFilters]);
+  const [selectedFilters, setSelectedFilters] = useState<Record<MainTab, string>>(() => ({
+    "All DeFi": "All",
+    Lending: "All Lending",
+    "Staking & Yield": QUICK_FILTERS["Staking & Yield"]?.[0] ?? "All",
+    "Trading & Exchanges": QUICK_FILTERS["Trading & Exchanges"]?.[0] ?? "All",
+    "Stablecoins & Services": QUICK_FILTERS["Stablecoins & Services"]?.[0] ?? "All",
+  }));
+  const activeQuickFilter = selectedFilters[currentTab] ?? defaultQuickFilter;
+  const filterMessage =
+    currentTab === "All DeFi"
+      ? "No filter applied"
+      : `Filtered by: ${currentTab}${activeQuickFilter ? ` ➜ ${activeQuickFilter}` : ""}`;
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+      <Stack direction="row" spacing={1} flexWrap="wrap">
+        {MAIN_TABS.map(tab => (
+          <Button
+            key={tab}
+            size="small"
+            disableElevation
+            sx={{
+              position: "relative",
+              textTransform: "none",
+              fontWeight: 600,
+              borderRadius: "999px",
+              px: 2.5,
+              py: 1,
+              bgcolor: tab === currentTab ? alpha(highlightColor, 0.18) : "transparent",
+              color: tab === currentTab ? "#ffffff" : mutedText,
+              border: tab === currentTab ? `1px solid ${alpha(highlightColor, 0.5)}` : `1px solid ${alpha("#ffffff", 0.08)}`,
+              transition: "all 0.2s ease",
+              "&:hover": {
+                bgcolor: tab === currentTab ? alpha(highlightColor, 0.24) : alpha("#ffffff", isDark ? 0.08 : 0.12),
+              },
+            }}
+            onClick={() => {
+              setCurrentTab(tab);
+              if (!selectedFilters[tab]) {
+                setSelectedFilters(prev => ({ ...prev, [tab]: QUICK_FILTERS[tab]?.[0] ?? "All" }));
+              }
+            }}
+          >
+            {tab}
+          </Button>
+        ))}
+      </Stack>
+
+      {quickFilters.length > 0 && (
+        <Stack direction="row" alignItems="center" spacing={1.5} flexWrap="wrap">
+          <Typography variant="body2" sx={{ color: mutedText, fontWeight: 600 }}>
+            Quick Filter:
+          </Typography>
+          {quickFilters.map(label => (
+            <Chip
+              key={label}
+              label={label}
+              onClick={() =>
+                setSelectedFilters(prev => ({
+                  ...prev,
+                  [currentTab]: label,
+                }))
+              }
+              sx={{
+                height: 32,
+                borderRadius: "999px",
+                fontWeight: label === activeQuickFilter ? 700 : 500,
+                letterSpacing: 0.3,
+                bgcolor: label === activeQuickFilter ? highlightColor : "transparent",
+                color: label === activeQuickFilter ? "#ffffff" : mutedText,
+                border: label === activeQuickFilter ? "none" : `1px solid ${alpha("#ffffff", 0.08)}`,
+                cursor: "pointer",
+                "& .MuiChip-label": { px: 2.5 },
+              }}
+            />
+          ))}
+        </Stack>
+      )}
+
+      <Box sx={{ mt: 1, p: 2, borderRadius: 1.5, border: `1px dashed ${alpha("#ffffff", 0.1)}`, color: mutedText, fontSize: 14 }}>
+        {filterMessage}
+      </Box>
+    </Box>
+  );
+};
+
 export default function PocLpPage() {
   const poolsData = Array.isArray(pocLpPools) ? pocLpPools.map(normalizePool) : [];
   const dexsData = normalizeStringArray(pocLpDexs);
 
   return (
-    <DefiTokensSectionTest
-      persisKey={ACCORDION_KEY}
-      exportFileName="POC LP Mock"
-      overrides={{
-        pools: poolsData,
-        dexs: dexsData,
-        title: "POC LP"
-      }}
-    />
+    <Fragment>
+      <DefiTokensSectionTest
+        persisKey={ACCORDION_KEY}
+        exportFileName="POC LP Mock"
+        overrides={{
+          pools: poolsData,
+          dexs: dexsData,
+          title: "POC LP",
+          prefilterControls: <PrefilterMockSection />,
+        }}
+      />
+    </Fragment>
   );
 }
 

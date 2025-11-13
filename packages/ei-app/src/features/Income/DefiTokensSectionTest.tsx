@@ -34,6 +34,7 @@ type OverridesConfig = {
   loading?: boolean;
   title?: string;
   accordionTitle?: string;
+  prefilterControls?: React.ReactNode;
 };
 
 type Props = Omit<AccordionProps, "children"> & {
@@ -44,7 +45,14 @@ type Props = Omit<AccordionProps, "children"> & {
 };
 
 export default function DefiTokensSectionTest({ persisKey, startTourButton, exportFileName, overrides, ...props }: Props) {
-  const { pools: overridePools, dexs: overrideDexs, loading: overrideLoading, title: overrideTitle, accordionTitle: overrideAccordionTitle } = overrides || {};
+  const {
+    pools: overridePools,
+    dexs: overrideDexs,
+    loading: overrideLoading,
+    title: overrideTitle,
+    accordionTitle: overrideAccordionTitle,
+    prefilterControls,
+  } = overrides || {};
   const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery(undefined, { skip: !!overridePools });
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery(undefined, { skip: !!overrideDexs });
   const dispatch = useAppDispatch();
@@ -255,6 +263,9 @@ export default function DefiTokensSectionTest({ persisKey, startTourButton, expo
             pointerEvents: "auto",
           }}
         >
+          {prefilterControls && (
+            <Box sx={{ mb: 3 }}>{prefilterControls}</Box>
+          )}
           <MemoizedDefiPoolsTable
             loading={isLoading}
             dexs={tableDexs}
