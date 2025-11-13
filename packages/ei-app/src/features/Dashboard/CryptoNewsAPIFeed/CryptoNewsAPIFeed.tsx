@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   Box,
   Typography,
@@ -11,7 +11,6 @@ import {
   alpha,
   Paper,
   CircularProgress,
-  Button,
 } from "@mui/material";
 import ArticleIcon from '@mui/icons-material/Article';
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
@@ -26,7 +25,7 @@ import {
 
 // Items per page constant
 // Note: Backend currently only supports items=3
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 100;
 
 // Inline SVG fallback placeholder
 const FALLBACK_SVG = encodeURIComponent(
@@ -85,6 +84,8 @@ export function CryptoNewsAPIFeed() {
   
   const [query, setQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const isLoadingMore = useRef(false);
+  const scrollRef = useRef<any>(null);
   
   const { 
     newsByTicker,
@@ -95,17 +96,6 @@ export function CryptoNewsAPIFeed() {
     totalPages 
   } = useAppSelector((state) => state.cryptoNews);
 
-  useEffect(() => {
-    dispatch(fetchNewsByCategoryAsync({
-      section: "general",
-      items: ITEMS_PER_PAGE,
-      page: 1,
-    }));
-    
-    return () => {
-      dispatch(clearNewsByCategory());
-    };
-  }, [dispatch]);
 
   const handleSearch = () => {
     if (!query.trim()) {
@@ -145,31 +135,53 @@ export function CryptoNewsAPIFeed() {
     }
   };
 
-  const handleLoadMore = () => {
-    const nextPage = currentPage + 1;
-    dispatch(setCurrentPage(nextPage));
+  useEffect(() => {
+    const scrollElement = scrollRef.current?.getScrollElement?.();
+    if (!scrollElement) return;
 
-    if (hasSearched && query.trim()) {
-      const tickers = query
-        .toUpperCase()
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean)
-        .join(",");
+    const handleScroll = () => {
+      const scrollPosition = scrollElement.scrollTop + scrollElement.clientHeight;
+      const scrollHeight = scrollElement.scrollHeight;
+      
+      // Загружаем следующую страницу, когда пользователь прокрутил до 80% контента
+      if (scrollPosition >= scrollHeight * 0.8 && 
+          !loading && 
+          !isLoadingMore.current && 
+          currentPage < totalPages) {
+        isLoadingMore.current = true;
+        const nextPage = currentPage + 1;
+        dispatch(setCurrentPage(nextPage));
 
-      dispatch(fetchNewsByTickerAsync({
-        tickers,
-        items: ITEMS_PER_PAGE,
-        page: nextPage,
-      }));
-    } else {
-      dispatch(fetchNewsByCategoryAsync({
-        section: "general",
-        items: ITEMS_PER_PAGE,
-        page: nextPage,
-      }));
-    }
-  };
+        if (hasSearched && query.trim()) {
+          const tickers = query
+            .toUpperCase()
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+            .join(",");
+
+          dispatch(fetchNewsByTickerAsync({
+            tickers,
+            items: ITEMS_PER_PAGE,
+            page: nextPage,
+          })).finally(() => {
+            isLoadingMore.current = false;
+          });
+        } else {
+          dispatch(fetchNewsByCategoryAsync({
+            section: "general",
+            items: ITEMS_PER_PAGE,
+            page: nextPage,
+          })).finally(() => {
+            isLoadingMore.current = false;
+          });
+        }
+      }
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll);
+    return () => scrollElement.removeEventListener('scroll', handleScroll);
+  }, [loading, currentPage, totalPages, hasSearched, query, dispatch]);
 
   const articles = useMemo(() => {
     if (hasSearched && newsByTicker) {
@@ -194,7 +206,8 @@ export function CryptoNewsAPIFeed() {
       elevation={2}
       sx={{ 
         width: '100%',
-        p: 3,
+        height: '100%',
+        p: 2,
         backgroundColor: alpha(
           theme.palette.mode === 'light'
             ? "#fff"
@@ -202,15 +215,17 @@ export function CryptoNewsAPIFeed() {
           1
         ),
         borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 1.5 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1.5, flexShrink: 0 }}>
         <ArticleIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Crypto News Feed
         </Typography>
       </Box>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 2, flexShrink: 0 }}>
         <TextField
           fullWidth
           value={query}
@@ -251,7 +266,8 @@ export function CryptoNewsAPIFeed() {
             p: 2, 
             backgroundColor: alpha(theme.palette.error.main, 0.1),
             borderRadius: 1,
-            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`
+            border: `1px solid ${alpha(theme.palette.error.main, 0.3)}`,
+            flexShrink: 0,
           }}
         >
           <Typography variant="body2" color="error">
@@ -261,8 +277,10 @@ export function CryptoNewsAPIFeed() {
       )}
 
       <SimpleBarStyled
+        ref={scrollRef}
         sx={{
-          height: "400px",
+          flex: 1,
+          minHeight: 0,
         }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {loading && articles.length === 0 ? (
@@ -395,36 +413,14 @@ export function CryptoNewsAPIFeed() {
             </Card>
           ))
         )}
+        
+        {loading && articles.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+            <CircularProgress size={32} />
+          </Box>
+        )}
         </Box>
       </SimpleBarStyled>
-
-      <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-        {articles.length > 0 && currentPage < totalPages && (
-          <Button
-            variant="outlined"
-            onClick={handleLoadMore}
-            disabled={loading}
-            sx={{
-              minWidth: 200,
-              borderColor: theme.palette.primary.main,
-              color: theme.palette.primary.main,
-              '&:hover': {
-                borderColor: theme.palette.primary.dark,
-                backgroundColor: alpha(theme.palette.primary.main, 0.1),
-              }
-            }}
-          >
-            {loading ? (
-              <>
-                <CircularProgress size={16} sx={{ mr: 1 }} />
-                Loading...
-              </>
-            ) : (
-              `Load More`
-            )}
-          </Button>
-        )}
-      </Box>
     </Paper>
   );
 }

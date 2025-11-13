@@ -91,7 +91,7 @@ export const cryptoNewsService = {
       const response = await appAxios.get("/api/cryptonews/category", {
         params: {
           section: params.section,
-          items: params.items || 3,
+          items: params.items || 100,
           page: params.page || 1,
         },
         withCredentials: true,

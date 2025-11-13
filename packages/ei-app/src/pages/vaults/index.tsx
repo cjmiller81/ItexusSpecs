@@ -277,7 +277,11 @@ export default function VaultsPage() {
     >
       <>
         <TourStateSync totalSteps={steps.length} />
-        <VaultsTokensSection persisKey="VaultsTokensSection" startTourButton={<StartTourButton />} />
+        <VaultsTokensSection
+          persisKey="VaultsTokensSection"
+          startTourButton={<StartTourButton />}
+          exportFileName={t("Vaults", { ns: "IncomeSection" })}
+        />
       </>
     </TourProvider>
   );

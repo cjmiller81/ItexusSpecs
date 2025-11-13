@@ -441,6 +441,7 @@ export default function MarketCapEqualWeightedPage() {
         onFilterChanged={onFilterChanged}
         id="table_header"
         filterType="market-cap-equal"
+        exportFileName={t("MarketCapEqualWeight", { ns: "SideBar" })}
       />
 
       <IndexModelingSection

@@ -20,18 +20,19 @@ import { PageTitle, StatePersistedAccordion } from "components";
 import CustomStore from "devextreme/data/custom_store";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
-import * as XLSX from "xlsx";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   startTourButton?: React.ReactNode;
+  exportFileName: string;
 };
 
 const transformFilter = (filter: any): any => {
@@ -49,12 +50,14 @@ const transformFilter = (filter: any): any => {
   return filter.map((item: any) => (Array.isArray(item) ? transformFilter(item) : item));
 };
 
-export default function DefiTokensSection({ persisKey, startTourButton, ...props }: Props) {
+export default function DefiTokensSection({ persisKey, startTourButton, exportFileName, ...props }: Props) {
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
   const theme = useTheme();
   const { sidebarOpened } = useAppSelector(store => store.ui);
+  const dataGridRef = useRef<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
 
   useEffect(() => {
@@ -171,67 +174,30 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
     };
   }, [poolsDataSource]);
 
-  const onExport = useCallback(async () => {
-    const sorter = JSON.stringify([{ selector: "tvlUsd", desc: true }]);
-    let filter = "[]";
-
-    try {
-      if (currentFilter) {
-        const transformed = transformFilter(currentFilter);
-        filter = JSON.stringify(transformed ?? []);
-      }
-    } catch (error) {
-      console.error("Error transforming filter for export", error);
-      filter = "[]";
+ const onExport = async () => {
+    if (isExporting) {
+      return;
     }
 
-    try {
-      const response = await appAxios.get("/api/defi/pools", {
-        params: {
-          sorter,
-          filter,
-          skip: 0,
-          take: 1000,
-        },
-        withCredentials: true,
-      });
-
-      const pools: PoolData[] = response.data?.data ?? [];
-
-      const updatedAssets = pools.map(asset => ({
-        pool: asset.symbol || "N/A",
-        project: asset.project || "N/A",
-        chain: asset.chain || "N/A",
-        dex: asset.dex ? asset.dex.join(", ") : "N/A",
-        tvl: asset.tvlUsd ? `$${asset.tvlUsd}` : "$0.00",
-        apy: asset.apy ? `${asset.apy}%` : "0.00%",
-        apyMean30d: asset.apyMean30d ? `${asset.apyMean30d}%` : "0.00%",
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-        header: ["pool", "project", "chain", "dex", "tvl", "apy", "apyMean30d"],
-      });
-
-      const columnWidth = { wch: 20 };
-      worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
-
-      for (let i = 2; i < updatedAssets.length + 2; i++) {
-        worksheet[`E${i}`].z = "$#,##0.00";
-        worksheet[`F${i}`].z = "0.00%";
-        worksheet[`G${i}`].z = "0.00%";
-      }
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.sheet_add_aoa(worksheet, [["Pool", "Project", "Chain", "DEX", "TVL", "APY", "APY Mean 30d"]], {
-        origin: "A1",
-      });
-      XLSX.utils.book_append_sheet(workbook, worksheet, "pools");
-
-      XLSX.writeFile(workbook, "pools.xlsx", { compression: true });
-    } catch (error) {
-      console.error("Failed to export pools", error);
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
     }
-  }, [currentFilter]);
+
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export liquidity pools data:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
@@ -355,11 +321,12 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                   onExport();
+                  void onExport();
                 }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
                 id="income_export"
+                disabled={isExporting}
               >
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                   <DownloadIcon />
@@ -383,6 +350,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
             onUpdate={() => {}}
             dataSource={poolsDataSource}
             onFilterValueChange={handleFilterValueChange}
+            dataGridRef={dataGridRef}
           />
         </AccordionDetails>
       </StatePersistedAccordion>
@@ -391,7 +359,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, ...props
 }
 
 const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource;
+  return prevProps.dataSource === nextProps.dataSource && prevProps.dataGridRef === nextProps.dataGridRef;
 });
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({

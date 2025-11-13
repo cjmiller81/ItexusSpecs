@@ -19,7 +19,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { toDollarAmountField, toPercentageField } from "./helpers";
 import { VaultsData } from "./Models/VaultsData";
 import SimpleBar from "simplebar-react";
@@ -34,10 +34,13 @@ export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<VaultsData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
+  dataGridRef?: MutableRefObject<DataGridDef<VaultsData, string> | null>;
 }
 
-export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource }) => {
-  const datagrid = React.createRef<DataGridDef<VaultsData, string>>();
+export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef }) => {
+  const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
+  const datagrid =
+    (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(

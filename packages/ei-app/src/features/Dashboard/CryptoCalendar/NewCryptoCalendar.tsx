@@ -229,6 +229,7 @@ useEffect(() => {
       <Paper 
         elevation={2}
         sx={{ 
+          height: '100%',
           backgroundColor: alpha(
             theme.palette.mode === 'light'
               ? "#fff"
@@ -236,9 +237,12 @@ useEffect(() => {
             1
           ),
           borderRadius: 2,
+          display: 'flex',
+          flexDirection: 'column',
         }}>
         <Box sx={{ 
           p: 2,
+          flexShrink: 0,
         }}>
           <Box sx={{ 
             display: "flex", 
@@ -284,6 +288,7 @@ useEffect(() => {
           top: 0, 
           zIndex: 1, 
           px: 2,
+          flexShrink: 0,
           mb: "10px",
         }}>
           <Box sx={{ borderRadius: "10px", backgroundColor: alpha(theme.palette.background.paper, 0.6), p: 2, border: `1px solid ${theme.palette.divider}`, }}>
@@ -532,7 +537,8 @@ useEffect(() => {
         <SimpleBarStyled
           sx={{
             backgroundColor: theme.palette.mode === "dark" ? "transparent !important" : "#fff !important",
-            height: "473px",
+            flex: 1,
+            minHeight: 0,
           }}>
           {filteredEvents.length > 0 ? (
             <Box sx={{ p: 2 }}>

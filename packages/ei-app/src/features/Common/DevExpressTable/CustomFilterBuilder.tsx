@@ -784,6 +784,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         : [];
 
       if (newSymbols.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
         return;
       }
 
@@ -829,6 +832,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         : [];
 
       if (newProjects.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
         return;
       }
 

@@ -19,7 +19,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable";
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -39,6 +39,7 @@ export interface IPrefilterTokensTable {
   categories: ICategory[];
   exchanges: IExchange[];
   filterType?: string;
+  dataGridRef?: MutableRefObject<DataGridDef<ICoin, string> | null>;
 }
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
@@ -49,8 +50,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   categories,
   exchanges,
   filterType = "market-cap",
+  dataGridRef,
 }) => {
-  const datagrid = React.createRef<DataGridDef<ICoin, string>>();
+  const internalDataGridRef = useRef<DataGridDef<ICoin, string> | null>(null);
+  const datagrid =
+    (dataGridRef as MutableRefObject<DataGridDef<ICoin, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, updatingFilterStatus, deletingFilterStatus, creatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,

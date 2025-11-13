@@ -14,6 +14,8 @@ import {
   TooltipProps,
   Typography,
   useTheme,
+  Chip,
+  Box,
 } from "@mui/material";
 import React from "react";
 import { darken, lighten, Stack, StackProps } from "@mui/system";
@@ -22,6 +24,7 @@ import { FC, MouseEventHandler, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarEvent } from "./eventsResponseModel";
 import ImageSlider from "./ImageSlider";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 export type Props = StackProps & {
   event: CalendarEvent;
@@ -78,18 +81,61 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
     window.open(event.source, "_blank");
   };
 
+  const getEventType = () => {
+    const categoryName = event.categories[0]?.name?.toLowerCase() || "";
+    const categoryDisplayName = event.categories[0]?.name || "Other";
+    
+    if (categoryName.includes("conference") || categoryName.includes("meetup") || categoryName.includes("ama")) {
+      return { primary: "Event", secondary: categoryDisplayName };
+    }
+    if (categoryName.includes("exchange") || categoryName.includes("listing")) {
+      return { primary: "Listing", secondary: categoryDisplayName };
+    }
+    if (categoryName.includes("tokenomics") || categoryName.includes("unlock") || 
+        categoryName.includes("airdrop") || categoryName.includes("snapshot") || 
+        categoryName.includes("staking") || categoryName.includes("farming") || 
+        categoryName.includes("fork") || categoryName.includes("swap")) {
+      return { primary: "Token", secondary: categoryDisplayName };
+    }
+    if (categoryName.includes("release") || categoryName.includes("roadmap") || 
+        categoryName.includes("whitepaper") || categoryName.includes("team update")) {
+      return { primary: "Update", secondary: categoryDisplayName };
+    }
+    if (categoryName.includes("partnership") || categoryName.includes("integration")) {
+      return { primary: "Partnership", secondary: categoryDisplayName };
+    }
+    if (categoryName.includes("branding")) {
+      return { primary: "Branding", secondary: categoryDisplayName };
+    }
+    
+    return { primary: "Other", secondary: categoryDisplayName };
+  };
+
+  const eventType = getEventType();
+
   return (
     <Stack
-      sx={{ p: 1.3, pt: 0.5, ...sx }}
+      direction="row"
+      spacing={1}
+      sx={{ p: 1.2, ...sx }}
       {...props}>
-      <Stack
-        direction={"row"}
-        alignItems={"center"}
-        spacing={1}>
+      {/* Левая колонка: иконка и дата */}
+      <Stack alignItems="center" sx={{ flexShrink: 0, minWidth: '50px' }}>
         <ImageSlider
-          style={{ width: "25px", minWidth: "25px", height: "25px" }}
+          style={{ width: "28px", minWidth: "28px", height: "28px" }}
           imageUrls={imagesUrls}
         />
+        <Stack direction="row" alignItems="center" spacing={0.3} sx={{ height: '18px', mt: 'auto' }}>
+          <CalendarTodayIcon sx={{ fontSize: "11px", color: theme.palette.text.secondary }} />
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', whiteSpace: 'nowrap' }}>
+            {moment(event.date_event).format("MMM DD")}
+          </Typography>
+        </Stack>
+      </Stack>
+
+      {/* Центральная часть: название токенов, описание и pill badges */}
+      <Stack flex={1} spacing={0.5} sx={{ minWidth: 0 }}>
+        {/* Название токенов */}
         <HtmlTooltip
           arrow
           placement="top-start"
@@ -113,7 +159,7 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
             <>
               {event.coins.map((coin, index) => {
                 return (
-                  <>
+                  <React.Fragment key={coin.id}>
                     <Typography
                       sx={{
                         cursor: "pointer",
@@ -133,16 +179,15 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
                     {index !== event.coins.length - 1 && (
                       <span style={{ color: theme.palette.text.primary }}>{", "}</span>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </>
           }>
           <Typography
-            width="100%"
             sx={{
               fontWeight: 500,
-              letterSpacing: 0.5,
+              fontSize: "0.875rem",
               cursor: "pointer",
               ":hover": {
                 color: darken(theme.palette.primary.main, 0.2),
@@ -151,90 +196,104 @@ const CalendarEventTile: FC<Props> = ({ event, sx, ...props }) => {
             }}
             onClick={handleEventTitleClick}
             color={theme.palette.primary.main}
+            noWrap
           >
             {event.coins[0].name}
             {event.coins.length > 1 ? ` and ${event.coins.length - 1} others` : ""}
           </Typography>
         </HtmlTooltip>
-        <Stack
-          direction={"row"}
-          spacing={1}
-          alignItems={"center"}>
-          <IconButton onClick={handleOpenCalendarMenuClick}>
-            <CalendarMonthIcon
-              color={"primary"}
-              sx={{ width: "19px", height: "19px", cursor: "pointer", marginLeft: "-11px" }}></CalendarMonthIcon>
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleCloseCalendarMenu}
-            MenuListProps={{
-              "aria-labelledby": "basic-button",
-            }}>
-            <MenuItem
-              component={Link}
-              target={"_blank"}
-              href={googleUrlString}
-              onClick={handleCloseCalendarMenu}>
-              <CalendarItemContent
-                title={"Google"}
-                icon={<GoogleIcon />}
-              />
-            </MenuItem>
-            <MenuItem
-              component={Link}
-              target={"_blank"}
-              href={outlookUrlString}
-              onClick={handleCloseCalendarMenu}>
-              <CalendarItemContent
-                title={"Outlook"}
-                icon={<WindowIcon />}
-              />
-            </MenuItem>
-            <MenuItem
-              component={Link}
-              target={"_blank"}
-              href={appleUrl}
-              onClick={handleCloseCalendarMenu}>
-              <CalendarItemContent
-                title={"Apple"}
-                icon={<AppleIcon />}
-              />
-            </MenuItem>
-          </Menu>
-          <ScheduleIcon
-            color={"primary"}
-            sx={{ width: "19px", height: "19px", cursor: "pointer", marginLeft: "-11px" }}></ScheduleIcon>
+        
+        <Typography
+          sx={{
+            fontSize: "0.72rem",
+            color: theme.palette.text.secondary,
+          }}
+          noWrap
+        >
+          {event.title["en"]}
+        </Typography>
+
+        <Stack direction="row" spacing={0.5}>
+          <Chip
+            label={eventType.primary}
+            size="small"
+            sx={{
+              height: '18px',
+              fontSize: '0.65rem',
+              backgroundColor: '#2D6B5E',
+              color: '#66B2A2',
+              '& .MuiChip-label': {
+                px: 0.8,
+              }
+            }}
+          />
+          <Chip
+            label={eventType.secondary}
+            size="small"
+            sx={{
+              height: '18px',
+              fontSize: '0.65rem',
+              backgroundColor: '#4A4A4A',
+              color: 'white',
+              '& .MuiChip-label': {
+                px: 0.8,
+              }
+            }}
+          />
         </Stack>
       </Stack>
 
-      <Stack
-        spacing={1}
-        alignItems={"center"}>
-        <Stack
-          alignItems={"center"}
-          width={"100%"}>
-          <Typography
-            color="#71A5D7"
-            variant="h7">
-            {event.displayed_date}
-          </Typography>
-          <Typography
-            sx={{
-              fontSize: "16px",
-              textDecorationColor:
-                theme.palette.mode === "light" ? darken(theme.palette.primary.main, 0.4) : theme.palette.primary.main,
-            }}
-            color={
-              theme.palette.mode === "light"
-                ? darken(theme.palette.primary.main, 0.6)
-                : lighten(theme.palette.primary.main, 0.8)
-            }
-            variant="h6">
-            {event.title["en"]}
-          </Typography>
-        </Stack>
+      <Stack direction="row" spacing={0.3} alignItems="flex-start" sx={{ flexShrink: 0 }}>
+        <IconButton size="small" onClick={handleOpenCalendarMenuClick} sx={{ p: 0.2 }}>
+          <CalendarMonthIcon
+            color="primary"
+            sx={{ width: "15px", height: "15px" }}
+          />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleCloseCalendarMenu}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}>
+          <MenuItem
+            component={Link}
+            target="_blank"
+            href={googleUrlString}
+            onClick={handleCloseCalendarMenu}>
+            <CalendarItemContent
+              title="Google"
+              icon={<GoogleIcon />}
+            />
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            target="_blank"
+            href={outlookUrlString}
+            onClick={handleCloseCalendarMenu}>
+            <CalendarItemContent
+              title="Outlook"
+              icon={<WindowIcon />}
+            />
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            target="_blank"
+            href={appleUrl}
+            onClick={handleCloseCalendarMenu}>
+            <CalendarItemContent
+              title="Apple"
+              icon={<AppleIcon />}
+            />
+          </MenuItem>
+        </Menu>
+        <IconButton size="small" sx={{ p: 0.2 }}>
+          <ScheduleIcon
+            color="primary"
+            sx={{ width: "15px", height: "15px" }}
+          />
+        </IconButton>
       </Stack>
     </Stack>
   );

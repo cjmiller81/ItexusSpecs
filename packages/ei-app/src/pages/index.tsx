@@ -3,7 +3,6 @@ import { useGetCalendarEventsQuery } from "@/features/Dashboard/CryptoCalendar/c
 import NewCryptoCalendar from "@/features/Dashboard/CryptoCalendar/NewCryptoCalendar";
 import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
-import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
 import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
 import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
@@ -98,17 +97,14 @@ export default function HomePage() {
     take: 50,
   });
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
-  const { news, loadMore, isLoading, setMarket, market } = useNews();
   const [topTokens, setTopTokens] = useState<TopTokenData[] | null>(null);
   const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);
-  const { data: calendarEvents } = useGetCalendarEventsQuery({
+  const { data: calendarEvents, isLoading: isCalendarLoading } = useGetCalendarEventsQuery({
     page: 0,
     max: 150,
     fromDate: moment(selectedDate[0]).utc().toDate(),
     toDate: moment(selectedDate[1]).utc().toDate(),
   })
-  const newsRef = useRef(news);
-  const retryNewsRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const recoveryCookie = document.cookie
@@ -123,31 +119,6 @@ export default function HomePage() {
       setShowPasswordResetModal(false);
     }
   }, [router.query.requireChangePassword]);
-
-  useEffect(() => {
-  newsRef.current = news;
-}, [news]);
-
-useEffect(() => {
-  const retryNewsFetch = () => {
-    const currentNews = newsRef.current;
-    const isNewsEmpty = !currentNews || currentNews.length === 0;
-
-    if (isNewsEmpty && !isLoading) {
-      loadMore();
-    }
-  };
-
-  retryNewsFetch();
-
-  retryNewsRef.current = setInterval(() => {
-    retryNewsFetch();
-  }, 3000)
-
-  return () => {
-    if (retryNewsRef.current) clearInterval(retryNewsRef.current);
-  };
-}, [loadMore, isLoading]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -410,17 +381,20 @@ useEffect(() => {
         mt={2}
         spacing={2}
         container
+        alignItems="stretch"
         sx={{ marginTop: 0 }}>
         <Grid
           item
           xs={12}
           md={6}
-          lg={5}>
+          lg={5}
+          sx={{ display: 'flex' }}>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
             icon={<AccountBalanceWalletIcon />}
             chartDataGrowth={totalWalletWorthChartData}
             chartDataValue={totalWalletWorthValueChartData}
+            sx={{ width: '100%' }}
           />
         </Grid>
         <Grid
@@ -428,28 +402,26 @@ useEffect(() => {
           xs={12}
           md={6}
           lg={5}
-          sx={{ marginBottom: "10px" }}
-          id="ei-investing-card">
+          id="ei-investing-card"
+          sx={{ display: 'flex' }}>
           <TopTokensTile
             loading={isFetchingTopTokens}
             title={t("TopTokensTile")}
             icon={<AutoGraphIcon />}
             tableAssets={topTokens}
+            sx={{ width: '100%' }}
           />
         </Grid>
         <Grid
           item
           xs={12}
           md={12}
-          lg={2}>
+          lg={2}
+          sx={{ display: 'flex' }}>
           <CryptoNewsTile
-            onNewsSourceChange={setMarket}
-            news={news}
-            newsSource={market}
-            onLoadMoreNews={loadMore}
-            isLoading={isLoading}
             title={t("CryptoNewsTile")}
             icon={<NewspaperIcon />}
+            sx={{ width: '100%' }}
           />
         </Grid>
 
@@ -490,28 +462,7 @@ useEffect(() => {
             md={12}
             lg={2}>
             <CryptoCalendar
-              loading={false}
-              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-              icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
-              calendarData={calendarEvents?.body || []}
-              setSelectedDate={setSelectedDate}
-              selectedDate={selectedDate}
-              onFetchPage={fetchLookupPage}
-            />
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            md={6}>
-            <CryptoNewsAPIFeed />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}>
-            <NewCryptoCalendar
-              loading={false}
+              loading={isCalendarLoading}
               title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
               icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
               calendarData={calendarEvents?.body || []}

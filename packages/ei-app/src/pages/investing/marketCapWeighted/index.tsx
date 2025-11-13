@@ -442,6 +442,7 @@ export default function MarketCapWeightedPage() {
         persisKey="WeightedPrefilterTokens"
         id="table_header"
         filterType="market-cap"
+        exportFileName={t("MarketCapWeighted", { ns: "SideBar" })}
       />
 
       <IndexModelingSection

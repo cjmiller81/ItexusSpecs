@@ -291,7 +291,8 @@
     "TableDisplaysTokenPositionsOnly": "Table displays token positions only",
     "HowToUseADDTEMPORARYPOSITION": "Using '+ADD TEMPORARY POSITION'",
     "ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet": "Use this tool to simulate a trade/holding not yet in your wallet, to plan or test strategies.",
-    "NOTEThisWillAlsoRequireYouToReloadSelectedWallet": "NOTE: This will also require you to reload the selected wallet"
+    "NOTEThisWillAlsoRequireYouToReloadSelectedWallet": "NOTE: This will also require you to reload the selected wallet",
+    "SelectSavedWAallet": "SELECT SAVED WALLET"
   },
   "TradeTable": {
     "PleaseSelectDifferentMarket": "Warning: you do not have a coin or token that matches your trading pair market. You must make a initial trade to create that pair (i.e. from ETH to USDC to create a SOL/USDC market pair)",
@@ -464,7 +465,14 @@
     "ChosenExchangesRankedByPerformance": "chosen exchanges ranked by performance.",
     "TargetedDEXComparison": "✓ Targeted DEX comparison",
     "SideBySidePerformanceAnalysis": "✓ Side-by-side performance analysis",
-    "BEST": "BEST"
+    "BEST": "BEST",
+    "Copy": "Copy",
+    "Clear": "Clear",
+    "DeepLinksNotice": "Deep links: Uniswap and 1inch links open with this exact swap pre-loaded",
+    "MarketDataUpdated": "Market data updated as of: {{value}}.",
+    "ExecutionPricesNotice": "Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions.",
+    "DexAdditionalFeesNotice": "DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX.",
+    "ComingSoon": "Coming soon..."
   },
   "SessionWatcher": {
     "SessionExpiringSoon": "Session Expiring Soon",

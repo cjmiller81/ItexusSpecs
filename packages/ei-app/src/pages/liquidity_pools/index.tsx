@@ -277,7 +277,11 @@ export default function LiquidityPoolsPage() {
     >
       <>
         <TourStateSync totalSteps={steps.length} />
-        <DefiTokensSection persisKey="DefiTokensSection" startTourButton={<StartTourButton />} />
+        <DefiTokensSection
+          persisKey="DefiTokensSection"
+          startTourButton={<StartTourButton />}
+          exportFileName={t("LiquidityPools", { ns: "IncomeSection" })}
+        />
       </>
     </TourProvider>
   );

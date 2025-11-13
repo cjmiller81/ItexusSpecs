@@ -28,6 +28,10 @@ import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
 import Chip from '@mui/material/Chip';
 import ReplayIcon from '@mui/icons-material/Replay';
+import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import MultiSelectDexDropdown, { Dex } from "./MultiSelectDexDropdown";
 import { generateUniswapLink } from "@/helpers/UniswapLinksGenerator";
 import { generateOneInchLink } from "@/helpers/OneInchLinksGenerator";
@@ -729,6 +733,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
   };
 
   const isWalletSelected = selectedWallet !== null;
+  const noticeColor = theme.palette.mode === "dark" ? "#f1b036ff" : "#be7d04ff";
 
   return (
     <Grid
@@ -1225,7 +1230,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 startIcon={<ReplayIcon />}
                                 onClick={clearAllDexSelections}
                                 sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}>
-                                Clear
+                                {t("Clear")}
                               </Button>
                             )}
                           </Stack>
@@ -1355,6 +1360,9 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           {quoteData.map((row, index) => {
                             const dexKey = Array.isArray(row.name) ? row.name[0] : row.name;
                             const dexUrl = dexWebsites[dexKey];
+                            const isHighlightedDex =
+                              typeof dexKey === "string" &&
+                              (dexKey.toUpperCase().includes("UNISWAP") || dexKey.toUpperCase().includes("1INCH"));
                             const isBest = index === 0;
 
                             return (
@@ -1379,12 +1387,15 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                       style={{
                                         color: "#219a83",
                                         textDecoration: "underline",
+                                        fontWeight: isHighlightedDex ? 700 : 400,
                                       }}
                                     >
                                       {dexKey}
                                     </a>
                                   ) : (
-                                    dexKey
+                                    <Typography component="span" sx={{ fontWeight: isHighlightedDex ? 700 : 500 }}>
+                                      {dexKey}
+                                    </Typography>
                                   )}
                                 </TableCell>
                                 <TableCell>{row.price}</TableCell>
@@ -1431,15 +1442,50 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       )}
                   </Table>
                 </TableContainer>
+                {quoteData.length > 0 && (
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      mt: 2,
+                      p: 1.5,
+                      borderColor: theme.palette.mode === "dark" ? "rgba(3, 169, 244, 0.4)" : "rgba(3, 169, 244, 0.3)",
+                      backgroundColor: theme.palette.background.paper,
+                    }}
+                  >
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <LaunchOutlinedIcon sx={{ color: "#03a9f4", fontSize: "1rem" }} />
+                      <Typography sx={{ color: "#03a9f4", fontWeight: 600, fontSize: "0.85rem" }}>
+                        {t("DeepLinksNotice")}
+                      </Typography>
+                    </Stack>
+                  </Paper>
+                )}
                 {invalidQuote.length > 0 && lastUpdated && (
                   <Typography sx={{ color: theme.palette.mode === "dark" ? "#f14f36ff" : "#be3f04ff", fontSize: "0.75rem", marginTop: 1 }}>
                     {invalidQuoteError()}.
                   </Typography>
                 )}
                 {quoteData.length > 0 && lastUpdated && (
-                  <Typography sx={{ color: theme.palette.mode === "dark" ? "#f1b036ff" : "#be7d04ff", fontSize: "0.75rem", marginTop: 1 }}>
-                    {t("MarketDataUpdatedAs", { value: lastUpdated })}
-                  </Typography>
+                  <Stack spacing={1} sx={{ mt: 1.5 }}>
+                    <Stack direction="row" spacing={1} alignItems="flex-start">
+                      <AccessTimeIcon sx={{ color: noticeColor, fontSize: "1rem", mt: "2px" }} />
+                      <Typography sx={{ color: noticeColor, fontSize: "0.75rem" }}>
+                        {t("MarketDataUpdated", { value: lastUpdated })}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} alignItems="flex-start">
+                      <WarningAmberRoundedIcon sx={{ color: noticeColor, fontSize: "1rem", mt: "2px" }} />
+                      <Typography sx={{ color: noticeColor, fontSize: "0.75rem" }}>
+                        {t("ExecutionPricesNotice")}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} alignItems="flex-start">
+                      <DescriptionOutlinedIcon sx={{ color: noticeColor, fontSize: "1rem", mt: "2px" }} />
+                      <Typography sx={{ color: noticeColor, fontSize: "0.75rem" }}>
+                        {t("DexAdditionalFeesNotice")}
+                      </Typography>
+                    </Stack>
+                  </Stack>
                 )}
                 <NoRouteDialog
                     open={noRouteOpen}
@@ -1448,7 +1494,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               </Grid> 
             </Grid>            
         ) : (
-            <Typography sx={{ fontSize: "20px" }}> Coming soon...</Typography>
+            <Typography sx={{ fontSize: "20px" }}>{t("ComingSoon")}</Typography>
         )}
       </Grid>
       </Box>

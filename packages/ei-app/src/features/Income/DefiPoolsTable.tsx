@@ -20,7 +20,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
@@ -38,10 +38,19 @@ export interface IPrefilterTokensTable {
   onUpdate: (filteredTokenData: ICoin[]) => void;
   dexs: string[];
   onFilterValueChange?: (filter: object[] | null | undefined) => void;
+  dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dexs, onFilterValueChange }) => {
-  const datagrid = React.createRef<DataGridDef<PoolData, string>>();
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
+  loading,
+  onUpdate,
+  dataSource,
+  dexs,
+  onFilterValueChange,
+  dataGridRef,
+}) => {
+  const internalDataGridRef = useRef<DataGridDef<PoolData, string> | null>(null);
+  const datagrid = (dataGridRef as MutableRefObject<DataGridDef<PoolData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
