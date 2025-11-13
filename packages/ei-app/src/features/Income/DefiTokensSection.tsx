@@ -28,10 +28,12 @@ import { useGetDexsQuery } from "./DexApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
 import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   startTourButton?: React.ReactNode;
+  exportFileName: string;
   exportFileName: string;
 };
 
@@ -322,10 +324,12 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
                 onClick={e => {
                   e.stopPropagation();
                   void onExport();
+                  void onExport();
                 }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
                 id="income_export"
+                disabled={isExporting}
                 disabled={isExporting}
               >
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
