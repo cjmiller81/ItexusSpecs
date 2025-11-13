@@ -78,6 +78,10 @@ function getPlatformsItems(hasPageAccess: (pagePath: string) => boolean): Sideba
           href: "/vaults",
           disabled: !hasPageAccess("/vaults"),
         },
+        {
+          title: "POC LP",
+          href: "/poc_lp"
+        }
       ],
     },
   ];
