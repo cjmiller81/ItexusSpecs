@@ -5,6 +5,7 @@ import { stockSlice } from "@/features/strategies/stockSlice"
 import userProfileSlice from "@/features/strategies/userProfileSlice"
 import optionTradeSlice from "@/slices/optionTradeSlice"
 import { symbolSlice } from "@/slices/symbolSlice"
+import { tickerSlice } from "@/slices/tickerSlice"
 
 import { combineReducers } from "@reduxjs/toolkit"
 import { uiSlice } from "components"
@@ -22,6 +23,7 @@ export const rootReducer = combineReducers({
   optionTrade: optionTradeSlice,
   callSetList: callSetListSlice.reducer,
   symbol: symbolSlice.reducer,
+  ticker: tickerSlice.reducer,
 })
 
 const config = getPersistConfig<RootState>({

@@ -6,12 +6,9 @@ import {
   Checkbox,
 } from "@mui/material";
 import { TFunction } from "i18next";
-import SymbolSearchAutocomplete from "@/common/symbolSearchAutocomplete";
-import { Instrument } from "@/slices/dpdOptionsScanSlice";
-
 interface OptionSettingsFormProps {
-  ticker: Instrument | null;
-  setTicker: (value: Instrument | null) => void;
+  ticker: string;
+  setTicker: (value: string) => void;
   dteMin: number;
   setDteMin: (value: number) => void;
   dteMax: number;
@@ -86,10 +83,26 @@ const OptionSettingsForm: React.FC<OptionSettingsFormProps> = ({
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <form onSubmit={onSubmit} style={{ flexGrow: 1 }}>
-              <SymbolSearchAutocomplete
-                value={ticker}
-                onChange={setTicker}
+              <TextField
+                variant="outlined"
                 placeholder="Enter ticker"
+                value={ticker}
+                onChange={e => setTicker(e.target.value.toUpperCase())}
+                required
+                sx={{
+                  bgcolor: "#1E1E1E",
+                  width: "100%",
+                  "& .MuiOutlinedInput-root": {
+                    height: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                    color: "white",
+                  },
+                  "& .MuiInputBase-input": {
+                    padding: "0 12px",
+                  },
+                }}
+                inputProps={{ maxLength: 10 }}
               />
               <button type="submit" style={{ display: "none" }} />
             </form>

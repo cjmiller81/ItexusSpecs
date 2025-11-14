@@ -45,7 +45,7 @@ export default function StraddleOptionSet() {
   const [minVolume, setMinVolume] = useState<number>(10);
   const [oiCapPercent, setOiCapPercent] = useState<number>(500);
   const [requireActiveBid, setRequireActiveBid] = useState<boolean>(false);
-  const [ticker, setTicker] = useState<Instrument | null>(null);
+  const [ticker, setTicker] = useState<string>("");
   const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
   const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
   const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
@@ -58,6 +58,17 @@ export default function StraddleOptionSet() {
   const [isSaveCopyEnabled, setIsSaveCopyEnabled] = useState(false);
   const [isSaveEnabled, setIsSaveEnabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const buildInstrument = (symbol: string): Instrument | null =>
+    symbol.trim()
+      ? {
+          symbol: symbol.trim().toUpperCase(),
+          cusip: "",
+          description: "",
+          exchange: "",
+          assetType: "",
+        }
+      : null;
 
   const resetForm = () => {
     setAccount(undefined);
@@ -80,7 +91,7 @@ export default function StraddleOptionSet() {
     setMinVolume(10);
     setOiCapPercent(500);
     setRequireActiveBid(false);
-    setTicker(null);
+    setTicker("");
     setTradeAsSet(false);
     setBaSpreadDiff(10);
     setExitTiers([]);
@@ -146,7 +157,7 @@ export default function StraddleOptionSet() {
       setRequireActiveBid(selectedSubProfile.requireActiveBid);
       setIsBAMaxEnabled(selectedSubProfile.useBidAskMax);
       setBidAskMax(selectedSubProfile.bidAskMax || 0);
-      setTicker(selectedSubProfile.instruments);
+      setTicker(selectedSubProfile.instruments?.symbol ?? "");
       setAmount(selectedSubProfile.totalDollarAmount);
       setTradeUnderlyingFound(selectedSubProfile.tradeUnderlying);
       setIsBreakUpEnabled(selectedSubProfile.breakUpOrder);
@@ -176,8 +187,8 @@ export default function StraddleOptionSet() {
       original.requireActiveBid !== requireActiveBid ||
       original.useBidAskMax !== isBAMaxEnabled ||
       original.bidAskMax !== bidAskMax ||
-      original.ticker !== ticker?.symbol ||
-      original.instruments !== ticker ||
+      original.ticker !== ticker ||
+      (original.instruments?.symbol || "") !== ticker ||
       original.totalDollarAmount !== amount ||
       original.tradeUnderlying !== tradeUnderlyingFound ||
       original.breakUpOrder !== isBreakUpEnabled ||
@@ -234,8 +245,8 @@ export default function StraddleOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        instruments: ticker,
-        ticker: ticker? ticker.symbol : "",
+        instruments: buildInstrument(ticker),
+        ticker,
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -320,8 +331,8 @@ export default function StraddleOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        instruments: ticker,
-        ticker: ticker? ticker.symbol : "",
+        instruments: buildInstrument(ticker),
+        ticker,
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -375,7 +386,7 @@ export default function StraddleOptionSet() {
   const handleSendOrder = async (e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
         if (e) e.preventDefault();
     
-        if (!account || !ticker) {
+        if (!account || !ticker.trim()) {
           return; 
         }
       try {
@@ -400,14 +411,14 @@ export default function StraddleOptionSet() {
             oiCapPercent,
             optionType: "STRADDLE",
             requireActiveBid,
-            ticker: ticker?.symbol || "",
+            ticker,
             totalDollarAmount: amount,
             tradeUnderlying: tradeUnderlyingFound,
             onlyTradeUnderlying,
             breakUpOrder: isBreakUpEnabled,
             orderBreaks: breakUp,
             tradeAsSet,
-            instrument: ticker
+            instrument: buildInstrument(ticker)
           },
         };
   

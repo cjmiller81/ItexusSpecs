@@ -99,7 +99,7 @@ const EntryOrderPanel: React.FC<EntryOrderPanelProps> = ({
         {/* Top Row */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", flexDirection: "row", gap: 4 }}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               <Typography>{t("TotalDollarAmount")}</Typography>
               <TextField
                 variant="outlined"
@@ -114,8 +114,13 @@ const EntryOrderPanel: React.FC<EntryOrderPanelProps> = ({
               />
             </Box>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Typography>{t("OIPercentCap")}</Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1, minWidth: 220 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography>{t("OIPercentCap")}</Typography>
+                <Typography variant="caption" component="span" sx={{ color: "rgba(255,255,255,0.7)" }}>
+                  {t("OIPercentCapHint")}
+                </Typography>
+              </Box>
               <TextField
                 type="number"
                 variant="outlined"
@@ -124,7 +129,7 @@ const EntryOrderPanel: React.FC<EntryOrderPanelProps> = ({
                 sx={{
                   bgcolor: "#1E1E1E",
                   input: { color: "white", textAlign: "center" },
-                  width: "110px",
+                  width: "150px",
                   "& .MuiOutlinedInput-root": { height: "40px" },
                 }}
               />

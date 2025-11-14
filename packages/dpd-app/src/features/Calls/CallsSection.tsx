@@ -46,7 +46,7 @@ export default function CallOptionSet() {
   const [minVolume, setMinVolume] = useState<number>(10);
   const [oiCapPercent, setOiCapPercent] = useState<number>(500);
   const [requireActiveBid, setRequireActiveBid] = useState<boolean>(false);
-  const [ticker, setTicker] = useState<Instrument | null>(null);
+  const [ticker, setTicker] = useState<string>("");
   const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
   const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
   const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
@@ -59,6 +59,17 @@ export default function CallOptionSet() {
   const [isSaveCopyEnabled, setIsSaveCopyEnabled] = useState(false);
   const [isSaveEnabled, setIsSaveEnabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const buildInstrument = (symbol: string): Instrument | null =>
+    symbol.trim()
+      ? {
+          symbol: symbol.trim().toUpperCase(),
+          cusip: "",
+          description: "",
+          exchange: "",
+          assetType: "",
+        }
+      : null;
 
   const resetForm = () => {
     setAccount(undefined);
@@ -81,7 +92,7 @@ export default function CallOptionSet() {
     setMinVolume(10);
     setOiCapPercent(500);
     setRequireActiveBid(false);
-    setTicker(null);
+    setTicker("");
     setTradeAsSet(false);
     setBaSpreadDiff(10);
     setExitTiers([]);
@@ -152,7 +163,7 @@ export default function CallOptionSet() {
       setRequireActiveBid(selectedSubProfile.requireActiveBid);
       setIsBAMaxEnabled(selectedSubProfile.useBidAskMax);
       setBidAskMax(selectedSubProfile.bidAskMax || 0);
-      setTicker(selectedSubProfile.instruments);
+      setTicker(selectedSubProfile.instruments?.symbol ?? "");
       setAmount(selectedSubProfile.totalDollarAmount);
       setTradeUnderlyingFound(selectedSubProfile.tradeUnderlying);
       setIsBreakUpEnabled(selectedSubProfile.breakUpOrder);
@@ -182,8 +193,8 @@ export default function CallOptionSet() {
       original.requireActiveBid !== requireActiveBid ||
       original.useBidAskMax !== isBAMaxEnabled ||
       original.bidAskMax !== bidAskMax ||
-      original.ticker !== ticker?.symbol ||
-      original.instruments !== ticker ||
+      original.ticker !== ticker ||
+      (original.instruments?.symbol || "") !== ticker ||
       original.totalDollarAmount !== amount ||
       original.tradeUnderlying !== tradeUnderlyingFound ||
       original.breakUpOrder !== isBreakUpEnabled ||
@@ -240,8 +251,8 @@ export default function CallOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker ? ticker.symbol : "",
-        instruments: ticker,
+        ticker,
+        instruments: buildInstrument(ticker),
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -301,14 +312,14 @@ export default function CallOptionSet() {
           oiCapPercent,
           optionType: "CALL",
           requireActiveBid,
-          ticker: ticker?.symbol || "",
+          ticker,
           totalDollarAmount: amount,
           tradeUnderlying: tradeUnderlyingFound,
           onlyTradeUnderlying,
           breakUpOrder: isBreakUpEnabled,
           orderBreaks: breakUp,
           tradeAsSet,
-          instrument: ticker,
+          instrument: buildInstrument(ticker),
         },
       };
 
@@ -390,7 +401,7 @@ export default function CallOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker? ticker.symbol : "",
+        ticker,
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -399,7 +410,7 @@ export default function CallOptionSet() {
         baSpreadDiff: baSpreadDiff,
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
-        instruments: ticker
+        instruments: buildInstrument(ticker)
       };
 
       await dispatch(updateSubProfile(subProfileRequest));
