@@ -152,7 +152,9 @@ const PrefilterMockSection = () => {
   const isDark = theme.palette.mode === "dark";
   const mutedText = isDark ? "rgba(229, 231, 235, 0.72)" : "rgba(55, 65, 81, 0.75)";
   const highlightColor = "#10B981";
-  const [currentTab, setCurrentTab] = useState<MainTab>("Staking & Yield");
+  const borderColor = isDark ? alpha("#ffffff", 0.12) : alpha("#0f172a", 0.24);
+  const chipBorderColor = isDark ? alpha("#ffffff", 0.08) : alpha("#0f172a", 0.3);
+  const [currentTab, setCurrentTab] = useState<MainTab>("All DeFi");
   const quickFilters = QUICK_FILTERS[currentTab];
   const defaultQuickFilter = useMemo(() => quickFilters?.[0] ?? "All", [quickFilters]);
   const [selectedFilters, setSelectedFilters] = useState<Record<MainTab, string>>(() => ({
@@ -183,12 +185,12 @@ const PrefilterMockSection = () => {
               borderRadius: "999px",
               px: 2.5,
               py: 1,
-              bgcolor: tab === currentTab ? alpha(highlightColor, 0.18) : "transparent",
-              color: tab === currentTab ? "#ffffff" : mutedText,
-              border: tab === currentTab ? `1px solid ${alpha(highlightColor, 0.5)}` : `1px solid ${alpha("#ffffff", 0.08)}`,
+              bgcolor: tab === currentTab ? (isDark ? alpha(highlightColor, 0.18) : alpha(highlightColor, 0.25)) : "transparent",
+              color: tab === currentTab ? (isDark ? "#ffffff" : "#0f172a") : mutedText,
+              border: `1px solid ${tab === currentTab ? alpha(highlightColor, 0.6) : borderColor}`,
               transition: "all 0.2s ease",
               "&:hover": {
-                bgcolor: tab === currentTab ? alpha(highlightColor, 0.24) : alpha("#ffffff", isDark ? 0.08 : 0.12),
+                bgcolor: tab === currentTab ? (isDark ? alpha(highlightColor, 0.24) : alpha(highlightColor, 0.35)) : alpha(isDark ? "#ffffff" : "#0f172a", 0.08),
               },
             }}
             onClick={() => {
@@ -204,7 +206,7 @@ const PrefilterMockSection = () => {
       </Stack>
 
       {quickFilters.length > 0 && (
-        <Stack direction="row" alignItems="center" spacing={1.5} flexWrap="wrap">
+        <Stack direction="row" alignItems="center" spacing={1.5} flexWrap="wrap" sx={{ rowGap: 1 }}>
           <Typography variant="body2" sx={{ color: mutedText, fontWeight: 600 }}>
             Quick Filter:
           </Typography>
@@ -225,7 +227,7 @@ const PrefilterMockSection = () => {
                 letterSpacing: 0.3,
                 bgcolor: label === activeQuickFilter ? highlightColor : "transparent",
                 color: label === activeQuickFilter ? "#ffffff" : mutedText,
-                border: label === activeQuickFilter ? "none" : `1px solid ${alpha("#ffffff", 0.08)}`,
+                border: label === activeQuickFilter ? "none" : `1px solid ${chipBorderColor}`,
                 cursor: "pointer",
                 "& .MuiChip-label": { px: 2.5 },
               }}
@@ -233,8 +235,18 @@ const PrefilterMockSection = () => {
           ))}
         </Stack>
       )}
-
-      <Box sx={{ mt: 1, p: 2, borderRadius: 1.5, border: `1px dashed ${alpha("#ffffff", 0.1)}`, color: mutedText, fontSize: 14 }}>
+      
+      <Box
+        sx={{
+          mt: 1,
+          p: 2,
+          borderRadius: 1.5,
+          border: `1px dashed ${isDark ? alpha("#ffffff", 0.14) : alpha("#0f172a", 0.35)}`,
+          color: mutedText,
+          fontSize: 14,
+          backgroundColor: isDark ? "transparent" : alpha("#0f172a", 0.02),
+        }}
+      >
         {filterMessage}
       </Box>
     </Box>
