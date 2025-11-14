@@ -472,6 +472,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
   const [allPoolSymbolOptions, setAllPoolSymbolOptions] = useState<string[]>([]);
   const [allPoolProjectOptions, setAllPoolProjectOptions] = useState<string[]>([]);
+  const [allVaultNameOptions, setAllVaultNameOptions] = useState<string[]>([]);
+  const [allVaultPlatformOptions, setAllVaultPlatformOptions] = useState<string[]>([]);
   const [customChains, setCustomChains] = useState<string[]>([]);
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [customExchanges, setCustomExchanges] = useState<string[]>([]);
@@ -479,10 +481,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const allSymbolOptionsRef = useRef<string[]>([]);
   const allPoolSymbolOptionsRef = useRef<string[]>([]);
   const allPoolProjectOptionsRef = useRef<string[]>([]);
+  const allVaultNameOptionsRef = useRef<string[]>([]);
+  const allVaultPlatformOptionsRef = useRef<string[]>([]);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const startTourRef = useRef<(() => void) | null>(null);
   const filterBuilderRef = useRef<any>(null);
+  const isVaultsFilter = filterType === "vaults";
 
   const tourSteps = [
     {
@@ -669,6 +674,14 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     allPoolProjectOptionsRef.current = allPoolProjectOptions;
   }, [allPoolProjectOptions]);
   
+  useEffect(() => {
+    allVaultNameOptionsRef.current = allVaultNameOptions;
+  }, [allVaultNameOptions]);
+  
+  useEffect(() => {
+    allVaultPlatformOptionsRef.current = allVaultPlatformOptions;
+  }, [allVaultPlatformOptions]);
+  
   const extractValuesFromFilter = (filter: any, dataField: string): string[] => {
     if (!filter || !Array.isArray(filter)) return [];
     
@@ -727,6 +740,36 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           }
         });
         setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+      }
+
+      if (isVaultsFilter) {
+        const filterVaultNames = extractValuesFromFilter(filterValue, 'name');
+        if (filterVaultNames.length > 0) {
+          const vaultNamesArray = filterVaultNames
+            .map(value => (typeof value === "string" ? value.trim() : value))
+            .filter((value): value is string => typeof value === "string" && value.length > 0);
+
+          vaultNamesArray.forEach(name => {
+            if (!allVaultNameOptionsRef.current.includes(name)) {
+              allVaultNameOptionsRef.current.push(name);
+            }
+          });
+          setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+        }
+
+        const filterVaultPlatforms = extractValuesFromFilter(filterValue, 'platformId');
+        if (filterVaultPlatforms.length > 0) {
+          const vaultPlatformsArray = filterVaultPlatforms
+            .map(value => (typeof value === "string" ? value.trim() : value))
+            .filter((value): value is string => typeof value === "string" && value.length > 0);
+
+          vaultPlatformsArray.forEach(platform => {
+            if (!allVaultPlatformOptionsRef.current.includes(platform)) {
+              allVaultPlatformOptionsRef.current.push(platform);
+            }
+          });
+          setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
+        }
       }
     }
   }, [filterBuilderOpen]);
@@ -859,25 +902,149 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   };
 
+  const searchVaultNamesDynamically = async (searchText: string, component?: any) => {
+    if (!isVaultsFilter || !searchText || searchText.length < 2) {
+      return;
+    }
+
+    try {
+      const normalizedSymbols = encodeURIComponent(searchText);
+      const response = await appAxios.get<string[]>(
+        `/api/beefy/vaults/names/${normalizedSymbols}`,
+        {
+          withCredentials: true,
+          params: {
+            symbols: searchText,
+          },
+        }
+      );
+
+      let newNames = Array.isArray(response.data)
+        ? response.data
+            .filter((name): name is string => typeof name === "string" && name.trim().length > 0)
+            .map(name => name.trim())
+            .slice(0, 70)
+        : [];
+
+      if (newNames.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+
+      const existingNames = allVaultNameOptionsRef.current.filter(name => !newNames.includes(name));
+      const uniqueNames = [...newNames, ...existingNames];
+
+      allVaultNameOptionsRef.current = uniqueNames;
+
+      if (component) {
+        component.option('dataSource', uniqueNames);
+        if (!component.option('opened')) {
+          component.open();
+        }
+      } else {
+        setAllVaultNameOptions([...uniqueNames]);
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+      throw error;
+    }
+  };
+
+  const searchVaultPlatformsDynamically = async (searchText: string, component?: any) => {
+    if (!isVaultsFilter || !searchText || searchText.length < 2) {
+      return;
+    }
+
+    try {
+      const normalizedSymbols = encodeURIComponent(searchText);
+      const response = await appAxios.get<string[]>(
+        `/api/beefy/vaults/platforms/${normalizedSymbols}`,
+        {
+          withCredentials: true,
+          params: {
+            symbols: searchText,
+          },
+        }
+      );
+
+      let newPlatforms = Array.isArray(response.data)
+        ? response.data
+            .filter((platform): platform is string => typeof platform === "string" && platform.trim().length > 0)
+            .map(platform => platform.trim())
+            .slice(0, 70)
+        : [];
+
+      if (newPlatforms.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+
+      const existingPlatforms = allVaultPlatformOptionsRef.current.filter(platform => !newPlatforms.includes(platform));
+      const uniquePlatforms = [...newPlatforms, ...existingPlatforms];
+
+      allVaultPlatformOptionsRef.current = uniquePlatforms;
+
+      if (component) {
+        component.option('dataSource', uniquePlatforms);
+        if (!component.option('opened')) {
+          component.open();
+        }
+      } else {
+        setAllVaultPlatformOptions([...uniquePlatforms]);
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+      throw error;
+    }
+  };
+
 
   const processedFields = useMemo(() => {
     return filterBuilderFields.map(field => {
       const isSymbolField = field.dataField === "sym";
       const isPoolSymbolField = field.dataField === "symbol";
       const isPoolProjectField = field.dataField === "project";
+      const isVaultNameField = isVaultsFilter && field.dataField === "name";
+      const isVaultPlatformField = isVaultsFilter && field.dataField === "platformId";
       const isSymbolLikeField =
-        isSymbolField || isPoolSymbolField || isPoolProjectField;
+        isSymbolField || isPoolSymbolField || isPoolProjectField || isVaultNameField || isVaultPlatformField;
       
 
       if (isSymbolLikeField) {
+        const resolveDataSource = () => {
+          if (isSymbolField) {
+            return allSymbolOptions;
+          }
+          if (isPoolSymbolField) {
+            return allPoolSymbolOptions;
+          }
+          if (isPoolProjectField) {
+            return allPoolProjectOptions;
+          }
+          if (isVaultNameField) {
+            return allVaultNameOptions;
+          }
+          return allVaultPlatformOptions;
+        };
+
         return {
           ...field,
           lookup: {
-            dataSource: isSymbolField
-              ? allSymbolOptions
-              : isPoolSymbolField
-              ? allPoolSymbolOptions
-              : allPoolProjectOptions,
+            dataSource: resolveDataSource(),
             allowClearing: true,
           },
           editorOptions: {
@@ -1017,7 +1184,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       
       return field;
     });
-  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, allPoolSymbolOptions, allPoolProjectOptions, customChains, customCategories, customExchanges]);
+  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, allPoolSymbolOptions, allPoolProjectOptions, allVaultNameOptions, allVaultPlatformOptions, customChains, customCategories, customExchanges, isVaultsFilter]);
 
   const handleSaveFilter = () => {
     if (!filterName) return;
@@ -1277,12 +1444,14 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         onEditorPreparing={(e: any) => {
                           const isSymbolField = e.dataField === "sym";
                           const isPoolSymbolField = e.dataField === "symbol";
-                          const isPoolProjectField = e.dataField === "project";
-                          const isSymbolLikeField = e.dataField === "sym" || e.dataField === "symbol" || e.dataField === "project";
+                        const isPoolProjectField = e.dataField === "project";
+                        const isVaultNameField = isVaultsFilter && e.dataField === "name";
+                        const isVaultPlatformField = isVaultsFilter && e.dataField === "platformId";
+                        const isSymbolLikeField = e.dataField === "sym" || e.dataField === "symbol" || e.dataField === "project" || isVaultNameField || isVaultPlatformField;
                           const isChainsField = e.dataField === "chainsFormatted" || e.dataField === "chain";
                           const isCategoriesField = e.dataField === "categoriesFormatted" || e.dataField === "category";
                           const isExchangesField = e.dataField === "exchangesFormatted";
-                          const isLookupField = isSymbolField || isPoolSymbolField || isPoolProjectField || isChainsField || isCategoriesField || isExchangesField;
+                        const isLookupField = isSymbolField || isPoolSymbolField || isPoolProjectField || isVaultNameField || isVaultPlatformField || isChainsField || isCategoriesField || isExchangesField;
                           
                           if (e.editorName === "dxSelectBox" && isLookupField) {
                             const originalOptions = e.editorOptions || {};
@@ -1294,6 +1463,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                               currentDataSource = allPoolSymbolOptionsRef.current;
                             } else if (isPoolProjectField) {
                               currentDataSource = allPoolProjectOptionsRef.current;
+                            } else if (isVaultNameField) {
+                              currentDataSource = allVaultNameOptionsRef.current;
+                            } else if (isVaultPlatformField) {
+                              currentDataSource = allVaultPlatformOptionsRef.current;
                             }
                             
                             e.editorOptions = {
@@ -1341,6 +1514,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                   if (typeof searchText !== "string") return searchText;
                                   if (isPoolSymbolField) return searchText.toUpperCase();
                                   if (isPoolProjectField) return searchText.trim();
+                                  if (isVaultNameField || isVaultPlatformField) return searchText.trim();
                                   return searchText;
                                 })();
 
@@ -1364,6 +1538,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       searchPoolSymbolsDynamically(normalizedValue, component);
                                     } else if (isPoolProjectField) {
                                       searchPoolProjectsDynamically(normalizedValue, component);
+                                    } else if (isVaultNameField) {
+                                      searchVaultNamesDynamically(normalizedValue, component);
+                                    } else if (isVaultPlatformField) {
+                                      searchVaultPlatformsDynamically(normalizedValue, component);
                                     }
                                   }, 300);
                                 }
@@ -1380,6 +1558,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                   const normalizedFromText = (() => {
                                     if (isSymbolField || isPoolSymbolField) return currentText.toUpperCase();
                                     if (isPoolProjectField) return currentText.trim();
+                                    if (isVaultNameField || isVaultPlatformField) return currentText.trim();
                                     return currentText;
                                   })();
 
@@ -1499,6 +1678,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                             allPoolProjectOptionsRef.current = [...allPoolProjectOptionsRef.current, currentValue];
                                           }
                                           setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+                                        } else if (isVaultNameField) {
+                                          if (!allVaultNameOptionsRef.current.includes(currentValue)) {
+                                            allVaultNameOptionsRef.current = [...allVaultNameOptionsRef.current, currentValue];
+                                          }
+                                          setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                        } else if (isVaultPlatformField) {
+                                          if (!allVaultPlatformOptionsRef.current.includes(currentValue)) {
+                                            allVaultPlatformOptionsRef.current = [...allVaultPlatformOptionsRef.current, currentValue];
+                                          }
+                                          setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                         }
                                       }
                                     }
@@ -1642,6 +1831,20 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                         }
                                         setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
                                   }, 100);
+                                } else if (isVaultNameField) {
+                                  setTimeout(() => {
+                                    if (!allVaultNameOptionsRef.current.includes(args.value)) {
+                                      allVaultNameOptionsRef.current = [...allVaultNameOptionsRef.current, args.value];
+                                    }
+                                    setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                  }, 100);
+                                } else if (isVaultPlatformField) {
+                                  setTimeout(() => {
+                                    if (!allVaultPlatformOptionsRef.current.includes(args.value)) {
+                                      allVaultPlatformOptionsRef.current = [...allVaultPlatformOptionsRef.current, args.value];
+                                    }
+                                    setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
+                                  }, 100);
                                 }
                                   }
                                 }, 100);
@@ -1661,6 +1864,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                     if (typeof inputText !== "string") return inputText;
                                     if (isSymbolField || isPoolSymbolField) return inputText.toUpperCase();
                                     if (isPoolProjectField) return inputText.trim();
+                                    if (isVaultNameField || isVaultPlatformField) return inputText.trim();
                                     return inputText;
                                   })();
                                   if (typeof e.setValue === "function") {
@@ -1673,6 +1877,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                   if (typeof args.text !== "string") return args.text;
                                   if (isSymbolField || isPoolSymbolField) return args.text.toUpperCase();
                                   if (isPoolProjectField) return args.text.trim();
+                                  if (isVaultNameField || isVaultPlatformField) return args.text.trim();
                                   return args.text;
                                 })();
                                 let currentDS = args.component.option('dataSource');
@@ -1684,6 +1889,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                     currentDS = allPoolSymbolOptionsRef.current;
                                   } else if (isPoolProjectField) {
                                     currentDS = allPoolProjectOptionsRef.current;
+                                  } else if (isVaultNameField) {
+                                    currentDS = allVaultNameOptionsRef.current;
+                                  } else if (isVaultPlatformField) {
+                                    currentDS = allVaultPlatformOptionsRef.current;
                                   } else {
                                     currentDS = [];
                                   }
@@ -1701,6 +1910,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                   } else if (isPoolProjectField) {
                                     allPoolProjectOptionsRef.current = newDS;
                                     setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+                                  } else if (isVaultNameField) {
+                                    allVaultNameOptionsRef.current = newDS;
+                                    setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                  } else if (isVaultPlatformField) {
+                                    allVaultPlatformOptionsRef.current = newDS;
+                                    setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                   } else if (isChainsField) {
                                     setCustomChains(prev => [...prev, customValue]);
                                   } else if (isCategoriesField) {
@@ -1792,6 +2007,22 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                             allPoolSymbolOptionsRef.current = [...allPoolSymbolOptionsRef.current, customValue];
                                           }
                                           setAllPoolSymbolOptions([...allPoolSymbolOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                      if (isVaultNameField) {
+                                        setTimeout(() => {
+                                          if (!allVaultNameOptionsRef.current.includes(customValue)) {
+                                            allVaultNameOptionsRef.current = [...allVaultNameOptionsRef.current, customValue];
+                                          }
+                                          setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                      if (isVaultPlatformField) {
+                                        setTimeout(() => {
+                                          if (!allVaultPlatformOptionsRef.current.includes(customValue)) {
+                                            allVaultPlatformOptionsRef.current = [...allVaultPlatformOptionsRef.current, customValue];
+                                          }
+                                          setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                         }, 100);
                                       }
                                     }

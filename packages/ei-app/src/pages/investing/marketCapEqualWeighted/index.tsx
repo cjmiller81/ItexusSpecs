@@ -20,38 +20,13 @@ import { Wallet } from "@/models/Wallet/Wallet";
 import { Box, Stack, Typography, Button } from "@mui/material";
 import { InfoBadge } from "@/components/InfoBadge";
 import { AppAccordionSection } from "components";
-import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
+import CustomStore from "devextreme/data/custom_store";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
-
-const transformFilter = (filter: any): any => {
-  if (!filter || !Array.isArray(filter)) {
-    return filter;
-  }
-
-  if (filter.length === 3 && filter[1] === 'between' && Array.isArray(filter[2])) {
-    const [field, , values] = filter;
-    const [minValue, maxValue] = values;
-    
-    return [
-      [field, '>=', minValue],
-      'and',
-      [field, '<=', maxValue]
-    ];
-  }
-
-  return filter.map((item: any) => {
-    if (Array.isArray(item)) {
-      return transformFilter(item);
-    }
-    return item;
-  });
-};
-
-
+import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
 const TOUR_ID = "mCapEqual_v1";
 const TOUR_NAME = "mCapEqual";
 
@@ -118,38 +93,75 @@ export default function MarketCapEqualWeightedPage() {
   const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
 
-  const dataSource = useMemo(
-      () =>
-        new DataSource({
-          store: createStore({
-            key: "id",
-            cacheRawData: true,
-            loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
-  
-            onBeforeSend: (method, ajaxOptions) => {
-              ajaxOptions.xhrFields = { withCredentials: true };
-              
-              if (ajaxOptions.data && ajaxOptions.data.filter !== undefined) {
-                try {
-                  if (ajaxOptions.data.filter === null || ajaxOptions.data.filter === "null") {
-                    ajaxOptions.data.filter = "[]";
-                  } else {
-                    const originalFilter = JSON.parse(ajaxOptions.data.filter);
-                    const transformedFilter = transformFilter(originalFilter);
-                    ajaxOptions.data.filter = JSON.stringify(transformedFilter);
-                  }
-                } catch (error) {
-                  console.error('Error transforming filter in DataSource:', error);
-                  ajaxOptions.data.filter = "[]"; 
-                }
-              }
-            },
-          }),
-          paginate: true,
-          pageSize: 20,
-        }),
-      [],
-    );
+  const normalizeSort = (value: unknown): Array<{ selector: string; desc: boolean }> => {
+    if (!value) {
+      return [{ selector: "mCap", desc: true }];
+    }
+
+    if (Array.isArray(value)) {
+      const normalized = value
+        .map(item => {
+          if (!item) return undefined;
+          if (typeof item === "string") {
+            return { selector: item, desc: false };
+          }
+          const anyItem = item as any;
+          if (typeof anyItem.selector === "string") {
+            return { selector: anyItem.selector, desc: !!anyItem.desc };
+          }
+          if (typeof anyItem.field === "string") {
+            return { selector: anyItem.field, desc: !!anyItem.desc };
+          }
+          return undefined;
+        })
+        .filter((itm): itm is { selector: string; desc: boolean } => Boolean(itm));
+
+      return normalized.length > 0 ? normalized : [{ selector: "mCap", desc: true }];
+    }
+
+    if (typeof value === "string") {
+      return [{ selector: value, desc: false }];
+    }
+
+    const anyValue = value as any;
+    if (anyValue && typeof anyValue.selector === "string") {
+      return [{ selector: anyValue.selector, desc: !!anyValue.desc }];
+    }
+
+    return [{ selector: "mCap", desc: true }];
+  };
+
+  const dataSource = useMemo(() => {
+    const store = new CustomStore({
+      key: "id",
+      load: async loadOptions => {
+        const { skip = 0, take = 20, sort, filter } = loadOptions ?? {};
+        const sortArray = normalizeSort(sort);
+        const sorter = JSON.stringify(sortArray);
+        const filterParam = filter ?? [];
+
+        try {
+          const response = await filteredTokensApi.fetchFilteredTokens(sorter, filterParam, skip, take);
+          const data = response.data ?? [];
+          const totalCount = response.totalCount ?? data.length ?? 0;
+
+          return {
+            data,
+            totalCount,
+          };
+        } catch (error) {
+          console.error("Failed to load tokens", error);
+          throw error;
+        }
+      },
+    });
+
+    return new DataSource({
+      store,
+      paginate: true,
+      pageSize: 20,
+    });
+  }, []);
 
   const steps: StepType[] = [
     {
