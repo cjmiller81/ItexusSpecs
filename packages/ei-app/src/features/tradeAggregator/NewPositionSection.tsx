@@ -11,6 +11,7 @@ import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextF
   Autocomplete,
   Avatar,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
@@ -1069,7 +1070,9 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           setInputSearchSwapFor('');
                         }
                       }}
-                      noOptionsText={t("NoOptionsOnThisChain")}
+                      loading={!!selectedTokenRow && !tokenIconsSwapFor}
+                      loadingText={<CircularProgress size={18} />}
+                      noOptionsText={tokenIconsSwapFor ? t("NoOptionsOnThisChain") : ""}
                       renderInput={(params) => (
                         <TextField
                           {...params}
