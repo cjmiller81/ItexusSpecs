@@ -261,6 +261,7 @@ export default function CallOptionSet() {
         baSpreadDiff: baSpreadDiff,
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
+        assetType: buildInstrument(ticker)?.assetType || selectedSubProfile?.assetType || undefined,
       };
 
       await optionTradeService.createSubProfile(subProfileRequest );
@@ -410,7 +411,8 @@ export default function CallOptionSet() {
         baSpreadDiff: baSpreadDiff,
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
-        instruments: buildInstrument(ticker)
+        instruments: buildInstrument(ticker),
+        assetType: buildInstrument(ticker)?.assetType || selectedSubProfile?.assetType || undefined,
       };
 
       await dispatch(updateSubProfile(subProfileRequest));
