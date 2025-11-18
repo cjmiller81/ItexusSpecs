@@ -438,6 +438,22 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="boolean"
           allowHiding={true}
         />
+        <Column
+          dataField={DefiField.IlRisk}
+          caption={DefiLabel.IlRisk}
+          alignment="left"
+          visible={false}
+          dataType="string"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.Exposure}
+          caption={DefiLabel.Exposure}
+          alignment="left"
+          visible={false}
+          dataType="string"
+          allowHiding={true}
+        />
 
         <Export
           enabled={true}
