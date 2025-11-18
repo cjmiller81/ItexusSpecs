@@ -90,7 +90,12 @@ export default function HomePage() {
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
-  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
+  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery({
+    sorter: JSON.stringify([{ selector: "tvlUsd", desc: true }]),
+    filter: "[]",
+    skip: 0,
+    take: 50,
+  });
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
   const [topTokens, setTopTokens] = useState<TopTokenData[] | null>(null);
   const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);

@@ -109,7 +109,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function LiquidityPoolsPage() {
-  const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
+  const { t } = useTranslation(["LiquidityPoolsPage", "Common"]); 
 
   const steps: StepType[] = [
     {

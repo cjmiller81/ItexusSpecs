@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
-import { createFilter, deleteFilter, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { createFilter, deleteFilter, updateFilter, fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -20,7 +20,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
 import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
@@ -37,13 +37,20 @@ export interface IPrefilterTokensTable {
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
   dexs: string[];
-  dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null>;
+  onFilterValueChange?: (filter: object[] | null | undefined) => void;
+  dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dexs, dataGridRef }) => {
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
+  loading,
+  onUpdate,
+  dataSource,
+  dexs,
+  onFilterValueChange,
+  dataGridRef,
+}) => {
   const internalDataGridRef = useRef<DataGridDef<PoolData, string> | null>(null);
-  const datagrid =
-    (dataGridRef as MutableRefObject<DataGridDef<PoolData, string> | null>) ?? internalDataGridRef;
+  const datagrid = (dataGridRef as MutableRefObject<DataGridDef<PoolData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
@@ -90,9 +97,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      setCurrentFilter(filter as object[]);
+      const value = filter as object[];
+      setCurrentFilter(value);
+      onFilterValueChange?.(value);
     },
-    [setCurrentFilter],
+    [onFilterValueChange],
   );
   
   const onContentReady = () => {
@@ -109,6 +118,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
     reconfigureFilterPanelStyles(containerRef, currentFilter);
   };
 
+  useEffect(() => {
+    return () => {
+      if (filterPanelText.current) {
+        filterPanelText.current.replaceWith(filterPanelText.current.cloneNode(true));
+      }
+    };
+  }, []);
+
   return (
     <div ref={containerRef}>
       {/*@ts-ignore*/}
@@ -118,17 +135,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         allowColumnResizing={true}
         columnResizingMode="widget"
         ref={datagrid}
-        noDataText={loading ? "" : "No data"}
-        loadPanel={{
-          enabled: true,
-          visible: loading,
-          showPane: false,
-          shading: false,
-          position: { of: containerRef.current, offset: { y: 20 }, },
-        }}
+        loadPanel={{ enabled: false }}
         allowColumnReordering={true}
         columnHidingEnabled={false}
-        keyExpr="ID"
+        keyExpr="pool"
+        remoteOperations={{ sorting: true, paging: true, filtering: true, search: true }}
         onCellClick={descOrderingAfterClick}
         columnAutoWidth={false}
         showRowLines={true}
@@ -156,10 +167,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
-        <LoadPanel
-          showPane={loading}
-          enabled
-        />
+        <LoadPanel enabled={false} />
         <Paging defaultPageSize={10} />
         <Pager
           visible={true}
@@ -201,12 +209,13 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
                 predefinedFilters={liquidityPoolFilters}
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
                 onDisableFilter={() => {
-                  setCurrentFilter(null)
-                }}
-                onApply={filter => {
-                  setCurrentFilter(filter);
+                  setCurrentFilter(null);
+                  onFilterValueChange?.(null);
+                  filterRef.current?.onUpdateFilter(null);
+                  dispatch(fetchFilters({}));
                 }}
                 filterToAppply={currentFilter}
+                onApply={value => onApplyFilter(value)}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>
@@ -427,6 +436,22 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="boolean"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.IlRisk}
+          caption={DefiLabel.IlRisk}
+          alignment="left"
+          visible={false}
+          dataType="string"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.Exposure}
+          caption={DefiLabel.Exposure}
+          alignment="left"
+          visible={false}
+          dataType="string"
           allowHiding={true}
         />
 

@@ -30,7 +30,7 @@ import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
 import FilterBuilderDef from "devextreme-react/filter-builder";
 import { ValueChangedEvent } from "devextreme/ui/filter_builder";
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -41,6 +41,7 @@ import { useGetChainsQuery } from "@/features/Investing/chainsApi";
 import { useGetCategoriesQuery } from "@/features/Investing/categoriesApi";
 import { useGetExchangesQuery } from "@/features/Investing/exchangesApi";
 import { iconsApi, iconsAbortableApi } from "@/services/iconsService";
+import appAxios from "@/libs/axios/axios";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
@@ -469,15 +470,24 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
   const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery();
   const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
+  const [allPoolSymbolOptions, setAllPoolSymbolOptions] = useState<string[]>([]);
+  const [allPoolProjectOptions, setAllPoolProjectOptions] = useState<string[]>([]);
+  const [allVaultNameOptions, setAllVaultNameOptions] = useState<string[]>([]);
+  const [allVaultPlatformOptions, setAllVaultPlatformOptions] = useState<string[]>([]);
   const [customChains, setCustomChains] = useState<string[]>([]);
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [customExchanges, setCustomExchanges] = useState<string[]>([]);
   
   const allSymbolOptionsRef = useRef<string[]>([]);
+  const allPoolSymbolOptionsRef = useRef<string[]>([]);
+  const allPoolProjectOptionsRef = useRef<string[]>([]);
+  const allVaultNameOptionsRef = useRef<string[]>([]);
+  const allVaultPlatformOptionsRef = useRef<string[]>([]);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const startTourRef = useRef<(() => void) | null>(null);
   const filterBuilderRef = useRef<any>(null);
+  const isVaultsFilter = filterType === "vaults";
 
   const tourSteps = [
     {
@@ -656,6 +666,22 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     allSymbolOptionsRef.current = allSymbolOptions;
   }, [allSymbolOptions]);
   
+  useEffect(() => {
+    allPoolSymbolOptionsRef.current = allPoolSymbolOptions;
+  }, [allPoolSymbolOptions]);
+
+  useEffect(() => {
+    allPoolProjectOptionsRef.current = allPoolProjectOptions;
+  }, [allPoolProjectOptions]);
+  
+  useEffect(() => {
+    allVaultNameOptionsRef.current = allVaultNameOptions;
+  }, [allVaultNameOptions]);
+  
+  useEffect(() => {
+    allVaultPlatformOptionsRef.current = allVaultPlatformOptions;
+  }, [allVaultPlatformOptions]);
+  
   const extractValuesFromFilter = (filter: any, dataField: string): string[] => {
     if (!filter || !Array.isArray(filter)) return [];
     
@@ -693,6 +719,58 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         
         setAllSymbolOptions([...allSymbolOptionsRef.current]);
       }
+
+      const filterPoolSymbols = extractValuesFromFilter(filterValue, 'symbol');
+      if (filterPoolSymbols.length > 0) {
+        const poolSymbolsArray = filterPoolSymbols.map(sym => (sym.toUpperCase()));
+        poolSymbolsArray.forEach(sym => {
+          if (!allPoolSymbolOptionsRef.current.includes(sym)) {
+            allPoolSymbolOptionsRef.current.push(sym);
+          }
+        });
+        setAllPoolSymbolOptions([...allPoolSymbolOptionsRef.current]);
+      }
+
+      const filterPoolProjects = extractValuesFromFilter(filterValue, 'project');
+      if (filterPoolProjects.length > 0) {
+        const poolProjectsArray = filterPoolProjects.map(project => (project.toUpperCase()));
+        poolProjectsArray.forEach(project => {
+          if (!allPoolProjectOptionsRef.current.includes(project)) {
+            allPoolProjectOptionsRef.current.push(project);
+          }
+        });
+        setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+      }
+
+      if (isVaultsFilter) {
+        const filterVaultNames = extractValuesFromFilter(filterValue, 'name');
+        if (filterVaultNames.length > 0) {
+          const vaultNamesArray = filterVaultNames
+            .map(value => (typeof value === "string" ? value.trim() : value))
+            .filter((value): value is string => typeof value === "string" && value.length > 0);
+
+          vaultNamesArray.forEach(name => {
+            if (!allVaultNameOptionsRef.current.includes(name)) {
+              allVaultNameOptionsRef.current.push(name);
+            }
+          });
+          setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+        }
+
+        const filterVaultPlatforms = extractValuesFromFilter(filterValue, 'platformId');
+        if (filterVaultPlatforms.length > 0) {
+          const vaultPlatformsArray = filterVaultPlatforms
+            .map(value => (typeof value === "string" ? value.trim() : value))
+            .filter((value): value is string => typeof value === "string" && value.length > 0);
+
+          vaultPlatformsArray.forEach(platform => {
+            if (!allVaultPlatformOptionsRef.current.includes(platform)) {
+              allVaultPlatformOptionsRef.current.push(platform);
+            }
+          });
+          setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
+        }
+      }
     }
   }, [filterBuilderOpen]);
 
@@ -728,14 +806,245 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   };
 
+  const searchPoolSymbolsDynamically = async (searchText: string, component?: any) => {
+    if (!searchText || searchText.length < 2) {
+      return;
+    }
+
+    try {
+      const response = await appAxios.get<string[]>(
+        `/api/defi/pools/symbols/${searchText}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      let newSymbols = Array.isArray(response.data)
+        ? response.data
+            .filter((sym): sym is string => typeof sym === "string" && sym.trim().length > 0)
+            .map(sym => sym.toUpperCase())
+            .slice(0, 70)
+        : [];
+
+      if (newSymbols.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+
+      const existingSymbols = allPoolSymbolOptionsRef.current.filter(sym => !newSymbols.includes(sym));
+      const uniqueSymbols = [...newSymbols, ...existingSymbols];
+
+      allPoolSymbolOptionsRef.current = uniqueSymbols;
+
+      if (component) {
+        component.option('dataSource', uniqueSymbols);
+        if (!component.option('opened')) {
+          component.open();
+        }
+      } else {
+        setAllPoolSymbolOptions([...uniqueSymbols]);
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        return;
+      }
+      throw error;
+    }
+  };
+
+  const searchPoolProjectsDynamically = async (searchText: string, component?: any) => {
+    if (!searchText || searchText.length < 2) {
+      return;
+    }
+
+    try {
+      const response = await appAxios.get<string[]>(
+        `/api/defi/pools/projects/${searchText}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      let newProjects = Array.isArray(response.data)
+        ? response.data
+            .filter((project): project is string => typeof project === "string" && project.trim().length > 0)
+            .map(project => project.trim())
+            .slice(0, 70)
+        : [];
+
+      if (newProjects.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+
+      const existingProjects = allPoolProjectOptionsRef.current.filter(project => !newProjects.includes(project));
+      const uniqueProjects = [...newProjects, ...existingProjects];
+
+      allPoolProjectOptionsRef.current = uniqueProjects;
+
+      if (component) {
+        component.option('dataSource', uniqueProjects);
+        if (!component.option('opened')) {
+          component.open();
+        }
+      } else {
+        setAllPoolProjectOptions([...uniqueProjects]);
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        return;
+      }
+      throw error;
+    }
+  };
+
+  const searchVaultNamesDynamically = async (searchText: string, component?: any) => {
+    if (!isVaultsFilter || !searchText || searchText.length < 2) {
+      return;
+    }
+
+    try {
+      const normalizedSymbols = encodeURIComponent(searchText);
+      const response = await appAxios.get<string[]>(
+        `/api/beefy/vaults/names/${normalizedSymbols}`,
+        {
+          withCredentials: true,
+          params: {
+            symbols: searchText,
+          },
+        }
+      );
+
+      let newNames = Array.isArray(response.data)
+        ? response.data
+            .filter((name): name is string => typeof name === "string" && name.trim().length > 0)
+            .map(name => name.trim())
+            .slice(0, 70)
+        : [];
+
+      if (newNames.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+
+      const existingNames = allVaultNameOptionsRef.current.filter(name => !newNames.includes(name));
+      const uniqueNames = [...newNames, ...existingNames];
+
+      allVaultNameOptionsRef.current = uniqueNames;
+
+      if (component) {
+        component.option('dataSource', uniqueNames);
+        if (!component.option('opened')) {
+          component.open();
+        }
+      } else {
+        setAllVaultNameOptions([...uniqueNames]);
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+      throw error;
+    }
+  };
+
+  const searchVaultPlatformsDynamically = async (searchText: string, component?: any) => {
+    if (!isVaultsFilter || !searchText || searchText.length < 2) {
+      return;
+    }
+
+    try {
+      const normalizedSymbols = encodeURIComponent(searchText);
+      const response = await appAxios.get<string[]>(
+        `/api/beefy/vaults/platforms/${normalizedSymbols}`,
+        {
+          withCredentials: true,
+          params: {
+            symbols: searchText,
+          },
+        }
+      );
+
+      let newPlatforms = Array.isArray(response.data)
+        ? response.data
+            .filter((platform): platform is string => typeof platform === "string" && platform.trim().length > 0)
+            .map(platform => platform.trim())
+            .slice(0, 70)
+        : [];
+
+      if (newPlatforms.length === 0) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+
+      const existingPlatforms = allVaultPlatformOptionsRef.current.filter(platform => !newPlatforms.includes(platform));
+      const uniquePlatforms = [...newPlatforms, ...existingPlatforms];
+
+      allVaultPlatformOptionsRef.current = uniquePlatforms;
+
+      if (component) {
+        component.option('dataSource', uniquePlatforms);
+        if (!component.option('opened')) {
+          component.open();
+        }
+      } else {
+        setAllVaultPlatformOptions([...uniquePlatforms]);
+      }
+    } catch (error: any) {
+      if (error?.response?.status === 404) {
+        if (component) {
+          component.option('dataSource', []);
+        }
+        return;
+      }
+      throw error;
+    }
+  };
+
 
   const processedFields = useMemo(() => {
     return filterBuilderFields.map(field => {
-      if (field.dataField === "sym") {
+      const isSymbolField = field.dataField === "sym";
+      const isPoolSymbolField = field.dataField === "symbol";
+      const isPoolProjectField = field.dataField === "project";
+      const isVaultNameField = isVaultsFilter && field.dataField === "name";
+      const isVaultPlatformField = isVaultsFilter && field.dataField === "platformId";
+      const isSymbolLikeField =
+        isSymbolField || isPoolSymbolField || isPoolProjectField || isVaultNameField || isVaultPlatformField;
+      
+
+      if (isSymbolLikeField) {
+        const resolveDataSource = () => {
+          if (isSymbolField) {
+            return allSymbolOptions;
+          }
+          if (isPoolSymbolField) {
+            return allPoolSymbolOptions;
+          }
+          if (isPoolProjectField) {
+            return allPoolProjectOptions;
+          }
+          if (isVaultNameField) {
+            return allVaultNameOptions;
+          }
+          return allVaultPlatformOptions;
+        };
+
         return {
           ...field,
           lookup: {
-            dataSource: allSymbolOptions,
+            dataSource: resolveDataSource(),
             allowClearing: true,
           },
           editorOptions: {
@@ -875,7 +1184,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       
       return field;
     });
-  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, customChains, customCategories, customExchanges]);
+  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, allPoolSymbolOptions, allPoolProjectOptions, allVaultNameOptions, allVaultPlatformOptions, customChains, customCategories, customExchanges, isVaultsFilter]);
 
   const handleSaveFilter = () => {
     if (!filterName) return;
@@ -964,6 +1273,23 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const handleToggleLogicGate = () => {
     setOpenLogicGate(prev => !prev);
   };
+
+  const poolsDataSource = useMemo(() => {
+    return [
+      {
+        text: "All",
+        value: "all",
+      },
+      {
+        text: "Symbol",
+        value: "symbol",
+      },
+      {
+        text: "Project",
+        value: "project",
+      },
+    ];
+  }, []);
 
   return (
     <>
@@ -1117,10 +1443,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         onValueChanged={handleFilterValueChanged}
                         onEditorPreparing={(e: any) => {
                           const isSymbolField = e.dataField === "sym";
+                          const isPoolSymbolField = e.dataField === "symbol";
+                        const isPoolProjectField = e.dataField === "project";
+                        const isVaultNameField = isVaultsFilter && e.dataField === "name";
+                        const isVaultPlatformField = isVaultsFilter && e.dataField === "platformId";
+                        const isSymbolLikeField = e.dataField === "sym" || e.dataField === "symbol" || e.dataField === "project" || isVaultNameField || isVaultPlatformField;
                           const isChainsField = e.dataField === "chainsFormatted" || e.dataField === "chain";
                           const isCategoriesField = e.dataField === "categoriesFormatted" || e.dataField === "category";
                           const isExchangesField = e.dataField === "exchangesFormatted";
-                          const isLookupField = isSymbolField || isChainsField || isCategoriesField || isExchangesField;
+                        const isLookupField = isSymbolField || isPoolSymbolField || isPoolProjectField || isVaultNameField || isVaultPlatformField || isChainsField || isCategoriesField || isExchangesField;
                           
                           if (e.editorName === "dxSelectBox" && isLookupField) {
                             const originalOptions = e.editorOptions || {};
@@ -1128,6 +1459,14 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                             let currentDataSource = originalOptions.dataSource;
                             if (isSymbolField) {
                               currentDataSource = allSymbolOptionsRef.current;
+                            } else if (isPoolSymbolField) {
+                              currentDataSource = allPoolSymbolOptionsRef.current;
+                            } else if (isPoolProjectField) {
+                              currentDataSource = allPoolProjectOptionsRef.current;
+                            } else if (isVaultNameField) {
+                              currentDataSource = allVaultNameOptionsRef.current;
+                            } else if (isVaultPlatformField) {
+                              currentDataSource = allVaultPlatformOptionsRef.current;
                             }
                             
                             e.editorOptions = {
@@ -1135,33 +1474,105 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                               dataSource: currentDataSource,
                               acceptCustomValue: true,
                               onInput: (args: any) => {
-                                if (isSymbolField) {
                                   const searchText = args.event?.target?.value;
                                   const component = args.component;
-                                  
-                                  const currentValue = component.option('value');
-                                  if (currentValue && searchText && searchText.toUpperCase() !== currentValue.toUpperCase()) {
-                                    component.option('value', searchText.toUpperCase());
-                                  }
+                                const fbInstance = filterBuilderRef.current?.instance;
+                                const fbValue = fbInstance?.option?.("value");
+                                const displayFilter = Array.isArray(fbValue) ? JSON.stringify(fbValue) : fbValue;
+                                const currentComponentValue = component.option("value");
                                   
                                   if (searchTimeoutRef.current) {
                                     clearTimeout(searchTimeoutRef.current);
                                   }
                                   
-                                  if (searchText && searchText.length >= 2) {
+                                if (isSymbolField) {
+                                  const normalized = typeof searchText === "string" ? searchText.toUpperCase() : searchText;
+
+                                  if (
+                                    currentComponentValue &&
+                                    normalized &&
+                                    typeof normalized === "string" &&
+                                    normalized !== currentComponentValue
+                                  ) {
+                                    component.option("value", normalized);
+                                  }
+
+                                  if (!component.option("opened")) {
+                                    component.open();
+                                  }
+
+                                  if (normalized && typeof normalized === "string" && normalized.length >= 2) {
                                     searchTimeoutRef.current = setTimeout(() => {
-                                      searchTokensDynamically(searchText, component);
+                                      searchTokensDynamically(normalized, component);
                                     }, 300);
                                   }
+
+                                  return;
+                                }
+
+                                const normalizedValue = (() => {
+                                  if (typeof searchText !== "string") return searchText;
+                                  if (isPoolSymbolField) return searchText.toUpperCase();
+                                  if (isPoolProjectField) return searchText.trim();
+                                  if (isVaultNameField || isVaultPlatformField) return searchText.trim();
+                                  return searchText;
+                                })();
+
+                                if (!component.option("opened")) {
+                                  component.open();
+                                }
+
+                                if (
+                                  normalizedValue &&
+                                  typeof normalizedValue === "string" &&
+                                  normalizedValue.length > 0 &&
+                                  currentComponentValue &&
+                                  normalizedValue !== currentComponentValue
+                                ) {
+                                  component.option("value", normalizedValue);
+                                }
+
+                                if (normalizedValue && typeof normalizedValue === "string" && normalizedValue.length >= 2) {
+                                  searchTimeoutRef.current = setTimeout(() => {
+                                    if (isPoolSymbolField) {
+                                      searchPoolSymbolsDynamically(normalizedValue, component);
+                                    } else if (isPoolProjectField) {
+                                      searchPoolProjectsDynamically(normalizedValue, component);
+                                    } else if (isVaultNameField) {
+                                      searchVaultNamesDynamically(normalizedValue, component);
+                                    } else if (isVaultPlatformField) {
+                                      searchVaultPlatformsDynamically(normalizedValue, component);
+                                    }
+                                  }, 300);
                                 }
                               },
                               onClosed: (args: any) => {
                                 const component = args.component;
-                                const currentValue = component.option('value');
+                                let currentValue = component.option('value');
+                                const currentText = component.option('text');
+
+                                const fbInstanceInitial = filterBuilderRef.current?.instance;
+                                const fbValueBefore = fbInstanceInitial ? fbInstanceInitial.option("value") : undefined;
+
+                                if (typeof currentText === "string" && currentText.trim().length > 0) {
+                                  const normalizedFromText = (() => {
+                                    if (isSymbolField || isPoolSymbolField) return currentText.toUpperCase();
+                                    if (isPoolProjectField) return currentText.trim();
+                                    if (isVaultNameField || isVaultPlatformField) return currentText.trim();
+                                    return currentText;
+                                  })();
+
+                                  if (!currentValue) {
+                                    component.option("value", normalizedFromText);
+                                    currentValue = normalizedFromText;
+                                  } else if (normalizedFromText && normalizedFromText !== currentValue) {
+                                    component.option("value", normalizedFromText);
+                                    currentValue = normalizedFromText;
+                                  }
+                                }
                                 const oldValue = e.value;
                                 
                                 if (currentValue && currentValue !== oldValue) {
-                                  
                                   setTimeout(() => {
                                     if (filterBuilderRef.current?.instance) {
                                       const fbInstance = filterBuilderRef.current.instance;
@@ -1205,31 +1616,40 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                         return isNot ? ['!', result] : result;
                                       };
                                       
-                                      const replaceOrAddCondition = (filter: any, dataField: string, operation: string, oldVal: any, newCond: any): any => {
-                                        if (!Array.isArray(filter) || filter.length === 0) return newCond;
-                                        if (typeof filter[0] === 'string') {
-                                          if (filter[0] === dataField && filter[1] === operation && filter[2] === oldVal) {
-                                            return newCond;
-                                          }
-                                          return [filter, 'and', newCond];
+                                      const replaceOrAddCondition = (filter: any): any => {
+                                        if (!Array.isArray(filter) || filter.length === 0) {
+                                          return newCondition;
                                         }
-                                        let replaced = false;
+
+                                        if (typeof filter[0] === 'string') {
+                                          if (filter[0] === e.dataField) {
+                                            return newCondition;
+                                          }
+                                          return [filter, 'and', newCondition];
+                                        }
+
                                         const result = [...filter];
+                                        let replaced = false;
+
                                         for (let i = 0; i < result.length; i++) {
                                           const item = result[i];
-                                          if (Array.isArray(item) && typeof item[0] === 'string' && 
-                                              item[0] === dataField && item[1] === operation && item[2] === oldVal) {
-                                            result[i] = newCond;
+                                          if (Array.isArray(item) && typeof item[0] === 'string') {
+                                            if (item[0] === e.dataField) {
+                                              result[i] = newCondition;
                                             replaced = true;
                                             break;
                                           }
                                         }
-                                        if (replaced) return result;
-                                        const currentOp = getCurrentOperator(filter);
-                                        return [...filter, currentOp, newCond];
+                                        }
+
+                                        if (replaced) {
+                                          return result;
+                                        }
+
+                                        return [...filter, 'and', newCondition];
                                       };
                                       
-                                      let updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, e.filterOperation || 'contains', oldValue, newCondition);
+                                      let updatedFilter = replaceOrAddCondition(currentFilter);
                                       const currentOp = getCurrentOperator(currentFilter);
                                       const newOp = getCurrentOperator(updatedFilter);
                                       if (currentOp !== newOp && currentFilter.length > 0) {
@@ -1237,11 +1657,37 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       }
                                       
                                       fbInstance.option('value', updatedFilter);
+                                      const fbValueAfter = fbInstance.option('value');
+                                      if (typeof e.setValue === 'function') {
+                                        e.setValue(currentValue);
+                                      }
                                       
-                                      if (isSymbolField && currentValue) {
+                                      if (currentValue) {
+                                        if (isSymbolField) {
                                         if (!allSymbolOptionsRef.current.includes(currentValue)) {
                                           allSymbolOptionsRef.current = [...allSymbolOptionsRef.current, currentValue];
+                                          }
                                           setAllSymbolOptions([...allSymbolOptionsRef.current]);
+                                        } else if (isPoolSymbolField) {
+                                          if (!allPoolSymbolOptionsRef.current.includes(currentValue)) {
+                                            allPoolSymbolOptionsRef.current = [...allPoolSymbolOptionsRef.current, currentValue];
+                                          }
+                                          setAllPoolSymbolOptions([...allPoolSymbolOptionsRef.current]);
+                                        } else if (isPoolProjectField) {
+                                          if (!allPoolProjectOptionsRef.current.includes(currentValue)) {
+                                            allPoolProjectOptionsRef.current = [...allPoolProjectOptionsRef.current, currentValue];
+                                          }
+                                          setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+                                        } else if (isVaultNameField) {
+                                          if (!allVaultNameOptionsRef.current.includes(currentValue)) {
+                                            allVaultNameOptionsRef.current = [...allVaultNameOptionsRef.current, currentValue];
+                                          }
+                                          setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                        } else if (isVaultPlatformField) {
+                                          if (!allVaultPlatformOptionsRef.current.includes(currentValue)) {
+                                            allVaultPlatformOptionsRef.current = [...allVaultPlatformOptionsRef.current, currentValue];
+                                          }
+                                          setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                         }
                                       }
                                     }
@@ -1249,88 +1695,104 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 }
                               },
                               onValueChanged: (args: any) => {
-                                if (args.value && args.event) {
+                                      const fbInstance = filterBuilderRef.current?.instance;
+                                      const fbValue = fbInstance?.option?.("value");
+                                      if (!args?.value || !args.event) {
+                                        if (args.component?.option) {
+                                          args.component.option("text", args.value ?? args.component.option("text"));
+                                          args.component.option("opened", true);
+                                        }
+                                        return;
+                                      }
+
+                                      if (typeof e.setValue === "function") {
+                                        e.setValue(args.value);
+                                      }
+
                                   setTimeout(() => {
-                                    if (filterBuilderRef.current?.instance) {
-                                      const fbInstance = filterBuilderRef.current.instance;
-                                      let currentFilter = fbInstance.option('value') || [];
-                                      
-                                      const newCondition = [e.dataField, e.filterOperation || 'contains', args.value];
+                                        if (!filterBuilderRef.current?.instance) {
+                                          return;
+                                        }
+
+                                        const fbInstance = filterBuilderRef.current.instance;
+                                        let currentFilter = fbInstance.option("value") || [];
+                                        const newCondition = [e.dataField, e.filterOperation || "contains", args.value];
                                       const oldValue = e.value;
+                                        if (typeof e.setValue === "function") {
+                                          e.setValue(args.value);
+                                        }
                                       
                                       const getCurrentOperator = (filter: any): string => {
-                                        if (!Array.isArray(filter)) return 'and';
-                                        
-                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                        if (!Array.isArray(filter)) return "and";
+                                        if (filter[0] === "!" && Array.isArray(filter[1])) {
                                           const innerOp = getCurrentOperator(filter[1]);
-                                          return innerOp === 'or' ? '!or' : '!and';
+                                      return innerOp === "or" ? "!or" : "!and";
                                         }
-                                        
                                         for (const item of filter) {
-                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                      if (typeof item === "string" && (item === "and" || item === "or")) {
                                             return item;
                                           }
                                         }
-                                        return 'and';
+                                    return "and";
                                       };
                                       
                                       const replaceAllOperators = (filter: any, newOperator: string): any => {
                                         if (!Array.isArray(filter)) return filter;
-                                        
-                                        const isNot = newOperator.startsWith('!');
+                                    const isNot = newOperator.startsWith("!");
                                         const baseOp = isNot ? newOperator.substring(1) : newOperator;
-                                        
-                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
+                                    if (filter[0] === "!" && Array.isArray(filter[1])) {
                                           const innerFilter = filter[1].map(item => {
-                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                        if (typeof item === "string" && (item === "and" || item === "or")) {
                                               return baseOp;
                                             }
                                             return item;
                                           });
-                                          return isNot ? ['!', innerFilter] : innerFilter;
+                                      return isNot ? ["!", innerFilter] : innerFilter;
                                         }
-                                        
                                         const result = filter.map(item => {
-                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
+                                      if (typeof item === "string" && (item === "and" || item === "or")) {
                                             return baseOp;
                                           }
                                           return item;
                                         });
-                                        
-                                        return isNot ? ['!', result] : result;
+                                    return isNot ? ["!", result] : result;
                                       };
                                       
-                                      const replaceOrAddCondition = (filter: any, dataField: string, operation: string, oldVal: any, newCond: any): any => {
-                                        if (!Array.isArray(filter) || filter.length === 0) return newCond;
-                                        
+                                      const replaceOrAddCondition = (filter: any): any => {
+                                        if (!Array.isArray(filter) || filter.length === 0) {
+                                          return newCondition;
+                                        }
+
+                                        // одиночное условие
                                         if (typeof filter[0] === 'string') {
-                                          if (filter[0] === dataField && filter[1] === operation && filter[2] === oldVal) {
-                                            return newCond;
+                                          if (filter[0] === e.dataField) {
+                                            return newCondition;
                                           }
-                                          return [filter, 'and', newCond];
+                                          return [filter, 'and', newCondition];
                                         }
                                         
-                                        let replaced = false;
                                         const result = [...filter];
+                                        let replaced = false;
                                         
                                         for (let i = 0; i < result.length; i++) {
                                           const item = result[i];
-                                          if (Array.isArray(item) && typeof item[0] === 'string' && 
-                                              item[0] === dataField && item[1] === operation && item[2] === oldVal) {
-                                            result[i] = newCond;
+                                          if (Array.isArray(item) && typeof item[0] === 'string') {
+                                            if (item[0] === e.dataField) {
+                                              result[i] = newCondition;
                                             replaced = true;
                                             break;
+                                            }
                                           }
                                         }
                                         
-                                        if (replaced) return result;
+                                        if (replaced) {
+                                          return result;
+                                        }
                                         
-                                        const currentOp = getCurrentOperator(filter);
-                                        return [...filter, currentOp, newCond];
+                                        return [...filter, 'and', newCondition];
                                       };
                                       
-                                      let updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, e.filterOperation || 'contains', oldValue, newCondition);
-                                      
+                                  let updatedFilter = replaceOrAddCondition(currentFilter);
                                       const currentOp = getCurrentOperator(currentFilter);
                                       const newOp = getCurrentOperator(updatedFilter);
                                       
@@ -1338,10 +1800,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                         updatedFilter = replaceAllOperators(updatedFilter, newOp);
                                       }
                                       
-                                      fbInstance.option('value', updatedFilter);
+                                  fbInstance.option("value", updatedFilter);
+                                  setFilterValue(updatedFilter);
+                                  if (typeof e.setValue === "function") {
+                                    e.setValue(args.value);
                                     }
                                     
-                                    const filterBuilderEl = document.querySelector('.dx-filterbuilder');
+                                  const filterBuilderEl = document.querySelector(".dx-filterbuilder");
                                     if (filterBuilderEl) {
                                       (filterBuilderEl as HTMLElement).click();
                                       
@@ -1352,10 +1817,37 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                           }
                                           setAllSymbolOptions([...allSymbolOptionsRef.current]);
                                         }, 100);
-                                      }
+                                    } else if (isPoolSymbolField) {
+                                      setTimeout(() => {
+                                        if (!allPoolSymbolOptionsRef.current.includes(args.value)) {
+                                          allPoolSymbolOptionsRef.current = [...allPoolSymbolOptionsRef.current, args.value];
+                                        }
+                                        setAllPoolSymbolOptions([...allPoolSymbolOptionsRef.current]);
+                                      }, 100);
+                                    } else if (isPoolProjectField) {
+                                      setTimeout(() => {
+                                        if (!allPoolProjectOptionsRef.current.includes(args.value)) {
+                                          allPoolProjectOptionsRef.current = [...allPoolProjectOptionsRef.current, args.value];
+                                        }
+                                        setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+                                  }, 100);
+                                } else if (isVaultNameField) {
+                                  setTimeout(() => {
+                                    if (!allVaultNameOptionsRef.current.includes(args.value)) {
+                                      allVaultNameOptionsRef.current = [...allVaultNameOptionsRef.current, args.value];
                                     }
+                                    setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                  }, 100);
+                                } else if (isVaultPlatformField) {
+                                  setTimeout(() => {
+                                    if (!allVaultPlatformOptionsRef.current.includes(args.value)) {
+                                      allVaultPlatformOptionsRef.current = [...allVaultPlatformOptionsRef.current, args.value];
+                                    }
+                                    setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                   }, 100);
                                 }
+                                  }
+                                }, 100);
                               },
                               onEnterKey: (args: any) => {
                                 if (searchTimeoutRef.current) {
@@ -1368,144 +1860,42 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 const currentValue = component.option('value');
                                 
                                 if (inputText) {
-                                  const customValue = isSymbolField ? inputText.toUpperCase() : inputText;
-                                  
-                                  let currentDS = component.option('dataSource');
-                                  
-                                  if (!Array.isArray(currentDS)) {
-                                    currentDS = isSymbolField ? allSymbolOptionsRef.current : [];
-                                  }
-                                  
-                                  if (!currentDS.includes(customValue)) {
-                                    const newDS = [...currentDS, customValue];
-                                    
-                                    if (isSymbolField) {
-                                      allSymbolOptionsRef.current = newDS;
-                                    } else if (isChainsField) {
-                                      setCustomChains(prev => [...prev, customValue]);
-                                    } else if (isCategoriesField) {
-                                      setCustomCategories(prev => [...prev, customValue]);
-                                    } else if (isExchangesField) {
-                                      setCustomExchanges(prev => [...prev, customValue]);
-                                    }
-                                    
-                                    component.option('dataSource', newDS);
-                                  }
-                                  
-                                  if (e.setValue) {
-                                    setTimeout(() => {
-                                      if (filterBuilderRef.current?.instance) {
-                                        const fbInstance = filterBuilderRef.current.instance;
-                                        let currentFilter = fbInstance.option('value') || [];
-                                        const newCondition = [e.dataField, e.filterOperation || 'contains', customValue];
-                                        const oldValue = e.value;
-                                        
-                                        const getCurrentOperator = (filter: any): string => {
-                                          if (!Array.isArray(filter)) return 'and';
-                                          
-                                          if (filter[0] === '!' && Array.isArray(filter[1])) {
-                                            const innerOp = getCurrentOperator(filter[1]);
-                                            return innerOp === 'or' ? '!or' : '!and';
-                                          }
-                                          
-                                          for (const item of filter) {
-                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
-                                              return item;
-                                            }
-                                          }
-                                          return 'and';
-                                        };
-                                        
-                                        const replaceAllOperators = (filter: any, newOperator: string): any => {
-                                          if (!Array.isArray(filter)) return filter;
-                                          
-                                          const isNot = newOperator.startsWith('!');
-                                          const baseOp = isNot ? newOperator.substring(1) : newOperator;
-                                          
-                                          if (filter[0] === '!' && Array.isArray(filter[1])) {
-                                            const innerFilter = filter[1].map(item => {
-                                              if (typeof item === 'string' && (item === 'and' || item === 'or')) {
-                                                return baseOp;
-                                              }
-                                              return item;
-                                            });
-                                            return isNot ? ['!', innerFilter] : innerFilter;
-                                          }
-                                          
-                                          const result = filter.map(item => {
-                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
-                                              return baseOp;
-                                            }
-                                            return item;
-                                          });
-                                          
-                                          return isNot ? ['!', result] : result;
-                                        };
-                                        
-                                        const replaceOrAddCondition = (filter: any, dataField: string, operation: string, oldVal: any, newCond: any): any => {
-                                          if (!Array.isArray(filter) || filter.length === 0) return newCond;
-                                          
-                                          if (typeof filter[0] === 'string') {
-                                            if (filter[0] === dataField && filter[1] === operation && filter[2] === oldVal) {
-                                              return newCond;
-                                            }
-                                            return [filter, 'and', newCond];
-                                          }
-                                          
-                                          let replaced = false;
-                                          const result = [...filter];
-                                          
-                                          for (let i = 0; i < result.length; i++) {
-                                            const item = result[i];
-                                            if (Array.isArray(item) && typeof item[0] === 'string' && 
-                                                item[0] === dataField && item[1] === operation && item[2] === oldVal) {
-                                              result[i] = newCond;
-                                              replaced = true;
-                                              break;
-                                            }
-                                          }
-                                          
-                                          if (replaced) return result;
-                                          
-                                          const currentOp = getCurrentOperator(filter);
-                                          return [...filter, currentOp, newCond];
-                                        };
-                                        
-                                        let updatedFilter = replaceOrAddCondition(currentFilter, e.dataField, e.filterOperation || 'contains', oldValue, newCondition);
-                                        
-                                        const currentOp = getCurrentOperator(currentFilter);
-                                        const newOp = getCurrentOperator(updatedFilter);
-                                        
-                                        if (currentOp !== newOp && currentFilter.length > 0) {
-                                          updatedFilter = replaceAllOperators(updatedFilter, newOp);
-                                        }
-                                        
-                                        fbInstance.option('value', updatedFilter);
-                                      }
-                                      
-                                      setTimeout(() => {
-                                        const filterBuilderEl = document.querySelector('.dx-filterbuilder');
-                                        if (filterBuilderEl) {
-                                          (filterBuilderEl as HTMLElement).click();
-                                          
-                                          setTimeout(() => {
-                                            if (isSymbolField) {
-                                              setAllSymbolOptions([...allSymbolOptionsRef.current]);
-                                            }
-                                          }, 100);
-                                        }
-                                      }, 50);
-                                    }, 200);
+                                  const customValue = (() => {
+                                    if (typeof inputText !== "string") return inputText;
+                                    if (isSymbolField || isPoolSymbolField) return inputText.toUpperCase();
+                                    if (isPoolProjectField) return inputText.trim();
+                                    if (isVaultNameField || isVaultPlatformField) return inputText.trim();
+                                    return inputText;
+                                  })();
+                                  if (typeof e.setValue === "function") {
+                                    e.setValue(customValue);
                                   }
                                 }
                               },
                               onCustomItemCreating: (args: any) => {
-                                const customValue = isSymbolField ? args.text.toUpperCase() : args.text;
-                                
+                                const customValue = (() => {
+                                  if (typeof args.text !== "string") return args.text;
+                                  if (isSymbolField || isPoolSymbolField) return args.text.toUpperCase();
+                                  if (isPoolProjectField) return args.text.trim();
+                                  if (isVaultNameField || isVaultPlatformField) return args.text.trim();
+                                  return args.text;
+                                })();
                                 let currentDS = args.component.option('dataSource');
                                 
                                 if (!Array.isArray(currentDS)) {
-                                  currentDS = isSymbolField ? allSymbolOptionsRef.current : [];
+                                  if (isSymbolField) {
+                                    currentDS = allSymbolOptionsRef.current;
+                                  } else if (isPoolSymbolField) {
+                                    currentDS = allPoolSymbolOptionsRef.current;
+                                  } else if (isPoolProjectField) {
+                                    currentDS = allPoolProjectOptionsRef.current;
+                                  } else if (isVaultNameField) {
+                                    currentDS = allVaultNameOptionsRef.current;
+                                  } else if (isVaultPlatformField) {
+                                    currentDS = allVaultPlatformOptionsRef.current;
+                                  } else {
+                                    currentDS = [];
+                                  }
                                 }
                                 
                                 if (!currentDS.includes(customValue)) {
@@ -1513,6 +1903,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                   
                                   if (isSymbolField) {
                                     allSymbolOptionsRef.current = newDS;
+                                    setAllSymbolOptions([...allSymbolOptionsRef.current]);
+                                  } else if (isPoolSymbolField) {
+                                    allPoolSymbolOptionsRef.current = newDS;
+                                    setAllPoolSymbolOptions([...allPoolSymbolOptionsRef.current]);
+                                  } else if (isPoolProjectField) {
+                                    allPoolProjectOptionsRef.current = newDS;
+                                    setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+                                  } else if (isVaultNameField) {
+                                    allVaultNameOptionsRef.current = newDS;
+                                    setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                  } else if (isVaultPlatformField) {
+                                    allVaultPlatformOptionsRef.current = newDS;
+                                    setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                   } else if (isChainsField) {
                                     setCustomChains(prev => [...prev, customValue]);
                                   } else if (isCategoriesField) {
@@ -1525,6 +1928,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 }
                                 
                                 args.customItem = customValue;
+                                if (typeof e.setValue === "function") {
+                                  e.setValue(customValue);
+                                }
                                 
                                 if (filterBuilderRef.current?.instance && e.setValue) {
                                   const fbInstance = filterBuilderRef.current.instance;
@@ -1533,30 +1939,49 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                   const newCondition = [e.dataField, e.filterOperation || 'contains', customValue];
                                   
                                   const replaceOrAddCondition = (filter: any): any => {
-                                    if (!Array.isArray(filter) || filter.length === 0) return newCondition;
-                                    
-                                    if (typeof filter[0] === 'string' && filter[0] === e.dataField) {
+                                    if (!Array.isArray(filter) || filter.length === 0) {
                                       return newCondition;
                                     }
                                     
+                                    if (typeof filter[0] === 'string') {
+                                      if (filter[0] === e.dataField) {
+                                      return newCondition;
+                                      }
+                                      return [filter, 'and', newCondition];
+                                    }
+                                    
                                     const result = [...filter];
+                                    let replaced = false;
+
                                     for (let i = 0; i < result.length; i++) {
-                                      if (Array.isArray(result[i]) && typeof result[i][0] === 'string') {
-                                        if (result[i][0] === e.dataField) {
+                                      const item = result[i];
+                                      if (Array.isArray(item) && typeof item[0] === 'string') {
+                                        if (item[0] === e.dataField) {
                                           result[i] = newCondition;
-                                          return result;
+                                          replaced = true;
+                                          break;
                                         }
                                       }
                                     }
-                                    
-                                    return newCondition;
+
+                                    if (replaced) {
+                                      return result;
+                                    }
+
+                                    return [...filter, 'and', newCondition];
                                   };
                                   
                                   const updatedFilter = replaceOrAddCondition(currentFilter);
                                   
                                   fbInstance.option('value', updatedFilter);
+                                  if (typeof e.setValue === "function") {
+                                    e.setValue(customValue);
+                                  }
                                   
                                   setFilterValue(updatedFilter);
+                                  if (typeof e.setValue === "function") {
+                                    e.setValue(customValue);
+                                  }
                                   
                                   setTimeout(() => {
                                     const filterBuilderEl = document.querySelector('.dx-filterbuilder');
@@ -1566,6 +1991,38 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       if (isSymbolField) {
                                         setTimeout(() => {
                                           setAllSymbolOptions([...allSymbolOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                      if (isPoolProjectField) {
+                                        setTimeout(() => {
+                                          if (!allPoolProjectOptionsRef.current.includes(customValue)) {
+                                            allPoolProjectOptionsRef.current = [...allPoolProjectOptionsRef.current, customValue];
+                                          }
+                                          setAllPoolProjectOptions([...allPoolProjectOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                      if (isPoolSymbolField) {
+                                        setTimeout(() => {
+                                          if (!allPoolSymbolOptionsRef.current.includes(customValue)) {
+                                            allPoolSymbolOptionsRef.current = [...allPoolSymbolOptionsRef.current, customValue];
+                                          }
+                                          setAllPoolSymbolOptions([...allPoolSymbolOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                      if (isVaultNameField) {
+                                        setTimeout(() => {
+                                          if (!allVaultNameOptionsRef.current.includes(customValue)) {
+                                            allVaultNameOptionsRef.current = [...allVaultNameOptionsRef.current, customValue];
+                                          }
+                                          setAllVaultNameOptions([...allVaultNameOptionsRef.current]);
+                                        }, 100);
+                                      }
+                                      if (isVaultPlatformField) {
+                                        setTimeout(() => {
+                                          if (!allVaultPlatformOptionsRef.current.includes(customValue)) {
+                                            allVaultPlatformOptionsRef.current = [...allVaultPlatformOptionsRef.current, customValue];
+                                          }
+                                          setAllVaultPlatformOptions([...allVaultPlatformOptionsRef.current]);
                                         }, 100);
                                       }
                                     }
