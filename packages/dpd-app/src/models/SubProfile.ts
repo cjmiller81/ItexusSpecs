@@ -38,5 +38,6 @@ export interface ExitTier {
     account: string;
     instruments: Instrument | null;
     exitTiers: ExitTier[];
+    assetType?: string;
   }
   
