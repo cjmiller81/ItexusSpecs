@@ -1,6 +1,7 @@
 import DefiTokensSection from "@/features/Income/DefiTokensSection";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButton";
+import { CategoryFiltersSection } from "../../components/CategoryFiltersSection";
 import { Box, Typography, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -281,6 +282,7 @@ export default function LiquidityPoolsPage() {
           persisKey="DefiTokensSection"
           startTourButton={<StartTourButton />}
           exportFileName={t("LiquidityPools", { ns: "IncomeSection" })}
+          prefilterControls={<CategoryFiltersSection />}
         />
       </>
     </TourProvider>
