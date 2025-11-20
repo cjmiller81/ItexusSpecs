@@ -49,10 +49,19 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 const pulseGlow = keyframes`
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(33, 154, 131, 0.5);
+    box-shadow: 0 0 0 0 rgba(33, 154, 131, 0.3);
   }
   50% {
-    box-shadow: 0 0 0 15px rgba(33, 154, 131, 0);
+    box-shadow: 0 0 0 4px rgba(33, 154, 131, 0.1);
+  }
+`;
+
+const shimmer = keyframes`
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
   }
 `;
 
@@ -509,41 +518,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 md={4.5}
                 lg={4.6}
                 sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }, position: 'relative'  }}>
-              
-              {!selectedWallet && wallets && wallets.length > 0 && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '-30px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    animation: `${bounce} 2s ease-in-out infinite`,
-                    zIndex: 10,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      color: '#219a83',
-                    }}
-                  >
-                    Click Here
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: '1rem',
-                      fontWeight: 600,
-                      color: '#219a83',
-                    }}
-                  >
-                    ↓
-                  </Typography>
-                </Box>
-              )}
 
               {!wallets || wallets.length === 0 ? (
                 <Select
@@ -582,9 +556,24 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     width: "100%",
                     maxHeight: "40px",
                     marginBottom: "12px",
-                    animation: `${pulseGlow} 2s ease-in-out infinite`,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    animation: `${pulseGlow} 3s ease-in-out infinite`,
+                    backdropFilter: 'blur(8px)',
                     border: '1px solid rgba(255, 255, 255, 0.5)',
-                    "& .MuiSelect-icon": { color: "white" },
+                    "& .MuiSelect-icon": { color: "white", position: 'relative', zIndex: 1 },
+                    "& .MuiSelect-select": { position: 'relative', zIndex: 1 },
+                    "&::before": {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: '-100%',
+                      width: '100%',
+                      height: '100%',
+                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+                      animation: `${shimmer} 2s infinite`,
+                      zIndex: 0,
+                    },
                   }}
                 >
                   {wallets?.map(wallet => (
