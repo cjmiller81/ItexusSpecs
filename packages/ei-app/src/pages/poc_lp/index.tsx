@@ -91,7 +91,7 @@ const normalizePool = (pool: unknown): PoolData => {
   };
 };
 
-const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins & Services"] as const;
+const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
 type MainTab = (typeof MAIN_TABS)[number];
 
 const QUICK_FILTERS: Record<MainTab, string[]> = {
@@ -128,22 +128,25 @@ const QUICK_FILTERS: Record<MainTab, string[]> = {
     "Prediction Market",
     "Synthetics",
   ],
-  "Stablecoins & Services": [
-    "All Stablecoins & Services",
+  Stablecoins: [
+    "All Stablecoins",
     "Algo-Stables",
-    "Bridge",
-    "Chain",
-    "Cross Chain Bridge",
-    "DOR",
     "Dual-Token Stablecoin",
+    "Partially Algorithmic Stablecoin",
+    "Reserve Currency",
+  ],
+  "Infrastructure & Services": [
+    "All Infrastructure & Services",
+    "Bridge",
+    "Cross Chain Bridge",
+    "Chain",
+    "Services",
     "Indexes",
     "Insurances",
-    "NFT Marketplace",
-    "Partially Algorithmic Stablecoin",
     "Payments",
-    "Reserve Currency",
+    "DOR",
+    "NFT Marketplace",
     "RWA",
-    "Services",
   ],
 };
 
@@ -162,7 +165,8 @@ const PrefilterMockSection = () => {
     Lending: "All Lending",
     "Staking & Yield": QUICK_FILTERS["Staking & Yield"]?.[0] ?? "All",
     "Trading & Exchanges": QUICK_FILTERS["Trading & Exchanges"]?.[0] ?? "All",
-    "Stablecoins & Services": QUICK_FILTERS["Stablecoins & Services"]?.[0] ?? "All",
+    Stablecoins: QUICK_FILTERS.Stablecoins?.[0] ?? "All",
+    "Infrastructure & Services": QUICK_FILTERS["Infrastructure & Services"]?.[0] ?? "All",
   }));
   const activeQuickFilter = selectedFilters[currentTab] ?? defaultQuickFilter;
   const filterMessage =
