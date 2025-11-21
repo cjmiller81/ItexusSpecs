@@ -37,6 +37,10 @@ export interface IPrefilterTokensTable {
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
   dexs: string[];
+  chains: string[];
+  categories: string[];
+  projects: string[];
+  symbols: string[];
   onFilterValueChange?: (filter: object[] | null | undefined) => void;
   dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
 }
@@ -46,6 +50,10 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   onUpdate,
   dataSource,
   dexs,
+  chains,
+  categories,
+  projects,
+  symbols,
   onFilterValueChange,
   dataGridRef,
 }) => {
@@ -62,6 +70,13 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const filterPanelText = useRef<Element | null>(null);
+
+  const stringToFilterItem = (item: string): { text: string; value: string } => {
+    return {
+      text: item,
+      value: item,
+    };
+  };
 
   const calculateFilterExpression = useCallback(function (
       this: any,
@@ -230,7 +245,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           allowHiding={true}
           cellComponent={toPoolCellField}
-        />
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: symbols,
+              },
+              map: stringToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["value"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.Project}
           caption={DefiLabel.Project}
@@ -239,7 +272,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           allowHiding={true}
           cellComponent={ProjectCellComponent}
-        />
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: projects,
+              },
+              map: stringToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["value"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.Chain}
           caption={DefiLabel.Chain}
@@ -248,7 +299,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="string"
           allowHiding={true}
           cellComponent={ChainCell}
-        />
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: chains,
+              },
+              map: stringToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["value"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.Category}
           caption={DefiLabel.Category}
@@ -256,7 +325,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           visible={true}
           dataType="string"
           allowHiding={true}
-        />
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: categories,
+              },
+              map: stringToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["value"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.TVL}
           caption={DefiLabel.TVL}
