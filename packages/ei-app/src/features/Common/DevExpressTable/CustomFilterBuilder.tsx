@@ -42,6 +42,7 @@ import { useGetCategoriesQuery } from "@/features/Investing/categoriesApi";
 import { useGetExchangesQuery } from "@/features/Investing/exchangesApi";
 import { iconsApi, iconsAbortableApi } from "@/services/iconsService";
 import appAxios from "@/libs/axios/axios";
+import { filtersApi } from "../../../../../components/src/services/filterService";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
@@ -466,9 +467,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
+  const isLiquidityPoolFilter = filterType === "liquidity-pool";
+  const isVaultsFilter = filterType === "vaults";
   const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
-  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery();
-  const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery(undefined, { 
+    skip: isLiquidityPoolFilter 
+  });
+  const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery(undefined, { 
+    skip: isLiquidityPoolFilter 
+  });
   const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
   const [allPoolSymbolOptions, setAllPoolSymbolOptions] = useState<string[]>([]);
   const [allPoolProjectOptions, setAllPoolProjectOptions] = useState<string[]>([]);
@@ -477,6 +484,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [customChains, setCustomChains] = useState<string[]>([]);
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [customExchanges, setCustomExchanges] = useState<string[]>([]);
+  const [poolCategories, setPoolCategories] = useState<string[]>([]);
   
   const allSymbolOptionsRef = useRef<string[]>([]);
   const allPoolSymbolOptionsRef = useRef<string[]>([]);
@@ -487,7 +495,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   
   const startTourRef = useRef<(() => void) | null>(null);
   const filterBuilderRef = useRef<any>(null);
-  const isVaultsFilter = filterType === "vaults";
+
+  // Load pool categories once for liquidity-pool filter type
+  useEffect(() => {
+    if (isLiquidityPoolFilter && poolCategories.length === 0) {
+      filtersApi.getPoolCategories()
+        .then(data => {
+          setPoolCategories(data);
+        })
+        .catch(error => {
+          console.error("Failed to load pool categories:", error);
+        });
+    }
+  }, [isLiquidityPoolFilter]);
 
   const tourSteps = [
     {
@@ -813,8 +833,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
     try {
       const response = await appAxios.get<string[]>(
-        `/api/defi/pools/symbols/${searchText}`,
+        `/api/defi/pools/symbols`,
         {
+          params: {
+            searchString: searchText,
+          },
           withCredentials: true,
         }
       );
@@ -861,8 +884,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
     try {
       const response = await appAxios.get<string[]>(
-        `/api/defi/pools/projects/${searchText}`,
+        `/api/defi/pools/projects`,
         {
+          params: {
+            searchString: searchText,
+          },
           withCredentials: true,
         }
       );
@@ -1104,8 +1130,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         };
       }
       
-      if ((field.dataField === "categoriesFormatted" || field.dataField === "category") && categories) {
-        let categoriesOptions = categories.map(c => c.name);
+      if ((field.dataField === "categoriesFormatted" || field.dataField === "category")) {
+        // For liquidity-pool, use pool categories; otherwise use regular categories
+        let categoriesOptions: string[] = [];
+        
+        if (isLiquidityPoolFilter && poolCategories.length > 0) {
+          categoriesOptions = [...poolCategories];
+        } else if (categories) {
+          categoriesOptions = categories.map(c => c.name);
+        }
         
         customCategories.forEach(category => {
           if (!categoriesOptions.includes(category)) {
@@ -1184,7 +1217,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       
       return field;
     });
-  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, allPoolSymbolOptions, allPoolProjectOptions, allVaultNameOptions, allVaultPlatformOptions, customChains, customCategories, customExchanges, isVaultsFilter]);
+  }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, allPoolSymbolOptions, allPoolProjectOptions, allVaultNameOptions, allVaultPlatformOptions, customChains, customCategories, customExchanges, isVaultsFilter, isLiquidityPoolFilter, poolCategories, filterValue]);
 
   const handleSaveFilter = () => {
     if (!filterName) return;

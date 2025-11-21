@@ -27,6 +27,7 @@ import { useGetDexsQuery } from "./DexApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
 import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
+import { filtersApi } from "../../../../components/src/services/filterService";
 
 type OverridesConfig = {
   pools?: PoolData[];
@@ -61,9 +62,39 @@ export default function DefiTokensSectionTest({ persisKey, startTourButton, expo
   const { sidebarOpened } = useAppSelector(store => store.ui);
   const dataGridRef = useRef<any>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [chains, setChains] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [projects, setProjects] = useState<string[]>([]);
+  const [symbols, setSymbols] = useState<string[]>([]);
+  const [loadingFilters, setLoadingFilters] = useState(true);
+
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [chainsData, categoriesData, projectsData, symbolsData] = await Promise.all([
+          filtersApi.getPoolChains(),
+          filtersApi.getPoolCategories(),
+          filtersApi.getPoolProjects(),
+          filtersApi.getPoolSymbols(),
+        ]);
+
+        setChains(chainsData);
+        setCategories(categoriesData);
+        setProjects(projectsData);
+        setSymbols(symbolsData);
+      } catch (error) {
+        console.error("Failed to load chains, categories, projects and symbols:", error);
+      } finally {
+        setLoadingFilters(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const tablePools = useMemo<PoolData[]>(() => {
     if (overridePools) {
@@ -266,13 +297,21 @@ export default function DefiTokensSectionTest({ persisKey, startTourButton, expo
           {prefilterControls && (
             <Box sx={{ mb: 3 }}>{prefilterControls}</Box>
           )}
-          <MemoizedDefiPoolsTable
-            loading={isLoading}
-            dexs={tableDexs}
-            onUpdate={() => {}}
-            dataSource={allTokensSource}
-            dataGridRef={dataGridRef}
-          />
+          {loadingFilters ? (
+            <div></div>
+          ) : (
+            <MemoizedDefiPoolsTable
+              loading={isLoading}
+              dexs={tableDexs}
+              onUpdate={() => {}}
+              dataSource={allTokensSource}
+              dataGridRef={dataGridRef}
+              chains={chains}
+              categories={categories}
+              projects={projects}
+              symbols={symbols}
+            />
+          )}
         </AccordionDetails>
       </StatePersistedAccordion>
     </>
@@ -280,7 +319,13 @@ export default function DefiTokensSectionTest({ persisKey, startTourButton, expo
 }
 
 const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource;
+  return (
+    prevProps.dataSource === nextProps.dataSource &&
+    prevProps.chains === nextProps.chains &&
+    prevProps.categories === nextProps.categories &&
+    prevProps.projects === nextProps.projects &&
+    prevProps.symbols === nextProps.symbols
+  );
 });
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({

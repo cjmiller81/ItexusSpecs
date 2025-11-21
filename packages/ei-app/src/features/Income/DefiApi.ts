@@ -43,8 +43,11 @@ export const defisApi = createApi({
           }
 
           const result = await baseQuery({
-            url: `/api/defi/pools/symbols/${encodeURIComponent(search)}`,
+            url: `/api/defi/pools/symbols`,
             method: "get",
+            params: {
+              searchString: search,
+            },
           });
 
           if ("error" in result && result.error) {
@@ -63,8 +66,11 @@ export const defisApi = createApi({
           }
 
           const result = await baseQuery({
-            url: `/api/defi/pools/projects/${encodeURIComponent(search)}`,
+            url: `/api/defi/pools/projects`,
             method: "get",
+            params: {
+              searchString: search,
+            },
           });
 
           if ("error" in result && result.error) {
