@@ -33,6 +33,7 @@ type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   startTourButton?: React.ReactNode;
   exportFileName: string;
+  prefilterControls?: React.ReactNode;
 };
 
 const transformFilter = (filter: any): any => {
@@ -50,7 +51,7 @@ const transformFilter = (filter: any): any => {
   return filter.map((item: any) => (Array.isArray(item) ? transformFilter(item) : item));
 };
 
-export default function DefiTokensSection({ persisKey, startTourButton, exportFileName, ...props }: Props) {
+export default function DefiTokensSection({ persisKey, startTourButton, exportFileName, prefilterControls, ...props }: Props) {
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
@@ -344,6 +345,9 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
             pointerEvents: "auto",
           }}
         >
+          {prefilterControls && (
+            <Box sx={{ mb: 3 }}>{prefilterControls}</Box>
+          )}
           <MemoizedDefiPoolsTable
             loading={isGridLoading}
             dexs={dexsData || []}
