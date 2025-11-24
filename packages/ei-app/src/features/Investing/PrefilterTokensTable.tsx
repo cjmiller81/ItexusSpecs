@@ -146,21 +146,22 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   }, []);
 
   const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
-    onCurrentFilterChange(filter as object[]);
-    currentFilterRef.current = filter as object[];
+    const filterValue = filter as object[];
+    onCurrentFilterChange(filterValue);
+    currentFilterRef.current = filterValue;
 
     // Send new information to filter builder
     filterRef.current?.onUpdateFilter(filter || []);
     
     if (!filter) {
       datagrid.current?.instance.clearFilter();
+      setCurrentFilter(null);
     }
     else {
       datagrid.current?.instance.filter(filter);
-    }
-
-    if (isExternalFiltering) {
-      setCurrentFilter(filter as object[]);
+      if (isExternalFiltering) {
+        setCurrentFilter(filterValue);
+      }
     }
   }
 
@@ -278,7 +279,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 onApply={filter => {
                   onApplyFilter(filter, true);
                 }}
-                filterToAppply={currentFilterRef.current}
+                filterToAppply={currentFilter}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>

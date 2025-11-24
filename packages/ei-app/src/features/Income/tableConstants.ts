@@ -85,7 +85,7 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.Category,
     dataField: DefiField.Category,
     dataType: "string",
-    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>", "anyof"]
   },
   {
     caption: DefiLabel.TVL,
