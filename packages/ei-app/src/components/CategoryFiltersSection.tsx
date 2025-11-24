@@ -344,3 +344,5 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
   );
 });
 
+CategoryFiltersSection.displayName = 'CategoryFiltersSection';
+
