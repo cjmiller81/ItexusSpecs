@@ -676,6 +676,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleFilterBuilderOpen = (status: boolean) => {
+    if (status && isLiquidityPoolFilter) {
+      onDisableFilter();
+      setFilterValue(undefined);
+      setSelectedSavedFilter(null);
+      setFilterName("");
+    }
     setFilterBuilderOpen(status);
     if (status) {
       setShowGuidanceBanner(true);
@@ -1395,7 +1401,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             },
           }}
           color={"success"}
-          onClick={() => setFilterBuilderOpen(true)}
+          onClick={() => {
+            if (isLiquidityPoolFilter) {
+              onDisableFilter();
+              setFilterValue(undefined);
+              setSelectedSavedFilter(null);
+              setFilterName("");
+            }
+            setFilterBuilderOpen(true);
+          }}
           startIcon={<TuneIcon />}>
           {t("BuildStrategyFilter")}
         </StyledFilterButton>

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { cryptoNewsService, NewsResponse, NewsItem } from "../services/cryptoNewsService";
+import { cryptoNewsService, NewsResponse } from "../services/cryptoNewsService";
 import { AxiosError } from "axios";
 
 export interface CryptoNewsState {

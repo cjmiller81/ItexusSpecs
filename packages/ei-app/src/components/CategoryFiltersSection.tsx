@@ -7,10 +7,110 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 
 const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
 type MainTab = (typeof MAIN_TABS)[number];
+
+const ALL_STABLECOINS_CATEGORIES = [
+  "Algo-Stables",
+  "Dual-Token Stablecoin",
+  "Partially Algorithmic Stablecoin",
+  "Reserve Currency",
+];
+
+const ALL_LENDING_CATEGORIES = [
+  "Lending",
+  "CDP",
+  "NFT Lending",
+  "RWA Lending",
+  "Onchain Capital Allocator",
+  "Uncollateralized Lending",
+];
+
+const ALL_STAKING_YIELD_CATEGORIES = [
+  "Farm",
+  "Leveraged Farming",
+  "Liquid Restaking",
+  "Liquid Staking",
+  "Restaking",
+  "Staking Pool",
+  "Yield",
+  "Yield Aggregator",
+];
+
+const ALL_TRADING_EXCHANGE_CATEGORIES = [
+  "Basis Trading",
+  "Derivatives",
+  "DEX Aggregator",
+  "Dexs",
+  "Liquidity manager",
+  "Options",
+  "Options Vault",
+  "Prediction Market",
+  "Synthetics",
+];
+
+const ALL_INFRASTRUCTURE_SERVICES_CATEGORIES = [
+  "Bridge",
+  "Cross Chain Bridge",
+  "Chain",
+  "Services",
+  "Indexes",
+  "Insurance",
+  "Payments",
+  "DOR",
+  "NFT Marketplace",
+  "RWA",
+];
+
+const CATEGORY_NAME_MAPPING: Record<string, string> = {
+  "Options Vaults": "Options Vault",
+  "Onchain Capital Allocation": "Onchain Capital Allocator",
+  "Insurances": "Insurance",
+  "Liquidity Manager": "Liquidity manager",
+};
+
+const getCategoryName = (filterLabel: string): string => {
+  return CATEGORY_NAME_MAPPING[filterLabel] || filterLabel;
+};
+
+const buildFilterFromSelection = (tab: MainTab, filterLabel: string): any[] | null => {
+  if (tab === "All DeFi") {
+    return null;
+  }
+
+  if (filterLabel.startsWith("All ")) {
+    let categories: string[] = [];
+    
+    if (filterLabel === "All Stablecoins") {
+      categories = ALL_STABLECOINS_CATEGORIES;
+    } else if (filterLabel === "All Lending") {
+      categories = ALL_LENDING_CATEGORIES;
+    } else if (filterLabel === "All Staking & Yield") {
+      categories = ALL_STAKING_YIELD_CATEGORIES;
+    } else if (filterLabel === "All Trading & Exchange") {
+      categories = ALL_TRADING_EXCHANGE_CATEGORIES;
+    } else if (filterLabel === "All Infrastructure & Services") {
+      categories = ALL_INFRASTRUCTURE_SERVICES_CATEGORIES;
+    }
+    
+    if (categories.length === 0) return null;
+    
+    return ["category", "anyof", categories];
+  }
+
+  const actualCategoryName = getCategoryName(filterLabel);
+  return ["category", "=", actualCategoryName];
+};
+
+interface CategoryFiltersSectionProps {
+  onFilterChange?: (filter: any[] | null) => void;
+}
+
+export interface CategoryFiltersSectionRef {
+  clearFilter: () => void;
+}
 
 const QUICK_FILTERS: Record<MainTab, string[]> = {
   "All DeFi": [],
@@ -68,7 +168,8 @@ const QUICK_FILTERS: Record<MainTab, string[]> = {
   ],
 };
 
-export const CategoryFiltersSection = () => {
+export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, CategoryFiltersSectionProps>(
+  ({ onFilterChange }, ref) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const mutedText = isDark ? "rgba(229, 231, 235, 0.72)" : "rgba(55, 65, 81, 0.75)";
@@ -87,6 +188,40 @@ export const CategoryFiltersSection = () => {
     "Infrastructure & Services": QUICK_FILTERS["Infrastructure & Services"]?.[0] ?? "All",
   }));
   const activeQuickFilter = selectedFilters[currentTab] ?? defaultQuickFilter;
+
+  useImperativeHandle(ref, () => ({
+    clearFilter: () => {
+      setCurrentTab("All DeFi");
+      setSelectedFilters({
+        "All DeFi": "All",
+        Lending: "All Lending",
+        "Staking & Yield": QUICK_FILTERS["Staking & Yield"]?.[0] ?? "All",
+        "Trading & Exchanges": QUICK_FILTERS["Trading & Exchanges"]?.[0] ?? "All",
+        Stablecoins: QUICK_FILTERS.Stablecoins?.[0] ?? "All",
+        "Infrastructure & Services": QUICK_FILTERS["Infrastructure & Services"]?.[0] ?? "All",
+      });
+      if (onFilterChange) {
+        onFilterChange(null);
+      }
+    },
+  }), [onFilterChange]);
+
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (onFilterChange) {
+        const filter = buildFilterFromSelection(currentTab, activeQuickFilter);
+        onFilterChange(filter);
+      }
+      return;
+    }
+    
+    if (onFilterChange) {
+      const filter = buildFilterFromSelection(currentTab, activeQuickFilter);
+      onFilterChange(filter);
+    }
+  }, [currentTab, activeQuickFilter, onFilterChange]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
@@ -113,8 +248,13 @@ export const CategoryFiltersSection = () => {
             }}
             onClick={() => {
               setCurrentTab(tab);
+              const defaultFilter = QUICK_FILTERS[tab]?.[0] ?? "All";
               if (!selectedFilters[tab]) {
-                setSelectedFilters(prev => ({ ...prev, [tab]: QUICK_FILTERS[tab]?.[0] ?? "All" }));
+                setSelectedFilters(prev => ({ ...prev, [tab]: defaultFilter }));
+              }
+              if (onFilterChange) {
+                const filter = buildFilterFromSelection(tab, selectedFilters[tab] || defaultFilter);
+                onFilterChange(filter);
               }
             }}
           >
@@ -172,12 +312,17 @@ export const CategoryFiltersSection = () => {
               <Chip
                 key={label}
                 label={label}
-                onClick={() =>
-                  setSelectedFilters(prev => ({
-                    ...prev,
+                onClick={() => {
+                  const newFilters = {
+                    ...selectedFilters,
                     [currentTab]: label,
-                  }))
-                }
+                  };
+                  setSelectedFilters(newFilters);
+                  if (onFilterChange) {
+                    const filter = buildFilterFromSelection(currentTab, label);
+                    onFilterChange(filter);
+                  }
+                }}
                 sx={{
                   height: 32,
                   borderRadius: "999px",
@@ -197,5 +342,7 @@ export const CategoryFiltersSection = () => {
       )}
     </Box>
   );
-};
+});
+
+CategoryFiltersSection.displayName = 'CategoryFiltersSection';
 

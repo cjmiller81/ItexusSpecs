@@ -20,7 +20,7 @@ import { PageTitle, StatePersistedAccordion } from "components";
 import CustomStore from "devextreme/data/custom_store";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, isValidElement, cloneElement } from "react";
 import { useTranslation } from "react-i18next";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
@@ -29,6 +29,7 @@ import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutl
 import { FeatureAccessGuard } from "components";
 import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 import { filtersApi } from "../../../../components/src/services/filterService";
+import { CategoryFiltersSectionRef } from "@/components/CategoryFiltersSection";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -61,11 +62,13 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
   const dataGridRef = useRef<any>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const [externalFilter, setExternalFilter] = useState<object[] | null | undefined>();
   const [chains, setChains] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [projects, setProjects] = useState<string[]>([]);
   const [symbols, setSymbols] = useState<string[]>([]);
   const [loadingFilters, setLoadingFilters] = useState(true);
+  const categoryFiltersSectionRef = useRef<CategoryFiltersSectionRef>(null);
 
   useEffect(() => {
     dispatch(fetchFilters({}));
@@ -272,6 +275,18 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
     [],
   );
 
+  const handleCategoryFilterChange = useCallback(
+    (filter: any[] | null) => {
+      setExternalFilter(filter || null);
+    },
+    [],
+  );
+
+  const handleClearCategoryFilter = useCallback(() => {
+    categoryFiltersSectionRef.current?.clearFilter();
+    setExternalFilter(null);
+  }, []);
+
   return (
     <>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 0 }}>
@@ -376,7 +391,14 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
           }}
         >
           {prefilterControls && (
-            <Box sx={{ mb: 3 }}>{prefilterControls}</Box>
+            <Box sx={{ mb: 3 }}>
+              {isValidElement(prefilterControls)
+                ? cloneElement(prefilterControls as React.ReactElement<any>, {
+                    onFilterChange: handleCategoryFilterChange,
+                    ref: categoryFiltersSectionRef,
+                  })
+                : prefilterControls}
+            </Box>
           )}
           {loadingFilters ? (
             <div></div>
@@ -392,6 +414,8 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
               categories={categories}
               projects={projects}
               symbols={symbols}
+              externalFilter={externalFilter}
+              onClearCategoryFilter={handleClearCategoryFilter}
             />
           )}
         </AccordionDetails>
@@ -407,7 +431,8 @@ const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps)
     prevProps.chains === nextProps.chains &&
     prevProps.categories === nextProps.categories &&
     prevProps.projects === nextProps.projects &&
-    prevProps.symbols === nextProps.symbols
+    prevProps.symbols === nextProps.symbols &&
+    prevProps.externalFilter === nextProps.externalFilter
   );
 });
 
