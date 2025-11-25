@@ -7,7 +7,9 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
-import { useMemo, useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
+import React, { useMemo, useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
+import ReactDOM from "react-dom";
+import { styled, keyframes } from "@mui/material/styles";
 
 const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
 type MainTab = (typeof MAIN_TABS)[number];
@@ -112,6 +114,55 @@ export interface CategoryFiltersSectionRef {
   clearFilter: () => void;
 }
 
+const CATEGORY_TOOLTIPS: Record<string, string> = {
+  "Algo-Stables": "Algorithmic stablecoins maintaining price through supply adjustments",
+  "Basis Trading": "Capture funding rate spreads between spot/futures",
+  "Bridge": "Transfer assets between blockchain networks",
+  "CDP": "Lock collateral to mint stablecoins or borrow",
+  "Chain": "Native blockchain staking for network security",
+  "Cross Chain Bridge": "Multi-chain asset transfer infrastructure",
+  "Derivatives": "Exposure to crypto-based financial contracts",
+  "DEX Aggregator": "Optimize trades across multiple exchanges",
+  "Dexs": "Peer-to-peer token swaps via automated pools",
+  "DOR": "Manage and optimize options positions",
+  "Dual-Token Stablecoin": "Two-token stability mechanisms",
+  "Farm": "Earn rewards for providing liquidity",
+  "Indexes": "Diversified crypto asset portfolios",
+  "Insurances": "Smart contract and protocol failure coverage",
+  "Lending": "Earn yield on deposits, borrow against collateral",
+  "Leveraged Farming": "Amplified farming with borrowed capital",
+  "Liquid Restaking": "Restake staked assets while maintaining liquidity",
+  "Liquid Staking": "Stake assets, receive liquid tokens",
+  "Liquidity Manager": "Automated concentrated liquidity optimization",
+  "NFT Lending": "Borrow and lend using NFT collateral",
+  "NFT Marketplace": "Trade and provide liquidity for NFTs",
+  "Onchain Capital Allocation": "Programmatic capital deployment strategies",
+  "Options": "Right to buy/sell at predetermined prices",
+  "Options Vaults": "Generate yield selling options premium",
+  "Partially Algorithmic Stablecoin": "Hybrid algorithmic and collateral-backed stability",
+  "Payments": "Crypto payment processing infrastructure",
+  "Prediction Market": "Bet on future event outcomes",
+  "Reserve Currency": "Treasury-backed governance tokens",
+  "Restaking": "Stake already-staked assets for extra rewards",
+  "RWA": "Tokenized real-world asset yields",
+  "RWA Lending": "Loans backed by tokenized real-world assets",
+  "Services": "DeFi infrastructure and utility protocols",
+  "Staking Pool": "Collective proof-of-stake participation",
+  "Synthetics": "Track asset prices without direct ownership",
+  "Uncollateralized Lending": "Credit-based loans without upfront collateral",
+  "Yield": "Aggregated return-generating strategies",
+  "Yield Aggregator": "Auto-optimize yields across protocols",
+};
+
+const pulseGlow = keyframes`
+  0%, 100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.25;
+  }
+`;
+
 const QUICK_FILTERS: Record<MainTab, string[]> = {
   "All DeFi": [],
   Lending: [
@@ -188,6 +239,30 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
     "Infrastructure & Services": QUICK_FILTERS["Infrastructure & Services"]?.[0] ?? "All",
   }));
   const activeQuickFilter = selectedFilters[currentTab] ?? defaultQuickFilter;
+  const [pinnedTooltip, setPinnedTooltip] = useState<string | null>(null);
+  const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
+  const chipRefs = useRef<Record<string, HTMLElement | null>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setPinnedTooltip(null);
+    setHoveredTooltip(null);
+  }, [currentTab]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setPinnedTooltip(null);
+      }
+    };
+
+    if (pinnedTooltip) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [pinnedTooltip]);
 
   useImperativeHandle(ref, () => ({
     clearFilter: () => {
@@ -286,58 +361,130 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
           >
             Category:
           </Typography>
-          <Stack
-            direction="row"
-            spacing={1}
-            flexWrap="nowrap"
-            sx={{
-              overflowX: "auto",
-              "&::-webkit-scrollbar": {
-                height: "6px",
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)",
-                borderRadius: "3px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
-                borderRadius: "3px",
-                "&:hover": {
-                  backgroundColor: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
-                },
-              },
+          <Box
+            ref={containerRef}
+            onMouseLeave={() => {
+              if (!pinnedTooltip) {
+                setHoveredTooltip(null);
+              }
             }}
           >
-            {quickFilters.map(label => (
-              <Chip
-                key={label}
-                label={label}
-                onClick={() => {
-                  const newFilters = {
-                    ...selectedFilters,
-                    [currentTab]: label,
-                  };
-                  setSelectedFilters(newFilters);
-                  if (onFilterChange) {
-                    const filter = buildFilterFromSelection(currentTab, label);
-                    onFilterChange(filter);
-                  }
-                }}
-                sx={{
-                  height: 32,
-                  borderRadius: "999px",
-                  fontWeight: label === activeQuickFilter ? 700 : 500,
-                  letterSpacing: 0.3,
-                  bgcolor: label === activeQuickFilter ? highlightColor : "transparent",
-                  color: label === activeQuickFilter ? "#ffffff" : mutedText,
-                  border: label === activeQuickFilter ? "none" : `1px solid ${chipBorderColor}`,
-                  cursor: "pointer",
-                  flexShrink: 0,
-                  "& .MuiChip-label": { px: 2.5 },
-                }}
-              />
-            ))}
-          </Stack>
+            <Stack
+              direction="row"
+              spacing={1}
+              flexWrap="nowrap"
+              sx={{
+                overflowX: "auto",
+                overflowY: "hidden",
+                "&::-webkit-scrollbar": {
+                  height: "6px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)",
+                  borderRadius: "3px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)",
+                  borderRadius: "3px",
+                  "&:hover": {
+                    backgroundColor: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)",
+                  },
+                },
+              }}
+            >
+              {quickFilters.map(label => {
+                const tooltipText = CATEGORY_TOOLTIPS[label];
+                const hasTooltip = Boolean(tooltipText && !label.startsWith("All "));
+                const isPinned = pinnedTooltip === label;
+                const isHovered = hoveredTooltip === label;
+                const isActive = label === activeQuickFilter || isPinned;
+                const showTooltip = hasTooltip && (isHovered || (isPinned && (hoveredTooltip === null || hoveredTooltip === label)));
+
+                return (
+                  <Box
+                    key={label}
+                    ref={(el: HTMLDivElement | null) => {
+                      chipRefs.current[label] = el;
+                    }}
+                    sx={{
+                      position: "relative",
+                      display: "inline-flex",
+                    }}
+                    onMouseEnter={() => {
+                      if (hasTooltip) {
+                        setHoveredTooltip(label);
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (!isPinned) {
+                        setHoveredTooltip(null);
+                      }
+                    }}
+                  >
+                    <Chip
+                      label={label}
+                      onClick={() => {
+                        const newFilters = {
+                          ...selectedFilters,
+                          [currentTab]: label,
+                        };
+                        setSelectedFilters(newFilters);
+                        if (onFilterChange) {
+                          const filter = buildFilterFromSelection(currentTab, label);
+                          onFilterChange(filter);
+                        }
+                        if (hasTooltip) {
+                          if (isPinned) {
+                            setPinnedTooltip(null);
+                          } else {
+                            setPinnedTooltip(label);
+                          }
+                        }
+                      }}
+                      sx={{
+                        height: 32,
+                        borderRadius: "999px",
+                        fontWeight: isActive ? 700 : 500,
+                        letterSpacing: 0.3,
+                        bgcolor: isActive ? highlightColor : "transparent",
+                        color: isActive ? "#ffffff" : mutedText,
+                        border: isActive ? "none" : `1px solid ${isHovered && !isActive ? highlightColor : chipBorderColor}`,
+                        cursor: "pointer",
+                        flexShrink: 0,
+                        position: "relative",
+                        "& .MuiChip-label": { px: 2.5 },
+                        ...(isHovered && !isActive && {
+                          boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
+                        }),
+                        ...(isPinned && {
+                          boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.25), 0 4px 12px rgba(16, 185, 129, 0.3)",
+                          "&::before": {
+                            content: '""',
+                            position: "absolute",
+                            inset: "-4px",
+                            borderRadius: "28px",
+                            background: "linear-gradient(135deg, #10B981 0%, transparent 50%)",
+                            opacity: 0.15,
+                            zIndex: -1,
+                            animation: `${pulseGlow} 2s ease-in-out infinite`,
+                          },
+                        }),
+                      }}
+                    />
+                    {hasTooltip && showTooltip && typeof window !== "undefined" && chipRefs.current[label] && ReactDOM.createPortal(
+                      <CategoryTooltip
+                        chipElement={chipRefs.current[label]}
+                        text={tooltipText}
+                        isPinned={isPinned}
+                        theme={theme}
+                      />,
+                      document.body
+                    )}
+                  </Box>
+                );
+              })}
+            </Stack>
+          </Box>
         </Card>
       )}
     </Box>
@@ -345,4 +492,98 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
 });
 
 CategoryFiltersSection.displayName = 'CategoryFiltersSection';
+
+interface CategoryTooltipProps {
+  chipElement: HTMLElement | null;
+  text: string;
+  isPinned: boolean;
+  theme: any;
+}
+
+const CategoryTooltip: React.FC<CategoryTooltipProps> = ({ chipElement, text, isPinned, theme }) => {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (chipElement) {
+      const updatePosition = () => {
+        const chip = chipElement.querySelector('.MuiChip-root') as HTMLElement;
+        const targetElement = chip || chipElement;
+        const rect = targetElement.getBoundingClientRect();
+        
+        setPosition({
+          top: rect.top - 16,
+          left: rect.left + rect.width / 2,
+        });
+      };
+
+      updatePosition();
+      
+      window.addEventListener("scroll", updatePosition, true);
+      window.addEventListener("resize", updatePosition);
+
+      return () => {
+        window.removeEventListener("scroll", updatePosition, true);
+        window.removeEventListener("resize", updatePosition);
+      };
+    }
+  }, [chipElement]);
+
+  if (!chipElement) return null;
+
+  const isDark = theme.palette.mode === "dark";
+
+  return (
+    <Box
+      sx={{
+        position: "fixed",
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        transform: "translate(-50%, calc(-100% - 16px))",
+        zIndex: 10000,
+        pointerEvents: isPinned ? "auto" : "none",
+        transition: "opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
+    >
+      <Box
+        sx={{
+          position: "relative",
+          background: isDark ? "#1a1d2e" : "#ffffff",
+          color: isDark ? "#e0e0e0" : "#0f172a",
+          padding: "12px 24px",
+          borderRadius: "8px",
+          fontSize: "13px",
+          fontWeight: 400,
+          whiteSpace: "nowrap",
+          border: "2px solid #10B981",
+          boxShadow: isDark
+            ? "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.2)"
+            : "0 8px 24px rgba(0, 0, 0, 0.15), 0 0 20px rgba(16, 185, 129, 0.15)",
+          minWidth: "300px",
+          textAlign: "center",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: "100%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "2px",
+            height: "12px",
+            background: "#10B981",
+          },
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            top: "100%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            border: "8px solid transparent",
+            borderTopColor: "#10B981",
+          },
+        }}
+      >
+        {text}
+      </Box>
+    </Box>
+  );
+};
 
