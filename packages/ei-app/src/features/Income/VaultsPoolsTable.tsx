@@ -20,6 +20,9 @@ import DataGridDef, {
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
 import React, { FC, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
+import { Button, styled } from "@mui/material";
+import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { toDollarAmountField, toPercentageField } from "./helpers";
 import { VaultsData } from "./Models/VaultsData";
 import SimpleBar from "simplebar-react";
@@ -37,6 +40,28 @@ export interface IPrefilterTokensTable {
   dataGridRef?: MutableRefObject<DataGridDef<VaultsData, string> | null>;
 }
 
+const COLUMN_CHOOSER_BUTTON_ID = "vaults-column-chooser-btn";
+
+const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  minWidth: 200,
+  maxHeight: 40,
+  height: 32,
+  fontWeight: 400,
+  borderRadius: 6,
+  padding: theme.spacing(0.25, 3),
+  backgroundColor: "#219a83",
+  color: "#0f172a",
+  display: "flex",
+  justifyContent: "space-between",
+  "&:hover": {
+    backgroundColor: "#1c8d74",
+  },
+  "& .column-chooser-arrow": {
+    color: "#0f172a",
+  },
+}));
+
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef }) => {
   const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
   const datagrid =
@@ -52,6 +77,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
   const filterRef = useRef<CustomFilterBuilderRef>(null);
+  const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
 
   const filterPanelText = useRef<Element | null>(null);
 
@@ -125,7 +151,13 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         filterValue={currentFilterRef.current || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}>
+        onFilterValueChange={onApplyFilter}
+        onOptionChanged={(e) => {
+          // Track ColumnChooser open/close state
+          if (e.fullName === "columnChooser.visible" || e.fullName?.includes("columnChooser")) {
+            setIsColumnChooserOpen(e.value === true);
+          }
+        }}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -177,16 +209,35 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
               />
             </SimpleBar>
           </Item>
-          <Item name="columnChooserButton" />
+          <Item location="after">
+            <ColumnChooserActionButton
+              id={COLUMN_CHOOSER_BUTTON_ID}
+              variant="contained"
+              color="success"
+              onClick={() => {
+                if (isColumnChooserOpen) {
+                  datagrid.current?.instance?.hideColumnChooser();
+                } else {
+                  datagrid.current?.instance?.showColumnChooser();
+                }
+              }}>
+              <span>COLUMN CHOOSER</span>
+              {isColumnChooserOpen ? (
+                <KeyboardArrowUpRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              ) : (
+                <KeyboardArrowDownRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              )}
+            </ColumnChooserActionButton>
+          </Item>
         </Toolbar>
         <ColumnChooser
-          height={500}
+          height={800}
           enabled={true}
           mode="select">
           <Position
             my="right top"
             at="right bottom"
-            of=".dx-datagrid-column-chooser-button"
+            of={`#${COLUMN_CHOOSER_BUTTON_ID}`}
           />
 
           <ColumnChooserSearch
@@ -231,7 +282,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataType="string"
           allowHiding={false}
         />
-        x{" "}
         <Column
           dataField="tvl"
           caption="TVL"
