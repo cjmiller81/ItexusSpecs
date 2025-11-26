@@ -175,6 +175,10 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           }
   
           if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+            // If externalFilter is active and this is not category column, use "anyof" operator
+            if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0 && column.dataField !== "category") {
+              return [column.dataField, "anyof", selectedValue];
+            }
             return selectedValue.map((value: string) => [column.dataField, "contains", value]);
           }
   
@@ -185,7 +189,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         console.error("Error on calculateFilterExpression:", err);
         return null;
       }
-    }, []);
+    }, [externalFilter]);
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
@@ -212,26 +216,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     },
     [onFilterValueChange, datagrid, categoryHeaderFilterDataSource],
   );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
@@ -725,7 +709,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataField={DefiField.IlRisk}
           caption={DefiLabel.IlRisk}
           alignment="left"
-          visible={false}
+          visible={true}
           dataType="string"
           allowHiding={true}
         />
@@ -733,7 +717,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataField={DefiField.Exposure}
           caption={DefiLabel.Exposure}
           alignment="left"
-          visible={false}
+          visible={true}
           dataType="string"
           allowHiding={true}
         />
