@@ -46,7 +46,7 @@ export enum DefiLabel {
   ApyPct1D = "APY Pct 1D",
   ApyPct7D = "APY Pct 7D",
   Stablecoin = "Stablecoin",
-  IlRisk = "IL Risk",
+  IlRisk = "Impermanent Loss Risk",
   Exposure = "Exposure",
   PoolMeta = "Meta",
   Mu = "MU",
@@ -67,19 +67,19 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.Symbol,
     dataField: DefiField.Symbol,
     dataType: "string",
-    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>", "anyof"]
   },
   {
     caption: DefiLabel.Project,
     dataField: DefiField.Project,
     dataType: "string",
-    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>", "anyof"]
   },
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
     dataType: "string",
-    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>", "anyof"]
   },
   {
     caption: DefiLabel.Category,
