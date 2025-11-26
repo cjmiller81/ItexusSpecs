@@ -31,6 +31,10 @@ import SimpleBar from "simplebar-react";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -46,6 +50,30 @@ export interface IPrefilterTokensTable {
   externalFilter?: object[] | null | undefined;
   onClearCategoryFilter?: () => void;
 }
+
+const COLUMN_CHOOSER_BUTTON_ID = "defi-pools-column-chooser-btn";
+
+const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  minWidth: 200,
+  maxHeight: 40,
+  height: 32,
+  fontWeight: 400,
+  borderRadius: 6,
+  padding: theme.spacing(0.25, 3),
+  backgroundColor: "#219a83",
+  color: "#0f172a",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(1),
+  "&:hover": {
+    backgroundColor: "#1c8d74",
+  },
+  "& .column-chooser-arrow": {
+    color: "#0f172a",
+  },
+}));
 
 export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   loading,
@@ -70,6 +98,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const dispatch = useAppDispatch();
   
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
   const filterRef = useRef<CustomFilterBuilderRef>(null);
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
@@ -365,6 +394,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
               }
             }, 150);
           }
+
+          // Track ColumnChooser open/close state
+          if (e.fullName === "columnChooser.visible" || e.fullName?.includes("columnChooser")) {
+            setIsColumnChooserOpen(e.value === true);
+          }
         }}>
           
         <FilterRow visible={true} />
@@ -393,13 +427,13 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           showNavigationButtons={true}
         />
         <ColumnChooser
-          height={500}
+          height={800}
           enabled={true}
           mode="select">
           <Position
             my="right top"
             at="right bottom"
-            of=".dx-datagrid-column-chooser-button"
+            of={`#${COLUMN_CHOOSER_BUTTON_ID}`}
           />
           <ColumnChooserSearch
             enabled={true}
@@ -436,7 +470,26 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
               />
             </SimpleBar>
           </Item>
-          <Item name="columnChooserButton" />
+          <Item location="after">
+            <ColumnChooserActionButton
+              id={COLUMN_CHOOSER_BUTTON_ID}
+              variant="contained"
+              color="success"
+              onClick={() => {
+                if (isColumnChooserOpen) {
+                  datagrid.current?.instance?.hideColumnChooser();
+                } else {
+                  datagrid.current?.instance?.showColumnChooser();
+                }
+              }}>
+              <span>COLUMN CHOOSER</span>
+              {isColumnChooserOpen ? (
+                <KeyboardArrowUpRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              ) : (
+                <KeyboardArrowDownRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              )}
+            </ColumnChooserActionButton>
+          </Item>
         </Toolbar>
         <Column
           dataField={DefiField.Symbol}

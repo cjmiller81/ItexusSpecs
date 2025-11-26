@@ -20,6 +20,9 @@ import DataGridDef, {
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
 import React, { FC, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, styled } from "@mui/material";
+import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { filterBuilderFields, PrefilterTokensField, PrefilterTokensLabel } from "../../constants/PrefilterTokensTable";
 import { SymbolCellIdComponent } from "./SymbolCellIdComponent";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
@@ -41,6 +44,28 @@ export interface IPrefilterTokensTable {
   filterType?: string;
   dataGridRef?: MutableRefObject<DataGridDef<ICoin, string> | null>;
 }
+
+const COLUMN_CHOOSER_BUTTON_ID = "market-cap-column-chooser-btn";
+
+const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  minWidth: 200,
+  maxHeight: 40,
+  height: 32,
+  fontWeight: 400,
+  borderRadius: 6,
+  padding: theme.spacing(0.25, 3),
+  backgroundColor: "#219a83",
+  color: "#0f172a",
+  display: "flex",
+  justifyContent: "space-between",
+  "&:hover": {
+    backgroundColor: "#1c8d74",
+  },
+  "& .column-chooser-arrow": {
+    color: "#0f172a",
+  },
+}));
 
 export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   onCurrentFilterChange,
@@ -67,6 +92,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(null);
   const filterRef = useRef<CustomFilterBuilderRef>(null);
+  const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
 
   useEffect(() => {
     handleOnUpdate();
@@ -242,25 +268,6 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
           showInfo={true}
           showNavigationButtons={true}
         />
-        <ColumnChooser
-          height={500}
-          enabled={true}
-          mode="select">
-          <Position
-            my="right top"
-            at="right bottom"
-            of=".dx-datagrid-column-chooser-button"
-          />
-          <ColumnChooserSearch
-            enabled={true}
-            editorOptions={true}
-          />
-          <ColumnChooserSelection
-            allowSelectAll={true}
-            selectByClick={true}
-            recursive={true}
-          />
-        </ColumnChooser>
         <Toolbar>
           <Item location="before">
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
@@ -284,8 +291,46 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
               />
             </SimpleBar>
           </Item>
-          <Item name="columnChooserButton" />
+          <Item location="after">
+            <ColumnChooserActionButton
+              id={COLUMN_CHOOSER_BUTTON_ID}
+              variant="contained"
+              color="success"
+              onClick={() => {
+                if (isColumnChooserOpen) {
+                  datagrid.current?.instance?.hideColumnChooser();
+                } else {
+                  datagrid.current?.instance?.showColumnChooser();
+                }
+              }}>
+              <span>COLUMN CHOOSER</span>
+              {isColumnChooserOpen ? (
+                <KeyboardArrowUpRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              ) : (
+                <KeyboardArrowDownRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              )}
+            </ColumnChooserActionButton>
+          </Item>
         </Toolbar>
+        <ColumnChooser
+          height={800}
+          enabled={true}
+          mode="select">
+          <Position
+            my="right top"
+            at="right bottom"
+            of={`#${COLUMN_CHOOSER_BUTTON_ID}`}
+          />
+          <ColumnChooserSearch
+            enabled={true}
+            editorOptions={true}
+          />
+          <ColumnChooserSelection
+            allowSelectAll={true}
+            selectByClick={true}
+            recursive={true}
+          />
+        </ColumnChooser>
 
         <Column
           dataField={PrefilterTokensField.Symbol}
