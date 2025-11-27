@@ -1,5 +1,8 @@
-import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
+import { Box, BoxProps, Button, Card, CircularProgress, SelectChangeEvent, Tab, Tabs, Typography } from "@mui/material";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { styled, useMediaQuery, useTheme } from "@mui/system";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import {
   GridCellParams,
   GridEventListener,
@@ -72,6 +75,8 @@ export const MyWalletsSectionForPage = ({
   const router = useRouter();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const { portfolioWalletData } = useAppSelector( state => state.wallets);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"positions" | "history">("positions");
 
   const addWallet = async (walletAddressModel: AddressModel) => {
     const resultAction = await dispatch(createWallet(walletAddressModel));
@@ -192,6 +197,175 @@ export const MyWalletsSectionForPage = ({
   const theme = useTheme();
   const isXL = useMediaQuery("(min-width:2000px)");
 
+  const renderCardContent = (isExpandedView: boolean = false) => (
+    <Card
+      elevation={0}
+      sx={{
+        height: isExpandedView ? "calc(100vh - 100px)" : "auto",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: 3,
+        boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+        backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
+      }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 3,
+          pt: 3,
+          pb: 2,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          flexShrink: 0,
+        }}>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            onClick={() => setActiveTab("positions")}
+            size="small"
+            startIcon={<ImportExportIcon sx={{ fontSize: 20 }} />}
+            sx={{
+              textTransform: "none",
+              color: "#000",
+              backgroundColor: activeTab === "positions" ? "#f7f5f2" : "#e5ddd5",
+              "&:hover": {
+                backgroundColor: activeTab === "positions" ? "#f7f5f2" : "#e5ddd5",
+              },
+              border: "1px solid #e5ddd5",
+              borderRadius: "4px",
+            }}>
+            {t("Positions", { ns: "MyWalletsPage", defaultValue: "Positions" })}
+          </Button>
+          <Button
+            onClick={() => setActiveTab("history")}
+            size="small"
+            startIcon={<TrendingUpIcon sx={{ fontSize: 20 }} />}
+            sx={{
+              textTransform: "none",
+              color: "#000",
+              backgroundColor: activeTab === "history" ? "#f7f5f2" : "#e5ddd5",
+              "&:hover": {
+                backgroundColor: activeTab === "history" ? "#f7f5f2" : "#e5ddd5",
+              },
+              border: "1px solid #e5ddd5",
+              borderRadius: "4px",
+            }}>
+            {t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" })}
+          </Button>
+        </Box>
+        <Box
+          component="button"
+          onClick={() => setIsExpanded(!isExpanded)}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'rgba(25, 118, 210, 0.2)',
+            gap: 0.3,
+            textDecoration: 'none',
+            color: '#219a83',
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            padding: '2px 6px',
+            border: '1px solid #219a83',
+            borderRadius: '4px',
+            transition: 'all 0.2s ease-in-out',
+            cursor: 'pointer',
+            background: 'none',
+            fontFamily: 'inherit',
+            '&:hover': {
+              backgroundColor: '#219a83',
+              color: "white",
+            },
+          }}
+        >
+          <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+          <Typography
+            variant="body2"
+            component="span"
+            sx={{
+              fontSize: '0.75rem',
+              lineHeight: 1.2,
+            }}
+          >
+            {isExpanded
+              ? t("CollapseView", { ns: "MyWalletsPage", defaultValue: "Collapse View" })
+              : t("ExpandView", { ns: "MyWalletsPage", defaultValue: "Expand View" })}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: 0 }}>
+        {activeTab === "positions" && (
+          <Box sx={{ width: "100%", p: 2, flex: 1, overflow: "auto" }}>
+            <Box sx={{ position: "relative", width: "99%", overflowX: "clip", mb: 1 }}>
+              {loading && (
+                <CircularProgress
+                  size="20px"
+                  sx={{ width: "24px", position: "absolute", right: 0, top: 0 }}
+                />
+              )}
+            </Box>
+            <DexWalletsTable
+              loading={wallets === null && loading}
+              disableVirtualization
+              hideFooter
+              $hasExpandedRows={expandedRows.length > 0}
+              $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
+              sx={{
+                ...tableScrollSx,
+              }}
+              scrollbarSize={7}
+              editMode="row"
+              rowModesModel={rowModesModel}
+              onRowModesModelChange={handleRowModesModelChange}
+              onRowEditStop={handleRowEditStop}
+              processRowUpdate={processRowUpdate}
+              slotProps={{
+                row: {
+                  isExpanded: (id: GridRowId) => expandedRows.includes(id),
+                  onHeightUpdate: updateRowHeight,
+                  isCollapsed: isExpandedView,
+                },
+              }}
+              slots={{
+                row: ExpandableRowDex,
+              }}
+              onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+                onSelectedChanged(
+                  wallets!.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+                );
+              }}
+              onCellClick={onCellClick}
+              apiRef={apiRef}
+              getRowId={x => x.address}
+              columns={getDexWalletsColumns({
+                handleCancelClick: handleCancelClick,
+                handleSaveClick: handleSaveClick,
+                handleEditClick: handleEditClick,
+                handleDeleteClick: handleDeleteClick,
+                gridRowModesModel: rowModesModel,
+                expandedRows: expandedRows,
+                onExpandClick: handleExpandClick,
+                isXL: isXL
+              })}
+              rows={wallets || []}
+              rowSelectionModel={selectedWalletsIds}
+              checkboxSelection={true}
+            />
+          </Box>
+        )}
+
+        {activeTab === "history" && (
+          <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", p: 4 }}>
+            <Typography variant="body1" color="text.secondary">
+              {t("TransactionHistoryPlaceholder", { ns: "MyWalletsPage", defaultValue: "Transaction History coming soon..." })}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </Card>
+  );
+
   return (
     <Box
       id={id}
@@ -210,61 +384,24 @@ export const MyWalletsSectionForPage = ({
         <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
-             <Box sx={{ width: "100%" }}>
-        <Box sx={{ position: "relative", width: "99%", top: 18, overflowX: "clip" }}>
-          {loading && (
-            <CircularProgress
-              size="20px"
-              sx={{ width: "24px", position: "absolute", right: 0, top: 0 }}
-            />
-          )}
-        </Box>
-                 <DexWalletsTable
-           loading={wallets === null && loading}
-           disableVirtualization
-           hideFooter
-           $hasExpandedRows={expandedRows.length > 0}
-           $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
-          sx={{
-           ...tableScrollSx,
-          }}
-          scrollbarSize={7}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          slotProps={{
-            row: {
-              isExpanded: (id: GridRowId) => expandedRows.includes(id),
-              onHeightUpdate: updateRowHeight,
-            },
-          }}
-          slots={{
-            row: ExpandableRowDex,
-          }}
-          onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
-            onSelectedChanged(
-              wallets!.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
-            );
-          }}
-          onCellClick={onCellClick}
-          apiRef={apiRef}
-          getRowId={x => x.address}
-          columns={getDexWalletsColumns({
-            handleCancelClick: handleCancelClick,
-            handleSaveClick: handleSaveClick,
-            handleEditClick: handleEditClick,
-            handleDeleteClick: handleDeleteClick,
-            gridRowModesModel: rowModesModel,
-            expandedRows: expandedRows,
-            onExpandClick: handleExpandClick,
-            isXL: isXL
-          })}
-          rows={wallets || []}
-          rowSelectionModel={selectedWalletsIds}
-          checkboxSelection={true}
-        />
+      <Box
+        sx={{
+          position: isExpanded ? "fixed" : "relative",
+          top: isExpanded ? "140px" : "auto",
+          left: isExpanded ? "220px" : "auto",
+          right: isExpanded ? 0 : "auto",
+          bottom: isExpanded ? 0 : "auto",
+          width: isExpanded ? "calc(100vw - 220px)" : "100%",
+          height: isExpanded ? "calc(100vh - 140px)" : "auto",
+          zIndex: isExpanded ? 1300 : "auto",
+          backgroundColor: "transparent",
+          ...(isExpanded && {
+            padding: 3,
+            display: "flex",
+            flexDirection: "column",
+          }),
+        }}>
+        {renderCardContent(isExpanded)}
       </Box>
     </Box>
   );
