@@ -24,4 +24,10 @@ export type VaultsData = {
   apyReward?: number | null;
   ilRisk?: string;
   pool?: string;
+  vaultApy?: number;
+  beefyPerformanceFee?: number;
+  lpFee?: number;
+  tradingApr?: number;
+  strategyTypeId?: string;
+  earnedToken?: string;
 };
