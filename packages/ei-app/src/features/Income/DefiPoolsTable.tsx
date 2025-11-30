@@ -105,16 +105,20 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const filterPanelText = useRef<Element | null>(null);
   const categoryHeaderFilterRef = useRef<any>(null);
 
+  const prevExternalFilterRef = useRef<object[] | null | undefined>(undefined);
+  
   useEffect(() => {
-    if (datagrid.current?.instance) {
-      const filterValue = externalFilter || [];
-      datagrid.current.instance.option("filterValue", filterValue);
-      datagrid.current.instance.refresh();
+    const hasExternalFilterChanged = externalFilter !== prevExternalFilterRef.current;
+    const hasNoMergedFilter = !currentFilter || !Array.isArray(currentFilter) || currentFilter.length === 0;
+    
+    if (hasExternalFilterChanged && externalFilter !== undefined && hasNoMergedFilter) {
+      if (!currentFilter) {
+        setCurrentFilter(externalFilter);
+      }
     }
-    if (externalFilter !== undefined) {
-      setCurrentFilter(externalFilter);
-    }
-  }, [externalFilter, datagrid]);
+    
+    prevExternalFilterRef.current = externalFilter;
+  }, [externalFilter, currentFilter]);
 
   const stringToFilterItem = useCallback((item: { name: string }): { text: string; value: string } => {
     return {
@@ -171,6 +175,30 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     return Array.from(new Set(values));
   }, []);
 
+  const hasCategoryFilter = useCallback((filter: any[] | null | undefined): boolean => {
+    if (!filter || !Array.isArray(filter)) return false;
+
+    const check = (node: any): boolean => {
+      if (!Array.isArray(node)) return false;
+      
+      if (node.length === 3 && typeof node[0] === "string" && node[0] === "category") {
+        return true;
+      }
+      
+      for (let i = 0; i < node.length; i++) {
+        const item = node[i];
+        if (item === "or" || item === "and") continue;
+        if (Array.isArray(item) && check(item)) {
+          return true;
+        }
+      }
+      
+      return false;
+    };
+
+    return check(filter);
+  }, []);
+
   const activeFilter = useMemo(() => {
     return externalFilter !== undefined ? (externalFilter || []) : (currentFilter || []);
   }, [externalFilter, currentFilter]);
@@ -222,9 +250,22 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      const value = filter as object[];
-      setCurrentFilter(value);
-      onFilterValueChange?.(null);
+      const newFilter = filter as object[] | null;
+      
+      if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
+        if (newFilter && Array.isArray(newFilter) && newFilter.length > 0) {
+          if (hasCategoryFilter(newFilter)) {
+            setCurrentFilter(newFilter);
+          } else {
+            const mergedFilter: any[] = [externalFilter, "and", newFilter];
+            setCurrentFilter(mergedFilter);
+          }
+        } else {
+          setCurrentFilter(null);
+        }
+      } else {
+        setCurrentFilter(newFilter);
+      }
       
       if (datagrid.current?.instance) {
         setTimeout(() => {
@@ -243,7 +284,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         }, 200);
       }
     },
-    [onFilterValueChange, datagrid, categoryHeaderFilterDataSource],
+    [externalFilter, datagrid, categoryHeaderFilterDataSource, hasCategoryFilter],
   );
   
   const onContentReady = () => {
@@ -306,9 +347,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHierarchicalFields: true,
         }}
         filterValue={
-          externalFilter !== undefined && externalFilter !== null && Array.isArray(externalFilter) && externalFilter.length > 0
-            ? externalFilter
-            : (currentFilter || [])
+          currentFilter && Array.isArray(currentFilter) && currentFilter.length > 0
+            ? currentFilter
+            : (externalFilter !== undefined && externalFilter !== null && Array.isArray(externalFilter) && externalFilter.length > 0
+              ? externalFilter
+              : [])
         }
         onContentReady={onContentReady}
         filterSyncEnabled={true}
