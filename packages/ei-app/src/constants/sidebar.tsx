@@ -77,10 +77,6 @@ function getPlatformsItems(hasPageAccess: (pagePath: string) => boolean): Sideba
           title: t("Vaults", { ns: "IncomeSection" }),
           href: "/vaults",
           disabled: !hasPageAccess("/vaults"),
-        },
-        {
-          title: "POC LP",
-          href: "/poc_lp"
         }
       ],
     },
