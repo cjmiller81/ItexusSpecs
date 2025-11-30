@@ -348,6 +348,80 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           }}
           allowHiding={false}
         />
+        <Column
+          dataField="vaultApy"
+          caption="Vault APY"
+          alignment="left"
+          dataType="number"
+          allowHiding={true}
+          visible={false}
+          allowHeaderFiltering={false}
+          calculateCellValue={data => {
+            const vaultApy = data.vaultApy ?? 0;
+            return vaultApy * 100;
+          }}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField="beefyPerformanceFee"
+          caption="Beefy Performance Fee"
+          alignment="left"
+          dataType="number"
+          allowHiding={true}
+          visible={false}
+          allowHeaderFiltering={false}
+          calculateCellValue={data => {
+            const fee = data.beefyPerformanceFee ?? 0;
+            return fee * 100;
+          }}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField="lpFee"
+          caption="LP Fee"
+          alignment="left"
+          dataType="number"
+          allowHiding={true}
+          visible={false}
+          allowHeaderFiltering={false}
+          calculateCellValue={data => {
+            const fee = data.lpFee ?? 0;
+            return fee * 100;
+          }}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField="tradingApr"
+          caption="Trading APR"
+          alignment="left"
+          dataType="number"
+          allowHiding={true}
+          visible={false}
+          allowHeaderFiltering={false}
+          calculateCellValue={data => {
+            const apr = data.tradingApr ?? 0;
+            return apr * 100;
+          }}
+          customizeText={toPercentageField}
+        />
+        <Column
+          dataField="strategyTypeId"
+          caption="Strategy Type ID"
+          alignment="left"
+          dataType="string"
+          allowHiding={true}
+          visible={false}
+          headerFilter={{ visible: true }}
+        />
+        <Column
+          dataField="earnedToken"
+          caption="Earned Token"
+          alignment="left"
+          dataType="string"
+          allowHiding={true}
+          visible={false}
+          headerFilter={{ visible: true }}
+        />
         <Export
           enabled={true}
           allowExportSelectedData={true}
