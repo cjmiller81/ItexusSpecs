@@ -6,7 +6,7 @@ export const DexWalletsTable = styled(BasicTable, {
   shouldForwardProp: (prop) => prop !== '$hasExpandedRows' && prop !== '$minHeight',
 })<{ $hasExpandedRows?: boolean; $minHeight?: string }>(({ theme, $hasExpandedRows, $minHeight }) => ({
   width: "100%",
-  minHeight: $hasExpandedRows ? ($minHeight || "55vh") : 150,
+  maxHeight: $hasExpandedRows ? ($minHeight || "80vh") : 150,
   height: "auto",
   mt: 2,
   display: "grid",
@@ -15,7 +15,7 @@ export const DexWalletsTable = styled(BasicTable, {
   },
   "& .MuiDataGrid-main": {
     height: "auto",
-    minHeight: $hasExpandedRows ? ($minHeight || "55vh") : 150,
+    minHeight: $hasExpandedRows ? ($minHeight || "80vh") : 150,
     width:"100%",
     backgroundColor:
       theme.palette.mode === "dark"
