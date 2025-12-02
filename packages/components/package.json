@@ -27,7 +27,11 @@
   },
   "packageManager": "yarn@4.2.1",
   "dependencies": {
+    "@ory/client": "^1.9.0",
+    "@ory/elements-react": "^1.1.0",
+    "@ory/integrations": "^1.1.5",
     "react": "^18.3.1",
+    "react-dom": "^18.2.0",
     "use-file-picker": "^2.1.2"
   }
 }

@@ -63,7 +63,7 @@ const nextConfig = {
     NEXT_PUBLIC_ORY_CARD_IMAGE_URL: process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
   },
-  transpilePackages: ['@mui/icons-material', 'components'],
+  transpilePackages: ['@mui/icons-material', 'components', '@ory/elements-react', '@ory/client-fetch'],
 }
 
 module.exports = nextConfig

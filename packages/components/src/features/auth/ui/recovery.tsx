@@ -6,7 +6,9 @@ import { Loader } from "../components/loader"
 import { ory } from "../lib/sdk"
 import { HandleError } from "../utils/hooks"
 import { StyledAuthContainer } from "./StyledAuthContainer"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
+import { Stack } from "@mui/material"
+import { CustomRecoveryForm } from "./CustomRecoveryForm"
+import ProtectedByOryLabel from "./protectedByOryLabel"
 
 export const Recovery: FC<{ changePasswordRoute: string }> = ({
   changePasswordRoute,
@@ -127,18 +129,15 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
 
   return (
     <StyledAuthContainer>
-      <div className="log">
-        <StyledUserAuthCard
-          flowType="recovery"
-          flow={flow}
-          additionalProps={{ loginURL: "/ui/login" }}
-          includeScripts
-          onSubmit={({ body }) =>
-            submitFlow(body as UpdateRecoveryFlowBody)
-          }
-         cardImage={process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL}
-        />
-      </div>
+      <Stack alignItems="center" gap={1} className="log">
+        {flow && (
+          <CustomRecoveryForm
+            flow={flow}
+            onSubmit={submitFlow}
+          />
+        )}
+        <ProtectedByOryLabel />
+      </Stack>
     </StyledAuthContainer>
   )
 }

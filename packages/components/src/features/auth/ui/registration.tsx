@@ -1,13 +1,14 @@
-import { Button, Stack, Typography } from "@mui/material"
+import { Button, Stack, Typography, Box } from "@mui/material"
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useState } from "react"
+import { FC, useCallback, useEffect, useState, useMemo } from "react"
+import { Registration as OryRegistration } from "@ory/elements-react/theme"
+import { createOryConfig } from "../lib/oryConfig"
 import { Loader } from "../components/loader"
 import { HandleError } from "../utils/hooks"
 import { ory } from "../lib/sdk"
 import { StyledAuthContainer } from "./StyledAuthContainer"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
 const Registration: FC<{}> = () => {
   const [flow, setFlow] = useState<RegistrationFlow>()
@@ -64,6 +65,10 @@ const Registration: FC<{}> = () => {
     [handleError],
   )
 
+  const registrationConfig = useMemo(() => {
+    return createOryConfig()
+  }, [])
+
   useEffect(() => {
     if (!router.isReady) {
       return
@@ -94,19 +99,19 @@ const Registration: FC<{}> = () => {
   }
 
   if (error) {
-  return (
-    <StyledAuthContainer>
-      <Stack alignItems="center" gap={2} className="log">
-        <Typography variant="h5" color="error" align="center">
-          New user registration is currently disabled
-        </Typography>
-        <Button sx={{ textTransform: "capitalize" }} variant="contained" color="primary" onClick={handleRedirect}>
-          Home
-        </Button>
-      </Stack>
-    </StyledAuthContainer>
-  )
-}
+    return (
+      <StyledAuthContainer>
+        <Stack alignItems="center" gap={2} className="log">
+          <Typography variant="h5" color="error" align="center">
+            New user registration is currently disabled
+          </Typography>
+          <Button sx={{ textTransform: "capitalize" }} variant="contained" color="primary" onClick={handleRedirect}>
+            Home
+          </Button>
+        </Stack>
+      </StyledAuthContainer>
+    )
+  }
 
   if (!flow) return <Loader />
   return (
@@ -115,22 +120,22 @@ const Registration: FC<{}> = () => {
         alignItems="center"
         gap={1}
         className="log">
-        <StyledUserAuthCard
-          // create a registration form that dynamically renders based on the flow data using Ory Elements
-          // This defines what kind of card we want to render.
-          flowType={"registration"}
-          // we always need to pass the flow to the card since it contains the form fields, error messages and csrf token
-          flow={flow}
-          // the registration card needs a way to navigate to the login page
-          additionalProps={{
-            loginURL: "/ui/login",
-          }}
-          // include the necessary scripts for webauthn to work
-          includeScripts={true}
-          // submit the registration form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateRegistrationFlowBody)}
-          cardImage={process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL}
-        />
+        <Box sx={{ 
+          backgroundColor: "#2B2B2B",
+          borderRadius: "1rem",
+          padding: "48px",
+          minWidth: "400px",
+          borderWidth: "2px",
+          borderColor: "white",
+          borderStyle: "solid",
+        }}>
+          {registrationConfig && flow && (
+            <OryRegistration
+              flow={flow as any}
+              config={registrationConfig}
+            />
+          )}
+        </Box>
       </Stack>
     </StyledAuthContainer>
   )

@@ -1,5 +1,6 @@
 import "../libs/i18n/i18n"
 import RootLayout from "@/Layouts/RootLayout"
+import "@ory/elements-react/theme/styles.css"
 import '../global.css'
 import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
