@@ -356,11 +356,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={true}
           visible={false}
           allowHeaderFiltering={false}
-          calculateCellValue={data => {
-            const vaultApy = data.vaultApy ?? 0;
-            return vaultApy * 100;
-          }}
-          customizeText={toPercentageField}
         />
         <Column
           dataField="beefyPerformanceFee"
@@ -370,11 +365,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={true}
           visible={false}
           allowHeaderFiltering={false}
-          calculateCellValue={data => {
-            const fee = data.beefyPerformanceFee ?? 0;
-            return fee * 100;
-          }}
-          customizeText={toPercentageField}
         />
         <Column
           dataField="lpFee"
@@ -384,11 +374,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={true}
           visible={false}
           allowHeaderFiltering={false}
-          calculateCellValue={data => {
-            const fee = data.lpFee ?? 0;
-            return fee * 100;
-          }}
-          customizeText={toPercentageField}
         />
         <Column
           dataField="tradingApr"
@@ -398,11 +383,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={true}
           visible={false}
           allowHeaderFiltering={false}
-          calculateCellValue={data => {
-            const apr = data.tradingApr ?? 0;
-            return apr * 100;
-          }}
-          customizeText={toPercentageField}
         />
         <Column
           dataField="strategyTypeId"

@@ -47,14 +47,38 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
   }, [vaultsData, isVaultsLoading]);
 
   const processedVaults = useMemo(() => {
-    return vaults.map(pool => ({
-      ...pool,
-            apy: pool.breakdowns && pool.breakdowns.totalApy != null && pool.breakdowns.totalApy !== "Infinity" ?
-        (typeof pool.breakdowns.totalApy === 'number' ? pool.breakdowns.totalApy.toFixed(2) : pool.breakdowns.totalApy) : null,
-      tvl: pool.tvls ? pool.tvls?.value : null,
-      platformId: pool.platform_id || null,
-      isRetired: pool.status === "eol",
-    }));
+    return vaults.map(pool => {
+      const anyPool = pool as any;
+
+      const totalApy =
+        pool.breakdowns &&
+        pool.breakdowns.totalApy != null &&
+        pool.breakdowns.totalApy !== "Infinity"
+          ? pool.breakdowns.totalApy
+          : null;
+
+      return {
+        ...pool,
+        apy:
+          typeof totalApy === "number"
+            ? Number(totalApy.toFixed(2))
+            : totalApy,
+        tvl: pool.tvls ? pool.tvls?.value : null,
+        platformId: pool.platform_id || null,
+        isRetired: pool.status === "eol",
+        vaultApy:
+          anyPool.vault_apy ?? anyPool.breakdowns?.vaultApy ?? null,
+        beefyPerformanceFee:
+          anyPool.beefy_performance_fee ??
+          anyPool.breakdowns?.beefyPerformanceFee ??
+          null,
+        lpFee: anyPool.lp_fee ?? anyPool.breakdowns?.lpFee ?? null,
+        tradingApr:
+          anyPool.trading_apr ?? anyPool.breakdowns?.tradingApr ?? null,
+        strategyTypeId: anyPool.strategy_type_id ?? null,
+        earnedToken: anyPool.earned_token ?? null,
+      };
+    });
   }, [vaults]);
 
   const filteredTokensSource = useMemo(
