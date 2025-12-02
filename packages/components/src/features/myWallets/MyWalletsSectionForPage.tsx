@@ -194,6 +194,22 @@ export const MyWalletsSectionForPage = ({
       router.events.off("hashChangeStart", collapseOnRoute);
     };
   }, [router.events]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isExpanded]);
+
   const theme = useTheme();
   const isXL = useMediaQuery("(min-width:2000px)");
 
@@ -253,44 +269,58 @@ export const MyWalletsSectionForPage = ({
             {t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" })}
           </Button>
         </Box>
-        <Box
-          component="button"
-          onClick={() => setIsExpanded(!isExpanded)}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'rgba(25, 118, 210, 0.2)',
-            gap: 0.3,
-            textDecoration: 'none',
-            color: '#219a83',
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            padding: '2px 6px',
-            border: '1px solid #219a83',
-            borderRadius: '4px',
-            transition: 'all 0.2s ease-in-out',
-            cursor: 'pointer',
-            background: 'none',
-            fontFamily: 'inherit',
-            '&:hover': {
-              backgroundColor: '#219a83',
-              color: "white",
-            },
-          }}
-        >
-          <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
-          <Typography
-            variant="body2"
-            component="span"
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+          {isExpandedView && (
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: '0.7rem',
+                color: theme.palette.text.secondary,
+                fontStyle: 'italic',
+              }}
+            >
+              Click or press "Esc" to Collapse View
+            </Typography>
+          )}
+          <Box
+            component="button"
+            onClick={() => setIsExpanded(!isExpanded)}
             sx={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: 'rgba(25, 118, 210, 0.2)',
+              gap: 0.3,
+              textDecoration: 'none',
+              color: '#219a83',
               fontSize: '0.75rem',
-              lineHeight: 1.2,
+              fontWeight: 500,
+              padding: '2px 6px',
+              border: '1px solid #219a83',
+              borderRadius: '4px',
+              transition: 'all 0.2s ease-in-out',
+              cursor: 'pointer',
+              background: 'none',
+              fontFamily: 'inherit',
+              '&:hover': {
+                backgroundColor: '#219a83',
+                color: "white",
+              },
             }}
           >
-            {isExpanded
-              ? t("CollapseView", { ns: "MyWalletsPage", defaultValue: "Collapse View" })
-              : t("ExpandView", { ns: "MyWalletsPage", defaultValue: "Expand View" })}
-          </Typography>
+            <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{
+                fontSize: '0.75rem',
+                lineHeight: 1.2,
+              }}
+            >
+              {isExpanded
+                ? t("CollapseView", { ns: "MyWalletsPage", defaultValue: "Collapse View" })
+                : t("ExpandView", { ns: "MyWalletsPage", defaultValue: "Expand View" })}
+            </Typography>
+          </Box>
         </Box>
       </Box>
 
