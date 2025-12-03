@@ -109,11 +109,23 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   
   useEffect(() => {
     const hasExternalFilterChanged = externalFilter !== prevExternalFilterRef.current;
-    const hasNoMergedFilter = !currentFilter || !Array.isArray(currentFilter) || currentFilter.length === 0;
     
-    if (hasExternalFilterChanged && externalFilter !== undefined && hasNoMergedFilter) {
-      if (!currentFilter) {
-        setCurrentFilter(externalFilter);
+    if (hasExternalFilterChanged && externalFilter !== undefined) {
+      if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
+        if (hasCategoryFilter(externalFilter)) {
+          setCurrentFilter(externalFilter);
+        } else {
+          if (currentFilter && Array.isArray(currentFilter) && currentFilter.length > 0) {
+            const mergedFilter: any[] = [externalFilter, "and", currentFilter];
+            setCurrentFilter(mergedFilter);
+          } else {
+            setCurrentFilter(externalFilter);
+          }
+        }
+      } else {
+        if (currentFilter && Array.isArray(currentFilter) && hasCategoryFilter(currentFilter)) {
+          setCurrentFilter(null);
+        }
       }
     }
     

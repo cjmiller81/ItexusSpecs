@@ -397,7 +397,7 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
                 const hasTooltip = Boolean(tooltipText && !label.startsWith("All "));
                 const isPinned = pinnedTooltip === label;
                 const isHovered = hoveredTooltip === label;
-                const isActive = label === activeQuickFilter || isPinned;
+                const isActive = label === activeQuickFilter;
                 const showTooltip = hasTooltip && (isHovered || (isPinned && (hoveredTooltip === null || hoveredTooltip === label)));
 
                 return (
@@ -429,10 +429,16 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
                           [currentTab]: label,
                         };
                         setSelectedFilters(newFilters);
+                        
+                        if (pinnedTooltip !== label) {
+                          setPinnedTooltip(null);
+                        }
+                        
                         if (onFilterChange) {
                           const filter = buildFilterFromSelection(currentTab, label);
                           onFilterChange(filter);
                         }
+                        
                         if (hasTooltip) {
                           if (isPinned) {
                             setPinnedTooltip(null);
