@@ -121,7 +121,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
   const categoryToFilterItem = (item): { text: string; value: string } => {
     return {
       text: item.name,
-      value: item.category_id,
+      value: item.name,
     };
   };
 
@@ -150,6 +150,15 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
       if (filterValues) {
         let selectedValue = filterValues;
 
+        if (selectedFilterOperation === "anyof" && Array.isArray(selectedValue)) {
+          if (selectedValue.length === 0) return [];
+          if (selectedValue.length === 1) {
+            return [column.dataField, "contains", selectedValue[0]];
+          }
+          const conditions = selectedValue.map((value: string) => [column.dataField, "contains", value]);
+          return conditions.reduce((acc, curr) => acc ? [...acc, "or", curr] : [curr]);
+        }
+
         if (selectedValue && selectedFilterOperation === "=") {
           return [column.dataField, "contains", selectedValue];
         }
@@ -159,7 +168,11 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         }
 
         if (Array.isArray(selectedValue) && selectedValue.length > 0) {
-          return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+          if (selectedValue.length === 1) {
+            return [column.dataField, "contains", selectedValue[0]];
+          }
+          const conditions = selectedValue.map((value: string) => [column.dataField, "contains", value]);
+          return conditions.reduce((acc, curr) => acc ? [...acc, "or", curr] : [curr]);
         }
 
         return column.defaultCalculateFilterExpression.apply(this, arguments);
@@ -171,23 +184,61 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
     }
   }, []);
 
+  const transformFilterFromAnyof = useCallback((filter: any): any => {
+    if (!filter || !Array.isArray(filter)) {
+      return filter;
+    }
+
+    if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+      const [field, , values] = filter;
+      if (values.length === 0) return [];
+      if (values.length === 1) {
+        return [field, 'contains', values[0]];
+      }
+      const conditions = values.map((value: any) => [field, 'contains', value]);
+      const result: any[] = [];
+      conditions.forEach((condition, index) => {
+        if (index > 0) {
+          result.push('or');
+        }
+        result.push(condition);
+      });
+      return result;
+    }
+
+    if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
+      return filter.map((item: any) => {
+        if (Array.isArray(item)) {
+          return transformFilterFromAnyof(item);
+        }
+        return item;
+      });
+    }
+
+    return filter;
+  }, []);
+
   const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
-    const filterValue = filter as object[];
+    let transformedFilter = filter;
+    if (filter && Array.isArray(filter)) {
+      transformedFilter = transformFilterFromAnyof(filter);
+    }
+    
+    const filterValue = transformedFilter as object[];
+
     onCurrentFilterChange(filterValue);
     currentFilterRef.current = filterValue;
 
-    // Send new information to filter builder
-    filterRef.current?.onUpdateFilter(filter || []);
+    setCurrentFilter(filterValue);
+
+    filterRef.current?.onUpdateFilter(transformedFilter || []);
     
-    if (!filter) {
+    if (!transformedFilter) {
       datagrid.current?.instance.clearFilter();
       setCurrentFilter(null);
     }
     else {
-      datagrid.current?.instance.filter(filter);
-      if (isExternalFiltering) {
-        setCurrentFilter(filterValue);
-      }
+      datagrid.current?.instance.filter(transformedFilter);
     }
   }
 
@@ -241,7 +292,15 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
         filterValue={currentFilterRef.current || []}
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={(filter) => onApplyFilter(filter)}>
+        onFilterValueChange={(filter) => {
+          // Transform filter to convert "anyof" to "contains" with "or" before applying
+          if (filter && Array.isArray(filter)) {
+            const transformed = transformFilterFromAnyof(filter);
+            onApplyFilter(transformed);
+          } else {
+            onApplyFilter(filter);
+          }
+        }}>
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
