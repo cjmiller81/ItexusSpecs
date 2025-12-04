@@ -601,7 +601,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (filterBuilderRef.current?.instance && filterValue !== undefined && filterValue !== null) {
       const fbInstance = filterBuilderRef.current.instance;
       const currentFbValue = fbInstance.option('value');
-      
       if (!isDeepEqual(filterValue, currentFbValue)) {
         fbInstance.option('value', filterValue);
         fbInstance.repaint();
