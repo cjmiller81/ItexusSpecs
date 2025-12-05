@@ -1882,6 +1882,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                               const replaced = navigateAndReplace(filter, editingInfo.path, newCondition);
                                               return replaced;
                                             } catch (error) {
+                                              // Ignore error and continue to fallback logic
                                             }
                                           }
                                           
