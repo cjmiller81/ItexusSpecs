@@ -220,6 +220,40 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     return values;
   }, [activeFilter, extractCategoryValues]);
 
+  const transformFilterFromAnyof = useCallback((filter: any): any => {
+    if (!filter || !Array.isArray(filter)) {
+      return filter;
+    }
+
+    if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+      const [field, , values] = filter;
+      if (values.length === 0) return [];
+      if (values.length === 1) {
+        return [field, 'contains', values[0]];
+      }
+      const conditions = values.map((value: any) => [field, 'contains', value]);
+      const result: any[] = [];
+      conditions.forEach((condition, index) => {
+        if (index > 0) {
+          result.push('or');
+        }
+        result.push(condition);
+      });
+      return result;
+    }
+
+    if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
+      return filter.map((item: any) => {
+        if (Array.isArray(item)) {
+          return transformFilterFromAnyof(item);
+        }
+        return item;
+      });
+    }
+
+    return filter;
+  }, []);
+
   const calculateFilterExpression = useCallback(function (
       this: any,
       filterValues: any,
@@ -244,11 +278,18 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           }
   
           if (Array.isArray(selectedValue) && selectedValue.length > 0) {
-            // If externalFilter is active and this is not category column, use "anyof" operator
-            if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0 && column.dataField !== "category") {
-              return [column.dataField, "anyof", selectedValue];
+            if (selectedValue.length === 1) {
+              return [column.dataField, "contains", selectedValue[0]];
             }
-            return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+            const conditions = selectedValue.map((value: string) => [column.dataField, "contains", value]);
+            const result: any[] = [];
+            conditions.forEach((condition, index) => {
+              if (index > 0) {
+                result.push('or');
+              }
+              result.push(condition);
+            });
+            return result;
           }
   
           return column.defaultCalculateFilterExpression.apply(this, arguments);
@@ -258,11 +299,15 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         console.error("Error on calculateFilterExpression:", err);
         return null;
       }
-    }, [externalFilter]);
+    }, []);
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      const newFilter = filter as object[] | null;
+      let newFilter = filter as object[] | null;
+      
+      if (newFilter && Array.isArray(newFilter)) {
+        newFilter = transformFilterFromAnyof(newFilter);
+      }
       
       if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
         if (newFilter && Array.isArray(newFilter) && newFilter.length > 0) {
@@ -289,6 +334,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                   dataSource: categoryHeaderFilterDataSource,
                 },
               });
+              if (newFilter && Array.isArray(newFilter) && newFilter.length > 0) {
+                instance.option('filterValue', newFilter);
+              }
             }
           } catch (error) {
             console.error("[DefiPoolsTable] ❌ Could not restore category HeaderFilter dataSource:", error);
@@ -296,7 +344,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         }, 200);
       }
     },
-    [externalFilter, datagrid, categoryHeaderFilterDataSource, hasCategoryFilter],
+    [externalFilter, datagrid, categoryHeaderFilterDataSource, hasCategoryFilter, transformFilterFromAnyof],
   );
   
   const onContentReady = () => {
@@ -503,7 +551,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                   dispatch(fetchFilters({}));
                   onClearCategoryFilter?.();
                 }}
-                filterToAppply={currentFilter}
+                filterToAppply={currentFilter ? transformFilterFromAnyof(currentFilter) : currentFilter}
                 onApply={value => onApplyFilter(value)}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
