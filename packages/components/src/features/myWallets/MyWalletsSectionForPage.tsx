@@ -29,6 +29,7 @@ import { useFormik } from "formik";
 import { DexWalletsTable } from "./DexWalletTable";
 import { getDexWalletsColumns } from "./DexWalletsTableColumnsDefs";
 import { ExpandableRowDex } from "./TokensRowDex";
+import { TransactionHistory } from "./TransactionHistory";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -386,10 +387,8 @@ export const MyWalletsSectionForPage = ({
         )}
 
         {activeTab === "history" && (
-          <Box sx={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", p: 4 }}>
-            <Typography variant="body1" color="text.secondary">
-              {t("TransactionHistoryPlaceholder", { ns: "MyWalletsPage", defaultValue: "Transaction History coming soon..." })}
-            </Typography>
+          <Box sx={{ flex: 1, overflow: "auto" }}>
+            <TransactionHistory wallets={wallets} />
           </Box>
         )}
       </Box>
