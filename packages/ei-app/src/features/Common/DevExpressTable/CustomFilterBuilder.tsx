@@ -492,11 +492,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const allVaultNameOptionsRef = useRef<string[]>([]);
   const allVaultPlatformOptionsRef = useRef<string[]>([]);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const editingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const startTourRef = useRef<(() => void) | null>(null);
   const filterBuilderRef = useRef<any>(null);
+  
+  const editingConditionRef = useRef<{
+    field: string | null;
+    oldValue: any;
+    path: number[] | null;
+  } | null>(null);
+  const filterBeforeEditRef = useRef<any[] | null>(null);
+  const lastEditingValueRef = useRef<any>(null);
 
-  // Load pool categories once for liquidity-pool filter type
   useEffect(() => {
     if (isLiquidityPoolFilter && poolCategories.length === 0) {
       filtersApi.getPoolCategories()
@@ -504,7 +512,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           setPoolCategories(data);
         })
         .catch(error => {
-          console.error("Failed to load pool categories:", error);
         });
     }
   }, [isLiquidityPoolFilter]);
@@ -574,11 +581,51 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   }));
 
+  const transformFilterFromAnyof = useCallback((filter: any): any => {
+    if (!filter || !Array.isArray(filter)) {
+      return filter;
+    }
+
+    if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+      const [field, , values] = filter;
+      if (values.length === 0) return [];
+      if (values.length === 1) {
+        return [field, 'contains', values[0]];
+      }
+      const conditions = values.map((value: any) => [field, 'contains', value]);
+      const result: any[] = [];
+      conditions.forEach((condition, index) => {
+        if (index > 0) {
+          result.push('or');
+        }
+        result.push(condition);
+      });
+      return result;
+    }
+
+    if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
+      return filter.map((item: any) => {
+        if (Array.isArray(item)) {
+          return transformFilterFromAnyof(item);
+        }
+        return item;
+      });
+    }
+
+    return filter;
+  }, []);
+
   useEffect(() => {
-    if (filterToAppply && !Array.isArray(filterToAppply)) {
-      setFilterValue([filterToAppply]);
+    let processedFilter = filterToAppply;
+    
+    if (isLiquidityPoolFilter && processedFilter && Array.isArray(processedFilter)) {
+      processedFilter = transformFilterFromAnyof(processedFilter);
+    }
+    
+    if (processedFilter && !Array.isArray(processedFilter)) {
+      setFilterValue([processedFilter]);
     } else {
-      setFilterValue(filterToAppply);
+      setFilterValue(processedFilter);
     }
 
     const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
@@ -589,7 +636,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setSelectedSavedFilter(null);
       setFilterName("");
     }
-  }, [filterToAppply, sortedPredefinedFilters]);
+  }, [filterToAppply, sortedPredefinedFilters, isLiquidityPoolFilter, transformFilterFromAnyof]);
 
   useEffect(() => {
     if (filterBuilderOpen) {
@@ -601,7 +648,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (filterBuilderRef.current?.instance && filterValue !== undefined && filterValue !== null) {
       const fbInstance = filterBuilderRef.current.instance;
       const currentFbValue = fbInstance.option('value');
-      if (!isDeepEqual(filterValue, currentFbValue)) {
+      const valuesEqual = isDeepEqual(filterValue, currentFbValue);
+      
+      if (!valuesEqual) {
         fbInstance.option('value', filterValue);
         fbInstance.repaint();
       }
@@ -675,12 +724,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleFilterBuilderOpen = (status: boolean) => {
-    if (status && isLiquidityPoolFilter) {
-      onDisableFilter();
-      setFilterValue(undefined);
-      setSelectedSavedFilter(null);
-      setFilterName("");
-    }
     setFilterBuilderOpen(status);
     if (status) {
       setShowGuidanceBanner(true);
@@ -1401,12 +1444,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           }}
           color={"success"}
           onClick={() => {
-            if (isLiquidityPoolFilter) {
-              onDisableFilter();
-              setFilterValue(undefined);
-              setSelectedSavedFilter(null);
-              setFilterName("");
-            }
             setFilterBuilderOpen(true);
           }}
           startIcon={<TuneIcon />}>
@@ -1490,16 +1527,80 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         onEditorPreparing={(e: any) => {
                           const isSymbolField = e.dataField === "sym";
                           const isPoolSymbolField = e.dataField === "symbol";
-                        const isPoolProjectField = e.dataField === "project";
-                        const isVaultNameField = isVaultsFilter && e.dataField === "name";
-                        const isVaultPlatformField = isVaultsFilter && e.dataField === "platformId";
-                        const isSymbolLikeField = e.dataField === "sym" || e.dataField === "symbol" || e.dataField === "project" || isVaultNameField || isVaultPlatformField;
+                          const isPoolProjectField = e.dataField === "project";
+                          const isVaultNameField = isVaultsFilter && e.dataField === "name";
+                          const isVaultPlatformField = isVaultsFilter && e.dataField === "platformId";
                           const isChainsField = e.dataField === "chainsFormatted" || e.dataField === "chain";
                           const isCategoriesField = e.dataField === "categoriesFormatted" || e.dataField === "category";
                           const isExchangesField = e.dataField === "exchangesFormatted";
-                        const isLookupField = isSymbolField || isPoolSymbolField || isPoolProjectField || isVaultNameField || isVaultPlatformField || isChainsField || isCategoriesField || isExchangesField;
+                          const isLookupField = isSymbolField || isPoolSymbolField || isPoolProjectField || isVaultNameField || isVaultPlatformField || isChainsField || isCategoriesField || isExchangesField;
                           
                           if (e.editorName === "dxSelectBox" && isLookupField) {
+                            const fbInstance = filterBuilderRef.current?.instance;
+                            const currentFilterValue = fbInstance ? fbInstance.option('value') : null;
+                            
+                            if (e.value !== null && e.value !== undefined && currentFilterValue) {
+                              const findConditionPath = (filter: any, targetField: string, targetValue: any, path: number[] = [], visitedIndices: Set<number> = new Set()): number[] | null => {
+                                if (!Array.isArray(filter)) return null;
+                                
+                                for (let i = 0; i < filter.length; i++) {
+                                  if (visitedIndices.has(i)) continue;
+                                  
+                                  const item = filter[i];
+                                  if (Array.isArray(item) && item.length === 3 && item[0] === targetField && item[2] === targetValue) {
+                                    const fullPath = [...path, i];
+                                    return fullPath;
+                                  }
+                                }
+                                
+                                for (let i = 0; i < filter.length; i++) {
+                                  if (visitedIndices.has(i)) continue;
+                                  
+                                  const item = filter[i];
+                                  if (Array.isArray(item) && !(item.length === 3 && typeof item[0] === 'string')) {
+                                    const found = findConditionPath(item, targetField, targetValue, [...path, i], visitedIndices);
+                                    if (found) return found;
+                                  }
+                                }
+                                return null;
+                              };
+                              
+                              const getAllConditionsWithField = (filter: any, field: string): Array<{ condition: any, index: number, path: number[] }> => {
+                                const results: Array<{ condition: any, index: number, path: number[] }> = [];
+                                
+                                const traverse = (f: any, path: number[] = []) => {
+                                  if (!Array.isArray(f)) return;
+                                  
+                                  for (let i = 0; i < f.length; i++) {
+                                    const item = f[i];
+                                    if (Array.isArray(item) && item.length === 3 && item[0] === field) {
+                                      results.push({ condition: item, index: i, path: [...path, i] });
+                                    } else if (Array.isArray(item) && !(item.length === 3 && typeof item[0] === 'string')) {
+                                      traverse(item, [...path, i]);
+                                    }
+                                  }
+                                };
+                                
+                                traverse(filter);
+                                return results;
+                              };
+                              
+                              const allConditions = getAllConditionsWithField(currentFilterValue, e.dataField);
+                              
+                              const matchingCondition = allConditions.find(c => c.condition[2] === e.value);
+                              const conditionPath = matchingCondition ? matchingCondition.path : findConditionPath(currentFilterValue, e.dataField, e.value);
+                              
+                              editingConditionRef.current = {
+                                field: e.dataField,
+                                oldValue: e.value,
+                                path: conditionPath,
+                              };
+                              filterBeforeEditRef.current = currentFilterValue ? JSON.parse(JSON.stringify(currentFilterValue)) : null;
+                            } else {
+                              editingConditionRef.current = null;
+                              filterBeforeEditRef.current = null;
+                            }
+                            
                             const originalOptions = e.editorOptions || {};
                             
                             let currentDataSource = originalOptions.dataSource;
@@ -1593,6 +1694,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 }
                               },
                               onClosed: (args: any) => {
+                                if (editingTimeoutRef.current) {
+                                  clearTimeout(editingTimeoutRef.current);
+                                  editingTimeoutRef.current = null;
+                                }
+                                
                                 const component = args.component;
                                 let currentValue = component.option('value');
                                 const currentText = component.option('text');
@@ -1618,13 +1724,31 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 }
                                 const oldValue = e.value;
                                 
-                                if (currentValue && currentValue !== oldValue) {
+                                const editingInfo = editingConditionRef.current;
+                                const valuesDifferent = currentValue && currentValue !== oldValue;
+                                const hasEditingInfo = editingInfo && editingInfo.field === e.dataField && currentValue;
+                                const shouldProcess = valuesDifferent || hasEditingInfo;
+                                
+                                if (shouldProcess) {
                                   setTimeout(() => {
                                     if (filterBuilderRef.current?.instance) {
                                       const fbInstance = filterBuilderRef.current.instance;
                                       let currentFilter = fbInstance.option('value') || [];
                                       
                                       const newCondition = [e.dataField, e.filterOperation || 'contains', currentValue];
+                                      
+                                      const filterBeforeEdit = filterBeforeEditRef.current;
+                                      const isEditing = editingInfo && 
+                                                        filterBeforeEdit &&
+                                                        editingInfo.field === e.dataField && 
+                                                        editingInfo.oldValue !== null && 
+                                                        editingInfo.oldValue !== undefined &&
+                                                        editingInfo.path !== null &&
+                                                        Array.isArray(editingInfo.path) &&
+                                                        editingInfo.path.length > 0 &&
+                                                        oldValue !== null &&
+                                                        oldValue !== undefined &&
+                                                        editingInfo.oldValue === oldValue;
                                       
                                       const getCurrentOperator = (filter: any): string => {
                                         if (!Array.isArray(filter)) return 'and';
@@ -1662,9 +1786,113 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                         return isNot ? ['!', result] : result;
                                       };
                                       
+                                      const navigateAndReplace = (filter: any, path: number[], newCondition: any): any => {
+                                        if (path.length === 0) return newCondition;
+                                        if (!Array.isArray(filter)) return filter;
+                                        
+                                        const result = JSON.parse(JSON.stringify(filter));
+                                        
+                                        if (path.length === 1) {
+                                          const idx = path[0];
+                                          
+                                          if (idx < result.length) {
+                                            if (Array.isArray(result[idx]) && result[idx].length === 3) {
+                                              result[idx] = newCondition;
+                                              return result;
+                                            } else {
+                                              return filter;
+                                            }
+                                          } else {
+                                            return filter;
+                                          }
+                                        }
+                                        
+                                        let current = result;
+                                        for (let i = 0; i < path.length - 1; i++) {
+                                          const idx = path[i];
+                                          if (idx < current.length && Array.isArray(current[idx])) {
+                                            current[idx] = [...current[idx]];
+                                            current = current[idx];
+                                          } else {
+                                            return filter;
+                                          }
+                                        }
+                                        
+                                        const finalIdx = path[path.length - 1];
+                                        if (finalIdx < current.length) {
+                                          current[finalIdx] = newCondition;
+                                        } else {
+                                          return filter;
+                                        }
+                                        
+                                        return result;
+                                      };
+                                      
+                                      // Helper function to find condition by field and old value
+                                      // Returns ALL matching conditions to help identify the correct one
+                                      const findAllConditionsByValue = (filter: any, field: string, oldValue: any, path: number[] = []): Array<{ condition: any, path: number[] }> => {
+                                        const results: Array<{ condition: any, path: number[] }> = [];
+                                        
+                                        if (!Array.isArray(filter)) return results;
+                                        
+                                        for (let i = 0; i < filter.length; i++) {
+                                          const item = filter[i];
+                                          if (Array.isArray(item) && item.length === 3 && item[0] === field && item[2] === oldValue) {
+                                            results.push({ condition: item, path: [...path, i] });
+                                          }
+                                          if (Array.isArray(item) && !(item.length === 3 && typeof item[0] === 'string')) {
+                                            const found = findAllConditionsByValue(item, field, oldValue, [...path, i]);
+                                            results.push(...found);
+                                          }
+                                        }
+                                        return results;
+                                      };
+                                      
+                                      const findConditionByValue = (filter: any, field: string, oldValue: any, path: number[] = []): { condition: any, path: number[] } | null => {
+                                        const allMatches = findAllConditionsByValue(filter, field, oldValue, path);
+                                        
+                                        // If we have a saved path, try to match it
+                                        if (editingInfo && editingInfo.path && allMatches.length > 0) {
+                                          const pathMatch = allMatches.find(m => JSON.stringify(m.path) === JSON.stringify(editingInfo.path));
+                                          if (pathMatch) {
+                                            return pathMatch;
+                                          }
+                                        }
+                                        
+                                        // Return first match if any
+                                        return allMatches.length > 0 ? allMatches[0] : null;
+                                      };
+                                      
                                       const replaceOrAddCondition = (filter: any): any => {
                                         if (!Array.isArray(filter) || filter.length === 0) {
                                           return newCondition;
+                                        }
+
+                                        // If editing, try to replace the specific condition
+                                        if (isEditing && editingInfo && editingInfo.path) {
+                                          const pathIsValid = editingInfo.path.length === 1 && 
+                                                             editingInfo.path[0] < filter.length &&
+                                                             Array.isArray(filter[editingInfo.path[0]]) &&
+                                                             filter[editingInfo.path[0]].length === 3 &&
+                                                             filter[editingInfo.path[0]][0] === editingInfo.field &&
+                                                             filter[editingInfo.path[0]][2] === editingInfo.oldValue;
+                                          
+                                          if (pathIsValid) {
+                                            try {
+                                              const replaced = navigateAndReplace(filter, editingInfo.path, newCondition);
+                                              return replaced;
+                                            } catch (error) {
+                                              // Ignore error and continue to fallback logic
+                                            }
+                                          }
+                                          
+                                          if (editingInfo.field !== null) {
+                                            const found = findConditionByValue(filter, editingInfo.field, editingInfo.oldValue);
+                                            if (found) {
+                                              const replaced = navigateAndReplace(filter, found.path, newCondition);
+                                              return replaced;
+                                            }
+                                          }
                                         }
 
                                         if (typeof filter[0] === 'string') {
@@ -1674,25 +1902,37 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                           return [filter, 'and', newCondition];
                                         }
 
-                                        const result = [...filter];
-                                        let replaced = false;
-
-                                        for (let i = 0; i < result.length; i++) {
-                                          const item = result[i];
+                                        const hasOrOperator = filter.includes('or');
+                                        const hasAndOperator = filter.includes('and');
+                                        
+                                        let foundSameField = false;
+                                        let firstSameFieldIndex = -1;
+                                        
+                                        for (let i = 0; i < filter.length; i++) {
+                                          const item = filter[i];
                                           if (Array.isArray(item) && typeof item[0] === 'string') {
                                             if (item[0] === e.dataField) {
-                                              result[i] = newCondition;
-                                            replaced = true;
-                                            break;
+                                              foundSameField = true;
+                                              if (firstSameFieldIndex === -1) {
+                                                firstSameFieldIndex = i;
+                                              }
+                                            }
                                           }
                                         }
-                                        }
-
-                                        if (replaced) {
+                                        
+                                        if (foundSameField) {
+                                          const result = [...filter];
+                                          result.splice(firstSameFieldIndex + 1, 0, 'or', newCondition);
                                           return result;
                                         }
-
-                                        return [...filter, 'and', newCondition];
+                                        
+                                        if (hasOrOperator && !hasAndOperator) {
+                                          return [filter, 'and', newCondition];
+                                        } else {
+                                          const result = [...filter];
+                                          result.push('and', newCondition);
+                                          return result;
+                                        }
                                       };
                                       
                                       let updatedFilter = replaceOrAddCondition(currentFilter);
@@ -1703,7 +1943,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       }
                                       
                                       fbInstance.option('value', updatedFilter);
-                                      const fbValueAfter = fbInstance.option('value');
+                                      
+                                      setFilterValue(updatedFilter);
+                                      
+                                      editingConditionRef.current = null;
+                                      filterBeforeEditRef.current = null;
+                                      
                                       if (typeof e.setValue === 'function') {
                                         e.setValue(currentValue);
                                       }
@@ -1743,7 +1988,100 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                               onValueChanged: (args: any) => {
                                       const fbInstance = filterBuilderRef.current?.instance;
                                       const fbValue = fbInstance?.option?.("value");
-                                      if (!args?.value || !args.event) {
+                                      
+                                      if (!args?.value) {
+                                        if (args.component?.option) {
+                                          args.component.option("text", args.value ?? args.component.option("text"));
+                                          args.component.option("opened", true);
+                                        }
+                                        return;
+                                      }
+                                      
+                                      if (!args.event) {
+                                        if (editingTimeoutRef.current) {
+                                          clearTimeout(editingTimeoutRef.current);
+                                        }
+                                        
+                                        lastEditingValueRef.current = {
+                                          value: args.value,
+                                          dataField: e.dataField,
+                                          filterOperation: e.filterOperation,
+                                        };
+                                        
+                                        editingTimeoutRef.current = setTimeout(() => {
+                                          if (lastEditingValueRef.current && editingConditionRef.current) {
+                                            const stored = lastEditingValueRef.current;
+                                            
+                                            if (filterBuilderRef.current?.instance) {
+                                              const fbInstance = filterBuilderRef.current.instance;
+                                              let currentFilter = fbInstance.option('value') || [];
+                                              const newCondition = [stored.dataField, stored.filterOperation || 'contains', stored.value];
+                                              
+                                              const editingInfo = editingConditionRef.current;
+                                              const isEditing = editingInfo && 
+                                                                editingInfo.field === stored.dataField && 
+                                                                editingInfo.oldValue !== null && 
+                                                                editingInfo.oldValue !== undefined &&
+                                                                editingInfo.path !== null &&
+                                                                Array.isArray(editingInfo.path) &&
+                                                                editingInfo.path.length > 0;
+                                              
+                                              if (isEditing && editingInfo.path) {
+                                                // Use the same replacement logic as in onClosed
+                                                const navigateAndReplace = (filter: any, path: number[], newCondition: any): any => {
+                                                  if (path.length === 0) return newCondition;
+                                                  if (!Array.isArray(filter)) return filter;
+                                                  
+                                                  const result = JSON.parse(JSON.stringify(filter));
+                                                  
+                                                  if (path.length === 1) {
+                                                    const idx = path[0];
+                                                    if (idx < result.length && Array.isArray(result[idx]) && result[idx].length === 3) {
+                                                      result[idx] = newCondition;
+                                                      return result;
+                                                    }
+                                                  }
+                                                  
+                                                  let current = result;
+                                                  for (let i = 0; i < path.length - 1; i++) {
+                                                    const idx = path[i];
+                                                    if (idx < current.length && Array.isArray(current[idx])) {
+                                                      current[idx] = [...current[idx]];
+                                                      current = current[idx];
+                                                    } else {
+                                                      return filter;
+                                                    }
+                                                  }
+                                                  
+                                                  const finalIdx = path[path.length - 1];
+                                                  if (finalIdx < current.length) {
+                                                    current[finalIdx] = newCondition;
+                                                  }
+                                                  
+                                                  return result;
+                                                };
+                                                
+                                                const pathIsValid = editingInfo.path.length === 1 && 
+                                                                   editingInfo.path[0] < currentFilter.length &&
+                                                                   Array.isArray(currentFilter[editingInfo.path[0]]) &&
+                                                                   currentFilter[editingInfo.path[0]].length === 3 &&
+                                                                   currentFilter[editingInfo.path[0]][0] === editingInfo.field;
+                                                
+                                                if (pathIsValid) {
+                                                  const replaced = navigateAndReplace(currentFilter, editingInfo.path, newCondition);
+                                                  fbInstance.option('value', replaced);
+                                                  setFilterValue(replaced);
+                                                  
+                                                  // Clear editing info after update
+                                                  editingConditionRef.current = null;
+                                                  filterBeforeEditRef.current = null;
+                                                  lastEditingValueRef.current = null;
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }, 500);
+                                        
                                         if (args.component?.option) {
                                           args.component.option("text", args.value ?? args.component.option("text"));
                                           args.component.option("opened", true);
@@ -1804,38 +2142,191 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                     return isNot ? ["!", result] : result;
                                       };
                                       
+                                      // Check if we're editing an existing condition (same logic as in onClosed)
+                                      const editingInfo = editingConditionRef.current;
+                                      const filterBeforeEdit = filterBeforeEditRef.current;
+                                      const isEditing = editingInfo && 
+                                                        filterBeforeEdit &&
+                                                        editingInfo.field === e.dataField && 
+                                                        editingInfo.oldValue !== null && 
+                                                        editingInfo.oldValue !== undefined &&
+                                                        editingInfo.path !== null &&
+                                                        Array.isArray(editingInfo.path) &&
+                                                        editingInfo.path.length > 0 &&
+                                                        oldValue !== null &&
+                                                        oldValue !== undefined &&
+                                                        editingInfo.oldValue === oldValue;
+                                      
+                                      const navigateAndReplace = (filter: any, path: number[], newCondition: any): any => {
+                                        if (path.length === 0) return newCondition;
+                                        if (!Array.isArray(filter)) return filter;
+                                        
+                                        const result = JSON.parse(JSON.stringify(filter));
+                                        
+                                        if (path.length === 1) {
+                                          const idx = path[0];
+                                          if (idx < result.length && Array.isArray(result[idx]) && result[idx].length === 3) {
+                                            result[idx] = newCondition;
+                                            return result;
+                                          }
+                                        }
+                                        
+                                        let current = result;
+                                        for (let i = 0; i < path.length - 1; i++) {
+                                          const idx = path[i];
+                                          if (idx < current.length && Array.isArray(current[idx])) {
+                                            current[idx] = [...current[idx]];
+                                            current = current[idx];
+                                          } else {
+                                            return filter;
+                                          }
+                                        }
+                                        
+                                        const finalIdx = path[path.length - 1];
+                                        if (finalIdx < current.length) {
+                                          current[finalIdx] = newCondition;
+                                        }
+                                        
+                                        return result;
+                                      };
+                                      
+                                      const findConditionByValue = (filter: any, field: string, oldValue: any): { condition: any, path: number[] } | null => {
+                                        if (!Array.isArray(filter)) return null;
+                                        
+                                        for (let i = 0; i < filter.length; i++) {
+                                          const item = filter[i];
+                                          if (Array.isArray(item) && item.length === 3 && item[0] === field && item[2] === oldValue) {
+                                            return { condition: item, path: [i] };
+                                          }
+                                        }
+                                        return null;
+                                      };
+                                      
                                       const replaceOrAddCondition = (filter: any): any => {
                                         if (!Array.isArray(filter) || filter.length === 0) {
                                           return newCondition;
                                         }
 
-                                        // одиночное условие
-                                        if (typeof filter[0] === 'string') {
-                                          if (filter[0] === e.dataField) {
-                                            return newCondition;
-                                          }
-                                          return [filter, 'and', newCondition];
-                                        }
-                                        
-                                        const result = [...filter];
-                                        let replaced = false;
-                                        
-                                        for (let i = 0; i < result.length; i++) {
-                                          const item = result[i];
-                                          if (Array.isArray(item) && typeof item[0] === 'string') {
-                                            if (item[0] === e.dataField) {
-                                              result[i] = newCondition;
-                                            replaced = true;
-                                            break;
+                                        if (isEditing === true && editingInfo && editingInfo.path) {
+                                          const pathIsValid = editingInfo.path.length === 1 && 
+                                                             editingInfo.path[0] < filter.length &&
+                                                             Array.isArray(filter[editingInfo.path[0]]) &&
+                                                             filter[editingInfo.path[0]].length === 3 &&
+                                                             filter[editingInfo.path[0]][0] === editingInfo.field &&
+                                                             filter[editingInfo.path[0]][2] === editingInfo.oldValue;
+                                          
+                                          if (pathIsValid) {
+                                            const replaced = navigateAndReplace(filter, editingInfo.path, newCondition);
+                                            return replaced;
+                                          } else {
+                                            if (editingInfo.field !== null) {
+                                              const found = findConditionByValue(filter, editingInfo.field, editingInfo.oldValue);
+                                              if (found) {
+                                                const replaced = navigateAndReplace(filter, found.path, newCondition);
+                                                return replaced;
+                                              }
                                             }
                                           }
                                         }
+
+                                        if (Array.isArray(filter) && filter.length === 3 && typeof filter[0] === 'string' && typeof filter[1] === 'string') {
+                                          if (filter[0] === e.dataField) {
+                                            return [filter, 'or', newCondition];
+                                          } else {
+                                            return [filter, 'and', newCondition];
+                                          }
+                                        }
                                         
-                                        if (replaced) {
+                                        const hasOrOperator = filter.includes('or');
+                                        const hasAndOperator = filter.includes('and');
+                                        
+                                        let foundSameField = false;
+                                        let foundConditionIndex = -1;
+                                        let foundConditionPath: number[] = [];
+                                        
+                                        const findConditionWithField = (f: any, path: number[] = []): { found: boolean, index: number, path: number[] } => {
+                                          if (!Array.isArray(f)) return { found: false, index: -1, path: [] };
+                                          
+                                          for (let i = 0; i < f.length; i++) {
+                                            const item = f[i];
+                                            if (item === 'and' || item === 'or') continue;
+                                            
+                                            if (Array.isArray(item) && item.length !== 3 && typeof item !== 'string') {
+                                              const nested = findConditionWithField(item, [...path, i]);
+                                              if (nested.found) {
+                                                return nested;
+                                              }
+                                            }
+                                          }
+                                          
+                                          for (let i = 0; i < f.length; i++) {
+                                            const item = f[i];
+                                            if (item === 'and' || item === 'or') continue;
+                                            
+                                            if (Array.isArray(item) && item.length === 3 && typeof item[0] === 'string' && item[0] === e.dataField) {
+                                              return { found: true, index: i, path: [...path, i] };
+                                            }
+                                          }
+                                          
+                                          return { found: false, index: -1, path: [] };
+                                        };
+                                        
+                                        const fieldSearch = findConditionWithField(filter);
+                                        foundSameField = fieldSearch.found;
+                                        foundConditionIndex = fieldSearch.index;
+                                        foundConditionPath = fieldSearch.path;
+                                        
+                                        if (foundSameField && foundConditionIndex >= 0) {
+                                          const result = JSON.parse(JSON.stringify(filter));
+
+                                          let current = result;
+                                          for (let i = 0; i < foundConditionPath.length - 1; i++) {
+                                            current = current[foundConditionPath[i]];
+                                          }
+                                          const conditionIndex = foundConditionPath[foundConditionPath.length - 1];
+                                          const condition = current[conditionIndex];
+                                          
+                                          const parentArray = current;
+                                          let isInOrGroup = false;
+                                          
+                                          for (let i = 0; i < parentArray.length; i++) {
+                                            if (parentArray[i] === 'or') {
+                                              isInOrGroup = true;
+                                              break;
+                                            }
+                                          }
+                                          
+                                          if (isInOrGroup) {
+                                            parentArray.push('or', newCondition);
+                                          } else {
+                                            current[conditionIndex] = [condition, 'or', newCondition];
+                                          }
+                                          
                                           return result;
                                         }
                                         
-                                        return [...filter, 'and', newCondition];
+                                        if (hasOrOperator && !hasAndOperator) {
+                                          return [filter, 'and', newCondition];
+                                        } else if (hasAndOperator) {
+                                          const result = JSON.parse(JSON.stringify(filter));
+                                          const lastElement = result[result.length - 1];
+                                          
+                                          if (Array.isArray(lastElement) && lastElement.length === 3 && typeof lastElement[0] === 'string' && lastElement[0] === e.dataField) {
+                                            result[result.length - 1] = [lastElement, 'or', newCondition];
+                                            return result;
+                                          } else if (Array.isArray(lastElement) && lastElement.length === 3 && typeof lastElement[0] === 'string') {
+                                            result[result.length - 1] = [lastElement];
+                                            result.push('and', newCondition);
+                                          } else {
+                                            result.push('and', newCondition);
+                                          }
+                                          
+                                          return result;
+                                        } else {
+                                          const result = [...filter];
+                                          result.push('and', newCondition);
+                                          return result;
+                                        }
                                       };
                                       
                                   let updatedFilter = replaceOrAddCondition(currentFilter);
@@ -1991,30 +2482,121 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                     
                                     if (typeof filter[0] === 'string') {
                                       if (filter[0] === e.dataField) {
-                                      return newCondition;
+                                        return newCondition;
                                       }
                                       return [filter, 'and', newCondition];
                                     }
                                     
-                                    const result = [...filter];
-                                    let replaced = false;
-
-                                    for (let i = 0; i < result.length; i++) {
-                                      const item = result[i];
-                                      if (Array.isArray(item) && typeof item[0] === 'string') {
-                                        if (item[0] === e.dataField) {
-                                          result[i] = newCondition;
-                                          replaced = true;
-                                          break;
+                                    let foundSameField = false;
+                                    let targetGroup: any = null;
+                                    let targetGroupIndex = -1;
+                                    
+                                    const findFieldGroup = (f: any, parentIndex: number = -1, path: number[] = []): { found: boolean, group: any, groupIndex: number, path: number[] } => {
+                                      if (!Array.isArray(f)) return { found: false, group: null, groupIndex: -1, path: [] };
+                                      
+                                      for (let i = 0; i < f.length; i++) {
+                                        const item = f[i];
+                                        if (item === 'and' || item === 'or') continue;
+                                        
+                                        if (Array.isArray(item) && item.length !== 3 && typeof item !== 'string') {
+                                          const nested = findFieldGroup(item, i, [...path, i]);
+                                          if (nested.found) {
+                                            return nested;
+                                          }
                                         }
+                                      }
+                                      
+                                      let hasSameField = false;
+                                      let hasOtherFields = false;
+                                      let conditionCount = 0;
+                                      
+                                      for (let i = 0; i < f.length; i++) {
+                                        const item = f[i];
+                                        if (item === 'and' || item === 'or') continue;
+                                        
+                                        if (Array.isArray(item) && item.length === 3 && typeof item[0] === 'string') {
+                                          conditionCount++;
+                                          if (item[0] === e.dataField) {
+                                            hasSameField = true;
+                                          } else {
+                                            hasOtherFields = true;
+                                          }
+                                        }
+                                      }
+                                      
+                                      if (hasSameField && hasOtherFields) {
+                                        return { found: false, group: null, groupIndex: -1, path: [] };
+                                      }
+                                      
+                                      if (hasSameField && !hasOtherFields && conditionCount > 0) {
+                                        return { found: true, group: f, groupIndex: parentIndex, path };
+                                      }
+                                      
+                                      return { found: false, group: null, groupIndex: -1, path: [] };
+                                    };
+                                    
+                                    const fieldSearch = findFieldGroup(filter);
+                                    foundSameField = fieldSearch.found;
+                                    targetGroup = fieldSearch.group;
+                                    targetGroupIndex = fieldSearch.groupIndex;
+                                    
+                                    if (foundSameField && targetGroup) {
+                                      const editingInfo = editingConditionRef.current;
+                                      const isEditing = editingInfo && 
+                                                        editingInfo.field === e.dataField && 
+                                                        editingInfo.oldValue !== null && 
+                                                        editingInfo.oldValue !== undefined;
+                                      
+                                      if (isEditing && editingInfo.oldValue) {
+                                        const result = JSON.parse(JSON.stringify(filter));
+                                        if (targetGroupIndex >= 0) {
+                                          const updatedGroup = targetGroup.map((item: any) => {
+                                            if (Array.isArray(item) && item.length === 3 && item[0] === e.dataField && item[2] === editingInfo.oldValue) {
+                                              return newCondition;
+                                            }
+                                            return item;
+                                          });
+                                          result[targetGroupIndex] = updatedGroup;
+                                        } else {
+                                          const updatedGroup = targetGroup.map((item: any) => {
+                                            if (Array.isArray(item) && item.length === 3 && item[0] === e.dataField && item[2] === editingInfo.oldValue) {
+                                              return newCondition;
+                                            }
+                                            return item;
+                                          });
+                                          return updatedGroup;
+                                        }
+                                        return result;
+                                      } else {
+                                        const result = JSON.parse(JSON.stringify(filter));
+                                        
+                                        if (fieldSearch.path.length > 0) {
+                                          let current = result;
+                                          for (let i = 0; i < fieldSearch.path.length - 1; i++) {
+                                            current = current[fieldSearch.path[i]];
+                                          }
+                                          const finalIndex = fieldSearch.path[fieldSearch.path.length - 1];
+                                          current[finalIndex] = [...targetGroup, 'or', newCondition];
+                                        } else if (targetGroupIndex >= 0) {
+                                          result[targetGroupIndex] = [...targetGroup, 'or', newCondition];
+                                        } else {
+                                          result.push('or', newCondition);
+                                        }
+                                        
+                                        return result;
                                       }
                                     }
 
-                                    if (replaced) {
+                                    const hasOrOperator = filter.includes('or');
+                                    const hasAndOperator = filter.includes('and');
+                                    
+                                    if (hasOrOperator && !hasAndOperator) {
+                                      const result = [filter, 'and', newCondition];
                                       return result;
                                     }
 
-                                    return [...filter, 'and', newCondition];
+                                    const result = [...filter, 'and', newCondition];
+                                    return result;
                                   };
                                   
                                   const updatedFilter = replaceOrAddCondition(currentFilter);
