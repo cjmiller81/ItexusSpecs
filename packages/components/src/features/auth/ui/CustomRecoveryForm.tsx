@@ -1,4 +1,4 @@
-import { TextField, Button, Link, Box } from "@mui/material"
+import { TextField, Button, Link, Box, Alert } from "@mui/material"
 import { RecoveryFlow, UiNodeInputAttributes, UiNodeAnchorAttributes, UpdateRecoveryFlowBody } from "@ory/client"
 import { 
   isUiNodeInputAttributes, 
@@ -35,6 +35,7 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
       )
       return hasChanges ? initialValues : prev
     })
+    setIsLoading(false)
   }, [flow])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -53,10 +54,18 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
       formValues[key] = typeof value === 'string' ? value : value.toString()
     })
 
-    // Ensure method is set to "link" for recovery (or get from submit button)
+    let method = formValues.method
+    if (!method) {
+      if (flow.state === "sent_email") {
+        method = "code"
+      } else {
+        method = "code"
+      }
+    }
+
     const body: Record<string, string> = {
       ...formValues,
-      method: "link",
+      method: method,
     }
 
     // Type assertion needed because UpdateRecoveryFlowBody is a union type
@@ -91,6 +100,13 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
     return false
   })
 
+  const codeNode = flow.ui.nodes.find(node => {
+    if (isUiNodeInputAttributes(node.attributes)) {
+      return node.attributes.name === "code"
+    }
+    return false
+  })
+
   // Get submit button node
   const submitNode = flow.ui.nodes.find(node => {
     if (isUiNodeInputAttributes(node.attributes)) {
@@ -110,12 +126,19 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
   const emailAttributes = emailNode && isUiNodeInputAttributes(emailNode.attributes) 
     ? emailNode.attributes 
     : null
+  const codeAttributes = codeNode && isUiNodeInputAttributes(codeNode.attributes)
+    ? codeNode.attributes
+    : null
   const submitAttributes = submitNode && isUiNodeInputAttributes(submitNode.attributes)
     ? submitNode.attributes
     : null
   const loginAttributes = loginLink && isUiNodeAnchorAttributes(loginLink.attributes)
     ? loginLink.attributes
     : null
+
+  const isCodeStage = flow.state === "sent_email" || codeAttributes !== null
+  const showEmailField = !isCodeStage && emailAttributes !== null
+  const showCodeField = isCodeStage && codeAttributes !== null
 
   const logoUrl = process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL || "/ElanInsightsLight.png"
 
@@ -126,6 +149,8 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
         borderRadius: '1rem',
         padding: '48px',
         minWidth: '400px',
+        maxWidth: '400px',
+        width: '100%',
         borderWidth: '2px',
         borderColor: 'white',
         borderStyle: 'solid',
@@ -198,7 +223,28 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
           </p>
         </Box>
 
-        {emailAttributes && (
+        {flow.ui.messages && flow.ui.messages.length > 0 && (
+          <Box sx={{ marginBottom: '1.5rem' }}>
+            {flow.ui.messages.map((message) => (
+              <Alert 
+                key={message.id} 
+                severity={message.type === "error" ? "error" : "info"}
+                icon={false}
+                sx={{
+                  marginBottom: '0.5rem',
+                  backgroundColor: 'transparent',
+                  '& .MuiAlert-message': {
+                    color: message.type === "error" ? '#ff6b6b' : '#ffffff',
+                  },
+                }}
+              >
+                {message.text}
+              </Alert>
+            ))}
+          </Box>
+        )}
+
+        {showEmailField && emailAttributes && (
           <Box sx={{ marginBottom: '1.5rem' }}>
             <label
               htmlFor={emailAttributes.name}
@@ -246,7 +292,57 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
           </Box>
         )}
 
-        <input type="hidden" name="method" value="link" />
+        {showCodeField && codeAttributes && (
+          <Box sx={{ marginBottom: '1.5rem' }}>
+            <label
+              htmlFor={codeAttributes.name}
+              style={{
+                display: 'block',
+                color: '#ffffff',
+                marginBottom: '0.5rem',
+                fontSize: '0.975rem',
+                fontWeight: 500,
+              }}
+            >
+              Recovery Code *
+            </label>
+            <TextField
+              id={codeAttributes.name}
+              name={codeAttributes.name}
+              type={codeAttributes.type || "text"}
+              value={values[codeAttributes.name] || ""}
+              onChange={(e) => handleChange(codeAttributes.name, e.target.value)}
+              disabled={codeAttributes.disabled || isLoading}
+              required={codeAttributes.required}
+              fullWidth
+              autoFocus
+              placeholder="Enter the code from your email"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: values[codeAttributes.name] ? '#E3F2FD' : '#ffffff',
+                  borderRadius: '4px',
+                  '& fieldset': {
+                    borderColor: values[codeAttributes.name] ? '#4CAF50' : '#d0d0d0',
+                    borderWidth: values[codeAttributes.name] ? '2px' : '1px',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: values[codeAttributes.name] ? '#4CAF50' : '#d0d0d0',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: values[codeAttributes.name] ? '#4CAF50' : '#0D73C7',
+                    borderWidth: values[codeAttributes.name] ? '2px' : '2px',
+                  },
+                  '& input': {
+                    color: '#000000',
+                    padding: '0.75rem',
+                  },
+                },
+              }}
+            />
+          </Box>
+        )}
+
+        <input type="hidden" name="method" value="code" />
 
         <Button
           type="submit"
@@ -269,7 +365,7 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
             },
           }}
         >
-          { "Continue"}
+          {isCodeStage ? "Verify Code" : "Continue"}
         </Button>
 
         <Box sx={{ textAlign: 'center' }}>
