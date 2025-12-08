@@ -6,7 +6,7 @@ export const DexWalletsTable = styled(BasicTable, {
   shouldForwardProp: (prop) => prop !== '$hasExpandedRows' && prop !== '$minHeight',
 })<{ $hasExpandedRows?: boolean; $minHeight?: string }>(({ theme, $hasExpandedRows, $minHeight }) => ({
   width: "100%",
-  maxHeight: $hasExpandedRows ? ($minHeight || "80vh") : 150,
+  maxHeight: $hasExpandedRows ? ($minHeight || "80vh") : "auto",
   height: "auto",
   mt: 2,
   display: "grid",

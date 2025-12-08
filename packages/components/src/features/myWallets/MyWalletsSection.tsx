@@ -15,7 +15,7 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
@@ -202,9 +202,24 @@ export const MyWalletsSection = ({
   };
 
   const handleExpandClick = (id: GridRowId, expanded: boolean) => {
-    const newExpanded = expanded ? [...expandedRows, id as string] : expandedRows.filter(rowId => rowId !== id);
-    setExpandedRows(newExpanded);
+    // Only allow one wallet to be expanded at a time
+    if (expanded) {
+      setExpandedRows([id as string]);
+    } else {
+      setExpandedRows([]);
+    }
   };
+
+  // Reorder wallets so that expanded wallet is always last
+  const orderedWallets = React.useMemo(() => {
+    if (!wallets || expandedRows.length === 0) return wallets;
+    const expandedRowId = expandedRows[0];
+    const expandedWallet = wallets.find(w => w.address === expandedRowId);
+    if (!expandedWallet) return wallets;
+    
+    const otherWallets = wallets.filter(w => w.address !== expandedRowId);
+    return [...otherWallets, expandedWallet];
+  }, [wallets, expandedRows]);
 
   const handleSaveClick = (id: GridRowId) => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
@@ -308,7 +323,7 @@ export const MyWalletsSection = ({
               }}
               onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
               onSelectedChanged(
-              wallets!.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+              (orderedWallets || wallets || []).filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
             );
           }}
           onCellClick={onCellClick}
@@ -324,7 +339,7 @@ export const MyWalletsSection = ({
           onExpandClick: handleExpandClick,
           isXL: isXL
           })}
-          rows={wallets || []}
+          rows={orderedWallets || []}
           rowSelectionModel={selectedWalletsIds}
           checkboxSelection={true}
         />
