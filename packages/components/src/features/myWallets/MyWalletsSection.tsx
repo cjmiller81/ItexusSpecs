@@ -288,7 +288,7 @@ export const MyWalletsSection = ({
         <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
-      <Box sx={{ width: "100%", overflow: "auto" }}>
+      <Box sx={{ width: "100%", overflow: "hidden" }}>
         <Box sx={{ position: "relative", width: "99%", top: 18, overflowX: "clip" }}>
           {loading && (
             <CircularProgress

@@ -341,7 +341,7 @@ export const MyWalletsSectionForPage = ({
 
       <Box sx={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: 0 }}>
         {activeTab === "positions" && (
-          <Box sx={{ width: "100%", p: 2, flex: 1, overflow: "auto" }}>
+          <Box sx={{ width: "100%", p: 2, flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
             <Box sx={{ position: "relative", width: "99%", overflowX: "clip", mb: 1 }}>
               {loading && (
                 <CircularProgress
@@ -358,6 +358,8 @@ export const MyWalletsSectionForPage = ({
               $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
               sx={{
                 ...tableScrollSx,
+                flex: 1,
+                minHeight: 0,
               }}
               scrollbarSize={7}
               editMode="row"
