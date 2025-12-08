@@ -56,10 +56,10 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
       formValues[key] = typeof value === 'string' ? value : value.toString()
     })
 
-    // Ensure method is set to "password" (required by Ory)
+    const method = totpAttributes ? "totp" : "password"
     const body: Record<string, string> = {
       ...formValues,
-      method: "password",
+      method: method,
     }
 
     // Type assertion needed because UpdateLoginFlowBody is a union type
@@ -117,6 +117,13 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
     return false
   })
 
+  const totpNode = flow.ui.nodes.find(node => {
+    if (isUiNodeInputAttributes(node.attributes)) {
+      return node.attributes.name === "totp_code"
+    }
+    return false
+  })
+
   // Get submit button node
   const submitNode = flow.ui.nodes.find(node => {
     if (isUiNodeInputAttributes(node.attributes)) {
@@ -146,6 +153,9 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
     : null
   const passwordAttributes = passwordNode && isUiNodeInputAttributes(passwordNode.attributes)
     ? passwordNode.attributes
+    : null
+  const totpAttributes = totpNode && isUiNodeInputAttributes(totpNode.attributes)
+    ? totpNode.attributes
     : null
   const submitAttributes = submitNode && isUiNodeInputAttributes(submitNode.attributes)
     ? submitNode.attributes
@@ -354,26 +364,85 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
           </Box>
         )}
 
-        <Box sx={{ marginBottom: '1.5rem' }}>
-          <Link
-            href={recoveryAttributes?.href || "/ui/recovery"}
-            onClick={(e) => {
-              e.preventDefault()
-              const recoveryUrl = recoveryAttributes?.href || "/ui/recovery"
-              router.push(recoveryUrl)
-            }}
-            sx={{
-              color: '#0D73C7',
-              textDecoration: 'underline',
-              fontSize: '0.875rem',
-              cursor: 'pointer',
-            }}
-          >
-            Forgot password?
-          </Link>
-        </Box>
+        {!totpAttributes && (
+          <Box sx={{ marginBottom: '1.5rem' }}>
+            <Link
+              href={recoveryAttributes?.href || "/ui/recovery"}
+              onClick={(e) => {
+                e.preventDefault()
+                const recoveryUrl = recoveryAttributes?.href || "/ui/recovery"
+                router.push(recoveryUrl)
+              }}
+              sx={{
+                color: '#0D73C7',
+                textDecoration: 'underline',
+                fontSize: '0.875rem',
+                cursor: 'pointer',
+              }}
+            >
+              Forgot password?
+            </Link>
+          </Box>
+        )}
 
-        <input type="hidden" name="method" value="password" />
+        {totpAttributes && (
+          <Box sx={{ marginBottom: '1.5rem' }}>
+            <label
+              htmlFor={totpAttributes.name}
+              style={{
+                display: 'block',
+                color: '#ffffff',
+                marginBottom: '0.5rem',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+              }}
+            >
+              Authenticator Code *
+            </label>
+            <TextField
+              id={totpAttributes.name}
+              name={totpAttributes.name}
+              type={totpAttributes.type || "text"}
+              value={values[totpAttributes.name] || ""}
+              onChange={(e) => handleChange(totpAttributes.name, e.target.value)}
+              disabled={totpAttributes.disabled || isLoading}
+              required={totpAttributes.required}
+              fullWidth
+              autoComplete="one-time-code"
+              inputProps={{
+                inputMode: 'numeric',
+                pattern: '[0-9]*',
+                maxLength: 6,
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: values[totpAttributes.name] ? '#E3F2FD' : '#ffffff',
+                  borderRadius: '4px',
+                  '& fieldset': {
+                    borderColor: values[totpAttributes.name] ? '#4CAF50' : '#d0d0d0',
+                    borderWidth: values[totpAttributes.name] ? '2px' : '1px',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: values[totpAttributes.name] ? '#4CAF50' : '#d0d0d0',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: values[totpAttributes.name] ? '#4CAF50' : '#0D73C7',
+                    borderWidth: values[totpAttributes.name] ? '2px' : '2px',
+                  },
+                  '& input': {
+                    color: '#000000',
+                    padding: '0.75rem',
+                    textAlign: 'center',
+                    fontSize: '1.5rem',
+                    letterSpacing: '0.5rem',
+                  },
+                },
+              }}
+            />
+          </Box>
+        )}
+
+        <input type="hidden" name="method" value={totpAttributes ? "totp" : "password"} />
 
         <Button
           type="submit"

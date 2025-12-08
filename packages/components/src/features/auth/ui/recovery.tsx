@@ -67,6 +67,47 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
       })
       .catch((err) => void handleError(err))
 
+  const handleResend = (email: string) => {
+    // Create a new recovery flow - this will reset the flow and allow resending
+    ory
+      .createBrowserRecoveryFlow()
+      .then(({ data: newFlow }) => {
+        setFlow(newFlow)
+        router.replace(`/ui/recovery?flow=${newFlow.id}`)
+        
+        // Extract CSRF token from the new flow
+        const csrfNode = newFlow.ui.nodes.find(node => {
+          if (node.attributes && typeof node.attributes === 'object' && 'name' in node.attributes) {
+            return node.attributes.name === "csrf_token"
+          }
+          return false
+        })
+        const csrfToken = csrfNode && typeof csrfNode.attributes === 'object' && 'value' in csrfNode.attributes
+          ? (csrfNode.attributes as any).value
+          : undefined
+        
+        // Submit with email using the new flow ID and CSRF token
+        const submitValues: UpdateRecoveryFlowBody = {
+          email: email,
+          method: "code",
+          ...(csrfToken && { csrf_token: csrfToken }),
+        } as UpdateRecoveryFlowBody
+        ory
+          .updateRecoveryFlow({
+            flow: String(newFlow.id),
+            updateRecoveryFlowBody: submitValues
+          })
+          .then(({ data }) => {
+            if (data.state === "sent_email") {
+              setFlow(data)
+              router.replace(`/ui/recovery?flow=${data.id}`)
+            }
+          })
+          .catch((err) => void handleError(err))
+      })
+      .catch((err) => void handleError(err))
+  }
+
   // ──────────────────────────────────────────────────────────────────────────
   // init
   // ──────────────────────────────────────────────────────────────────────────
@@ -134,6 +175,7 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
           <CustomRecoveryForm
             flow={flow}
             onSubmit={submitFlow}
+            onResend={handleResend}
           />
         )}
         <ProtectedByOryLabel />

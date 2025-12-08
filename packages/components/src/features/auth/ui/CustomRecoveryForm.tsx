@@ -11,12 +11,14 @@ import { useRouter } from "next/router"
 interface CustomRecoveryFormProps {
   flow: RecoveryFlow
   onSubmit: (values: UpdateRecoveryFlowBody) => void
+  onResend?: (email: string) => void
 }
 
-export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit }) => {
+export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit, onResend }) => {
   const router = useRouter()
   const [values, setValues] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
+  const [savedEmail, setSavedEmail] = useState<string>("")
 
   // Initialize values from flow
   useEffect(() => {
@@ -25,6 +27,10 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
       if (isUiNodeInputAttributes(node.attributes)) {
         if (node.attributes.type !== "button" && node.attributes.type !== "submit" && node.attributes.type !== "hidden") {
           initialValues[node.attributes.name] = node.attributes.value || ""
+          // Save email for resend functionality
+          if (node.attributes.name === "email" || node.attributes.name === "identifier") {
+            setSavedEmail(node.attributes.value || "")
+          }
         }
       }
     })
@@ -61,6 +67,11 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
       } else {
         method = "code"
       }
+    }
+
+    // Save email for resend functionality
+    if (formValues.email || formValues.identifier) {
+      setSavedEmail(formValues.email || formValues.identifier || "")
     }
 
     const body: Record<string, string> = {
@@ -367,6 +378,38 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
         >
           {isCodeStage ? "Verify Code" : "Continue"}
         </Button>
+
+        {isCodeStage && savedEmail && (
+          <Button
+            type="button"
+            disabled={isLoading}
+            fullWidth
+            onClick={(e) => {
+              e.preventDefault()
+              if (onResend && savedEmail) {
+                onResend(savedEmail)
+              }
+            }}
+            sx={{
+              backgroundColor: '#0D73C7',
+              color: '#ffffff',
+              fontWeight: 600,
+              borderRadius: '4px',
+              height: '50px',
+              fontSize: '1rem',
+              textTransform: 'none',
+              marginBottom: '1.5rem',
+              '&:hover': {
+                backgroundColor: '#0a5a9e',
+              },
+              '&:disabled': {
+                opacity: 0.6,
+              },
+            }}
+          >
+            Resend Code
+          </Button>
+        )}
 
         <Box sx={{ textAlign: 'center' }}>
           <span style={{ color: '#ffffff', fontSize: '0.875rem' }}>
