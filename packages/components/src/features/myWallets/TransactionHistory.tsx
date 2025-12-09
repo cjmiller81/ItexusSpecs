@@ -21,6 +21,7 @@ interface TokenDelta {
   usdValue?: string;
   iconUrl?: string;
   type: "received" | "sent";
+  fallbackColor?: string;
 }
 
 interface Transaction {
@@ -46,11 +47,13 @@ const mockTransactions: Transaction[] = [
         usdValue: "$3,307.96",
         iconUrl: "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
         type: "received",
+        fallbackColor: "#10b981",
       },
       {
         symbol: "bbqUSDT",
         amount: "-3,112.96 bbqUSDT",
         type: "sent",
+        fallbackColor: "#8b5cf6",
       },
     ],
     gasCost: "$2.34",
@@ -68,11 +71,13 @@ const mockTransactions: Transaction[] = [
         usdValue: "$0.90",
         iconUrl: "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
         type: "received",
+        fallbackColor: "#3b82f6",
       },
       {
         symbol: "opASF",
         amount: "+0.82 opASF",
         type: "received",
+        fallbackColor: "#f59e0b",
       },
     ],
     gasCost: "$1.12",
@@ -90,11 +95,13 @@ const mockTransactions: Transaction[] = [
         usdValue: "$4,060.53",
         iconUrl: "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0x6b175474e89094c44da98b954eedeac495271d0f.png",
         type: "received",
+        fallbackColor: "#8b5cf6",
       },
       {
         symbol: "uDAI",
         amount: "-4,061.41 uDAI",
         type: "sent",
+        fallbackColor: "#ef4444",
       },
     ],
     gasCost: "$3.21",
@@ -112,11 +119,13 @@ const mockTransactions: Transaction[] = [
         usdValue: "$3,087.15",
         iconUrl: "https://storage.googleapis.com/zapper-fi-assets/tokens/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
         type: "received",
+        fallbackColor: "#3b82f6",
       },
       {
         symbol: "tUSDC",
         amount: "-3,087.83 tUSDC",
         type: "sent",
+        fallbackColor: "#06b6d4",
       },
     ],
     gasCost: "$2.89",
@@ -132,6 +141,7 @@ const mockTransactions: Transaction[] = [
         symbol: "FLUID",
         amount: "+0.91 FLUID",
         type: "received",
+        fallbackColor: "#8b5cf6",
       },
     ],
     gasCost: "$1.45",
@@ -146,8 +156,8 @@ interface TransactionHistoryProps {
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ wallets }) => {
   const { t } = useTranslation("MyWalletsPage");
   const [selectedWalletId, setSelectedWalletId] = useState<string>("");
-  const [timeRange, setTimeRange] = useState<string>("30");
-  const [transactionType, setTransactionType] = useState<string>("withdraw");
+  const [timeRange, setTimeRange] = useState<string>("90");
+  const [transactionType, setTransactionType] = useState<string>("all");
   const [tokenFilter, setTokenFilter] = useState<string>("all");
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
@@ -251,7 +261,8 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ wallets 
     return symbol.substring(0, 2).toUpperCase();
   };
 
-  const getTokenIconColor = (symbol: string) => {
+  const getTokenIconColor = (symbol: string, fallbackColor?: string) => {
+    if (fallbackColor) return fallbackColor;
     const colors = [
       "#10b981", "#8b5cf6", "#3b82f6", "#f59e0b", "#ef4444", "#06b6d4",
       "#a78bfa", "#fbbf24", "#f97316", "#ec4899"
@@ -326,92 +337,6 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ wallets 
 
       {selectedWallet && (
         <>
-          {/* Summary Cards */}
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" },
-              gap: 2,
-              mb: 3,
-            }}
-          >
-            <Card
-              sx={{
-                background: "linear-gradient(to bottom right, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5))",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(51, 65, 85, 0.5)",
-                borderRadius: "0.75rem",
-                padding: "1.25rem",
-              }}
-            >
-              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                <Typography sx={{ fontSize: "0.875rem", color: "#94a3b8" }}>
-                  Net Flow (All Time)
-                </Typography>
-                <Typography sx={{ fontSize: "0.875rem" }}>ℹ️</Typography>
-              </Box>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: "bold", color: "#10b981", mb: 1 }}>
-                +$4,929.11
-              </Typography>
-              <Box sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                  <span>Inflow:</span>
-                  <span style={{ color: "#10b981" }}>$16,909.08</span>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <span>Outflow:</span>
-                  <span style={{ color: "#fb923c" }}>$11,979.96</span>
-                </Box>
-              </Box>
-            </Card>
-
-            <Card
-              sx={{
-                background: "linear-gradient(to bottom right, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5))",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(51, 65, 85, 0.5)",
-                borderRadius: "0.75rem",
-                padding: "1.25rem",
-              }}
-            >
-              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                <Typography sx={{ fontSize: "0.875rem", color: "#94a3b8" }}>
-                  Total Transactions
-                </Typography>
-                <Typography sx={{ fontSize: "0.875rem" }}>ℹ️</Typography>
-              </Box>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: "bold", color: "#ffffff", mb: 1 }}>
-                23
-              </Typography>
-              <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-                Since Sep 11, 2025
-              </Typography>
-            </Card>
-
-            <Card
-              sx={{
-                background: "linear-gradient(to bottom right, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.5))",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(51, 65, 85, 0.5)",
-                borderRadius: "0.75rem",
-                padding: "1.25rem",
-              }}
-            >
-              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                <Typography sx={{ fontSize: "0.875rem", color: "#94a3b8" }}>
-                  Total Gas Spent
-                </Typography>
-                <Typography sx={{ fontSize: "0.875rem" }}>ℹ️</Typography>
-              </Box>
-              <Typography sx={{ fontSize: "1.5rem", fontWeight: "bold", color: "#fb923c", mb: 1 }}>
-                $48.32
-              </Typography>
-              <Typography sx={{ fontSize: "0.75rem", color: "#64748b" }}>
-                Avg $2.10 per tx
-              </Typography>
-            </Card>
-          </Box>
-
           {/* Transaction Section */}
           <Card
             sx={{
@@ -627,7 +552,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ wallets 
                                   fontSize: "0.625rem",
                                   fontWeight: "bold",
                                   color: "#ffffff",
-                                  backgroundColor: getTokenIconColor(delta.symbol),
+                                  backgroundColor: getTokenIconColor(delta.symbol, delta.fallbackColor),
                                 }}
                               >
                                 {getTokenIconFallback(delta.symbol)}
