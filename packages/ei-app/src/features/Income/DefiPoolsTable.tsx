@@ -758,6 +758,28 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           width="auto"
         />
         <Column
+          dataField={DefiField.DepositWithdrawFees}
+          caption={DefiLabel.DepositWithdrawFees}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          allowHeaderFiltering={false}
+          customizeText={toPercentageField}
+          width="auto"
+        />
+        <Column
+          dataField={DefiField.ProtocolFees}
+          caption={DefiLabel.ProtocolFees}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          allowHeaderFiltering={false}
+          customizeText={toPercentageField}
+          width="auto"
+        />
+        <Column
           dataField={DefiField.VolumeUsd1d}
           caption={DefiLabel.VolumeUsd1d}
           alignment="left"

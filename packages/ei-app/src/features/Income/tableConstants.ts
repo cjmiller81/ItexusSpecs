@@ -28,6 +28,8 @@ export enum DefiField {
   VolumeUsd1d = "volumeUsd1d",
   VolumeUsd7d = "volumeUsd7d",
   ApyBaseInception = "apyBaseInception",
+  DepositWithdrawFees = "depositWithdrawFees",
+  ProtocolFees = "protocolFees",
   Dex = "dexFormatted"
 }
 
@@ -60,6 +62,8 @@ export enum DefiLabel {
   VolumeUsd1d = "Volume Usd 1d",
   VolumeUsd7d = "Volume Usd 7d",
   ApyBaseInception = "APY Base Inception",
+  DepositWithdrawFees = "Deposit/Withdraw Fees",
+  ProtocolFees = "Protocol Fees",
 }
 
 export const defiFilterBuilderFields: FilterBuilderItems[] = [
@@ -175,6 +179,16 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
   {
     caption: DefiLabel.ApyBaseInception,
     dataField: DefiField.ApyBaseInception,
+    dataType: "number",
+  },
+  {
+    caption: DefiLabel.DepositWithdrawFees,
+    dataField: DefiField.DepositWithdrawFees,
+    dataType: "number",
+  },
+  {
+    caption: DefiLabel.ProtocolFees,
+    dataField: DefiField.ProtocolFees,
     dataType: "number",
   },
 ];
