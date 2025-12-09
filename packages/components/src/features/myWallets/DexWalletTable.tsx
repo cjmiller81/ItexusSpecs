@@ -6,21 +6,30 @@ export const DexWalletsTable = styled(BasicTable, {
   shouldForwardProp: (prop) => prop !== '$hasExpandedRows' && prop !== '$minHeight',
 })<{ $hasExpandedRows?: boolean; $minHeight?: string }>(({ theme, $hasExpandedRows, $minHeight }) => ({
   width: "100%",
-  maxHeight: $hasExpandedRows ? ($minHeight || "80vh") : 150,
-  height: "auto",
+  maxHeight: $hasExpandedRows ? ($minHeight || "80vh") : "auto",
+  height: $hasExpandedRows ? ($minHeight || "80vh") : "auto",
   mt: 2,
   display: "grid",
+  overflow: "hidden",
   "& .MuiDataGrid-virtualScroller": {
     overflowY: "auto !important",
+    maxHeight: $hasExpandedRows ? ($minHeight || "80vh") : "none",
   },
   "& .MuiDataGrid-main": {
-    height: "auto",
+    height: $hasExpandedRows ? ($minHeight || "80vh") : "auto",
     minHeight: $hasExpandedRows ? ($minHeight || "80vh") : 150,
     width:"100%",
+    overflow: "hidden",
     backgroundColor:
       theme.palette.mode === "dark"
         ? "#1f2937"
         : "#f7f5f2",
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    position: "sticky",
+    top: 0,
+    zIndex: 10,
+    backgroundColor: theme.palette.mode === "dark" ? "#1f2937" : "#f7f5f2",
   }, 
     "& .MuiDataGrid-row.Mui-selected": {
     backgroundColor: theme.palette.mode === "dark"
