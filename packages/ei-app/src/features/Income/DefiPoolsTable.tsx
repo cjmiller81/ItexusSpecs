@@ -49,6 +49,7 @@ export interface IPrefilterTokensTable {
   dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
   externalFilter?: object[] | null | undefined;
   onClearCategoryFilter?: () => void;
+  onFilterBuilderOpenChange?: (isOpen: boolean) => void;
 }
 
 const COLUMN_CHOOSER_BUTTON_ID = "defi-pools-column-chooser-btn";
@@ -88,6 +89,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   dataGridRef,
   externalFilter,
   onClearCategoryFilter,
+  onFilterBuilderOpenChange,
 }) => {
   const internalDataGridRef = useRef<DataGridDef<PoolData, string> | null>(null);
   const datagrid = (dataGridRef as MutableRefObject<DataGridDef<PoolData, string> | null>) ?? internalDataGridRef;
@@ -554,6 +556,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                 filterToAppply={currentFilter ? transformFilterFromAnyof(currentFilter) : currentFilter}
                 onApply={value => onApplyFilter(value)}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+                onFilterBuilderOpenChange={onFilterBuilderOpenChange}
               />
             </SimpleBar>
           </Item>

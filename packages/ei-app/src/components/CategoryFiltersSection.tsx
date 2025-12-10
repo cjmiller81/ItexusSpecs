@@ -112,6 +112,7 @@ interface CategoryFiltersSectionProps {
 
 export interface CategoryFiltersSectionRef {
   clearFilter: () => void;
+  clearTooltips: () => void;
 }
 
 const CATEGORY_TOOLTIPS: Record<string, string> = {
@@ -279,6 +280,10 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
         onFilterChange(null);
       }
     },
+    clearTooltips: () => {
+      setPinnedTooltip(null);
+      setHoveredTooltip(null);
+    },
   }), [onFilterChange]);
 
   const isInitialMount = useRef(true);
@@ -429,10 +434,6 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
                           [currentTab]: label,
                         };
                         setSelectedFilters(newFilters);
-                        
-                        if (pinnedTooltip !== label) {
-                          setPinnedTooltip(null);
-                        }
                         
                         if (onFilterChange) {
                           const filter = buildFilterFromSelection(currentTab, label);

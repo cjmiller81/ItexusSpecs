@@ -415,6 +415,7 @@ export interface ICustomFilterBuilderProps {
   filterLoading?: boolean;
   filterDeletingLoading?: boolean;
   filterBuilderFields: FilterBuilderItems[];
+  onFilterBuilderOpenChange?: (isOpen: boolean) => void;
 }
 
 export interface CustomFilterBuilderRef {
@@ -433,7 +434,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   filterLoading,
   filterDeletingLoading,
   filterBuilderFields,
-  filterType
+  filterType,
+  onFilterBuilderOpenChange
 }, ref) => {
 
   const videoLinks = {
@@ -642,7 +644,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (filterBuilderOpen) {
       setShowGuidanceBanner(true);
     }
-  }, [filterBuilderOpen]);
+    onFilterBuilderOpenChange?.(filterBuilderOpen);
+  }, [filterBuilderOpen, onFilterBuilderOpenChange]);
   
   useEffect(() => {
     if (filterBuilderRef.current?.instance && filterValue !== undefined && filterValue !== null) {
