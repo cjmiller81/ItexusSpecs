@@ -7,8 +7,8 @@ import { Loader } from "../components/loader"
 import { HandleError } from "../utils/hooks"
 import { ory } from "../lib/sdk"
 import { StyledAuthContainer } from "./StyledAuthContainer"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
 import ProtectedByOryLabel from "./protectedByOryLabel"
+import { CustomLoginForm } from "./CustomLoginForm"
 
 export const Login: FC<{}> = () => {
   const [flow, setFlow] = useState<LoginFlow | null>(null)
@@ -137,6 +137,7 @@ export const Login: FC<{}> = () => {
     )
   }, [router.isReady, returnTo])
 
+
   const submitFlow = (values: UpdateLoginFlowBody) => {
     ory
       .updateLoginFlow({
@@ -171,23 +172,12 @@ export const Login: FC<{}> = () => {
   return (
     <StyledAuthContainer>
       <Stack alignItems="center" gap={1} className="log">
-        <StyledUserAuthCard
-          // This defines what kind of card we want to render.
-          flowType={"login"}
-          // We always need the flow data which populates the form fields and error messages dynamically
-          flow={flow}
-          // The login card should allow the user to go to the registration page and the recovery page
-          additionalProps={{
-            forgotPasswordURL: "/ui/recovery",
-            signupURL: "/ui/registration",
-          }}
-          // We might need webauthn support which requires additional JS
-          includeScripts={true}
-          // We submit the form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateLoginFlowBody)}
-          cardImage={process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL}
-          title="Sign In"
-        />
+        {flow && (
+          <CustomLoginForm
+            flow={flow}
+            onSubmit={submitFlow}
+          />
+        )}
         <ProtectedByOryLabel />
       </Stack>
     </StyledAuthContainer>
