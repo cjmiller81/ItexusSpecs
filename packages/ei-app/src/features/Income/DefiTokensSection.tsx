@@ -287,6 +287,12 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
     setExternalFilter(null);
   }, []);
 
+  const handleFilterBuilderOpenChange = useCallback((isOpen: boolean) => {
+    if (isOpen) {
+      categoryFiltersSectionRef.current?.clearTooltips();
+    }
+  }, []);
+
   return (
     <>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 0 }}>
@@ -416,6 +422,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
               symbols={symbols}
               externalFilter={externalFilter}
               onClearCategoryFilter={handleClearCategoryFilter}
+              onFilterBuilderOpenChange={handleFilterBuilderOpenChange}
             />
           )}
         </AccordionDetails>
@@ -432,7 +439,8 @@ const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps)
     prevProps.categories === nextProps.categories &&
     prevProps.projects === nextProps.projects &&
     prevProps.symbols === nextProps.symbols &&
-    prevProps.externalFilter === nextProps.externalFilter
+    prevProps.externalFilter === nextProps.externalFilter &&
+    prevProps.onFilterBuilderOpenChange === nextProps.onFilterBuilderOpenChange
   );
 });
 
