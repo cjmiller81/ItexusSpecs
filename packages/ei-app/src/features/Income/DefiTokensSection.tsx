@@ -141,7 +141,10 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
             return undefined;
           };
 
-          const sortArray = normalizeSort(sort) ?? [{ selector: "tvlUsd", desc: true }];
+          let sortArray = normalizeSort(sort) ?? [{ selector: "tvlUsd", desc: true }];
+          const blockedSortFields = ["protocolFees", "depositWithdrawFees"];
+          sortArray = sortArray.filter(s => !blockedSortFields.includes(s.selector));
+
           const sorter = JSON.stringify(sortArray);
 
           let filterParam = "[]";
@@ -166,7 +169,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
 
           const rawData = response.data ?? {};
           const data: PoolData[] = rawData?.data ?? [];
-          const totalCount: number = rawData?.totalCount ?? data.length ?? 0;
+          const totalCount: number = rawData?.count ?? data.length ?? 0;
 
           return {
             data,

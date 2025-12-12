@@ -22,7 +22,7 @@ import DataGridDef, {
 import DataSource from "devextreme/data/data_source";
 import React, { FC, MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
-import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
+import { toDollarAmountField, toPercentageField, toPercentageFieldWithZero, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
 import { ProjectCellComponent } from "./ProjectCellComponent";
 import { DefiField, defiFilterBuilderFields, DefiLabel } from "./tableConstants";
@@ -768,7 +768,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="number"
           allowHiding={true}
           allowHeaderFiltering={false}
-          customizeText={toPercentageField}
+          customizeText={toPercentageFieldWithZero}
+          allowFiltering={false}
           width="auto"
         />
         <Column
@@ -779,7 +780,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="number"
           allowHiding={true}
           allowHeaderFiltering={false}
-          customizeText={toPercentageField}
+          allowFiltering={false}
+          customizeText={toPercentageFieldWithZero}
           width="auto"
         />
         <Column
