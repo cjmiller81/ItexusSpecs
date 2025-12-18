@@ -141,10 +141,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
             return undefined;
           };
 
-          let sortArray = normalizeSort(sort) ?? [{ selector: "tvlUsd", desc: true }];
-          const blockedSortFields = ["protocolFees", "depositWithdrawFees"];
-          sortArray = sortArray.filter(s => !blockedSortFields.includes(s.selector));
-
+          const sortArray = normalizeSort(sort) ?? [{ selector: "tvlUsd", desc: true }];
           const sorter = JSON.stringify(sortArray);
 
           let filterParam = "[]";
