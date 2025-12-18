@@ -13,7 +13,7 @@ import Turnstile from "react-turnstile"
 
 interface CustomLoginFormProps {
   flow: LoginFlow
-  onSubmit: (values: UpdateLoginFlowBody) => void
+  onSubmit: (values: UpdateLoginFlowBody) => Promise<unknown> | void
 }
 
 export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) => {
@@ -84,9 +84,11 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
     // Type assertion needed because UpdateLoginFlowBody is a union type
     const loginBody = body as unknown as UpdateLoginFlowBody
 
-    try {
-      onSubmit(loginBody)
-    } catch (error) {
+    const promise = onSubmit(loginBody)
+
+    if (promise && typeof (promise as any).then === "function") {
+      ;(promise as Promise<unknown>).finally(() => setIsLoading(false))
+    } else {
       setIsLoading(false)
     }
   }
@@ -188,6 +190,11 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
 
   const logoUrl = process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL || "/ElanInsightsLight.png"
 
+  const globalMessages =
+    (flow.ui.messages ?? [])
+      .map(m => (m as any)?.text)
+      .filter((m): m is string => Boolean(m))
+
   return (
     <Box
       sx={{
@@ -265,6 +272,26 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
             _______________
           </p>
         </Box>
+
+        {globalMessages.length > 0 && (
+          <Box sx={{ mb: 2 }}>
+            {globalMessages.map((msg, idx) => (
+              <Typography
+                key={idx}
+                sx={{
+                  color: "#f97373",
+                  fontSize: "0.8rem",
+                  lineHeight: 1.4,
+                  maxWidth: 300,
+                  margin: "0 auto",
+                  wordBreak: "break-word",
+                }}
+              >
+                {msg}
+              </Typography>
+            ))}
+          </Box>
+        )}
 
         {emailAttributes && (
           <Box sx={{ marginBottom: '1.5rem' }}>
@@ -494,7 +521,11 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
               variant="body2"
               sx={{
                 color: "#f97373",
-                textAlign: "center",
+                fontSize: "0.8rem",
+                lineHeight: 1.4,
+                maxWidth: 300,
+                margin: "0 auto",
+                wordBreak: "break-word",
               }}
             >
               {turnstileError}

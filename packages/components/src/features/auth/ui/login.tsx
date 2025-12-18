@@ -139,7 +139,7 @@ export const Login: FC<{}> = () => {
 
 
   const submitFlow = (values: UpdateLoginFlowBody) => {
-    ory
+    return ory
       .updateLoginFlow({
         flow: String(flow?.id),
         updateLoginFlowBody: values,
