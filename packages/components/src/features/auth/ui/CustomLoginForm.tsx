@@ -1,7 +1,7 @@
-import { TextField, Button, Link, Box } from "@mui/material"
+import { TextField, Button, Link, Box, Typography } from "@mui/material"
 import { LoginFlow, UiNodeInputAttributes, UiNodeAnchorAttributes, UpdateLoginFlowBody } from "@ory/client"
-import { 
-  isUiNodeInputAttributes, 
+import {
+  isUiNodeInputAttributes,
   isUiNodeAnchorAttributes,
   getNodeId,
 } from "@ory/integrations/ui"
@@ -9,6 +9,7 @@ import { FC, useState, useEffect, FormEvent } from "react"
 import { useRouter } from "next/router"
 import VisibilityIcon from "@mui/icons-material/Visibility"
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff"
+import Turnstile from "react-turnstile"
 
 interface CustomLoginFormProps {
   flow: LoginFlow
@@ -20,6 +21,18 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
   const [values, setValues] = useState<Record<string, string>>({})
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [turnstileError, setTurnstileError] = useState<string | null>(null)
+  const [isBrowser, setIsBrowser] = useState(false)
+
+  useEffect(() => {
+    // Ensure Turnstile is only rendered client-side
+    setIsBrowser(typeof window !== "undefined")
+  }, [])
+
+  const turnstileSiteKey =
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.TURNSTILE_SITE_KEY || ""
+  const isTurnstileEnabled = Boolean(turnstileSiteKey)
 
   // Initialize values from flow
   useEffect(() => {
@@ -45,6 +58,12 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
     e.stopPropagation()
 
     if (isLoading) return
+
+    // Require Turnstile to pass before allowing submission, if enabled
+    if (isTurnstileEnabled && !turnstileToken) {
+      setTurnstileError("Please confirm you are not a bot to continue.")
+      return
+    }
 
     setIsLoading(true)
 
@@ -444,9 +463,48 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, onSubmit }) =>
 
         <input type="hidden" name="method" value={totpAttributes ? "totp" : "password"} />
 
+        {isTurnstileEnabled && isBrowser && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mb: 2,
+            }}
+          >
+            <Turnstile
+              sitekey={turnstileSiteKey}
+              onVerify={token => {
+                setTurnstileToken(token)
+                setTurnstileError(null)
+              }}
+              onExpire={() => {
+                setTurnstileToken(null)
+              }}
+              onError={() => {
+                setTurnstileToken(null)
+                setTurnstileError("Verification failed. Please try again.")
+              }}
+            />
+          </Box>
+        )}
+
+        {isTurnstileEnabled && turnstileError && (
+          <Box sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#f97373",
+                textAlign: "center",
+              }}
+            >
+              {turnstileError}
+            </Typography>
+          </Box>
+        )}
+
         <Button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || (isTurnstileEnabled && !turnstileToken)}
           fullWidth
           sx={{
             backgroundColor: '#0D73C7',
