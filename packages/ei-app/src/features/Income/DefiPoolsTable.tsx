@@ -769,7 +769,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageFieldWithZero}
-          allowFiltering={false}
           width="auto"
         />
         <Column
@@ -780,7 +779,6 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           dataType="number"
           allowHiding={true}
           allowHeaderFiltering={false}
-          allowFiltering={false}
           customizeText={toPercentageFieldWithZero}
           width="auto"
         />
