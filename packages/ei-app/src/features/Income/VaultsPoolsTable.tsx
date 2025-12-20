@@ -349,15 +349,6 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={false}
         />
         <Column
-          dataField="vaultApy"
-          caption="Vault APY"
-          alignment="left"
-          dataType="number"
-          allowHiding={true}
-          visible={false}
-          allowHeaderFiltering={false}
-        />
-        <Column
           dataField="beefyPerformanceFee"
           caption="Beefy Performance Fee"
           alignment="left"
