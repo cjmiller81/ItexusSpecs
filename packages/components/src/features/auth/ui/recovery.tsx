@@ -9,14 +9,24 @@ import { StyledAuthContainer } from "./StyledAuthContainer"
 import { Stack } from "@mui/material"
 import { CustomRecoveryForm } from "./CustomRecoveryForm"
 import ProtectedByOryLabel from "./protectedByOryLabel"
+import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer";
 
 export const Recovery: FC<{ changePasswordRoute: string }> = ({
   changePasswordRoute,
 }) => {
-  const [flow, setFlow] = useState<RecoveryFlow | null>()
+  const [flow, setFlow] = useState<RecoveryFlow | null>();
 
-  const router = useRouter()
-  const flowId = String(router.query.flow || "")
+  const router = useRouter();
+  const flowId = String(router.query.flow || "");
+
+  const isRefreshFlowIdNeeded = useFlowIdExpirationTimer(flow);
+
+  useEffect(() => {
+    if (isRefreshFlowIdNeeded) {
+      router.push('/ui/login/');
+    }
+
+  }, [isRefreshFlowIdNeeded]);
 
   const getFlow = useCallback(
     (id: string) =>

@@ -61,7 +61,9 @@
   },
   "ory": {
     "login.title": "Login",
-    "identities.messages.1070004": "Email"
+    "identities.messages.1070004": "Email",
+    "expiredForm.button.refresh": "Refresh page to login again",
+    "expiredForm.text.loginFormExpired": "This login form has expired!"
   },
   "WalletInputModal": {
     "AddNewWallet": "Add new wallet",
