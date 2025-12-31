@@ -646,8 +646,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (filterBuilderOpen) {
       setShowGuidanceBanner(true);
     }
-    onFilterBuilderOpenChange?.(filterBuilderOpen);
-  }, [filterBuilderOpen, onFilterBuilderOpenChange]);
+  }, [filterBuilderOpen]);
   
   useEffect(() => {
     if (filterBuilderRef.current?.instance && filterValue !== undefined && filterValue !== null) {
