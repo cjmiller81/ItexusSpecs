@@ -40,9 +40,12 @@ import { FeatureAccessGuard } from "components";
 import { useGetChainsQuery } from "@/features/Investing/chainsApi";
 import { useGetCategoriesQuery } from "@/features/Investing/categoriesApi";
 import { useGetExchangesQuery } from "@/features/Investing/exchangesApi";
-import { iconsApi, iconsAbortableApi } from "@/services/iconsService";
+import { iconsAbortableApi } from "@/services/iconsService";
 import appAxios from "@/libs/axios/axios";
 import { filtersApi } from "../../../../../components/src/services/filterService";
+import { LIQUIDITY_POOL, PREFILTER_ALL_CATEGORIES_MAP, PREFILTER_CATEGORIES_MAP } from "@/constants/prefilterKeys";
+import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
+import { PrefilterTabs } from "@/types/filter";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
@@ -409,7 +412,7 @@ export interface ICustomFilterBuilderProps {
   onUpdateFilter: (filter: IPrefilterTokensFilterValues) => void;
   onDeleteFilter: (filterId: string) => void;
   onDisableFilter: () => void;
-  filterToAppply?: object | null;
+  filterToApply?: object | null;
   onApply: (filterValue: object[]) => void;
   filterType: FilterType;
   filterLoading?: boolean;
@@ -429,13 +432,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   onUpdateFilter,
   onDeleteFilter,
   onDisableFilter,
-  filterToAppply,
+  filterToApply,
   onApply,
   filterLoading,
   filterDeletingLoading,
   filterBuilderFields,
   filterType,
-  onFilterBuilderOpenChange
 }, ref) => {
 
   const videoLinks = {
@@ -459,7 +461,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
   const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
   const [filterName, setFilterName] = useState<string | undefined>("");
-  const [filterValue, setFilterValue] = useState<object[] | undefined | null>();
+  const [filterValue, setFilterValue] = useState<object[] | string[] | undefined | null>();
   const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>();
   const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
   const { t } = useTranslation("CustomFilterBuilder");
@@ -469,7 +471,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [openBuildFilter, setOpenBuildFilter] = useState(true);
   const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
   const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
-  const isLiquidityPoolFilter = filterType === "liquidity-pool";
+  const isLiquidityPoolFilter = filterType === LIQUIDITY_POOL;
   const isVaultsFilter = filterType === "vaults";
   const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
   const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery(undefined, { 
@@ -487,7 +489,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [customCategories, setCustomCategories] = useState<string[]>([]);
   const [customExchanges, setCustomExchanges] = useState<string[]>([]);
   const [poolCategories, setPoolCategories] = useState<string[]>([]);
-  
+  const [customFilterType, setCustomFilterType] = useState<string | undefined>(undefined); 
+
   const allSymbolOptionsRef = useRef<string[]>([]);
   const allPoolSymbolOptionsRef = useRef<string[]>([]);
   const allPoolProjectOptionsRef = useRef<string[]>([]);
@@ -495,7 +498,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const allVaultPlatformOptionsRef = useRef<string[]>([]);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const editingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
   const startTourRef = useRef<(() => void) | null>(null);
   const filterBuilderRef = useRef<any>(null);
   
@@ -618,19 +620,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   }, []);
 
   useEffect(() => {
-    let processedFilter = filterToAppply;
+    let processedFilter = filterToApply;
     
     if (isLiquidityPoolFilter && processedFilter && Array.isArray(processedFilter)) {
       processedFilter = transformFilterFromAnyof(processedFilter);
     }
-    
+
     if (processedFilter && !Array.isArray(processedFilter)) {
       setFilterValue([processedFilter]);
     } else {
       setFilterValue(processedFilter);
     }
 
-    const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filterToAppply?.toString());
+    const isPredefinedFilter = sortedPredefinedFilters.find(filter => filter.filter.toString() == filterToApply?.toString());
     if (isPredefinedFilter) {
       setSelectedSavedFilter(isPredefinedFilter);
       setFilterName(isPredefinedFilter.name);
@@ -638,7 +640,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setSelectedSavedFilter(null);
       setFilterName("");
     }
-  }, [filterToAppply, sortedPredefinedFilters, isLiquidityPoolFilter, transformFilterFromAnyof]);
+  }, [filterToApply, sortedPredefinedFilters, isLiquidityPoolFilter, transformFilterFromAnyof]);
 
   useEffect(() => {
     if (filterBuilderOpen) {
@@ -666,6 +668,69 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (updatedFilter) setSelectedSavedFilter(updatedFilter);
   }, [sortedPredefinedFilters, selectedSavedFilter]);
 
+  const clearCustomFilterType = () => setCustomFilterType(undefined);
+
+  const defineCategoryAllTab = (categoryConditions) => {
+    const categoryValues = categoryConditions.map((condition) => condition[2]);
+
+    const matchedCategories = Object.keys(PREFILTER_CATEGORIES_MAP).filter((category) => {
+      const subCategoryList = Object.keys(PREFILTER_CATEGORIES_MAP[category]);
+      return subCategoryList.every((subCat) => categoryValues.includes(subCat));
+    });
+
+    if (matchedCategories.length === 1) {
+      const matchedCategory = matchedCategories[0];
+      const subCategoryList = Object.keys(PREFILTER_CATEGORIES_MAP[matchedCategory]);
+      const hasExtraValues = categoryValues.some(val => !subCategoryList.includes(val));
+      
+      if (hasExtraValues) {
+        return { categoryTab: PrefilterTabs.ALL_DEFI, categoryValue: undefined };
+      }
+      return  { categoryTab: matchedCategory, categoryValue: PREFILTER_ALL_CATEGORIES_MAP[matchedCategory] };
+    }
+
+    return { categoryTab: PrefilterTabs.ALL_DEFI, categoryValue: undefined };
+  };
+
+  const defineCategorySingleTab = (categoryValue: string) => {
+    return Object.keys(PREFILTER_CATEGORIES_MAP).find((tabValue) => {
+      const tabCategories = PREFILTER_CATEGORIES_MAP[tabValue];
+      return !!(categoryValue in tabCategories);
+    }) as `${PrefilterTabs}` | undefined;
+  };
+
+  useEffect(() => {
+    if (!filterValue) {
+      clearCustomFilterType();
+      return;
+    };
+
+    if (filterValue[0] !== 'category') { // there are several conditions in filterValue
+      const categoryConditions = filterValue.filter((item) => 
+        Array.isArray(item) && item[0] === 'category'
+      );
+      
+      if (categoryConditions.length === 0) {
+        clearCustomFilterType();
+        return;
+      }
+
+      const { categoryTab, categoryValue } = defineCategoryAllTab(categoryConditions);
+      const newFilterType = generateFilterKey(filterType, categoryTab as `${PrefilterTabs}`, categoryValue);
+      newFilterType && setCustomFilterType(newFilterType); 
+      return;
+    }
+
+    const categoryValue = filterValue[2];
+    if (typeof categoryValue !== "string") return;
+
+    const categoryTab = defineCategorySingleTab(categoryValue);
+    if (!categoryTab) return;
+
+    const newFilterType = generateFilterKey(filterType, categoryTab, categoryValue)
+    newFilterType && setCustomFilterType(newFilterType);
+  }, [filterValue, filterType]);
+
   const handleFilterValueChanged = (event: ValueChangedEvent) => {
     if (isDeepEqual(event.value, filterValue)) {
       return;
@@ -675,10 +740,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const handleFilterBuilderClick = (e: React.MouseEvent) => {
-  const target = e.target as HTMLElement;
-  if (target.closest('.dx-filterbuilder-action-icon.dx-icon-plus')) {
-    setShowGuidanceBanner(false);
-  }
+    const target = e.target as HTMLElement;
+    if (target.closest('.dx-filterbuilder-action-icon.dx-icon-plus')) {
+      setShowGuidanceBanner(false);
+    }
 };
 
   const handleApplyFilter = () => {
@@ -720,6 +785,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     setSelectedSavedFilter(null);
     setFilterValue(undefined);
     setFilterName("");
+    setCustomFilterType(undefined);
   };
 
   const handleDismissGuidanceBanner = () => {
@@ -1272,12 +1338,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
   const handleSaveFilter = () => {
     if (!filterName) return;
-    
+
     if (selectedSavedFilter) {
       onUpdateFilter({
         id: selectedSavedFilter.id,
         name: filterName,
-        filterType: filterType,
+        filterType: customFilterType ?? filterType,
         description: filterName,
         icon: "filter",
         isPublic: true,
@@ -1290,7 +1356,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       onCreateFilter({
         name: filterName,
         description: filterName,
-        filterType: filterType,
+        filterType: customFilterType ?? filterType,
         icon: "filter",
         isPublic: true,
         OwnerUserId: "",
@@ -1445,7 +1511,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
               mt: 1,
             },
           }}
-          color={"success"}
+          color="success"
           onClick={() => {
             setFilterBuilderOpen(true);
           }}
@@ -1466,9 +1532,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             },
           }}
           variant="contained"
-          color={"error"}
+          color="error"
           disabled={!filterValue || filterValue?.length == 0}
-          onClick={() => handleClearFilters()}
+          onClick={handleClearFilters}
           id="clear_filter_btn">
           {t("ClearFilter")}
         </StyledFilterButton>
@@ -2723,8 +2789,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                 <FilterControlsContainer>
                   <Stack
                     gap={2}
-                    alignItems={"center"}
-                    direction={"row"}>
+                    alignItems="center"
+                    direction="row"
+                  >
                     <Typography
                       noWrap
                       fontWeight={500}
@@ -2741,7 +2808,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                   </Stack>
                   <Stack
                     minWidth={300}
-                    direction={"row"}
+                    direction="row"
                     gap={2}
                     justifyContent="space-between"
                     height={24}>

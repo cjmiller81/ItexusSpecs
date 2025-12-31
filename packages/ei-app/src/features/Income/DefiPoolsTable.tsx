@@ -45,6 +45,7 @@ export interface IPrefilterTokensTable {
   categories: string[];
   projects: string[];
   symbols: string[];
+  filterKey: string | null;
   onFilterValueChange?: (filter: object[] | null | undefined) => void;
   dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
   externalFilter?: object[] | null | undefined;
@@ -88,6 +89,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   onFilterValueChange,
   dataGridRef,
   externalFilter,
+  filterKey,
   onClearCategoryFilter,
   onFilterBuilderOpenChange,
 }) => {
@@ -102,7 +104,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
   const filterRef = useRef<CustomFilterBuilderRef>(null);
-  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
+
+  const liquidityPoolFilters = useMemo(() => filters.filter(f => {
+    return f.filterType === filterKey;
+  }), [filters, filterKey]);
+
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const filterPanelText = useRef<Element | null>(null);
   const categoryHeaderFilterRef = useRef<any>(null);
@@ -553,7 +559,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                   dispatch(fetchFilters({}));
                   onClearCategoryFilter?.();
                 }}
-                filterToAppply={currentFilter ? transformFilterFromAnyof(currentFilter) : currentFilter}
+                filterToApply={currentFilter ? transformFilterFromAnyof(currentFilter) : currentFilter}
                 onApply={value => onApplyFilter(value)}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
                 onFilterBuilderOpenChange={onFilterBuilderOpenChange}

@@ -204,7 +204,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
                 onApply={filter => {
                   onApplyFilter(filter, true);
                 }}
-                filterToAppply={currentFilterRef.current}
+                filterToApply={currentFilterRef.current}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>

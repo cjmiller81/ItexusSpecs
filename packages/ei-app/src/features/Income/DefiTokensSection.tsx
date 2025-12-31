@@ -1,7 +1,6 @@
 import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import appAxios from "@/libs/axios/axios";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   AccordionDetails,
   AccordionProps,
@@ -30,6 +29,9 @@ import { FeatureAccessGuard } from "components";
 import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { CategoryFiltersSectionRef } from "@/components/CategoryFiltersSection";
+import { CategoryFilterType } from "@/types/filter";
+import { LIQUIDITY_POOL } from "@/constants/prefilterKeys";
+import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
@@ -63,6 +65,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
   const [isExporting, setIsExporting] = useState(false);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
   const [externalFilter, setExternalFilter] = useState<object[] | null | undefined>();
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilterType>({ tab: undefined, category: undefined });
   const [chains, setChains] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [projects, setProjects] = useState<string[]>([]);
@@ -208,6 +211,13 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
     };
   }, [poolsDataSource]);
 
+  const filterKey = useMemo(() => {
+      if (categoryFilter.tab && categoryFilter.category) {
+        return generateFilterKey(LIQUIDITY_POOL, categoryFilter.tab, categoryFilter.category);
+      }
+      return LIQUIDITY_POOL;
+  }, [categoryFilter]);
+
  const onExport = async () => {
     if (isExporting) {
       return;
@@ -276,8 +286,9 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
   );
 
   const handleCategoryFilterChange = useCallback(
-    (filter: any[] | null) => {
+    (filter: any[] | null, filterContext: CategoryFilterType) => {
       setExternalFilter(filter || null);
+      setCategoryFilter(filterContext);
     },
     [],
   );
@@ -285,6 +296,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
   const handleClearCategoryFilter = useCallback(() => {
     categoryFiltersSectionRef.current?.clearFilter();
     setExternalFilter(null);
+    setCategoryFilter({ tab: undefined, category: undefined });
   }, []);
 
   const handleFilterBuilderOpenChange = useCallback((isOpen: boolean) => {
@@ -421,6 +433,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
               projects={projects}
               symbols={symbols}
               externalFilter={externalFilter}
+              filterKey={filterKey}
               onClearCategoryFilter={handleClearCategoryFilter}
               onFilterBuilderOpenChange={handleFilterBuilderOpenChange}
             />
@@ -440,7 +453,7 @@ const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps)
     prevProps.projects === nextProps.projects &&
     prevProps.symbols === nextProps.symbols &&
     prevProps.externalFilter === nextProps.externalFilter &&
-    prevProps.onFilterBuilderOpenChange === nextProps.onFilterBuilderOpenChange
+    prevProps.filterKey === nextProps.filterKey
   );
 });
 
