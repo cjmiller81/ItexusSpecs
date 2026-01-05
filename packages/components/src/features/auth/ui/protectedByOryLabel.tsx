@@ -1,10 +1,10 @@
 import { Box, Link, Typography } from "@mui/material"
 import React from "react"
 
-export const ProtectedByOryLabel = (): React.JSX.Element => {
-  const termsUrl =
-    process.env.NEXT_PUBLIC_APP_TERMS_URL || process.env.APP_TERMS_URL || ""
+interface ProtectedByOryLabelProps { env: { termsUrl: string, appTermsUrl: string } }
 
+export const ProtectedByOryLabel = ({ env }: ProtectedByOryLabelProps): React.JSX.Element => {
+  const termsUrl = env.termsUrl || env.appTermsUrl || ""
   const hasTerms = Boolean(termsUrl && termsUrl.trim().length > 0)
 
   return (

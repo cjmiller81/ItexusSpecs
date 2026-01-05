@@ -11,7 +11,9 @@ import ProtectedByOryLabel from "./protectedByOryLabel";
 import { CustomLoginForm } from "./CustomLoginForm";
 import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer";
 
-export const Login: FC<{}> = () => {
+interface LoginProps { env: { termsUrl: string, appTermsUrl: string } }
+
+export const Login: FC<LoginProps> = ({ env }) => {
   const [flow, setFlow] = useState<LoginFlow | null>(null);
   const router = useRouter();
   const returnTo = String(router.query.return_to || window.location.origin);
@@ -182,7 +184,7 @@ export const Login: FC<{}> = () => {
             onSubmit={submitFlow}
           />
         )}
-        <ProtectedByOryLabel />
+        <ProtectedByOryLabel env={env} />
       </Stack>
     </StyledAuthContainer>
   )
