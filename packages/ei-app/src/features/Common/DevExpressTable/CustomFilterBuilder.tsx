@@ -413,7 +413,7 @@ export interface ICustomFilterBuilderProps {
   onDeleteFilter: (filterId: string) => void;
   onDisableFilter: () => void;
   filterToApply?: object | null;
-  onApply: (filterValue: object[]) => void;
+  onApply: (filterValue: object[] | string[]) => void;
   filterType: FilterType;
   filterLoading?: boolean;
   filterDeletingLoading?: boolean;

@@ -45,7 +45,7 @@ export interface IPrefilterTokensTable {
   categories: string[];
   projects: string[];
   symbols: string[];
-  filterKey: string | null;
+  filterKey?: string | null;
   onFilterValueChange?: (filter: object[] | null | undefined) => void;
   dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
   externalFilter?: object[] | null | undefined;
@@ -101,7 +101,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   );
   const dispatch = useAppDispatch();
   
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const [currentFilter, setCurrentFilter] = useState<object[] | string[] | null | undefined>();
   const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
   const filterRef = useRef<CustomFilterBuilderRef>(null);
 
@@ -311,7 +311,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      let newFilter = filter as object[] | null;
+      let newFilter = filter as object[] | string[] | null;
       
       if (newFilter && Array.isArray(newFilter)) {
         newFilter = transformFilterFromAnyof(newFilter);
