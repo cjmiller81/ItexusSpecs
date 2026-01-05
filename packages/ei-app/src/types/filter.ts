@@ -39,7 +39,7 @@ export enum PrefilterCategories {
   DEXS = "Dexs",
   LIQUIDITY_MANAGER = "Liquidity manager",
   OPTIONS = "Options",
-  OPTIONS_VAULTS = "Options Vaults",
+  OPTIONS_VAULTS = "Options Vault",
   PREDICTION_MARKET = "Prediction Market",
   SYNTHETICS = "Synthetics",
 
@@ -49,7 +49,7 @@ export enum PrefilterCategories {
   CHAIN = "Chain",
   SERVICES = "Services",
   INDEXES = "Indexes",
-  INSURANCE = "Insurances",
+  INSURANCE = "Insurance",
   PAYMENTS = "Payments",
   DOR = "DOR",
   NFT_MARKETPLACE = "NFT Marketplace",

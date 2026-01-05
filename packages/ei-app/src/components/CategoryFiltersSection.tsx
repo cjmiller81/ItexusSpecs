@@ -11,6 +11,7 @@ import React, { useMemo, useState, useEffect, useRef, useImperativeHandle, forwa
 import ReactDOM from "react-dom";
 import { keyframes } from "@mui/material/styles";
 import { CategoryFilterType } from "@/types/filter";
+import { CATEGORY_NAME_MAPPING } from "@/constants/prefilterKeys";
 
 const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
 type MainTab = (typeof MAIN_TABS)[number];
@@ -66,13 +67,6 @@ const ALL_INFRASTRUCTURE_SERVICES_CATEGORIES = [
   "NFT Marketplace",
   "RWA",
 ];
-
-const CATEGORY_NAME_MAPPING: Record<string, string> = {
-  "Options Vaults": "Options Vault",
-  "Onchain Capital Allocation": "Onchain Capital Allocator",
-  "Insurances": "Insurance",
-  "Liquidity Manager": "Liquidity manager",
-};
 
 const getCategoryName = (filterLabel: string): string => {
   return CATEGORY_NAME_MAPPING[filterLabel] || filterLabel;

@@ -1,4 +1,9 @@
-import { LIQUIDITY_POOL, PREFILTER_TAB_KEYS, PREFILTER_CATEGORIES_MAP } from "@/constants/prefilterKeys";
+import { 
+  LIQUIDITY_POOL,
+  PREFILTER_TAB_KEYS,
+  PREFILTER_CATEGORIES_MAP,
+  CATEGORY_NAME_MAPPING
+} from "@/constants/prefilterKeys";
 import { PrefilterCategories, PrefilterTabs } from "@/types/filter";
 
 export const generateFilterKey = (
@@ -23,5 +28,6 @@ export const generateFilterKey = (
     return `${filterType}-all-${PREFILTER_TAB_KEYS[tab]}`;
   }
 
-  return `${filterType}-${PREFILTER_TAB_KEYS[tab]}-${PREFILTER_CATEGORIES_MAP[tab][category]}`;
+  const formattedCategory = CATEGORY_NAME_MAPPING[category] ?? category;
+  return `${filterType}-${PREFILTER_TAB_KEYS[tab]}-${PREFILTER_CATEGORIES_MAP[tab][formattedCategory]}`;
 };

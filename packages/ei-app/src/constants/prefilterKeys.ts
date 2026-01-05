@@ -50,7 +50,7 @@ export const PREFILTER_CATEGORIES_MAP: { [key in Exclude<PrefilterTabs, Prefilte
     [PrefilterCategories.DEXS]: 'dexs',
     [PrefilterCategories.LIQUIDITY_MANAGER]: 'liquidity-manager',
     [PrefilterCategories.OPTIONS]: 'options',
-    [PrefilterCategories.OPTIONS_VAULTS]: 'options-vaults',
+    [PrefilterCategories.OPTIONS_VAULTS]: 'options-vault',
     [PrefilterCategories.PREDICTION_MARKET]: 'prediction-market',
     [PrefilterCategories.SYNTHETICS]: 'synthetics',
   },
@@ -66,4 +66,11 @@ export const PREFILTER_CATEGORIES_MAP: { [key in Exclude<PrefilterTabs, Prefilte
     [PrefilterCategories.NFT_MARKETPLACE]: 'nft-marketplace',
     [PrefilterCategories.RWA]: 'rwa',
   },
+};
+
+export const CATEGORY_NAME_MAPPING: Record<string, string> = {
+  "Options Vaults": "Options Vault",
+  "Onchain Capital Allocation": "Onchain Capital Allocator",
+  "Insurances": "Insurance",
+  "Liquidity Manager": "Liquidity manager",
 };

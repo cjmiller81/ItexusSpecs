@@ -700,63 +700,41 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }) as `${PrefilterTabs}` | undefined;
   };
 
-  // Recursively extract all category conditions from filter structure
-  const extractCategoryConditions = (filter: any): any[] => {
-    if (!filter || !Array.isArray(filter)) return [];
-    
-    const categoryConditions: any[] = [];
-    
-    const traverse = (item: any) => {
-      if (Array.isArray(item)) {
-        // Check if this is a category condition: [field, operator, value]
-        if (item.length === 3 && typeof item[0] === 'string' && item[0] === 'category') {
-          categoryConditions.push(item);
-          return;
-        }
-        // Otherwise, traverse nested arrays
-        item.forEach(subItem => {
-          if (subItem !== 'and' && subItem !== 'or') {
-            traverse(subItem);
-          }
-        });
-      }
-    };
-    
-    traverse(filter);
-    return categoryConditions;
-  };
-
   useEffect(() => {
     if (!filterValue) {
       clearCustomFilterType();
       return;
     };
 
-    // Extract all category conditions recursively from the filter
-    const categoryConditions = extractCategoryConditions(filterValue);
-    
-    if (categoryConditions.length === 0) {
-      clearCustomFilterType();
+    if (filterValue[0] !== 'category') { // there are several conditions in filterValue
+      const categoryConditions = filterValue.filter((item) => 
+        Array.isArray(item) && item[0] === 'category'
+      );
+      
+      if (categoryConditions.length === 0) {
+        clearCustomFilterType();
+        return;
+      } else if (categoryConditions.length === 1) {
+        const categoryValue = categoryConditions[0][2];
+        const categoryTab = defineCategorySingleTab(categoryValue);
+        const newFilterType = generateFilterKey(filterType, categoryTab, categoryValue);
+        newFilterType && setCustomFilterType(newFilterType);
+        return;
+      }
+
+      const { categoryTab, categoryValue } = defineCategoryAllTab(categoryConditions);
+      const newFilterType = generateFilterKey(filterType, categoryTab as `${PrefilterTabs}`, categoryValue);
+      newFilterType && setCustomFilterType(newFilterType); 
       return;
     }
 
-    // If there's only one category condition, use defineCategorySingleTab
-    // This works for both simple filters and filters with additional conditions
-    if (categoryConditions.length === 1) {
-      const categoryValue = categoryConditions[0][2];
-      if (typeof categoryValue === "string") {
-        const categoryTab = defineCategorySingleTab(categoryValue);
-        if (categoryTab) {
-          const newFilterType = generateFilterKey(filterType, categoryTab, categoryValue);
-          newFilterType && setCustomFilterType(newFilterType);
-          return;
-        }
-      }
-    }
+    const categoryValue = filterValue[2];
+    if (typeof categoryValue !== "string") return;
 
-    // For filters with multiple category conditions, use defineCategoryAllTab
-    const { categoryTab, categoryValue } = defineCategoryAllTab(categoryConditions);
-    const newFilterType = generateFilterKey(filterType, categoryTab as `${PrefilterTabs}`, categoryValue);
+    const categoryTab = defineCategorySingleTab(categoryValue);
+    if (!categoryTab) return;
+
+    const newFilterType = generateFilterKey(filterType, categoryTab, categoryValue);
     newFilterType && setCustomFilterType(newFilterType);
   }, [filterValue, filterType]);
 
@@ -786,9 +764,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         return;
       }
     }
-    
-    if (filterValue && Array.isArray(filterValue) && filterValue.length > 0) {
-      onApply(filterValue as object[]);
+
+    if (filterValue) {
+      onApply(filterValue);  
       setFilterBuilderOpen(false);
     }
     else {
@@ -1398,10 +1376,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
   const handleApplyFilterChange = (event: SelectChangeEvent<string>) => {
     const predefinedFilter = sortedPredefinedFilters.find(filter => filter.id === event.target.value[0]);
-    if (predefinedFilter && Array.isArray(predefinedFilter.filter) && predefinedFilter.filter.length > 0) {
-      // Filter should always be object[] in practice, but type allows string[]
-      const filterArray = predefinedFilter.filter as object[];
-      onApply(filterArray);
+
+    if (predefinedFilter) {
+      onApply(predefinedFilter.filter);
       setSelectedSavedFilter(predefinedFilter);
       setFilterValue(predefinedFilter.filter);
       setFilterName(predefinedFilter.name);
