@@ -9,7 +9,9 @@ import {
 import { alpha, useTheme } from "@mui/material/styles";
 import React, { useMemo, useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import ReactDOM from "react-dom";
-import { styled, keyframes } from "@mui/material/styles";
+import { keyframes } from "@mui/material/styles";
+import { CategoryFilterType } from "@/types/filter";
+import { CATEGORY_NAME_MAPPING } from "@/constants/prefilterKeys";
 
 const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
 type MainTab = (typeof MAIN_TABS)[number];
@@ -66,13 +68,6 @@ const ALL_INFRASTRUCTURE_SERVICES_CATEGORIES = [
   "RWA",
 ];
 
-const CATEGORY_NAME_MAPPING: Record<string, string> = {
-  "Options Vaults": "Options Vault",
-  "Onchain Capital Allocation": "Onchain Capital Allocator",
-  "Insurances": "Insurance",
-  "Liquidity Manager": "Liquidity manager",
-};
-
 const getCategoryName = (filterLabel: string): string => {
   return CATEGORY_NAME_MAPPING[filterLabel] || filterLabel;
 };
@@ -107,7 +102,7 @@ const buildFilterFromSelection = (tab: MainTab, filterLabel: string): any[] | nu
 };
 
 interface CategoryFiltersSectionProps {
-  onFilterChange?: (filter: any[] | null) => void;
+  onFilterChange?: (filter: any[] | null, filterContext: CategoryFilterType) => void;
 }
 
 export interface CategoryFiltersSectionRef {
@@ -277,7 +272,7 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
         "Infrastructure & Services": QUICK_FILTERS["Infrastructure & Services"]?.[0] ?? "All",
       });
       if (onFilterChange) {
-        onFilterChange(null);
+        onFilterChange(null, { tab: undefined, category: undefined } );
       }
     },
     clearTooltips: () => {
@@ -292,14 +287,14 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
       isInitialMount.current = false;
       if (onFilterChange) {
         const filter = buildFilterFromSelection(currentTab, activeQuickFilter);
-        onFilterChange(filter);
+        onFilterChange(filter, { tab: currentTab, category: activeQuickFilter } );
       }
       return;
     }
     
     if (onFilterChange) {
       const filter = buildFilterFromSelection(currentTab, activeQuickFilter);
-      onFilterChange(filter);
+      onFilterChange(filter, { tab: currentTab, category: activeQuickFilter });
     }
   }, [currentTab, activeQuickFilter, onFilterChange]);
 
@@ -334,7 +329,7 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
               }
               if (onFilterChange) {
                 const filter = buildFilterFromSelection(tab, selectedFilters[tab] || defaultFilter);
-                onFilterChange(filter);
+                onFilterChange(filter, { tab: currentTab, category: activeQuickFilter });
               }
             }}
           >
@@ -437,7 +432,7 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
                         
                         if (onFilterChange) {
                           const filter = buildFilterFromSelection(currentTab, label);
-                          onFilterChange(filter);
+                          onFilterChange(filter, { tab: currentTab, category: activeQuickFilter });
                         }
                         
                         if (hasTooltip) {

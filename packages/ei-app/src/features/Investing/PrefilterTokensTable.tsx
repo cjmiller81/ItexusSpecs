@@ -345,7 +345,7 @@ export const PrefilterTokensTable: FC<IPrefilterTokensTable> = ({
                 onApply={filter => {
                   onApplyFilter(filter, true);
                 }}
-                filterToAppply={currentFilter}
+                filterToApply={currentFilter}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
               />
             </SimpleBar>
