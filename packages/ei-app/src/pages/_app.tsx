@@ -36,12 +36,19 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     initMocks()
   }, [])
 
+  const extendedPageProps = { 
+    ...pageProps,
+    env: { termsUrl: process.env.NEXT_PUBLIC_APP_TERMS_URL ?? "",
+          appTermsUrl: process.env.APP_TERMS_URL ?? ""
+    }
+  }
+
   return (
     <>
       {mocksStarted && (
-        <RootLayout {...pageProps}>
+        <RootLayout {...extendedPageProps}>
           <SessionWatcher />
-          <Component {...pageProps} />
+          <Component {...extendedPageProps} />
         </RootLayout>
       )}
       {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GA_ID && (

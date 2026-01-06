@@ -36,6 +36,11 @@ const allAuthPaths = [SelfServicesLogin, ErrorPath, SettingsPath, LoginPath, Rec
 
 const OryGatewayContext = createContext<OryContextType | undefined>(undefined)
 
+const env = {
+  termsUrl: process.env.NEXT_PUBLIC_APP_TERMS_URL ?? "",
+  appTermsUrl: process.env.APP_TERMS_URL ?? ""
+}
+
 export function OryAuthGateway({
   children,
   changePasswordRoute,
@@ -252,9 +257,9 @@ const renewSession = async (): Promise<void> => {
         <ThemeProvider theme={theme}>
           <StyledAuthLayout>
             <CssBaseline />
-            {pathname == ErrorPath && <ErrorUi />}
-            {pathname == LoginPath && <Login />}
-            {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} />}
+            {pathname == ErrorPath && <ErrorUi env={env} />}
+            {pathname == LoginPath && <Login env={env} />}
+            {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} env={env} />}
             {pathname == RegistrationPath && <Registration />}
             {pathname == SettingsPath && <Settings />}
           </StyledAuthLayout>

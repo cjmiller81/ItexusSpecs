@@ -25,7 +25,14 @@ const ErrorCard = styled(Box)(({ theme }) => ({
   },
 }))
 
-export const ErrorUi = (): React.JSX.Element => {
+interface ErrorUiProps {
+  env: {
+    termsUrl: string,
+    appTermsUrl: string
+  }
+}
+
+export const ErrorUi = ({ env }: ErrorUiProps): React.JSX.Element => {
   const [error, setError] = useState<string>()
   const [errorMessage, setErrorMessage] = useState<string | null>()
   const [session, setSession] = useState<Session | null>(null)
@@ -175,7 +182,7 @@ export const ErrorUi = (): React.JSX.Element => {
             </Box>
           </Collapse>
         </ErrorCard>
-        <ProtectedByOryLabel />
+        <ProtectedByOryLabel env={env} />
       </Stack>
     </StyledAuthContainer>
   )

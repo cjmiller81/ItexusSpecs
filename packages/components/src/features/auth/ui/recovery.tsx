@@ -11,8 +11,16 @@ import { CustomRecoveryForm } from "./CustomRecoveryForm"
 import ProtectedByOryLabel from "./protectedByOryLabel"
 import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer";
 
-export const Recovery: FC<{ changePasswordRoute: string }> = ({
-  changePasswordRoute,
+interface RecoveryProps {
+  changePasswordRoute: string
+  env: {
+    termsUrl: string,
+    appTermsUrl: string
+  }
+}
+
+export const Recovery: FC<RecoveryProps> = ({
+  changePasswordRoute, env
 }) => {
   const [flow, setFlow] = useState<RecoveryFlow | null>();
 
@@ -188,7 +196,7 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({
             onResend={handleResend}
           />
         )}
-        <ProtectedByOryLabel />
+        <ProtectedByOryLabel env={env} />
       </Stack>
     </StyledAuthContainer>
   )
