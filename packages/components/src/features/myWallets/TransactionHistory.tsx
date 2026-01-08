@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -26,6 +26,26 @@ interface TransactionHistoryProps {
   wallets?: Wallet[] | null;
 }
 
+type DateRange = { from: string; to: string }; // ISO yyyy-mm-dd
+
+const PRESETS: Record<string, number | null> = {
+  'all': null,
+  'last_7': 7,
+  'last_30': 30,
+  'last_90': 90,
+  'custom': null,
+};
+
+function formatISO(date: Date) {
+  return date.toISOString().slice(0, 10); // yyyy-mm-dd
+}
+
+function computeRange(days: number | null): DateRange {
+  const to = new Date();
+  const from = days ? new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000) : new Date();
+  return { from: formatISO(from), to: formatISO(to) };
+}
+
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAddress, wallets }) => {
   const { t } = useTranslation("MyWalletsPage");
   // local selection when wallets list is provided
@@ -35,25 +55,29 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   const resolvedAddress = walletAddress ?? wallets?.find(w => w.walletId === selectedWalletId)?.address ?? wallets?.[0]?.address ?? "";
 
   const {
+    // server / UI state
     loading,
     error,
+    data,
     paginatedTransactions,
-    filteredTransactions,
     dateFilter, setDateFilter,
     typeFilter, setTypeFilter,
     tokenFilter, setTokenFilter,
     hideSpam, setHideSpam,
     uniqueTokens,
     page, setPage,
+    pageSize,
     totalPages,
-    totalFiltered,
-    spamCount
+    totalCount,
+    filteredCount,
+    spamCount,
+    hasMore
   } = useTransactionHistory(resolvedAddress);
 
   // memoized count text to avoid recalcs — must be declared before any early returns
   const sectionCountText = useMemo(() => {
-    return `${totalFiltered} transactions${hideSpam && spamCount ? ` (${spamCount} hidden)` : ""}`;
-  }, [totalFiltered, hideSpam, spamCount]);
+    return `${filteredCount} transactions${hideSpam && spamCount ? ` (${spamCount} hidden)` : ""}`;
+  }, [filteredCount, hideSpam, spamCount]);
 
   // keep dropdown in sync if external walletAddress prop provided
   React.useEffect(() => {
@@ -65,9 +89,60 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
 
   const handleWalletSelect = (e: SelectChangeEvent<string>) => {
     setSelectedWalletId(e.target.value);
-    // reset page when wallet changes
-    setPage(1);
+    // reset page when wallet changes (server expects 0-based page)
+    setPage(0);
   };
+
+  // Date range state
+  const [preset, setPreset] = useState<string>('last_7');
+  const initial = computeRange(PRESETS['last_7']);
+  const [fromDate, setFromDate] = useState<string>(initial.from);
+  const [toDate, setToDate] = useState<string>(initial.to);
+  const [customTouched, setCustomTouched] = useState(false);
+
+  useEffect(() => {
+    // notify parent / trigger API whenever preset changes to non-custom
+    if (preset !== 'custom') {
+      if (preset === 'all') {
+        // "All Time" — clear date filter so API can request all records
+        console.log('[DatePreset] preset=all -> clearing dateFilter');
+        setDateFilter('all');
+        setPage(0);
+        setCustomTouched(false);
+        return;
+      }
+
+      const days = PRESETS[preset];
+      const r = computeRange(days);
+      setFromDate(r.from);
+      setToDate(r.to);
+      console.log('[DatePreset] setting dateFilter', r);
+      setDateFilter({ from: r.from, to: r.to });
+      setPage(0); // reset to first page (server 0-based) to trigger refetch / UI update
+      setCustomTouched(false);
+    }
+    // if preset === 'custom' do not auto-trigger here
+  }, [preset]);
+
+  function handleApplyCustom() {
+    // validate
+    if (!fromDate || !toDate) {
+      console.warn('[DateRange] Apply aborted - missing from/to', { fromDate, toDate });
+      return;
+    }
+    if (new Date(fromDate) > new Date(toDate)) {
+      console.warn('fromDate must be <= toDate');
+      return;
+    }
+    console.log('[DateRange] Apply clicked -> setting dateFilter', { from: fromDate, to: toDate });
+    setDateFilter({ from: fromDate, to: toDate });
+    setPage(0); // ensure API is called for server page 0 with new date filter
+    setCustomTouched(false);
+  }
+
+  function handleResetToPreset(p: string) {
+    setPreset(p);
+  }
 
   if (!resolvedAddress) {
     return (
@@ -166,23 +241,23 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         )}
       </Box>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <button
+         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+           <button
             className="btn btn-primary"
-            onClick={() => exportTransactionsXlsx(filteredTransactions)}
-            style={{
-              background: "rgba(16,185,129,0.15)",
-              border: "1px solid rgba(16,185,129,0.3)",
-              color: "#10b981",
-              padding: "0.5rem 1rem",
-              borderRadius: 8,
-              cursor: "pointer",
-            }}
-          >
-            📊 Export XLSX
-          </button>
-        </div>
-      </div>
+            onClick={() => exportTransactionsXlsx(paginatedTransactions)}
+             style={{
+               background: "rgba(16,185,129,0.15)",
+               border: "1px solid rgba(16,185,129,0.3)",
+               color: "#10b981",
+               padding: "0.5rem 1rem",
+               borderRadius: 8,
+               cursor: "pointer",
+             }}
+           >
+             📊 Export XLSX
+           </button>
+         </div>
+       </div>
 
       {/* Main Section */}
       <div className="transaction-section" style={{ marginTop: 12 }}>
@@ -194,16 +269,24 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         {/* Filters */}
         <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #4E4E57" }}>
           <TransactionFilters
-            dateFilter={dateFilter}
-            setDateFilter={setDateFilter}
-            typeFilter={typeFilter}
-            setTypeFilter={setTypeFilter}
-            tokenFilter={tokenFilter}
-            setTokenFilter={setTokenFilter}
-            hideSpam={hideSpam}
-            setHideSpam={setHideSpam}
-            uniqueTokens={uniqueTokens}
-          />
+            // new date controls (presets + custom)
+            dateRange={{ from: fromDate, to: toDate }}
+            setDateRange={(v) => (setDateFilter as unknown as (v: DateRange) => void)(v)}
+            preset={preset}
+            setPreset={setPreset}
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            onApplyCustom={handleApplyCustom}
+             typeFilter={typeFilter}
+             setTypeFilter={setTypeFilter}
+             tokenFilter={tokenFilter}
+             setTokenFilter={setTokenFilter}
+             hideSpam={hideSpam}
+             setHideSpam={setHideSpam}
+             uniqueTokens={uniqueTokens}
+           />
         </div>
 
         {/* Transaction List */}
@@ -222,14 +305,15 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         {/* Pagination */}
         <div style={{ padding: 12, borderTop: "1px solid #4E4E57", display: "flex", justifyContent: "center" }}>
           <Pagination
-            page={page}
+            // map server 0-based page -> UI 1-based page
+            page={(page ?? 0) + 1}
             totalPages={totalPages}
-            totalItems={totalFiltered}
-            itemsPerPage={10}
-            onPageChange={(p) => setPage(p)}
+            totalItems={filteredCount}
+            itemsPerPage={pageSize}
+            onPageChange={(p) => setPage(Math.max(0, p - 1))}
           />
-        </div>
-      </div>
-    </div>
-  );
-};
+         </div>
+       </div>
+     </div>
+   );
+ };
