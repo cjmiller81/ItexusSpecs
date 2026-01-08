@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { TransactionHistoryResponse } from '../types/transactions';
 import { fetchTransactions } from "../api/transactions";
 
+type DateRange = { from: string; to: string };
+type DateFilter = 'all' | DateRange | string; // string kept for backward compatibility ('7','30','90')
+
 export function useTransactionHistory(walletAddress: string) {
   // API data state
   const [data, setData] = useState<TransactionHistoryResponse | null>(null);
@@ -9,73 +12,86 @@ export function useTransactionHistory(walletAddress: string) {
   const [error, setError] = useState<Error | null>(null);
   
   // Filter state
-  const [dateFilter, setDateFilter] = useState('all');   // 'all' | '7' | '30' | '90'
+  const [dateFilter, setDateFilter] = useState<DateFilter>('all');   // 'all' | '7' | '30' | '90' | {from,to}
   const [typeFilter, setTypeFilter] = useState('all');
   const [tokenFilter, setTokenFilter] = useState('all');
   const [hideSpam, setHideSpam] = useState(true);
   
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
-  
-  // Fetch on mount
-  useEffect(() => {
-  async function load() {
-    setLoading(true);
-    setError(null);
+  // Server-side pagination state (server expects `page` and `pageSize`)
+  // server page is 0-based by default; initialize to 0
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(50); // default server pageSize
 
-    try {
-      const response = await fetchTransactions(walletAddress);
-      setData(response);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
+  // Fetch on mount and when walletAddress / dateFilter / page / pageSize / hideSpam change
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const params: Record<string, any> = { page, pageSize };
+        if (walletAddress) {
+          if (dateFilter && dateFilter !== 'all' && typeof dateFilter !== 'string') {
+            params.fromDate = dateFilter.from;
+            params.toDate = dateFilter.to;
+          } else if (typeof dateFilter === 'string' && dateFilter !== 'all') {
+            params.days = dateFilter;
+          }
+        }
+
+        // includeSpam = true when we SHOW spam (hideSpam === false)
+        // default includeSpam = false matches hideSpam === true
+        params.includeSpam = !hideSpam;
+
+        // fetchTransactions expects a single object param — pass address + params together
+        const response = await fetchTransactions({ address: walletAddress, ...params });
+        if (!mounted) return;
+        setData(response);
+        // update pageSize from server if provided
+        if (response?.pageSize && response.pageSize !== pageSize) {
+          setPageSize(response.pageSize);
+        }
+      } catch (err) {
+        if (!mounted) return;
+        setError(err as Error);
+      } finally {
+        if (!mounted) return;
+        setLoading(false);
+      }
+    }
+
+    if (walletAddress) {
+      load();
+    } else {
+      // clear if no address
+      setData(null);
       setLoading(false);
     }
-  }
 
-  if (walletAddress) {
-    load();
-  }
-}, [walletAddress]);
+    return () => { mounted = false; };
+  }, [walletAddress, dateFilter, page, pageSize, hideSpam]); // <-- added hideSpam
 
-  
-  // Derived: filtered transactions
-  const filteredTransactions = useMemo(() => {
-    if (!data?.transactions) return [];
-    
-    return data.transactions.filter(tx => {
-      // Spam filter - use ONLY isSpam boolean
-      if (hideSpam && tx.spam.isSpam) return false;
-      
-      // Date filter
-      if (dateFilter !== 'all') {
-        const days = parseInt(dateFilter);
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - days);
-        if (new Date(tx.timestamp) < cutoff) return false;
-      }
-      
-      // Type filter
-      if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
-      
-      // Token filter
-      if (tokenFilter !== 'all') {
-        const hasToken = tx.transfers.some(t => t.symbol === tokenFilter);
-        if (!hasToken) return false;
-      }
-      
-      return true;
-    });
-  }, [data, dateFilter, typeFilter, tokenFilter, hideSpam]);
-  
-  // Derived: paginated transactions
+  // When the spam toggle changes, reset to first server page so the refetch uses page=0 immediately
+  useEffect(() => {
+    setPage(0);
+  }, [hideSpam]);
+
+  // Use server-provided transactions as paginated result
   const paginatedTransactions = useMemo(() => {
-    const start = (page - 1) * itemsPerPage;
-    return filteredTransactions.slice(start, start + itemsPerPage);
-  }, [filteredTransactions, page]);
-  
-  // Derived: unique token options for filter
+    return data?.transactions ?? [];
+  }, [data]);
+
+  // Derived counts and paging info from server response
+  const totalCount = data?.totalCount ?? 0;
+  const filteredCount = data?.filteredCount ?? (data?.totalCount ?? 0);
+  const spamCount = data?.spamCount ?? 0;
+  const serverPage = data?.page ?? page;
+  const serverPageSize = data?.pageSize ?? pageSize;
+  const hasMore = data?.hasMore ?? false;
+  const totalPages = Math.max(1, Math.ceil(filteredCount / (serverPageSize || 1)));
+
+  // Derived: unique token options for filter (from returned page(s))
   const uniqueTokens = useMemo(() => {
     const tokens = new Set<string>();
     data?.transactions.forEach(tx => 
@@ -83,20 +99,14 @@ export function useTransactionHistory(walletAddress: string) {
     );
     return Array.from(tokens).sort();
   }, [data]);
-  
-  // Derived: spam count
-  const spamCount = useMemo(() => 
-    data?.transactions.filter(tx => tx.spam.isSpam).length ?? 0
-  , [data]);
-  
+
   return {
     // Data
     data,
     loading,
     error,
     
-    // Transactions
-    filteredTransactions,
+    // Transactions (server page)
     paginatedTransactions,
     
     // Filters
@@ -108,12 +118,15 @@ export function useTransactionHistory(walletAddress: string) {
     // Filter options
     uniqueTokens,
     
-    // Pagination
-    page, setPage,
-    totalPages: Math.ceil(filteredTransactions.length / itemsPerPage),
-    
-    // Counts
-    totalFiltered: filteredTransactions.length,
-    spamCount
+    // Pagination (server-driven)
+    page: serverPage,
+    setPage,
+    pageSize: serverPageSize,
+    setPageSize,
+    totalPages,
+    totalCount,
+    filteredCount,
+    spamCount,
+    hasMore,
   };
 }
