@@ -7,10 +7,12 @@ import {
   SelectChangeEvent,
   Card,
   FormControl,
+  Button,
+  TablePagination,
 } from "@mui/material";
 import { Wallet } from "../../models";
 import { useTranslation } from "react-i18next";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DownloadIcon from "@mui/icons-material/Download";
 import { useTransactionHistory } from "../../hooks/useTransactionHistory";
 import { formatAddress } from "../../utils/formatters";
 import { exportTransactionsXlsx } from "../../utils/exportXlsx";
@@ -18,8 +20,8 @@ import { Spinner, Center } from "@chakra-ui/react";
 import { Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 import { TransactionFilters } from "./TransactionFilters";
 import { TransactionRow } from "./TransactionRow";
-import Pagination from "./Pagination";
 import "./TransactionHistory.css";
+import { useTheme } from "@mui/system";
 
 interface TransactionHistoryProps {
   walletAddress?: string;
@@ -67,6 +69,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     uniqueTokens,
     page, setPage,
     pageSize,
+    setPageSize,
     totalPages,
     totalCount,
     filteredCount,
@@ -99,6 +102,9 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   const [fromDate, setFromDate] = useState<string>(initial.from);
   const [toDate, setToDate] = useState<string>(initial.to);
   const [customTouched, setCustomTouched] = useState(false);
+
+  const theme = useTheme();
+  const borderColors = useMemo(() => ({ borderColor: theme.palette.mode === "dark" ? "#4E4E57" : "#B5B1B1" }), [theme]);
 
   useEffect(() => {
     // notify parent / trigger API whenever preset changes to non-custom
@@ -200,120 +206,128 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     <div className="transaction-history">
       {/* Header */}
       <div className="header" style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-
-      {/* Wallet Selection */}
-      <Box sx={{ mb: 3 }}>
-        <Select
-          displayEmpty
-          value={selectedWalletId}
-          onChange={handleWalletSelect}
-          renderValue={() => selectedWalletId ? wallets?.find(w => w.walletId === selectedWalletId)?.walletName || "" : t("SelectSavedWAallet", { ns: "IndexModelingSection", defaultValue: "SELECT SAVED WALLET" })}
-          sx={{
-            backgroundColor: "#219a83",
-            fontSize: "12px",
-            fontWeight: 500,
-            color: "white",
-            width: "100%",
-            maxWidth: "400px",
-            maxHeight: "40px",
-            marginBottom: selectedWalletId ? "12px" : 0,
-            "& .MuiSelect-icon": { color: "white" },
-          }}
-        >
-          {wallets?.map(wallet => (
-            <MenuItem key={wallet.walletId} value={wallet.walletId}>
-              {wallet.walletName || wallet.address}
-            </MenuItem>
-          ))}
-        </Select>
-
-        {resolvedAddress && (
-          <Typography
-            variant="body2"
+        {/* Wallet Selection */}
+        <Box sx={{ mb: 3 }}>
+          <Select
+            displayEmpty
+            value={selectedWalletId}
+            onChange={handleWalletSelect}
+            renderValue={() => selectedWalletId ? wallets?.find(w => w.walletId === selectedWalletId)?.walletName || "" : t("SelectSavedWAallet", { ns: "IndexModelingSection", defaultValue: "SELECT SAVED WALLET" })}
             sx={{
-              fontSize: "0.875rem",
-              color: "#94a3b8",
-              mt: 1,
+              backgroundColor: "#219a83",
+              fontSize: "12px",
+              fontWeight: 500,
+              color: "white",
+              width: "100%",
+              maxWidth: "400px",
+              maxHeight: "40px",
+              marginBottom: selectedWalletId ? "12px" : 0,
+              "& .MuiSelect-icon": { color: "white" },
             }}
           >
-            {resolvedAddress}
-          </Typography>
-        )}
-      </Box>
+            {wallets?.map(wallet => (
+              <MenuItem key={wallet.walletId} value={wallet.walletId}>
+                {wallet.walletName || wallet.address}
+              </MenuItem>
+            ))}
+          </Select>
 
-         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-           <button
-            className="btn btn-primary"
-            onClick={() => exportTransactionsXlsx(paginatedTransactions)}
-             style={{
-               background: "rgba(16,185,129,0.15)",
-               border: "1px solid rgba(16,185,129,0.3)",
-               color: "#10b981",
-               padding: "0.5rem 1rem",
-               borderRadius: 8,
-               cursor: "pointer",
-             }}
-           >
-             📊 Export XLSX
-           </button>
-         </div>
-       </div>
+          {resolvedAddress && (
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: "0.875rem",
+                color: "#94a3b8",
+                mt: 1,
+              }}
+            >
+              {resolvedAddress}
+            </Typography>
+          )}
+        </Box>
+      </div>
 
       {/* Main Section */}
-      <div className="transaction-section" style={{ marginTop: 12 }}>
-        <div className="section-header" style={{ display: "flex", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: "1px solid #4E4E57" }}>
-          <span className="section-title" style={{ fontWeight: 600 }}>Transactions</span>
-          <span className="section-count" style={{ color: "#64748b" }}>{sectionCountText}</span>
-        </div>
-
-        {/* Filters */}
-        <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid #4E4E57" }}>
-          <TransactionFilters
-            // new date controls (presets + custom)
-            dateRange={{ from: fromDate, to: toDate }}
-            setDateRange={(v) => (setDateFilter as unknown as (v: DateRange) => void)(v)}
-            preset={preset}
-            setPreset={setPreset}
-            fromDate={fromDate}
-            setFromDate={setFromDate}
-            toDate={toDate}
-            setToDate={setToDate}
-            onApplyCustom={handleApplyCustom}
-             typeFilter={typeFilter}
-             setTypeFilter={setTypeFilter}
-             tokenFilter={tokenFilter}
-             setTokenFilter={setTokenFilter}
-             hideSpam={hideSpam}
-             setHideSpam={setHideSpam}
-             uniqueTokens={uniqueTokens}
-           />
-        </div>
-
-        {/* Transaction List */}
-        <div className="transaction-list" style={{ padding: "0.75rem 1rem", maxHeight: "60vh", overflowY: "auto" }}>
-          {paginatedTransactions.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
-              📭 No transactions found matching filters
+      {selectedWalletId && (
+        <div className="transaction-section" style={{ marginTop: 12, ...borderColors }}>
+          <div
+            className="section-header"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "1rem 1.25rem",
+              borderBottom: "1px solid #4E4E57",
+              ...borderColors
+            }}
+          >
+            <span className="section-title" style={{ fontWeight: 600 }}>Transactions</span>
+            <div>
+              <span className="section-count" style={{ color: "#64748b" }}>{sectionCountText}</span>
+              <Button
+                onClick={() => exportTransactionsXlsx(paginatedTransactions)}
+                variant="outlined"
+                sx={{ ml: 4, marginRight: "17px" }}
+              >
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  <DownloadIcon />
+                  {t("Export")}
+                </Box>
+              </Button>
             </div>
-          ) : (
-            paginatedTransactions.map(tx => (
-              <TransactionRow key={tx.hash} transaction={tx} />
-            ))
-          )}
-        </div>
+          </div>
 
-        {/* Pagination */}
-        <div style={{ padding: 12, borderTop: "1px solid #4E4E57", display: "flex", justifyContent: "center" }}>
-          <Pagination
+          {/* Filters */}
+          <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid", ...borderColors }}>
+            <TransactionFilters
+              // new date controls (presets + custom)
+              dateRange={{ from: fromDate, to: toDate }}
+              setDateRange={(v) => (setDateFilter as unknown as (v: DateRange) => void)(v)}
+              preset={preset}
+              setPreset={setPreset}
+              fromDate={fromDate}
+              setFromDate={setFromDate}
+              toDate={toDate}
+              setToDate={setToDate}
+              onApplyCustom={handleApplyCustom}
+              typeFilter={typeFilter}
+              setTypeFilter={setTypeFilter}
+              tokenFilter={tokenFilter}
+              setTokenFilter={setTokenFilter}
+              hideSpam={hideSpam}
+              setHideSpam={setHideSpam}
+              uniqueTokens={uniqueTokens}
+            />
+          </div>
+
+          {/* Transaction List */}
+          <div className="transaction-list" style={{ padding: "0.75rem 1rem", maxHeight: "60vh", overflowY: "auto" }}>
+            {paginatedTransactions.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
+                📭 No transactions found matching filters
+              </div>
+            ) : (
+              paginatedTransactions.map(tx => (
+                <TransactionRow key={tx.hash} transaction={tx} borderColors={borderColors} />
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          <TablePagination
+            component="div"
+            count={filteredCount}
             // map server 0-based page -> UI 1-based page
-            page={(page ?? 0) + 1}
-            totalPages={totalPages}
-            totalItems={filteredCount}
-            itemsPerPage={pageSize}
-            onPageChange={(p) => setPage(Math.max(0, p - 1))}
+            page={page}
+            rowsPerPage={pageSize}
+            onPageChange={(_event, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(event) => {
+              setPageSize(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 25, 50, 100]}
           />
-         </div>
-       </div>
+        </div>
+      )}
      </div>
    );
  };

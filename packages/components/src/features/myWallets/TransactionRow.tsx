@@ -14,9 +14,10 @@ const CHAIN_CONFIG: Record<string, { name: string; class: string; icon: string }
 
 interface TransactionRowProps {
   transaction: Transaction;
+  borderColors: { borderColor: string };
 }
 
-export function TransactionRow({ transaction }: TransactionRowProps) {
+export function TransactionRow({ transaction, borderColors }: TransactionRowProps) {
   const typeConfig = TYPE_CONFIG[transaction.type] || TYPE_CONFIG.unknown;
   const chainCfg = CHAIN_CONFIG[transaction.chainName] || { name: transaction.chainName, class: '', icon: '🔗' };
 
@@ -24,7 +25,7 @@ export function TransactionRow({ transaction }: TransactionRowProps) {
   const meaningfulTransfers = transaction.transfers.filter(t => t.amount > 0);
 
   return (
-    <div className={`tx-row ${transaction.spam.isSpam ? 'spam' : ''}`}>
+    <div className={`tx-row ${transaction.spam.isSpam ? 'spam' : ''}`} style={borderColors}>
       {/* Type Icon */}
       <div className={`tx-icon ${transaction.type}`}>
         {typeConfig.icon}
