@@ -1,4 +1,5 @@
-import React from "react";
+import { useTheme } from "@mui/system";
+import { useMemo } from "react";
 
 interface DateRange { from: string; to: string; }
 
@@ -23,7 +24,14 @@ interface FiltersProps {
 }
 
 export function TransactionFilters(props: FiltersProps) {
+  const theme = useTheme();
   const today = new Date().toISOString().slice(0, 10);
+
+  const filterColors = useMemo(() => ({ 
+    backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#fff",
+    color: theme.palette.mode === "dark" ? "#cbd5e1" : "#4E4E57",
+    borderColor: theme.palette.mode === "dark" ? "#4E4E57" : "#B5B1B1" 
+  }), [theme]);
 
   return (
     <div className="filters" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -33,6 +41,7 @@ export function TransactionFilters(props: FiltersProps) {
           className="filter-select"
           value={props.preset}
           onChange={(e) => props.setPreset(e.target.value)}
+          style={filterColors}
         >
           <option value="all">All Time</option>
           <option value="last_7">Last 7 Days</option>
@@ -87,6 +96,7 @@ export function TransactionFilters(props: FiltersProps) {
         className="filter-select"
         value={props.typeFilter}
         onChange={(e) => props.setTypeFilter(e.target.value)}
+        style={filterColors}
       >
         <option value="all">All Types</option>
         <option value="deposit">Deposit</option>
@@ -102,6 +112,7 @@ export function TransactionFilters(props: FiltersProps) {
         className="filter-select"
         value={props.tokenFilter}
         onChange={(e) => props.setTokenFilter(e.target.value)}
+        style={filterColors}
       >
         <option value="all">All Tokens</option>
         {props.uniqueTokens.map((token) => (
