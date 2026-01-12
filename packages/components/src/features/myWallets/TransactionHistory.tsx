@@ -22,6 +22,8 @@ import { TransactionFilters } from "./TransactionFilters";
 import { TransactionRow } from "./TransactionRow";
 import "./TransactionHistory.css";
 import { useTheme } from "@mui/system";
+import { TransactionSyncStatus } from "./TransactionSyncStatus";
+import { TransactionSyncButton } from "./TransactionSyncButton";
 
 interface TransactionHistoryProps {
   walletAddress?: string;
@@ -204,10 +206,12 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
 
   return (
     <div className="transaction-history">
-      {/* Header */}
       <div className="header" style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        {/* Wallet Selection */}
-        <Box sx={{ mb: 3 }}>
+
+      {/* Wallet selection with address underneath, sync controls directly to the right of dropdown */}
+      <Box sx={{ mb: 3, display: "flex", alignItems: "flex-start", gap: 2, flexWrap: "wrap" }}>
+        {/* Left column: dropdown + address */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <Select
             displayEmpty
             value={selectedWalletId}
@@ -238,13 +242,20 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
               sx={{
                 fontSize: "0.875rem",
                 color: "#94a3b8",
-                mt: 1,
+                mt: 0.5,
               }}
             >
               {resolvedAddress}
             </Typography>
           )}
-        </Box>
+        </div>
+
+        {/* Sync controls placed immediately to the right of the dropdown */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
+          <TransactionSyncStatus walletAddress={resolvedAddress} />
+          <TransactionSyncButton walletAddress={resolvedAddress} />
+        </div>
+      </Box>
       </div>
 
       {/* Main Section */}
