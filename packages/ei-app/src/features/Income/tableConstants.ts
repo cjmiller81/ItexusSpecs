@@ -181,7 +181,7 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     dataField: DefiField.ApyBaseInception,
     dataType: "number",
   },
-  {
+  /*{
     caption: DefiLabel.DepositWithdrawFees,
     dataField: DefiField.DepositWithdrawFees,
     dataType: "number",
@@ -190,5 +190,5 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.ProtocolFees,
     dataField: DefiField.ProtocolFees,
     dataType: "number",
-  },
+  },*/
 ];

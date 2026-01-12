@@ -54,9 +54,32 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   const { t } = useTranslation("MyWalletsPage");
   // local selection when wallets list is provided
   const [selectedWalletId, setSelectedWalletId] = useState<string>("");
+  const [hasUserSelectedWallet, setHasUserSelectedWallet] = useState<boolean>(false);
+
+  // Determine if we're in "selection mode" (wallets provided but no explicit walletAddress)
+  const isSelectionMode = !walletAddress && wallets && wallets.length > 0;
 
   // resolve address: explicit prop walletAddress wins, otherwise selected from wallets
-  const resolvedAddress = walletAddress ?? wallets?.find(w => w.walletId === selectedWalletId)?.address ?? wallets?.[0]?.address ?? "";
+  const resolvedAddress = useMemo(() => {
+    // If explicit walletAddress is provided, use it immediately
+    if (walletAddress) {
+      setHasUserSelectedWallet(true);
+      return walletAddress;
+    }
+    
+    // If we have a selected wallet ID from user selection
+    if (selectedWalletId && wallets) {
+      const selectedWallet = wallets.find(w => w.walletId === selectedWalletId);
+      if (selectedWallet) {
+        setHasUserSelectedWallet(true);
+        return selectedWallet.address;
+      }
+    }
+    
+    // No selection yet
+    setHasUserSelectedWallet(false);
+    return "";
+  }, [walletAddress, wallets, selectedWalletId]);
 
   const {
     // server / UI state
@@ -88,12 +111,17 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   React.useEffect(() => {
     if (walletAddress && wallets) {
       const w = wallets.find(w => w.address === walletAddress);
-      if (w) setSelectedWalletId(w.walletId);
+      if (w) {
+        setSelectedWalletId(w.walletId);
+        setHasUserSelectedWallet(true);
+      }
     }
   }, [walletAddress, wallets]);
 
   const handleWalletSelect = (e: SelectChangeEvent<string>) => {
-    setSelectedWalletId(e.target.value);
+    const newWalletId = e.target.value;
+    setSelectedWalletId(newWalletId);
+    setHasUserSelectedWallet(true);
     // reset page when wallet changes (server expects 0-based page)
     setPage(0);
   };
@@ -152,36 +180,6 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     setPreset(p);
   }
 
-  if (!resolvedAddress) {
-    return (
-      <Box sx={{ width: "100%", p: 3 }}>
-        <Typography variant="body1" color="text.secondary">
-          {t?.("SelectSavedWallet") ?? "Select a wallet to view transactions"}
-        </Typography>
-        {wallets && (
-          <FormControl sx={{ mt: 2, minWidth: 240 }}>
-            <Select
-              displayEmpty
-              value={selectedWalletId}
-              onChange={handleWalletSelect}
-              renderValue={() =>
-                selectedWalletId
-                  ? wallets.find(w => w.walletId === selectedWalletId)?.walletName || ""
-                  : t?.("SelectSavedWAallet", { ns: "IndexModelingSection", defaultValue: "SELECT SAVED WALLET" })
-              }
-            >
-              {wallets.map(w => (
-                <MenuItem key={w.walletId} value={w.walletId}>
-                  {w.walletName ?? w.address}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-      </Box>
-    );
-  }
-
   if (loading) {
     return (
       <Center py={10}>
@@ -216,7 +214,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
             displayEmpty
             value={selectedWalletId}
             onChange={handleWalletSelect}
-            renderValue={() => selectedWalletId ? wallets?.find(w => w.walletId === selectedWalletId)?.walletName || "" : t("SelectSavedWAallet", { ns: "IndexModelingSection", defaultValue: "SELECT SAVED WALLET" })}
+            renderValue={() => selectedWalletId ? wallets?.find(w => w.walletId === selectedWalletId)?.walletName || "" : "SELECT SAVED WALLET" }
             sx={{
               backgroundColor: "#219a83",
               fontSize: "12px",
@@ -251,15 +249,17 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         </div>
 
         {/* Sync controls placed immediately to the right of the dropdown */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-          <TransactionSyncStatus walletAddress={resolvedAddress} />
-          <TransactionSyncButton walletAddress={resolvedAddress} />
-        </div>
+        {resolvedAddress && (
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: isSelectionMode ? 18 : 0 }}>
+            <TransactionSyncStatus walletAddress={resolvedAddress} />
+            <TransactionSyncButton walletAddress={resolvedAddress} />
+          </div>
+        )}
       </Box>
       </div>
 
-      {/* Main Section */}
-      {selectedWalletId && (
+      {/* Main Section - Only show when we have a resolved address */}
+      {resolvedAddress && (
         <div className="transaction-section" style={{ marginTop: 12, ...borderColors }}>
           <div
             className="section-header"

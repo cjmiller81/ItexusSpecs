@@ -580,7 +580,7 @@
     "TourIncomeFilterBuilderTitle": "Filter Builder",
     "TourIncomeFilterBuilderText": "View the filter-builder videos and build your own custom filters",
     "TourIncomeClearFiltersText": "Clear all filters to reset\nyour view",
-    "TourIncomeCurrentFilterText": "Your current filter appears\nhere",
+    "TourIncomeCurrentFilterText": "Your current filter appears\nhere. Click the text to edit it.",
     "TourIncomeExportText": "Export table to a spreadsheet\n(subscription only)"
   },
   "Support": {
@@ -636,7 +636,7 @@
     "TourMCEWStrategyText": "You are in the MCEW strategy of the investing platform",
     "TourQuickSortTitle": "Quick Sort and Filter",
     "TourQuickSortText": "Quickly sort and filter the table in the first two rows",
-    "TourCurrentFilterText": "Your current filter appears\nhere",
+    "TourCurrentFilterText": "Your current filter appears\nhere. Click the text to edit it.",
     "TourPrebuiltFiltersText": "Your pre-built filters appear\nhere",
     "TourPrebuiltFiltersStep8Text": "Select a pre-build strategy filter here to update the Model Results below.",
     "TourCustomFiltersTitle": "Custom Filters",
@@ -783,7 +783,7 @@
     "TourIncomeFilterBuilderTitle": "Filter Builder",
     "TourIncomeFilterBuilderText": "View the filter-builder videos and build your own custom filters",
     "TourIncomeClearFiltersText": "Clear all filters to reset\nyour view",
-    "TourIncomeCurrentFilterText": "Your current filter appears\nhere",
+    "TourIncomeCurrentFilterText": "Your current filter appears\nhere. Click the text to edit it.",
     "TourIncomeExportText": "Export table to a spreadsheet\n(subscription only)"
   },
   "Modals":{

@@ -395,7 +395,8 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
               {quickFilters.map(label => {
                 const tooltipText = CATEGORY_TOOLTIPS[label];
                 const hasTooltip = Boolean(tooltipText && !label.startsWith("All "));
-                const isPinned = pinnedTooltip === label;
+                //const isPinned = pinnedTooltip === label;
+                const isPinned = false; // Disable pinned tooltips for now
                 const isHovered = hoveredTooltip === label;
                 const isActive = label === activeQuickFilter;
                 const showTooltip = hasTooltip && (isHovered || (isPinned && (hoveredTooltip === null || hoveredTooltip === label)));
@@ -458,7 +459,7 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
                         ...(isHovered && !isActive && {
                           boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
                         }),
-                        ...(isPinned && {
+                        /*...(isPinned && {
                           boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.25), 0 4px 12px rgba(16, 185, 129, 0.3)",
                           "&::before": {
                             content: '""',
@@ -470,7 +471,7 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
                             zIndex: -1,
                             animation: `${pulseGlow} 2s ease-in-out infinite`,
                           },
-                        }),
+                        }),*/
                       }}
                     />
                     {hasTooltip && showTooltip && typeof window !== "undefined" && chipRefs.current[label] && ReactDOM.createPortal(

@@ -56,14 +56,10 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
   borderRadius: 6,
   padding: theme.spacing(0.25, 3),
   backgroundColor: "#219a83",
-  color: "#0f172a",
   display: "flex",
   justifyContent: "space-between",
   "&:hover": {
     backgroundColor: "#1c8d74",
-  },
-  "& .column-chooser-arrow": {
-    color: "#0f172a",
   },
 }));
 
