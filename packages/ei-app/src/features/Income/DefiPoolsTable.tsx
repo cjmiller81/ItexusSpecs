@@ -64,16 +64,12 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
   borderRadius: 6,
   padding: theme.spacing(0.25, 3),
   backgroundColor: "#219a83",
-  color: "#0f172a",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   gap: theme.spacing(1),
   "&:hover": {
     backgroundColor: "#1c8d74",
-  },
-  "& .column-chooser-arrow": {
-    color: "#0f172a",
   },
 }));
 
@@ -766,7 +762,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           customizeText={toPercentageField}
           width="auto"
         />
-        <Column
+        {/*<Column
           dataField={DefiField.DepositWithdrawFees}
           caption={DefiLabel.DepositWithdrawFees}
           alignment="left"
@@ -787,7 +783,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           customizeText={toPercentageFieldWithZero}
           width="auto"
-        />
+        />*/}
         <Column
           dataField={DefiField.VolumeUsd1d}
           caption={DefiLabel.VolumeUsd1d}
