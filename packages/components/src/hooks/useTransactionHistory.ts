@@ -107,10 +107,7 @@ export function useTransactionHistory(walletAddress: string) {
   useEffect(() => {
     if (!data || (allDateFilterRange.from && allDateFilterRange.to)) return;
     const loadLastPage = async () => {
-      const targetPage = totalPages - 1;
-      if (targetPage === 0) return; // already have all data in first page
-      
-      const params: Record<string, any> = { page: targetPage, pageSize, includeSpam: !hideSpam };
+      const params: Record<string, any> = { page: totalPages - 1, pageSize, includeSpam: !hideSpam };
       const response = await fetchTransactions({ address: walletAddress, ...params });
       const oldestDate = response?.transactions[response?.transactions?.length - 1]?.timestamp;
       setAllDateFilterRange({ 
