@@ -13,6 +13,7 @@ export function AppDatePicker({ required, tooltip, label, ...props }: Props) {
           fieldLabel={label}
           tooltip={tooltip}
           required={required}
+          {...props}
         />
         <DatePicker {...props} />
       </FormControl>

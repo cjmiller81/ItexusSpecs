@@ -424,12 +424,12 @@
   margin-left: 0.5rem;
 }
 .transaction-history .date-input {
-  background: #1f2937;
-  border: 1px solid #374151;
-  color: #e6eef8;
-  padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.8125rem;
+  width: 150px;
+  input {
+    padding: 5px 10px 4px;
+  }
 }
 .transaction-history .date-input:focus { outline: none; border-color: #10b981; }
 

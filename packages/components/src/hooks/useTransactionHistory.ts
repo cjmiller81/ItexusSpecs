@@ -100,6 +100,31 @@ export function useTransactionHistory(walletAddress: string) {
     return Array.from(tokens).sort();
   }, [data]);
 
+  const [allDateFilterRange, setAllDateFilterRange] = 
+    useState<{ from: Date | undefined, to: Date | undefined }>({ from: undefined, to: undefined });
+
+  // TODO: Optimization way: move getting oldest/newest date for All preset to the BE side in future
+  useEffect(() => {
+    if (!data || (allDateFilterRange.from && allDateFilterRange.to)) return;
+    const loadLastPage = async () => {
+      const targetPage = totalPages - 1;
+      if (targetPage === 0) return; // already have all data in first page
+      
+      const params: Record<string, any> = { page: targetPage, pageSize, includeSpam: !hideSpam };
+      const response = await fetchTransactions({ address: walletAddress, ...params });
+      const oldestDate = response?.transactions[response?.transactions?.length - 1]?.timestamp;
+      setAllDateFilterRange({ 
+        from: oldestDate ? new Date(oldestDate) : undefined, 
+        to: data?.transactions[0]?.timestamp ? new Date(data?.transactions[0]?.timestamp) : undefined 
+      });
+    };
+    loadLastPage();
+
+    return () => {
+      setAllDateFilterRange({ from: undefined, to: undefined });
+    }
+  }, [data, walletAddress]);
+
   return {
     // Data
     data,
@@ -114,6 +139,7 @@ export function useTransactionHistory(walletAddress: string) {
     typeFilter, setTypeFilter,
     tokenFilter, setTokenFilter,
     hideSpam, setHideSpam,
+    allDateFilterRange,
     
     // Filter options
     uniqueTokens,

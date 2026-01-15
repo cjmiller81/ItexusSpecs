@@ -1,17 +1,19 @@
 import { useTheme } from "@mui/system";
 import { useMemo } from "react";
+import { AppDatePicker } from "../../components";
+import { Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 interface DateRange { from: string; to: string; }
 
 interface FiltersProps {
-  dateRange: DateRange;
-  setDateRange: (v: DateRange) => void;
   preset: string;
   setPreset: (v: string) => void;
-  fromDate: string;
-  setFromDate: (v: string) => void;
-  toDate: string;
-  setToDate: (v: string) => void;
+  fromDate: Date | undefined;
+  setFromDate: (v: Date | undefined) => void;
+  toDate: Date | undefined;
+  setToDate: (v: Date | undefined) => void;
   onApplyCustom: () => void;
 
   typeFilter: string;
@@ -26,6 +28,9 @@ interface FiltersProps {
 export function TransactionFilters(props: FiltersProps) {
   const theme = useTheme();
   const today = new Date().toISOString().slice(0, 10);
+  const { t } = useTranslation("HistoricalWalletsWorth");
+  const maxFromDate = (props.toDate ? moment(props.toDate).add(-1, "d") : moment().add(-1, "d")).toDate();
+  const minToDate = props.fromDate ? moment(props.fromDate).add(1, "d").toDate() : undefined;
 
   const filterColors = useMemo(() => ({ 
     backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#fff",
@@ -50,45 +55,61 @@ export function TransactionFilters(props: FiltersProps) {
           <option value="custom">Custom</option>
         </select>
 
-        {props.preset === "custom" && (
-          <div style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-            <input
+        <div style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+          <Stack
+            gap={1}
+            direction="row"
+            style={{ marginTop: -22  }}
+          >
+            <AppDatePicker
               className="date-input"
-              type="date"
+              tooltip={t("Required", { ns: "Tooltips" })}
+              required
+              disableFuture
               value={props.fromDate}
-              max={today}
-              onChange={(e) => props.setFromDate(e.target.value)}
-            />
-            <span className="date-sep">—</span>
-            <input
-              className="date-input"
-              type="date"
-              value={props.toDate}
-              max={today}
-              onChange={(e) => props.setToDate(e.target.value)}
-            />
-            <button
-              className="apply-btn"
-              onClick={() => props.onApplyCustom()}
-            >
-              Apply
-            </button>
-            <button
-              className="clear-btn"
-              onClick={() => {
-                props.setPreset("last_7");
+              onChange={(date) => {
+                props.setPreset("custom");
+                props.setFromDate(date ?? undefined);
               }}
-            >
-              Reset
-            </button>
-          </div>
-        )}
-
-        {props.preset !== "custom" && props.preset !== "all" && (
-          <div className="preset-summary" style={{ fontSize: 12, color: "#94a3b8" }}>
-            {props.dateRange.from} → {props.dateRange.to}
-          </div>
-        )}
+              maxDate={maxFromDate}
+              label={t("FromDate")}
+              labelSize="s"
+            />
+            <AppDatePicker
+              className="date-input"
+              tooltip={t("Required", { ns: "Tooltips" })}
+              required
+              disableFuture
+              value={props.toDate}
+              onChange={(date) => {
+                props.setPreset("custom");
+                props.setToDate(date ?? undefined);
+              }}
+              maxDate={new Date()}
+              minDate={minToDate}
+              label={t("ToDate")}
+              labelSize="s"
+            />
+          </Stack>
+          {props.preset === "custom" && (
+            <>
+              <button
+                className="apply-btn"
+                onClick={() => props.onApplyCustom()}
+              >
+                Apply
+              </button>
+              <button
+                className="clear-btn"
+                onClick={() => {
+                  props.setPreset("all");
+                }}
+              >
+                Reset
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Type Filter */}

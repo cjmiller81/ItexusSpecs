@@ -30,7 +30,7 @@ interface TransactionHistoryProps {
   wallets?: Wallet[] | null;
 }
 
-type DateRange = { from: string; to: string }; // ISO yyyy-mm-dd
+type DateRange = { from: Date; to: Date }; // ISO yyyy-mm-dd
 
 const PRESETS: Record<string, number | null> = {
   'all': null,
@@ -47,7 +47,7 @@ function formatISO(date: Date) {
 function computeRange(days: number | null): DateRange {
   const to = new Date();
   const from = days ? new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000) : new Date();
-  return { from: formatISO(from), to: formatISO(to) };
+  return { from, to };
 }
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAddress, wallets }) => {
@@ -99,7 +99,8 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     totalCount,
     filteredCount,
     spamCount,
-    hasMore
+    hasMore,
+    allDateFilterRange,
   } = useTransactionHistory(resolvedAddress);
 
   // memoized count text to avoid recalcs — must be declared before any early returns
@@ -127,11 +128,9 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   };
 
   // Date range state
-  const [preset, setPreset] = useState<string>('last_7');
-  const initial = computeRange(PRESETS['last_7']);
-  const [fromDate, setFromDate] = useState<string>(initial.from);
-  const [toDate, setToDate] = useState<string>(initial.to);
-  const [customTouched, setCustomTouched] = useState(false);
+  const [preset, setPreset] = useState<string>('all');
+  const [fromDate, setFromDate] = useState<Date | undefined>(allDateFilterRange.from);
+  const [toDate, setToDate] = useState<Date | undefined>(allDateFilterRange.to);
 
   const theme = useTheme();
   const borderColors = useMemo(() => ({ borderColor: theme.palette.mode === "dark" ? "#4E4E57" : "#B5B1B1" }), [theme]);
@@ -144,7 +143,8 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         console.log('[DatePreset] preset=all -> clearing dateFilter');
         setDateFilter('all');
         setPage(0);
-        setCustomTouched(false);
+        setFromDate(allDateFilterRange.from);
+        setToDate(allDateFilterRange.to);
         return;
       }
 
@@ -153,12 +153,25 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
       setFromDate(r.from);
       setToDate(r.to);
       console.log('[DatePreset] setting dateFilter', r);
-      setDateFilter({ from: r.from, to: r.to });
+      setDateFilter({ from: formatISO(r.from), to: formatISO(r.to) });
       setPage(0); // reset to first page (server 0-based) to trigger refetch / UI update
-      setCustomTouched(false);
     }
     // if preset === 'custom' do not auto-trigger here
   }, [preset]);
+
+  useEffect(() => {
+    if (preset !== 'all') return;
+
+    if (fromDate !== allDateFilterRange.from || toDate !== allDateFilterRange.to) {
+      setFromDate(allDateFilterRange.from);
+      setToDate(allDateFilterRange.to);
+    }
+
+    return () => {
+      setFromDate(undefined);
+      setToDate(undefined);
+    }
+  }, [allDateFilterRange]);
 
   function handleApplyCustom() {
     // validate
@@ -166,18 +179,13 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
       console.warn('[DateRange] Apply aborted - missing from/to', { fromDate, toDate });
       return;
     }
-    if (new Date(fromDate) > new Date(toDate)) {
+    if (fromDate > toDate) {
       console.warn('fromDate must be <= toDate');
       return;
     }
     console.log('[DateRange] Apply clicked -> setting dateFilter', { from: fromDate, to: toDate });
-    setDateFilter({ from: fromDate, to: toDate });
+    setDateFilter({ from: formatISO(fromDate), to: formatISO(toDate) });
     setPage(0); // ensure API is called for server page 0 with new date filter
-    setCustomTouched(false);
-  }
-
-  function handleResetToPreset(p: string) {
-    setPreset(p);
   }
 
   if (loading) {
@@ -290,9 +298,6 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
           {/* Filters */}
           <div style={{ padding: "0.875rem 1.25rem", borderBottom: "1px solid", ...borderColors }}>
             <TransactionFilters
-              // new date controls (presets + custom)
-              dateRange={{ from: fromDate, to: toDate }}
-              setDateRange={(v) => (setDateFilter as unknown as (v: DateRange) => void)(v)}
               preset={preset}
               setPreset={setPreset}
               fromDate={fromDate}
