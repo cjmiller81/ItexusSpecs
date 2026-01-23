@@ -7,9 +7,10 @@ const STORAGE_KEY = "syncCooldownEnd";
 
 interface Props {
   walletAddress: string;
+  onSyncComplete?: () => void;
 }
 
-export const TransactionSyncButton: React.FC<Props> = ({ walletAddress }) => {
+export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncComplete }) => {
   const [syncing, setSyncing] = useState(false);
   const [cooldownEnd, setCooldownEnd] = useState<number | null>(null);
   const [remainingText, setRemainingText] = useState<string>("");
@@ -98,6 +99,9 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress }) => {
       }
       // start cooldown
       startCooldown();
+      if (onSyncComplete) {
+        onSyncComplete();
+      }
     } catch (err) {
       console.error("Sync failed", err);
       setError("Sync failed — try again");

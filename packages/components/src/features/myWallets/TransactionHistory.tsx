@@ -188,6 +188,22 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     setPage(0); // ensure API is called for server page 0 with new date filter
   }
 
+  const refreshTransactions = () => {
+    console.log('[Refresh] Refreshing transactions with current filters...');
+    // ensure we pass strings (ISO dates) to the API, or 'all' if no explicit range
+    if (fromDate && toDate) {
+      setDateFilter({ from: formatISO(fromDate), to: formatISO(toDate) });
+    } else {
+      setDateFilter('all');
+    }
+    setPage(0);
+  };
+
+  const handleSyncComplete = () => {
+    console.log('[Sync] Sync completed, refreshing transactions...');
+    refreshTransactions();
+  };
+
   if (loading) {
     return (
       <Center py={10}>
@@ -260,7 +276,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         {resolvedAddress && (
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: isSelectionMode ? 18 : 0 }}>
             <TransactionSyncStatus walletAddress={resolvedAddress} />
-            <TransactionSyncButton walletAddress={resolvedAddress} />
+            <TransactionSyncButton walletAddress={resolvedAddress} onSyncComplete={handleSyncComplete} />
           </div>
         )}
       </Box>
