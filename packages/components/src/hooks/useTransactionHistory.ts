@@ -38,6 +38,10 @@ export function useTransactionHistory(walletAddress: string) {
           } else if (typeof dateFilter === 'string' && dateFilter !== 'all') {
             params.days = dateFilter;
           }
+
+          if (typeFilter && typeFilter !== 'all') {
+            params.type = typeFilter;
+          }
         }
 
         // includeSpam = true when we SHOW spam (hideSpam === false)
@@ -70,7 +74,7 @@ export function useTransactionHistory(walletAddress: string) {
     }
 
     return () => { mounted = false; };
-  }, [walletAddress, dateFilter, page, pageSize, hideSpam]); // <-- added hideSpam
+  }, [walletAddress, dateFilter, page, pageSize, hideSpam, typeFilter]); // <-- added hideSpam
 
   // When the spam toggle changes, reset to first server page so the refetch uses page=0 immediately
   useEffect(() => {
@@ -108,6 +112,9 @@ export function useTransactionHistory(walletAddress: string) {
     if (!data || (allDateFilterRange.from && allDateFilterRange.to)) return;
     const loadLastPage = async () => {
       const params: Record<string, any> = { page: totalPages - 1, pageSize, includeSpam: !hideSpam };
+      if (typeFilter && typeFilter !== 'all') {
+        params.type = typeFilter;
+      }
       const response = await fetchTransactions({ address: walletAddress, ...params });
       const oldestDate = response?.transactions[response?.transactions?.length - 1]?.timestamp;
       setAllDateFilterRange({ 

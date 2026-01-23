@@ -129,7 +129,7 @@ export function TransactionFilters(props: FiltersProps) {
       </select>
 
       {/* Token Filter */}
-      <select
+      {/*<select
         className="filter-select"
         value={props.tokenFilter}
         onChange={(e) => props.setTokenFilter(e.target.value)}
@@ -141,7 +141,7 @@ export function TransactionFilters(props: FiltersProps) {
             {token}
           </option>
         ))}
-      </select>
+      </select>*/}
 
       {/* Spam Toggle */}
       <button
