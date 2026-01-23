@@ -28,7 +28,7 @@ import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutl
 import { FeatureAccessGuard } from "components";
 import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 import { filtersApi } from "../../../../components/src/services/filterService";
-import { CategoryFiltersSectionRef } from "@/components/CategoryFiltersSection";
+import { CategoryFiltersSectionRef, MainTab } from "@/components/CategoryFiltersSection";
 import { CategoryFilterType } from "@/types/filter";
 import { LIQUIDITY_POOL } from "@/constants/prefilterKeys";
 import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
@@ -72,6 +72,15 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
   const [symbols, setSymbols] = useState<string[]>([]);
   const [loadingFilters, setLoadingFilters] = useState(true);
   const categoryFiltersSectionRef = useRef<CategoryFiltersSectionRef>(null);
+
+  const handleTreeViewFilterChange = useCallback(
+    (filter: any, filterContext: { tab?: MainTab; category?: string }) => {
+      if (filterContext.tab) {
+        (categoryFiltersSectionRef.current as any)?.setFilter(filter.filter, filterContext.tab, filterContext.category);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     dispatch(fetchFilters({}));
@@ -436,6 +445,7 @@ export default function DefiTokensSection({ persisKey, startTourButton, exportFi
               filterKey={filterKey}
               onClearCategoryFilter={handleClearCategoryFilter}
               onFilterBuilderOpenChange={handleFilterBuilderOpenChange}
+              onTreeViewFilterChange={handleTreeViewFilterChange}
             />
           )}
         </AccordionDetails>

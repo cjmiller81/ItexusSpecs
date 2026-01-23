@@ -13,8 +13,8 @@ import { keyframes } from "@mui/material/styles";
 import { CategoryFilterType } from "@/types/filter";
 import { CATEGORY_NAME_MAPPING } from "@/constants/prefilterKeys";
 
-const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
-type MainTab = (typeof MAIN_TABS)[number];
+export const MAIN_TABS = ["All DeFi", "Lending", "Staking & Yield", "Trading & Exchanges", "Stablecoins", "Infrastructure & Services"] as const;
+export type MainTab = (typeof MAIN_TABS)[number];
 
 const ALL_STABLECOINS_CATEGORIES = [
   "Algo-Stables",
@@ -278,6 +278,17 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
     clearTooltips: () => {
       setPinnedTooltip(null);
       setHoveredTooltip(null);
+    },
+    setFilter: (filter: any, tab: MainTab, category?: string) => {
+      setCurrentTab(tab);
+      setSelectedFilters(prev => ({
+        ...prev,
+        [tab]: category || prev[tab],
+      }));
+
+      if (onFilterChange) {
+        onFilterChange(filter, { tab, category });
+      }
     },
   }), [onFilterChange]);
 
