@@ -35,6 +35,7 @@ import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
+import { MainTab } from "@/components/CategoryFiltersSection";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -51,6 +52,7 @@ export interface IPrefilterTokensTable {
   externalFilter?: object[] | null | undefined;
   onClearCategoryFilter?: () => void;
   onFilterBuilderOpenChange?: (isOpen: boolean) => void;
+  onTreeViewFilterChange?: (filter: any, filterContext: { tab?: MainTab; category?: string }) => void;
 }
 
 const COLUMN_CHOOSER_BUTTON_ID = "defi-pools-column-chooser-btn";
@@ -88,7 +90,19 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   filterKey,
   onClearCategoryFilter,
   onFilterBuilderOpenChange,
+  onTreeViewFilterChange
 }) => {
+  const handleTreeViewSelection = useCallback(
+    (filter: any, filterContext: { tab?: MainTab; category?: string }) => {
+      const { tab, category } = filterContext;
+
+      const mainTab = tab as MainTab;
+      if (onTreeViewFilterChange) {
+        onTreeViewFilterChange(filter, { tab: mainTab, category });
+      }
+    },
+    [onTreeViewFilterChange]
+  );
   const internalDataGridRef = useRef<DataGridDef<PoolData, string> | null>(null);
   const datagrid = (dataGridRef as MutableRefObject<DataGridDef<PoolData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -102,7 +116,8 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const filterRef = useRef<CustomFilterBuilderRef>(null);
 
   const liquidityPoolFilters = useMemo(() => filters.filter(f => {
-    return f.filterType === filterKey;
+    //return f.filterType === filterKey;
+    return typeof f?.filterType === "string" && f.filterType.startsWith('liquidity-pool');
   }), [filters, filterKey]);
 
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
@@ -559,6 +574,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                 onApply={value => onApplyFilter(value)}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
                 onFilterBuilderOpenChange={onFilterBuilderOpenChange}
+                onTreeViewFilterChange={handleTreeViewSelection}
               />
             </SimpleBar>
           </Item>

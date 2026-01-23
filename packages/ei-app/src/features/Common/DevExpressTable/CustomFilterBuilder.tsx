@@ -6,6 +6,8 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 import CloseIcon from "@mui/icons-material/Close";
 import TuneIcon from "@mui/icons-material/Tune";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { LoadingButton } from "@mui/lab";
 import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
 import {
@@ -25,6 +27,7 @@ import {
   TextField,
   Typography,
   styled,
+  Popover,
 } from "@mui/material";
 import { YesNoDialog } from "components";
 import { FilterType, IPrefilterTokensFilterValues } from "components/src/models/token/IPrefilterTokensFilterValues";
@@ -43,9 +46,11 @@ import { useGetExchangesQuery } from "@/features/Investing/exchangesApi";
 import { iconsAbortableApi } from "@/services/iconsService";
 import appAxios from "@/libs/axios/axios";
 import { filtersApi } from "../../../../../components/src/services/filterService";
-import { LIQUIDITY_POOL, PREFILTER_ALL_CATEGORIES_MAP, PREFILTER_CATEGORIES_MAP } from "@/constants/prefilterKeys";
+import { LIQUIDITY_POOL, PREFILTER_TAB_KEYS, PREFILTER_ALL_CATEGORIES_MAP, PREFILTER_CATEGORIES_MAP } from "@/constants/prefilterKeys";
 import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
-import { PrefilterTabs } from "@/types/filter";
+import { PrefilterTabs, PrefilterCategories } from "@/types/filter";
+import { TreeView, TreeItem } from "@mui/x-tree-view";
+import { MainTab, MAIN_TABS } from "@/components/CategoryFiltersSection";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
 
@@ -419,6 +424,7 @@ export interface ICustomFilterBuilderProps {
   filterDeletingLoading?: boolean;
   filterBuilderFields: FilterBuilderItems[];
   onFilterBuilderOpenChange?: (isOpen: boolean) => void;
+  onTreeViewFilterChange?: (filter: any, filterContext: { tab?: MainTab; category?: string }) => void;
 }
 
 export interface CustomFilterBuilderRef {
@@ -438,8 +444,22 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   filterDeletingLoading,
   filterBuilderFields,
   filterType,
-  onFilterBuilderOpenChange
+  onFilterBuilderOpenChange,
+  onTreeViewFilterChange
 }, ref) => {
+
+  const handleTreeViewChange = (filter: any, filterContext: { tab?: string; category?: string }) => {
+    const { tab, category } = filterContext;
+
+    let mainTab = tab as MainTab;
+    if (!mainTab) {
+      mainTab = MAIN_TABS[0];
+    }
+
+    if (onTreeViewFilterChange) {
+      onTreeViewFilterChange(filter, { tab: mainTab, category });
+    }
+  };
 
   const videoLinks = {
     introduction: "https://www.youtube.com/embed/HMoJuK9mNtw",
@@ -454,6 +474,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const sortedPredefinedFilters = useMemo(() => {
+    console.log("Predefined Filters:", predefinedFilters);
     return [...predefinedFilters].sort((a, b) => {
       return (a.isPublic ? 0 : 1) - (b.isPublic ? 0 : 1);
     });
@@ -491,6 +512,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   const [customExchanges, setCustomExchanges] = useState<string[]>([]);
   const [poolCategories, setPoolCategories] = useState<string[]>([]);
   const [customFilterType, setCustomFilterType] = useState<string | undefined>(undefined); 
+
+  // State for filter tree popover
+  const [filterTreeAnchorEl, setFilterTreeAnchorEl] = useState<null | HTMLElement>(null);
+  const isFilterTreeOpen = Boolean(filterTreeAnchorEl);
 
   const allSymbolOptionsRef = useRef<string[]>([]);
   const allPoolSymbolOptionsRef = useRef<string[]>([]);
@@ -751,7 +776,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (target.closest('.dx-filterbuilder-action-icon.dx-icon-plus')) {
       setShowGuidanceBanner(false);
     }
-};
+  };
 
   const handleApplyFilter = () => {
     if (filterBuilderRef.current?.instance) {
@@ -804,6 +829,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (status) {
       setShowGuidanceBanner(true);
     }
+  };
+  
+  // Filter tree popover handlers
+  const handleFilterTreeOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterTreeAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterTreeClose = () => {
+    setFilterTreeAnchorEl(null);
   };
   
   useEffect(() => {
@@ -1449,62 +1483,431 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     ];
   }, []);
 
+  const generateTopLevelKeys = (): Record<string, string> => {
+    const filterTypes: FilterType[] = ["market-cap", "market-cap-equal", "liquidity-pool", "vaults"];
+    const topLevelKeys: Record<string, string> = {};
+
+    filterTypes.forEach(type => {
+      if (type) {
+        const formattedName = type
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+        topLevelKeys[type] = formattedName;
+      }
+    });
+
+    return topLevelKeys;
+  };
+
+  const topLevelKeys = generateTopLevelKeys();
+
+  const buildFilterTree = (filters: IPrefilterTokensFilterValues[]) => {
+    const tree: Record<string, any> = {};
+
+    filters.forEach(filter => {
+      const rawFilterType = filter.filterType || '';
+      let topLevelKey = Object.keys(topLevelKeys).find(key => rawFilterType === key);
+      if (!topLevelKey) {
+        topLevelKey = Object.keys(topLevelKeys).find(key => rawFilterType.startsWith(key));
+      }
+
+      if (!topLevelKey) {
+        console.error(`Unknown top-level filter type: ${rawFilterType}`);
+        return;
+      }
+
+      if (!tree[topLevelKey]) {
+        tree[topLevelKey] = { 
+          name: topLevelKeys[topLevelKey], 
+          children: [],
+          nodeId: topLevelKey
+        };
+      }
+
+      let childFilterType = rawFilterType.replace(`${topLevelKey}`, '')
+      if (childFilterType) {
+        childFilterType = childFilterType.startsWith('-') ? childFilterType.slice(1) : childFilterType;
+        if (topLevelKey === LIQUIDITY_POOL) {
+          const tabName = Object.entries(PREFILTER_TAB_KEYS).find(([, value]) => childFilterType.startsWith(value))?.[0];
+          const tabKey = Object.entries(PREFILTER_TAB_KEYS).find(([, value]) => childFilterType.startsWith(value))?.[1];
+
+          if (tabName) {
+            let tabNode = tree[topLevelKey].children.find((child: any) => child.name === tabName);
+            
+            if (!tabNode) {
+              tabNode = {
+                name: tabName,
+                tabName: tabName,
+                children: [],
+                nodeId: `${topLevelKey}-${tabName}`
+              };
+              tree[topLevelKey].children.push(tabNode);
+            }
+
+            if (typeof tabKey === 'string' && tabKey.length > 0) {
+              childFilterType = childFilterType.replace(tabKey, '');
+              childFilterType = childFilterType.startsWith('-') ? childFilterType.slice(1) : childFilterType;
+
+              if (childFilterType) {
+                const formattedTabKey = childFilterType.toUpperCase().replace(/-/g, "_");
+                const categoryName = PrefilterCategories[formattedTabKey as keyof typeof PrefilterCategories];
+
+                if (categoryName) {
+                  let categoryNode = tabNode.children.find((child: any) => child.name === categoryName);
+                  
+                  if (!categoryNode) {
+                    categoryNode = {
+                      name: categoryName,
+                      categoryName: categoryName,
+                      tabName: tabName,
+                      children: [],
+                      nodeId: `${topLevelKey}-${tabName}-${categoryName}`
+                    };
+                    tabNode.children.push(categoryNode);
+                  }
+
+                  categoryNode.children.push({
+                    id: filter.id,
+                    name: filter.name,
+                    filterValue: filter.filter,
+                    isPublic: filter.isPublic,
+                    filterObject: filter,
+                    nodeId: filter.id,
+                    categoryName: categoryName,
+                    tabName: tabName,
+                    hasChildren: false
+                  });
+                }
+              }
+            } else {
+              tabNode.children.push({
+                id: filter.id,
+                name: filter.name,
+                filterValue: filter.filter,
+                isPublic: filter.isPublic,
+                filterObject: filter,
+                nodeId: filter.id,
+                tabName: tabName,
+                hasChildren: false
+              });
+            }
+          }
+        }
+      } else {
+        tree[topLevelKey].children.push({
+          id: filter.id,
+          name: filter.name,
+          filterValue: filter.filter,
+          isPublic: filter.isPublic,
+          filterObject: filter,
+          nodeId: filter.id,
+          hasChildren: false
+        });
+      }
+    });
+
+    const sortChildren = (children: any[]) => {
+      if (!children || !Array.isArray(children)) return [];
+
+      return [...children].sort((a, b) => {
+        const aHasChildren = a.children && a.children.length > 0;
+        const bHasChildren = b.children && b.children.length > 0;
+
+        if (!aHasChildren && !bHasChildren) {
+          const aIsDefault = a.isPublic;
+          const bIsDefault = b.isPublic;
+
+          if (aIsDefault && !bIsDefault) return -1;
+          if (!aIsDefault && bIsDefault) return 1;
+          return a.name.localeCompare(b.name);
+        }
+
+        if (aHasChildren && !bHasChildren) return 1;
+        if (!aHasChildren && bHasChildren) return -1;
+        return 0;
+      });
+    };
+
+    Object.values(tree).forEach((node: any) => {
+      if (node.children) {
+        node.children = sortChildren(node.children);
+        node.children.forEach((child: any) => {
+          if (child.children) {
+            child.children = sortChildren(child.children);
+            child.children.forEach((grandChild: any) => {
+              if (grandChild.children) {
+                grandChild.children = sortChildren(grandChild.children);
+              }
+            });
+          }
+        });
+      }
+    });
+
+    return tree;
+  };
+
+  const filterTree = useMemo(() => {
+    const tree = buildFilterTree(predefinedFilters);
+    console.log("Filter Tree:", tree);
+    return tree;
+  }, [predefinedFilters]);
+
+  const renderTreeNodes = (nodes: any[], parentNodeId: string = "") => {
+    if (!nodes || !Array.isArray(nodes)) return null;
+
+    return nodes.map((node) => {
+      const hasChildren = node.children && node.children.length > 0;
+      
+      if (hasChildren) {
+        return (
+          <TreeItem
+            key={node.nodeId}
+            nodeId={node.nodeId}
+            label={
+              <Typography 
+                sx={{ 
+                  fontSize: '0.875rem',
+                  color: 'rgba(0, 0, 0, 0.87)',
+                  fontWeight: 500,
+                }}
+              >
+                {node.name}
+              </Typography>
+            }
+            sx={{
+              "& .MuiTreeItem-content": {
+                backgroundColor: 'transparent',
+                padding: '6px 8px',
+                "&:hover": {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              },
+              "& .MuiTreeItem-label": {
+                padding: 0,
+                margin: 0,
+              },
+            }}
+          >
+            {renderTreeNodes(node.children, node.nodeId)}
+          </TreeItem>
+        );
+      } else {
+        const filterName = mapFilterName(node.name, node.isPublic);
+        
+        return (
+          <TreeItem
+            key={node.id}
+            nodeId={node.id}
+            label={
+              <Box 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <Typography 
+                  sx={{ 
+                    flex: 1,
+                    textAlign: 'left',
+                    fontSize: '0.875rem',
+                    color: 'rgba(0, 0, 0, 0.87)',
+                  }}
+                >
+                  {filterName}
+                </Typography>
+                {!node.isPublic && (
+                  <IconButton
+                    size="small"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleDeleteFilter(node.filterObject, event);
+                    }}
+                    sx={{
+                      padding: '4px',
+                      marginRight: '-8px',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                      },
+                    }}
+                  >
+                    <CustomDeleteIcon />
+                  </IconButton>
+                )}
+              </Box>
+            }
+            onClick={() => {
+              if (node.filterObject.filterType !== "liquidity-pool") {
+                handleFilterSelect(node.filterObject);
+              }
+              handleFilterTreeClose();
+            }}
+            sx={{
+              "& .MuiTreeItem-content": {
+                backgroundColor: 'transparent',
+                padding: '6px 8px',
+                "&:hover": {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+                "&.Mui-selected": {
+                  backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                  "&:hover": {
+                    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+                  },
+                },
+              },
+              "& .MuiTreeItem-label": {
+                padding: 0,
+                margin: 0,
+                width: '100%',
+              },
+            }}
+          />
+        );
+      }
+    });
+  };
+
+  const handleFilterSelect = (filter: IPrefilterTokensFilterValues) => {
+    setSelectedSavedFilter(filter);
+    setFilterValue(filter.filter);
+    setFilterName(filter.name);
+    onApply(filter.filter);
+
+    const filterContext = determineFilterContext(filter.filterType);
+    if (onTreeViewFilterChange) {
+      onTreeViewFilterChange(filter.filter, filterContext);
+    }
+  };
+
+  const determineFilterContext = (filterType?: string | null): { tab?: MainTab; category?: string } => {
+    if (!filterType) {
+      return {};
+    }
+    const parts = filterType.split("-");
+    if (parts.length === 1 && MAIN_TABS.includes(parts[0] as MainTab)) {
+      return { tab: parts[0] as MainTab };
+    } else if (parts.length === 2 && MAIN_TABS.includes(parts[0] as MainTab)) {
+      return { tab: parts[0] as MainTab, category: `All ${parts[1]}` };
+    } else if (parts.length === 3 && MAIN_TABS.includes(parts[0] as MainTab)) {
+      return { tab: parts[0] as MainTab, category: parts[2] };
+    }
+    return {};
+  };
+
+  const rootNodes = useMemo(() => {
+    return Object.values(filterTree);
+  }, [filterTree]);
+
+  const defaultExpandedNodes = useMemo(() => {
+    return rootNodes.map(node => node.nodeId);
+  }, [rootNodes]);
+
+  const findNodeById = (tree: any, nodeId: string): any => {
+    const findNode = (nodes: any[]): any => {
+      for (const node of nodes) {
+        if (node.nodeId === nodeId) {
+          return node;
+        }
+        if (node.children) {
+          const found = findNode(node.children);
+          if (found) {
+            return found;
+          }
+        }
+      }
+      return null;
+    };
+
+    return findNode(Object.values(tree));
+  };
+
   return (
     <>
       <TourPortal tourSteps={tourSteps} isModalOpen={filterBuilderOpen} onStartTourRef={startTourRef} />
       <StyledAdaptivePageBox sx={{ width: "100%" }}>
-        <Select
-          id="filter_presets"
-          fullWidth
-          size="small"
-          displayEmpty
-          value={selectedSavedFilter?.id || ''}
-          onChange={handleApplyFilterChange}
-          sx={{
-            minWidth: 250,
-            maxWidth: 250,
-            maxHeight: 32,
-            marginRight: 1,
-            backgroundColor: "#219a83",
-            color: theme.palette.mode === "dark" ? "#363640" : "white",
-            fontWeight: 600,
-            textAlign: "center",
-            borderColor: "#219a83",
-            "@media (max-width: 1030px) and (min-width: 900px)": {
-              width: "210px",
-              minWidth: 200,
-            },
-            "@media (max-width: 900px)": {
-              mt: 1,
-            },
-            "& .MuiSelect-icon": {
-              fill: theme.palette.mode === "dark" ? "#363640" : "white",
-            },
-          }}
-          renderValue={_value => mapButtonFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)}>
-          {sortedPredefinedFilters.map(filter => (
-            <MenuItem
-              selected={false}
-              key={filter.id}
-              value={[filter.id, filter.name]}>
-              <ListItemText primary={mapFilterName(filter?.name, filter?.isPublic)} />
-              {!filter.isPublic && (
-                <IconButton
-                  onClick={event => handleDeleteFilter(filter, event)}
-                  disableRipple
-                  sx={{
-                    padding: 0,
-                    '&:hover': {
-                      backgroundColor: 'transparent',
-                    },
-                  }}
-                >
-                  <CustomDeleteIcon />
-                </IconButton>
-              )}
-            </MenuItem>
-          ))}
-        </Select>
+        {/* Filter Tree with Popover */}
+        <Box sx={{ position: "relative", display: 'inline-block', mr: 1 }}>
+          <Button
+            onClick={handleFilterTreeOpen}
+            sx={{
+              minWidth: 250,
+              maxWidth: 250,
+              height: 32,
+              backgroundColor: "#219a83",
+              color: theme.palette.mode === "dark" ? "#363640" : "white",
+              fontWeight: 600,
+              textAlign: "center",
+              border: "1px solid #219a83",
+              borderRadius: "4px",
+              padding: "4px 8px",
+              "@media (max-width: 1030px) and (min-width: 900px)": {
+                width: "210px",
+                minWidth: 200,
+              },
+              "@media (max-width: 900px)": {
+                mt: 1,
+              },
+              "&:hover": {
+                backgroundColor: "#1c8d74",
+              },
+            }}
+          >
+            {mapButtonFilterName(selectedSavedFilter?.name, selectedSavedFilter?.isPublic)}
+            {isFilterTreeOpen ? <ExpandLessIcon sx={{ ml: 1 }} /> : <ExpandMoreIcon sx={{ ml: 1 }} />}
+          </Button>
+          
+          <Popover
+            open={isFilterTreeOpen}
+            anchorEl={filterTreeAnchorEl}
+            onClose={handleFilterTreeClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            PaperProps={{
+              sx: {
+                maxHeight: 400,
+                overflowY: 'auto',
+                minWidth: 250,
+                backgroundColor: "#f7f5f2",
+                color: "rgba(0, 0, 0, 0.87)",
+                mt: 0.5,
+                boxShadow: '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)',
+              }
+            }}
+          >
+            <TreeView
+              defaultExpanded={defaultExpandedNodes}
+              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultExpandIcon={<ChevronRightIcon />}
+              onNodeSelect={(event, nodeId) => {
+                const node = findNodeById(filterTree, nodeId);
+                if (node && (!node.children || node.children.length === 0)) {
+                  handleTreeViewChange(node.filterObject, { tab: node.tabName, category: node.categoryName });
+                }
+              }}
+              sx={{
+                padding: '8px 0',
+                "& .MuiTreeItem-root": {
+                  "& .MuiTreeItem-content": {
+                    minHeight: '36px',
+                  },
+                },
+              }}
+            >
+              {renderTreeNodes(rootNodes)}
+            </TreeView>
+          </Popover>
+        </Box>
+        
         <StyledFilterButton
           id="filter_builder_btn"
           variant="contained"
