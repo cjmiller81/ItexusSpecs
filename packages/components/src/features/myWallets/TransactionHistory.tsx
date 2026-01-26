@@ -231,7 +231,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
       <div className="header" style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
 
       {/* Wallet selection with address underneath, sync controls directly to the right of dropdown */}
-      <Box sx={{ mb: 3, display: "flex", alignItems: "flex-start", gap: 2, flexWrap: "wrap" }}>
+      <Box sx={{ mb: 3, display: "flex", alignItems: "flex-start", gap: 2, flexWrap: "wrap", justifyContent: "space-between", width: "100%" }}>
         {/* Left column: dropdown + address */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <Select
@@ -274,9 +274,9 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
 
         {/* Sync controls placed immediately to the right of the dropdown */}
         {resolvedAddress && (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: isSelectionMode ? 18 : 0 }}>
-            <TransactionSyncStatus walletAddress={resolvedAddress} />
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: isSelectionMode ? 18 : 0, justifyContent: "flex-end", flexGrow: 1 }}>
             <TransactionSyncButton walletAddress={resolvedAddress} onSyncComplete={handleSyncComplete} />
+            <TransactionSyncStatus walletAddress={resolvedAddress} />
           </div>
         )}
       </Box>

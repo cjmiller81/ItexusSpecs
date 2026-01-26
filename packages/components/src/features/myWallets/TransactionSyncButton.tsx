@@ -122,6 +122,13 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
+      {/* Cooldown timer */}
+      {isCooldownActive && (
+        <div className="sync-cooldown-timer" aria-hidden>
+          {remainingText}
+        </div>
+      )}
+
       <button
         className={`sync-btn ${syncing ? "syncing" : ""} ${isCooldownActive ? "cooldown" : ""}`}
         onClick={handleClick}
@@ -133,13 +140,6 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
         </span>
         <span className="sync-text">{syncing ? "Syncing..." : "Sync New Transactions"}</span>
       </button>
-
-      {/* Cooldown timer */}
-      {isCooldownActive && (
-        <div className="sync-cooldown-timer" aria-hidden>
-          {remainingText}
-        </div>
-      )}
 
       {/* Tooltip */}
       {showTooltip && (
