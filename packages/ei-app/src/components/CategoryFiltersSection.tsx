@@ -281,10 +281,21 @@ export const CategoryFiltersSection = forwardRef<CategoryFiltersSectionRef, Cate
     },
     setFilter: (filter: any, tab: MainTab, category?: string) => {
       setCurrentTab(tab);
-      setSelectedFilters(prev => ({
-        ...prev,
-        [tab]: category || prev[tab],
-      }));
+      if (category) {
+        setSelectedFilters(prev => ({
+          ...prev,
+          [tab]: category || prev[tab],
+        }));
+      } else {
+        setSelectedFilters({
+          "All DeFi": "All",
+          Lending: QUICK_FILTERS.Lending?.[0],
+          "Staking & Yield": QUICK_FILTERS["Staking & Yield"]?.[0],
+          "Trading & Exchanges": QUICK_FILTERS["Trading & Exchanges"]?.[0],
+          Stablecoins: QUICK_FILTERS.Stablecoins?.[0],
+          "Infrastructure & Services": QUICK_FILTERS["Infrastructure & Services"]?.[0],
+        });
+      }
 
       if (onFilterChange) {
         onFilterChange(filter, { tab, category });

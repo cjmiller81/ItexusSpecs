@@ -1529,6 +1529,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       if (childFilterType) {
         childFilterType = childFilterType.startsWith('-') ? childFilterType.slice(1) : childFilterType;
         if (topLevelKey === LIQUIDITY_POOL) {
+          childFilterType = childFilterType.startsWith('all-') ? childFilterType.slice(4) : childFilterType;
           const tabName = Object.entries(PREFILTER_TAB_KEYS).find(([, value]) => childFilterType.startsWith(value))?.[0];
           const tabKey = Object.entries(PREFILTER_TAB_KEYS).find(([, value]) => childFilterType.startsWith(value))?.[1];
 
@@ -1579,6 +1580,17 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     hasChildren: false
                   });
                 }
+              } else {
+                tabNode.children.push({
+                    id: filter.id,
+                    name: filter.name,
+                    filterValue: filter.filter,
+                    isPublic: filter.isPublic,
+                    filterObject: filter,
+                    nodeId: filter.id,
+                    tabName: tabName,
+                    hasChildren: false
+                  });
               }
             } else {
               tabNode.children.push({
