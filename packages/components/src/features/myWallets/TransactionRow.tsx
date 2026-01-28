@@ -2,6 +2,7 @@ import { Transaction } from '../../types/transactions';
 import { formatDate, formatHash } from '../../utils/formatters';
 import { TokenBadge } from './TokenBadge';
 import { typeConfig as TYPE_CONFIG, getTokenColor } from "../../constants/typeConfig";
+import { useMemo } from 'react';
 
 const CHAIN_CONFIG: Record<string, { name: string; class: string; icon: string }> = {
   'eth-mainnet': { name: 'Ethereum', class: 'eth', icon: 'Ξ' },
@@ -18,11 +19,22 @@ interface TransactionRowProps {
 }
 
 export function TransactionRow({ transaction, borderColors }: TransactionRowProps) {
+  const { type, transfers, gasUsd, hash, chainName, timestamp } = transaction;
+
+  const tokensHtml = useMemo(() => {
+    if (transfers.length > 0) {
+      return transfers.map((transfer, idx) => (
+            <TokenBadge key={idx} transfer={transfer} />
+          ));
+    } else if (type === 'approval') {
+      return <span className="no-transfers approval-text">Token approval (no transfer)</span>;
+    } else {
+      return <span className="no-transfers">No token transfers</span>;
+    }
+  }, [transfers, type]);
+
   const typeConfig = TYPE_CONFIG[transaction.type] || TYPE_CONFIG.unknown;
   const chainCfg = CHAIN_CONFIG[transaction.chainName] || { name: transaction.chainName, class: '', icon: '🔗' };
-
-  // Filter zero-amount transfers
-  const meaningfulTransfers = transaction.transfers.filter(t => t.amount > 0);
 
   return (
     <div className={`tx-row ${transaction.spam.isSpam ? 'spam' : ''}`} style={borderColors}>
@@ -65,13 +77,7 @@ export function TransactionRow({ transaction, borderColors }: TransactionRowProp
 
       {/* Right: Token Flows */}
       <div className="tx-tokens">
-        {meaningfulTransfers.length > 0 ? (
-          meaningfulTransfers.map((transfer, idx) => (
-            <TokenBadge key={idx} transfer={transfer} />
-          ))
-        ) : (
-          <span className="no-transfers">No token transfers</span>
-        )}
+        {tokensHtml}
       </div>
     </div>
   );

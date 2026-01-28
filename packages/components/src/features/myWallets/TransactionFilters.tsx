@@ -125,6 +125,7 @@ export function TransactionFilters(props: FiltersProps) {
         <option value="claim">Claim</option>
         <option value="swap">Swap</option>
         <option value="transfer">Transfer</option>
+        <option value="approval">Approval</option>
         <option value="native_transfer">ETH Transfer</option>
       </select>
 
