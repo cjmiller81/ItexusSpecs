@@ -172,7 +172,7 @@
 .transaction-history .tx-icon.claim { background: rgba(16, 185, 129, 0.2); color: #fbbf24; }
 .transaction-history .tx-icon.transfer { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
 .transaction-history .tx-icon.native_transfer { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
-.transaction-history .tx-icon.approval { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
+.transaction-history .tx-icon.approval { background: rgba(250, 204, 21, 0.15); color: #facc15; }
 .transaction-history .tx-icon.unknown { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
 
 /* token badges on the right: ensure they use their own colors (not inheriting white) */
@@ -270,7 +270,7 @@
 .transaction-history .tx-type-badge.claim { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4); color:#34d399; }
 .transaction-history .tx-type-badge.transfer { background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.4); color:#22d3ee; }
 .transaction-history .tx-type-badge.native_transfer { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.4); color:#818cf8; }
-.transaction-history .tx-type-badge.approval { background: rgba(100,116,139,0.12); border-color: rgba(100,116,139,0.4); color:#94a3b8; }
+.transaction-history .tx-type-badge.approval { background: rgba(250, 204, 21, 0.12); border-color: rgba(250, 204, 21, 0.4); color: #facc15; }
 .transaction-history .tx-type-badge.unknown { background: rgba(100,116,139,0.12); border-color: rgba(100,116,139,0.4); color:#94a3b8; }
 
 .transaction-history .tx-chain-badge {
@@ -391,6 +391,10 @@
 
 /* No transfers indicator (reaffirm) */
 .transaction-history .no-transfers { font-size: 0.75rem; color: #64748b; font-style: italic; }
+.transaction-history .no-transfers.approval-text {
+  color: #facc15;
+  font-style: normal;
+}
 
 /* Loading spinner */
 .transaction-history .spinner {

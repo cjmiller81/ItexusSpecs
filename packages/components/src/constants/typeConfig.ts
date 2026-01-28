@@ -5,7 +5,7 @@ export const typeConfig: Record<string, { icon: string; label: string; bgColor: 
   claim:           { icon: '💰', label: 'CLAIM',        bgColor: 'rgba(16, 185, 129, 0.2)',  textColor: '#fbbf24' },
   transfer:        { icon: '→',  label: 'TRANSFER',     bgColor: 'rgba(6, 182, 212, 0.15)',  textColor: '#22d3ee' },
   native_transfer: { icon: 'Ξ',  label: 'ETH TRANSFER', bgColor: 'rgba(99, 102, 241, 0.15)', textColor: '#818cf8' },
-  approval:        { icon: '✓',  label: 'APPROVAL',     bgColor: 'rgba(100, 116, 139, 0.15)', textColor: '#94a3b8' },
+  approval:        { icon: '🔓',  label: 'APPROVAL',     bgColor: 'rgba(250, 204, 21, 0.15)', textColor: '#facc15' },
   unknown:         { icon: '?',  label: 'UNKNOWN',      bgColor: 'rgba(100, 116, 139, 0.15)', textColor: '#94a3b8' }
 };
 
