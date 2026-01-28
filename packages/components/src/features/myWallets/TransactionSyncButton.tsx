@@ -17,6 +17,7 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
   const [isHovering, setIsHovering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<number | null>(null);
+  const pollRef = useRef<number | null>(null);
 
   // read persisted cooldown on mount
   useEffect(() => {
@@ -33,6 +34,9 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
     return () => {
       if (intervalRef.current) {
         window.clearInterval(intervalRef.current);
+      }
+      if (pollRef.current) {
+        window.clearInterval(pollRef.current);
       }
     };
   }, []);
@@ -83,32 +87,71 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
 
     setSyncing(true);
     try {
-      // POST to trigger sync
-      await appAxios.post(`/api/wallet/${walletAddress}/sync`);
-      // on success, refresh sync status (GET) and notify TransactionSyncStatus
-      try {
-        const res = await appAxios.get(`/api/wallet/${walletAddress}/sync-status`);
-        const chains = res?.data?.chains;
-        const raw = Array.isArray(chains) && chains.length > 0 ? chains[0]?.last_synced_at : null;
-        // notify listeners (TransactionSyncStatus) to update label + animate
-        window.dispatchEvent(new CustomEvent("walletSyncStatusUpdated", {
-          detail: { walletAddress, last_synced_at: raw }
-        }));
-      } catch (err) {
-        console.error("Failed to fetch sync status after sync", err);
-      }
-      // start cooldown
-      startCooldown();
-      if (onSyncComplete) {
-        onSyncComplete();
-      }
+      // Start the sync process by calling the POST endpoint
+      const initialStatus = await appAxios.post(`/api/wallet/${walletAddress}/sync`);
+      const initialTimestamps = extractTimestamps(initialStatus.data.chains);
+
+      pollRef.current = window.setInterval(async () => {
+        try {
+          const currentStatus = await appAxios.get(`/api/wallet/${walletAddress}/sync-status`);
+          const currentTimestamps = extractTimestamps(currentStatus.data.chains);
+
+          const syncedChains = countSyncedChains(initialTimestamps, currentTimestamps);
+          const totalChains = currentTimestamps.size;
+
+          // Notify TransactionSyncStatus of progress
+          window.dispatchEvent(
+            new CustomEvent("walletSyncStatusUpdated", {
+              detail: { walletAddress, syncedChains, totalChains },
+            })
+          );
+
+          // Check if all chains are synced
+          if (syncedChains === totalChains) {
+            window.clearInterval(pollRef.current!);
+            pollRef.current = null;
+
+            // Notify TransactionSyncStatus of completion
+            window.dispatchEvent(
+              new CustomEvent("walletSyncStatusUpdated", {
+                detail: { walletAddress, last_synced_at: new Date().toISOString() },
+              })
+            );
+
+            startCooldown();
+            if (onSyncComplete) {
+              onSyncComplete();
+            }
+            setSyncing(false);
+          }
+        } catch (err) {
+          console.error("Polling failed", err);
+        }
+      }, 15000);
     } catch (err) {
       console.error("Sync failed", err);
       setError("Sync failed — try again");
-    } finally {
       setSyncing(false);
       // tooltip visibility is controlled by hover OR syncing OR cooldown
     }
+  }
+
+  function extractTimestamps(chains: any[]) {
+    const timestamps = new Map<string, string>();
+    chains.forEach((chain) => {
+      timestamps.set(chain.chain_name, chain.last_synced_at);
+    });
+    return timestamps;
+  }
+
+  function countSyncedChains(initial: Map<string, string>, current: Map<string, string>) {
+    let count = 0;
+    current.forEach((timestamp, chain) => {
+      if (!initial.has(chain) || new Date(timestamp) > new Date(initial.get(chain)!)) {
+        count++;
+      }
+    });
+    return count;
   }
 
   const isCooldownActive = !!cooldownEnd && Date.now() < cooldownEnd;
@@ -144,7 +187,11 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
       {/* Tooltip */}
       {showTooltip && (
         <div className="sync-tooltip" role="tooltip">
-          {syncing ? "Fetching new transactions..." : isCooldownActive ? `Available in ${remainingText.replace(/[()]/g,'')}` : "Click to fetch latest transactions"}
+          {syncing
+            ? "Fetching new transactions..."
+            : isCooldownActive
+            ? `Available in ${remainingText.replace(/[()]/g, "")}`
+            : "Click to fetch latest transactions"}
           <span className="tooltip-arrow" />
         </div>
       )}

@@ -5,77 +5,46 @@ interface Props {
   walletAddress: string;
 }
 
-function parseAndFormatDateTime(isoString: string): string {
-  try {
-    const date = new Date(isoString);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    return `${month}/${day}/${year} at ${hours}:${minutes} ${ampm}`;
-  } catch {
-    return "Sync status unavailable";
-  }
-}
-
 export const TransactionSyncStatus: React.FC<Props> = ({ walletAddress }) => {
   const [label, setLabel] = useState<string>("Loading…");
   const [anim, setAnim] = useState<boolean>(false);
 
-  async function loadStatus() {
-    if (!walletAddress) {
-      setLabel("Sync status unavailable");
-      return;
-    }
-    try {
-      const res = await appAxios.get(`/api/wallet/${walletAddress}/sync-status`);
-      const chains = res?.data?.chains;
-      const raw = Array.isArray(chains) && chains.length > 0 ? chains[0]?.last_synced_at : null;
-      if (raw) {
-        setLabel(parseAndFormatDateTime(raw));
-        setAnim(true);
-        window.setTimeout(() => setAnim(false), 900);
-      } else {
-        setLabel("Sync status unavailable");
-      }
-    } catch (err) {
-      console.error("Failed to fetch sync status", err);
-      setLabel("Sync status unavailable");
-    }
-  }
-
   useEffect(() => {
     let mounted = true;
-    if (!walletAddress) {
-      setLabel("Sync status unavailable");
-      return;
-    }
-    // initial load
-    loadStatus();
 
-    // listen to external updates (triggered by Sync Button)
-    function onUpdate(e: Event) {
+    async function loadStatus() {
+      if (!walletAddress) {
+        setLabel("Sync status unavailable");
+        return;
+      }
       try {
-        const ev = e as CustomEvent;
-        if (ev?.detail?.walletAddress === walletAddress) {
-          const raw = ev.detail.last_synced_at;
-          if (raw) {
-            setLabel(parseAndFormatDateTime(raw));
-            setAnim(true);
-            window.setTimeout(() => setAnim(false), 900);
-          } else {
-            // fallback fetch
-            loadStatus();
-          }
+        const res = await appAxios.get(`/api/wallet/${walletAddress}/sync-status`);
+        const chains = res?.data?.chains;
+        const raw = Array.isArray(chains) && chains.length > 0 ? chains[0]?.last_synced_at : null;
+        if (raw) {
+          setLabel(`Last synced: ${new Date(raw).toLocaleString()}`);
+        } else {
+          setLabel("Sync status unavailable");
         }
       } catch (err) {
-        // ignore
+        console.error("Failed to fetch sync status", err);
+        setLabel("Sync status unavailable");
       }
     }
+
+    loadStatus();
+
+    function onUpdate(e: Event) {
+      const ev = e as CustomEvent;
+      if (ev?.detail?.walletAddress === walletAddress) {
+        if (ev.detail.syncedChains !== undefined && ev.detail.totalChains !== undefined) {
+          setLabel(`${ev.detail.syncedChains} of ${ev.detail.totalChains} chains synced`);
+        } else if (ev.detail.last_synced_at) {
+          setLabel(`Last synced: ${new Date(ev.detail.last_synced_at).toLocaleString()}`);
+        }
+      }
+    }
+
     window.addEventListener("walletSyncStatusUpdated", onUpdate as EventListener);
 
     return () => {
@@ -90,7 +59,7 @@ export const TransactionSyncStatus: React.FC<Props> = ({ walletAddress }) => {
         <span className="check">✓</span>
       </div>
       <div className="sync-text">
-        <div className="sync-label">LAST SYNCED</div>
+        <div className="sync-label">SYNC STATUS</div>
         <div className="sync-value">{label}</div>
       </div>
     </div>
