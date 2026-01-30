@@ -646,6 +646,11 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   }, []);
 
   useEffect(() => {
+    if (justSavedFilterRef.current) {
+      justSavedFilterRef.current = false;
+      return;
+    }
+
     let processedFilter = filterToApply;
     
     if (isLiquidityPoolFilter && processedFilter && Array.isArray(processedFilter)) {
@@ -663,8 +668,10 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       setSelectedSavedFilter(isPredefinedFilter);
       setFilterName(isPredefinedFilter.name);
     } else {
-      setSelectedSavedFilter(null);
-      setFilterName("");
+      if (!selectedSavedFilter && !filterName) {
+        setSelectedSavedFilter(null);
+        setFilterName("");
+      }
     }
   }, [filterToApply, sortedPredefinedFilters, isLiquidityPoolFilter, transformFilterFromAnyof]);
 
@@ -1377,22 +1384,24 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     });
   }, [filterBuilderFields, chains, categories, exchanges, allSymbolOptions, allPoolSymbolOptions, allPoolProjectOptions, allVaultNameOptions, allVaultPlatformOptions, customChains, customCategories, customExchanges, isVaultsFilter, isLiquidityPoolFilter, poolCategories, filterValue]);
 
+  const justSavedFilterRef = useRef(false);
+
   const handleSaveFilter = () => {
     if (!filterName) return;
 
+    justSavedFilterRef.current = true;
+
     if (selectedSavedFilter) {
-      onUpdateFilter({
-        id: selectedSavedFilter.id,
+      const updatedFilter: IPrefilterTokensFilterValues = {
+        ...selectedSavedFilter,
         name: filterName,
         filterType: customFilterType ?? filterType,
         description: filterName,
-        icon: "filter",
-        isPublic: true,
-        OwnerUserId: "",
-        isPublished: false,
-        accessPlanName: "",
         filter: filterValue || [],
-      });
+      };
+      
+      onUpdateFilter(updatedFilter);
+      setSelectedSavedFilter(updatedFilter);
     } else {
       onCreateFilter({
         name: filterName,
@@ -1439,6 +1448,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     if (filterToDelete.id === selectedSavedFilter?.id) {
       setSelectedSavedFilter(null);
       setFilterValue(null);
+      setFilterName("");
     }
   };
 
