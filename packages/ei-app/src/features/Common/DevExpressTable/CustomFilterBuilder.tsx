@@ -1489,11 +1489,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
     filterTypes.forEach(type => {
       if (type) {
-        const formattedName = type
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-        topLevelKeys[type] = formattedName;
+        if (type === "liquidity-pool") {
+          topLevelKeys[type] = "All Defi";
+        } else {
+          const formattedName = type
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+          topLevelKeys[type] = formattedName;
+        }
       }
     });
 
@@ -1517,15 +1521,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         return;
       }
 
-      if (!tree[topLevelKey]) {
-        tree[topLevelKey] = { 
-          name: topLevelKeys[topLevelKey], 
-          children: [],
-          nodeId: topLevelKey
-        };
-      }
-
-      let childFilterType = rawFilterType.replace(`${topLevelKey}`, '')
+      let childFilterType = rawFilterType.replace(`${topLevelKey}`, '');
+      
       if (childFilterType) {
         childFilterType = childFilterType.startsWith('-') ? childFilterType.slice(1) : childFilterType;
         if (topLevelKey === LIQUIDITY_POOL) {
@@ -1534,16 +1531,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           const tabKey = Object.entries(PREFILTER_TAB_KEYS).find(([, value]) => childFilterType.startsWith(value))?.[1];
 
           if (tabName) {
-            let tabNode = tree[topLevelKey].children.find((child: any) => child.name === tabName);
+            const tabNodeId = `${topLevelKey}-${tabName}`;
             
-            if (!tabNode) {
-              tabNode = {
+            if (!tree[tabNodeId]) {
+              tree[tabNodeId] = {
                 name: tabName,
                 tabName: tabName,
                 children: [],
-                nodeId: `${topLevelKey}-${tabName}`
+                nodeId: tabNodeId,
+                isTab: true
               };
-              tree[topLevelKey].children.push(tabNode);
             }
 
             if (typeof tabKey === 'string' && tabKey.length > 0) {
@@ -1555,7 +1552,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                 const categoryName = PrefilterCategories[formattedTabKey as keyof typeof PrefilterCategories];
 
                 if (categoryName) {
-                  let categoryNode = tabNode.children.find((child: any) => child.name === categoryName);
+                  let categoryNode = tree[tabNodeId].children.find((child: any) => child.name === categoryName);
                   
                   if (!categoryNode) {
                     categoryNode = {
@@ -1563,9 +1560,9 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                       categoryName: categoryName,
                       tabName: tabName,
                       children: [],
-                      nodeId: `${topLevelKey}-${tabName}-${categoryName}`
+                      nodeId: `${tabNodeId}-${categoryName}`
                     };
-                    tabNode.children.push(categoryNode);
+                    tree[tabNodeId].children.push(categoryNode);
                   }
 
                   categoryNode.children.push({
@@ -1581,19 +1578,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                   });
                 }
               } else {
-                tabNode.children.push({
-                    id: filter.id,
-                    name: filter.name,
-                    filterValue: filter.filter,
-                    isPublic: filter.isPublic,
-                    filterObject: filter,
-                    nodeId: filter.id,
-                    tabName: tabName,
-                    hasChildren: false
-                  });
+                tree[tabNodeId].children.push({
+                  id: filter.id,
+                  name: filter.name,
+                  filterValue: filter.filter,
+                  isPublic: filter.isPublic,
+                  filterObject: filter,
+                  nodeId: filter.id,
+                  tabName: tabName,
+                  hasChildren: false
+                });
               }
             } else {
-              tabNode.children.push({
+              tree[tabNodeId].children.push({
                 id: filter.id,
                 name: filter.name,
                 filterValue: filter.filter,
@@ -1607,53 +1604,46 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           }
         }
       } else {
-        tree[topLevelKey].children.push({
-          id: filter.id,
-          name: filter.name,
-          filterValue: filter.filter,
-          isPublic: filter.isPublic,
-          filterObject: filter,
-          nodeId: filter.id,
-          hasChildren: false
-        });
-      }
-    });
-
-    const sortChildren = (children: any[]) => {
-      if (!children || !Array.isArray(children)) return [];
-
-      return [...children].sort((a, b) => {
-        const aHasChildren = a.children && a.children.length > 0;
-        const bHasChildren = b.children && b.children.length > 0;
-
-        if (!aHasChildren && !bHasChildren) {
-          const aIsDefault = a.isPublic;
-          const bIsDefault = b.isPublic;
-
-          if (aIsDefault && !bIsDefault) return -1;
-          if (!aIsDefault && bIsDefault) return 1;
-          return a.name.localeCompare(b.name);
-        }
-
-        if (aHasChildren && !bHasChildren) return 1;
-        if (!aHasChildren && bHasChildren) return -1;
-        return 0;
-      });
-    };
-
-    Object.values(tree).forEach((node: any) => {
-      if (node.children) {
-        node.children = sortChildren(node.children);
-        node.children.forEach((child: any) => {
-          if (child.children) {
-            child.children = sortChildren(child.children);
-            child.children.forEach((grandChild: any) => {
-              if (grandChild.children) {
-                grandChild.children = sortChildren(grandChild.children);
-              }
-            });
+        if (!tree[topLevelKey]) {
+          tree[topLevelKey] = { 
+            name: topLevelKeys[topLevelKey], 
+            children: [],
+            nodeId: topLevelKey
+          };
+          
+          if (topLevelKey === LIQUIDITY_POOL) {
+            const samplesHeader = {
+              name: "Samples",
+              children: [],
+              nodeId: `${topLevelKey}-samples`
+            };
+            
+            const customHeader = {
+              name: "Custom", 
+              children: [],
+              nodeId: `${topLevelKey}-custom`
+            };
+            
+            tree[topLevelKey].children.push(samplesHeader, customHeader);
           }
-        });
+        }
+        
+        const targetHeaderName = filter.isPublic ? "Samples" : "Custom";
+        const targetHeader = topLevelKey === LIQUIDITY_POOL ? tree[topLevelKey].children.find(
+            (child: any) => child.name === targetHeaderName
+          ) : tree[topLevelKey];
+
+        if (targetHeader) {
+          targetHeader.children.push({
+            id: filter.id,
+            name: filter.name,
+            filterValue: filter.filter,
+            isPublic: filter.isPublic,
+            filterObject: filter,
+            nodeId: filter.id,
+            hasChildren: false
+          });
+        }
       }
     });
 
@@ -1706,8 +1696,6 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
           </TreeItem>
         );
       } else {
-        const filterName = mapFilterName(node.name, node.isPublic);
-        
         return (
           <TreeItem
             key={node.id}
@@ -1729,7 +1717,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                     color: 'rgba(0, 0, 0, 0.87)',
                   }}
                 >
-                  {filterName}
+                  {node.name}
                 </Typography>
                 {!node.isPublic && (
                   <IconButton
@@ -1811,11 +1799,12 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
   };
 
   const rootNodes = useMemo(() => {
-    return Object.values(filterTree);
+    return Object.values(filterTree).sort((a: any, b: any) => (a?.name ?? "").localeCompare(b?.name ?? ""));
   }, [filterTree]);
 
   const defaultExpandedNodes = useMemo(() => {
-    return rootNodes.map(node => node.nodeId);
+    //return rootNodes.map(node => node.nodeId);
+    return [];
   }, [rootNodes]);
 
   const findNodeById = (tree: any, nodeId: string): any => {
