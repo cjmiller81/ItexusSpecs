@@ -113,7 +113,8 @@ function getToolsItems(hasPageAccess: (pagePath: string) => boolean): SidebarLis
         },
         {
           title: t("CEX", { ns: "SideBar" }),
-          href: "/tradeAggregator/cex"
+          href: "/tradeAggregator/cex",
+          disabled: !hasPageAccess("/tradeAggregator/cex"),
         },
       ],
     }
