@@ -40,7 +40,11 @@ export function TransactionRow({ transaction, borderColors }: TransactionRowProp
     <div className={`tx-row ${transaction.spam.isSpam ? 'spam' : ''}`} style={borderColors}>
       {/* Type Icon */}
       <div className={`tx-icon ${transaction.type}`}>
-        {typeConfig.icon}
+        {typeConfig.icon.includes('<svg') ? (
+          <div dangerouslySetInnerHTML={{ __html: typeConfig.icon }} />
+        ) : (
+          typeConfig.icon
+        )}
       </div>
 
       {/* Left Content */}
