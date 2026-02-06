@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { TransactionHistoryResponse } from '../types/transactions';
+import { TransactionHistoryResponse, Transaction } from '../types/transactions';
 import { fetchTransactions } from "../api/transactions";
 
 type DateRange = { from: string; to: string };
@@ -129,6 +129,57 @@ export function useTransactionHistory(walletAddress: string) {
     }
   }, [data, walletAddress]);
 
+  const fetchAllTransactionsForExport = async (): Promise<Transaction[]> => {
+    if (!walletAddress) return [];
+
+    try {
+      const allTransactions: Transaction[] = [];
+      let currentPage = 0;
+      let hasMorePages = true;
+      const batchPageSize = 1000;
+
+      while (hasMorePages) {
+        const params: Record<string, any> = { 
+          page: currentPage, 
+          pageSize: batchPageSize 
+        };
+
+        if (dateFilter && dateFilter !== 'all' && typeof dateFilter !== 'string') {
+          params.fromDate = dateFilter.from;
+          params.toDate = dateFilter.to;
+        } else if (typeof dateFilter === 'string' && dateFilter !== 'all') {
+          params.days = dateFilter;
+        }
+
+        if (typeFilter && typeFilter !== 'all') {
+          params.type = typeFilter;
+        }
+
+        // includeSpam = true when we SHOW spam (hideSpam === false)
+        params.includeSpam = !hideSpam;
+
+        const response = await fetchTransactions({ address: walletAddress, ...params });
+
+        if (response?.transactions && response.transactions.length > 0) {
+          allTransactions.push(...response.transactions);
+        }
+
+        hasMorePages = response?.hasMore ?? false;
+        currentPage++;
+
+        if (currentPage > 100) {
+          console.warn('Export: Reached maximum page limit (100 pages)');
+          break;
+        }
+      }
+
+      return allTransactions;
+    } catch (err) {
+      console.error('Error fetching all transactions for export:', err);
+      return [];
+    }
+  };
+
   return {
     // Data
     data,
@@ -137,6 +188,9 @@ export function useTransactionHistory(walletAddress: string) {
     
     // Transactions (server page)
     paginatedTransactions,
+    
+    // Export
+    fetchAllTransactionsForExport,
     
     // Filters
     dateFilter, setDateFilter,
