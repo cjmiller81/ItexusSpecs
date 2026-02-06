@@ -66,7 +66,7 @@ const nextConfig = {
     ORY_SDK_URL: process.env.ORY_SDK_URL,
     NEXT_PUBLIC_BACKEND_API_URL:process.env.NEXT_PUBLIC_BACKEND_API_URL,
   },
-  transpilePackages: ['@mui/icons-material', 'components'],
+  transpilePackages: ['@mui/icons-material', 'components', '@ory/elements-react', '@ory/client-fetch'],
 }
 
 module.exports = nextConfig

@@ -1,9 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useAppSelector } from "@/libs/redux/Store";
 import {
   AccordionDetails,
   AccordionProps,
   Box,
+  Button,
   IconButton,
   styled,
   Tooltip,
@@ -12,21 +12,25 @@ import {
 } from "@mui/material";
 import { ICategory, IExchange, IPlatform, PageTitle, StatePersistedAccordion } from "components";
 import DataSource from "devextreme/data/data_source";
-import { exportDataGrid } from "devextreme/excel_exporter";
-import { Workbook } from "exceljs";
-import { saveAs } from "file-saver-es";
-import React, { useCallback, useEffect, useState } from "react";
+import DownloadIcon from "@mui/icons-material/Download";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyledAccordionSummary } from "./IndexModelingSection";
 import { PrefilterTokensTable } from "./PrefilterTokensTable";
 import { filtersApi } from "../../../../components/src/services/filterService";
 import { useTheme } from "@mui/material/styles";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   dataSource: DataSource;
   onFilterChanged: (filter: any) => void;
   onSorterChanged: (sorter: any) => void;
+  id?: string;
+  filterType?: string;
+  exportFileName: string;
 };
 
 export default function PrefilterTokensSection({
@@ -34,6 +38,9 @@ export default function PrefilterTokensSection({
   onFilterChanged,
   dataSource,
   persisKey,
+  id,
+  filterType = "market-cap",
+  exportFileName,
   ...props
 }: Props) {
   const { t } = useTranslation(["PrefilterTokensSection", "Common"]);
@@ -44,6 +51,8 @@ export default function PrefilterTokensSection({
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [exchanges, setExchanges] = useState<IExchange[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const dataGridRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,27 +76,6 @@ export default function PrefilterTokensSection({
     fetchData();
   }, []);
 
-  const onExporting = useCallback(async (e: any): Promise<void> => {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Main sheet");
-
-    const currentDate = new Date();
-
-    await exportDataGrid({
-      component: e.component,
-      worksheet,
-      autoFilterEnabled: true,
-    });
-
-    await workbook.xlsx.writeBuffer().then(buffer => {
-      saveAs(
-        new Blob([buffer], { type: "application/octet-stream" }),
-        `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split("T")[0]}.xlsx`,
-      );
-    });
-    e.cancel = true;
-  }, []);
-
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
       {...props}
@@ -108,35 +96,86 @@ export default function PrefilterTokensSection({
     cursor: "default !important",
     pointerEvents: "none",
     position: "inherit",
-    borderRadius: "2px",
-    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     backgroundColor: "#363640",
-    border: "1.6px solid #25252AFF",
-    outline: "1.9px solid #363640",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
-    },
+    border: "1px solid #25252AFF",
+  };
+
+  const lightThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none",
+    position: "inherit",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    backgroundColor: "#f7f5f2"
+  };
+
+  const onExport = async () => {
+    if (isExporting) {
+      return;
+    }
+
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export Prefilter tokens data:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
     <StatePersistedAccordion
+      className="index-modeling-section-container"
       persistKey={persisKey}
       defaultExpanded
-      sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", pointerEvents: "none" }}
+      sx={theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles}
+      id={id}
       {...props}>
       <StyledAccordionSummary
-        expandIcon={
-          <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
-            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-              <ExpandMoreIcon />
-            </IconButton>
-          </CustomTooltip>
-        }
         sx={{
+          borderTopLeftRadius: "10px",
+          borderTopRightRadius: "10px",
+          borderBottomLeftRadius: "10px",
+          borderBottomRightRadius: "10px", 
+          backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
           "&.MuiAccordionSummary-root:hover": {
             cursor: "default",
           },
-        }}>
+        }}
+        expandIcon={
+          <CustomTooltip title={t("ToggleView", { ns: "Common" })}>
+            <IconButton
+              sx={{
+                cursor: "pointer",
+                pointerEvents: "auto",
+                transform: "rotate(-90deg)",
+              }}>
+              <ArrowBackIosNewOutlinedIcon
+                sx={{
+                  "& path": {
+                    stroke: "currentColor",
+                    strokeWidth: 2,
+                    fill: "currentColor",
+                  },
+                }}
+              />
+            </IconButton>
+          </CustomTooltip>
+        }>
+
         <Box
           sx={{
             display: "flex",
@@ -150,13 +189,31 @@ export default function PrefilterTokensSection({
             onClick={e => e.stopPropagation()}>
             {t("PrefilterTokens")}
           </PageTitle>
+          <FeatureAccessGuard feature="tableExport">
+            <Button
+              id="export_button"
+              disabled={isExporting}
+              onClick={e => {
+                e.stopPropagation();
+                void onExport();
+              }}
+              variant="outlined"
+              sx={{ ml: 4, marginRight: "17px" }}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                <DownloadIcon />
+                {t("Export")}
+              </Box>
+            </Button>
+          </FeatureAccessGuard>
         </Box>
       </StyledAccordionSummary>
       <AccordionDetails
         sx={{
-          backgroundColor: theme.palette.mode === "dark" ? "#363640" : "background.paper",
+          backgroundColor: theme.palette.mode === "dark" ? "#363640 !important" : "#f7f5f2 !important",
           width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
           transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+          borderBottomLeftRadius: "10px",
+          borderBottomRightRadius: "10px",
         }}>
         {loading ? (
           <div></div>
@@ -167,8 +224,9 @@ export default function PrefilterTokensSection({
             exchanges={exchanges}
             onCurrentFilterChange={onFilterChanged}
             dataSource={dataSource}
-            onExport={onExporting}
             onSorterChanged={onSorterChanged}
+            filterType={filterType}
+            dataGridRef={dataGridRef}
           />
         )}
       </AccordionDetails>

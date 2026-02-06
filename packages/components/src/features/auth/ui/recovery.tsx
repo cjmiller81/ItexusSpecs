@@ -6,42 +6,72 @@ import { Loader } from "../components/loader"
 import { ory } from "../lib/sdk"
 import { HandleError } from "../utils/hooks"
 import { StyledAuthContainer } from "./StyledAuthContainer"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
+import { Stack } from "@mui/material"
+import { CustomRecoveryForm } from "./CustomRecoveryForm"
+import ProtectedByOryLabel from "./protectedByOryLabel"
+import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer";
 
-export const Recovery: FC<{ changePasswordRoute: string }> = ({ changePasswordRoute }) => {
-  const [flow, setFlow] = useState<RecoveryFlow | null>()
+interface RecoveryProps {
+  changePasswordRoute: string
+  env: {
+    termsUrl: string,
+    appTermsUrl: string
+  }
+}
 
-  // Get flow information from the URL
-  const router = useRouter()
+export const Recovery: FC<RecoveryProps> = ({
+  changePasswordRoute, env
+}) => {
+  const [flow, setFlow] = useState<RecoveryFlow | null>();
 
-  const flowId = String(router.query.flow || "")
+  const router = useRouter();
+  const flowId = String(router.query.flow || "");
+
+  const isRefreshFlowIdNeeded = useFlowIdExpirationTimer(flow);
+
+  useEffect(() => {
+    if (isRefreshFlowIdNeeded) {
+      router.push('/ui/login/');
+    }
+
+  }, [isRefreshFlowIdNeeded]);
 
   const getFlow = useCallback(
     (id: string) =>
       ory
         .getRecoveryFlow({ id })
-        .then(({ data }) => {
-          setFlow(data)
-        })
+        .then(({ data }) => setFlow(data))
         .catch(handleError),
     [],
   )
 
   const handleError = useCallback(
     (error: AxiosError) => {
-      const handle = HandleError(getFlow, setFlow, "/ui/registration", true)
+      if (error.response?.status === 410) {
+          const data = error.response.data as { error?: { details?: { redirect_to?: string } } }
+          const redirectTo = data?.error?.details?.redirect_to
 
-      if (error.response?.status && error.response?.status == 422) {
-        const errorData: any = error.response?.data
+          if (redirectTo) {
+            const returnTo = window.location.origin
 
-        if (errorData?.redirect_browser_to) {
-          // TODO: Just calling `handle(error)` throws `invalid URL error when `HandleError(...)` does `new URL(responseData.redirect_browser_to)`.
-          // Set the full base path/origin so the URL is valid and will redirect to the `/profile` page to show recovery message.
-          errorData.redirect_browser_to = `${window.location.origin}${errorData.redirect_browser_to}`
+            const redirectUrl = new URL(redirectTo)
+            redirectUrl.searchParams.set("return_to", returnTo)
+
+            window.location.replace(redirectUrl.toString())
+            return
+          }
+        }
+
+      const forward = HandleError(getFlow, setFlow, "/ui/registration", true)
+
+      if (error.response?.status === 422) {
+        const data: any = error.response.data
+        if (data?.redirect_browser_to) {
+          data.redirect_browser_to = `${window.location.origin}${data.redirect_browser_to}`
         }
       }
 
-      return handle(error)
+      return forward(error)
     },
     [getFlow],
   )
@@ -51,70 +81,123 @@ export const Recovery: FC<{ changePasswordRoute: string }> = ({ changePasswordRo
       .createBrowserRecoveryFlow()
       .then(({ data }) => {
         setFlow(data)
-        router.push(`/ui/recovery?flow=${data.id}`)
+        router.replace(`/ui/recovery?flow=${data.id}`)
       })
-      .catch(c => {
-        void handleError(c)
-      })
+      .catch((err) => void handleError(err))
 
+  const handleResend = (email: string) => {
+    // Create a new recovery flow - this will reset the flow and allow resending
+    ory
+      .createBrowserRecoveryFlow()
+      .then(({ data: newFlow }) => {
+        setFlow(newFlow)
+        router.replace(`/ui/recovery?flow=${newFlow.id}`)
+        
+        // Extract CSRF token from the new flow
+        const csrfNode = newFlow.ui.nodes.find(node => {
+          if (node.attributes && typeof node.attributes === 'object' && 'name' in node.attributes) {
+            return node.attributes.name === "csrf_token"
+          }
+          return false
+        })
+        const csrfToken = csrfNode && typeof csrfNode.attributes === 'object' && 'value' in csrfNode.attributes
+          ? (csrfNode.attributes as any).value
+          : undefined
+        
+        // Submit with email using the new flow ID and CSRF token
+        const submitValues: UpdateRecoveryFlowBody = {
+          email: email,
+          method: "code",
+          ...(csrfToken && { csrf_token: csrfToken }),
+        } as UpdateRecoveryFlowBody
+        ory
+          .updateRecoveryFlow({
+            flow: String(newFlow.id),
+            updateRecoveryFlowBody: submitValues
+          })
+          .then(({ data }) => {
+            if (data.state === "sent_email") {
+              setFlow(data)
+              router.replace(`/ui/recovery?flow=${data.id}`)
+            }
+          })
+          .catch((err) => void handleError(err))
+      })
+      .catch((err) => void handleError(err))
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // init
+  // ──────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!router.isReady) {
-      return
-    }
-
-    // If ?flow=.. was in the URL, we fetch it
+    if (!router.isReady) return
     if (flowId) {
       getFlow(flowId).catch(() => createFlow())
-      // if the flow is expired, we create a new one
       return
     }
-
-    // Otherwise we initialize it
     createFlow()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // submit handler
+  // ──────────────────────────────────────────────────────────────────────────
   const submitFlow = (values: UpdateRecoveryFlowBody) => {
     ory
       .updateRecoveryFlow({
         flow: String(flow?.id),
-        updateRecoveryFlowBody: values,
+        updateRecoveryFlowBody: values
       })
       .then(({ data }) => {
+        /*
+         * Kratos ≥ 0.11 returns 200 OK with a state field.
+         *  ─ "sent_email"       -> stay on page, show message / ask for code
+         *  ─ "passed_challenge" -> session cookie is set, redirect to app
+         */
+        if (data.state === "sent_email") {
+          setFlow(data) // just update UI, ask for the recovery code
+          return
+        }
+
+        if (data.state === "passed_challenge") {
+          document.cookie = `postRecoveryRedirect=${encodeURIComponent(changePasswordRoute)}; path=/;`
+          window.location.replace(changePasswordRoute)
+          return
+        }
+
+        // fallback: still update local flow (error messages, etc.)
         setFlow(data)
+
+        document.cookie = `postRecoveryRedirect=${encodeURIComponent(changePasswordRoute)}; path=/;`
       })
       .catch((error: AxiosError) => {
-        if (error.response?.status && error.response?.status == 422) {
-          const errorData: any = error.response?.data
-          // Use custom page to change password
-          if (errorData?.redirect_browser_to) {
-            window.location.href = changePasswordRoute
+        // Older Kratos (<0.11) success branch: 422 + redirect_browser_to
+        if (error.response?.status === 422) {
+          const data: any = error.response.data
+          if (data?.redirect_browser_to) {
+            document.cookie = `postRecoveryRedirect=${encodeURIComponent(changePasswordRoute)}; path=/;`
+            window.location.replace(changePasswordRoute)
+            return
           }
         }
+        void handleError(error)
       })
   }
 
   if (!flow) return <Loader />
+
   return (
     <StyledAuthContainer>
-      <div className="log">
-        <StyledUserAuthCard
-          // create a recovery form that dynamically renders based on the flow data using Ory Elements
-          // This defines what kind of card we want to render.
-          flowType={"recovery"}
-          // we always need the flow data which populates the form fields and error messages dynamically
-          flow={flow}
-          // the registration card should allow the user to go to the registration page and the login page
-          additionalProps={{
-            loginURL: "/ui/login",
-          }}
-          // we might need webauthn support which requires additional js
-          includeScripts={true}
-          // we submit the form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
-          cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
-        />
-      </div>
+      <Stack alignItems="center" gap={1} className="log">
+        {flow && (
+          <CustomRecoveryForm
+            flow={flow}
+            onSubmit={submitFlow}
+            onResend={handleResend}
+          />
+        )}
+        <ProtectedByOryLabel env={env} />
+      </Stack>
     </StyledAuthContainer>
   )
 }

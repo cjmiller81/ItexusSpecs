@@ -1,3 +1,5 @@
 export * from "./AppModal"
 export * from "./AppModalBody"
 export * from "./YesNoDialog"
+export * from "./PasswordResetModal"
+export * from "./WelcomeModal"

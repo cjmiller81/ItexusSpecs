@@ -2,6 +2,7 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { Typography } from "@mui/material";
 import { Market } from "@/models/Market";
 import i18next, { t } from "i18next";
+import moment from "moment";
 
 i18next.setDefaultNamespace("MarketTableColumns");
 
@@ -24,10 +25,11 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
             fontWeight: 'bold'
           }}
         >
-          {new Date(params.row.date).toISOString().split('T')[0]}
+           {moment.utc(params.row.date).format("YYYY-MM-DD")}
         </Typography>
       ),
     },
+
     {
       field: "symbol",
       headerName: t("Symbol"),
@@ -60,38 +62,82 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
           minimumFractionDigits: 0,
         });
       },
-      renderCell: (params: GridRenderCellParams<Market, any, any>) => (
-        <Typography
-          variant="body1"
-          sx={{ fontSize: "0.85rem", color: "green", fontWeight: 'bold'}}>
-          {params.formattedValue}
-        </Typography>
-      ),
-    },
-
-    {
-        field: "sold",
-        headerName: t("Sold"),
-        sortable: false,
-        editable: false,
-        filterable: false,
-        flex: 1,
-        disableColumnMenu: true,
-        valueGetter: params => {
-          if (!params.row.sold) return "--";
-          return params.row.sold.toLocaleString("en-US", {
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-          });
-        },
-        renderCell: (params: GridRenderCellParams<Market, any, any>) => (
+      renderCell: (params: GridRenderCellParams<Market, any, any>) => {
+        const boughtValue = params.row.bought;
+        const soldValue = params.row.sold;
+    
+        let boughtColor = "#9E9E9E";
+        let soldColor = "#9E9E9E";
+    
+        if (boughtValue > soldValue) {
+          boughtColor = "green";
+          soldColor = "#9E9E9E";
+        } else if (boughtValue < soldValue) {
+          boughtColor = "#9E9E9E";
+          soldColor = "red"; 
+        } else if (boughtValue === soldValue) {
+          boughtColor = "#9E9E9E";
+          soldColor = "#9E9E9E"; 
+        }
+    
+        return (
           <Typography
             variant="body1"
-            sx={{ fontSize: "0.85rem", color: "#DC143C", fontWeight: 'bold'}}>
+            sx={{
+              fontSize: "0.85rem",
+              color: boughtColor,
+              fontWeight: "bold",
+            }}
+          >
             {params.formattedValue}
           </Typography>
-        ),
+        );
       },
+    },
+    
+    {
+      field: "sold",
+      headerName: t("Sold"),
+      sortable: false,
+      editable: false,
+      filterable: false,
+      flex: 1,
+      disableColumnMenu: true,
+      valueGetter: params => {
+        if (!params.row.sold) return "--";
+        return params.row.sold.toLocaleString("en-US", {
+          maximumFractionDigits: 0,
+          minimumFractionDigits: 0,
+        });
+      },
+      renderCell: (params: GridRenderCellParams<Market, any, any>) => {
+        const boughtValue = params.row.bought;
+        const soldValue = params.row.sold;
+    
+        let soldColor = "#9E9E9E";
+    
+        if (boughtValue > soldValue) {
+          soldColor = "#9E9E9E";
+        } else if (boughtValue < soldValue) {
+          soldColor = "red"; 
+        } else if (boughtValue === soldValue) {
+          soldColor = "#9E9E9E";
+        }
+    
+        return (
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: "0.85rem",
+              color: soldColor,
+              fontWeight: "bold",
+            }}
+          >
+            {params.formattedValue}
+          </Typography>
+        );
+      },
+    },
 
       {
         field: "percentAvg",
@@ -102,8 +148,8 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         flex: 1,
         disableColumnMenu: true,
         valueGetter: (params) => {
-          if (!params.row.percentAvg) return "--";
-          return (params.row.percentAvg * 100).toFixed(0);
+           if (!params.row.percentAvg) return "--";
+           return (params.row.percentAvg * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -123,22 +169,46 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         filterable: false,
         flex: 1,
         disableColumnMenu: true,
-        valueGetter: params => {
+        valueGetter: (params) => {
           if (!params.row.buyRatio) return "--";
           return params.row.buyRatio.toLocaleString("en-US", {
             maximumFractionDigits: 2,
             minimumFractionDigits: 2,
           });
         },
-        renderCell: (params: GridRenderCellParams<Market, any, any>) => (
-          <Typography
-            variant="body1"
-            sx={{ fontSize: "0.85rem", color:"#9E9E9E", fontWeight: 'bold' }}>
-            {params.formattedValue}
-          </Typography>
-        ),
+        renderCell: (params: GridRenderCellParams<Market, any, any>) => {
+          const buyRatioValue = params.formattedValue;
+          let cellStyle = {};
+          let textColor = "#9E9E9E";
+          
+          if (buyRatioValue > 1 && buyRatioValue < 1.50) {
+            textColor = "green";
+          } else if (buyRatioValue > 1.5 && buyRatioValue < 3.0) {
+            cellStyle = { backgroundColor: "green", color: "black" };
+          } else if (buyRatioValue > 3.0) {
+            cellStyle = { backgroundColor: "lightblue", color: "black" };
+          } else if (buyRatioValue < 1 && buyRatioValue > 0.50) {
+            textColor = "red";
+          } else if (buyRatioValue < 0.50) {
+            cellStyle = { backgroundColor: "red", color: "white" }; 
+          }
+      
+          return (
+            <Typography
+              variant="body1"
+              sx={{
+                fontSize: "0.85rem",
+                fontWeight: "bold",
+                color: textColor,
+                ...cellStyle, 
+              }}
+            >
+              {buyRatioValue}
+            </Typography>
+          );
+        },
       },
-
+      
       {
         field: "dpIndex",
         headerName: t("DPIndex"),
@@ -149,7 +219,7 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
         disableColumnMenu: true,
         valueGetter: (params) => {
           if (!params.row.dpIndex) return "--";
-          return (params.row.dpIndex * 100).toFixed(0);
+           return (params.row.dpIndex * 100).toFixed(0);
         },
         renderCell: (params: GridRenderCellParams<Market, any, any>) => (
           <Typography
@@ -160,6 +230,7 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
           </Typography>
         ),
       },
+      
       {
         field: "total",
         headerName: t("Total"),
@@ -182,6 +253,6 @@ export const  getMarketTableColumns = (): GridColDef<Market>[] => {
             {params.formattedValue}
           </Typography>
         ),
-      },
+      }
   ];
 };

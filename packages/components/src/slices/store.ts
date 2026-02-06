@@ -2,10 +2,18 @@ import { asyncThunkCreator, buildCreateSlice, combineReducers, configureStore } 
 import { walletsSlice } from "./walletsSlice"
 import { uiSlice } from "./uiSlice"
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux"
+import { krakenSlice } from "./krakenSlice"
+import { billingSlice } from "./billingSlice"
+import {dexSlice} from "./dexSlice"
+import { reactourSlice } from "./reactourSlice"
 
 const reducers = {
   ui: uiSlice.reducer,
   wallets: walletsSlice.reducer,
+  kraken: krakenSlice.reducer,
+  billing: billingSlice.reducer,
+  dex: dexSlice.reducer,
+  reactour: reactourSlice.reducer,
 }
 const rootReducer = combineReducers(reducers)
 

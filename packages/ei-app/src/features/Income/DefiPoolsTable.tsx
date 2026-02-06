@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ICoin } from "components/src/models/token/ICoin";
-import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/redux/Slices/AllTokensTableSlice";
+import { createFilter, deleteFilter, updateFilter, fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import DataGridDef, {
   Column,
   ColumnChooser,
@@ -20,50 +20,258 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import { ExportingEvent } from "devextreme/ui/data_grid";
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChainCell } from "./ChainCell";
-import { toDollarAmountField, toPercentageField, toPoolCellField } from "./helpers";
+import { toDollarAmountField, toPercentageField, toPercentageFieldWithZero, toPoolCellField } from "./helpers";
 import { PoolData } from "./Models/PoolData";
 import { ProjectCellComponent } from "./ProjectCellComponent";
 import { DefiField, defiFilterBuilderFields, DefiLabel } from "./tableConstants";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import SimpleBar from "simplebar-react";
-import { CustomFilterBuilder } from "../Common/DevExpressTable/CustomFilterBuilder";
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
+import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
+import { MainTab } from "@/components/CategoryFiltersSection";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
   dataSource: DataSource<PoolData, string>;
   onUpdate: (filteredTokenData: ICoin[]) => void;
-  onExport: (e: ExportingEvent<PoolData, any>) => void;
   dexs: string[];
+  chains: string[];
+  categories: string[];
+  projects: string[];
+  symbols: string[];
+  filterKey?: string | null;
+  onFilterValueChange?: (filter: object[] | null | undefined) => void;
+  dataGridRef?: MutableRefObject<DataGridDef<PoolData, string> | null> | RefObject<DataGridDef<PoolData, string>>;
+  externalFilter?: object[] | null | undefined;
+  onClearCategoryFilter?: () => void;
+  onFilterBuilderOpenChange?: (isOpen: boolean) => void;
+  onTreeViewFilterChange?: (filter: any, filterContext: { tab?: MainTab; category?: string }) => void;
 }
 
-export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, onExport, dexs }) => {
-  const datagrid = React.createRef<DataGridDef<PoolData, string>>();
+const COLUMN_CHOOSER_BUTTON_ID = "defi-pools-column-chooser-btn";
+
+const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  minWidth: 200,
+  maxHeight: 40,
+  height: 32,
+  fontWeight: 400,
+  borderRadius: 6,
+  padding: theme.spacing(0.25, 3),
+  backgroundColor: "#219a83",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: theme.spacing(1),
+  "&:hover": {
+    backgroundColor: "#1c8d74",
+  },
+}));
+
+export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
+  loading,
+  onUpdate,
+  dataSource,
+  dexs,
+  chains,
+  categories,
+  projects,
+  symbols,
+  onFilterValueChange,
+  dataGridRef,
+  externalFilter,
+  filterKey,
+  onClearCategoryFilter,
+  onFilterBuilderOpenChange,
+  onTreeViewFilterChange
+}) => {
+  const handleTreeViewSelection = useCallback(
+    (filter: any, filterContext: { tab?: MainTab; category?: string }) => {
+      const { tab, category } = filterContext;
+
+      const mainTab = tab as MainTab;
+      if (onTreeViewFilterChange) {
+        onTreeViewFilterChange(filter, { tab: mainTab, category });
+      }
+    },
+    [onTreeViewFilterChange]
+  );
+  const internalDataGridRef = useRef<DataGridDef<PoolData, string> | null>(null);
+  const datagrid = (dataGridRef as MutableRefObject<DataGridDef<PoolData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
-  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
-  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "liquidity-pool"), [filters]);
-  const [filterBuildeOpen, setFilterBuilderOpen] = useState(false);
+  
+  const [currentFilter, setCurrentFilter] = useState<object[] | string[] | null | undefined>();
+  const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
+  const filterRef = useRef<CustomFilterBuilderRef>(null);
+
+  const liquidityPoolFilters = useMemo(() => filters.filter(f => {
+    //return f.filterType === filterKey;
+    return typeof f?.filterType === "string" && f.filterType.startsWith('liquidity-pool');
+  }), [filters, filterKey]);
+
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const filterPanelText = useRef<Element | null>(null);
+  const categoryHeaderFilterRef = useRef<any>(null);
 
-  const updatePrefilteredTokens = useCallback(async (): Promise<void> => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
+  const prevExternalFilterRef = useRef<object[] | null | undefined>(undefined);
+  
+  useEffect(() => {
+    const hasExternalFilterChanged = externalFilter !== prevExternalFilterRef.current;
+    
+    if (hasExternalFilterChanged && externalFilter !== undefined) {
+      if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
+        if (hasCategoryFilter(externalFilter)) {
+          setCurrentFilter(externalFilter);
+        } else {
+          if (currentFilter && Array.isArray(currentFilter) && currentFilter.length > 0) {
+            const mergedFilter: any[] = [externalFilter, "and", currentFilter];
+            setCurrentFilter(mergedFilter);
+          } else {
+            setCurrentFilter(externalFilter);
+          }
+        }
+      } else {
+        if (currentFilter && Array.isArray(currentFilter) && hasCategoryFilter(currentFilter)) {
+          setCurrentFilter(null);
+        }
+      }
+    }
+    
+    prevExternalFilterRef.current = externalFilter;
+  }, [externalFilter, currentFilter]);
 
-    const filteredDataSource = grid.getDataSource();
-    datagrid?.current?.instance?.filter(currentFilter);
-    await grid.refresh();
-    const prefilteredData = filteredDataSource.items() as ICoin[];
-    onUpdate(prefilteredData);
-  }, [datagrid, currentFilter, onUpdate]);
+  const stringToFilterItem = useCallback((item: { name: string }): { text: string; value: string } => {
+    return {
+      text: item.name,
+      value: item.name,
+    };
+  }, []);
+
+  const categoryHeaderFilterDataSource = useMemo(() => ({
+    store: {
+      type: "array" as const,
+      data: categories.map((cat: string) => ({ name: cat })),
+    },
+    map: stringToFilterItem,
+  }), [categories, stringToFilterItem]);
+
+  const extractCategoryValues = useCallback((filter: any[] | null | undefined): string[] => {
+    if (!filter || !Array.isArray(filter)) return [];
+
+    const values: string[] = [];
+
+    const walk = (node: any) => {
+      if (!Array.isArray(node)) return;
+
+      if (node.length === 3 && typeof node[0] === "string") {
+        const [field, op, value] = node;
+        
+        if (field === "category" && op === "anyof" && Array.isArray(value)) {
+          values.push(...value.filter(v => typeof v === "string"));
+          return;
+        }
+        
+        if (field === "category" && (op === "contains" || op === "=")) {
+          if (typeof value === "string") {
+            values.push(value);
+          }
+        }
+        return;
+      }
+      
+      for (let i = 0; i < node.length; i++) {
+        const item = node[i];
+        if (item === "or" || item === "and") {
+          continue;
+        }
+        if (Array.isArray(item)) {
+          walk(item);
+        }
+      }
+    };
+
+    walk(filter);
+    
+    return Array.from(new Set(values));
+  }, []);
+
+  const hasCategoryFilter = useCallback((filter: any[] | null | undefined): boolean => {
+    if (!filter || !Array.isArray(filter)) return false;
+
+    const check = (node: any): boolean => {
+      if (!Array.isArray(node)) return false;
+      
+      if (node.length === 3 && typeof node[0] === "string" && node[0] === "category") {
+        return true;
+      }
+      
+      for (let i = 0; i < node.length; i++) {
+        const item = node[i];
+        if (item === "or" || item === "and") continue;
+        if (Array.isArray(item) && check(item)) {
+          return true;
+        }
+      }
+      
+      return false;
+    };
+
+    return check(filter);
+  }, []);
+
+  const activeFilter = useMemo(() => {
+    return externalFilter !== undefined ? (externalFilter || []) : (currentFilter || []);
+  }, [externalFilter, currentFilter]);
+
+  const selectedCategoryValues = useMemo(() => {
+    const values = extractCategoryValues(activeFilter);
+    return values;
+  }, [activeFilter, extractCategoryValues]);
+
+  const transformFilterFromAnyof = useCallback((filter: any): any => {
+    if (!filter || !Array.isArray(filter)) {
+      return filter;
+    }
+
+    if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+      const [field, , values] = filter;
+      if (values.length === 0) return [];
+      if (values.length === 1) {
+        return [field, 'contains', values[0]];
+      }
+      const conditions = values.map((value: any) => [field, 'contains', value]);
+      const result: any[] = [];
+      conditions.forEach((condition, index) => {
+        if (index > 0) {
+          result.push('or');
+        }
+        result.push(condition);
+      });
+      return result;
+    }
+
+    if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
+      return filter.map((item: any) => {
+        if (Array.isArray(item)) {
+          return transformFilterFromAnyof(item);
+        }
+        return item;
+      });
+    }
+
+    return filter;
+  }, []);
 
   const calculateFilterExpression = useCallback(function (
       this: any,
@@ -76,6 +284,10 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
         if (filterValues) {
           let selectedValue = filterValues;
   
+          if (selectedValue && selectedFilterOperation === "=" && column.dataField === "category") {
+            return [column.dataField, "=", selectedValue];
+          }
+  
           if (selectedValue && selectedFilterOperation === "=") {
             return [column.dataField, "contains", selectedValue];
           }
@@ -85,7 +297,18 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           }
   
           if (Array.isArray(selectedValue) && selectedValue.length > 0) {
-            return selectedValue.map((value: string) => [column.dataField, "contains", value]);
+            if (selectedValue.length === 1) {
+              return [column.dataField, "contains", selectedValue[0]];
+            }
+            const conditions = selectedValue.map((value: string) => [column.dataField, "contains", value]);
+            const result: any[] = [];
+            conditions.forEach((condition, index) => {
+              if (index > 0) {
+                result.push('or');
+              }
+              result.push(condition);
+            });
+            return result;
           }
   
           return column.defaultCalculateFilterExpression.apply(this, arguments);
@@ -99,18 +322,57 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
 
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
-      setCurrentFilter(filter as object[]);
+      let newFilter = filter as object[] | string[] | null;
+      
+      if (newFilter && Array.isArray(newFilter)) {
+        newFilter = transformFilterFromAnyof(newFilter);
+      }
+      
+      if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
+        if (newFilter && Array.isArray(newFilter) && newFilter.length > 0) {
+          if (hasCategoryFilter(newFilter)) {
+            setCurrentFilter(newFilter);
+          } else {
+            const mergedFilter: any[] = [externalFilter, "and", newFilter];
+            setCurrentFilter(mergedFilter);
+          }
+        } else {
+          setCurrentFilter(null);
+        }
+      } else {
+        setCurrentFilter(newFilter);
+      }
+      
+      if (datagrid.current?.instance) {
+        setTimeout(() => {
+          try {
+            const instance = datagrid.current?.instance;
+            if (instance) {
+              instance.columnOption("category", {
+                headerFilter: {
+                  dataSource: categoryHeaderFilterDataSource,
+                },
+              });
+              if (newFilter && Array.isArray(newFilter) && newFilter.length > 0) {
+                instance.option('filterValue', newFilter);
+              }
+            }
+          } catch (error) {
+            console.error("[DefiPoolsTable] ❌ Could not restore category HeaderFilter dataSource:", error);
+          }
+        }, 200);
+      }
     },
-    [setCurrentFilter],
+    [externalFilter, datagrid, categoryHeaderFilterDataSource, hasCategoryFilter, transformFilterFromAnyof],
   );
-
+  
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
       filterPanelText.current = filterPanelTextDiv;
       filterPanelTextDiv.addEventListener("click", () => {
         if (currentFilter && currentFilter.length > 0) {
-          setFilterBuilderOpen(true);
+          filterRef.current?.onOpenBuilder(true);
         }
       });
     }
@@ -119,33 +381,132 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
   };
 
   useEffect(() => {
-    const grid = datagrid?.current?.instance;
-    if (!grid) return;
-  }, [currentFilter, datagrid]);
+    return () => {
+      if (filterPanelText.current) {
+        filterPanelText.current.replaceWith(filterPanelText.current.cloneNode(true));
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const instance = datagrid.current?.instance;
+    if (!instance) return;
+
+    try {
+      instance.columnOption("category", {
+        headerFilter: {
+          filterValues: selectedCategoryValues.length > 0 ? selectedCategoryValues : null,
+        },
+      });
+    } catch (error) {
+      console.error("[DefiPoolsTable] ❌ Could not update filterValues:", error);
+    }
+  }, [selectedCategoryValues, datagrid]);
 
   return (
     <div ref={containerRef}>
       {/*@ts-ignore*/}
       <StyledDataGridDef<PoolData>
-        id="defi-tokens-table"
+        id="income_table"
         dataSource={dataSource}
+        allowColumnResizing={true}
+        columnResizingMode="widget"
         ref={datagrid}
+        loadPanel={{ enabled: false }}
         allowColumnReordering={true}
         columnHidingEnabled={false}
-        keyExpr="ID"
+        keyExpr="pool"
+        remoteOperations={{ sorting: true, paging: true, filtering: true, search: true }}
         onCellClick={descOrderingAfterClick}
         columnAutoWidth={false}
         showRowLines={true}
         showBorders={true}
-        onExporting={onExport}
         filterBuilder={{
           customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
-        filterValue={currentFilter || []}
+        filterValue={
+          currentFilter && Array.isArray(currentFilter) && currentFilter.length > 0
+            ? currentFilter
+            : (externalFilter !== undefined && externalFilter !== null && Array.isArray(externalFilter) && externalFilter.length > 0
+              ? externalFilter
+              : [])
+        }
         onContentReady={onContentReady}
         filterSyncEnabled={true}
-        onFilterValueChange={onApplyFilter}>
+        onFilterValueChange={onApplyFilter}
+        onOptionChanged={(e) => {
+          const instance = datagrid.current?.instance;
+          if (!instance) return;
+
+          const isCategoryHeaderFilterOpened = 
+            e.fullName === "columns[category].headerFilter.visible" && 
+            e.name === "visible" && 
+            e.value === true;
+
+          if (isCategoryHeaderFilterOpened) {
+            try {
+              instance.columnOption("category", {
+                headerFilter: {
+                  dataSource: categoryHeaderFilterDataSource,
+                },
+              });
+              
+              let attemptCount = 0;
+              const maxAttempts = 3;
+              const setFilterValues = () => {
+                attemptCount++;
+                try {
+                  instance.columnOption("category", {
+                    headerFilter: {
+                      dataSource: categoryHeaderFilterDataSource,
+                    },
+                  });
+                  
+                  const filterValues = selectedCategoryValues.length > 0 ? selectedCategoryValues : null;
+                  instance.columnOption("category", {
+                    headerFilter: {
+                      filterValues: filterValues,
+                    },
+                  });
+                  
+                  if (attemptCount < maxAttempts) {
+                    setTimeout(setFilterValues, 150);
+                  }
+                } catch (error) {
+                  console.error("[DefiPoolsTable] ❌ Could not set filterValues (attempt " + attemptCount + "):", error);
+                  if (attemptCount < maxAttempts) {
+                    setTimeout(setFilterValues, 150);
+                  }
+                }
+              };
+              
+              setTimeout(setFilterValues, 100);
+            } catch (error) {
+              console.error("[DefiPoolsTable] ❌ Could not set category HeaderFilter dataSource:", error);
+            }
+          }
+
+          if (e.fullName === "filterValue" && e.name === "filterValue") {
+            setTimeout(() => {
+              try {
+                instance.columnOption("category", {
+                  headerFilter: {
+                    dataSource: categoryHeaderFilterDataSource,
+                  },
+                });
+              } catch (error) {
+                console.error("[DefiPoolsTable] ❌ Could not ensure category HeaderFilter dataSource:", error);
+              }
+            }, 150);
+          }
+
+          // Track ColumnChooser open/close state
+          if (e.fullName === "columnChooser.visible" || e.fullName?.includes("columnChooser")) {
+            setIsColumnChooserOpen(e.value === true);
+          }
+        }}>
+          
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -161,10 +522,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
-        <LoadPanel
-          showPane={loading}
-          enabled
-        />
+        <LoadPanel enabled={false} />
         <Paging defaultPageSize={10} />
         <Pager
           visible={true}
@@ -175,13 +533,13 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           showNavigationButtons={true}
         />
         <ColumnChooser
-          height={500}
+          height={800}
           enabled={true}
           mode="select">
           <Position
             my="right top"
             at="right bottom"
-            of=".dx-datagrid-column-chooser-button"
+            of={`#${COLUMN_CHOOSER_BUTTON_ID}`}
           />
           <ColumnChooserSearch
             enabled={true}
@@ -197,28 +555,49 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           <Item location="before">
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
+                ref={filterRef}             
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
                 filterDeletingLoading={deletingFilterStatus === "loading"}
-                open={filterBuildeOpen}
                 onCreateFilter={filter => dispatch(createFilter(filter))}
-                onClose={() => setFilterBuilderOpen(false)}
-                onOpen={() => setFilterBuilderOpen(true)}
                 predefinedFilters={liquidityPoolFilters}
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
-                onDisableFilter={() => setCurrentFilter(null)}
-                onApply={filter => {
-                  setCurrentFilter(filter);
-                  setFilterBuilderOpen(false);
+                onDisableFilter={() => {
+                  setCurrentFilter(null);
+                  onFilterValueChange?.(null);
+                  filterRef.current?.onUpdateFilter(null);
+                  dispatch(fetchFilters({}));
+                  onClearCategoryFilter?.();
                 }}
-                filterToAppply={currentFilter}
+                filterToApply={currentFilter ? transformFilterFromAnyof(currentFilter) : currentFilter}
+                onApply={value => onApplyFilter(value)}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+                onFilterBuilderOpenChange={onFilterBuilderOpenChange}
+                onTreeViewFilterChange={handleTreeViewSelection}
               />
             </SimpleBar>
           </Item>
-          <Item name="exportButton" />
-          <Item name="columnChooserButton" />
+          <Item location="after">
+            <ColumnChooserActionButton
+              id={COLUMN_CHOOSER_BUTTON_ID}
+              variant="contained"
+              color="success"
+              onClick={() => {
+                if (isColumnChooserOpen) {
+                  datagrid.current?.instance?.hideColumnChooser();
+                } else {
+                  datagrid.current?.instance?.showColumnChooser();
+                }
+              }}>
+              <span>COLUMN CHOOSER</span>
+              {isColumnChooserOpen ? (
+                <KeyboardArrowUpRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              ) : (
+                <KeyboardArrowDownRoundedIcon fontSize="small" className="column-chooser-arrow" />
+              )}
+            </ColumnChooserActionButton>
+          </Item>
         </Toolbar>
         <Column
           dataField={DefiField.Symbol}
@@ -228,7 +607,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           dataType="string"
           allowHiding={true}
           cellComponent={toPoolCellField}
-        />
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: symbols.map((sym: string) => ({ name: sym })),
+              },
+              map: stringToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.Project}
           caption={DefiLabel.Project}
@@ -237,7 +634,25 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           dataType="string"
           allowHiding={true}
           cellComponent={ProjectCellComponent}
-        />
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: projects.map((proj: string) => ({ name: proj })),
+              },
+              map: stringToFilterItem,
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.Chain}
           caption={DefiLabel.Chain}
@@ -246,33 +661,46 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           dataType="string"
           allowHiding={true}
           cellComponent={ChainCell}
-        />
-        <Column
-          dataField={DefiField.Dex}
-          caption={DefiLabel.Dex}
-          alignment="left"
-          visible={true}
-          dataType="string"
-          allowHiding={true}
-          calculateFilterExpression={calculateFilterExpression}
-          width="320px"
-        >
-           <HeaderFilter
-            height={650}
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
             visible={true}
+            height={650}
             dataSource={{
-            store: {
-              type: "array",
-              data: dexs.map(dex => ({ value: dex, text: dex })),
+              store: {
+                type: "array",
+                data: chains.map((chain: string) => ({ name: chain })),
               },
+              map: stringToFilterItem,
             }}
             search={{
               enabled: true,
               mode: "contains",
+              searchExpr: ["name"],
             }}>
             <Search enabled={true} />
           </HeaderFilter>
-          </Column>
+        </Column>
+        <Column
+          dataField={DefiField.Category}
+          caption={DefiLabel.Category}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          allowHiding={true}
+          calculateFilterExpression={calculateFilterExpression}>
+          <HeaderFilter
+            ref={categoryHeaderFilterRef}
+            visible={true}
+            height={650}
+            dataSource={categoryHeaderFilterDataSource}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["name"],
+            }}>
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField={DefiField.TVL}
           caption={DefiLabel.TVL}
@@ -300,21 +728,23 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           dataField={DefiField.ApyBase}
           caption={DefiLabel.ApyBase}
           alignment="left"
-          visible={false}
+          visible={true}
           dataType="number"
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          width="auto"
         />
         <Column
           dataField={DefiField.APYReward}
           caption={DefiLabel.APYReward}
           alignment="left"
-          visible={false}
+          visible={true}
           dataType="number"
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          width="auto"
         />
 
         <Column
@@ -348,6 +778,28 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           customizeText={toPercentageField}
           width="auto"
         />
+        {/*<Column
+          dataField={DefiField.DepositWithdrawFees}
+          caption={DefiLabel.DepositWithdrawFees}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          allowHeaderFiltering={false}
+          customizeText={toPercentageFieldWithZero}
+          width="auto"
+        />
+        <Column
+          dataField={DefiField.ProtocolFees}
+          caption={DefiLabel.ProtocolFees}
+          alignment="left"
+          visible={false}
+          dataType="number"
+          allowHiding={true}
+          allowHeaderFiltering={false}
+          customizeText={toPercentageFieldWithZero}
+          width="auto"
+        />*/}
         <Column
           dataField={DefiField.VolumeUsd1d}
           caption={DefiLabel.VolumeUsd1d}
@@ -450,6 +902,22 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, d
           alignment="left"
           visible={false}
           dataType="boolean"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.IlRisk}
+          caption={DefiLabel.IlRisk}
+          alignment="left"
+          visible={true}
+          dataType="string"
+          allowHiding={true}
+        />
+        <Column
+          dataField={DefiField.Exposure}
+          caption={DefiLabel.Exposure}
+          alignment="left"
+          visible={true}
+          dataType="string"
           allowHiding={true}
         />
 

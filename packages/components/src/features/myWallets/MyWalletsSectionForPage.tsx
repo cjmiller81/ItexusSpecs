@@ -1,5 +1,8 @@
-import { Box, BoxProps, Button, CircularProgress, SelectChangeEvent } from "@mui/material";
-import { styled } from "@mui/system";
+import { Box, BoxProps, Button, Card, CircularProgress, SelectChangeEvent, Tab, Tabs, Typography } from "@mui/material";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import { styled, useMediaQuery, useTheme } from "@mui/system";
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import {
   GridCellParams,
   GridEventListener,
@@ -13,22 +16,20 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
-import { TotalWalletWorthData } from "../../slices";
-import { ExpandableRow } from "./TokensRow";
-import { TotalWalletsWorthCard } from "./TotalWalletsWorthCard";
+import { createWallet, TotalWalletWorthData, useAppDispatch, useAppSelector } from "../../slices";
+
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
-import { StyledWalletsTable } from "./WalletsTable";
-import { getWalletsColumns } from "./WalletsTableColumnsDefs";
-import { getExchangeAccountColumns } from "./ExchangeAccountTable";
-import { ExchangeDialog } from "./dialogs/ExchangeDialog";
-import { CoinbaseDialog } from "./dialogs/CoinbaseDialog";
-import { KrakenDialog } from "./dialogs/KrakenDialog";
 import { useFormik } from "formik";
+import { DexWalletsTable } from "./DexWalletTable";
+import { getDexWalletsColumns } from "./DexWalletsTableColumnsDefs";
+import { ExpandableRowDex } from "./TokensRowDex";
+import { TransactionHistory } from "./TransactionHistory";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -36,43 +37,67 @@ interface Props extends BoxProps {
   loading?: boolean;
   onUpdateWallet: (wallet: Wallet) => void;
   onDeleteWallet: (wallet: string) => void;
-  onAddWallet: (wallet: AddressModel) => void;
   onSelectedRowsChanged?: (rows: Wallet[]) => void;
   totalWalletsWorthData?: TotalWalletWorthData;
+  totalAmount: number;
+  addWalletModalOpen: boolean;
+  setAddWalletModalOpen: (open: boolean) => void;
+  id?: string;
 }
 
 export const MyWalletsSectionForPage = ({
-  onAddWallet,
   onDeleteWallet,
   onSelectedRowsChanged,
   onUpdateWallet,
   wallets,
   totalWalletsWorthData,
+  totalAmount,
   loading,
   selectedWalletsIds,
+  addWalletModalOpen,
+  setAddWalletModalOpen,
+  id,
   sx,
   ...props
 }: Props) => {
   const { t } = useTranslation("MyWalletsSection");
   const apiRef = useGridApiRef();
-  const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
+  
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
+  const [expandedRowHeights, setExpandedRowHeights] = useState<Record<string, string>>({});
   const [openKrakenDialog, setOpenKrakenDialog] = useState(false);
   const [openCoinbaseDialog, setOpenCoinbaseDialog] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
   const [openExchangeDialog, setOpenExchangeDialog] = useState(false);
   const [exchange, setExchange] = useState<IExchange[]>([]);
   const [activeConnection, setActiveConnection] = useState<string>("");
-  const [dialogState, setDialogState] = useState(["Kraken", "Coinbase"]);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
+  const { portfolioWalletData } = useAppSelector( state => state.wallets);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"positions" | "history">("positions");
 
   const addWallet = async (walletAddressModel: AddressModel) => {
-    onAddWallet(walletAddressModel);
-    setAddWalletModalOpen(false);
+    const resultAction = await dispatch(createWallet(walletAddressModel));
+    if (createWallet.rejected.match(resultAction)) {
+      setCreateErrorMessage((resultAction.payload as any)?.error)
+    } else {
+      setCreateErrorMessage(null);
+      setAddWalletModalOpen(false)
+    }
   };
 
   const onSelectedChanged = (rows: Wallet[]) => {
     if (onSelectedRowsChanged) onSelectedRowsChanged(rows);
+  };
+
+  const updateRowHeight = (rowId: string, height: string) => {
+    setExpandedRowHeights(prev => ({
+      ...prev,
+      [rowId]: height
+    }));
   };
   const formik = useFormik({
     initialValues: {
@@ -98,31 +123,10 @@ export const MyWalletsSectionForPage = ({
       resetForm();
       setOpenKrakenDialog(false);
       setOpenCoinbaseDialog(false);
-      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService };
+      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService, apiKey:values.apiKey, apiSecret: values.apiSecret };
       setExchange([...exchange, newExchanges]);
     },
   });
-
-  const handleChainNameChange = (name: string) => {
-    setSelectedService(name);
-  };
-
-  const handleServiceChange = (event: SelectChangeEvent<string>) => {
-    const value = event.target.value;
-    if (value === "" || value === "Kraken" || value === "Coinbase") {
-      setSelectedService(value);
-      formik.setFieldValue("chainName", value === "Kraken" ? "Kraken" : "Coinbase");
-    }
-  };
-
-  const handleCancelExchange = () => {
-    setDialogState(["Kraken", "Coinbase"]);
-    setActiveConnection("");
-    setSelectedService("");
-    setOpenExchangeDialog(false);
-    setOpenKrakenDialog(false);
-    setOpenCoinbaseDialog(false);
-  };
 
   //eslint-disable-next-line no-undef
   const onCellClick = async (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
@@ -132,9 +136,6 @@ export const MyWalletsSectionForPage = ({
     }
   };
 
-  const handleOpenModal = () => {
-    setOpenExchangeDialog(true);
-  };
 
   useEffect(() => {
     if (selectedService === "Kraken") {
@@ -156,9 +157,24 @@ export const MyWalletsSectionForPage = ({
   };
 
   const handleExpandClick = (id: GridRowId, expanded: boolean) => {
-    const newExpanded = expanded ? [...expandedRows, id as string] : expandedRows.filter(rowId => rowId !== id);
-    setExpandedRows(newExpanded);
+    // Only allow one wallet to be expanded at a time
+    if (expanded) {
+      setExpandedRows([id as string]);
+    } else {
+      setExpandedRows([]);
+    }
   };
+
+  // Reorder wallets so that expanded wallet is always last
+  const orderedWallets = React.useMemo(() => {
+    if (!wallets || expandedRows.length === 0) return wallets;
+    const expandedRowId = expandedRows[0];
+    const expandedWallet = wallets.find(w => w.address === expandedRowId);
+    if (!expandedWallet) return wallets;
+    
+    const otherWallets = wallets.filter(w => w.address !== expandedRowId);
+    return [...otherWallets, expandedWallet];
+  }, [wallets, expandedRows]);
 
   const handleSaveClick = (id: GridRowId) => {
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
@@ -175,12 +191,6 @@ export const MyWalletsSectionForPage = ({
     onDeleteWallet(id as string);
   };
 
-  const handleExchangeEditClick = (id: GridRowId) => {};
-
-  const handleExchangeDeleteClick = (id: GridRowId) => {
-    setExchange(prevExchange => prevExchange.filter(item => item.exchange_id !== id));
-  };
-
   const processRowUpdate = (newRow: GridRowModel<Wallet>, _oldRow: GridRowModel<Wallet>) => {
     const updatedRow = { ...newRow, isNew: false };
     onUpdateWallet(newRow);
@@ -191,8 +201,220 @@ export const MyWalletsSectionForPage = ({
     setRowModesModel(newRowModesModel);
   };
 
+  useEffect(() => {
+    const collapseOnRoute = () => setExpandedRows([]);
+    router.events.on("routeChangeStart", collapseOnRoute);
+    router.events.on("hashChangeStart", collapseOnRoute);
+    return () => {
+      router.events.off("routeChangeStart", collapseOnRoute);
+      router.events.off("hashChangeStart", collapseOnRoute);
+    };
+  }, [router.events]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [isExpanded]);
+
+  const theme = useTheme();
+  const isXL = useMediaQuery("(min-width:2000px)");
+
+  const renderCardContent = (isExpandedView: boolean = false) => (
+    <Card
+      elevation={0}
+      sx={{
+        height: isExpandedView ? "calc(100vh - 100px)" : "auto",
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: 3,
+        boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+        backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
+      }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 3,
+          pt: 3,
+          pb: 2,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          flexShrink: 0,
+        }}>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            onClick={() => setActiveTab("positions")}
+            size="small"
+            startIcon={<ImportExportIcon sx={{ fontSize: 20 }} />}
+            sx={{
+              textTransform: "none",
+              color: "#000",
+              backgroundColor: activeTab === "positions" ? "#f7f5f2" : "#e5ddd5",
+              "&:hover": {
+                backgroundColor: activeTab === "positions" ? "#f7f5f2" : "#e5ddd5",
+              },
+              border: "1px solid #e5ddd5",
+              borderRadius: "4px",
+            }}>
+            {t("Positions", { ns: "MyWalletsPage", defaultValue: "Positions" })}
+          </Button>
+          <Button
+            onClick={() => setActiveTab("history")}
+            size="small"
+            startIcon={<TrendingUpIcon sx={{ fontSize: 20 }} />}
+            sx={{
+              textTransform: "none",
+              color: "#000",
+              backgroundColor: activeTab === "history" ? "#f7f5f2" : "#e5ddd5",
+              "&:hover": {
+                backgroundColor: activeTab === "history" ? "#f7f5f2" : "#e5ddd5",
+              },
+              border: "1px solid #e5ddd5",
+              borderRadius: "4px",
+            }}>
+            {t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" })}
+          </Button>
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+          {isExpandedView && (
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: '0.7rem',
+                color: theme.palette.text.secondary,
+                fontStyle: 'italic',
+              }}
+            >
+              Click or press "Esc" to Collapse View
+            </Typography>
+          )}
+          <Box
+            component="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: 'rgba(25, 118, 210, 0.2)',
+              gap: 0.3,
+              textDecoration: 'none',
+              color: '#219a83',
+              fontSize: '0.75rem',
+              fontWeight: 500,
+              padding: '2px 6px',
+              border: '1px solid #219a83',
+              borderRadius: '4px',
+              transition: 'all 0.2s ease-in-out',
+              cursor: 'pointer',
+              background: 'none',
+              fontFamily: 'inherit',
+              '&:hover': {
+                backgroundColor: '#219a83',
+                color: "white",
+              },
+            }}
+          >
+            <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+            <Typography
+              variant="body2"
+              component="span"
+              sx={{
+                fontSize: '0.75rem',
+                lineHeight: 1.2,
+              }}
+            >
+              {isExpanded
+                ? t("CollapseView", { ns: "MyWalletsPage", defaultValue: "Collapse View" })
+                : t("ExpandView", { ns: "MyWalletsPage", defaultValue: "Expand View" })}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box sx={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: 0 }}>
+        {activeTab === "positions" && (
+          <Box sx={{ width: "100%", p: 2, flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <Box sx={{ position: "relative", width: "99%", overflowX: "clip", mb: 1 }}>
+              {loading && (
+                <CircularProgress
+                  size="20px"
+                  sx={{ width: "24px", position: "absolute", right: 0, top: 0 }}
+                />
+              )}
+            </Box>
+            <DexWalletsTable
+              loading={wallets === null && loading}
+              disableVirtualization
+              hideFooter
+              $hasExpandedRows={expandedRows.length > 0}
+              $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
+              sx={{
+                ...tableScrollSx,
+                flex: 1,
+                minHeight: 0,
+              }}
+              scrollbarSize={7}
+              editMode="row"
+              rowModesModel={rowModesModel}
+              onRowModesModelChange={handleRowModesModelChange}
+              onRowEditStop={handleRowEditStop}
+              processRowUpdate={processRowUpdate}
+              slotProps={{
+                row: {
+                  isExpanded: (id: GridRowId) => expandedRows.includes(id),
+                  onHeightUpdate: updateRowHeight,
+                  isCollapsed: isExpandedView,
+                },
+              }}
+              slots={{
+                row: ExpandableRowDex,
+              }}
+              onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+                onSelectedChanged(
+                  (orderedWallets || wallets || []).filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+                );
+              }}
+              onCellClick={onCellClick}
+              apiRef={apiRef}
+              getRowId={x => x.address}
+              columns={getDexWalletsColumns({
+                handleCancelClick: handleCancelClick,
+                handleSaveClick: handleSaveClick,
+                handleEditClick: handleEditClick,
+                handleDeleteClick: handleDeleteClick,
+                gridRowModesModel: rowModesModel,
+                expandedRows: expandedRows,
+                onExpandClick: handleExpandClick,
+                isXL: isXL
+              })}
+              rows={orderedWallets || []}
+              rowSelectionModel={selectedWalletsIds}
+              checkboxSelection={true}
+            />
+          </Box>
+        )}
+
+        {activeTab === "history" && (
+          <Box sx={{ flex: 1, overflow: "auto" }}>
+            <TransactionHistory wallets={wallets} />
+          </Box>
+        )}
+      </Box>
+    </Card>
+  );
+
   return (
     <Box
+      id={id}
       {...props}
       sx={{ ...sx, position: "relative" }}>
       {addWalletModalOpen && (
@@ -200,76 +422,32 @@ export const MyWalletsSectionForPage = ({
           open={addWalletModalOpen}
           onEnter={addWallet}
           onClose={() => setAddWalletModalOpen(false)}
+          error={createErrorMessage}
+          onCleanupError={() => setCreateErrorMessage(null)}
         />
       )}
-      <StyledWalletWorthContainer>
-        <TotalWalletsWorthCard
-          growPercentage={totalWalletsWorthData?.growPercentage ?? 0}
-          totalWorth={totalWalletsWorthData?.totalWorth ?? 0}
-        />
-      </StyledWalletWorthContainer>
       <StyledAdaptivePageBox>
-        <StyledAddWalletButton
-          variant="contained"
-          onClick={() => setAddWalletModalOpen(true)}>
-          {t("AddWalletWeb3")}
-        </StyledAddWalletButton>
-      </StyledAdaptivePageBox>
-      <StyledAdaptivePageBox>
-        <PageTitle sx={{ mt: 4 }}>{t("Wallets")}</PageTitle>
+        <PageTitle sx={{ mt: 4 }}>{t("WalletsWeb3")}</PageTitle>
       </StyledAdaptivePageBox>
 
-      <Box sx={{ width: "100%", overflow: "auto" }}>
-        <Box sx={{ position: "relative", width: "99%", top: 18, overflowX: "clip" }}>
-          {loading && (
-            <CircularProgress
-              size="20px"
-              sx={{ width: "24px", position: "absolute", right: 0, top: 0 }}
-            />
-          )}
-        </Box>
-        <StyledWalletsTable
-          loading={wallets === null && loading}
-          disableVirtualization
-          hideFooter
-          sx={{
-            ...tableScrollSx,
-          }}
-          scrollbarSize={7}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          slotProps={{
-            row: {
-              isExpanded: (id: GridRowId) => expandedRows.includes(id),
-            },
-          }}
-          slots={{
-            row: ExpandableRow,
-          }}
-          onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
-            onSelectedChanged(
-              wallets!.filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
-            );
-          }}
-          onCellClick={onCellClick}
-          apiRef={apiRef}
-          getRowId={x => x.address}
-          columns={getWalletsColumns({
-            handleCancelClick: handleCancelClick,
-            handleSaveClick: handleSaveClick,
-            handleEditClick: handleEditClick,
-            handleDeleteClick: handleDeleteClick,
-            gridRowModesModel: rowModesModel,
-            expandedRows: expandedRows,
-            onExpandClick: handleExpandClick,
-          })}
-          rows={wallets || []}
-          rowSelectionModel={selectedWalletsIds}
-          checkboxSelection={true}
-        />
+      <Box
+        sx={{
+          position: isExpanded ? "fixed" : "relative",
+          top: isExpanded ? "140px" : "auto",
+          left: isExpanded ? "220px" : "auto",
+          right: isExpanded ? 0 : "auto",
+          bottom: isExpanded ? 0 : "auto",
+          width: isExpanded ? "calc(100vw - 220px)" : "100%",
+          height: isExpanded ? "calc(100vh - 140px)" : "auto",
+          zIndex: isExpanded ? 1300 : "auto",
+          backgroundColor: "transparent",
+          ...(isExpanded && {
+            padding: 3,
+            display: "flex",
+            flexDirection: "column",
+          }),
+        }}>
+        {renderCardContent(isExpanded)}
       </Box>
     </Box>
   );

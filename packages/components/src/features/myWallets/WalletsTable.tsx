@@ -12,7 +12,22 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   "& .MuiDataGrid-main": {
     height: "auto",
     maxHeight: "300px",
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent"
+        : "transparent",
+  }, 
+  "&.MuiDataGrid-root.MuiDataGrid-withBorderColor": {
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: theme.palette.mode === "light" ? "rgb(181 177 177)" : "rgba(81, 81, 81, 1)",
   },
+  "&.MuiDataGrid-withBorderColor": {  
+   backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent !important"
+        : "transparent !important",
+},
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
   },

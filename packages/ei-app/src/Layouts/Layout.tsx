@@ -3,9 +3,13 @@ import { useAppDispatch, useAppSelector } from "@/libs/redux/Store"
 import { CssBaseline, useTheme } from "@mui/material"
 import Box from "@mui/material/Box"
 import { styled } from "@mui/material/styles"
-import { Header, Sidebar, StyledDrawerHeader, toggleSideBar, toggleTheme, useOry } from "components"
+import { fetchSubscriptionsAsync, getBillingAsync, Header, RootState, Sidebar, StyledDrawerHeader, toggleSideBar, toggleTheme, useOry, fetchProductAsync, setProduct, createBillingAsync } from "components"
+import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useSelector } from "react-redux"
+import { useSubscription } from "components"
 import "react-toastify/dist/ReactToastify.css"
+
 interface Props {
   children: any
 }
@@ -14,9 +18,52 @@ export default function Layout({ children }: Props) {
   const { sidebarOpened, mode } = useAppSelector(store => store.ui)
   const theme = useTheme()
   const dispatch = useAppDispatch()
-  const sideBarOptions = getSidebarMenuItems(theme)
+  const billing = useSelector((state: RootState) => state.billing)
+  const currentPlan = (billing.product?.name?.split(" ")[0]) ?? null;
+  const { hasPageAccess } = useSubscription()
+  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme, hasPageAccess))
+
+  useEffect(() => {
+    setSideBarOptions(getSidebarMenuItems(theme, hasPageAccess))
+  }, [theme, billing.product?.metadata, billing.subscriptions])
+
   const { session, logOut } = useOry()
   const { t } = useTranslation("Header")
+  const isDarkMode = mode === 'dark';
+  const logoSrc = isDarkMode ? "/ElanInsightsLight.png" : "/ElanInsights.png"
+
+  useEffect(() => {
+    const loadBillingData = async () => {
+      try {
+        let billingData = await dispatch(getBillingAsync()).unwrap();
+        
+        if (!billingData) {
+          await dispatch(createBillingAsync());
+          billingData = await dispatch(getBillingAsync()).unwrap();
+        }
+        
+        if (billingData?.id) {
+          
+          const subscriptionsData = await dispatch(fetchSubscriptionsAsync(billingData.id)).unwrap();
+          
+          if (subscriptionsData && subscriptionsData.length > 0) {
+            const activeSubscription = subscriptionsData
+              ?.filter((sub) => sub.status === "active")
+              ?.sort((a, b) => b.created - a.created)[0];
+              
+            if (activeSubscription?.items?.data?.[0]?.price?.product) {
+              await dispatch(fetchProductAsync(activeSubscription.items.data[0].price.product));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading billing:', error);
+      }
+    };
+    
+    loadBillingData();
+  }, [dispatch]);
+
   return (
     <StyledRoot sx={{ width: "100%" }}>
       <Header
@@ -26,17 +73,22 @@ export default function Layout({ children }: Props) {
         mode={mode}
         toggleTheme={() => dispatch(toggleTheme())}
         open={sidebarOpened}
-        toggleSide={open => dispatch(toggleSideBar({ open: open }))}
-        title={t("ElanInsights")}
+        toggleSide={open => dispatch(toggleSideBar({ open: open }))}  
+        title={
+          <img
+            id="ei-logo"
+            src={logoSrc}
+            alt="ElanInsights"
+            style={{ height: 20, marginTop: "10px", objectFit: "contain" }}
+          />}
       />
-      <Sidebar
-        sidebarItems={sideBarOptions}
-        open={sidebarOpened}
-        toggleSide={open => dispatch(toggleSideBar({ open: open }))}
-      />
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3 }}>
+            <Sidebar
+              key={billing.product?.id}
+              sidebarItems={sideBarOptions}
+              open={sidebarOpened}
+              toggleSide={open => dispatch(toggleSideBar({ open: open }))}
+            />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <StyledDrawerHeader />
         <CssBaseline />
         {children}
@@ -50,4 +102,4 @@ const StyledRoot = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     display: "inherit",
   },
-}))
+}));

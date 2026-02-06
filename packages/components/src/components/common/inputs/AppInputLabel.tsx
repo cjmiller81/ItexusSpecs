@@ -8,13 +8,19 @@ export interface Props {
   required?: boolean
   fieldLabel?: ReactNode
   alignLabel?: "center" | "left"
-  tooltip?: string
+  tooltip?: string,
+  labelSize?: "s" | "m" | "l",
 }
 
-export function AppInputLabel({ required, tooltip, fieldLabel }: Props) {
+export function AppInputLabel({ required, tooltip, fieldLabel, labelSize = "m" }: Props) {
+  const labelSizeMap = {
+    s: 12,
+    m: 14,
+    l: 16,
+  };
   return (
     <AppInputLabelText>
-      {fieldLabel}
+      <span style={{ fontSize: labelSizeMap[labelSize] }}>{fieldLabel}</span>
       {required && <span style={{ paddingLeft: "2px", fontSize: "13px" }}>*</span>}
       {tooltip && (
         <AppToolTip

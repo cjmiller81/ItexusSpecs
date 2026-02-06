@@ -2,7 +2,7 @@ import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { IndexModelingSection } from "@/features/Investing/IndexModelingSection";
 import { IndexResultsSection } from "@/features/Investing/IndexResultsSection";
 import PrefilterTokensSection from "@/features/Investing/PrefilterTokensSection";
-import { HistoricalWalletsWorth } from "@/features/MyWallets/HistoricalWalletsWorth";
+import { HistoricalWalletsWorthMarketCap } from "@/features/MyWallets/HistoricalWalletsWorthMarketCap";
 import {
   fetchHistoricalCapWeightedData,
   resetState,
@@ -15,13 +15,57 @@ import {
 import { fetchIndexModelingTokens, setCapital, setTokens } from "@/libs/redux/Slices/MarketCapEqualWeightModelingSlice";
 import { defaultTotalTokensCount } from "@/libs/redux/Slices/MarketCapWeightedModelingSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
+import { setAccordionState, updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
 import { Wallet } from "@/models/Wallet/Wallet";
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, Button } from "@mui/material";
+import { InfoBadge } from "@/components/InfoBadge";
 import { AppAccordionSection } from "components";
-import { createStore } from "devextreme-aspnet-data-nojquery";
 import DataSource from "devextreme/data/data_source";
+import CustomStore from "devextreme/data/custom_store";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
+import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
+const TOUR_ID = "mCapEqual_v1";
+const TOUR_NAME = "mCapEqual";
+
+const StartTourButton = () => {
+  const { setIsOpen, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  
+  const openAllAccordions = () => {
+    const accordionKeys = ['EqualWeightedPrefilterTokens', 'EqualWeightedIndexModeling', 'EqualWeightedHistoricalWalletsWorth', 'IndexResultsSection'];
+    accordionKeys.forEach(key => {
+      dispatch(setAccordionState({ key, open: true }));
+    });
+  };
+  
+  const handleClick = async () => {
+    openAllAccordions();
+    
+    try {
+      const latestSettings = await dispatch(fetchReactourSettingsAsync()).unwrap();
+      
+      const savedStep = latestSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      
+      setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch tour data:', error);
+      setCurrentStep(0);
+      setIsOpen(true);
+    }
+  };
+  
+  return (
+    <AnimatedStartTourButton 
+      tourId={TOUR_ID}
+      sx={{ ml: 2 }}
+      onClick={handleClick}
+    />
+  );
+};
 
 export default function MarketCapEqualWeightedPage() {
   const {
@@ -43,9 +87,172 @@ export default function MarketCapEqualWeightedPage() {
   );
   const [take, setCurrentTake] = useState<number>(tokensCount ?? 0);
   const [indexModelRequestPromise, setIndexModelRequestPromise] = useState<any>(null);
-  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
 
+
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+  const [showPanel, setShowPanel] = useState<boolean>(false);
   const { t } = useTranslation(["MarketCapPage", "Common"]);
+
+  const normalizeSort = (value: unknown): Array<{ selector: string; desc: boolean }> => {
+    if (!value) {
+      return [{ selector: "mCap", desc: true }];
+    }
+
+    if (Array.isArray(value)) {
+      const normalized = value
+        .map(item => {
+          if (!item) return undefined;
+          if (typeof item === "string") {
+            return { selector: item, desc: false };
+          }
+          const anyItem = item as any;
+          if (typeof anyItem.selector === "string") {
+            return { selector: anyItem.selector, desc: !!anyItem.desc };
+          }
+          if (typeof anyItem.field === "string") {
+            return { selector: anyItem.field, desc: !!anyItem.desc };
+          }
+          return undefined;
+        })
+        .filter((itm): itm is { selector: string; desc: boolean } => Boolean(itm));
+
+      return normalized.length > 0 ? normalized : [{ selector: "mCap", desc: true }];
+    }
+
+    if (typeof value === "string") {
+      return [{ selector: value, desc: false }];
+    }
+
+    const anyValue = value as any;
+    if (anyValue && typeof anyValue.selector === "string") {
+      return [{ selector: anyValue.selector, desc: !!anyValue.desc }];
+    }
+
+    return [{ selector: "mCap", desc: true }];
+  };
+
+  const dataSource = useMemo(() => {
+    const store = new CustomStore({
+      key: "id",
+      load: async loadOptions => {
+        const { skip = 0, take = 20, sort, filter } = loadOptions ?? {};
+        const sortArray = normalizeSort(sort);
+        const sorter = JSON.stringify(sortArray);
+        const filterParam = filter ?? [];
+
+        try {
+          const response = await filteredTokensApi.fetchFilteredTokens(sorter, filterParam, skip, take);
+          const data = response.data ?? [];
+          const totalCount = response.totalCount ?? data.length ?? 0;
+
+          return {
+            data,
+            totalCount,
+          };
+        } catch (error) {
+          console.error("Failed to load tokens", error);
+          throw error;
+        }
+      },
+    });
+
+    return new DataSource({
+      store,
+      paginate: true,
+      pageSize: 20,
+    });
+  }, []);
+
+  const steps: StepType[] = [
+    {
+      selector: "#mcew_strategy",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourMCEWStrategyTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourMCEWStrategyText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#table_header .dx-header-row, #table_header .dx-datagrid-headers",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourQuickSortTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourQuickSortText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: ".dx-datagrid-filter-panel-text",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("TourCurrentFilterText")}</Typography>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#filter_presets",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("TourPrebuiltFiltersText")}</Typography>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#filter_builder_btn",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourCustomFiltersTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourCustomFiltersText")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#export_button",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("TourExportText")}</Typography>
+      ),
+      position: "left"
+    },
+    {
+      selector: "#modeling_section",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourModelingTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourModelingTextMCEW")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    },
+    {
+      selector: "#historical_chart",
+      content: () => (
+        <Typography sx={{ color: "#1a1a1a" }}>{t("TourHistoricalTextMCEW")}</Typography>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#token_selector",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourTokenCountTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourTokenCountTextMCEW")}</Typography>
+        </Box>
+      ),
+      position: "bottom"
+    },
+    {
+      selector: "#performance_metric",
+      content: () => (
+        <Box sx={{ color: "#1a1a1a" }}>
+          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourPerformanceTitle")}</Typography>
+          <Typography sx={{ color: "#4a5568" }}>{t("TourPerformanceTextMCEW")}</Typography>
+        </Box>
+      ),
+      position: "top"
+    }
+  ];
 
   useEffect(() => {
     dispatch(resetState());
@@ -102,23 +309,6 @@ export default function MarketCapEqualWeightedPage() {
     }
   };
 
-  const dataSource = useMemo(
-    () =>
-      new DataSource({
-        store: createStore({
-          key: "id",
-          cacheRawData: true,
-          loadUrl: `${process.env.BACKEND_API_URL}/tokensV2`,
-
-          onBeforeSend: (method, ajaxOptions) => {
-            ajaxOptions.xhrFields = { withCredentials: true };
-          },
-        }),
-        paginate: true,
-        pageSize: 20,
-      }),
-    [],
-  );
 
   const onSorterChanged = (sorter: any) => {
     setCurrentSorter(sorter ? JSON.stringify(sorter) : "[]");
@@ -129,35 +319,154 @@ export default function MarketCapEqualWeightedPage() {
   };
 
   return (
-    <Stack gap={2}>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 0 }}>
-        {t("MarketCapEqualWeight")}
-      </Typography>
+    <TourProvider
+      steps={steps}
+      styles={{
+        popover: (base) => ({ 
+          ...base, 
+          borderRadius: 12, 
+          padding: 16, 
+          background: "#f7f5f2", 
+          color: "#6b7280",
+          fontSize: "0.95rem",
+          lineHeight: 1.8
+        }),
+        maskArea: (base) => ({ ...base, rx: 10 }),
+        close: (base) => ({
+          ...base,
+          width: 14,
+          height: 14,
+          padding: '10px',
+          boxSizing: 'content-box',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: 10,
+          right: 8,
+          cursor: 'pointer',
+        }),
+      }}
+      showBadge={false}
+      components={{
+        Content: (props: any) => {
+          const step = steps[props.currentStep];
+          // @ts-ignore - content() signature varies
+          const content = typeof step?.content === 'function' ? step.content() : step?.content;
+          
+          return (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+                <Box sx={{
+                  width: 30, 
+                  height: 30, 
+                  borderRadius: '50%',
+                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                  color: '#fff',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 700, 
+                  fontSize: 14,
+                  flexShrink: 0,
+                  marginTop: "-2px"
+                }}>
+                  {(props.currentStep ?? 0) + 1}
+                </Box>
+                <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
+                  {content || null}
+                </Box>
+              </Box>
+            </Box>
+          );
+        },
+        Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+            <Box sx={{ display: 'flex', gap: '6px' }}>
+              {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              {currentStep > 0 && (
+                <Button
+                  variant="contained"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  sx={{ 
+                    background: '#f7f5f2', 
+                    color: '#4a5568', 
+                    border: '1px solid #e2e8f0', 
+                    boxShadow: 'none', 
+                    textTransform: 'none',
+                    '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                  }}
+                >
+                  Prior
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                onClick={() => {
+                  if (currentStep === (steps?.length || 0) - 1) {
+                    setIsOpen(false);
+                  } else {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+                sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+              >
+                {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+          </Box>
+        )
+      }}
+    >
+      <>
+        <TourStateSync totalSteps={steps.length} />
+        <Stack gap={2}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 0 }} id="mcew_strategy">
+            <Typography
+              variant="h4"
+              component="div"
+              sx={{ fontWeight: "bold" }}>
+              {t("MarketCapEqualWeight")}
+            </Typography>
+            <InfoBadge
+              title="What's Market Cap Investing"
+              tooltipContent={
+                <>
+                  <strong style={{ color: '#219a83' }}>{t("MarketCapExplained")}</strong>
+                  <br /><br />
+                  {t("SeeThis")} <a href="https://www.investopedia.com/terms/s/sp500.asp" target="_blank" rel="noopener noreferrer" style={{ color: '#219a83', textDecoration: 'underline' }}>{t("Article")}</a> {t("ToLearnAboutMarketCapWeightedIndexInvesting")}
+                  <br /><br />
+                  {t("ForFurtherInformationPleaseAlsoSeeThis")} <a href="https://www.investopedia.com/index-rebalancing-7972596" target="_blank" rel="noopener noreferrer" style={{ color: '#219a83', textDecoration: 'underline' }}>{t("Article")}</a>
+                </>
+              }
+            />
+            <StartTourButton />
+          </Box>
 
       <PrefilterTokensSection
         persisKey="EqualWeightedPrefilterTokens"
         dataSource={dataSource}
         onSorterChanged={onSorterChanged}
         onFilterChanged={onFilterChanged}
+        id="table_header"
+        filterType="market-cap-equal"
+        exportFileName={t("MarketCapEqualWeight", { ns: "SideBar" })}
       />
 
       <IndexModelingSection
         persistKey="EqualWeightedIndexModeling"
-        onCapitalChange={value => dispatch(setCapital(value))}
         onTokensChange={value => {
           dispatch(setTokens(value));
         }}
         weighted={weight * 100}
-        capital={totalCapital}
         tokens={tokensCount || 0}
         isEqualWeight
         tableAssets={tableData}
         title={t("IndexModeling")}
-        selectedWallet={selectedWallet}
+        id="modeling_section"
       />
 
       <AppAccordionSection
@@ -165,7 +474,8 @@ export default function MarketCapEqualWeightedPage() {
         defaultExpanded
         title={t("EqualWeightedChartTitle")}
         tooltip={t("ToggleView", { ns: "Common" })}>
-        <HistoricalWalletsWorth
+        <HistoricalWalletsWorthMarketCap
+          id="historical_chart"
           sx={{ mt: 4, width: "100%" }}
           onFetchPage={fetchLookupPage}
           sumbitButtonText={t("RunTest")}
@@ -189,12 +499,76 @@ export default function MarketCapEqualWeightedPage() {
           title={""}
         />
       </AppAccordionSection>
-
+    
+    {showPanel?
       <IndexResultsSection
         title={t("IndexResults")}
         tableAssets={tableData}
         onWalletChange={onWalletChange}
-      />
-    </Stack>
+        onCapitalChange={value => dispatch(setCapital(value))}
+        capital={totalCapital}
+        onTokensChange={value => {
+          dispatch(setTokens(value));
+        }}
+        tokens={tokensCount || 0}
+      /> :""}
+        </Stack>
+      </>
+    </TourProvider>
   );
 }
+
+const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
+  const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
+  const dispatch = useAppDispatch();
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
+
+  useEffect(() => {
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    
+    if (!viewed && !isOpen && !tourWasOpened) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
+      setIsOpen(true);
+    }
+  }, [reactourSettings, isOpen, tourWasOpened, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
+    }
+  }, [isOpen, tourWasOpened, dispatch]);
+  
+  return null;
+};

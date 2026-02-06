@@ -41,6 +41,16 @@ export interface FilterBuilderItems {
   dataField: string
   dataType: DataType
   format?: string
+  editorTemplate?: any
+  filterOperations?: string[]
+  lookup?: {
+    dataSource?: any
+    valueExpr?: string
+    displayExpr?: string
+    allowClearing?: boolean
+  }
+  editorOptions?: any
+  calculateFilterExpression?: (this: any, filterValue: any, selectedFilterOperation: any) => string | any[]
 }
 
 export const filterBuilderFields: FilterBuilderItems[] = [
@@ -55,6 +65,7 @@ export const filterBuilderFields: FilterBuilderItems[] = [
     width: 50,
     dataField: PrefilterTokensField.Symbol,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: PrefilterTokensLabel.Price,
@@ -89,6 +100,7 @@ export const filterBuilderFields: FilterBuilderItems[] = [
     caption: PrefilterTokensLabel.Chains,
     dataField: PrefilterTokensField.Chains,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: PrefilterTokensLabel.IsErc20,
@@ -99,10 +111,12 @@ export const filterBuilderFields: FilterBuilderItems[] = [
     caption: PrefilterTokensLabel.Categories,
     dataField: PrefilterTokensField.Categories,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: PrefilterTokensLabel.Exchanges,
     dataField: PrefilterTokensField.Exchanges,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
 ]

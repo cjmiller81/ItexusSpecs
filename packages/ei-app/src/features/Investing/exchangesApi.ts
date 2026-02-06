@@ -5,6 +5,7 @@ export const exchangesApi = createApi({
   reducerPath: "exchangesApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.BACKEND_API_URL,
+    credentials: 'include',
   }),
   endpoints: builder => ({
     getExchanges: builder.query<IExchange[], void>({

@@ -1,161 +1,162 @@
 import { Grid, Typography, TextField, Box, Button, Divider } from "@mui/material";
-import { darken, lighten, styled } from "@mui/material/styles";
-import { BasicTable, nativeBarSx } from "components";
-import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Market } from "@/models/Market";
 import { useTranslation } from "react-i18next";
-import { fetchStock } from "../strategies/stockSlice";
-import { useAppDispatch } from "@/libs/redux/Store";
 import moment from "moment";
 import { useGetStockDataQuery } from "../stockApi";
+import { BasicTable, nativeBarSx } from "components";
+import { getMarketTableColumns } from "@/constants/ColumnsDefs/MarketTableColumns";
+import { display, minHeight, useTheme } from "@mui/system";
 
 const tableScrollSx = {
+  display:"flex",
+  minHeight:"300px",
   "& .MuiDataGrid-virtualScroller": {
     ...nativeBarSx,
   },
 };
 
-  const UserInputsSection = () => {
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const [ticker, setTicker] = useState("");
-    const [filteredData, setFilteredData] = useState<Market[]>([]);
-    const [startDateError, setStartDateError] = useState(false);
-    const [endDateError, setEndDateError] = useState(false);
-    const [tickerError, setTickerError] = useState(false);
-    const {t} = useTranslation("UserInputsSection")
-    const [statisticsData, setStatisticsData] = useState({
-      totalVolume: 0,
-      totalBought: 0,
-      totalSold: 0,
-      avgTotalVolume: 0,
-      avgBuySellRatio: 0,
-      avgBuyVolume: 0,
-      avgSellVolume: 0,
-    });
+const UserInputsSection = () => {
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [ticker, setTicker] = useState("");
+  const [filteredData, setFilteredData] = useState<Market[]>([]);
+  const [startDateError, setStartDateError] = useState(false);
+  const [endDateError, setEndDateError] = useState(false);
+  const [tickerError, setTickerError] = useState(false);
+  const { t } = useTranslation("UserInputsSection");
+  const theme = useTheme();
+  const [statisticsData, setStatisticsData] = useState({
+    totalVolume: 0,
+    totalBought: 0,
+    totalSold: 0,
+    avgTotalVolume: 0,
+    avgBuySellRatio: 0,
+    avgBuyVolume: 0,
+    avgSellVolume: 0,
+  });
 
-    const dispatch = useAppDispatch();
+  const [fetchData, setFetchData] = useState(false);
 
-    const validateFields = () => {
-      let valid = true;
-      if (!startDate) {
-        setStartDateError(true);
-        valid = false;
-      }
-    
-      if (!endDate) {
-        setEndDateError(true);
-        valid = false;
-      }
-    
-      if (!ticker.trim()) {
-        setTickerError(true);
-        valid = false;
-      }
-    
-      return valid;
+  const { data, isFetching } = useGetStockDataQuery({
+    stocksTicker: ticker,
+    fromDate: startDate ? moment.utc(startDate).startOf("day").toISOString() : '',
+    toDate: endDate ? moment.utc(endDate).startOf("day").toISOString() : '',
+  }, { skip: !fetchData });
+
+  const validateFields = () => {
+    let valid = true;
+    if (!startDate) {
+      setStartDateError(true);
+      valid = false;
+    }
+
+    if (!endDate) {
+      setEndDateError(true);
+      valid = false;
+    }
+
+    if (!ticker.trim()) {
+      setTickerError(true);
+      valid = false;
+    }
+
+    return valid;
+  };
+
+  const handleDateChange = (e, type) => {
+    const newDate = e.target.value ? moment.utc(e.target.value).startOf("day").toDate() : null;
+
+    if (type === "start") {
+      setStartDate(newDate);
+    }
+    if (type === "end") {
+      setEndDate(newDate);
+    }
+  };
+
+  const handleTickerChange = (e) => {
+    setTicker(e.target.value);
+    setTickerError(false);
+  };
+
+  const formatNumber = (value: number) => {
+    return new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
+
+  const calculateStatistics = (data: Market[]) => {
+    const totalVolume = data.reduce((acc, item) => item.totalVolume, 0);
+    const totalBought = data.reduce((acc, item) => acc + item.bought, 0);
+    const totalSold = data.reduce((acc, item) => acc + item.sold, 0);
+    const avgTotalVolume = data.length > 0 ? totalVolume / data.length : 0;
+    const avgBuyVolume = data.reduce((acc, item) => item.averageBuyVolume, 0);
+    const avgSellVolume = data.reduce((acc, item) => item.averageSellVolume, 0);
+    const avgBuySellRatio = avgBuyVolume / avgSellVolume;
+
+    return {
+      totalVolume,
+      totalBought,
+      totalSold,
+      avgTotalVolume,
+      avgBuySellRatio,
+      avgBuyVolume,
+      avgSellVolume,
     };
-    
-    const handleDateChange = (e, type) => {
-      const newDate = e.target.value ? moment.utc(e.target.value).startOf("day").toDate() : null;
-      
-      if (type === "start") {
-        setStartDate(newDate);
-      }
-      if (type === "end") {
-        setEndDate(newDate);
-      }
-    };
-      
-      const handleTickerChange = (e) => {
-        setTicker(e.target.value);
-        setTickerError(false);
-      };    
-    
-      const handleRunModel = () => {
-      const isValid = validateFields();
-      if (isValid) {
-        setStartDateError(false);
-        setEndDateError(false);
-        setTickerError(false);
-      } else {
-        setFilteredData([]);
-        setStatisticsData({
-          totalVolume: 0,
-          totalBought: 0,
-          totalSold: 0,
-          avgTotalVolume: 0,
-          avgBuySellRatio: 0,
-          avgBuyVolume: 0,
-          avgSellVolume: 0,
-        });
-        return;
-      }
+  };
 
-    const startDateObject = startDate ? moment.utc(startDate).startOf("day").toDate() : new Date();
-    const endDateObject = endDate ? moment.utc(endDate).startOf("day").toDate() : new Date();
+  useEffect(() => {
+    if (data) {
+      const updatedData = data.map(item => ({
+        ...item,
+        tradeReportDate: moment.utc(item.date).local().toDate(),
+      }));
+  
+      updatedData.sort((a, b) => {
+        const dateA = a.tradeReportDate;
+        const dateB = b.tradeReportDate;
+        return dateB.getTime() - dateA.getTime();
+      });
+  
+      setFilteredData(updatedData);
+      const statistics = calculateStatistics(updatedData);
+      setStatisticsData(statistics);
+      setFetchData(false);
+    }
+  }, [data]);
+  
 
-    dispatch(
-        fetchStock({
-            startDate: startDateObject,
-            endDate: endDateObject, 
-            ticker,
-        })
-        
-    )
-        .unwrap()
-        .then((data: Market[]) => {
-            setFilteredData(data);
-            const newStats = calculateStatistics(data);
-            setStatisticsData(newStats);
-        })
-        .catch((error) => {
-            console.error(t("ErrorFetching"), error);
-            setFilteredData([]);
-            setStatisticsData({
-                totalVolume: 0,
-                totalBought: 0,
-                totalSold: 0,
-                avgTotalVolume: 0,
-                avgBuySellRatio: 0,
-                avgBuyVolume: 0,
-                avgSellVolume: 0,
-            });
-        });
-};
+  const handleRunModel = () => {
+    const isValid = validateFields();
+    if (isValid) {
+      setStartDateError(false);
+      setEndDateError(false);
+      setTickerError(false);
+      setFilteredData([]);
+      setStatisticsData({
+        totalVolume: 0,
+        totalBought: 0,
+        totalSold: 0,
+        avgTotalVolume: 0,
+        avgBuySellRatio: 0,
+        avgBuyVolume: 0,
+        avgSellVolume: 0,
+      });
+  
+      setFetchData(true);
+    } else {
+      setFetchData(false);
+    }
+  };
 
-      const formatNumber = (value: number) => {
-        return new Intl.NumberFormat('en-US', {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2,
-        }).format(value);
-      };
-
-      const calculateStatistics = (data: Market[]) => {
-        const totalVolume = data.reduce((acc, item) => acc + item.total, 0);
-        const totalBought = data.reduce((acc, item) => acc + item.bought, 0);
-        const totalSold = data.reduce((acc, item) => acc + item.sold, 0);
-        const avgTotalVolume = data.length > 0 ? totalVolume / data.length : 0;
-        const avgBuySellRatio = data.length > 0 ? data.reduce((acc, item) => acc + item.buyRatio, 0) / data.length : 0;
-        const avgBuyVolume = data.length > 0 ? totalBought / data.length : 0;
-        const avgSellVolume = data.length > 0 ? totalSold / data.length : 0;
-      
-        return {
-          totalVolume,
-          totalBought,
-          totalSold,
-          avgTotalVolume,
-          avgBuySellRatio,
-          avgBuyVolume,
-          avgSellVolume,
-        };
-      };
+  const isBoughtGreaterThanSold = statisticsData.totalBought > statisticsData.totalSold;
+  const isBoughtLessThanSold = statisticsData.totalBought < statisticsData.totalSold;
 
   return (
     <Grid container spacing={1} alignItems="flex-start">
       <Grid item xs={12} md={4.1}>
-
         <Grid container spacing={2} alignItems="center" mb={2}>
           <Grid item>
             <Typography variant="h7">{t("Ticker")}</Typography>
@@ -165,11 +166,11 @@ const tableScrollSx = {
               variant="outlined"
               placeholder={t("EnterTicker")}
               size="small"
-              onChange={handleTickerChange} 
-              sx={{ 
-                width: 175, 
-                fontSize: "12px", 
-                paddingLeft: "25px", 
+              onChange={handleTickerChange}
+              sx={{
+                width: 175,
+                fontSize: "12px",
+                paddingLeft: "25px",
                 "& .MuiOutlinedInput-root": {
                   borderColor: tickerError ? "red" : undefined,
                 },
@@ -181,7 +182,7 @@ const tableScrollSx = {
         </Grid>
 
         <Grid container spacing={2} alignItems="center" mb={2}>
-          <Grid item >
+          <Grid item>
             <Typography variant="h7">{t("StartDate")}</Typography>
           </Grid>
           <Grid item>
@@ -189,12 +190,12 @@ const tableScrollSx = {
               variant="outlined"
               type="date"
               size="small"
-              sx={{ 
-                width: 150, 
+              sx={{
+                width: 150,
                 fontSize: "12px",
                 "& .MuiOutlinedInput-root": {
                   borderColor: startDateError ? "red" : undefined,
-                }, 
+                },
               }}
               value={startDate ? startDate.toISOString().split("T")[0] : ""}
               onChange={(e) => handleDateChange(e, "start")}
@@ -210,13 +211,13 @@ const tableScrollSx = {
               variant="outlined"
               type="date"
               size="small"
-              sx={{ 
-                width: 150, 
+              sx={{
+                width: 150,
                 fontSize: "12px",
                 "& .MuiOutlinedInput-root": {
                   borderColor: endDateError ? "red" : undefined,
                 },
-               }}
+              }}
               value={endDate ? endDate.toISOString().split("T")[0] : ""}
               onChange={(e) => handleDateChange(e, "end")}
               error={endDateError}
@@ -225,153 +226,144 @@ const tableScrollSx = {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} alignItems="center" mb={2} sx={{paddingLeft:"80px"}}>
+        <Grid container spacing={2} alignItems="center" mb={2} sx={{ paddingLeft: "80px" }}>
           <Grid item>
-            <Button 
-             variant="contained"
-             color="primary"
-             sx={{width: "150px", color: "white", textTransform: "none"}}
-             onClick={handleRunModel}
-             >
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ width: "150px", color: "white", textTransform: "none" }}
+              onClick={handleRunModel}
+            >
               {t("RunModel")}
             </Button>
           </Grid>
         </Grid>
+
         <Divider sx={{ marginTop: "0px", marginBottom: "20px", width: "100vw", left: 0, position: "absolute", top: "auto" }} />
       </Grid>
 
       <Grid item xs={12} md={5}>
-  <Typography variant="h6"sx ={{marginTop:"-18px", fontSize:"16px"}}>
-    {t("TotalStatistics")}
-  </Typography>
+        <Typography variant="h6" sx={{ marginTop: "-18px", fontSize: "16px" }}>
+          {t("TotalStatistics")}
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">{t("TotalVolume")}:</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{formatNumber(statisticsData.totalVolume)}</Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">
+                    {t("TotalBought")}:
+                  </Typography>
+                  <Typography variant="body1" sx={{
+                    color: isBoughtGreaterThanSold
+                      ? "green"
+                      : theme.palette.mode === "dark"
+                      ? "white"
+                      : "black", 
+                    fontWeight: 'bold',
+                  }}>
+                    {formatNumber(statisticsData.totalBought)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">
+                    {t("TotalSold")}:
+                  </Typography>
+                  <Typography variant="body1" sx={{
+                    color: isBoughtLessThanSold
+                      ? "red"
+                      : theme.palette.mode === "dark"
+                      ? "white" 
+                      : "black",
+                    fontWeight: 'bold',
+                  }}
+                >
+                    {formatNumber(statisticsData.totalSold)}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Grid>
 
-  <Grid container spacing={3}>
-    <Grid item xs={12} md={4}>
-      <Grid container direction="column" spacing={2}>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("TotalVolume")}:</Typography>
-            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{formatNumber(statisticsData.totalVolume)}</Typography>
-          </Box>
-        </Grid>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("TotalBought")}:</Typography>
-            <Typography variant="body1" sx={{color: "green", fontWeight: 'bold'}}>{formatNumber(statisticsData.totalBought)}</Typography>
-          </Box>
-        </Grid>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("TotalSold")}:</Typography>
-            <Typography variant="body1" sx={{color: "#DC143C", fontWeight: 'bold'}}>{formatNumber(statisticsData.totalSold)}</Typography>
-          </Box>
+          <Grid item xs={12} md={4}>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">{t("AvgTotalVolume")}:</Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>{formatNumber(statisticsData.avgTotalVolume)}</Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">
+                    {t("AvgBuy-SellRatio")}:
+                  </Typography>
+                  <Typography variant="body1" sx={{
+                    color: statisticsData.avgBuySellRatio === 0 
+                    ? (theme => theme.palette.mode === 'dark' ? 'white' : 'black') 
+                    : (isBoughtGreaterThanSold ? "green" : "red"),
+                    fontWeight: 'bold',
+                  }}>
+                    {formatNumber(statisticsData.avgBuySellRatio)}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">{t("AvgBuyVolume")}:</Typography>
+                  <Typography variant="body1" sx={{
+                    color: isBoughtGreaterThanSold
+                      ? "green"
+                      : theme.palette.mode === "dark"
+                      ? "white"
+                      : "black", 
+                    fontWeight: 'bold',
+                  }}>{formatNumber(statisticsData.avgBuyVolume)}</Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="h7">{t("AvgSellVolume")}:</Typography>
+                  <Typography variant="body1" sx={{
+                    color: isBoughtLessThanSold
+                      ? "red"
+                      : theme.palette.mode === "dark"
+                      ? "white" 
+                      : "black",
+                    fontWeight: 'bold',
+                  }}
+                >{formatNumber(statisticsData.avgSellVolume)}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
-
-    <Grid item xs={12} md={4}>
-      <Grid container direction="column" spacing={2}>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("AvgTotalVolume")}:</Typography>
-            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{formatNumber(statisticsData.avgTotalVolume)}</Typography>
-          </Box>
-        </Grid>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("AvgBuy-SellRatio")}:</Typography>
-            <Typography variant="body1" sx={{fontWeight: 'bold'}}>{formatNumber(statisticsData.avgBuySellRatio)}</Typography>
-          </Box>
-        </Grid>
-      </Grid>
-    </Grid>
-
-    <Grid item xs={12} md={4}>
-      <Grid container direction="column" spacing={2}>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("AvgBuyVolume")}:</Typography>
-            <Typography variant="body1" sx={{color: "green", fontWeight: 'bold'}}>{formatNumber(statisticsData.avgBuyVolume)}</Typography>
-          </Box>
-        </Grid>
-        <Grid item>
-          <Box display="flex" justifyContent="space-between">
-            <Typography variant="h7">{t("AvgSellVolume")}:</Typography>
-            <Typography variant="body1" sx={{color: "#DC143C", fontWeight: 'bold'}}>{formatNumber(statisticsData.avgSellVolume)}</Typography>
-          </Box>
-        </Grid>
-      </Grid>
-    </Grid>
-  </Grid>
-</Grid>
 
       <Grid item xs={12} md={9.2}>
-        <MarketTable
-          sx={{
-            ...tableScrollSx,
-            width: "100%",
-          }}
-          hideFooter
-          rowSelection={false}
-          checkboxSelection={false}
-          getRowId={(row) => row.total}
-          columns={getMarketTableColumns()}
-          rows={filteredData} 
-          initialState={{
-            sorting: {
-              sortModel: [{ field: 'date', sort: 'desc' }]
-            },
-          }}
-        />
+        <Box sx={tableScrollSx}>
+          <BasicTable rows={filteredData} 
+            columns={getMarketTableColumns()}
+            getRowId={(row) => row.tradeReportDate}
+            checkboxSelection = {false}
+           />
+        </Box>
       </Grid>
     </Grid>
   );
 };
 
 export default UserInputsSection;
-
-export const MarketTable = styled(BasicTable)(({ theme }) => ({
-  minHeight:"500px",
-  mt: 2,
-  display: "grid",
-  "& .MuiDataGrid-virtualScroller": {
-    overflowY: "auto !important",
-  },
-  "& .MuiDataGrid-main": {
-    height: "auto",
-    maxHeight: "505px",
-  },
-  "& .MuiDataGrid-footerContainer": {
-    height: "40px",
-  },
-  "& .MuiDataGrid-row": {
-    maxHeight: "1000px !important",
-  },
-  ".MuiDataGrid-cell--withRenderer": {
-    maxHeight: "1000px !important",
-  },
-  "& .MuiDataGrid-row--editing": {
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: theme.palette.primary.main,
-  },
-  "& .MuiDataGrid-cell--editing[data-field=walletName]": {
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: theme.palette.primary.main,
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? darken(theme.palette.primary.main, 0.6)
-        : lighten(theme.palette.primary.main, 0.7),
-  },
-  ".MuiDataGrid-withBorderColor": {
-    bgColor: "transparent",
-  },
-  "& .MuiDataGrid-columnHeaders": {
-    backgroundColor: "black",
-  },
-  "& .MuiDataGrid-columnHeaderTitle": {
-    color: "#9E9E9E",
-    fontWeight: "bold",
-  },
-}));

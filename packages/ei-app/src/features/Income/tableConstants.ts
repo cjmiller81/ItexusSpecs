@@ -5,6 +5,7 @@ export enum DefiField {
   Project = "project",
   Symbol = "symbol",
   TVL = "tvlUsd",
+  Category = "category",
   ApyBase = "apyBase",
   APYReward = "apyReward",
   APY = "apy",
@@ -27,6 +28,8 @@ export enum DefiField {
   VolumeUsd1d = "volumeUsd1d",
   VolumeUsd7d = "volumeUsd7d",
   ApyBaseInception = "apyBaseInception",
+  DepositWithdrawFees = "depositWithdrawFees",
+  ProtocolFees = "protocolFees",
   Dex = "dexFormatted"
 }
 
@@ -36,6 +39,7 @@ export enum DefiLabel {
   Project = "Project",
   Symbol = "Pool",
   TVL = "TVL",
+  Category = "Category",
   ApyBase = "APY Base",
   APYReward = "APY Reward",
   APY = "APY",
@@ -44,7 +48,7 @@ export enum DefiLabel {
   ApyPct1D = "APY Pct 1D",
   ApyPct7D = "APY Pct 7D",
   Stablecoin = "Stablecoin",
-  IlRisk = "IL Risk",
+  IlRisk = "Impermanent Loss Risk",
   Exposure = "Exposure",
   PoolMeta = "Meta",
   Mu = "MU",
@@ -58,6 +62,8 @@ export enum DefiLabel {
   VolumeUsd1d = "Volume Usd 1d",
   VolumeUsd7d = "Volume Usd 7d",
   ApyBaseInception = "APY Base Inception",
+  DepositWithdrawFees = "Deposit/Withdraw Fees",
+  ProtocolFees = "Protocol Fees",
 }
 
 export const defiFilterBuilderFields: FilterBuilderItems[] = [
@@ -65,21 +71,25 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.Symbol,
     dataField: DefiField.Symbol,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Project,
     dataField: DefiField.Project,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.Chain,
     dataField: DefiField.Chain,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
-    caption: DefiLabel.Dex,
-    dataField: DefiField.Dex,
+    caption: DefiLabel.Category,
+    dataField: DefiField.Category,
     dataType: "string",
+    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
   },
   {
     caption: DefiLabel.TVL,
@@ -171,4 +181,14 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     dataField: DefiField.ApyBaseInception,
     dataType: "number",
   },
+  /*{
+    caption: DefiLabel.DepositWithdrawFees,
+    dataField: DefiField.DepositWithdrawFees,
+    dataType: "number",
+  },
+  {
+    caption: DefiLabel.ProtocolFees,
+    dataField: DefiField.ProtocolFees,
+    dataType: "number",
+  },*/
 ];

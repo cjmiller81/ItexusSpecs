@@ -10,17 +10,36 @@ export const StyledWalletsTable = styled(BasicTable)(({ theme }) => ({
   "& .MuiDataGrid-virtualScroller": {
     overflowX: "hidden",
   },
+  "& .MuiDataGrid-footerContainer": {
+  backgroundColor: "#f7f5f2",
+  borderTop: "none",
+  height: "40px",
+},
   "& .MuiDataGrid-main": {
     height: "444px",
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent"
+        : "transparent",
   },
-  "& .MuiDataGrid-footerContainer": {
-    height: "40px",
-  },
+
+"&.MuiDataGrid-withBorderColor": {  
+   backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent !important"
+        : "transparent !important",
+},
+
   "& .MuiDataGrid-row": {
     maxHeight: "1000px !important",
   },
   ".MuiDataGrid-cell--withRenderer ": {
     maxHeight: "1000px !important",
+  },
+  "&.MuiDataGrid-root.MuiDataGrid-withBorderColor": {
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: theme.palette.mode === "light" ? "rgb(181 177 177)" : "rgba(81, 81, 81, 1)",
   },
   "& .MuiDataGrid-row--editing": {
     border: "solid",

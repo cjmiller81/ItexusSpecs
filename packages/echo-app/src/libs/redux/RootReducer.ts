@@ -1,5 +1,5 @@
 import { combineReducers } from "@reduxjs/toolkit"
-import { uiSlice, walletsSlice } from "components"
+import { billingSlice, dexReducer, reactourSlice, uiSlice, walletsSlice } from "components"
 import { getPersistConfig } from "redux-deep-persist"
 import { persistReducer } from "redux-persist"
 import storage from "redux-persist/lib/storage"
@@ -8,6 +8,9 @@ import storage from "redux-persist/lib/storage"
 export const rootReducer = combineReducers({
   ui: uiSlice.reducer,
   wallets: walletsSlice.reducer,
+  billing: billingSlice.reducer,
+  reactour: reactourSlice.reducer,
+  dex: dexReducer
 })
 
 const config = getPersistConfig<RootState>({

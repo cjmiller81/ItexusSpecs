@@ -1,8 +1,11 @@
+import { disconnect, getSchwabAccountList, getSchwabConnectUrl, resetConnectedAccounts } from "@/features/strategies/userProfileSlice"
+import { useAppSelector } from "@/libs/redux/Store"
 import { TabContext, TabPanel } from "@mui/lab"
 import TabList from "@mui/lab/TabList"
 import { Box, Tab, styled } from "@mui/material"
 import {
-  ProfileContainer,
+  BrokerageConnectionContainer,
+    ProfileContainer,
   ProfileDetails,
   ProfilePicture,
   SecurityContainer,
@@ -12,13 +15,15 @@ import {
   useOry,
 } from "components"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
+
 
 export default function ProfilePage() {
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
   const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
   const { onUpdateAvatar, session, onUpdateProfile } = useOry()
+  const { connectedAccounts, schwabConnectUrl } = useAppSelector(store => store.userProfile);
   const dispatch = useAppDispatch()
 
   const router = useRouter()
@@ -29,18 +34,23 @@ export default function ProfilePage() {
   )
   const { t } = useTranslation("ProfilePage")
 
-  useEffect(() => {
-    router.push(
-      {
-        pathname: `${value}`,
-      },
-      undefined,
-      {
-        shallow: true,
-      },
-    )
-  }, [value, router])
+  const prevValue = useRef(value)
 
+  useEffect(() => {
+    if (prevValue.current !== value) {
+      router.push(
+        {
+          pathname: `${value}`,
+        },
+        undefined,
+        {
+          shallow: true,
+        },
+      )
+      prevValue.current = value
+    }
+  }, [value, router])
+  
   const handleChange = (newValue: string) => {
     //eslint-disable-next-line no-unused-vars
     setValue(newValue)
@@ -53,8 +63,8 @@ export default function ProfilePage() {
       .then(url => onUpdateAvatar(url))
       .catch((error: any) => {
         const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError(reason))
-        else dispatch(addError(t("AvatarUploadingError")))
+        if (reason) dispatch(addError({ message: reason }))
+        else dispatch(addError({ message: t("AvatarUploadingError") }))
       })
       .finally(() => setIsAvatarUploading(false))
   }
@@ -65,8 +75,8 @@ export default function ProfilePage() {
       .then()
       .catch((error: any) => {
         const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError(reason))
-        else dispatch(addError(t("ProfileUpdatingError")))
+        if (reason) dispatch(addError({ message: reason }))
+        else dispatch(addError({ message: t("ProfileUpdatingError") }))
       })
       .finally(() => setIsProfileDetailsUpdating(false))
   }
@@ -82,6 +92,10 @@ export default function ProfilePage() {
           <Tab
             label={t("SECURITY")}
             value="security"
+          />
+          <Tab
+            label={t("BrokerageConnection")}
+            value="brokerageConnection"
           />
         </StyledTabList>
         <TabPanel value="details">
@@ -102,6 +116,15 @@ export default function ProfilePage() {
         </TabPanel>
         <TabPanel value="security">
           <SecurityContainer />
+        </TabPanel>
+        <TabPanel value="brokerageConnection">
+        <BrokerageConnectionContainer  
+        connectedAccounts={ connectedAccounts }
+        schwabConnectUrl={ schwabConnectUrl }
+        getSchwabAccountList={ () => dispatch(getSchwabAccountList()) }
+        getSchwabConnectUrl={ () =>  dispatch(getSchwabConnectUrl()) }
+        resetConnectedAccounts={ () =>  dispatch(resetConnectedAccounts()) }
+        disconnect={ () => dispatch(disconnect())}/>
         </TabPanel>
       </TabContext>
     </ProfileContainer>

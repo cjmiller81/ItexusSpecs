@@ -1,5 +1,6 @@
 import { PoolData } from "./PoolData";
 export type PoolApiResponse = {
-  status: string;
+  status?: string;
   data: PoolData[];
+  totalCount?: number;
 };

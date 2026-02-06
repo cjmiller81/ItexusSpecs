@@ -26,6 +26,6 @@
         "react": [ "./node_modules/@types/react" ],
       }
     },
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../components/src/slices/userProfileSlice.tsx"],
     "exclude": ["node_modules"]
   }

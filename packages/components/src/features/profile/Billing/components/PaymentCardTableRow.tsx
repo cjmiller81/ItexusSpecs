@@ -8,7 +8,6 @@ type PaymentCardProps = BoxProps & {
   isDefault: boolean;
   onSetDefault: () => void;
   onDelete: () => void;
-  onEdit: () => void;
 };
 
 export const PaymentCardTableRow = ({
@@ -16,7 +15,6 @@ export const PaymentCardTableRow = ({
   isDefault,
   onSetDefault,
   onDelete,
-  onEdit,
   ...props
 }: PaymentCardProps) => {
   const { t } = useTranslation("BillingContainer");
@@ -61,17 +59,6 @@ export const PaymentCardTableRow = ({
             }}
             variant="link">
             {t("Delete", { ns: "Common" })}
-          </Button>
-          <Button
-            onClick={onEdit}
-            sx={{
-              padding: "2px 10px",
-              color: theme => theme.palette.warning.main,
-              borderColor: theme => lighten(theme.palette.warning.main, 0.5),
-              border: "1px solid",
-            }}
-            variant="link">
-            {t("Edit", { ns: "Common" })}
           </Button>
         </CardButtonsContainer>
       </PaymentCardContainer>

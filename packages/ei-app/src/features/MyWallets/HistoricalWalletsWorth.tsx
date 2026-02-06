@@ -3,6 +3,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, BoxProps, MenuItem, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import {
   AppDatePicker,
   AppSelect,
@@ -16,10 +17,11 @@ import moment from "moment";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LookupPageSize } from "../Common/fetchLookupPage";
+
 export type Period = "daily" | "weekly" | "monthly";
 
 interface Props extends BoxProps {
-  title: string;
+  title?: string;
   period: Period;
   onPeriodChange: (period: Period) => void;
   onFromDateChange: (date: Date | null) => void;
@@ -39,9 +41,13 @@ interface Props extends BoxProps {
   submitButtonDisabled: boolean;
   sumbitButtonText?: string;
   onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
-  //eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-undef
   chartSeries?: ApexAxisChartSeries | null;
+  // eslint-disable-next-line no-undef
+  valueSeries?: ApexAxisChartSeries | null;
+  className?: string;
 }
+
 export const HistoricalWalletsWorth = ({
   title,
   period,
@@ -62,8 +68,10 @@ export const HistoricalWalletsWorth = ({
   onToggleSeries,
   submitButtonDisabled,
   chartSeries,
+  valueSeries,
   onFetchPage,
   sumbitButtonText,
+  className,
   ...props
 }: Props) => {
   const { t } = useTranslation("HistoricalWalletsWorth");
@@ -77,7 +85,7 @@ export const HistoricalWalletsWorth = ({
   const [isFromDateValid, setIsFromDateValid] = useState(true);
   const [isToDateValid, setIsToDateValid] = useState(true);
   const [inputSearch, setInputSearch] = useState("");
-
+  const [selectedSection, setSelectedSection] = useState<"growth" | "value">("growth");
   const maxFromDate = (toDate ? moment(toDate).add(-1, "d") : moment().add(-1, "d")).toDate();
   const minToDate = fromDate ? moment(fromDate).add(1, "d").toDate() : undefined;
 
@@ -90,10 +98,71 @@ export const HistoricalWalletsWorth = ({
     setIsValid(isValid);
     if (onDatesValidChanged) onDatesValidChanged(isValid);
   };
+
   return (
-    <StyledWalletWorthContainer {...props}>
+    <StyledWalletWorthContainer
+      {...props}
+      className="index-modeling-section-container">
       <StyledWalletWorthMenuContainer>
-        <StyledTypographyWalletsWorthTitle alignContent={"center"}>{title}</StyledTypographyWalletsWorthTitle>
+        {title && (
+          <StyledTypographyWalletsWorthTitle alignContent={"center"}>
+            {title}
+          </StyledTypographyWalletsWorthTitle>
+        )}
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={selectedSection}
+            onChange={(_, newValue) => {
+              if (newValue !== null) setSelectedSection(newValue);
+            }}
+            sx={{ marginTop: 0 }}
+          >
+            <ToggleButton
+              value="growth"
+              sx={{
+                "&.Mui-selected": {
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
+                  "&:hover": {
+                    backgroundColor: "#f7f5f2",
+                  },
+                },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": {
+                    backgroundColor: "#e5ddd5",
+                  },
+                },
+                borderColor: "#e5ddd5",
+              }}
+            >
+              {t("Growth")}
+            </ToggleButton>
+            <ToggleButton
+              value="value"
+              sx={{
+                "&.Mui-selected": {
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
+                  "&:hover": {
+                    backgroundColor: "#f7f5f2",
+                  },
+                },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": {
+                    backgroundColor: "#e5ddd5",
+                  },
+                },
+                borderColor: "#e5ddd5",
+              }}
+            >
+              {t("Value")}
+            </ToggleButton>
+          </ToggleButtonGroup>
         <StyledWalletWorthMenu>
           <AppSelect
             tooltip={t("Period", { ns: "Tooltips" })}
@@ -136,22 +205,36 @@ export const HistoricalWalletsWorth = ({
               label={t("ToDate")}
             />
           </Stack>
-          <StyledSymbolLookup
-            pageSize={LookupPageSize}
-            onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
-            tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
-            loading={lookupLoading}
-            disableListWrap
-            value={lookupOption}
-            onChange={(_event, value) => onOptionChange(value)}
-            autoComplete={true}
-            onInputChange={(_event, value) => {
-              setInputSearch(value);
+          <Box
+            sx={{
+              width: "100%",
+              cursor: selectedSection === "value" ? "not-allowed" : "auto",
             }}
-            filterOptions={x => x}
-            inputValue={inputSearch}
-            label={t("CompareToSymbol")}
-          />
+          >
+            <StyledSymbolLookup
+              pageSize={LookupPageSize}
+              onFetchPage={pageNumber => onFetchPage(pageNumber, inputSearch)}
+              tooltip={t("CompareToSymbol", { ns: "Tooltips" })}
+              loading={lookupLoading}
+              disableListWrap
+              disabled={selectedSection === "value"}
+              value={lookupOption}
+              onChange={(_event, value) => onOptionChange(value)}
+              autoComplete={true}
+              onInputChange={(_event, value) => setInputSearch(value)}
+              filterOptions={x => x}
+              inputValue={inputSearch}
+              label={
+              <span style={{ color: selectedSection === "value" ? "#555555" : "inherit" }}>
+                {t("CompareToSymbol")}
+              </span>
+            }
+              sx={{
+                pointerEvents: selectedSection === "value" ? "none" : "auto",
+              }}
+            />
+          </Box>
+
           <LoadingButton
             loading={chartDataLoading}
             onClick={onChartSubmit}
@@ -162,83 +245,162 @@ export const HistoricalWalletsWorth = ({
           </LoadingButton>
         </StyledWalletWorthMenu>
       </StyledWalletWorthMenuContainer>
-      <Box sx={{ width: "100%" }}>
-        <AppChart
-          series={chartSeries || []}
-          height={460}
-          optionsOverrides={{
-            legend: {
-              show: true,
-              showForSingleSeries: true,
-              onItemClick: {
-                toggleDataSeries: true,
-              },
-            },
-            grid: {
-              strokeDashArray: 0,
-            },
-            chart: {
-              events: {
-                legendClick: (_chart: any, seriesIndex?: number) => {
-                  if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1);
-                },
-              },
-              animations: {
-                enabled: false,
-                dynamicAnimation: {
-                  enabled: false,
-                },
-              },
-              zoom: {
-                enabled: true,
-                type: "x",
-                autoScaleYaxis: false,
-                zoomedArea: {
-                  fill: {
-                    color: "#90CAF9",
-                    opacity: 0.4,
-                  },
-                  stroke: {
-                    color: "#0D47A1",
-                    opacity: 0.4,
-                    width: 1,
+        <Box sx={{ width: "100%" }}>
+          {selectedSection === "growth" ? (
+            <AppChart
+              series={chartSeries || []}
+              height={460}
+              optionsOverrides={{
+                legend: {
+                  show: true,
+                  showForSingleSeries: true,
+                  onItemClick: {
+                    toggleDataSeries: true,
                   },
                 },
-              },
-            },
-            yaxis: {
-              min: minChartValue,
-              max: maxChartValue,
-              forceNiceScale: true,
-              tickAmount: chartAxisTicks,
-              labels: {
-                formatter: percentageFormatter,
-              },
-            },
-            markers: {
-              radius: 0,
-            },
-            stroke: {
-              width: 3,
-              curve: "smooth",
-            },
-            tooltip: {
-              x: {
-                format: chartDateFormatString,
-              },
-              y: {
-                formatter: percentageFormatter,
-              },
-            },
-          }}
-        />
-      </Box>
+                grid: {
+                  strokeDashArray: 0,
+                },
+                chart: {
+                  events: {
+                    legendClick: (_chart: any, seriesIndex?: number) => {
+                      if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1);
+                    },
+                  },
+                  animations: {
+                    enabled: false,
+                    dynamicAnimation: {
+                      enabled: false,
+                    },
+                  },
+                  zoom: {
+                    enabled: true,
+                    type: "x",
+                    autoScaleYaxis: false,
+                    zoomedArea: {
+                      fill: {
+                        color: "#90CAF9",
+                        opacity: 0.4,
+                      },
+                      stroke: {
+                        color: "#0D47A1",
+                        opacity: 0.4,
+                        width: 1,
+                      },
+                    },
+                  },
+                },
+                yaxis: {
+                  min: minChartValue,
+                  max: maxChartValue,
+                  forceNiceScale: true,
+                  tickAmount: chartAxisTicks,
+                  labels: {
+                    formatter: percentageFormatter,
+                  },
+                },
+                markers: {
+                  radius: 0,
+                },
+                stroke: {
+                  width: 3,
+                  curve: "smooth",
+                },
+                tooltip: {
+                  x: {
+                    format: chartDateFormatString,
+                  },
+                  y: {
+                    formatter: percentageFormatter,
+                  },
+                },
+              }}
+            />
+          ) : (
+            <AppChart
+              series={valueSeries?.filter(s => s.name === "Value") || []}
+              height={460}
+              optionsOverrides={{
+                legend: {
+                  show: true,
+                  showForSingleSeries: true,
+                  onItemClick: {
+                    toggleDataSeries: true,
+                  },
+                },
+                grid: {
+                  strokeDashArray: 0,
+                },
+                chart: {
+                  events: {
+                    legendClick: (_chart: any, seriesIndex?: number) => {
+                      if (seriesIndex !== undefined) onToggleSeries(seriesIndex as 0 | 1);
+                    },
+                  },
+                  animations: {
+                    enabled: false,
+                    dynamicAnimation: {
+                      enabled: false,
+                    },
+                  },
+                  zoom: {
+                    enabled: true,
+                    type: "x",
+                    autoScaleYaxis: false,
+                    zoomedArea: {
+                      fill: {
+                        color: "#90CAF9",
+                        opacity: 0.4,
+                      },
+                      stroke: {
+                        color: "#0D47A1",
+                        opacity: 0.4,
+                        width: 1,
+                      },
+                    },
+                  },
+                },
+                yaxis: {
+                  forceNiceScale: true,
+                  tickAmount: chartAxisTicks,
+                  labels: {
+                    formatter: (value?: number) =>
+                      `$${(value ?? 0).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`,
+                  },
+                },
+                markers: {
+                  radius: 0,
+                },
+                stroke: {
+                  width: 3,
+                  curve: "smooth",
+                },
+                tooltip: {
+                  x: {
+                    format: chartDateFormatString,
+                  },
+                  y: {
+                    formatter: (value?: number) =>
+                      `$${(value ?? 0).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`,
+                  },
+                },
+              }}
+            />
+          )}
+        </Box>
     </StyledWalletWorthContainer>
   );
 };
 
 export const StyledWalletWorthContainer = styled(Box)(({ theme }) => ({
   flexDirection: "row",
+   backgroundColor: theme.palette.mode === 'light' ? "#f7f5f2" : "transparent",
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
   },

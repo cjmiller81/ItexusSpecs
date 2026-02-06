@@ -25,7 +25,6 @@ export default function CustomizedAccordion() {
   const [expanded, setExpanded] = useState('panel1');
 
   const handleChange = (panel) => (event, newExpanded) => {
-    console.log('event - ', event, newExpanded);
     setExpanded(newExpanded ? panel : false);
   };
 

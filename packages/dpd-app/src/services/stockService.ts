@@ -3,8 +3,8 @@ import { Market } from "@/models/Market"
 import { Moment } from "moment";
 
 export const stockService = {
-    get: async ({ startDate, endDate, ticker }: { startDate: Moment | Date; endDate: Moment | Date; ticker: string }): Promise<Market[]> => {
-        const url = `/api/dpd/${ticker}/range/${startDate}/${endDate}`;
+    get: async ({ startDate, endDate, ticker }: { startDate: Date; endDate: Date; ticker: string }): Promise<Market[]> => {
+        const url = `/api/finra/regSohDaily/${ticker}/${startDate}/${endDate}`;
         const response = await appAxios.get<Market[]>(url);
         return response.data;
     }

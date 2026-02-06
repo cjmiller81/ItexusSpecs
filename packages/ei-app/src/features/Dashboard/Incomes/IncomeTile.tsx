@@ -6,6 +6,7 @@ import { nativeBarSx } from "components";
 import { FC, useEffect, useMemo } from "react";
 import { DashboardTile, DashboardTileProps } from "../DashboardTile";
 import { getIncomeTokensColumnsDefs } from "./incomeTokensColumnsDefs";
+import { useTheme } from "@mui/material";
 
 type Props = Omit<DashboardTileProps, "children"> & {
   data?: PoolApiResponse;
@@ -13,7 +14,7 @@ type Props = Omit<DashboardTileProps, "children"> & {
 
 export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
   const dispatch = useAppDispatch();
-
+  const theme = useTheme();
   const rows = useMemo(() => {
     const coins = data ? data.data : [];
     const copy = coins.slice();
@@ -26,7 +27,13 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
   }, [dispatch]);
 
   return (
-    <DashboardTile loading={loading} {...props}>
+    <DashboardTile
+      loading={loading}
+      sectionLink={{
+        href: "/liquidity_pools",
+        text: "Go to full page"
+      }}
+      {...props}>
       <DataGrid
         autoHeight
         loading={loading}
@@ -34,12 +41,17 @@ export const IncomeTile: FC<Props> = ({ data, loading, ...props }) => {
         disableVirtualization
         columnHeaderHeight={25}
         sx={{
+          backgroundColor:
+      theme.palette.mode === "dark"
+        ? "transparent !important"
+        : "#fff !important",
           "& .MuiDataGrid-overlay": {
             height: "582px !important",
           },
           "& .MuiDataGrid-main": {
             height: "582px !important",
           },
+          borderColor: "rgba(0, 0, 0, 0.12)",
           ...tableScrollSx,
         }}
         slots={{

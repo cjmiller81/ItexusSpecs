@@ -1,19 +1,25 @@
-import { Stack } from "@mui/material"
+import { Button, Stack, Typography, Box } from "@mui/material"
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useState } from "react"
+import { FC, useCallback, useEffect, useState, useMemo } from "react"
+import { Registration as OryRegistration } from "@ory/elements-react/theme"
+import { createOryConfig } from "../lib/oryConfig"
 import { Loader } from "../components/loader"
 import { HandleError } from "../utils/hooks"
 import { ory } from "../lib/sdk"
 import { StyledAuthContainer } from "./StyledAuthContainer"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
 
 const Registration: FC<{}> = () => {
   const [flow, setFlow] = useState<RegistrationFlow>()
+  const [error, setError] = useState<string | null>(null)
 
   // Get flow information from the URL
   const router = useRouter()
+
+  const handleRedirect = () => {
+    router.push("/");
+  };
 
   const flowId = String(router.query.flow || "")
   const returnTo = String(router.query.return_to || "")
@@ -48,9 +54,20 @@ const Registration: FC<{}> = () => {
           setFlow(data)
           router.push(`/ui/registration?flow=${data.id}`)
         })
-        .catch(handleError),
+        .catch((error: AxiosError) => {
+          const errorId = (error.response?.data as any)?.error?.id
+          if (errorId === "self_service_flow_disabled") {
+            setError("New user registration is currently disabled")
+          } else {
+            handleError(error)
+          }
+        }),
     [handleError],
   )
+
+  const registrationConfig = useMemo(() => {
+    return createOryConfig()
+  }, [])
 
   useEffect(() => {
     if (!router.isReady) {
@@ -81,6 +98,21 @@ const Registration: FC<{}> = () => {
       .catch(handleError)
   }
 
+  if (error) {
+    return (
+      <StyledAuthContainer>
+        <Stack alignItems="center" gap={2} className="log">
+          <Typography variant="h5" color="error" align="center">
+            New user registration is currently disabled
+          </Typography>
+          <Button sx={{ textTransform: "capitalize" }} variant="contained" color="primary" onClick={handleRedirect}>
+            Home
+          </Button>
+        </Stack>
+      </StyledAuthContainer>
+    )
+  }
+
   if (!flow) return <Loader />
   return (
     <StyledAuthContainer>
@@ -88,22 +120,22 @@ const Registration: FC<{}> = () => {
         alignItems="center"
         gap={1}
         className="log">
-        <StyledUserAuthCard
-          // create a registration form that dynamically renders based on the flow data using Ory Elements
-          // This defines what kind of card we want to render.
-          flowType={"registration"}
-          // we always need to pass the flow to the card since it contains the form fields, error messages and csrf token
-          flow={flow}
-          // the registration card needs a way to navigate to the login page
-          additionalProps={{
-            loginURL: "/ui/login",
-          }}
-          // include the necessary scripts for webauthn to work
-          includeScripts={true}
-          // submit the registration form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateRegistrationFlowBody)}
-          cardImage="https://storage.googleapis.com/bac-gcs-production/4e4ca2261e1d38fc07bb3b99f23d260262e115eba6d6f65c51c1d911de290a625413d9c6bbf186c580805f9f6783a5144186d86a4f52f1395b58ee373d554463.png"
-        />
+        <Box sx={{ 
+          backgroundColor: "#2B2B2B",
+          borderRadius: "1rem",
+          padding: "48px",
+          minWidth: "400px",
+          borderWidth: "2px",
+          borderColor: "white",
+          borderStyle: "solid",
+        }}>
+          {registrationConfig && flow && (
+            <OryRegistration
+              flow={flow as any}
+              config={registrationConfig}
+            />
+          )}
+        </Box>
       </Stack>
     </StyledAuthContainer>
   )

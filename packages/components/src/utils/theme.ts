@@ -34,7 +34,7 @@ declare module "@mui/material/Typography" {
 
 const darkPalette: PaletteOptions = {
   primary: {
-    main: "#26BAFC",
+    main: "#219a83",
     light: "#2F4355",
   },
   success: {
@@ -53,7 +53,7 @@ const darkPalette: PaletteOptions = {
 
 const darkEIPalette: PaletteOptions = {
   primary: {
-    main: "#26BAFC",
+    main: "#219a83",
     light: "#2F4355",
   },
   success: {
@@ -72,7 +72,7 @@ const darkEIPalette: PaletteOptions = {
 
 const lightPalette: PaletteOptions = {
   primary: {
-    main: "#03A9F4",
+    main: "#219a83",
     light: "#E0F4FD",
   },
   success: {
@@ -83,10 +83,32 @@ const lightPalette: PaletteOptions = {
     light: "#FDE8E6",
     main: "#F64336",
   },
+  background: {
+    paper: "#f7f5f2", // Warm off-white for main cards
+    default: "#e5ddd5", // Warmest beige
+  },
+};
+
+const lightEIPalette: PaletteOptions = {
+  primary: {
+    main: "#219a83",
+    light: "#CDEFFD",
+  },
+  success: {
+    main: "#8BC34A",
+    light: "#DFF5D7",
+  },
+  error: {
+    light: "#FAE5E3",
+    main: "#F44336",
+  },
+  background: {
+    paper: "#f7f5f2", // Warm off-white for main cards
+    default: "#e5ddd5", // Warmest beige
+  },
 };
 
 const typographyOverrides: TypographyOptions = {
-  //fontFamily: "font-family: Roboto, RobotoFallback, Noto Kufi Arabic, Helvetica, Arial, sans-serif;",
   fontWeightBold: 700,
   fontWeightMedium: 500,
   fontWeightRegular: 400,
@@ -122,19 +144,19 @@ export const getEIAppTheme = (mode: PaletteMode) => {
   return getTheme(mode, "EI");
 };
 
-const getTheme = (mode: PaletteMode, darkTheme: string): Theme => {
-  let dark;
+const getTheme = (mode: PaletteMode, themeType: string): Theme => {
+  let palette: PaletteOptions;
 
-  if (darkTheme === "EI") {
-    dark = darkEIPalette;
+  if (mode === "dark") {
+    palette = themeType === "EI" ? darkEIPalette : darkPalette;
   } else {
-    dark = darkPalette;
+    palette = themeType === "EI" ? lightEIPalette : lightPalette;
   }
 
   const commonTheme = createTheme({
     palette: {
       mode,
-      ...(mode === "light" ? lightPalette : dark),
+      ...palette,
     },
     typography: typographyOverrides,
   });

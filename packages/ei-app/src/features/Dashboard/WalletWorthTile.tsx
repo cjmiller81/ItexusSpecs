@@ -1,96 +1,164 @@
-import { AppChart } from "@/components/Charts/AppChart"
-import { CompareToValues } from "@/libs/redux/Slices/Shared"
-import { chartDateFormatString } from "components"
-import { FC } from "react"
-import { useTranslation } from "react-i18next"
-import { DashboardTile, DashboardTileProps } from "./DashboardTile"
+import { CompareToValues } from "@/libs/redux/Slices/Shared";
+import { FC, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DashboardTile, DashboardTileProps } from "./DashboardTile";
+import { useTheme, ToggleButton, ToggleButtonGroup, Box } from "@mui/material";
+import { AppChartHome } from "@/components/Charts/AppChartHome";
+import { ApexOptions } from "apexcharts";
 
-type Props = Omit<DashboardTileProps, "children"> & {
-  chartData: CompareToValues | null
+type Props = Omit<
+  DashboardTileProps,
+  "children" | "title" | "rightHeaderContent"
+> & {
+  chartDataGrowth: CompareToValues | null;
+  chartDataValue: CompareToValues | null;
+};
+
+enum ThemeMode {
+  LIGHT = "light",
+  DARK = "dark",
 }
 
-export const WalletWorthTile: FC<Props> = ({ title, icon, chartData, ...props }) => {
-  const { t } = useTranslation("WalletWorthTile")
-  const percentageFormatter = (value?: number) => {
-    return `${(value ?? 0).toLocaleString("en-US", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    })}%`
-  }
+export const WalletWorthTile: FC<Props> = ({
+  icon,
+  chartDataGrowth,
+  chartDataValue,
+  ...props
+}) => {
+  const { t } = useTranslation("WalletWorthTile");
+  const theme = useTheme();
 
-  // eslint-disable-next-line no-undef
-  const series: ApexAxisChartSeries = [
-    {
-      name: t("ChartSeriesTitle"),
-      data: chartData || [],
-    },
-  ]
+  const backgroundColor =
+    theme.palette.mode === ThemeMode.DARK ? "transparent" : "#fff";
+
+  const [selectedSection, setSelectedSection] = useState<"growth" | "value">(
+    "growth"
+  );
+
+  const series =
+    selectedSection === "growth"
+      ? chartDataGrowth
+        ? [...chartDataGrowth]
+        : []
+      : chartDataValue
+      ? [...chartDataValue]
+      : [];
+
+  const chartOptions: ApexOptions = useMemo(() => {
+    const growthFormatter = (value?: number) => {
+      if (value === undefined || value === null) return "";
+      return `${value.toFixed(0)}%`;
+    };
+
+    const valueFormatter = (value?: number) => {
+      if (value === undefined || value === null) return "";
+      return `${value.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })} $`;
+    };
+
+    return {
+      yaxis: {
+        labels: {
+          formatter:
+            selectedSection === "growth" ? growthFormatter : valueFormatter,
+        },
+      },
+      xaxis: {
+        type: "datetime",
+        labels: {
+          datetimeFormatter: {
+            day: "dd MMM",
+          },
+        },
+        tickAmount: Math.floor((series?.length ?? 0) / 2),
+      },
+      tooltip: {
+        y: {
+          formatter:
+            selectedSection === "growth" ? growthFormatter : valueFormatter,
+        },
+      },
+    };
+  }, [selectedSection, series]);
+
   return (
     <DashboardTile
-      title={title}
       icon={icon}
-      {...props}>
-      <AppChart
-        series={series}
+      title={t("WalletsPerformance")}
+      sectionLink={{
+        href: "/myWallets/decentralized",
+        text: t("GoToFullPage")
+      }}
+      rightHeaderContent={
+        <Box display="flex" alignItems="center" gap={2}>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={selectedSection}
+            onChange={(_, newValue) => {
+              if (newValue !== null) {
+                setSelectedSection(newValue);
+              }
+            }}
+            aria-label="Select chart type"
+          >
+            <ToggleButton
+              value="growth"
+              sx={{
+                textTransform: "none",
+                "&.Mui-selected": {
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
+                  "&:hover": { backgroundColor: "#f7f5f2" },
+                },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": { backgroundColor: "#e5ddd5" },
+                },
+                borderColor: "#e5ddd5",
+              }}
+            >
+              {t("Growth")}
+            </ToggleButton>
+            <ToggleButton
+              value="value"
+              sx={{
+                textTransform: "none",
+                "&.Mui-selected": {
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
+                  "&:hover": { backgroundColor: "#f7f5f2" },
+                },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": { backgroundColor: "#e5ddd5" },
+                },
+                borderColor: "#e5ddd5",
+              }}
+            >
+              {t("Value")}
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      }
+      {...props}
+    >
+      <AppChartHome
+        sx={{ backgroundColor }}
+        series={[
+          {
+            name: selectedSection === "growth" ? t("Growth") : t("Value"),
+            data: series,
+          },
+        ]}
         height={398}
-        optionsOverrides={{
-          legend: {
-            show: true,
-            showForSingleSeries: true,
-            onItemClick: {
-              toggleDataSeries: true,
-            },
-          },
-          grid: {
-            strokeDashArray: 0,
-          },
-          yaxis: {
-            labels: {
-              formatter: percentageFormatter,
-            },
-          },
-          chart: {
-            animations: {
-              enabled: false,
-              dynamicAnimation: {
-                enabled: false,
-              },
-            },
-
-            zoom: {
-              enabled: true,
-              type: "x",
-              autoScaleYaxis: false,
-              zoomedArea: {
-                fill: {
-                  color: "#90CAF9",
-                  opacity: 0.4,
-                },
-                stroke: {
-                  color: "#0D47A1",
-                  opacity: 0.4,
-                  width: 1,
-                },
-              },
-            },
-          },
-          markers: {
-            radius: 0,
-          },
-          stroke: {
-            width: 3,
-            curve: "smooth",
-          },
-          tooltip: {
-            x: {
-              format: chartDateFormatString,
-            },
-            y: {
-              formatter: percentageFormatter,
-            },
-          },
-        }}
+        optionsOverrides={chartOptions}
+        key={selectedSection}
       />
     </DashboardTile>
-  )
-}
+  );
+};

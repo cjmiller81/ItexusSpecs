@@ -1,10 +1,12 @@
 import { fetchFilters } from "@/libs/redux/Slices/AllTokensTableSlice";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import appAxios from "@/libs/axios/axios";
 import {
   AccordionDetails,
   AccordionProps,
+  AccordionSummary,
   Box,
+  Button,
   IconButton,
   styled,
   Tooltip,
@@ -13,65 +15,242 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
+import { PageTitle, StatePersistedAccordion } from "components";
+import CustomStore from "devextreme/data/custom_store";
 import DataSource from "devextreme/data/data_source";
-import { exportDataGrid } from "devextreme/excel_exporter";
-import { Workbook } from "exceljs";
-import { saveAs } from "file-saver-es";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import DownloadIcon from "@mui/icons-material/Download";
+import React, { useCallback, useEffect, useMemo, useRef, useState, isValidElement, cloneElement } from "react";
 import { useTranslation } from "react-i18next";
-import { useGetPoolsQuery } from "./DefiApi";
 import { DefiPoolsTable } from "./DefiPoolsTable";
 import { PoolData } from "./Models/PoolData";
 import { useGetDexsQuery } from "./DexApi";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
+import { filtersApi } from "../../../../components/src/services/filterService";
+import { CategoryFiltersSectionRef, MainTab } from "@/components/CategoryFiltersSection";
+import { CategoryFilterType } from "@/types/filter";
+import { LIQUIDITY_POOL } from "@/constants/prefilterKeys";
+import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
+  startTourButton?: React.ReactNode;
+  exportFileName: string;
+  prefilterControls?: React.ReactNode;
 };
 
-export default function DefiTokensSection({ persisKey, ...props }: Props) {
-  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
+const transformFilter = (filter: any): any => {
+  if (!filter || !Array.isArray(filter)) {
+    return filter;
+  }
+
+  if (filter.length === 3 && filter[1] === "between" && Array.isArray(filter[2])) {
+    const [field, , values] = filter;
+    const [minValue, maxValue] = values;
+
+    return [[field, ">=", minValue], "and", [field, "<=", maxValue]];
+  }
+
+  return filter.map((item: any) => (Array.isArray(item) ? transformFilter(item) : item));
+};
+
+export default function DefiTokensSection({ persisKey, startTourButton, exportFileName, prefilterControls, ...props }: Props) {
   const { data: dexsData, isLoading: isDexsLoading } = useGetDexsQuery();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
   const theme = useTheme();
   const { sidebarOpened } = useAppSelector(store => store.ui);
+  const dataGridRef = useRef<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>();
+  const [externalFilter, setExternalFilter] = useState<object[] | null | undefined>();
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilterType>({ tab: undefined, category: undefined });
+  const [chains, setChains] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [projects, setProjects] = useState<string[]>([]);
+  const [symbols, setSymbols] = useState<string[]>([]);
+  const [loadingFilters, setLoadingFilters] = useState(true);
+  const categoryFiltersSectionRef = useRef<CategoryFiltersSectionRef>(null);
+
+  const handleTreeViewFilterChange = useCallback(
+    (filter: any, filterContext: { tab?: MainTab; category?: string }) => {
+      if (filterContext.tab) {
+        (categoryFiltersSectionRef.current as any)?.setFilter(filter.filter, filterContext.tab, filterContext.category);
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  const allTokensSource = useMemo(
-    () =>
-      new DataSource<PoolData, string>({
-        store: {
-          type: "array",
-          key: "pool",
-          data: poolsData ? poolsData.data : [],
-        },
-      }),
-    [poolsData],
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [chainsData, categoriesData, projectsData, symbolsData] = await Promise.all([
+          filtersApi.getPoolChains(),
+          filtersApi.getPoolCategories(),
+          filtersApi.getPoolProjects(),
+          filtersApi.getPoolSymbols(),
+        ]);
 
-  const onExporting = useCallback(async (e: any): Promise<void> => {
-    const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet("Main sheet");
+        setChains(chainsData);
+        setCategories(categoriesData);
+        setProjects(projectsData);
+        setSymbols(symbolsData);
+      } catch (error) {
+        console.error("Failed to load chains, categories, projects and symbols:", error);
+      } finally {
+        setLoadingFilters(false);
+      }
+    };
 
-    const currentDate = new Date();
-
-    await exportDataGrid({
-      component: e.component,
-      worksheet,
-      autoFilterEnabled: true,
-    });
-
-    await workbook.xlsx.writeBuffer().then(buffer => {
-      saveAs(
-        new Blob([buffer], { type: "application/octet-stream" }),
-        `TokenSets-Model-Prefilter-Tokens-${currentDate.toISOString().split("T")[0]}.xlsx`,
-      );
-    });
-    e.cancel = true;
+    fetchData();
   }, []);
+
+  const poolsDataSource = useMemo(() => {
+    const store = new CustomStore<PoolData, string>({
+      key: "pool",
+      load: async loadOptions => {
+        try {
+          const {
+            skip = 0,
+            take = 20,
+            sort,
+            filter,
+          } = loadOptions ?? {};
+
+          const normalizeSort = (value: unknown): Array<{ selector: string; desc: boolean }> | undefined => {
+            if (!value) return undefined;
+            if (Array.isArray(value)) {
+              const normalized = value
+                .map(item => {
+                  if (!item) return undefined;
+                  if (typeof item === "string") {
+                    return { selector: item, desc: false };
+                  }
+                  const anyItem = item as any;
+                  if (typeof anyItem.selector === "string") {
+                    return { selector: anyItem.selector, desc: !!anyItem.desc };
+                  }
+                  if (typeof anyItem.field === "string") {
+                    return { selector: anyItem.field, desc: !!anyItem.desc };
+                  }
+                  return undefined;
+                })
+                .filter((itm): itm is { selector: string; desc: boolean } => Boolean(itm));
+              return normalized.length > 0 ? normalized : undefined;
+            }
+            if (typeof value === "string") {
+              return [{ selector: value, desc: false }];
+            }
+            const anyValue = value as any;
+            if (anyValue && typeof anyValue.selector === "string") {
+              return [{ selector: anyValue.selector, desc: !!anyValue.desc }];
+            }
+            return undefined;
+          };
+
+          const sortArray = normalizeSort(sort) ?? [{ selector: "tvlUsd", desc: true }];
+          const sorter = JSON.stringify(sortArray);
+
+          let filterParam = "[]";
+          if (filter) {
+            try {
+              const transformed = transformFilter(filter);
+              filterParam = JSON.stringify(transformed ?? []);
+            } catch (error) {
+              filterParam = "[]";
+            }
+          }
+
+          const response = await appAxios.get("/api/defi/pools", {
+            params: {
+              sorter,
+              filter: filterParam,
+              skip,
+              take,
+            },
+            withCredentials: true,
+          });
+
+          const rawData = response.data ?? {};
+          const data: PoolData[] = rawData?.data ?? [];
+          const totalCount: number = rawData?.count ?? data.length ?? 0;
+
+          return {
+            data,
+            totalCount,
+          };
+        } catch (error: any) {
+          if (error?.response?.status === 404) {
+            return {
+              data: [],
+              totalCount: 0,
+            };
+          }
+
+          console.error("Failed to load pools", error);
+          throw error;
+        }
+      },
+    });
+
+    return new DataSource<PoolData, string>({
+      store,
+      paginate: true,
+      pageSize: 20,
+    });
+  }, []);
+
+  const [isGridLoading, setIsGridLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const handler = (isLoading: boolean) => {
+      setIsGridLoading(isLoading);
+    };
+
+    poolsDataSource.on("loadingChanged", handler);
+    setIsGridLoading(poolsDataSource.isLoading());
+
+    return () => {
+      poolsDataSource.off("loadingChanged", handler);
+    };
+  }, [poolsDataSource]);
+
+  const filterKey = useMemo(() => {
+      if (categoryFilter.tab && categoryFilter.category) {
+        return generateFilterKey(LIQUIDITY_POOL, categoryFilter.tab, categoryFilter.category);
+      }
+      return LIQUIDITY_POOL;
+  }, [categoryFilter]);
+
+ const onExport = async () => {
+    if (isExporting) {
+      return;
+    }
+
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export liquidity pools data:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
     <Tooltip
@@ -91,71 +270,184 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 
   const darkThemeStyles = {
     cursor: "default !important",
-    mt: 2,
     pointerEvents: "none",
     position: "inherit",
-    borderRadius: "2px",
-    boxShadow: "8px 2px 10px rgba(0, 0, 0, 0.2), -8px 2px 10px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     backgroundColor: "#363640",
-    border: "1.6px solid #25252AFF",
-    outline: "1.9px solid #363640",
-    "& .MuiAccordionSummary-root": {
-      background: `linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(54, 54, 64, 0.7) 24px, #363640 100%)`,
-    },
+    border: "1px solid #25252AFF",
   };
+
+  const lightThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none",
+    position: "inherit",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    backgroundColor: "#f7f5f2 !important",
+  };
+
+  const handleFilterValueChange = useCallback(
+    (filter: object[] | null | undefined) => {
+      setCurrentFilter(filter);
+    },
+    [],
+  );
+
+  const handleCategoryFilterChange = useCallback(
+    (filter: any[] | null, filterContext: CategoryFilterType) => {
+      setExternalFilter(filter || null);
+      setCategoryFilter(filterContext);
+    },
+    [],
+  );
+
+  const handleClearCategoryFilter = useCallback(() => {
+    categoryFiltersSectionRef.current?.clearFilter();
+    setExternalFilter(null);
+    setCategoryFilter({ tab: undefined, category: undefined });
+  }, []);
+
+  const handleFilterBuilderOpenChange = useCallback((isOpen: boolean) => {
+    if (isOpen) {
+      categoryFiltersSectionRef.current?.clearTooltips();
+    }
+  }, []);
 
   return (
     <>
-      <Typography
-        variant="h4"
-        component="div"
-        gutterBottom
-        sx={{ fontWeight: "bold", mb: 0 }}>
-        {t("PageTitleLiquidityPools")}
-      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 0 }}>
+        <Typography
+          variant="h4"
+          component="div"
+          gutterBottom
+          sx={{ fontWeight: "bold", mb: 0 }}
+          id="income_header">
+          {t("PageTitleLiquidityPools")}
+        </Typography>
+        {startTourButton}
+      </Box>
       <StatePersistedAccordion
+        className="index-modeling-section-container"
         persistKey={persisKey}
         defaultExpanded
-        sx={theme.palette.mode === "dark" ? darkThemeStyles : { cursor: "default !important", mt: 2 }}
-        {...props}>
+        sx={{
+          ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
+          borderRadius: "10px",
+          overflow: "hidden",
+          "&.Mui-expanded": {
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+          },
+          "&:not(.Mui-expanded)": {
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+          },
+        }}
+        {...props}
+      >
         <StyledAccordionSummary
           expandIcon={
             <CustomTooltip
               title={t("ToggleView", { ns: "Common" })}
-              arrow>
-              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto" }}>
-                <ExpandMoreIcon />
+              arrow
+            >
+              <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+                <ArrowBackIosNewOutlinedIcon
+                  sx={{
+                    "& path": {
+                      stroke: "currentColor",
+                      strokeWidth: 2,
+                      fill: "currentColor",
+                    },
+                  }}
+                />
               </IconButton>
             </CustomTooltip>
           }
           sx={{
-            pointerEvents: "none",
-            "&.MuiAccordionSummary-root:hover": {
-              cursor: "default",
+            borderBottom: "none",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+            "&.Mui-expanded": {
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
             },
-          }}>
-          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+            "&.MuiAccordionSummary-root:hover": {},
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              pointerEvents: "auto !important",
+              cursor: "default",
+            }}
+          >
             <PageTitle
               sx={{ width: "100%" }}
               onClick={e => e.stopPropagation()}>
               {t("PrefilterLiquidityPools")}
             </PageTitle>
+            <FeatureAccessGuard feature="tableExport">
+              <Button
+                onClick={e => {
+                  e.stopPropagation();
+                  void onExport();
+                }}
+                variant="outlined"
+                sx={{ ml: 4, marginRight: "17px" }}
+                id="income_export"
+                disabled={isExporting}
+              >
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  <DownloadIcon />
+                  {t("Export")}
+                </Box>
+              </Button>
+            </FeatureAccessGuard>
           </Box>
         </StyledAccordionSummary>
         <AccordionDetails
           sx={{
-            bgcolor: "background.paper",
-            width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
+            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2 !important",
+            width: sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)",
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",
-          }}>
-          <MemoizedDefiPoolsTable
-            loading={isPoolsLoading && isDexsLoading}
-            dexs={dexsData || []} 
-            onUpdate={() => {}}
-            onExport={onExporting}
-            dataSource={allTokensSource}
-          />
+          }}
+        >
+          {prefilterControls && (
+            <Box sx={{ mb: 3 }}>
+              {isValidElement(prefilterControls)
+                ? cloneElement(prefilterControls as React.ReactElement<any>, {
+                    onFilterChange: handleCategoryFilterChange,
+                    ref: categoryFiltersSectionRef,
+                  })
+                : prefilterControls}
+            </Box>
+          )}
+          {loadingFilters ? (
+            <div></div>
+          ) : (
+            <MemoizedDefiPoolsTable
+              loading={isGridLoading}
+              dexs={dexsData || []}
+              onUpdate={() => {}}
+              dataSource={poolsDataSource}
+              onFilterValueChange={handleFilterValueChange}
+              dataGridRef={dataGridRef}
+              chains={chains}
+              categories={categories}
+              projects={projects}
+              symbols={symbols}
+              externalFilter={externalFilter}
+              filterKey={filterKey}
+              onClearCategoryFilter={handleClearCategoryFilter}
+              onFilterBuilderOpenChange={handleFilterBuilderOpenChange}
+              onTreeViewFilterChange={handleTreeViewFilterChange}
+            />
+          )}
         </AccordionDetails>
       </StatePersistedAccordion>
     </>
@@ -163,5 +455,22 @@ export default function DefiTokensSection({ persisKey, ...props }: Props) {
 }
 
 const MemoizedDefiPoolsTable = React.memo(DefiPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource;
+  return (
+    prevProps.dataSource === nextProps.dataSource &&
+    prevProps.dataGridRef === nextProps.dataGridRef &&
+    prevProps.chains === nextProps.chains &&
+    prevProps.categories === nextProps.categories &&
+    prevProps.projects === nextProps.projects &&
+    prevProps.symbols === nextProps.symbols &&
+    prevProps.externalFilter === nextProps.externalFilter &&
+    prevProps.filterKey === nextProps.filterKey
+  );
 });
+
+export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  transition: "none",
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
+  borderTopLeftRadius: "10px",
+  borderTopRightRadius: "10px",
+  minHeight: "64px",
+}));

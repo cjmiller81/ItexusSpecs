@@ -5,6 +5,7 @@ export const chainsApi = createApi({
   reducerPath: "chainsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.BACKEND_API_URL,
+    credentials: 'include',
   }),
   endpoints: builder => ({
     getChains: builder.query<IPlatform[], void>({

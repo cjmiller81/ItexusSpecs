@@ -1,17 +1,14 @@
 import "../libs/i18n/i18n"
 import RootLayout from "@/Layouts/RootLayout"
-import "@ory/elements/assets/fa-brands.min.css"
-import "@ory/elements/assets/fa-solid.min.css"
-import "@ory/elements/assets/fontawesome.min.css"
-import "@ory/elements/assets/inter-font.css"
-import "@ory/elements/assets/jetbrains-mono-font.css"
-import "@ory/elements/assets/normalize.css"
-import "@ory/elements/style.css"
+import "@ory/elements-react/theme/styles.css"
 import "devextreme/dist/css/dx.common.css"
 import 'simplebar-react/dist/simplebar.min.css';
 import type { AppProps } from "next/app"
 import { useEffect, useState } from "react"
 import "../libs/axios/axios"
+import { SessionWatcher } from "../../../components/src/components/common/SessionWatcher"
+import { GoogleAnalytics } from '@next/third-parties/google'
+
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [mocksStarted, setMocksStarted] = useState(false)
 
@@ -39,12 +36,23 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     initMocks()
   }, [])
 
+  const extendedPageProps = { 
+    ...pageProps,
+    env: { termsUrl: process.env.NEXT_PUBLIC_APP_TERMS_URL ?? "",
+          appTermsUrl: process.env.APP_TERMS_URL ?? ""
+    }
+  }
+
   return (
     <>
       {mocksStarted && (
-        <RootLayout {...pageProps}>
-          <Component {...pageProps} />
+        <RootLayout {...extendedPageProps}>
+          <SessionWatcher />
+          <Component {...extendedPageProps} />
         </RootLayout>
+      )}
+      {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GA_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       )}
     </>
   )

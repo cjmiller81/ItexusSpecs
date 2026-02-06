@@ -1,6 +1,6 @@
 import { SimpleBarStyled } from "@/components/SimpleBarStyled";
 import { DashboardTile } from "@/features/Dashboard/DashboardTile";
-import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton } from "@mui/material";
+import { Box, Divider, Grid, FormControl, MenuItem, ListItemText, IconButton, useTheme, Dialog, CircularProgress, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CalendarEventTile from "./CalendarEventTile";
@@ -12,17 +12,15 @@ import { CustomDateSelector } from "./CustomDateSelector";
 import { CoinsLookupVirtualized, OnFetchResponse } from "components";
 import { CoinsLookUpOption } from "components/src/components/common/inputs/AppSymbolLookup/CoinsLookup";
 import moment from "moment";
+import CloseIcon from "@mui/icons-material/Close";
+import NewCryptoCalendar from "./NewCryptoCalendar";
 
-const CryptoCalendar = ({
-  loading,
-  title,
-  icon,
-  calendarData,
-  setSelectedDate,
-  selectedDate,
-  sx,
-  onFetchPage,
-}: {
+enum ThemeMode {
+  LIGHT = "light",
+  DARK = "dark",
+}
+
+interface Props {
   onFetchPage: (pageNumber: number, searchQuery: string) => Promise<OnFetchResponse>;
   loading: boolean;
   title: string;
@@ -31,13 +29,26 @@ const CryptoCalendar = ({
   setSelectedDate: (dateRange: [Date, Date]) => void;
   selectedDate: [Date, Date];
   sx?: object;
+}
+
+const CryptoCalendar: React.FC<Props> = ({
+  loading,
+  title,
+  icon,
+  calendarData,
+  setSelectedDate,
+  selectedDate,
+  sx,
+  onFetchPage,
 }) => {
   const { t } = useTranslation(["CryptoCalendar", "Common"]);
   const [selectedCoins, setSelectedCoins] = useState<CoinsLookUpOption[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [categoriesData, setCategoriesData] = useState<CategoriesResponse | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: items } = useGetCategoriesQuery();
+  const theme = useTheme();
 
   useEffect(() => {
     if (items) {
@@ -101,14 +112,25 @@ const CryptoCalendar = ({
       event.currentTarget.scrollHeight === event.currentTarget.scrollTop + event.currentTarget.clientHeight;
   };
 
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#f7f5f2";
   return (
-    <DashboardTile
-      title={title}
-      icon={icon}
-      loading={loading}
-      sx={sx}>
-      <Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+    <>
+      <DashboardTile
+        title={title}
+        icon={icon}
+        loading={loading}
+        sectionLink={{
+          href: "#",
+          text: "Expand View",
+          onClick: () => setIsModalOpen(true),
+          alwaysVisible: true
+        }}
+        sx={sx}>
+      <Box sx={{ backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important", }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1,  }}>
           <FormControl sx={{ width: "50%" }}>
             <CoinsLookupVirtualized
               pageSize={50}
@@ -147,7 +169,8 @@ const CryptoCalendar = ({
               displayEmpty
               renderValue={getRenderValue}
               sx={{
-                minHeight: "30px",
+                minHeight: "38px",
+                borderRadius: "8px",
                 ".MuiSelect-select": {
                   paddingTop: "4px",
                   textOverflow: "clip",
@@ -169,13 +192,27 @@ const CryptoCalendar = ({
 
         <SimpleBarStyled
           sx={{
-            height: "519px",
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important",
+            height: "512px",
             "@media (min-width: 1200px) and (max-width: 1800px)": {
               height: "483px",
             },
           }}
           onScroll={handleScroll}>
-          {filteredEvents.length > 0 ? (
+          {loading && calendarData.length === 0 ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "190px",
+              }}>
+              <CircularProgress size={40} />
+            </Box>
+          ) : filteredEvents.length > 0 ? (
             <Grid
               container
               spacing={0}>
@@ -206,10 +243,11 @@ const CryptoCalendar = ({
                 marginTop: "190px",
                 marginLeft: "15px",
                 marginRight: "10px",
-
                 fontSize: "22px",
               }}>
-              {t("NoMoreСurrentEventsForThisDate", { ns: "CryptoCalendar" })}
+              <Typography variant="h6" color="text.secondary">
+                {t("NoMoreСurrentEventsForThisDate", { ns: "CryptoCalendar" })}
+              </Typography>
             </Box>
           )}
         </SimpleBarStyled>
@@ -218,7 +256,18 @@ const CryptoCalendar = ({
           sx={{ width: "100%" }}
           variant="fullWidth"
         />
-        <Box sx={{ display: "flex", position: "relative", justifyContent: "center", margin: "3px 1px", width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            position: "relative",
+            justifyContent: "center",
+            padding: "3px 1px",
+            width: "100%",
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "transparent !important"
+                : "#fff !important",
+          }}>
           <CustomDateSelector
             setSelectedDate={setSelectedDate}
             selectedDate={selectedDate}
@@ -226,6 +275,51 @@ const CryptoCalendar = ({
         </Box>
       </Box>
     </DashboardTile>
+
+    <Dialog
+      open={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      maxWidth="md"
+      fullWidth
+      sx={{
+        '& .MuiBackdrop-root': {
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        },
+        '& .MuiDialog-paper': {
+          height: '85vh',
+          maxHeight: '85vh',
+          backgroundColor: theme.palette.background.default,
+        }
+      }}
+    >
+      <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <IconButton
+          onClick={() => setIsModalOpen(false)}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.text.primary,
+            zIndex: 1,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        
+        <Box sx={{ flex: 1, overflow: 'auto', p: 2, pt: 6 }}>
+          <NewCryptoCalendar
+            loading={loading}
+            title={title}
+            icon={icon}
+            calendarData={calendarData}
+            setSelectedDate={setSelectedDate}
+            selectedDate={selectedDate}
+            onFetchPage={onFetchPage}
+          />
+        </Box>
+      </Box>
+    </Dialog>
+  </>
   );
 };
 

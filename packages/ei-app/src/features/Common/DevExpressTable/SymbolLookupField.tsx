@@ -1,4 +1,4 @@
-import { Box, Stack, StackProps } from "@mui/material";
+import { Box, Link, Stack, StackProps } from "@mui/material";
 import { useMemoizedImage } from "components";
 import { FC } from "react";
 
@@ -7,8 +7,9 @@ type Props = StackProps & {
   imgWidth?: number;
   iconUrl?: string;
   text: string;
+  url?: string;
 };
-export const SymbolLookupField: FC<Props> = ({ iconUrl, text, imgHeight, imgWidth, ...props }) => {
+export const SymbolLookupField: FC<Props> = ({ iconUrl, text, url, imgHeight, imgWidth, ...props }) => {
   const imageRef = useMemoizedImage(iconUrl);
 
   return (
@@ -24,7 +25,10 @@ export const SymbolLookupField: FC<Props> = ({ iconUrl, text, imgHeight, imgWidt
         ref={imageRef}
         alt={text}
       />
-      <Box>{text}</Box>
+      {url != null 
+      ? <Box><Link href={url} target="_blank">{text}</Link></Box>
+      : <Box>{text}</Box>}
+
     </Stack>
   );
 };

@@ -6,12 +6,11 @@ import { Stack } from "@mui/material";
 import {
   LookUpOption,
   Wallet,
-  createWallet,
   deleteWallet,
   fetchTotalWalletsWorthData,
   fetchWallets,
+  fetchWalletsPortfolio,
   selectWallets,
-  toTableTokensModel,
   updateWallet,
 } from "components";
 import moment from "moment";
@@ -20,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { MyWalletsSectionForPage } from "../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets } = useAppSelector(
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
     state => state.wallets,
   );
   const { chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
@@ -31,6 +30,7 @@ export default function MyWalletsPage() {
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
   const [totalAmount,setTotalAmount] = useState<number>(0);
+  const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
 
   const { t } = useTranslation("MyWalletsPage");
 
@@ -51,15 +51,10 @@ export default function MyWalletsPage() {
     let totalUsdAmount = 0;
 
     selectedWallets.forEach(wallet => {
-      wallet.chainAssets.forEach(chainAsset => {
-        const tableAssets = toTableTokensModel(chainAsset);
-
-        tableAssets.forEach(asset => {
-          if (asset.usdAmount) {
-            totalUsdAmount += asset.usdAmount;
-          }
-        });
-      });
+      const portfolioWallet = portfolioWalletData.find(p => p.walletAddress === wallet.address);
+      if (portfolioWallet) {
+        totalUsdAmount += portfolioWallet.totalValueUSD;
+      }
     });
 
     return totalUsdAmount;
@@ -72,11 +67,18 @@ export default function MyWalletsPage() {
     } else {
       setTotalAmount(0);
     }
-  }, [selectedWallets]);
+  }, [selectedWallets, portfolioWalletData]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
   }, [dispatch, wallets]);
+
+  useEffect(() => {
+    if (wallets && wallets.length > 0) {
+      const addresses = wallets.map(w => w.address);
+      dispatch(fetchWalletsPortfolio(addresses));
+    }
+  }, [wallets, dispatch]);
 
   const onChartRefresh = () => {
     fetchHistoricalData();
@@ -103,8 +105,10 @@ export default function MyWalletsPage() {
         loading={statusFetchingWallets === "loading"}
         wallets={wallets}
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
-        onAddWallet={wallet => dispatch(createWallet(wallet))}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
+        totalAmount = {totalAmount}
+        addWalletModalOpen={addWalletModalOpen}
+        setAddWalletModalOpen={setAddWalletModalOpen}
       />
 
       <HistoricalWalletsWorth

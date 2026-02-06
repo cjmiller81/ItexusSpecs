@@ -8,8 +8,8 @@ Before you can use this repo, you must have the following software installed:
 - [Node.js](https://nodejs.org/) v20.10+
 - [Yarn](https://yarnpkg.com/) v1.22+
 - [Lerna](https://lerna.js.org/) v8.1+
- 
-### Installing: 
+
+### Installing:
 
 To use/run this repo, follow these steps:
 
@@ -80,10 +80,9 @@ yarn build:svt
 ```
 This will create a production build in the `packages/svt-app/build` directory.
 
-
 ##### TDA Web App:
 
-To start the `tda-app` web app development server, run:
+To start the `tda-app` web app development server, run: 
 ```shell
 yarn start:tda
 ```

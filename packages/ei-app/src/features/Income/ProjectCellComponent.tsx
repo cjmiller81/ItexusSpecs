@@ -10,6 +10,7 @@ export const ProjectCellComponent: FC<{ data: ColumnCellTemplateData<PoolData> }
       key={data.row.data.pool}
       text={data.row.data.project}
       iconUrl={url}
+      url={data.row.data.url}
     />
   );
 };

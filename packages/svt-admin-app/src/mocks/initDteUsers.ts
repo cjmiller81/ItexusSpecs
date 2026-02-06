@@ -3,7 +3,7 @@ import {
   StrategyBotList,
   ICurrentDayFills,
   OpenPosition,
-} from "@/features/strategies/dte/users/types";
+} from "@/features/strategies/0dte-iron-flies/users/types";
 
 export const initDteUsers: IDteStrategiesResponse = {
   strategies: [

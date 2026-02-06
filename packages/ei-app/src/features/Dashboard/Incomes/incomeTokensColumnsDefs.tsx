@@ -34,6 +34,7 @@ export const getIncomeTokensColumnsDefs = (): GridColDef<PoolData>[] => {
             key={params.row.pool}
             text={params.row.project}
             iconUrl={url}
+            url={params.row.url}
           />
         );
       },

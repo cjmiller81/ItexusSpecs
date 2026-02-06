@@ -1,6 +1,5 @@
 import { Box, CssBaseline, ThemeProvider, createTheme, styled } from "@mui/material"
 import { Session, SettingsFlow, UiNodeInputAttributes, UpdateSettingsFlowBody } from "@ory/client"
-import { CustomLanguageFormats, CustomTranslations, IntlProvider, isUiNodeInputAttributes } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react"
@@ -16,6 +15,7 @@ type OryContextType = {
   session: Session | undefined
   settingsFlow?: SettingsFlow
   logOut: () => Promise<void>
+  renewSession: () => Promise<void>
   onUpdateProfile: (firstName: string, lastName: string) => Promise<void>
   createSettingsFow: () => Promise<SettingsFlow>
   onChangePassword: (password: string) => Promise<void>
@@ -36,13 +36,16 @@ const allAuthPaths = [SelfServicesLogin, ErrorPath, SettingsPath, LoginPath, Rec
 
 const OryGatewayContext = createContext<OryContextType | undefined>(undefined)
 
+const env = {
+  termsUrl: process.env.NEXT_PUBLIC_APP_TERMS_URL ?? "",
+  appTermsUrl: process.env.APP_TERMS_URL ?? ""
+}
+
 export function OryAuthGateway({
   children,
-  customTranslations,
   changePasswordRoute,
 }: {
   children: ReactNode
-  customTranslations?: CustomLanguageFormats
   changePasswordRoute: string
 }) {
   const [session, setSession] = useState<Session | undefined>()
@@ -60,18 +63,18 @@ export function OryAuthGateway({
     const csrfAttributes = currentSettingsFlow.ui.nodes
       .map(node => node.attributes)
       .find(
-        attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token",
-      ) as UiNodeInputAttributes
-    return csrfAttributes.value
+        attributes => attributes && typeof attributes === 'object' && 'name' in attributes && attributes.name === "csrf_token",
+      ) as UiNodeInputAttributes | undefined
+    return csrfAttributes?.value
   }, [currentSettingsFlow])
 
   const getCsrfToken = (flow: SettingsFlow) => {
     const csrfAttributes = flow.ui.nodes
       .map(node => node.attributes)
       .find(
-        attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token",
-      ) as UiNodeInputAttributes
-    return csrfAttributes.value
+        attributes => attributes && typeof attributes === 'object' && 'name' in attributes && attributes.name === "csrf_token",
+      ) as UiNodeInputAttributes | undefined
+    return csrfAttributes?.value
   }
 
   const onChangePassword = async (password: string) => {
@@ -168,6 +171,22 @@ export function OryAuthGateway({
     } catch (error) {}
   }
 
+const renewSession = async (): Promise<void> => {
+  try {
+    // Get current URL to return to after refresh
+    const currentUrl = window.location.href;
+    const encodedReturnTo = encodeURIComponent(currentUrl);
+    
+    // Redirect to Ory login page with refresh=true and return_to parameters
+    const oryLoginUrl = `${process.env.ORY_SDK_URL}/ui/login?refresh=true&return_to=${encodedReturnTo}`;
+    window.location.href = oryLoginUrl;
+  } catch (err) {
+    console.error("Renew session failed:", err);
+    router.push("/ui/login");
+  }
+};
+
+  
   useEffect(() => {
     // If the router is not ready yet, or we already have a session, do nothing.
     if ([ErrorPath, LogoutPath, LoginPath, RecoveryPath, RegistrationPath].indexOf(pathname) > -1) {
@@ -194,6 +213,7 @@ export function OryAuthGateway({
       session,
       settingsFlow: currentSettingsFlow,
       logOut: handleLogout,
+      renewSession,
       onChangePassword,
       createSettingsFow,
       onUpdateProfile,
@@ -206,6 +226,7 @@ export function OryAuthGateway({
       currentSettingsFlow,
       onChangePassword,
       handleLogout,
+      renewSession,
       onUpdateProfile,
       createSettingsFow,
       onTotpSubmit,
@@ -236,16 +257,11 @@ export function OryAuthGateway({
         <ThemeProvider theme={theme}>
           <StyledAuthLayout>
             <CssBaseline />
-            <IntlProvider<CustomTranslations>
-              customTranslations={customTranslations || {}}
-              locale="en"
-              defaultLocale="en">
-              {pathname == ErrorPath && <ErrorUi />}
-              {pathname == LoginPath && <Login />}
-              {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} />}
-              {pathname == RegistrationPath && <Registration />}
-              {pathname == SettingsPath && <Settings />}
-            </IntlProvider>
+            {pathname == ErrorPath && <ErrorUi env={env} />}
+            {pathname == LoginPath && <Login env={env} />}
+            {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} env={env} />}
+            {pathname == RegistrationPath && <Registration />}
+            {pathname == SettingsPath && <Settings />}
           </StyledAuthLayout>
         </ThemeProvider>
       )}

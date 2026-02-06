@@ -9,7 +9,7 @@ interface CoinbaseDialogProps {
   open: boolean;
   formik: FormikProps<any>;
   onClose: () => void;
-  onChainNameChange: (name: string) => void; 
+  onChainNameChange: (name: string) => void;
 }
 
 export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, onChainNameChange, onClose }) => {
@@ -33,9 +33,9 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
           fullWidth
           variant="outlined"
           value={formik.values.chainName || ""}
-          onChange={(e) => {
-          formik.handleChange(e);
-          onChainNameChange(e.target.value); 
+          onChange={e => {
+            formik.handleChange(e);
+            onChainNameChange(e.target.value);
           }}
           name="chainName"
           placeholder={t("ExchangeAccountName")}
@@ -65,7 +65,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
         <Typography
           variant="subtitle2"
           sx={{ marginBottom: "8px" }}>
-          {t("PublicAPIKey")}*
+          {t("APIKey")}*
         </Typography>
         <TextField
           fullWidth
@@ -73,7 +73,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
           value={formik.values.apiKey}
           onChange={formik.handleChange}
           name="apiKey"
-          placeholder={`${t("PublicAPIKey")}*`}
+          placeholder={`${t("APIKey")}*`}
           sx={{ marginBottom: "12px" }}
           error={formik.touched.apiKey && Boolean(formik.errors.apiKey)}
           helperText={formik.touched.apiKey && (typeof formik.errors.apiKey === "string" ? formik.errors.apiKey : "")}
@@ -98,7 +98,6 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
             formik.touched.apiSecret && (typeof formik.errors.apiSecret === "string" ? formik.errors.apiSecret : "")
           }
         />
-
       </DialogContent>
       <DialogActions>
         <Button

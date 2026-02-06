@@ -21,6 +21,26 @@ export const filtersApi = {
         const response = await appAxios.get<IExchange[]>(`/exchanges`)
         return response.data
     },
+
+    getPoolChains: async (): Promise<string[]> => {
+        const response = await appAxios.get<string[]>(`/api/defi/pools/chains`)
+        return response.data
+    },
+
+    getPoolCategories: async (): Promise<string[]> => {
+        const response = await appAxios.get<string[]>(`/api/defi/pools/categories`)
+        return response.data
+    },
+
+    getPoolProjects: async (): Promise<string[]> => {
+        const response = await appAxios.get<string[]>(`/api/defi/pools/projects`)
+        return response.data
+    },
+
+    getPoolSymbols: async (): Promise<string[]> => {
+        const response = await appAxios.get<string[]>(`/api/defi/pools/symbols`)
+        return response.data
+    },
 }
 
 

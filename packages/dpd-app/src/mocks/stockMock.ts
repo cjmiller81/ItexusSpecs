@@ -21,24 +21,17 @@ export function configureStockMock(mock) {
         const startDate = new Date(from);
         const endDate = new Date(to);
 
-        const startUTC = Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
-        const endUTC = Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate());
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
 
         const filteredData = mockState.stocks.filter((stock) => {
-            const stockDateUTC = Date.UTC(
-                stock.date.getUTCFullYear(),
-                stock.date.getUTCMonth(),
-                stock.date.getUTCDate(),
-                stock.date.getUTCHours(),
-                stock.date.getUTCMinutes(),
-                stock.date.getUTCSeconds(),
-                stock.date.getUTCMilliseconds()
-            );
+            const stockDate = new Date(stock.date);
+            stockDate.setHours(0, 0, 0, 0);
 
             return (
                 stock.symbol === ticker &&
-                stockDateUTC >= startUTC &&
-                stockDateUTC <= endUTC
+                stockDate >= startDate &&
+                stockDate <= endDate
             );
         });
 
