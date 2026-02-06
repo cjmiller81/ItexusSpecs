@@ -1,4 +1,3 @@
-import { IconCell } from "components";
 import { InvestingTableAsset } from "@/models/Wallet/InvestingTableAsset";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import i18next, { t } from "i18next";

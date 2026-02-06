@@ -1,6 +1,5 @@
 import { Box, CssBaseline, ThemeProvider, createTheme, styled } from "@mui/material"
 import { Session, SettingsFlow, UiNodeInputAttributes, UpdateSettingsFlowBody } from "@ory/client"
-import { CustomLanguageFormats, CustomTranslations, IntlProvider, isUiNodeInputAttributes } from "@ory/elements"
 import { AxiosError } from "axios"
 import { useRouter } from "next/navigation"
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from "react"
@@ -37,13 +36,16 @@ const allAuthPaths = [SelfServicesLogin, ErrorPath, SettingsPath, LoginPath, Rec
 
 const OryGatewayContext = createContext<OryContextType | undefined>(undefined)
 
+const env = {
+  termsUrl: process.env.NEXT_PUBLIC_APP_TERMS_URL ?? "",
+  appTermsUrl: process.env.APP_TERMS_URL ?? ""
+}
+
 export function OryAuthGateway({
   children,
-  customTranslations,
   changePasswordRoute,
 }: {
   children: ReactNode
-  customTranslations?: CustomLanguageFormats
   changePasswordRoute: string
 }) {
   const [session, setSession] = useState<Session | undefined>()
@@ -61,18 +63,18 @@ export function OryAuthGateway({
     const csrfAttributes = currentSettingsFlow.ui.nodes
       .map(node => node.attributes)
       .find(
-        attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token",
-      ) as UiNodeInputAttributes
-    return csrfAttributes.value
+        attributes => attributes && typeof attributes === 'object' && 'name' in attributes && attributes.name === "csrf_token",
+      ) as UiNodeInputAttributes | undefined
+    return csrfAttributes?.value
   }, [currentSettingsFlow])
 
   const getCsrfToken = (flow: SettingsFlow) => {
     const csrfAttributes = flow.ui.nodes
       .map(node => node.attributes)
       .find(
-        attributes => isUiNodeInputAttributes(attributes) && attributes.name === "csrf_token",
-      ) as UiNodeInputAttributes
-    return csrfAttributes.value
+        attributes => attributes && typeof attributes === 'object' && 'name' in attributes && attributes.name === "csrf_token",
+      ) as UiNodeInputAttributes | undefined
+    return csrfAttributes?.value
   }
 
   const onChangePassword = async (password: string) => {
@@ -255,16 +257,11 @@ const renewSession = async (): Promise<void> => {
         <ThemeProvider theme={theme}>
           <StyledAuthLayout>
             <CssBaseline />
-            <IntlProvider<CustomTranslations>
-              customTranslations={customTranslations || {}}
-              locale="en"
-              defaultLocale="en">
-              {pathname == ErrorPath && <ErrorUi />}
-              {pathname == LoginPath && <Login />}
-              {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} />}
-              {pathname == RegistrationPath && <Registration />}
-              {pathname == SettingsPath && <Settings />}
-            </IntlProvider>
+            {pathname == ErrorPath && <ErrorUi env={env} />}
+            {pathname == LoginPath && <Login env={env} />}
+            {pathname == RecoveryPath && <Recovery changePasswordRoute={changePasswordRoute} env={env} />}
+            {pathname == RegistrationPath && <Registration />}
+            {pathname == SettingsPath && <Settings />}
           </StyledAuthLayout>
         </ThemeProvider>
       )}

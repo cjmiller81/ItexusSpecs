@@ -26,6 +26,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import NorthEastIcon from "@mui/icons-material/NorthEast";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getTradablePairs,  useAppDispatch } from 'components';
 import { formatVolume} from '@/utils/utils';
 import EditIcon from "@mui/icons-material/Edit";
@@ -84,6 +85,12 @@ export function TradeTable() {
   const { data: coinGeckoExchangesInitial, isLoading: isCoinGeckoExchangesLoading } = useGetExchangesQuery();
   const [coinGeckoExchanges, setCoinGeckoExchanges] = useState<Exchange[] | undefined>(coinGeckoExchangesInitial);
   const { data: countries, isLoading: isCoutriesLoading } = useGetCountriesQuery();
+  const orderedCountries = React.useMemo(() => {
+    const source = countries || [];
+    const unique = Array.from(new Set(source));
+    const rest = unique.filter((c) => c !== AllCountries && c !== "United States");
+    return [AllCountries, "United States", ...rest];
+  }, [countries]);
   const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>(AllCountries);
   const { data: backendExchangeData, isLoading: isBackendExchangeLoading } = useGetExchangesTickerQuery(selectedExchange?.id ?? skipToken, {
@@ -224,8 +231,17 @@ export function TradeTable() {
 
   useEffect(() => {
     if (coinGeckoExchangesInitial) {
-      setCoinGeckoExchanges(coinGeckoExchangesInitial.filter(x => selectedCountry == AllCountries 
-        || x.country == selectedCountry));
+      const filtered = coinGeckoExchangesInitial.filter(x => selectedCountry == AllCountries 
+        || x.country == selectedCountry);
+      
+      const sorted = [...filtered].sort((a, b) => {
+        if (a.trade_volume_24h_btc === null && b.trade_volume_24h_btc === null) return 0;
+        if (a.trade_volume_24h_btc === null) return 1;
+        if (b.trade_volume_24h_btc === null) return -1;
+        return b.trade_volume_24h_btc - a.trade_volume_24h_btc;
+      });
+      
+      setCoinGeckoExchanges(sorted);
     }
   }, [coinGeckoExchangesInitial, selectedCountry]);
   
@@ -653,7 +669,7 @@ export function TradeTable() {
           minHeight: "calc(100vh - 40%)",
           boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
           backgroundColor:
-            theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+            theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
             padding: 2,
           }}
       >
@@ -665,16 +681,18 @@ export function TradeTable() {
              color="primary"
              onClick={() => setActiveTab("Trading Pairs")}
              startIcon={<SwapVertIcon sx={{ 
-               color: activeTab === "Trading Pairs" ? "#fff" : undefined 
+               color: activeTab === "Trading Pairs" ? "#000" : "#000" 
              }} />}
              sx={{
                textTransform: "none",
                fontWeight: 500,
                fontSize: "0.875rem",
-               backgroundColor: activeTab === "Trading Pairs" ? "#1e88e5" : undefined,
-               color: activeTab === "Trading Pairs" ? "#fff" : undefined,
+               backgroundColor: activeTab === "Trading Pairs" ? "#f7f5f2" : "#e5ddd5",
+               color: activeTab === "Trading Pairs" ? "#000" : "#000",
+               borderColor: "#e5ddd5",
                "&:hover": {
-                 backgroundColor: activeTab === "Trading Pairs" ? "#1565c0" : undefined,
+                 backgroundColor: activeTab === "Trading Pairs" ? "#f7f5f2" : "#e5ddd5",
+                 borderColor: "#e5ddd5",
                },
              }}>
                {t("TradingPairs")}
@@ -685,15 +703,19 @@ export function TradeTable() {
              variant={activeTab === "Arbitrage Matrix" ? "contained" : "outlined"}
              color="primary"
              onClick={() => setActiveTab("Arbitrage Matrix")}
-             startIcon={<TrendingUpIcon />}
+             startIcon={<TrendingUpIcon sx={{ 
+               color: activeTab === "Arbitrage Matrix" ? "#000" : "#000" 
+             }} />}
              sx={{
                textTransform: "none",
                fontWeight: 500,
                fontSize: "0.875rem",
-               backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
-               color: activeTab === "Arbitrage Matrix" ? "#fff" : undefined,
+               backgroundColor: activeTab === "Arbitrage Matrix" ? "#f7f5f2" : "#e5ddd5",
+               color: activeTab === "Arbitrage Matrix" ? "#000" : "#000",
+               borderColor: "#e5ddd5",
                "&:hover": {
-                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#1e88e5" : undefined,
+                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#f7f5f2" : "#e5ddd5",
+                 borderColor: "#e5ddd5",
                },
              }}>
                {t("ArbitrageMatrix")}
@@ -720,11 +742,11 @@ export function TradeTable() {
                   padding: "2px 10px",
                   fontSize: "12px",
                   fontWeight: 600,
-                  backgroundColor: "#1866aaff",
+                  backgroundColor: "#219a83",
                   color: "#fff",
                   border: "1px solid #fff",
                   boxShadow: "none",
-                  '&:hover': { backgroundColor: "#13549eff", boxShadow: "none" }
+                  '&:hover': { backgroundColor: "#219a83", boxShadow: "none" }
                 }}
                 onClick={handleDemoClick}
               >
@@ -733,6 +755,45 @@ export function TradeTable() {
             </Grid>
             <Grid item sx={{ width: "100%" }}>
               <Grid container alignItems="center" direction="row" spacing={2}>
+                <Grid item container alignItems="center" sx={{ width: "auto" }}>
+                  <Grid item>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '0.9rem',
+                        marginRight:"10px",
+                        color: (theme) =>
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
+                      }}
+                    >
+                      {t("FilterbyCountry")}:
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    <FormControl size="small" sx={{ minWidth: 200 }}>
+                      <Autocomplete
+                        disableClearable
+                        size="small"
+                        options={orderedCountries}
+                        loading={isCoutriesLoading}
+                        getOptionLabel={(option) => option} 
+                        value={selectedCountry}
+                        onChange={(event, newValue) => {
+                          handleCountrySelect({ target: { value: newValue }} as SelectChangeEvent<string>);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t("SelectCountry")}
+                          />
+                        )}
+                        sx={{ width: 200 }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
                 <Grid item id="step-1" container alignItems="center" sx={{ width: "auto" }}>
                   <Grid item>
                     <Typography
@@ -764,45 +825,6 @@ export function TradeTable() {
                           <TextField
                             {...params}
                             placeholder={t("SelectExchange")}
-                          />
-                        )}
-                        sx={{ width: 200 }}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-                <Grid item container alignItems="center" sx={{ width: "auto" }}>
-                  <Grid item>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontSize: '0.9rem',
-                        marginRight:"10px",
-                        color: (theme) =>
-                          theme.palette.mode === 'dark'
-                            ? 'rgba(255, 255, 255, 0.7)'
-                            : 'rgba(0, 0, 0, 0.7)',
-                      }}
-                    >
-                      {t("FilterbyCountry")}:
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <FormControl size="small" sx={{ minWidth: 200 }}>
-                      <Autocomplete
-                        disableClearable
-                        size="small"
-                        options={countries || []}
-                        loading={isCoutriesLoading}
-                        getOptionLabel={(option) => option} 
-                        value={selectedCountry}
-                        onChange={(event, newValue) => {
-                          handleCountrySelect({ target: { value: newValue }} as SelectChangeEvent<string>);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t("SelectCountry")}
                           />
                         )}
                         sx={{ width: 200 }}
@@ -1104,8 +1126,8 @@ export function TradeTable() {
                               borderRadius: "6px",
                               height: "37px",
                                ...(tradeData.symbol && {
-                                backgroundColor: "#1e88e5",
-                                "&:hover": { backgroundColor: "#1e88e5", },
+                                backgroundColor: "#219a83",
+                                "&:hover": { backgroundColor: "#219a83", },
                               }),
                               color: "white",
                             }}
@@ -1288,12 +1310,37 @@ export function TradeTable() {
             p: 3,
             borderRadius: 3,
             maxWidth: 360,
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7f5f2',
             color: '#1a1a1a',
             ...(tourStep === 6 ? { mb: '15px' } : { mt: '15px' })
           }
         }}
       >
+        <Box sx={{ position: 'relative' }}>
+          <Button
+            variant="contained"
+            onClick={resetTour}
+            sx={{ 
+              position: 'absolute',
+              top: -12,
+              right: -12,
+              background: '#f7f5f2', 
+              color: '#4a5568', 
+              border: '1px solid #e2e8f0', 
+              boxShadow: 'none', 
+              textTransform: 'none', 
+              minWidth: 'auto',
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              padding: 0,
+              fontSize: 20,
+              '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+            }}
+          >
+            ×
+          </Button>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
           <Box sx={{
             width: 32, height: 32, borderRadius: '50%',
@@ -1330,14 +1377,25 @@ export function TradeTable() {
               <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= tourStep ? '#3b82f6' : '#e2e8f0' }} />
             ))}
           </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              variant="contained"
-              onClick={resetTour}
-              sx={{ background: '#ffffff', color: '#4a5568', border: '1px solid #e2e8f0', boxShadow: 'none', textTransform: 'none', '&:hover': { background: '#f7fafc', boxShadow: 'none' } }}
-            >
-              Skip
-            </Button>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            {tourStep > 0 && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setTourStep((prev) => prev - 1);
+                }}
+                sx={{ 
+                  background: '#f7f5f2', 
+                  color: '#4a5568', 
+                  border: '1px solid #e2e8f0', 
+                  boxShadow: 'none', 
+                  textTransform: 'none',
+                  '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                }}
+              >
+                Prior
+              </Button>
+            )}
             <Button
               variant="contained"
               onClick={() => {

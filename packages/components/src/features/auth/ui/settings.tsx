@@ -162,7 +162,7 @@ const Settings: NextPage = () => {
       <SettingsCard
         only="totp"
         flow={flow}>
-        <h3>Manage 2FA TOTP Authenticator App</h3>
+        <h3>Manage Two Factor Authentication - Use Authenticator App</h3>
         <p>
           Add a TOTP Authenticator App to your account to improve your account security. Popular Authenticator Apps are{" "}
           <a

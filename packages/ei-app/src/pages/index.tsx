@@ -1,12 +1,13 @@
 import fetchLookupPage from "@/features/Common/fetchLookupPage";
 import { useGetCalendarEventsQuery } from "@/features/Dashboard/CryptoCalendar/calendarApi";
+import NewCryptoCalendar from "@/features/Dashboard/CryptoCalendar/NewCryptoCalendar";
 import CryptoCalendar from "@/features/Dashboard/CryptoCalendar/CryptoCalendar";
 import { CryptoNewsTile } from "@/features/Dashboard/CryptoNewsTile/CryptoNewsTile";
-import { useNews } from "@/features/Dashboard/CryptoNewsTile/useNews";
 import { IncomeTile } from "@/features/Dashboard/Incomes/IncomeTile";
 import { TopTokenData, TopTokensTile } from "@/features/Dashboard/TopTokensTile";
 import { TradingViewTile } from "@/features/Dashboard/TradingViewTile";
 import { WalletWorthTile } from "@/features/Dashboard/WalletWorthTile";
+import { CryptoNewsAPIFeed } from "@/features/Dashboard/CryptoNewsAPIFeed";
 import { useGetPoolsQuery } from "@/features/Income/DefiApi";
 import { filteredTokensApi } from "@/features/Investing/filteredTokensApi";
 import { fetchHistoricalWalletData } from "@/libs/redux/Slices/DashboardSlice";
@@ -19,37 +20,29 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { fetchWallets, fetchWalletsPortfolio, useOry, PasswordResetModal } from "components";
+import { 
+  fetchWallets, 
+  fetchWalletsPortfolio, 
+  useOry, 
+  PasswordResetModal,
+  updateTourStatusAsync,
+  fetchReactourSettingsAsync
+} from "components";
+import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 
 const TOUR_ID = "home_v1";
+const TOUR_NAME = "home";
 
 const StartTourButton = () => {
-  const { setIsOpen, setCurrentStep } = useTour();
   return (
-    <Button
-      variant="contained"
-      size="small"
-      sx={{
-        ml: 2,
-        textTransform: "none",
-        backgroundColor: "#109EEF",
-        color: "white",
-        "&:hover": {
-          backgroundColor: "#0E8BD6"
-        }
-      }}
-      onClick={() => {
-        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
-        setIsOpen(true);
-      }}
-    >
-      Start Tour
-    </Button>
+    <AnimatedStartTourButton 
+      tourId={TOUR_ID}
+      sx={{ ml: 2 }}
+    />
   );
 };
 
@@ -61,10 +54,10 @@ const SurveyButton = () => {
       sx={{
         ml: 2,
         textTransform: "none",
-        backgroundColor: "#109EEF",
+        backgroundColor: "#219a83",
         color: "white",
         "&:hover": {
-          backgroundColor: "#0E8BD6"
+          backgroundColor: "#219a83"
         }
       }}
       onClick={() => {
@@ -91,25 +84,27 @@ export default function HomePage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
-    moment().startOf("day").toDate(),
-    moment().endOf("day").toDate(),
+    moment.utc().startOf("day").toDate(),
+    moment.utc().add(7, "days").endOf("day").toDate(),
   ]);
   const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
-  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery();
+  const { data: poolsData, isLoading: isPoolsLoading } = useGetPoolsQuery({
+    sorter: JSON.stringify([{ selector: "tvlUsd", desc: true }]),
+    filter: "[]",
+    skip: 0,
+    take: 50,
+  });
   const isMediumScreen = useMediaQuery("(min-width:900px) and (max-width:1200px)");
-  const { news, loadMore, isLoading, setMarket, market } = useNews();
   const [topTokens, setTopTokens] = useState<TopTokenData[] | null>(null);
   const [isFetchingTopTokens, setIsFetchingTopTokens] = useState<boolean>(false);
-  const { data: calendarEvents } = useGetCalendarEventsQuery({
+  const { data: calendarEvents, isLoading: isCalendarLoading } = useGetCalendarEventsQuery({
     page: 0,
     max: 150,
     fromDate: moment(selectedDate[0]).utc().toDate(),
     toDate: moment(selectedDate[1]).utc().toDate(),
   })
-  const newsRef = useRef(news);
-  const retryNewsRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const recoveryCookie = document.cookie
@@ -124,31 +119,6 @@ export default function HomePage() {
       setShowPasswordResetModal(false);
     }
   }, [router.query.requireChangePassword]);
-
-  useEffect(() => {
-  newsRef.current = news;
-}, [news]);
-
-useEffect(() => {
-  const retryNewsFetch = () => {
-    const currentNews = newsRef.current;
-    const isNewsEmpty = !currentNews || currentNews.length === 0;
-
-    if (isNewsEmpty && !isLoading) {
-      loadMore();
-    }
-  };
-
-  retryNewsFetch();
-
-  retryNewsRef.current = setInterval(() => {
-    retryNewsFetch();
-  }, 3000)
-
-  return () => {
-    if (retryNewsRef.current) clearInterval(retryNewsRef.current);
-  };
-}, [loadMore, isLoading]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
@@ -211,9 +181,9 @@ useEffect(() => {
     {
       selector: "#ei-logo",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("WelcomeToElanInsights")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("CryptoDataMiningAnalyticsDecisionModeling")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("WelcomeToElanInsights")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("CryptoDataMiningAnalyticsDecisionModeling")}</Typography>
         </Box>
       ),
       position: "bottom"
@@ -221,9 +191,9 @@ useEffect(() => {
     {
       selector: "#ei-profile-button",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ProfileSettings")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("ClickHereToAccessYourProfile")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ProfileSettings")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("ClickHereToAccessYourProfile")}</Typography>
         </Box>
       ),
       position: "bottom"
@@ -231,16 +201,16 @@ useEffect(() => {
     {
       selector: "#ei-news-filter",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("FilterNewsAndCalendarEvents")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsAndCalendarEvents")}</Typography>
       ),
       position: "right"
     },
     {
       selector: "#ei-platform-menu",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("PlatformStrategies")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("PlatformsContainStrategies")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("PlatformStrategies")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("PlatformsContainStrategies")}</Typography>
         </Box>
       ),
       position: "right"
@@ -248,9 +218,9 @@ useEffect(() => {
     {
       selector: "#ei-tools-section",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("AdvancedTools")}</Typography>
-          <Typography sx={{ color: "#4a5568" }}>{t("ToolsEnableCustomizedAnalysis")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("AdvancedTools")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("ToolsEnableCustomizedAnalysis")}</Typography>
         </Box>
       ),
       position: "left"
@@ -258,46 +228,138 @@ useEffect(() => {
     {
       selector: "#ei-investing-card",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
       ),
       position: "top"
     },
     {
       selector: "#ei-income-card",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
       ),
       position: "top"
     },
     {
       selector: "#ei-theme-toggle",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
+        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
       ),
       position: "left"
     },
     {
       selector: "#homepage",
       content: () => (
-        <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ThankYouTitle")}</Typography>
-          <Typography sx={{ color: "#4a5568", whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ThankYouTitle")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
         </Box>
       ),
       position: "top"
     }
   ];
 
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
-
   return (
     <TourProvider
       steps={steps}
-      styles={{
-        popover: (base) => ({ ...base, borderRadius: 12, padding: 16, background: "#ffffff", color: "#1a1a1a" }),
-        maskArea: (base) => ({ ...base, rx: 10 }),
-        badge: (base) => ({ ...base, display: "none" }),
-      }}
+        styles={{
+          popover: (base) => ({ 
+            ...base, 
+            borderRadius: 12, 
+            padding: 16, 
+            background: "#f7f5f2", 
+            color: "#6b7280",
+            fontSize: "0.95rem",
+            lineHeight: 1.8
+          }),
+          maskArea: (base) => ({ ...base, rx: 10 }),
+          close: (base) => ({
+            ...base,
+            width: 14,
+            height: 14,
+            padding: '10px',
+            boxSizing: 'content-box',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            top: 10,
+            right: 8,
+            cursor: 'pointer',
+          }),
+        }}
+        showBadge={false}
+        components={{
+          Content: (props: any) => {
+            const step = steps[props.currentStep];
+            // @ts-ignore - content() signature varies
+            const content = typeof step?.content === 'function' ? step.content() : step?.content;
+            
+            return (
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+                  <Box sx={{
+                    width: 30, 
+                    height: 30, 
+                    borderRadius: '50%',
+                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                    color: '#fff',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontWeight: 700, 
+                    fontSize: 14,
+                    flexShrink: 0,
+                    marginTop: "-2px"
+                  }}>
+                    {(props.currentStep ?? 0) + 1}
+                  </Box>
+                  <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
+                    {content || null}
+                  </Box>
+                </Box>
+              </Box>
+            );
+          },
+          Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+              <Box sx={{ display: 'flex', gap: '6px' }}>
+                {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                  <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+                ))}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                {currentStep > 0 && (
+                  <Button
+                    variant="contained"
+                    onClick={() => setCurrentStep(currentStep - 1)}
+                    sx={{ 
+                      background: '#f7f5f2', 
+                      color: '#4a5568', 
+                      border: '1px solid #e2e8f0', 
+                      boxShadow: 'none', 
+                      textTransform: 'none',
+                      '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                    }}
+                  >
+                    Prior
+                  </Button>
+                )}
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    if (currentStep === (steps?.length || 0) - 1) {
+                      setIsOpen(false);
+                    } else {
+                      setCurrentStep(currentStep + 1);
+                    }
+                  }}
+                  sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+                >
+                  {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+                </Button>
+              </Box>
+            </Box>
+          )
+        }}
     >
       <Box id="homepage">
         <TourStateSync
@@ -319,17 +381,20 @@ useEffect(() => {
         mt={2}
         spacing={2}
         container
+        alignItems="stretch"
         sx={{ marginTop: 0 }}>
         <Grid
           item
           xs={12}
           md={6}
-          lg={5}>
+          lg={5}
+          sx={{ display: 'flex' }}>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
             icon={<AccountBalanceWalletIcon />}
             chartDataGrowth={totalWalletWorthChartData}
             chartDataValue={totalWalletWorthValueChartData}
+            sx={{ width: '100%' }}
           />
         </Grid>
         <Grid
@@ -337,28 +402,26 @@ useEffect(() => {
           xs={12}
           md={6}
           lg={5}
-          sx={{ marginBottom: "10px" }}
-          id="ei-investing-card">
+          id="ei-investing-card"
+          sx={{ display: 'flex' }}>
           <TopTokensTile
             loading={isFetchingTopTokens}
             title={t("TopTokensTile")}
             icon={<AutoGraphIcon />}
             tableAssets={topTokens}
+            sx={{ width: '100%' }}
           />
         </Grid>
         <Grid
           item
           xs={12}
           md={12}
-          lg={2}>
+          lg={2}
+          sx={{ display: 'flex' }}>
           <CryptoNewsTile
-            onNewsSourceChange={setMarket}
-            news={news}
-            newsSource={market}
-            onLoadMoreNews={loadMore}
-            isLoading={isLoading}
             title={t("CryptoNewsTile")}
             icon={<NewspaperIcon />}
+            sx={{ width: '100%' }}
           />
         </Grid>
 
@@ -373,7 +436,7 @@ useEffect(() => {
             item
             xs={12}
             md={6}
-            lg={4}
+            lg={5}
             id="ei-income-card">
             <IncomeTile
               loading={isPoolsLoading}
@@ -386,36 +449,27 @@ useEffect(() => {
             item
             xs={12}
             md={6}
-            lg={6}
+            lg={5}
             id="ei-tools-section">
             <TradingViewTile
               icon={<SyncAltIcon />}
               title={t("TradingTile")}
             />
           </Grid>
-
           <Grid
             item
             xs={12}
             md={12}
             lg={2}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: isMediumScreen ? "row" : "column",
-                gap: 2,
-              }}>
-              <CryptoCalendar
-                loading={false}
-                title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-                icon={<CalendarMonthOutlinedIcon />}
-                calendarData={calendarEvents?.body || []}
-                setSelectedDate={setSelectedDate}
-                selectedDate={selectedDate}
-                sx={{ flex: isMediumScreen ? 4 : 1 }}
-                onFetchPage={fetchLookupPage}
-              />
-            </Box>
+            <CryptoCalendar
+              loading={isCalendarLoading}
+              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+              icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
+              calendarData={calendarEvents?.body || []}
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+              onFetchPage={fetchLookupPage}
+            />
           </Grid>
         </Grid>
       </Grid>
@@ -446,67 +500,56 @@ const TourStateSync = ({
   showWelcomeModal: boolean;
 }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  const dispatch = useAppDispatch();
   const [tourWasOpened, setTourWasOpened] = useState(false);
-
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
 
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    const hasOpenModals = showPasswordResetModal || showWelcomeModal;
+    
+    if (!viewed && !isOpen && !tourWasOpened && !hasOpenModals) {
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
+      setIsOpen(true);
     }
-  }, [currentStep, totalSteps]);
+  }, [reactourSettings, isOpen, tourWasOpened, showPasswordResetModal, showWelcomeModal, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
 
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
     } else if (isOpen) {
       setTourWasOpened(true);
     }
-  }, [isOpen, currentStep, tourWasOpened]);
-
-  useEffect(() => {
-    const recoveryCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('postRecoveryRedirect='));
-
-    if (recoveryCookie) {
-      try {
-        localStorage.removeItem(`EI_TOUR_${TOUR_ID}_VIEWED`);
-        localStorage.removeItem(`EI_TOUR_${TOUR_ID}_STEP`);
-      } catch { /* noop */ }
-    }
-  }, []);
-
-
-  useEffect(() => {
-    if (currentStep === 0 && !isOpen) {
-      // Don't mark as viewed on initial load
-    }
-  }, []);
-
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    const hasOpenModals = showPasswordResetModal || showWelcomeModal;
-
-    if (hasOpenModals) {
-      return;
-    }
-
-    if (!viewed && !isOpen) {
-      const timer = setTimeout(() => {
-        const stillNoModals = !showPasswordResetModal && !showWelcomeModal;
-        const stillNotViewed = localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) !== "1";
-
-        if (stillNoModals && stillNotViewed && !isOpen) {
-          if (!isNaN(savedStep)) setCurrentStep(savedStep);
-          setIsOpen(true);
-        }
-      }, 800);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showPasswordResetModal, showWelcomeModal, viewed, isOpen, setCurrentStep, setIsOpen]);
+  }, [isOpen, tourWasOpened, dispatch]);
 
   return null;
 };

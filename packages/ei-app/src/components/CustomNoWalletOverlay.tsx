@@ -4,6 +4,16 @@ import { GridOverlay } from "@mui/x-data-grid";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { useTranslation } from "react-i18next";
 import router from "next/router";
+import { keyframes } from '@mui/system';
+
+const pulseGlow = keyframes`
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(33, 154, 131, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(33, 154, 131, 0);
+  }
+`;
 
 const CustomNoWalletOverlay = () => {
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
@@ -17,27 +27,37 @@ const CustomNoWalletOverlay = () => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "22px",
+          padding: "40px 30px",
           backgroundColor: "transparent",
           borderRadius: "8px",
-          width: "100%",
           textAlign: "center",
         }}
       >
-        <AccountBalanceWalletIcon sx={{ fontSize: 45, color: theme.palette.mode === 'dark' ? '#fff' : '#1e88e5', mb: 2 }} />
+        <AccountBalanceWalletIcon 
+          sx={{ 
+            fontSize: 60, 
+            color: theme.palette.mode === 'dark' ? '#fff' : '#219a83', 
+            mb: 2 
+          }} 
+        />
 
-        <Typography variant="body2" fontWeight="bold" sx={{ mb: 1, fontSize: "16px" }}>
-          {t("ConnectYourWalletorAdd")}
+        <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, fontSize: "18px" }}>
+          {t("ConnectNewWalletAddress")}
         </Typography>
 
-        <Typography variant="body2" sx={{ mb: 2, color: "gray", fontSize: "13px" }}>
-          {t("ToSeeYourWalletPositions")}
+        <Typography variant="body2" sx={{ mb: 3, color: "gray", fontSize: "13px", maxWidth: '400px' }}>
+          {t("YouHaveNotSavedWalletAddress")}
         </Typography>
 
         <Button
             variant="contained"
             onClick={() => router.push('/profile/wallets')}
-            sx={{ backgroundColor: "#1e88e5", color: "white", fontSize: "11px" }}
+            sx={{ 
+              backgroundColor: "#219a83", 
+              color: "white", 
+              fontSize: "11px",
+              animation: `${pulseGlow} 2s ease-in-out infinite`,
+            }}
             >
             {t("AddYourFirstWallet")}
         </Button>

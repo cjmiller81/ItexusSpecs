@@ -53,6 +53,8 @@ const nextConfig = {
   },
   env: {
     BACKEND_API_URL: process.env.BACKEND_API_URL,
+    TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY,
+    APP_TERMS_URL: process.env.APP_TERMS_URL,
     COIN_MARKET_CALENDAR_IMAGE_URL: process.env.COIN_MARKET_CALENDAR_IMAGE_URL,
     NEXT_PUBLIC_MOCK_BACKEND_API: process.env.NEXT_PUBLIC_MOCK_BACKEND_API,
     ORY_SDK_URL: process.env.ORY_SDK_URL,
@@ -61,8 +63,9 @@ const nextConfig = {
     APP_VERSION: process.env.APP_VERSION,
     LAMA_PROJECT_ICONS_URL: process.env.LAMA_PROJECT_ICONS_URL,
     NEXT_PUBLIC_ORY_CARD_IMAGE_URL: process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL,
+    NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
   },
-  transpilePackages: ['@mui/icons-material', 'components'],
+  transpilePackages: ['@mui/icons-material', 'components', '@ory/elements-react', '@ory/client-fetch'],
 }
 
 module.exports = nextConfig

@@ -56,7 +56,7 @@ const NoRouteDialog: React.FC<Props> = ({ open, onClose }) => {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose} sx={{backgroundColor: "#1e88e5", color: "white"}}>
+        <Button onClick={handleClose} sx={{backgroundColor: "#219a83", color: "white"}}>
           {t("Try Again")}
         </Button>
       </DialogActions>

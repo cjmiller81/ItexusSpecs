@@ -24,10 +24,10 @@ const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+    color: theme.palette.mode === "dark" ? "#7CB9E8" : "#219a83",
   },
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#00308F",
+    backgroundColor: theme.palette.mode === "dark" ? "#7CB9E8" : "#219a83",
     color: "white",
   },
 }));
@@ -36,7 +36,7 @@ const StyledStatePersistedAccordion = styled(StatePersistedAccordion)(({ theme }
   borderRadius: 10,
   overflow: "hidden",
   boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
-  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
   border: theme.palette.mode === "dark" ? "1px solid #25252AFF" : "none",
   pointerEvents: "auto",
   "&.Mui-expanded": {
@@ -49,7 +49,7 @@ const StyledStatePersistedAccordion = styled(StatePersistedAccordion)(({ theme }
 }));
 
 export const StyledAccordionSummary = styled(AccordionSummary)(({theme}) => ({
-  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
   borderTopLeftRadius: 10,
   borderTopRightRadius: 10,
   borderBottomLeftRadius: 10,

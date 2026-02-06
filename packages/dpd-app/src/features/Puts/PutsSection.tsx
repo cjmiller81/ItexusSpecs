@@ -46,7 +46,7 @@ export default function PutOptionSet() {
   const [minVolume, setMinVolume] = useState<number>(10);
   const [oiCapPercent, setOiCapPercent] = useState<number>(500);
   const [requireActiveBid, setRequireActiveBid] = useState<boolean>(false);
-  const [ticker, setTicker] = useState<Instrument | null>(null);
+  const [ticker, setTicker] = useState<string>("");
   const [tradeAsSet, setTradeAsSet] = useState<boolean>(false);
   const [baSpreadDiff, setBaSpreadDiff] = useState<number>(10);
   const [exitTiers, setExitTiers] = useState<ExitTier[]>([]);
@@ -59,6 +59,17 @@ export default function PutOptionSet() {
   const [isSaveCopyEnabled, setIsSaveCopyEnabled] = useState(false);
   const [isSaveEnabled, setIsSaveEnabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const buildInstrument = (symbol: string, assetType?: string): Instrument | null =>
+    symbol.trim()
+      ? {
+          symbol: symbol.trim().toUpperCase(),
+          cusip: "",
+          description: "",
+          exchange: "",
+          assetType: assetType || "",
+        }
+      : null;
 
   const resetForm = () => {
     setAccount(undefined);
@@ -81,7 +92,7 @@ export default function PutOptionSet() {
     setMinVolume(10);
     setOiCapPercent(500);
     setRequireActiveBid(false);
-    setTicker(null);
+    setTicker("");
     setTradeAsSet(false);
     setBaSpreadDiff(10);
     setExitTiers([]);
@@ -152,7 +163,14 @@ export default function PutOptionSet() {
       setRequireActiveBid(selectedSubProfile.requireActiveBid);
       setIsBAMaxEnabled(selectedSubProfile.useBidAskMax);
       setBidAskMax(selectedSubProfile.bidAskMax || 0);
-      setTicker(selectedSubProfile.instruments);
+      
+      // Handle ticker: if ticker is set, populate Ticker field and update state
+      if (selectedSubProfile.ticker) {
+        setTicker(selectedSubProfile.ticker);
+      } else {
+        setTicker(selectedSubProfile.instruments?.symbol ?? "");
+      }
+      
       setAmount(selectedSubProfile.totalDollarAmount);
       setTradeUnderlyingFound(selectedSubProfile.tradeUnderlying);
       setIsBreakUpEnabled(selectedSubProfile.breakUpOrder);
@@ -182,8 +200,8 @@ export default function PutOptionSet() {
       original.requireActiveBid !== requireActiveBid ||
       original.useBidAskMax !== isBAMaxEnabled ||
       original.bidAskMax !== bidAskMax ||
-      original.ticker !== ticker?.symbol ||
-      original.instruments !== ticker ||
+      original.ticker !== ticker ||
+      (original.instruments?.symbol || "") !== ticker ||
       original.totalDollarAmount !== amount ||
       original.tradeUnderlying !== tradeUnderlyingFound ||
       original.breakUpOrder !== isBreakUpEnabled ||
@@ -240,8 +258,8 @@ export default function PutOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker? ticker.symbol : "",
-        instruments: ticker,
+        ticker,
+        instruments: buildInstrument(ticker, selectedSubProfile?.assetType),
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -250,6 +268,7 @@ export default function PutOptionSet() {
         baSpreadDiff: baSpreadDiff,
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
+        assetType: buildInstrument(ticker, selectedSubProfile?.assetType)?.assetType || selectedSubProfile?.assetType || undefined,
       };
 
       await optionTradeService.createSubProfile(subProfileRequest );
@@ -326,8 +345,8 @@ export default function PutOptionSet() {
         requireActiveBid: requireActiveBid,
         useBidAskMax: isBAMaxEnabled,
         bidAskMax: bidAskMax? bidAskMax : 0,
-        ticker: ticker ? ticker.symbol : "",
-        instruments: ticker,
+        ticker,
+        instruments: buildInstrument(ticker, selectedSubProfile?.assetType),
         totalDollarAmount: amount,
         tradeUnderlying: tradeUnderlyingFound,
         breakUpOrder: isBreakUpEnabled,
@@ -336,6 +355,7 @@ export default function PutOptionSet() {
         baSpreadDiff: baSpreadDiff,
         account: account?.accountNumber || "",
         exitTiers: isSendTriggerChecked ? exitTiers : [],
+        assetType: buildInstrument(ticker, selectedSubProfile?.assetType)?.assetType || selectedSubProfile?.assetType || undefined,
       };
 
       await dispatch(updateSubProfile(subProfileRequest));
@@ -364,7 +384,7 @@ export default function PutOptionSet() {
   const handleSendOrder = async (e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
       if (e) e.preventDefault();
   
-      if (!account || !ticker) {
+      if (!account || !ticker.trim()) {
         return; 
       }
       try {
@@ -389,8 +409,8 @@ export default function PutOptionSet() {
             oiCapPercent,
             optionType: "PUT",
             requireActiveBid,
-            ticker: ticker?.symbol || "",
-            instrument: ticker,
+            ticker,
+            instrument: buildInstrument(ticker, selectedSubProfile?.assetType),
             totalDollarAmount: amount,
             tradeUnderlying: tradeUnderlyingFound,
             onlyTradeUnderlying,

@@ -3,7 +3,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import { LoadingButton } from "@mui/lab"
 import { Box, BoxProps, Button, Divider, Grid, InputAdornment, Link, Stack, Typography } from "@mui/material"
 import { UiNode, UiNodeImageAttributes } from "@ory/client"
-import { isUiNodeImageAttributes, isUiNodeInputAttributes, isUiNodeTextAttributes } from "@ory/elements"
+import { isUiNodeImageAttributes, isUiNodeInputAttributes, isUiNodeTextAttributes } from "@ory/integrations/ui"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next"
 import { InferType, boolean, object, string } from "yup"
 import { AppFormSwitchField, AppFormTextField } from "../../components"
 import { addError, addMessage, addWarning, useAppDispatch } from "../../slices"
+import { parseOryErrorMessage } from "../../utils/parseOryErrors"
 import { NodeImage, useOry } from "../auth"
 import { ProfileContainer } from "./ProfileContainer"
 
@@ -192,8 +193,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         resetForm()
       })
       .catch(error => {
-        if (error.response.status === 400) dispatch(addError({ message: t("invalidPasswordFormat", { ns: "ErrorMessages" }) }))
-        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setNewPasswordLoading(false)
@@ -207,8 +208,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         dispatch(addMessage({ message: t("ApplicationLinked") }))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError({ message: t("invalidCode", { ns: "ErrorMessages" }) }))
-        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setCodeLoading(false)
@@ -222,8 +223,8 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         dispatch(addMessage({ message: t("ApplicationUnlinked") }))
       })
       .catch(error => {
-        if (error?.response?.status === 400) dispatch(addError({ message: t("invalidCode", { ns: "ErrorMessages" }) }))
-        else dispatch(addError({ message: error?.response?.data?.error?.reason }))
+        const errorMessage = parseOryErrorMessage(error);
+        dispatch(addError({ message: errorMessage, autoClose: false }));
       })
       .finally(() => {
         setCodeLoading(false)
@@ -264,6 +265,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         <ProfileContainer
           width={"100%"}
           title="Change Password"
+          contentBgColor="#f0ece5"
           sx={{ display: "flex", flexDirection: "column" }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <AppFormTextField
@@ -330,6 +332,7 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
         <Box sx={{ width: "100%" }}>
           <ProfileContainer
             title={t("AddAuthenticatorApp")}
+            contentBgColor="#f0ece5"
             sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <Formik<TotpAuthenticatorModel>
               initialValues={{

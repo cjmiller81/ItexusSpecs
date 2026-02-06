@@ -1,30 +1,35 @@
-import { Stack } from "@mui/material"
-import { LoginFlow, UpdateLoginFlowBody } from "@ory/client"
-import { AxiosError } from "axios"
-import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useState } from "react"
-import { Loader } from "../components/loader"
-import { HandleError } from "../utils/hooks"
-import { ory } from "../lib/sdk"
-import { StyledAuthContainer } from "./StyledAuthContainer"
-import { StyledUserAuthCard } from "./StyledUserAuthCard"
-import ProtectedByOryLabel from "./protectedByOryLabel"
+import { Stack } from "@mui/material";
+import { LoginFlow, UpdateLoginFlowBody } from "@ory/client";
+import { AxiosError } from "axios";
+import { useRouter } from "next/router";
+import { FC, useCallback, useEffect, useState } from "react";
+import { Loader } from "../components/loader";
+import { HandleError } from "../utils/hooks";
+import { ory } from "../lib/sdk";
+import { StyledAuthContainer } from "./StyledAuthContainer";
+import ProtectedByOryLabel from "./protectedByOryLabel";
+import { CustomLoginForm } from "./CustomLoginForm";
+import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer";
 
-export const Login: FC<{}> = () => {
-  const [flow, setFlow] = useState<LoginFlow | null>(null)
-  const router = useRouter()
-  const returnTo = String(router.query.return_to || window.location.origin)
-  const flowId = String(router.query.flow || "")
+interface LoginProps { env: { termsUrl: string, appTermsUrl: string } }
+
+export const Login: FC<LoginProps> = ({ env }) => {
+  const [flow, setFlow] = useState<LoginFlow | null>(null);
+  const router = useRouter();
+  const returnTo = String(router.query.return_to || window.location.origin);
+  const flowId = String(router.query.flow || "");
 
   // Refresh means we want to refresh the session. This is needed, for example, when we want to update the password
   // of a user.
-  const refresh = Boolean(router.query.refresh)
+  const refresh = Boolean(router.query.refresh);
 
   // AAL = Authorization Assurance Level. This implies that we want to upgrade the AAL, meaning that we want
   // to perform two-factor authentication/verification.
-  const aal = String(router.query.aal || "")
-  const isAal2 = router.query.aal2 === "true"  // front-end trigger for MFA step-up
-  const aalParam = isAal2 ? "aal2" : aal  // if front-end asks for aal2, override the param
+  const aal = String(router.query.aal || "");
+  const isAal2 = router.query.aal2 === "true";  // front-end trigger for MFA step-up
+  const aalParam = isAal2 ? "aal2" : aal;  // if front-end asks for aal2, override the param
+
+  const isRefreshFlowIdNeeded = useFlowIdExpirationTimer(flow);
 
   const getFlow = useCallback(
     (id: string) =>
@@ -32,19 +37,19 @@ export const Login: FC<{}> = () => {
       ory
         .getLoginFlow({ id })
         .then(({ data }) => {
-          setFlow(data)
+          setFlow(data);
         })
         .catch(handleError),
     [],
-  )
+  );
 
   const handleError = useCallback(
     (error: AxiosError) => {
-      const handle = HandleError(getFlow, setFlow, "/ui/login", true)
-      return handle(error)
+      const handle = HandleError(getFlow, setFlow, "/ui/login", true);
+      return handle(error);
     },
     [getFlow],
-  )
+  );
 
   // Create a new login flow, preserving aal2 if requested.
   const createFlow = useCallback(() => {
@@ -56,13 +61,13 @@ export const Login: FC<{}> = () => {
       })
       .then(({ data }) => {
         // keep aal2 flag and return_to in URL so UI shows MFA prompt and preserves return URL
-        const qs = [`flow=${data.id}`]
-        if (isAal2) qs.push("aal2=true")
-        if (refresh) qs.push("refresh=true")
+        const qs = [`flow=${data.id}`];
+        if (isAal2) qs.push("aal2=true");
+        if (refresh) qs.push("refresh=true");
         if (returnTo && returnTo !== window.location.origin) {
-          qs.push(`return_to=${encodeURIComponent(returnTo)}`)
+          qs.push(`return_to=${encodeURIComponent(returnTo)}`);
         }
-        router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true })
+        router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true });
       })
       .catch(err => {
         // fallback for older Kratos versions that don't support aal
@@ -70,53 +75,53 @@ export const Login: FC<{}> = () => {
           return ory
             .createBrowserLoginFlow({ refresh, returnTo })
             .then(({ data }) => {
-              const qs = [`flow=${data.id}`]
-              if (refresh) qs.push("refresh=true")
+              const qs = [`flow=${data.id}`];
+              if (refresh) qs.push("refresh=true");
               if (returnTo && returnTo !== window.location.origin) {
-                qs.push(`return_to=${encodeURIComponent(returnTo)}`)
+                qs.push(`return_to=${encodeURIComponent(returnTo)}`);
               }
-              router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true })
-            })
+              router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true });
+            });
         }
-        throw err
-      })
-  }, [refresh, aalParam, returnTo, isAal2, router])
+        throw err;
+      });
+  }, [refresh, aalParam, returnTo, isAal2, router]);
 
 
   useEffect(() => {
     if (!router.isReady) {
-      return
+      return;
     }
 
-    const queryString = typeof window !== "undefined" ? window.location.search : ""
-    const searchParams = new URLSearchParams(queryString)
-    const hasFlowId = searchParams.has("flow")
+    const queryString = typeof window !== "undefined" ? window.location.search : "";
+    const searchParams = new URLSearchParams(queryString);
+    const hasFlowId = searchParams.has("flow");
 
     ory.toSession().then(
       () => {
         if (returnTo && returnTo !== window.location.origin) {
-          router.replace(returnTo)
+          router.replace(returnTo);
         } else {
-          router.replace("/")
+          router.replace("/");
         }
       },
       () => {
         if (hasFlowId && flowId) {
           getFlow(flowId).catch(_err => {
-            createFlow()
-          })
+            createFlow();
+          });
         }
       }
-    )
-  }, [router.isReady, flowId, returnTo])
+    );
+  }, [router.isReady, flowId, returnTo]);
 
   useEffect(() => {
-    const queryString = typeof window !== "undefined" ? window.location.search : ""
-    const searchParams = new URLSearchParams(queryString)
-    const hasFlowId = searchParams.has("flow")
+    const queryString = typeof window !== "undefined" ? window.location.search : "";
+    const searchParams = new URLSearchParams(queryString);
+    const hasFlowId = searchParams.has("flow");
 
     if (!router.isReady || hasFlowId) {
-      return
+      return;
     }
 
     // Otherwise we initialize it
@@ -124,21 +129,21 @@ export const Login: FC<{}> = () => {
       () => {
         // User is already authenticated, redirect to return_to or home
         if (returnTo && returnTo !== window.location.origin) {
-          router.replace(returnTo)
+          router.replace(returnTo);
         } else {
-          router.replace("/")
+          router.replace("/");
         }
       },
       () => {
         if (!hasFlowId) {
-          createFlow()
+          createFlow();
         }
       }
     )
-  }, [router.isReady, returnTo])
+  }, [router.isReady, returnTo]);
 
   const submitFlow = (values: UpdateLoginFlowBody) => {
-    ory
+    return ory
       .updateLoginFlow({
         flow: String(flow?.id),
         updateLoginFlowBody: values,
@@ -147,48 +152,39 @@ export const Login: FC<{}> = () => {
       .then(() => {
         // Check for postRecoveryRedirect cookie first
         const match = document.cookie.split("; ")
-         .find(row => row.startsWith("postRecoveryRedirect="))
+         .find(row => row.startsWith("postRecoveryRedirect="));
  
         let redirect = match
          ? decodeURIComponent(match.split("=")[1])
-         : "/"
+         : "/";
 
         // If no recovery redirect, check for return_to parameter
         if (!match && returnTo && returnTo !== window.location.origin) {
-          redirect = returnTo
+          redirect = returnTo;
         }
 
-        document.cookie = `postRecoveryRedirect=; path=/; max-age=0`
-        router.push(redirect)
+        document.cookie = `postRecoveryRedirect=; path=/; max-age=0`;
+        router.push(redirect);
       })
       .catch(c => {
-        void handleError(c)
+        void handleError(c);
       })
-  }
+  };
 
-  if (!flow) return <Loader />
+  if (!flow) return <Loader />;
 
   return (
     <StyledAuthContainer>
       <Stack alignItems="center" gap={1} className="log">
-        <StyledUserAuthCard
-          // This defines what kind of card we want to render.
-          flowType={"login"}
-          // We always need the flow data which populates the form fields and error messages dynamically
-          flow={flow}
-          // The login card should allow the user to go to the registration page and the recovery page
-          additionalProps={{
-            forgotPasswordURL: "/ui/recovery",
-            signupURL: "/ui/registration",
-          }}
-          // We might need webauthn support which requires additional JS
-          includeScripts={true}
-          // We submit the form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateLoginFlowBody)}
-          cardImage={process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL}
-          title="Sign In"
-        />
-        <ProtectedByOryLabel />
+        {flow && (
+          <CustomLoginForm
+            flow={flow}
+            isRefreshFlowIdNeeded={isRefreshFlowIdNeeded}
+            onRefreshFlowId={createFlow}
+            onSubmit={submitFlow}
+          />
+        )}
+        <ProtectedByOryLabel env={env} />
       </Stack>
     </StyledAuthContainer>
   )

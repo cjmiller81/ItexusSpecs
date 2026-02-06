@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -18,24 +18,27 @@ import {
 import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "components";
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
-import * as XLSX from "xlsx";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
 import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
+import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
 
 type Props = Omit<AccordionProps, "children"> & {
   persisKey: string;
   startTourButton?: React.ReactNode;
+  exportFileName: string;
 };
 
-export default function VaultsTokensSection({ persisKey, startTourButton, ...props }: Props) {
+export default function VaultsTokensSection({ persisKey, startTourButton, exportFileName, ...props }: Props) {
   const [vaults, setVaults] = useState<VaultsData[]>([]);
   const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
   const { t } = useTranslation(["Vaults", "Common"]);
   const { sidebarOpened } = useAppSelector(store => store.ui);
   const theme = useTheme();
+  const dataGridRef = useRef<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (!isVaultsLoading && vaultsData) {
@@ -44,14 +47,38 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
   }, [vaultsData, isVaultsLoading]);
 
   const processedVaults = useMemo(() => {
-    return vaults.map(pool => ({
-      ...pool,
-            apy: pool.breakdowns && pool.breakdowns.totalApy != null && pool.breakdowns.totalApy !== "Infinity" ?
-        (typeof pool.breakdowns.totalApy === 'number' ? pool.breakdowns.totalApy.toFixed(2) : pool.breakdowns.totalApy) : null,
-      tvl: pool.tvls ? pool.tvls?.value : null,
-      platformId: pool.platform_id || null,
-      isRetired: pool.status === "eol",
-    }));
+    return vaults.map(pool => {
+      const anyPool = pool as any;
+
+      const totalApy =
+        pool.breakdowns &&
+        pool.breakdowns.totalApy != null &&
+        pool.breakdowns.totalApy !== "Infinity"
+          ? pool.breakdowns.totalApy
+          : null;
+
+      return {
+        ...pool,
+        apy:
+          typeof totalApy === "number"
+            ? Number(totalApy.toFixed(2))
+            : totalApy,
+        tvl: pool.tvls ? pool.tvls?.value : null,
+        platformId: pool.platform_id || null,
+        isRetired: pool.status === "eol",
+        vaultApy:
+          anyPool.vault_apy ?? anyPool.breakdowns?.vaultApy ?? null,
+        beefyPerformanceFee:
+          anyPool.beefy_performance_fee ??
+          anyPool.breakdowns?.beefyPerformanceFee ??
+          null,
+        lpFee: anyPool.lp_fee ?? anyPool.breakdowns?.lpFee ?? null,
+        tradingApr:
+          anyPool.trading_apr ?? anyPool.breakdowns?.tradingApr ?? null,
+        strategyTypeId: anyPool.strategy_type_id ?? null,
+        earnedToken: anyPool.earned_token ?? null,
+      };
+    });
   }, [vaults]);
 
   const filteredTokensSource = useMemo(
@@ -78,40 +105,29 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
     return Math.max(score, 0);
   };
 
-  const onExport = () => {
-    const updatedAssets = filteredTokensSource.items().map(asset => {
-      const totalApy = asset.breakdowns?.totalApy ?? 0;
-      const apyValue = totalApy === "Infinity" || totalApy === Infinity ? 
-        "∞" : 
-        (typeof totalApy === 'number' ? (totalApy * 100).toFixed(2) : (parseFloat(totalApy) * 100).toFixed(2));
-      
-      return {
-        name: asset.name,
-        chain: asset.chain,
-        platform: asset.platformId,
-        tvl: asset.tvl ? `$${asset.tvl.toFixed(2)}` : "$0.00",
-        apy: `${apyValue}%`,
-        safety: calculateSafetyScore(asset.risks),
-      };
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(updatedAssets, {
-      header: ["name", "chain", "platform", "tvl", "apy", "safety"],
-    });
-
-    const columnWidth = { wch: 20 };
-    worksheet["!cols"] = [columnWidth, columnWidth, columnWidth, columnWidth, columnWidth, columnWidth];
-
-    for (let i = 2; i < updatedAssets.length + 2; i++) {
-      worksheet[`D${i}`].z = "$#,##0.00";
-      worksheet[`E${i}`].z = "0.00%";
+  const onExport = async () => {
+    if (isExporting) {
+      return;
     }
 
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.sheet_add_aoa(worksheet, [["Name", "Chain", "Platform", "TVL", "APY", "Safety"]], { origin: "A1" });
-    XLSX.utils.book_append_sheet(workbook, worksheet, "assets");
+    const dataGridInstance = dataGridRef.current?.instance;
+    if (!dataGridInstance) {
+      console.error("DataGrid instance is not ready for export.");
+      return;
+    }
 
-    XLSX.writeFile(workbook, "assets.xlsx", { compression: true });
+    setIsExporting(true);
+    try {
+      await exportDataGridToXlsx({
+        dataGrid: dataGridInstance,
+        fileBaseName: exportFileName,
+        worksheetName: exportFileName,
+      });
+    } catch (error) {
+      console.error("Failed to export vaults data:", error);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -146,7 +162,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
     position: "inherit",
     boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
     borderRadius: "10px",
-    backgroundColor: "#aaaaaa !important"
+    backgroundColor: "#f7f5f2 !important"
   };
 
   return (
@@ -221,11 +237,12 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
               <Button
                 onClick={e => {
                   e.stopPropagation();
-                  onExport();
+                  void onExport();
                 }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
-                id="income_export">
+                id="income_export"
+                disabled={isExporting}>
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                   <DownloadIcon />
                   {t("Export")}
@@ -236,7 +253,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
         </StyledAccordionSummary>
         <AccordionDetails
           sx={{
-            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#aaaaaa",
+            bgcolor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
             width: `${sidebarOpened ? "calc(100vw - 283px)" : "calc(100vw - 105px)"}`,
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",
@@ -245,6 +262,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, ...pro
             loading={isVaultsLoading}
             onUpdate={() => {}}
             dataSource={filteredTokensSource}
+            dataGridRef={dataGridRef}
           />
         </AccordionDetails>
       </StatePersistedAccordion>

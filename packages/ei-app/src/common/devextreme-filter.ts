@@ -23,12 +23,12 @@ export const reconfigureFilterPanelStyles = (containerRef, isActiveFilter) => {
     }
     
     if (filterPanel) {
-      filterPanel.style.border =  "1px solid #03a9f4";
+      filterPanel.style.border =  "1px solid #219a83";
       filterPanel.style.borderRadius = "4px"
     }
 
     if (filterText) {
-      filterText.style.color = isActiveFilter ? "#03a9f4" : "#808080";
+      filterText.style.color = isActiveFilter ? "#219a83" : "#808080";
     }
 }
 

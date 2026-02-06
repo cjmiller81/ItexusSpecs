@@ -30,6 +30,7 @@ interface ExpandableRowDexProps extends GridRowProps {
   isExpanded: (rowId: string | number) => boolean;
   rowId: string | number;
   onHeightUpdate?: (rowId: string, height: string) => void;
+  isCollapsed?: boolean;
 }
 
 interface WalletData {
@@ -249,6 +250,7 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
 
   const getMinHeight = () => {
     const isProfilePage = window.location.pathname.includes('/profile');
+    const isCollapsed = props.isCollapsed ?? false;
     
     if (isProfilePage) {
       switch (sectionsWithData) {
@@ -259,12 +261,22 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
         default: return "65vh";
       }
     } else {
-      switch (sectionsWithData) {
-        case 0: return "25vh";
-        case 1: return "40vh";
-        case 2: return "55vh";
-        case 3: return "55vh";
-        default: return "55vh";
+      if (isCollapsed) {
+        switch (sectionsWithData) {
+          case 0: return "25vh";
+          case 1: return "71vh";
+          case 2: return "71vh";
+          case 3: return "71vh";
+          default: return "71vh";
+        }
+      } else {
+        switch (sectionsWithData) {
+          case 0: return `25vh`;
+          case 1: return `50vh`;
+          case 2: return `90vh`;
+          case 3: return `90vh`;
+          default: return `90vh`;
+        }
       }
     }
   };
@@ -293,11 +305,37 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
     <AppsIcon sx={{ color: WALLET_COLORS.nft, mr: 1, fontSize: "40px" }} />
   );
 
+  const isExpanded = props.isExpanded(props.rowId);
+
   return (
     <Box sx={{ width: "100%" }}>
-      <GridRow {...props} />
-      {props.isExpanded(props.rowId) && (
-                 <Box px={3} py={1} sx={{ width: "100%", maxWidth: "100%", minHeight: getMinHeight() }}>
+      <GridRow 
+        {...props} 
+        sx={{
+          ...(isExpanded && {
+            position: "sticky",
+            top: 52,
+            zIndex: 9,
+            backgroundColor: theme.palette.mode === "dark" ? "#1f2937" : "#f7f5f2",
+            "& .MuiDataGrid-cell": {
+              backgroundColor: theme.palette.mode === "dark" ? "#1f2937" : "#f7f5f2",
+            },
+          }),
+          ...props.sx,
+        }}
+      />
+      {isExpanded && (
+                 <Box 
+                   px={3} 
+                   py={1} 
+                   sx={{ 
+                     width: "100%", 
+                     maxWidth: "100%", 
+                     maxHeight: getMinHeight(),
+                     overflowY: "auto",
+                     overflowX: "hidden",
+                     ...nativeBarSx,
+                   }}>
            <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{ width: "100%", maxWidth: "100%" }}>
              <Box sx={{ width: "100%", maxWidth: "100%" }}>
                               <SectionHeader

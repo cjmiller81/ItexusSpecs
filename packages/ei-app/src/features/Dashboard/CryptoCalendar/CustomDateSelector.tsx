@@ -176,7 +176,7 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
                   sx={{
                     cursor: "pointer",
                     paddingLeft: "20px",
-                    color: "#03A9F4",
+                    color: "#219a83",
                   }}
                   onClick={() => handlePresetClick("next7")}>
                   {t("Next7days")}
@@ -186,7 +186,7 @@ export const CustomDateSelector = ({ setSelectedDate, selectedDate }) => {
                   sx={{
                     cursor: "pointer",
                     paddingRight: "20px",
-                    color: "#03A9F4",
+                    color: "#219a83",
                   }}
                   onClick={() => handlePresetClick("next30")}>
                   {t("Next30days")}

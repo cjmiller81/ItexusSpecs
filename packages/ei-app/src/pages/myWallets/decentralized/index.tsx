@@ -14,96 +14,118 @@ import {
   selectWallets,
   updateWallet,
   getCurrentTokensValueFromZapper,
+  fetchReactourSettingsAsync,
 } from "components";
 import moment from "moment";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
 import { useAppDispatch } from "@/libs/redux/Store";
-import { setAccordionState } from "components";
+import { setAccordionState, updateTourStatusAsync } from "components";
 import { MyWalletsSectionForPage } from "../../../../../components/src/features/myWallets/MyWalletsSectionForPage";
 import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
 import { FeatureAccessGuard } from "components";
 import { useSubscription } from "components";
 
-const TOUR_ID = "wallet_v1";
+const TOUR_ID = "decentralized_v1";
+const TOUR_NAME = "decentralized";
 
 const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
   
   const openAllAccordions = () => {
-    const accordionKeys = [
-      'WalletsOverviewPanel',
-      'MyWalletsSectionForPage'
-    ];
-    
+    const accordionKeys = ['WalletsOverviewPanel', 'MyWalletsSectionForPage'];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
   };
   
+  const handleClick = async () => {
+    openAllAccordions();
+    
+    try {
+      const latestSettings = await dispatch(fetchReactourSettingsAsync()).unwrap();
+      const savedStep = latestSettings?.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch tour data:', error);
+      setCurrentStep(0);
+      setIsOpen(true);
+    }
+  };
+  
   return (
-    <Button
-      variant="contained"
-      size="small"
-      sx={{ 
-        ml: 2, 
-        textTransform: "none", 
-        backgroundColor: "#109EEF",
-        color: "white",
-        "&:hover": {
-          backgroundColor: "#0E8BD6"
-        }
-      }}
-      onClick={() => {
-        openAllAccordions();
-        const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-        setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
-        setIsOpen(true);
-      }}
-    >
-      Start Tour
-    </Button>
+    <AnimatedStartTourButton 
+      tourId={TOUR_ID}
+      sx={{ ml: 2 }}
+      onClick={handleClick}
+    />
   );
 };
 
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
-  const viewed = typeof window !== "undefined" ? localStorage.getItem(`EI_TOUR_${TOUR_ID}_VIEWED`) === "1" : true;
+  const [tourWasOpened, setTourWasOpened] = useState(false);
+  const reactourSettings = useAppSelector((state) => state.reactour.settings);
   
   const openAllAccordions = () => {
-    const accordionKeys = [
-      'WalletsOverviewPanel',
-      'MyWalletsSectionForPage'
-    ];
-    
+    const accordionKeys = ['WalletsOverviewPanel', 'MyWalletsSectionForPage'];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
   };
-  
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_STEP`, String(currentStep)); } catch { /* noop */ }
-    if (currentStep >= totalSteps - 1) {
-      try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, "1"); } catch { /* noop */ }
-    }
-  }, [currentStep, totalSteps]);
-  
+    const loadTourData = async () => {
+      try {
+        await dispatch(fetchReactourSettingsAsync()).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tour settings:', error);
+      }
+    };
+    loadTourData();
+  }, [dispatch]);
+
   useEffect(() => {
-    try { localStorage.setItem(`EI_TOUR_${TOUR_ID}_VIEWED`, isOpen ? "0" : "1"); } catch { /* noop */ }
-  }, [isOpen]);
-  
-  useEffect(() => {
-    const savedStep = Number(localStorage.getItem(`EI_TOUR_${TOUR_ID}_STEP`) || 0);
-    if (!viewed) {
-      openAllAccordions(); // Открываем аккордеоны при автоматическом запуске тура
-      if (!isNaN(savedStep)) setCurrentStep(savedStep);
+    if (!reactourSettings?.tours) return;
+    
+    const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
+    
+    if (!viewed && !isOpen && !tourWasOpened) {
+      openAllAccordions();
+      const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
+      if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
       setIsOpen(true);
     }
-  }, []);
+  }, [reactourSettings, isOpen, tourWasOpened, setCurrentStep, setIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    dispatch(updateTourStatusAsync({
+      tourName: TOUR_NAME,
+      update: { 
+        step: currentStep,
+        viewed: currentStep >= totalSteps - 1 ? true : undefined
+      }
+    }));
+  }, [currentStep, totalSteps, isOpen, dispatch]);
+
+  useEffect(() => {
+    if (!isOpen && tourWasOpened) {
+      dispatch(updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: { viewed: true }
+      }));
+    } else if (isOpen) {
+      setTourWasOpened(true);
+    }
+  }, [isOpen, tourWasOpened, dispatch]);
   
   return null;
 };
@@ -299,7 +321,7 @@ export default function MyWalletsPage() {
     {
       selector: "#wallet_selector",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a" }}>{t("TourWalletMultipleText")}</Typography>
+        <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("TourWalletMultipleText")}</Typography>
       ),
       position: "right"
     },
@@ -322,21 +344,100 @@ export default function MyWalletsPage() {
         popover: (base) => ({ 
           ...base, 
           borderRadius: 12, 
-          padding: "32px 24px 24px 24px", 
-          background: "#ffffff", 
-          color: "#1a1a1a", 
-          minWidth: 400, 
-          maxWidth: 500,
-          paddingTop: "40px"
+          padding: 16, 
+          background: "#f7f5f2", 
+          color: "#6b7280",
+          fontSize: "0.95rem",
+          lineHeight: 1.8
         }),
         maskArea: (base) => ({ ...base, rx: 10 }),
-        badge: (base) => ({ ...base, display: "none" }),
-        close: (base) => ({ 
-          ...base, 
-          top: "12px", 
-          right: "12px",
-          zIndex: 1000
+        close: (base) => ({
+          ...base,
+          width: 14,
+          height: 14,
+          padding: '10px',
+          boxSizing: 'content-box',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: 10,
+          right: 8,
+          cursor: 'pointer',
         }),
+      }}
+      showBadge={false}
+      components={{
+        Content: (props: any) => {
+          const step = steps[props.currentStep];
+          // @ts-ignore - content() signature varies
+          const content = typeof step?.content === 'function' ? step.content() : step?.content;
+          
+          return (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
+                <Box sx={{
+                  width: 30, 
+                  height: 30, 
+                  borderRadius: '50%',
+                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                  color: '#fff',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 700, 
+                  fontSize: 14,
+                  flexShrink: 0,
+                  marginTop: "-2px"
+                }}>
+                  {(props.currentStep ?? 0) + 1}
+                </Box>
+                <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
+                  {content || null}
+                </Box>
+              </Box>
+            </Box>
+          );
+        },
+        Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+            <Box sx={{ display: 'flex', gap: '6px' }}>
+              {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              {currentStep > 0 && (
+                <Button
+                  variant="contained"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  sx={{ 
+                    background: '#f7f5f2', 
+                    color: '#4a5568', 
+                    border: '1px solid #e2e8f0', 
+                    boxShadow: 'none', 
+                    textTransform: 'none',
+                    '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                  }}
+                >
+                  Prior
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                onClick={() => {
+                  if (currentStep === (steps?.length || 0) - 1) {
+                    setIsOpen(false);
+                  } else {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+                sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
+              >
+                {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+              </Button>
+            </Box>
+          </Box>
+        )
       }}
     >
       <>
@@ -396,7 +497,7 @@ export default function MyWalletsPage() {
             borderRadius: "10px",
             boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
             backgroundColor:
-              theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+              theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
             padding: 2,
             paddingTop:"20px"
           }}

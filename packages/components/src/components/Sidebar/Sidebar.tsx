@@ -116,13 +116,14 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
                     toggleSide={toggleSide}
                     isDisclaimer={item.isDisclaimer}
                   />
-                  {sidebarItemindex !== sidebarItems.filter(item => !item.isDisclaimer).length - 1 && <Divider />}
+                  {sidebarItemindex !== sidebarItems.filter(item => !item.isDisclaimer).length - 1 && <Divider 
+                  sx={{backgroundColor: theme.palette.mode === "light" ? "rgba(255, 255, 255, 0.12)" : undefined}}/>}
                 </Box>
               ))}
               
               {sidebarItems.find(item => item.isDisclaimer) && hasScroll && open && (
                 <Box>
-                  <Divider />
+                  <Divider sx={{color: "lighgray"}}/>
                   <SidebarSection
                     sectionName=""
                     items={sidebarItems.find(item => item.isDisclaimer)?.sidebarListItems || []}

@@ -109,10 +109,16 @@ export const WalletWorthTile: FC<Props> = ({
               sx={{
                 textTransform: "none",
                 "&.Mui-selected": {
-                  color: "white",
-                  backgroundColor: "#1976d2",
-                  "&:hover": { backgroundColor: "#1565c0" },
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
+                  "&:hover": { backgroundColor: "#f7f5f2" },
                 },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": { backgroundColor: "#e5ddd5" },
+                },
+                borderColor: "#e5ddd5",
               }}
             >
               {t("Growth")}
@@ -122,10 +128,16 @@ export const WalletWorthTile: FC<Props> = ({
               sx={{
                 textTransform: "none",
                 "&.Mui-selected": {
-                  color: "white",
-                  backgroundColor: "#1976d2",
-                  "&:hover": { backgroundColor: "#1565c0" },
+                  color: "#000",
+                  backgroundColor: "#f7f5f2",
+                  "&:hover": { backgroundColor: "#f7f5f2" },
                 },
+                "&:not(.Mui-selected)": {
+                  color: "#000",
+                  backgroundColor: "#e5ddd5",
+                  "&:hover": { backgroundColor: "#e5ddd5" },
+                },
+                borderColor: "#e5ddd5",
               }}
             >
               {t("Value")}

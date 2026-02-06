@@ -40,6 +40,7 @@ export const ProfileDetails = ({ onUpdateProfile, loadingCnangeDetails, ...props
   return (
     <ProfileContainer
       title="Profile Details"
+      contentBgColor="#f0ece5"
       {...props}>
       <Formik<ProfileModel>
         initialValues={{ firstName, lastName, email }}

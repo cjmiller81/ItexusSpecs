@@ -9,7 +9,7 @@ export const useDataGridStyles = () => {
     borderRadius: DATA_GRID_STYLES.BORDER_RADIUS,
     "& .MuiDataGrid-cell": { py: DATA_GRID_STYLES.CELL_PADDING_Y },
     "& .MuiDataGrid-main": {
-      bgcolor: theme.palette.mode === "dark" ? "#363f4cff" : "white",
+      bgcolor: theme.palette.mode === "dark" ? "#363f4cff" : "#f7f5f2",
       borderRadius: DATA_GRID_STYLES.BORDER_RADIUS,
     },
   }), [theme.palette.mode]);

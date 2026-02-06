@@ -21,6 +21,7 @@ import {
   InputAdornment,
   Typography,
 } from "@mui/material";
+import { keyframes } from '@mui/system';
 import {
   BasicTable,
   fetchWalletsPortfolio,
@@ -39,11 +40,39 @@ import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { iconsApi } from "@/services/iconsService";
 import SearchIcon from '@mui/icons-material/Search';
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
+import CustomSelectWalletOverlay from "@/components/CustomSelectWalletOverlay";
 import { filterDustTokens } from "components";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { isSupportedChain } from "@/utils/supportedChains";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+
+const pulseGlow = keyframes`
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(33, 154, 131, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(33, 154, 131, 0.1);
+  }
+`;
+
+const shimmer = keyframes`
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+`;
+
+const bounce = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+`;
 
 interface CurrentPositionSectionProps {
     onWalletChange?: (wallet: Wallet | null) => void;
@@ -142,6 +171,13 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   };
 
   const { wallets } = useAppSelector(state => state.wallets);
+  
+  const NoRowsOverlayComponent = () => {
+    if (wallets && wallets.length > 0 && !selectedWallet) {
+      return <CustomSelectWalletOverlay />;
+    }
+    return <CustomNoWalletOverlay />;
+  };
 
   useEffect(() => {
     if (wasManualSelection) return;
@@ -473,7 +509,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               marginLeft: "8px",
               marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
               marginTop: { lg: "0%", md: "1.5%", xs: "4%" },
-              backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "transparent",
+              backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
             }}>
 
              <Grid
@@ -481,39 +517,109 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 xs={12}
                 md={4.5}
                 lg={4.6}
-                sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }  }}>
-              <Select
-                id="wallet_dropdown"
-                displayEmpty
-                value={selectedWallet?.walletId || ""}
-                onChange={handleWalletSelect}
-                renderValue={selected => (selected ? selectedWallet?.walletName : t("AddSavedWallet"))}
-                sx={{
-                  backgroundColor: "#109EEF",
-                  fontSize: "11px",
-                  color: "white",
-                  width: "100%",
-                  maxHeight: "40px",
-                  marginBottom: "12px",
-                  "& .MuiSelect-icon": { color: "white" },
-                }}>
-                {wallets?.map(wallet => (
-                  <MenuItem
-                    key={wallet.walletId}
-                    value={wallet.walletId}>
-                    {wallet.walletName}
-                  </MenuItem>
-                ))}
-              </Select>
+                sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }, position: 'relative'  }}>
+
+              {!wallets || wallets.length === 0 ? (
+                <Select
+                  id="wallet_dropdown"
+                  displayEmpty
+                  value=""
+                  renderValue={() => t("SelectSavedWAallet")}
+                  sx={{
+                    backgroundColor: "transparent",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "#219a83",
+                    width: "100%",
+                    maxHeight: "40px",
+                    marginBottom: "12px",
+                    pointerEvents: 'none',
+                    cursor: 'not-allowed',
+                    "& .MuiSelect-icon": { color: "#219a83" },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#219a83",
+                    },
+                  }}
+                />
+              ) : !selectedWallet ? (
+                <Select
+                  id="wallet_dropdown"
+                  displayEmpty
+                  value=""
+                  onChange={handleWalletSelect}
+                  renderValue={() => t("SelectSavedWAallet")}
+                  sx={{
+                    backgroundColor: "#219a83",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "white",
+                    width: "100%",
+                    maxHeight: "40px",
+                    marginBottom: "12px",
+                    position: 'relative',
+                    overflow: 'hidden',
+                    animation: `${pulseGlow} 3s ease-in-out infinite`,
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    "& .MuiSelect-icon": { color: "white", position: 'relative', zIndex: 1 },
+                    "& .MuiSelect-select": { position: 'relative', zIndex: 1 },
+                    "&::before": {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: '-100%',
+                      width: '100%',
+                      height: '100%',
+                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+                      animation: `${shimmer} 2s infinite`,
+                      zIndex: 0,
+                    },
+                  }}
+                >
+                  {wallets?.map(wallet => (
+                    <MenuItem
+                      key={wallet.walletId}
+                      value={wallet.walletId}>
+                      {wallet.walletName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <Select
+                  id="wallet_dropdown"
+                  displayEmpty
+                  value={selectedWallet.walletId}
+                  onChange={handleWalletSelect}
+                  renderValue={selected => selectedWallet.walletName}
+                  sx={{
+                    backgroundColor: "#219a83",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "white",
+                    width: "100%",
+                    maxHeight: "40px",
+                    marginBottom: "12px",
+                    "& .MuiSelect-icon": { color: "white" },
+                  }}
+                >
+                  {wallets?.map(wallet => (
+                    <MenuItem
+                      key={wallet.walletId}
+                      value={wallet.walletId}>
+                      {wallet.walletName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
 
               {selectedWallet?(<>
                             <Button
                               id="manual_position_btn"
                               sx={{
-                                backgroundColor: "white",
+                                backgroundColor: "#f7f5f2", // Warm off-white
                                 width: "100%",
                                 height: "40px",
-                                color: "#1e90ff",
+                                color: "#219a83",
                                 justifyContent: "flex-start",
                                 paddingLeft: "15px",
                                 fontSize: "11px bold",
@@ -527,18 +633,18 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                               <Button
                                 id="manual_position_btn"
                                 sx={{
-                                  backgroundColor: "white",
+                                  backgroundColor: "#f7f5f2",
                                   width: "100%",
                                   height: "40px",
-                                  color: "#1e88e5",
+                                  color: "#219a83",
                                   justifyContent: "flex-start",
                                   paddingLeft: "15px",
                                   fontSize: "11px bold",
-                                  borderColor: "#1e88e5",
+                                  borderColor: "#219a83",
                                   "&.Mui-disabled": {
                                     backgroundColor: "transparent",
-                                    borderColor: "#1e88e5",
-                                    color: "#1e88e5",
+                                    borderColor: "#219a83",
+                                    color: "#219a83",
                                   },
                                 }}
                                 variant="outlined"
@@ -571,10 +677,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   }}
                 >
                   <Box sx={{ padding:"8px" }}>
-                    <Typography sx={{ fontSize: '15px', fontWeight: 600, mb: 1, color: '#00a8ff' }}>
+                    <Typography sx={{ fontSize: '15px', fontWeight: 600, mb: 1, color: '#219a83' }}>
                       {t("HowToUseADDTEMPORARYPOSITION")}
                     </Typography>
-                    <Typography sx={{ fontSize: '14px', color: '#d1d5db', lineHeight: 1.4 }}>
+                    <Typography sx={{ fontSize: '14px', color: '#9ca3af', lineHeight: 1.4 }}>
                       {t("ThisIsAToolToUseToSimulateTradeOrHoldingNotYetInYourWallet")}
                     </Typography>
                   </Box>
@@ -590,11 +696,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                       <Box key={step.n} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 0.5 }}>
                         <Box sx={{
                           width: '18px', height: '18px', borderRadius: '50%',
-                          background: '#00a8ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: '#219a83', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '14px', fontWeight: 600, flexShrink: 0
                         }}>{step.n}</Box>
                         <Box sx={{ flex: 1 }}>
-                          <Typography sx={{ fontSize: '15px', fontWeight: 450, color: '#e5e7eb', mb: 0.25 }}>{step.t}</Typography>
+                          <Typography sx={{ fontSize: '15px', fontWeight: 450, color: theme.palette.mode === "dark" ?'#e5e7eb': '#6c7179ff', mb: 0.25 }}>{step.t}</Typography>
                           <Typography sx={{ fontSize: '14px', color: '#9ca3af', lineHeight: 1 }}>{step.d}</Typography>
                         </Box>
                       </Box>
@@ -602,8 +708,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   </Box>
 
                   <Box sx={{padding:"8px"}}>
-                    <Typography sx={{ fontSize: '14px', color: '#d1d5db', mb: 0.5 }}>
-                      Click <Box component="span" sx={{ color: '#00a8ff', fontWeight: 500 }}>&quot;Clear&quot;</Box> to remove the position.
+                    <Typography sx={{ fontSize: '14px', color: theme.palette.mode === "dark" ?'#d1d5db': '#6c7179ff', mb: 0.5 }}>
+                      Click <Box component="span" sx={{ color: '#219a83', fontWeight: 500 }}>&quot;Clear&quot;</Box> to remove the position.
                     </Typography>
                     <Typography sx={{ fontSize: '13px', color: '#9ca3af', fontStyle: 'italic' }}>
                       {t("NOTEThisWillAlsoRequireYouToReloadSelectedWallet")}
@@ -655,6 +761,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     sx={{
                       ...tableScrollSx,
                       width: "100%",
+                      '& .MuiDataGrid-virtualScroller': {
+                        border: (!wallets || wallets.length === 0) ? '2px dashed #219a83' : 'none',
+                        borderRadius: (!wallets || wallets.length === 0) ? '8px' : '0',
+                        overflow: (!wallets || wallets.length === 0) ? 'hidden !important' : 'auto',
+                      },
                     }}
                   hideFooter
                   rowSelection={true}
@@ -666,7 +777,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   rows={filteredRows}
                   onRowSelectionModelChange={handleSelectionChange}
                   slots={{
-                    noRowsOverlay: CustomNoWalletOverlay,
+                    noRowsOverlay: NoRowsOverlayComponent,
                   }}
                                                                      getRowClassName={(params) => {
                      const isSupportedChainRow = params.row.chain && 
@@ -907,7 +1018,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
     border: theme.palette.mode === "light" ?"1px solid black": "1px solid white",
   },
   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
-    backgroundColor: theme.palette.mode === "light" ? "#109EEF" : darken(theme.palette.primary.main, 0.2),
+    backgroundColor: theme.palette.mode === "light" ? "#219a83" : darken(theme.palette.primary.main, 0.2),
   },
   "& .unsupported-chain-row": {
     cursor: "not-allowed",

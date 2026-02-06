@@ -92,7 +92,7 @@ export const iconsDelayedApi = {
   getIcons: async (searchQuery?: string, pageNumber?: number, pageSize?: number, chainId?: number, signal?: AbortSignal, delayTime?: number): Promise<PaginatedList<TokenSearchItem>> => {
     if (delayTime) await delay(delayTime)
     signal?.throwIfAborted()
-    return await iconsApi.getIcons(searchQuery, pageNumber, pageSize,chainId, controller.signal)
+    return await iconsApi.getIcons(searchQuery, pageNumber, chainId, pageSize, controller.signal)
   },
 }
 

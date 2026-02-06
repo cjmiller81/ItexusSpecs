@@ -25,3 +25,9 @@ export const toPercentageField = (cellInfo: any) => {
   if (!value) return "";
   return `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 };
+
+export const toPercentageFieldWithZero = (cellInfo: any) => {
+  const { value } = cellInfo;
+  if (!value && value !== 0) return "";
+  return `${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+};

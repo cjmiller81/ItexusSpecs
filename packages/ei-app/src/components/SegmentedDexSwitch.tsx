@@ -67,11 +67,11 @@ const SegmentedDexSwitch: React.FC<Props> = ({
               px: 2,
               color: "text.primary",
               "&.Mui-selected": {
-                backgroundColor: "#1e88e5",
+                backgroundColor: "#219a83",
                 color: "#fff",
                 borderRadius: "8px",
                 "&:hover": {
-                  backgroundColor: "#1565c0",
+                  backgroundColor: "#219a83",
                 },
               },
             },
@@ -91,7 +91,7 @@ const SegmentedDexSwitch: React.FC<Props> = ({
                 sx: {
                   maxWidth: 320,
                   p: 2,
-                  border: "2px solid #1e88e5",
+                  border: "2px solid #219a83",
                   borderRadius: 2,
                   backgroundColor: "#696969",
                   color: "white",
@@ -101,12 +101,12 @@ const SegmentedDexSwitch: React.FC<Props> = ({
               arrow: {
                 sx: {
                   color: "#696969",
-                  border: "2px solid #1e88e5",
+                  border: "2px solid #219a83",
                 },
               },
             }}
           >
-            <IconButton size="small" sx={{ color: "#1e88e5" }} aria-label="info best routes">
+            <IconButton size="small" sx={{ color: "#219a83" }} aria-label="info best routes">
               <InfoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -120,7 +120,7 @@ const SegmentedDexSwitch: React.FC<Props> = ({
                 sx: {
                   maxWidth: 320,
                   p: 2,
-                  border: "2px solid #1e88e5",
+                  border: "2px solid #219a83",
                   borderRadius: 2,
                   backgroundColor: "#696969",
                   color: "white",
@@ -130,12 +130,12 @@ const SegmentedDexSwitch: React.FC<Props> = ({
               arrow: {
                 sx: {
                   color: "#696969",
-                  border: "2px solid #1e88e5",
+                  border: "2px solid #219a83",
                 },
               },
             }}
           >
-            <IconButton size="small" sx={{ color: "#1e88e5" }} aria-label="info dex chooser">
+            <IconButton size="small" sx={{ color: "#219a83" }} aria-label="info dex chooser">
               <InfoIcon fontSize="small" />
             </IconButton>
           </Tooltip>
