@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useTransactionHistory } from "../../hooks/useTransactionHistory";
 import { formatAddress } from "../../utils/formatters";
-import { exportTransactionsXlsx } from "../../utils/exportXlsx";
+import { exportTransactionsXlsx, ExportOptions } from "../../utils/exportXlsx";
 import { Spinner, Center } from "@chakra-ui/react";
 import { Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 import { TransactionFilters } from "./TransactionFilters";
@@ -101,6 +101,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     spamCount,
     hasMore,
     allDateFilterRange,
+    fetchAllTransactionsForExport,
   } = useTransactionHistory(resolvedAddress);
 
   // memoized count text to avoid recalcs — must be declared before any early returns
@@ -299,7 +300,45 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
             <div>
               <span className="section-count" style={{ color: "#64748b" }}>{sectionCountText}</span>
               <Button
-                onClick={() => exportTransactionsXlsx(paginatedTransactions)}
+                onClick={async () => {
+                  try {
+                    const allTransactions = await fetchAllTransactionsForExport();
+                    
+                    if (allTransactions.length === 0) {
+                      console.warn('No transactions to export');
+                      return;
+                    }
+
+                    let exportDateRange: 'all' | 'last_7' | 'last_30' | 'custom' = 'all';
+                    let startDate: Date | undefined;
+                    let endDate: Date | undefined;
+
+                    if (dateFilter !== 'all' && typeof dateFilter !== 'string') {
+                      // Custom date range
+                      exportDateRange = 'custom';
+                      startDate = new Date(dateFilter.from);
+                      endDate = new Date(dateFilter.to);
+                    } else if (dateFilter === 'all') {
+                      exportDateRange = 'all';
+                    } else if (dateFilter === 'last_7') {
+                      exportDateRange = 'last_7';
+                    } else if (dateFilter === 'last_30') {
+                      exportDateRange = 'last_30';
+                    }
+
+                    const opts: ExportOptions = {
+                      dateRange: exportDateRange,
+                      startDate,
+                      endDate,
+                      selectedTypes: typeFilter === 'all' ? ['all'] : [typeFilter.toLowerCase()],
+                      hideSpam: hideSpam
+                    };
+
+                    exportTransactionsXlsx(allTransactions, opts);
+                  } catch (err) {
+                    console.error('Export failed:', err);
+                  }
+                }}
                 variant="outlined"
                 sx={{ ml: 4, marginRight: "17px" }}
               >
