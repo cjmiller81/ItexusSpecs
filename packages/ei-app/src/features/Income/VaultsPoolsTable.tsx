@@ -402,6 +402,30 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           visible={false}
           headerFilter={{ visible: true }}
         />
+        <Column
+          dataField="assets"
+          caption="Assets"
+          alignment="left"
+          dataType="string"
+          allowHiding={true}
+          visible={false}
+        />
+        <Column
+          dataField="created_at"
+          caption="Created At"
+          alignment="left"
+          dataType="date"
+          allowHiding={true}
+          visible={false}
+        />
+        <Column
+          dataField="last_harvest"
+          caption="Harvested At"
+          alignment="left"
+          dataType="date"
+          allowHiding={true}
+          visible={false}
+        />
         <Export
           enabled={true}
           allowExportSelectedData={true}
