@@ -123,6 +123,21 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     return Math.max(score, 0);
   };
 
+  const formatTimestamp = (unixSeconds: number, fallbackText = 'N/A') => {
+    if (!unixSeconds || unixSeconds === 0) return fallbackText;
+    
+    const date = new Date(unixSeconds * 1000);
+    
+    const hours   = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const month   = String(date.getMonth() + 1).padStart(2, '0');
+    const day     = String(date.getDate()).padStart(2, '0');
+    const year    = date.getFullYear();
+    
+    return `${hours}:${minutes}:${seconds} ${month}/${day}/${year}`;
+  };
+
   return (
     <div ref={containerRef}>
       {/*@ts-ignore*/}
@@ -414,17 +429,19 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataField="created_at"
           caption="Created At"
           alignment="left"
-          dataType="date"
+          dataType="string"
           allowHiding={true}
           visible={false}
+          calculateCellValue={data => formatTimestamp(data.created_at)}
         />
         <Column
           dataField="last_harvest"
           caption="Harvested At"
           alignment="left"
-          dataType="date"
+          dataType="string"
           allowHiding={true}
           visible={false}
+          calculateCellValue={data => formatTimestamp(data.last_harvest, 'Never')}
         />
         <Export
           enabled={true}
