@@ -14,6 +14,7 @@ export type VaultsData = {
   };
   apy?: number;
   risks?: string[];
+  assets?: string[];
   boost?: string;
   stablecoin?: boolean;
   rewardTokens?: string[];
