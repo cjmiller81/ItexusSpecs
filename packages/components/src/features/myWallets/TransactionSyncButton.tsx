@@ -137,17 +137,17 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
   }
 
   function extractTimestamps(chains: any[]) {
-    const timestamps = new Map<string, string>();
+    const timestamps = new Map<string, { last_synced_at: string; sync_in_progress: boolean }>();
     chains.forEach((chain) => {
-      timestamps.set(chain.chain_name, chain.last_synced_at);
+      timestamps.set(chain.chain_name, { last_synced_at: chain.last_synced_at, sync_in_progress: chain.sync_in_progress });
     });
     return timestamps;
   }
 
-  function countSyncedChains(initial: Map<string, string>, current: Map<string, string>) {
+  function countSyncedChains(initial: Map<string, { last_synced_at: string; sync_in_progress: boolean }>, current: Map<string, { last_synced_at: string; sync_in_progress: boolean }>) {
     let count = 0;
     current.forEach((timestamp, chain) => {
-      if (!initial.has(chain) || new Date(timestamp) > new Date(initial.get(chain)!)) {
+      if (!initial.has(chain) || !timestamp.sync_in_progress) {
         count++;
       }
     });
