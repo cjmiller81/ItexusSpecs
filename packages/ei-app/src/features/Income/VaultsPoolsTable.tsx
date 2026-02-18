@@ -59,6 +59,36 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
 }));
 
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef }) => {
+    const transformFilterFromAnyof = (filter: any): any => {
+      if (!filter || !Array.isArray(filter)) {
+        return filter;
+      }
+      if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+        const [field, , values] = filter;
+        if (values.length === 0) return [];
+        if (values.length === 1) {
+          return [field, 'contains', values[0]];
+        }
+        const conditions = values.map((value: any) => [field, 'contains', value]);
+        const result: any[] = [];
+        conditions.forEach((condition, index) => {
+          if (index > 0) {
+            result.push('or');
+          }
+          result.push(condition);
+        });
+        return result;
+      }
+      if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
+        return filter.map((item: any) => {
+          if (Array.isArray(item)) {
+            return transformFilterFromAnyof(item);
+          }
+          return item;
+        });
+      }
+      return filter;
+    };
   const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
   const datagrid =
     (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
@@ -69,6 +99,34 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   );
   const dispatch = useAppDispatch();
   const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
+
+  const [uniqueAssets, setUniqueAssets] = useState<{ id: string; value: string; text: string }[]>([]);
+  const [assetValueToId, setAssetValueToId] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let cancelled = false;
+    dataSource.load().then((allData: VaultsData[]) => {
+      if (cancelled) return;
+      const allAssetsObj: { id: string; value: string; text: string }[] = [];
+      const valueToId: Record<string, string> = {};
+      allData.forEach(item => {
+        if (Array.isArray(item.assets)) {
+          item.assets.forEach(asset => {
+            const id = asset.toLowerCase();
+            if (!valueToId[asset]) valueToId[asset] = id;
+            allAssetsObj.push({ id, value: asset, text: asset });
+          });
+        }
+      });
+
+      const uniqueAssetsMap = new Map<string, { id: string; value: string; text: string }>();
+      allAssetsObj.forEach(obj => {
+        if (!uniqueAssetsMap.has(obj.id)) uniqueAssetsMap.set(obj.id, obj);
+      });
+      setUniqueAssets(Array.from(uniqueAssetsMap.values()));
+      setAssetValueToId(valueToId);
+    });
+    return () => { cancelled = true; };
+  }, [dataSource]);
 
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
@@ -82,19 +140,25 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   }, [dispatch]);
 
   const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
-    currentFilterRef.current = filter as object[];
+    let transformedFilter = filter;
+    if (filter && Array.isArray(filter)) {
+      transformedFilter = transformFilterFromAnyof(filter);
+    }
+    if (transformedFilter && Array.isArray(transformedFilter) && (transformedFilter.includes('and') || transformedFilter.includes('or'))) {
+      transformedFilter = transformFilterFromAnyof(transformedFilter);
+    }
+    currentFilterRef.current = transformedFilter as object[];
 
-    // Send new information to filter builder
-    filterRef.current?.onUpdateFilter(filter || []);
+    filterRef.current?.onUpdateFilter(transformedFilter || []);
 
-    if (!filter) {
+    if (!transformedFilter) {
       datagrid.current?.instance.clearFilter();
     } else {
-      datagrid.current?.instance.filter(filter);
+      datagrid.current?.instance.filter(transformedFilter);
     }
 
     if (isExternalFiltering) {
-      setCurrentFilter(filter as object[]);
+      setCurrentFilter(transformedFilter as object[]);
     }
   };
 
@@ -424,7 +488,67 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataType="string"
           allowHiding={true}
           visible={false}
-        />
+          calculateFilterExpression={function (
+            this: any,
+            filterValues: any,
+            selectedFilterOperation: string | null,
+            _target: string,
+          ): any {
+            try {
+              let column = this;
+              if (filterValues) {
+                let selectedValue = filterValues;
+                const toId = (v: string) => assetValueToId[v] || v.toLowerCase();
+                if (selectedFilterOperation === "anyof" && Array.isArray(selectedValue)) {
+                  if (selectedValue.length === 0) return [];
+                  if (selectedValue.length === 1) {
+                    return [column.dataField, "contains", toId(selectedValue[0])];
+                  }
+                  const conditions = selectedValue.map((value: string) => [column.dataField, "contains", toId(value)]);
+                  return conditions.reduce((acc, curr) => acc ? [...acc, "or", curr] : [curr]);
+                }
+                if (selectedValue && selectedFilterOperation === "=") {
+                  return [column.dataField, "contains", toId(selectedValue)];
+                }
+                if (selectedFilterOperation === "contains") {
+                  return [column.dataField, "contains", toId(selectedValue)];
+                }
+                if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+                  if (selectedValue.length === 1) {
+                    return [column.dataField, "contains", toId(selectedValue[0])];
+                  }
+                  const conditions = selectedValue.map((value: string) => [column.dataField, "contains", toId(value)]);
+                  return conditions.reduce((acc, curr) => acc ? [...acc, "or", curr] : [curr]);
+                }
+                return column.defaultCalculateFilterExpression?.apply(this, arguments);
+              }
+              return column.defaultCalculateFilterExpression?.apply(this, arguments);
+            } catch (err) {
+              console.error("Error on calculateFilterExpression (assets):", err);
+              return null;
+            }
+          }}
+          cellRender={({ data }) => Array.isArray(data.assets) ? data.assets.join(', ') : data.assets}
+        >
+          <HeaderFilter
+            visible={true}
+            height={650}
+            dataSource={{
+              store: {
+                type: "array",
+                data: uniqueAssets,
+              },
+              map: (item: any) => ({ text: item.text, value: item.value }),
+            }}
+            search={{
+              enabled: true,
+              mode: "contains",
+              searchExpr: ["text"],
+            }}
+          >
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField="created_at"
           caption="Created At"
