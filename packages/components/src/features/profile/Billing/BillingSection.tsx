@@ -2,6 +2,7 @@ import { Box, Button, Stack, StackProps, styled, Typography, useMediaQuery, useT
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BillingApiUsageCard } from "./BillingApiUsageCard";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
@@ -433,6 +434,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       </PaymentMethodModal>
 
       <Stack {...props}>
+        <BillingApiUsageCard />
         <PageTitle>{t("Plans")}</PageTitle>
 
         <PlansContainer>
