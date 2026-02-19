@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { Box, Typography, useTheme } from '@mui/material';
 import { appAxios } from "../../lib/axios/customAxios";
 
 export function ApiUsageStatus() {
   const theme = useTheme();
+  const router = useRouter();
   const [usage, setUsage] = useState<{ totalRequests: number; allowedRequests: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -28,7 +30,7 @@ export function ApiUsageStatus() {
         if (mounted) setLoading(false);
       });
     return () => { mounted = false; };
-  }, []);
+  }, [router.asPath]);
 
   const backgroundColor = theme.palette.mode === 'dark' ? '#2B2D36' : '#e1eef3ff';
   const captionColor = theme.palette.mode === 'dark' ? '#B0B3C0' : 'rgba(0, 0, 0, 0.6)';
