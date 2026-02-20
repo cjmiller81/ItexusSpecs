@@ -31,4 +31,5 @@ export type VaultsData = {
   tradingApr?: number;
   strategyTypeId?: string;
   earnedToken?: string;
+  add_liquidity_url?: string;
 };
