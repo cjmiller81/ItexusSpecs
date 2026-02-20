@@ -21,6 +21,26 @@ import DataGridDef, {
 import DataSource from "devextreme/data/data_source";
 import React, { FC, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Button, styled } from "@mui/material";
+const AddLiquidityButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  minWidth: 160,
+  maxHeight: 40,
+  height: 32,
+  fontWeight: 400,
+  borderRadius: 6,
+  padding: theme.spacing(0.25, 3),
+  backgroundColor: "#219a83",
+  color: "#fff",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  fontSize: 14,
+  boxShadow: "none",
+  '&:hover': {
+    backgroundColor: '#1c8d74',
+    boxShadow: 'none',
+  },
+}));
 import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { toDollarAmountField, toPercentageField } from "./helpers";
@@ -326,6 +346,33 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             recursive={true}
           />
         </ColumnChooser>
+        <Column
+          caption="Actions"
+          alignment="center"
+          allowHiding={false}
+          cellRender={({ data }) =>
+            data.add_liquidity_url ? (
+              <AddLiquidityButton variant="contained">
+                <a
+                  href={data.add_liquidity_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100%',
+                  }}
+                >
+                  Add Liquidity&nbsp;&rarr;
+                </a>
+              </AddLiquidityButton>
+            ) : null
+          }
+        />
         <Column
           dataField="name"
           caption="Name"
