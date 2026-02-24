@@ -12,11 +12,13 @@ import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextF
   Avatar,
   Stack,
   CircularProgress,
+  Collapse,
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
@@ -41,6 +43,187 @@ import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
 import { useSubscription } from "components";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+const hardcodedRoutes = [
+  {
+    provider: 'CCTP + Mayan',
+    best: true,
+    fastest: false,
+    amount: '4,061.2858 USDC',
+    gas: '$0.06',
+    time: '15m',
+    impact: '+0.03%',
+    impactColor: '#00e5a0',
+    rate: '1 DAI ≈ 0.999968 USDC',
+    steps: [
+      {
+        type: 'swap',
+        label: 'Swap on Ethereum via OKX Dex Aggregator',
+        tokens: ['4,061.4122 DAI', '4,061.3593 USDC'],
+        meta: ['⛽ Est. gas: $0.00', { link: 'https://app.1inch.io', label: 'app.1inch.io ↗' }, '· Re-enter amounts on site'],
+      },
+      {
+        type: 'bridge',
+        label: 'Bridge from Ethereum to Arbitrum via CCTP + Mayan',
+        tokens: ['4,061.3593 USDC on Ethereum', '4,061.2858 USDC on Arbitrum'],
+        meta: ['⛽ Est. gas: $0.06', { link: 'https://mayan.finance', label: 'mayan.finance ↗' }, '· Re-enter amounts on site'],
+      },
+    ],
+    summary: 'Complete steps in order — each step requires a separate wallet signature. Amounts shown are estimates; re-enter them manually on each protocol\'s site.'
+  },
+  {
+    provider: 'CCTPv2 + Mayan',
+    best: false,
+    fastest: false,
+    amount: '4,060.8631 USDC',
+    gas: '$0.06',
+    time: '35s',
+    impact: '+0.02%',
+    impactColor: '#00e5a0',
+    rate: '1 DAI ≈ 0.999864 USDC',
+    steps: [
+      {
+        type: 'bridge',
+        label: 'Bridge from Ethereum to Arbitrum via CCTPv2',
+        tokens: ['4,061.4122 DAI on Ethereum', 'USDC on Arbitrum'],
+        meta: ['⛽ Est. gas: $0.03', { link: 'https://bridge.circle.com', label: 'bridge.circle.com ↗' }, '· Re-enter amounts on site'],
+      },
+      {
+        type: 'swap',
+        label: 'Swap on Arbitrum via Mayan',
+        tokens: ['USDC', '4,060.8631 USDC'],
+        meta: ['⛽ Est. gas: $0.03', { link: 'https://mayan.finance', label: 'mayan.finance ↗' }, '· Re-enter amounts on site'],
+      },
+    ],
+    summary: 'Complete steps in order — each step requires a separate wallet signature. Amounts shown are estimates; re-enter them manually on each protocol\'s site.'
+  },
+  {
+    provider: 'Mayan (Swift)',
+    best: false,
+    fastest: true,
+    amount: '4,059.7095 USDC',
+    gas: '$0.06',
+    time: '10s',
+    impact: '-0.01%',
+    impactColor: '#7680a0',
+    rate: '1 DAI ≈ 0.99958 USDC',
+    steps: [
+      {
+        type: 'bridge',
+        label: 'Bridge from Ethereum to Arbitrum via Mayan Swift',
+        tokens: ['4,061.4122 DAI on Ethereum', '4,059.7095 USDC on Arbitrum'],
+        meta: ['⛽ Est. gas: $0.06', { link: 'https://mayan.finance', label: 'mayan.finance ↗' }, '· Re-enter amounts on site'],
+      },
+    ],
+    summary: 'Single-step route — requires one wallet signature. Amounts shown are estimates; re-enter them manually on the protocol\'s site.'
+  },
+  {
+    provider: 'Stargate',
+    best: false,
+    fastest: false,
+    amount: '4,056.5141 USDC',
+    gas: '$0.11',
+    time: '2m',
+    impact: '-0.09%',
+    impactColor: '#f5a623',
+    rate: '1 DAI ≈ 0.9991 USDC',
+    steps: [
+      {
+        type: 'bridge',
+        label: 'Bridge from Ethereum to Arbitrum via Stargate',
+        tokens: ['4,061.4122 DAI on Ethereum', '4,056.5141 USDC on Arbitrum'],
+        meta: ['⛽ Est. gas: $0.11', { link: 'https://stargate.finance/bridge', label: 'stargate.finance ↗' }, '· Re-enter amounts on site'],
+      },
+    ],
+    summary: 'Single-step route — requires one wallet signature. Amounts shown are estimates; re-enter them manually on the protocol\'s site.'
+  },
+];
+
+function BridgeRoutesMockup() {
+  const theme = useTheme();
+  const [openIdx, setOpenIdx] = useState(-1);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  return (
+    <Box>
+      {hardcodedRoutes.map((route, idx) => (
+        <Box key={idx} sx={{ border: '1px solid #30364a', borderRadius: '10px', background: selectedIdx === idx ? 'rgba(0,229,160,0.01)' : (theme.palette.mode === 'dark' ? 'rgb(37,40,54)' : '#fff'), mb: 1.5, cursor: 'pointer', overflow: 'hidden', borderColor: selectedIdx === idx ? 'rgba(0,229,160,0.28)' : '#30364a' }} onClick={() => setSelectedIdx(idx)}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', p: 2 }}>
+            <Box sx={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid', borderColor: selectedIdx === idx ? '#00e5a0' : '#30364a', background: selectedIdx === idx ? '#00e5a0' : 'transparent', mt: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {selectedIdx === idx && <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#0d1117' }} />}
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.83rem' }}>{route.provider}</Typography>
+                  {route.best && <Chip label="⭐ BEST" size="small" sx={{ background: 'rgba(245,200,66,0.12)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
+                  {route.fastest && <Chip label="⚡ FASTEST" size="small" sx={{ background: 'rgba(91,140,245,0.12)', color: '#5b8cf5', border: '1px solid rgba(91,140,245,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
+                </Box>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.12rem', color: selectedIdx === idx ? '#00e5a0' : '#e4e8f5' }}>{route.amount}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.72rem', color: '#7680a0' }}>
+                  <span>⛽ {route.gas}</span>
+                  <span>🕐 {route.time}</span>
+                  <span style={{ color: route.impactColor, fontWeight: 600 }}>{route.impact}</span>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.69rem', color: '#424b64', mt: 1 }}>
+                <span>{route.rate}</span>
+                <Button 
+                  size="small"
+                  endIcon={<ExpandMoreIcon sx={{ fontSize: '1rem', transform: openIdx === idx ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />}
+                  sx={{ 
+                    fontSize: '0.72rem', 
+                    fontWeight: 600, 
+                    color: openIdx === idx ? '#00e5a0' : '#7680a0', 
+                    background: openIdx === idx ? 'rgba(0,229,160,0.10)' : 'rgba(37,40,54,1)', 
+                    border: '1px solid', 
+                    borderColor: openIdx === idx ? 'rgba(0,229,160,0.28)' : '#30364a', 
+                    borderRadius: 1, 
+                    px: 1.5, 
+                    py: 0.5, 
+                    minWidth: 0,
+                    textTransform: 'none',
+                  }} 
+                  onClick={e => { e.stopPropagation(); setOpenIdx(openIdx === idx ? -1 : idx); }}
+                >
+                  {openIdx === idx ? 'Hide Steps' : 'View Steps'}
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+          <Collapse in={openIdx === idx} timeout="auto" unmountOnExit>
+            <Box sx={{ borderTop: '1px solid #30364a', background: '#13151e', p: 2 }}>
+              <Typography sx={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: '#7680a0', mb: 2 }}>How to execute this route</Typography>
+              {route.steps.map((step, sidx) => (
+                <Box key={sidx} sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', position: 'relative', mb: 2 }}>
+                  <Box sx={{ width: 28, height: 28, borderRadius: '50%', background: '#23263a', border: '1px solid #30364a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 700, color: step.type === 'swap' ? '#5b8cf5' : '#00e5a0', mt: 0.5 }}>{sidx + 1}</Box>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', px: 1, py: 0.5, borderRadius: 1, mb: 0.5, background: step.type === 'swap' ? 'rgba(91,140,245,0.12)' : 'rgba(0,229,160,0.10)', color: step.type === 'swap' ? '#5b8cf5' : '#00e5a0', border: '1px solid', borderColor: step.type === 'swap' ? 'rgba(91,140,245,0.3)' : 'rgba(0,229,160,0.28)' }}>{step.type === 'swap' ? '⇄ Swap' : '⇌ Bridge'}</Box>
+                    <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: '#e4e8f5', mb: 0.5 }}>{step.label}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.75rem', color: '#7680a0', mb: 0.5 }}>
+                      <Box sx={{ background: '#23263a', border: '1px solid #30364a', borderRadius: 1, px: 1, py: 0.5, fontWeight: 600 }}>{step.tokens[0]}</Box>
+                      <span style={{ color: '#424b64', fontSize: '0.7rem' }}>→</span>
+                      <Box sx={{ background: '#23263a', border: '1px solid #30364a', borderRadius: 1, px: 1, py: 0.5, fontWeight: 600 }}>{step.tokens[1]}</Box>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.68rem', color: '#424b64' }}>
+                      {step.meta.map((m, mi) => typeof m === 'string' ? <span key={mi}>{m}</span> : <a key={mi} href={m.link} target="_blank" rel="noopener" style={{ color: '#00e5a0', textDecoration: 'none', fontWeight: 600 }}>{m.label}</a>)}
+                    </Box>
+                  </Box>
+                </Box>
+              ))}
+              <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #30364a', display: 'flex', alignItems: 'flex-start', gap: 1, fontSize: '0.72rem', color: '#7680a0', lineHeight: 1.45 }}>
+                <span style={{ fontSize: '0.8rem' }}>ℹ</span>
+                {route.summary}
+              </Box>
+            </Box>
+          </Collapse>
+        </Box>
+      ))}
+    </Box>
+  );
+}
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -1497,7 +1680,343 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               </Grid> 
             </Grid>            
         ) : (
-            <Typography sx={{ fontSize: "20px" }}>{t("ComingSoon")}</Typography>
+            <Grid container spacing={2}>
+              {/* BRIDGE SECTION START */}
+              <Grid item xs={6}>
+                {/* FROM CARD */}
+                <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2, mb: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge From')}</Typography>
+                    <Box className="chain-badge" sx={{ background: 'rgba(98,126,234,0.12)', border: '1px solid rgba(98,126,234,0.35)', color: '#627EEA', borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#627EEA', boxShadow: '0 0 6px #627EEA', mr: 0.5 }} />
+                      {selectedChain || 'ETHEREUM'}
+                    </Box>
+                  </Box>
+                  {/* Token Dropdown + Chain Dropdown */}
+                  <Box display="flex" gap={2} mb={1.5}>
+                    <Box flex={2}>
+                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Current Position')}</Typography>
+                      <Autocomplete
+                        options={tokenIcons?.items ?? []}
+                        getOptionLabel={(option) => option.sym}
+                        value={symbolOptionSwap}
+                        onChange={(_e, newValue) => onOptionChangeSwap(newValue)}
+                        isOptionEqualToValue={(option, value) => option.id === value?.id}
+                        disableClearable={false}
+                        inputValue={symbolOptionSwap ? symbolOptionSwap.name ? `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` : symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
+                        onInputChange={(_event, newInputValue, reason) => {
+                          if (reason === 'clear') {
+                            onOptionChangeSwap(null);
+                          }
+                          setInputSearchSwap(newInputValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t('Search')}
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  {symbolOptionSwap?.lURI ? (
+                                    <InputAdornment position="start">
+                                      <Avatar src={symbolOptionSwap.lURI} alt={symbolOptionSwap.sym} sx={{ width: 22, height: 22, mr: 1 }} />
+                                    </InputAdornment>
+                                  ) : (
+                                    <InputAdornment position="start">
+                                      <SearchIcon />
+                                    </InputAdornment>
+                                  )}
+                                </>
+                              ),
+                              sx: {
+                                input: {
+                                  textTransform: symbolOptionSwap ? 'uppercase' : 'none',
+                                },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Avatar src={option.lURI ?? undefined} alt={option.sym} sx={{ width: 24, height: 24 }} />
+                            <Typography variant="body1">
+                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                            </Typography>
+                          </Box>
+                        )}
+                      />
+                    </Box>
+                    <Box flex={1}>
+                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Chain')}</Typography>
+                      <TextField
+                        variant="outlined"
+                        size="small"
+                        value={selectedChain}
+                        disabled
+                        sx={{
+                          height: '40px',
+                          marginBottom: 1,
+                          '& .MuiInputBase-root': { height: '40px' },
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                  {/* BRIDGE FROM: Token Address + Copy */}
+                  <Box display="flex" alignItems="center" gap={1} mt={1}>
+                    <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {tokenAddress ? `${tokenAddress.slice(0, 25)}...` : t('TokensAddress')}
+                    </Typography>
+                    {tokenAddress && (
+                      <Tooltip title={t('Copy')}>
+                        <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddress); }}>
+                          <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Box>
+                  {/* Qty Input */}
+                  <Box mb={1.5} display="flex" flexDirection="column">
+                    <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Qty')}</Typography>
+                    <TextField
+                      id="bridge_quantity_input"
+                      variant="outlined"
+                      size="small"
+                      value={formatNumberWithCommas(newBalance)}
+                      onChange={(e) => {
+                        const input = e.target.value.replace(/,/g, "");
+                        const validInput = /^(\d+)?(\.\d*)?$/.test(input);
+                        const numericValue = parseFloat(input);
+                        const max = Number(maxBalance);
+                        if (validInput) {
+                          const [, decimalPart = ""] = input.split(".");
+                          if (decimalPart.length <= 5) {
+                            if (!isNaN(numericValue)) {
+                              setShowNoQuotesMessage(false);
+                              setNewBalance(input);
+                            }
+                            if (input === "" || input === "." || input.endsWith(".")) {
+                              setShowNoQuotesMessage(false);
+                              setNewBalance(input);
+                            }
+                          }
+                        }
+                      }}
+                      type="text"
+                      fullWidth
+                      inputProps={{
+                        inputMode: 'decimal',
+                        min: 0,
+                        style: { MozAppearance: 'textfield' },
+                      }}
+                      sx={{
+                        marginBottom: 1,
+                        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                          WebkitAppearance: 'none',
+                          margin: 0,
+                        },
+                        '& input[type=number]': { MozAppearance: 'textfield' },
+                        '& .MuiInputBase-root': { height: '40px' },
+                        '& .MuiInputLabel-root': { marginTop: '8px' },
+                        width: '70%',
+                      }}
+                    />
+                  </Box>
+                </Box>
+                {/* TO CARD */}
+                <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge To')}</Typography>
+                    <Box className="chain-badge" sx={{ background: 'rgba(40,160,240,0.12)', border: '1px solid rgba(40,160,240,0.35)', color: '#28A0F0', borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#28A0F0', boxShadow: '0 0 6px #28A0F0', mr: 0.5 }} />
+                      {'ARBITRUM'}
+                    </Box>
+                  </Box>
+                  {/* Token Dropdown + Chain Dropdown */}
+                  <Box display="flex" gap={2} mb={1.5}>
+                    <Box flex={2}>
+                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Bridge For')}</Typography>
+                      <Autocomplete
+                        id="bridge_to_token_dropdown"
+                        options={tokenIconsSwapFor?.items ?? []}
+                        getOptionLabel={(option) => option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                        value={symbolOptionSwapFor}
+                        onChange={(_e, newValue) => {
+                          onOptionChangeSwapFor(newValue);
+                          if (newValue) {
+                            setInputSearchSwapFor(newValue.name ? `${newValue.sym.toUpperCase()} - ${newValue.name}` : newValue.sym.toUpperCase());
+                          }
+                        }}
+                        isOptionEqualToValue={(option, value) => option.id === value?.id}
+                        disableClearable={false}
+                        inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` : symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
+                        onInputChange={(_event, newInputValue, reason) => {
+                          if (reason === 'input') {
+                            onOptionChangeSwapFor(null);
+                            setInputSearchSwapFor(newInputValue);
+                          } else if (reason === 'clear') {
+                            onOptionChangeSwapFor(null);
+                            setInputSearchSwapFor('');
+                          }
+                        }}
+                        loading={!tokenIconsSwapFor}
+                        loadingText={<CircularProgress size={18} />}
+                        noOptionsText={tokenIconsSwapFor ? t('NoOptionsOnThisChain') : ''}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            placeholder={t('Search')}
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  {symbolOptionSwapFor?.lURI ? (
+                                    <InputAdornment position="start">
+                                      <Avatar src={symbolOptionSwapFor.lURI} alt={symbolOptionSwapFor.sym} sx={{ width: 22, height: 22, mr: 1 }} />
+                                    </InputAdornment>
+                                  ) : (
+                                    <InputAdornment position="start">
+                                      <SearchIcon />
+                                    </InputAdornment>
+                                  )}
+                                </>
+                              ),
+                              sx: {
+                                input: {
+                                  textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                                },
+                              },
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Avatar src={option.lURI ?? undefined} alt={option.sym} sx={{ width: 24, height: 24 }} />
+                            <Typography variant="body1">
+                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                            </Typography>
+                          </Box>
+                        )}
+                      />
+                    </Box>
+                    <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-end">
+                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Chain')}</Typography>
+                      <TextField
+                        select
+                        variant="outlined"
+                        size="small"
+                        value={"ARBITRUM"}
+                        disabled
+                        sx={{ height: '40px', marginBottom: 1, '& .MuiInputBase-root': { height: '40px' } }}
+                      >
+                        <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                      </TextField>
+                    </Box>
+                  </Box>
+                  {/* BRIDGE TO: Token Address + Copy */}
+                  <Box display="flex" alignItems="center" gap={1} mt={1}>
+                    <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {tokenAddressSwapFor ? `${tokenAddressSwapFor.slice(0, 25)}...` : t('SwapForPositionAddress')}
+                    </Typography>
+                    {tokenAddressSwapFor && (
+                      <Tooltip title={t('Copy')}>
+                        <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddressSwapFor); }}>
+                          <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Box>
+                </Box>
+                {/* GET ROUTES BUTTON */}
+                <Button
+                  id="get_quotes_btn"
+                  variant="contained"
+                  onClick={handleFetchQuotes}
+                  disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+                  sx={{
+                    backgroundColor: "#219a83",
+                    color: "#fff",
+                    textTransform: "none",
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    "&:hover": {
+                      backgroundColor: "#219a83",
+                  },
+                  }}
+                  startIcon={
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        animation: quoteLoading ? "spin 1s linear infinite" : "none",
+                        "@keyframes spin": {
+                          "0%": { transform: "rotate(0deg)" },
+                          "100%": { transform: "rotate(360deg)" },
+                        },
+                      }}
+                      >
+                      <RefreshIcon />
+                    </Box>
+                  }
+                >
+              {t("GetQuotes")}
+                </Button>
+                {/* Last update + disclaimers */}
+                {lastUpdated && (
+                  <Box sx={{ mt: 1.5 }}>
+                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
+                      <AccessTimeIcon sx={{ color: '#00e5a0', fontSize: '1rem', mt: '2px' }} />
+                      <Typography sx={{ color: '#00e5a0', fontSize: '0.75rem' }}>
+                        Last Updated: {lastUpdated}
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
+                      <InfoOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+                      <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+                        Prices are estimates and fluctuate based on network conditions.
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
+                      <WarningAmberRoundedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+                      <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+                        Gas fees are estimates only. Final costs determined at execution time.
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} alignItems="flex-start">
+                      <DescriptionOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+                      <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+                        Bridge protocols may apply additional fees. Review all parameters before proceeding.
+                      </Typography>
+                    </Stack>
+                  </Box>
+                )}
+              </Grid>
+              {/* BRIDGE ROUTES CARD */}
+              <Grid item xs={6}>
+                <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.08em' }}>{t('Bridge Routes')}</Typography>
+                    {/* routes count badge */}
+                    {lastUpdated && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.7rem', color: '#00e5a0', fontWeight: 600 }}>
+                        <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#00e5a0', boxShadow: '0 0 6px #00e5a0' }} />
+                        <span>4 routes found</span>
+                      </Box>
+                    )}
+                  </Box>
+                  {/* Empty state / Loading / Routes list (hardcoded) */}
+                  {!lastUpdated ? (
+                    <Box sx={{ border: '1px dashed #30364a', borderRadius: '10px', p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, textAlign: 'center' }}>
+                      <Box sx={{ width: 48, height: 48, borderRadius: 2, background: 'rgba(0,229,160,0.10)', border: '1px solid rgba(0,229,160,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>⇄</Box>
+                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#7680a0' }}>{t('NoRoutesYet', 'No routes yet')}</Typography>
+                      <Typography sx={{ fontSize: '0.78rem', color: '#424b64', maxWidth: 220, lineHeight: 1.5 }}>{t('ConfigureBridgeParams', 'Configure your bridge parameters and click Get Routes to see available options.')}</Typography>
+                    </Box>
+                  ) : (
+                    <BridgeRoutesMockup />
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
         )}
       </Grid>
       </Box>
