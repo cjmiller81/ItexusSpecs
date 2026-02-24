@@ -159,17 +159,23 @@ function BridgeRoutesMockup() {
                   {route.best && <Chip label="⭐ BEST" size="small" sx={{ background: 'rgba(245,200,66,0.12)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
                   {route.fastest && <Chip label="⚡ FASTEST" size="small" sx={{ background: 'rgba(91,140,245,0.12)', color: '#5b8cf5', border: '1px solid rgba(91,140,245,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
                 </Box>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.12rem', color: selectedIdx === idx ? '#00e5a0' : '#e4e8f5' }}>{route.amount}</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.12rem', color: selectedIdx === idx ? '#00e5a0' : (theme.palette.mode === 'dark' ? '#e4e8f5' : 'rgb(37,40,54)') }}>{route.amount}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.72rem', color: '#7680a0' }}>
-                  <span>⛽ {route.gas}</span>
-                  <span>🕐 {route.time}</span>
-                  <span style={{ color: route.impactColor, fontWeight: 600 }}>{route.impact}</span>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.72rem', color: '#7F8AA1', fontWeight: 700 }}>
+                  <span style={{ fontWeight: 700, color: '#7F8AA1' }}>⛽ {route.gas}</span>
+                  <span style={{ fontWeight: 700, color: '#7F8AA1' }}>🕐 {route.time}</span>
+                  <span style={{ color: route.impactColor, fontWeight: 700 }}>{route.impact}</span>
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.69rem', color: '#424b64', mt: 1 }}>
-                <span>{route.rate}</span>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem', color: '#7F8AA1', mt: 1, fontWeight: 700 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.72rem', color: '#7F8AA1', fontWeight: 700 }}>
+                  {/* Adjusted toAmountUSD */}
+                  <span style={{ fontWeight: 700, color: '#7F8AA1' }}>≈ ${route.amount.replace(/[^\d.]/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}</span>
+                  <span style={{ color: '#7F8AA1', fontWeight: 700, margin: '0 0px' }}>·</span>
+                  {/* Implied Exchange Rate */}
+                  <span style={{ fontWeight: 700, color: '#7F8AA1' }}>{route.rate}</span>
+                </Box>
                 <Button 
                   size="small"
                   endIcon={<ExpandMoreIcon sx={{ fontSize: '1rem', transform: openIdx === idx ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />}
