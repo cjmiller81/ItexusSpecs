@@ -1,3 +1,13 @@
+import { CHAIN_COLORS, CHAIN_MAP, SUPPORTED_CHAINS } from "./bridgeChains";
+import { BridgeRoutesMockup } from "./bridgeRoutesMockup";
+import {
+  coinGeckoChainId,
+  getGasTokenSymbol,
+  formatNumberWithCommas,
+  extractSymbol,
+  generateErrorMessage
+} from "./tradeAggregatorUtils";
+
 import React, { useEffect, useState } from "react";
 import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextField, TableCell, TableRow, TableHead,
   Table,
@@ -45,186 +55,6 @@ import { OneInchQuoteResponse } from "components";
 import { useSubscription } from "components";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const hardcodedRoutes = [
-  {
-    provider: 'CCTP + Mayan',
-    best: true,
-    fastest: false,
-    amount: '4,061.2858 USDC',
-    gas: '$0.06',
-    time: '15m',
-    impact: '+0.03%',
-    impactColor: '#00e5a0',
-    rate: '1 DAI ≈ 0.999968 USDC',
-    steps: [
-      {
-        type: 'swap',
-        label: 'Swap on Ethereum via OKX Dex Aggregator',
-        tokens: ['4,061.4122 DAI', '4,061.3593 USDC'],
-        meta: ['⛽ Est. gas: $0.00', { link: 'https://app.1inch.io', label: 'app.1inch.io ↗' }, '· Re-enter amounts on site'],
-      },
-      {
-        type: 'bridge',
-        label: 'Bridge from Ethereum to Arbitrum via CCTP + Mayan',
-        tokens: ['4,061.3593 USDC on Ethereum', '4,061.2858 USDC on Arbitrum'],
-        meta: ['⛽ Est. gas: $0.06', { link: 'https://mayan.finance', label: 'mayan.finance ↗' }, '· Re-enter amounts on site'],
-      },
-    ],
-    summary: 'Complete steps in order — each step requires a separate wallet signature. Amounts shown are estimates; re-enter them manually on each protocol\'s site.'
-  },
-  {
-    provider: 'CCTPv2 + Mayan',
-    best: false,
-    fastest: false,
-    amount: '4,060.8631 USDC',
-    gas: '$0.06',
-    time: '35s',
-    impact: '+0.02%',
-    impactColor: '#00e5a0',
-    rate: '1 DAI ≈ 0.999864 USDC',
-    steps: [
-      {
-        type: 'bridge',
-        label: 'Bridge from Ethereum to Arbitrum via CCTPv2',
-        tokens: ['4,061.4122 DAI on Ethereum', 'USDC on Arbitrum'],
-        meta: ['⛽ Est. gas: $0.03', { link: 'https://bridge.circle.com', label: 'bridge.circle.com ↗' }, '· Re-enter amounts on site'],
-      },
-      {
-        type: 'swap',
-        label: 'Swap on Arbitrum via Mayan',
-        tokens: ['USDC', '4,060.8631 USDC'],
-        meta: ['⛽ Est. gas: $0.03', { link: 'https://mayan.finance', label: 'mayan.finance ↗' }, '· Re-enter amounts on site'],
-      },
-    ],
-    summary: 'Complete steps in order — each step requires a separate wallet signature. Amounts shown are estimates; re-enter them manually on each protocol\'s site.'
-  },
-  {
-    provider: 'Mayan (Swift)',
-    best: false,
-    fastest: true,
-    amount: '4,059.7095 USDC',
-    gas: '$0.06',
-    time: '10s',
-    impact: '-0.01%',
-    impactColor: '#7680a0',
-    rate: '1 DAI ≈ 0.99958 USDC',
-    steps: [
-      {
-        type: 'bridge',
-        label: 'Bridge from Ethereum to Arbitrum via Mayan Swift',
-        tokens: ['4,061.4122 DAI on Ethereum', '4,059.7095 USDC on Arbitrum'],
-        meta: ['⛽ Est. gas: $0.06', { link: 'https://mayan.finance', label: 'mayan.finance ↗' }, '· Re-enter amounts on site'],
-      },
-    ],
-    summary: 'Single-step route — requires one wallet signature. Amounts shown are estimates; re-enter them manually on the protocol\'s site.'
-  },
-  {
-    provider: 'Stargate',
-    best: false,
-    fastest: false,
-    amount: '4,056.5141 USDC',
-    gas: '$0.11',
-    time: '2m',
-    impact: '-0.09%',
-    impactColor: '#f5a623',
-    rate: '1 DAI ≈ 0.9991 USDC',
-    steps: [
-      {
-        type: 'bridge',
-        label: 'Bridge from Ethereum to Arbitrum via Stargate',
-        tokens: ['4,061.4122 DAI on Ethereum', '4,056.5141 USDC on Arbitrum'],
-        meta: ['⛽ Est. gas: $0.11', { link: 'https://stargate.finance/bridge', label: 'stargate.finance ↗' }, '· Re-enter amounts on site'],
-      },
-    ],
-    summary: 'Single-step route — requires one wallet signature. Amounts shown are estimates; re-enter them manually on the protocol\'s site.'
-  },
-];
-
-function BridgeRoutesMockup() {
-  const theme = useTheme();
-  const [openIdx, setOpenIdx] = useState(-1);
-  const [selectedIdx, setSelectedIdx] = useState(0);
-  return (
-    <Box>
-      {hardcodedRoutes.map((route, idx) => (
-        <Box key={idx} sx={{ border: '1px solid #30364a', borderRadius: '10px', background: selectedIdx === idx ? 'rgba(0,229,160,0.01)' : (theme.palette.mode === 'dark' ? 'rgb(37,40,54)' : '#fff'), mb: 1.5, cursor: 'pointer', overflow: 'hidden', borderColor: selectedIdx === idx ? 'rgba(0,229,160,0.28)' : '#30364a' }} onClick={() => setSelectedIdx(idx)}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', p: 2 }}>
-            <Box sx={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid', borderColor: selectedIdx === idx ? '#00e5a0' : '#30364a', background: selectedIdx === idx ? '#00e5a0' : 'transparent', mt: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {selectedIdx === idx && <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#0d1117' }} />}
-            </Box>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.83rem' }}>{route.provider}</Typography>
-                  {route.best && <Chip label="⭐ BEST" size="small" sx={{ background: 'rgba(245,200,66,0.12)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
-                  {route.fastest && <Chip label="⚡ FASTEST" size="small" sx={{ background: 'rgba(91,140,245,0.12)', color: '#5b8cf5', border: '1px solid rgba(91,140,245,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
-                </Box>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.12rem', color: selectedIdx === idx ? '#00e5a0' : '#e4e8f5' }}>{route.amount}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.72rem', color: '#7680a0' }}>
-                  <span>⛽ {route.gas}</span>
-                  <span>🕐 {route.time}</span>
-                  <span style={{ color: route.impactColor, fontWeight: 600 }}>{route.impact}</span>
-                </Box>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.69rem', color: '#424b64', mt: 1 }}>
-                <span>{route.rate}</span>
-                <Button 
-                  size="small"
-                  endIcon={<ExpandMoreIcon sx={{ fontSize: '1rem', transform: openIdx === idx ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />}
-                  sx={{ 
-                    fontSize: '0.72rem', 
-                    fontWeight: 600, 
-                    color: openIdx === idx ? '#00e5a0' : '#7680a0', 
-                    background: openIdx === idx ? 'rgba(0,229,160,0.10)' : 'rgba(37,40,54,1)', 
-                    border: '1px solid', 
-                    borderColor: openIdx === idx ? 'rgba(0,229,160,0.28)' : '#30364a', 
-                    borderRadius: 1, 
-                    px: 1.5, 
-                    py: 0.5, 
-                    minWidth: 0,
-                    textTransform: 'none',
-                  }} 
-                  onClick={e => { e.stopPropagation(); setOpenIdx(openIdx === idx ? -1 : idx); }}
-                >
-                  {openIdx === idx ? 'Hide Steps' : 'View Steps'}
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-          <Collapse in={openIdx === idx} timeout="auto" unmountOnExit>
-            <Box sx={{ borderTop: '1px solid #30364a', background: '#13151e', p: 2 }}>
-              <Typography sx={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: '#7680a0', mb: 2 }}>How to execute this route</Typography>
-              {route.steps.map((step, sidx) => (
-                <Box key={sidx} sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', position: 'relative', mb: 2 }}>
-                  <Box sx={{ width: 28, height: 28, borderRadius: '50%', background: '#23263a', border: '1px solid #30364a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 700, color: step.type === 'swap' ? '#5b8cf5' : '#00e5a0', mt: 0.5 }}>{sidx + 1}</Box>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', px: 1, py: 0.5, borderRadius: 1, mb: 0.5, background: step.type === 'swap' ? 'rgba(91,140,245,0.12)' : 'rgba(0,229,160,0.10)', color: step.type === 'swap' ? '#5b8cf5' : '#00e5a0', border: '1px solid', borderColor: step.type === 'swap' ? 'rgba(91,140,245,0.3)' : 'rgba(0,229,160,0.28)' }}>{step.type === 'swap' ? '⇄ Swap' : '⇌ Bridge'}</Box>
-                    <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: '#e4e8f5', mb: 0.5 }}>{step.label}</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.75rem', color: '#7680a0', mb: 0.5 }}>
-                      <Box sx={{ background: '#23263a', border: '1px solid #30364a', borderRadius: 1, px: 1, py: 0.5, fontWeight: 600 }}>{step.tokens[0]}</Box>
-                      <span style={{ color: '#424b64', fontSize: '0.7rem' }}>→</span>
-                      <Box sx={{ background: '#23263a', border: '1px solid #30364a', borderRadius: 1, px: 1, py: 0.5, fontWeight: 600 }}>{step.tokens[1]}</Box>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.68rem', color: '#424b64' }}>
-                      {step.meta.map((m, mi) => typeof m === 'string' ? <span key={mi}>{m}</span> : <a key={mi} href={m.link} target="_blank" rel="noopener" style={{ color: '#00e5a0', textDecoration: 'none', fontWeight: 600 }}>{m.label}</a>)}
-                    </Box>
-                  </Box>
-                </Box>
-              ))}
-              <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #30364a', display: 'flex', alignItems: 'flex-start', gap: 1, fontSize: '0.72rem', color: '#7680a0', lineHeight: 1.45 }}>
-                <span style={{ fontSize: '0.8rem' }}>ℹ</span>
-                {route.summary}
-              </Box>
-            </Box>
-          </Collapse>
-        </Box>
-      ))}
-    </Box>
-  );
-}
-
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
     onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
@@ -248,7 +78,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
-  const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
@@ -270,6 +99,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
   const [noRouteOpen, setNoRouteOpen] = useState(false);
   const [invalidQuote, setInvalidQuote] = useState<OneInchQuoteResponse[]>([]);
+  const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
   
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
@@ -319,22 +149,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [error, quoteError, hasShownErrorOnce]);
 
 
-  const coinGeckoChainId = (chain: string) => {
-          switch (chain.toLowerCase()) {
-            case "ethereum": return 1;
-            case "optimism": return 10;
-            case "arbitrum": return 42161;
-            case "bnb chain": return 56;
-            case "polygon": return 137;
-            case "avalanche": return 43114;
-            case "base": return 8453;
-            case "zksync": return 324;
-            case "gnosis": return 100;
-            case "linea": return 59144;
-            case "sonic": return 146;
-            case "unichain": return 130;
-          }
-  };
 
   useEffect(() => {
     if (symbolOptionSwap && selectedChain && isDexEnabled) {
@@ -768,7 +582,14 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   useEffect(() => {
     if (hasAttemptedSubmit) {
-      setErrorMessage(generateErrorMessage());
+      setErrorMessage(generateErrorMessage({
+        symbolOptionSwap,
+        filteredRows,
+        selectedChain,
+        symbolOptionSwapFor,
+        newBalance,
+        t
+      }));
       setQuoteData([]);
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
@@ -806,54 +627,16 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     setErrorMessage(null);
   };
 
-  const getGasTokenSymbol = (chain: string): string => {
-    const chainMap: Record<string, string> = {
-      "ETHEREUM": "ETH",
-      "OPTIMISM": "ETH",
-      "ARBITRUM": "ETH",
-      "BASE": "ETH",
-      "ZKSYNC": "ETH",
-      "GNOSIS": "ETH",
-      "LINEA": "ETH",
-      "SONIC": "ETH",
-      "UNICHAIN": "ETH",
-      "BNB CHAIN": "BNB",
-      "POLYGON": "MATIC",
-      "AVALANCHE": "AVAX",
-    };
-    return chainMap[chain.toUpperCase()] || "";
-  };  
-
-  const generateErrorMessage = () => {
-    const errors: string[] = [];
-  
-    const selectedSymbol = symbolOptionSwap?.sym?.toUpperCase();
-    const tokenExistsInFilteredRows = filteredRows.some(
-      token => token.tokenName?.toUpperCase() === selectedSymbol
-    );
-  
-    if (!symbolOptionSwap) {
-      errors.push(t("TokenPosition"));
-    } else if (!tokenExistsInFilteredRows) {
-      return t("SelectedError");
-    }
-  
-    if (!selectedChain) errors.push(t("Chain"));
-    if (!symbolOptionSwapFor) errors.push(t("SwapFor"));
-    if (!newBalance || isNaN(Number(newBalance)) || Number(newBalance) <= 0) errors.push(t("Qty"));
-  
-    return errors.length > 0 ? `${t("MissingInputs")}: ${errors.join(", ")}` : null;
-  };
-
-  const formatNumberWithCommas = (value: string) => {
-    const [intPart, decimalPart] = value.split(".");
-    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
-  };
-
   const handleFetchQuotes = () => {
     setHasAttemptedSubmit(true);
-    const err = generateErrorMessage();      
+    const err = generateErrorMessage({
+        symbolOptionSwap,
+        filteredRows,
+        selectedChain,
+        symbolOptionSwapFor,
+        newBalance,
+        t
+      });      
   
     if (err) {
       setQuoteData([]);
@@ -1687,10 +1470,18 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2, mb: 2 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge From')}</Typography>
-                    <Box className="chain-badge" sx={{ background: 'rgba(98,126,234,0.12)', border: '1px solid rgba(98,126,234,0.35)', color: '#627EEA', borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#627EEA', boxShadow: '0 0 6px #627EEA', mr: 0.5 }} />
-                      {selectedChain || 'ETHEREUM'}
-                    </Box>
+                    {(() => {
+                      const chainKey = Object.values(CHAIN_MAP).find(
+                        c => c.name.toUpperCase() === (selectedChain || 'ETHEREUM').toUpperCase()
+                      )?.key || 'ETH';
+                      const colorObj = CHAIN_COLORS[chainKey] || CHAIN_COLORS.ETH;
+                      return (
+                        <Box className="chain-badge" sx={{ background: colorObj.bg, border: colorObj.border, color: colorObj.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: colorObj.color, boxShadow: `0 0 6px ${colorObj.color}`, mr: 0.5 }} />
+                          {selectedChain || 'ETHEREUM'}
+                        </Box>
+                      );
+                    })()}
                   </Box>
                   {/* Token Dropdown + Chain Dropdown */}
                   <Box display="flex" gap={2} mb={1.5}>
@@ -1757,7 +1548,17 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         sx={{
                           height: '40px',
                           marginBottom: 1,
-                          '& .MuiInputBase-root': { height: '40px' },
+                          '& .MuiInputBase-root': {
+                            height: '40px',
+                            color: '#6c7383', // darker grey for disabled
+                            fontStyle: 'italic',
+                            backgroundColor: 'inherit',
+                          },
+                          '& .Mui-disabled': {
+                            color: '#6c7383',
+                            fontStyle: 'italic',
+                            WebkitTextFillColor: '#6c7383',
+                          },
                         }}
                       />
                     </Box>
@@ -1827,10 +1628,24 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge To')}</Typography>
-                    <Box className="chain-badge" sx={{ background: 'rgba(40,160,240,0.12)', border: '1px solid rgba(40,160,240,0.35)', color: '#28A0F0', borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#28A0F0', boxShadow: '0 0 6px #28A0F0', mr: 0.5 }} />
-                      {'ARBITRUM'}
-                    </Box>
+                    {/* Dynamic chain badge for Bridge To */}
+                    {(() => {
+                      const selectedToChainId = selectedBridgeToChainId ?? 42161; // fallback to Arbitrum
+                      const chainMeta = CHAIN_MAP[selectedToChainId] || CHAIN_MAP[42161];
+                      const colorMeta = CHAIN_COLORS[chainMeta.key] || CHAIN_COLORS['ARB'];
+                      return (
+                        <Box className={`chain-${chainMeta.key}`}
+                          sx={{
+                            borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px',
+                            background: colorMeta.bg,
+                            border: colorMeta.border,
+                            color: colorMeta.color,
+                          }}>
+                          <Box className="chain-dot" sx={{ width: 6, height: 6, borderRadius: '50%', background: colorMeta.color, boxShadow: `0 0 6px ${colorMeta.color}`, mr: 0.5 }} />
+                          {chainMeta.name.toUpperCase()}
+                        </Box>
+                      );
+                    })()}
                   </Box>
                   {/* Token Dropdown + Chain Dropdown */}
                   <Box display="flex" gap={2} mb={1.5}>
@@ -1905,11 +1720,23 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         select
                         variant="outlined"
                         size="small"
-                        value={"ARBITRUM"}
-                        disabled
-                        sx={{ height: '40px', marginBottom: 1, '& .MuiInputBase-root': { height: '40px' } }}
+                        value={selectedBridgeToChainId ?? 42161}
+                        onChange={e => setSelectedBridgeToChainId(Number(e.target.value))}
+                        sx={{
+                          height: '40px',
+                          marginBottom: 1,
+                          '& .MuiInputBase-root': {
+                            height: '40px',
+                            color: theme.palette.mode === 'dark' ? '#fff' : '#23263a',
+                            fontWeight: 600,
+                          },
+                        }}
                       >
-                        <MenuItem value="ARBITRUM">ARBITRUM</MenuItem>
+                        {SUPPORTED_CHAINS.map(chain => (
+                          <MenuItem key={chain.chainId} value={chain.chainId}>
+                            <span style={{ fontWeight: 700 }}>{chain.name}</span>
+                          </MenuItem>
+                        ))}
                       </TextField>
                     </Box>
                   </Box>
