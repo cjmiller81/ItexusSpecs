@@ -20,6 +20,7 @@ import {
   Avatar,
   InputAdornment,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { keyframes } from '@mui/system';
 import {
@@ -172,11 +173,48 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
 
   const { wallets } = useAppSelector(state => state.wallets);
   
+  // Loading state for wallet positions (portfolio fetch)
+  const [isPortfolioLoading, setIsPortfolioLoading] = useState(false);
+
+  useEffect(() => {
+    if (wallets && wallets.length > 0) {
+      const addresses = wallets.map(w => w.address);
+      setIsPortfolioLoading(true);
+      dispatch(fetchWalletsPortfolio(addresses));
+    }
+  }, [wallets, dispatch]);
+
+  // When portfolioWalletData changes, stop loading
+  useEffect(() => {
+    if (isPortfolioLoading) {
+      setIsPortfolioLoading(false);
+    }
+  }, [portfolioWalletData]);
+
   const NoRowsOverlayComponent = () => {
+    // Always show spinner if portfolio loading
+    if (isPortfolioLoading) {
+      return (
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" minHeight={200}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <CircularProgress size={32} sx={{ color: '#219a83' }} />
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            Loading wallet positions...
+          </Typography>
+        </Box>
+      );
+    }
+    // After loading, show overlays based on wallet state
     if (wallets && wallets.length > 0 && !selectedWallet) {
       return <CustomSelectWalletOverlay />;
     }
-    return <CustomNoWalletOverlay />;
+    // If a wallet is selected but no positions exist, show CustomNoWalletOverlay
+    if (selectedWallet && filteredRows.length === 0) {
+      return <CustomNoWalletOverlay />;
+    }
+    // Otherwise, default overlay
+    return null;
   };
 
   useEffect(() => {
