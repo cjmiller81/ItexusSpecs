@@ -699,6 +699,33 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     }
   };
 
+  // Find the selected position from dropdown and update fields as if selected from table
+  const handleCurrentPositionDropdownChange = (event: any, value: TokenSearchItem | null) => {
+    if (!value) {
+      setSymbolOptionSwap(null);
+      setSelectedToken(null);
+      setSelectedChain("");
+      setNewBalance("");
+      onSelectedTokenChange?.(null, null);
+      return;
+    }
+    setSymbolOptionSwap(value);
+    setSelectedToken(value.sym);
+    // Find the matching row in filteredRows to get chain and balance
+    const matchedToken = filteredRows.find(token =>
+      token.tokenName?.toUpperCase() === value.sym?.toUpperCase()
+    );
+    if (matchedToken) {
+      setSelectedChain(matchedToken.chain?.toUpperCase() || "");
+      setNewBalance(matchedToken.balance?.toString() || "");
+      onSelectedTokenChange?.(matchedToken.tokenName, matchedToken.chain);
+    } else {
+      setSelectedChain("");
+      setNewBalance("");
+      onSelectedTokenChange?.(value.sym, null);
+    }
+  };
+
   const isWalletSelected = selectedWallet !== null;
   const noticeColor = theme.palette.mode === "dark" ? "#f1b036ff" : "#be7d04ff";
 
@@ -801,7 +828,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         options={tokenIcons?.items ?? []}
                         getOptionLabel={(option) => option.sym}
                         value={symbolOptionSwap}
-                        onChange={(_e, newValue) => onOptionChangeSwap(newValue)}
+                        onChange={handleCurrentPositionDropdownChange}
                         isOptionEqualToValue={(option, value) => option.id === value?.id}
                         disableClearable={false}
                         inputValue={symbolOptionSwap ? symbolOptionSwap.name ?
@@ -1491,7 +1518,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         options={tokenIcons?.items ?? []}
                         getOptionLabel={(option) => option.sym}
                         value={symbolOptionSwap}
-                        onChange={(_e, newValue) => onOptionChangeSwap(newValue)}
+                        onChange={handleCurrentPositionDropdownChange}
                         isOptionEqualToValue={(option, value) => option.id === value?.id}
                         disableClearable={false}
                         inputValue={symbolOptionSwap ? symbolOptionSwap.name ? `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` : symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
@@ -1511,7 +1538,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 <>
                                   {symbolOptionSwap?.lURI ? (
                                     <InputAdornment position="start">
-                                      <Avatar src={symbolOptionSwap.lURI} alt={symbolOptionSwap.sym} sx={{ width: 22, height: 22, mr: 1 }} />
+                                      <Avatar
+                                        src={symbolOptionSwap.lURI}
+                                        alt={symbolOptionSwap.sym} 
+                                        sx={{ width: 22, height: 22, mr: 1 }}
+                                      />
                                     </InputAdornment>
                                   ) : (
                                     <InputAdornment position="start">
@@ -1530,7 +1561,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         )}
                         renderOption={(props, option) => (
                           <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar src={option.lURI ?? undefined} alt={option.sym} sx={{ width: 24, height: 24 }} />
+                            <Avatar
+                              src={option.lURI ?? undefined}
+                              alt={option.sym}
+                              sx={{ width: 24, height: 24 }}
+                            />
                             <Typography variant="body1">
                               {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
                             </Typography>
@@ -1687,7 +1722,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                                 <>
                                   {symbolOptionSwapFor?.lURI ? (
                                     <InputAdornment position="start">
-                                      <Avatar src={symbolOptionSwapFor.lURI} alt={symbolOptionSwapFor.sym} sx={{ width: 22, height: 22, mr: 1 }} />
+                                      <Avatar
+                                        src={symbolOptionSwapFor.lURI}
+                                        alt={symbolOptionSwapFor.sym}
+                                        sx={{ width: 22, height: 22, mr: 1 }}
+                                      />
                                     </InputAdornment>
                                   ) : (
                                     <InputAdornment position="start">
@@ -1706,9 +1745,15 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         )}
                         renderOption={(props, option) => (
                           <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar src={option.lURI ?? undefined} alt={option.sym} sx={{ width: 24, height: 24 }} />
+                            <Avatar
+                              src={option.lURI ?? undefined}
+                              alt={option.sym}
+                              sx={{ width: 24, height: 24 }}
+                            />
                             <Typography variant="body1">
-                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                              {option.name
+                                ? `${option.sym.toUpperCase()} - ${option.name}`
+                                : option.sym.toUpperCase()}
                             </Typography>
                           </Box>
                         )}
@@ -1850,3 +1895,4 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     </Grid>
   );
 };
+
