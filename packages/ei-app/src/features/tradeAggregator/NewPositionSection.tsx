@@ -1683,8 +1683,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     })()}
                   </Box>
                   {/* Token Dropdown + Chain Dropdown */}
-                  <Box display="flex" gap={2} mb={1.5}>
-                    <Box flex={2}>
+                  <Grid container spacing={2} mb={1.5} direction={{ xs: 'column', sm: 'row' }}>
+                    <Grid item xs={12} sm={8}>
                       <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Bridge For')}</Typography>
                       <Autocomplete
                         id="bridge_to_token_dropdown"
@@ -1758,8 +1758,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           </Box>
                         )}
                       />
-                    </Box>
-                    <Box flex={1} display="flex" flexDirection="column" justifyContent="flex-end">
+                    </Grid>
+                    <Grid item xs={12} sm={4} display="flex" flexDirection="column" justifyContent="flex-end">
                       <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Chain')}</Typography>
                       <TextField
                         select
@@ -1783,8 +1783,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           </MenuItem>
                         ))}
                       </TextField>
-                    </Box>
-                  </Box>
+                    </Grid>
+                  </Grid>
                   {/* BRIDGE TO: Token Address + Copy */}
                   <Box display="flex" alignItems="center" gap={1} mt={1}>
                     <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
