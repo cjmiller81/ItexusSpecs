@@ -192,8 +192,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   }, [portfolioWalletData]);
 
   const NoRowsOverlayComponent = () => {
-    // Always show spinner if portfolio loading
-    if (isPortfolioLoading) {
+    // Show the "Select Wallet" overlay until a wallet is selected
+    if (wallets && wallets.length > 0 && !selectedWallet) {
+      return <CustomSelectWalletOverlay />;
+    }
+    // Only show spinner if a wallet is selected and loading
+    if (selectedWallet && isPortfolioLoading) {
       return (
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" minHeight={200}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -204,10 +208,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
           </Typography>
         </Box>
       );
-    }
-    // After loading, show overlays based on wallet state
-    if (wallets && wallets.length > 0 && !selectedWallet) {
-      return <CustomSelectWalletOverlay />;
     }
     // If a wallet is selected but no positions exist, show CustomNoWalletOverlay
     if (selectedWallet && filteredRows.length === 0) {
@@ -527,35 +527,54 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
         mt={2}
         spacing={0}
         container
-        xs={12}>
+        xs={12}
+        sx={{ width: '100%' }}
+      >
         <Grid
           container
           xs={12}
-          spacing={1}>
+          spacing={1}
+          sx={{ width: '100%' }}
+        >
           <Grid
             id="current_position_section"
             item
             xs={12}
-            md={12}
-            lg={12}
-            spacing={1}
             container
-            direction="row"
+            spacing={1}
+            direction={{ xs: 'column', md: 'row' }}
             sx={{
               boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
               borderRadius: "10px",
-              marginLeft: "8px",
+              marginLeft: { xs: 0, sm: '4px', md: '8px' },
               marginRight: { lg: "1.5%", md: "1.5%", xs: 0 },
               marginTop: { lg: "0%", md: "1.5%", xs: "4%" },
               backgroundColor: theme.palette.mode === "dark" ? "rgb(54, 54, 64)" : "#f7f5f2",
-            }}>
-
-             <Grid
-                item
-                xs={12}
-                md={4.5}
-                lg={4.6}
-                sx={{ marginTop: "31px", marginLeft: "0%", marginRight:{ lg: "0%", md: "1%", xs: "2%" }, position: 'relative'  }}>
+              width: '100%',
+              flexDirection: { xs: 'column', md: 'row' },
+              display: 'flex',
+              gap: { xs: 2, md: 0 },
+              padding: { xs: 1, sm: 2 },
+            }}
+          >
+            <Grid
+              item
+              xs={12}
+              md={5}
+              lg={4.6}
+              sx={{
+                marginTop: { xs: '16px', md: "31px" },
+                marginLeft: "0%",
+                marginRight: { lg: "0%", md: "1%", xs: "0%" },
+                position: 'relative',
+                width: { xs: '100%', md: 'auto' },
+                minWidth: 0,
+                paddingRight: { xs: 0, md: 2 },
+                paddingBottom: { xs: 2, md: 0 },
+                flex: { xs: 'unset', md: 1 },
+                maxWidth: { xs: '100%', md: '40%' },
+              }}
+            >
 
               {!wallets || wallets.length === 0 ? (
                 <Select
@@ -757,12 +776,23 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               )}
             </Grid>
 
-               <Grid
-                 item
-                 xs={12}
-                 md={6.9}
-                 lg={6.6}
-                 sx={{ marginTop: "5px", marginLeft: { lg: "4%", md: "2%", xs: "0%" },marginRight:{ lg: "0%", md: "1%", xs: "2%" }, position: 'relative' }}>
+            <Grid
+              item
+              xs={12}
+              md={7}
+              lg={7.4}
+              sx={{
+                marginTop: { xs: '0px', md: "5px" },
+                marginLeft: { lg: "4%", md: "2%", xs: "0%" },
+                marginRight: { lg: "0%", md: "1%", xs: "0%" },
+                position: 'relative',
+                width: { xs: '100%', md: 'auto' },
+                minWidth: 0,
+                paddingLeft: { xs: 0, md: 2 },
+                flex: { xs: 'unset', md: 1 },
+                maxWidth: { xs: '100%', md: '60%' },
+              }}
+            >
                
                 <Box 
                   display="flex" 
@@ -1022,8 +1052,8 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
     maxHeight: "425px",
   },
   "& .MuiDataGrid-columnHeaders": {
-  backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",
-},
+    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",
+  },
   "& .MuiDataGrid-footerContainer": {
     height: "40px",
   },
@@ -1050,13 +1080,15 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   ".MuiDataGrid-withBorderColor": {
     bgColor: "transparent",
   }, 
+  // FIX: Prevent horizontal scrollbar on hover
   "& .MuiDataGrid-row:hover": {
     cursor: "pointer",
     backgroundColor: theme.palette.mode === "light" ? "#e3f2fd" : "#1a237e",
-    border: theme.palette.mode === "light" ?"1px solid black": "1px solid white",
+    border: "none !important",
   },
   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
     backgroundColor: theme.palette.mode === "light" ? "#219a83" : darken(theme.palette.primary.main, 0.2),
+    border: "none !important",
   },
   "& .unsupported-chain-row": {
     cursor: "not-allowed",
@@ -1065,10 +1097,11 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   "& .unsupported-chain-row:hover": {
     cursor: "not-allowed",
     backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "#2a2a2a",
-    border: "none",
+    border: "none !important",
   },
   "& .unsupported-chain-row:hover .MuiDataGrid-cell": {
     backgroundColor: "transparent",
+    border: "none !important",
   },
   "& .selected-row .MuiDataGrid-cell": {
     backgroundColor: "transparent",
