@@ -836,6 +836,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                       },
                     }}
                   hideFooter
+                  defaultRowsPerPage={100}
                   rowSelection={true}
                   rowSelectionModel={selectedRows ? [selectedRows] : []}
                   checkboxSelection={false}
@@ -847,31 +848,27 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   slots={{
                     noRowsOverlay: NoRowsOverlayComponent,
                   }}
-                                                                     getRowClassName={(params) => {
-                     const isSupportedChainRow = params.row.chain && 
-                       isSupportedChain(params.row.chain);
-                     
-                     if (!isSupportedChainRow) {
-                       return 'unsupported-chain-row';
-                     }
-                     
+                  getRowClassName={(params) => {
+                    const isSupportedChainRow = params.row.chain && 
+                      isSupportedChain(params.row.chain);
+                    if (!isSupportedChainRow) {
+                      return 'unsupported-chain-row';
+                    }
                     if (selectedRows &&
                         `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
                       return 'selected-row';
                     }
-                    
                     return '';
                   }}
-                                     componentsProps={{
-                   row: (params) => {
-                     const isSupportedChainRow = params.row.chain && 
-                       isSupportedChain(params.row.chain);
-                     
-                     return {
-                       title: isSupportedChainRow ? t("ClickToLoadCurrentPosition") : `${params.row.chain} chain is not supported for selection`
-                     };
-                   }
-                 }}
+                  componentsProps={{
+                    row: (params) => {
+                      const isSupportedChainRow = params.row.chain && 
+                        isSupportedChain(params.row.chain);
+                      return {
+                        title: isSupportedChainRow ? t("ClickToLoadCurrentPosition") : `${params.row.chain} chain is not supported for selection`
+                      };
+                    }
+                  }}
                 />
                 </Box>
               <Dialog
