@@ -608,6 +608,34 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
 
   setSymbolOptionSwapFor(value);
   setErrorMessage(null);
+
+  // Fetch token addresses for display if both tokens are selected
+  if (symbolOptionSwap && value && selectedChain && newBalance) {
+    dispatch(
+      fetchQuoteParameters({
+        tokenPositionSymbol: symbolOptionSwap.sym,
+        chainName: selectedChain,
+        qty: Number(newBalance),
+        swapForSymbol: value.sym,
+        tokenPositionId: symbolOptionSwap.id,
+        swapForId: value.id,
+      })
+    ).then((result) => {
+      if (fetchQuoteParameters.fulfilled.match(result)) {
+        const data = result.payload;
+        if (data?.fromTokenAddress && data?.toTokenAddress) {
+          setTokenAddress(data.fromTokenAddress);
+          setTokenAddressSwapFor(data.toTokenAddress);
+        } else {
+          setTokenAddress(null);
+          setTokenAddressSwapFor(null);
+        }
+      } else {
+        setTokenAddress(null);
+        setTokenAddressSwapFor(null);
+      }
+    });
+  }
 };
 
   const onOptionChangeSwap = (value: TokenSearchItem  | null) => {
@@ -622,9 +650,36 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     {
       onSelectedTokenChange?.(null,null);
     }
-    
     setSymbolOptionSwap(value);
     setErrorMessage(null);
+
+    // Fetch token addresses for display if both tokens are selected
+    if (value && symbolOptionSwapFor && selectedChain && newBalance) {
+      dispatch(
+        fetchQuoteParameters({
+          tokenPositionSymbol: value.sym,
+          chainName: selectedChain,
+          qty: Number(newBalance),
+          swapForSymbol: symbolOptionSwapFor.sym,
+          tokenPositionId: value.id,
+          swapForId: symbolOptionSwapFor.id,
+        })
+      ).then((result) => {
+        if (fetchQuoteParameters.fulfilled.match(result)) {
+          const data = result.payload;
+          if (data?.fromTokenAddress && data?.toTokenAddress) {
+            setTokenAddress(data.fromTokenAddress);
+            setTokenAddressSwapFor(data.toTokenAddress);
+          } else {
+            setTokenAddress(null);
+            setTokenAddressSwapFor(null);
+          }
+        } else {
+          setTokenAddress(null);
+          setTokenAddressSwapFor(null);
+        }
+      });
+    }
   };
 
   const handleFetchQuotes = () => {
