@@ -609,6 +609,19 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
   setSymbolOptionSwapFor(value);
   setErrorMessage(null);
 
+  // --- Bridge clear logic: if in Bridge tab and Bridge For is cleared, reset bridge results ---
+  if (activeTab === "bridge" && value === null) {
+    setQuoteData([]);
+    setLastUpdated(null);
+    setErrorMessage(null);
+    setShowNoQuotesMessage(false);
+    setErrorQuote(null);
+    setErrorQuoteParametrs(null);
+    setTokenAddress(null);
+    setTokenAddressSwapFor(null);
+    setHasAttemptedSubmit(false);
+  }
+
   // Fetch token addresses for display if both tokens are selected
   if (symbolOptionSwap && value && selectedChain && newBalance) {
     dispatch(
@@ -649,6 +662,18 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     if(value === null)
     {
       onSelectedTokenChange?.(null,null);
+      // --- Bridge clear logic: if in Bridge tab and Current Position is cleared, reset bridge results ---
+      if (activeTab === "bridge") {
+        setQuoteData([]);
+        setLastUpdated(null);
+        setErrorMessage(null);
+        setShowNoQuotesMessage(false);
+        setErrorQuote(null);
+        setErrorQuoteParametrs(null);
+        setTokenAddress(null);
+        setTokenAddressSwapFor(null);
+        setHasAttemptedSubmit(false);
+      }
     }
     setSymbolOptionSwap(value);
     setErrorMessage(null);
