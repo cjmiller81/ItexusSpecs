@@ -1,4 +1,5 @@
-import { CHAIN_COLORS, CHAIN_MAP, SUPPORTED_CHAINS } from "./bridgeChains";
+import { CHAIN_COLORS, CHAIN_MAP } from "./bridgeChains";
+import { fetchLifiChains, sortChains, LifiChain } from "./lifiChains";
 import { BridgeRoutesMockup } from "./bridgeRoutesMockup";
 import {
   coinGeckoChainId,
@@ -100,6 +101,28 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [noRouteOpen, setNoRouteOpen] = useState(false);
   const [invalidQuote, setInvalidQuote] = useState<OneInchQuoteResponse[]>([]);
   const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
+  const [lifiChains, setLifiChains] = useState<LifiChain[]>([]);
+  const [lifiChainsLoading, setLifiChainsLoading] = useState(false);
+  const [lifiChainsError, setLifiChainsError] = useState(false);
+    // Fetch LI.FI chains for Bridge To dropdown (with caching/fallback)
+    useEffect(() => {
+      let ignore = false;
+      setLifiChainsLoading(true);
+      fetchLifiChains()
+        .then((chains) => {
+          if (!ignore) {
+            setLifiChains(chains);
+            setLifiChainsError(false);
+          }
+        })
+        .catch(() => {
+          if (!ignore) setLifiChainsError(true);
+        })
+        .finally(() => {
+          if (!ignore) setLifiChainsLoading(false);
+        });
+      return () => { ignore = true; };
+    }, []);
   
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
@@ -1743,21 +1766,23 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                 <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge To')}</Typography>
-                    {/* Dynamic chain badge for Bridge To */}
+                    {/* Dynamic chain badge for Bridge To (with icon) */}
                     {(() => {
-                      const selectedToChainId = selectedBridgeToChainId ?? 42161; // fallback to Arbitrum
-                      const chainMeta = CHAIN_MAP[selectedToChainId] || CHAIN_MAP[42161];
-                      const colorMeta = CHAIN_COLORS[chainMeta.key] || CHAIN_COLORS['ARB'];
+                      const chain = lifiChains.find(c => c.id === (selectedBridgeToChainId ?? lifiChains[0]?.id));
+                      if (!chain) return null;
+                      const colorMeta = CHAIN_COLORS[chain.key?.toUpperCase?.()] || CHAIN_COLORS['ARB'];
                       return (
-                        <Box className={`chain-${chainMeta.key}`}
+                        <Box className={`chain-${chain.key}`}
                           sx={{
-                            borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px',
+                            borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px',
                             background: colorMeta.bg,
                             border: colorMeta.border,
                             color: colorMeta.color,
                           }}>
-                          <Box className="chain-dot" sx={{ width: 6, height: 6, borderRadius: '50%', background: colorMeta.color, boxShadow: `0 0 6px ${colorMeta.color}`, mr: 0.5 }} />
-                          {chainMeta.name.toUpperCase()}
+                          {chain.logoURI && (
+                            <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
+                          )}
+                          {chain.name.toUpperCase()}
                         </Box>
                       );
                     })()}
@@ -1845,7 +1870,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         select
                         variant="outlined"
                         size="small"
-                        value={selectedBridgeToChainId ?? 42161}
+                        value={selectedBridgeToChainId ?? (lifiChains[0]?.id || 42161)}
                         onChange={e => setSelectedBridgeToChainId(Number(e.target.value))}
                         sx={{
                           height: '40px',
@@ -1856,12 +1881,44 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             fontWeight: 600,
                           },
                         }}
+                        disabled={lifiChainsLoading}
+                        SelectProps={{
+                          MenuProps: {
+                            PaperProps: {
+                              style: { maxHeight: 400 },
+                            },
+                          },
+                        }}
+                        helperText={lifiChainsError ? t('FailedToLoadChains', 'Failed to load chains, fallback used') : ''}
                       >
-                        {SUPPORTED_CHAINS.map(chain => (
-                          <MenuItem key={chain.chainId} value={chain.chainId}>
-                            <span style={{ fontWeight: 700 }}>{chain.name}</span>
-                          </MenuItem>
-                        ))}
+                        {(() => {
+                          const { preferred, rest } = sortChains(lifiChains);
+                          return [
+                            ...preferred.map(chain => (
+                              <MenuItem key={chain.id} value={chain.id}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  {chain.logoURI && (
+                                    <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 20, height: 20 }} />
+                                  )}
+                                  <span style={{ fontWeight: 700 }}>{chain.name}</span>
+                                  <span style={{ color: '#888', fontSize: 12, marginLeft: 6 }}>{chain.coin}</span>
+                                </Box>
+                              </MenuItem>
+                            )),
+                            ...(rest.length > 0 ? [<MenuItem disabled divider style={{ height: 1, padding: 0, margin: 0 }} key="divider" />] : []),
+                            ...rest.map(chain => (
+                              <MenuItem key={chain.id} value={chain.id}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  {chain.logoURI && (
+                                    <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 20, height: 20 }} />
+                                  )}
+                                  <span style={{ fontWeight: 700 }}>{chain.name}</span>
+                                  <span style={{ color: '#888', fontSize: 12, marginLeft: 6 }}>{chain.coin}</span>
+                                </Box>
+                              </MenuItem>
+                            )),
+                          ];
+                        })()}
                       </TextField>
                     </Grid>
                   </Grid>
