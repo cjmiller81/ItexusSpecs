@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   AccordionDetails,
   AccordionProps,
@@ -19,8 +18,9 @@ import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "comp
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
-import { VaultsData } from "./Models/VaultsData";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
+import appAxios from "@/libs/axios/axios";
+import { VaultsData } from "./Models/VaultsData";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import { FeatureAccessGuard } from "components";
 import { exportDataGridToXlsx } from "@/utils/exportDataGrid";
@@ -32,31 +32,17 @@ type Props = Omit<AccordionProps, "children"> & {
 };
 
 export default function VaultsTokensSection({ persisKey, startTourButton, exportFileName, ...props }: Props) {
-  const [vaults, setVaults] = useState<VaultsData[]>([]);
-  const { data: vaultsData, isLoading: isVaultsLoading } = useGetAllDataQuery();
+  const [isVaultsLoading, setIsVaultsLoading] = useState(false);
   const { t } = useTranslation(["Vaults", "Common"]);
   const { sidebarOpened } = useAppSelector(store => store.ui);
   const theme = useTheme();
   const dataGridRef = useRef<any>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  useEffect(() => {
-    if (!isVaultsLoading && vaultsData) {
-      setVaults(vaultsData.data);
-    }
-  }, [vaultsData, isVaultsLoading]);
-
-  const processedVaults = useMemo(() => {
-    return vaults.map(pool => {
+  const processedVaults = (data: VaultsData[]) => {
+    return data.map(pool => {
       const anyPool = pool as any;
-
-      const totalApy =
-        pool.breakdowns &&
-        pool.breakdowns.totalApy != null &&
-        pool.breakdowns.totalApy !== "Infinity"
-          ? pool.breakdowns.totalApy
-          : null;
-
+      const totalApy = pool.breakdowns?.totalApy ?? null;
       return {
         ...pool,
         apy:
@@ -79,31 +65,112 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
         earnedToken: anyPool.earned_token ?? null,
       };
     });
-  }, [vaults]);
-
-  const filteredTokensSource = useMemo(
-    () =>
-      new DataSource<VaultsData, string>({
-        store: {
-          type: "array",
-          key: "id",
-          data: processedVaults,
-        },
-        paginate: true,
-        pageSize: 10,
-      }),
-    [processedVaults],
-  );
-  const calculateSafetyScore = (risks: string[]) => {
-    if (!risks || risks.length === 0) return 0;
-
-    let score = 3;
-
-    if (risks.includes("IL_HIGH")) score -= 1;
-    if (risks.includes("MCAP_MICRO")) score -= 1;
-
-    return Math.max(score, 0);
   };
+
+  useGetAllDataQuery({});
+
+  // DataSource instance for DevExtreme (async load, always fresh)
+  const filteredTokensSource = React.useMemo(() => {
+    const CustomStore = require("devextreme/data/custom_store").default;
+    // Helper to recursively remove all 'assets' filters and collect their values
+    // Also cleans up redundant logical operators (and/or) left after removal
+    function removeAssetsFiltersAndCollectValues(filter: any, assetsParam: string[]): any {
+      if (!filter) return filter;
+      if (Array.isArray(filter)) {
+        // If this is an 'assets' filter
+        if (
+          filter.length === 3 &&
+          (filter[0] === "assets" || (filter[0] && filter[0].dataField === "assets")) &&
+          (filter[1] === "contains" || filter[1] === "=" || filter[1] === "anyof")
+        ) {
+          // Collect value(s) without duplicates
+          if (Array.isArray(filter[2])) {
+            filter[2].forEach(val => {
+              if (!assetsParam.includes(val)) assetsParam.push(val);
+            });
+          } else if (filter[2]) {
+            if (!assetsParam.includes(filter[2])) assetsParam.push(filter[2]);
+          }
+          return null;
+        }
+        // Recursively process subfilters
+        let processed = filter
+          .map(sub => removeAssetsFiltersAndCollectValues(sub, assetsParam))
+          .filter(x => x !== null && x !== undefined);
+
+        // Remove leading/trailing and duplicate logical operators
+        processed = processed.filter((item, idx, arr) => {
+          if (item === 'and' || item === 'or') {
+            if (idx === 0 || idx === arr.length - 1) return false;
+            if (arr[idx - 1] === 'and' || arr[idx - 1] === 'or') return false;
+            if (arr[idx + 1] === 'and' || arr[idx + 1] === 'or') return false;
+          }
+          return true;
+        });
+
+        // If after cleaning only one element remains, return it directly
+        if (processed.length === 1) return processed[0];
+        if (processed.length === 0) return null;
+        return processed;
+      }
+      return filter;
+    }
+
+    // Helper: filter is meaningful if it contains anything except only logical operators
+    function isMeaningfulFilter(f: any): boolean {
+      if (!f) return false;
+      if (typeof f === 'string') {
+        return f !== 'and' && f !== 'or';
+      }
+      if (Array.isArray(f)) {
+        const allLogic = f.every(x => typeof x === 'string' && (x === 'and' || x === 'or'));
+        if (allLogic) return false;
+        return f.some(x => isMeaningfulFilter(x));
+      }
+      if (typeof f === 'object' && f !== null) {
+        return true;
+      }
+      return false;
+    }
+
+    return new DataSource(
+      new CustomStore({
+        key: "id",
+        load: async (loadOptions: any) => {
+          try {
+            const params: any = {};
+            if (loadOptions.skip != null) params.skip = loadOptions.skip;
+            if (loadOptions.take != null) params.take = loadOptions.take;
+            if (loadOptions.sort) params.sorter = JSON.stringify(loadOptions.sort);
+
+            let assetsParam: string[] = [];
+            let filter = loadOptions.filter;
+            if (filter) {
+              // Deep clone filter to avoid mutating DevExtreme state
+              let filterCopy = Array.isArray(filter) ? JSON.parse(JSON.stringify(filter)) : filter;
+              let filterWithoutAssets = removeAssetsFiltersAndCollectValues(filterCopy, assetsParam);
+              if (isMeaningfulFilter(filterWithoutAssets)) {
+                params.filter = JSON.stringify(filterWithoutAssets);
+              }
+            }
+            if (assetsParam.length > 0) {
+              params.assets = assetsParam.join(",");
+            }
+
+            const response = await appAxios.get("/api/beefy/vaults", { params });
+            const result = response.data;
+            return {
+              data: processedVaults(result.data),
+              totalCount: result.totalCount ?? result.data.length,
+            };
+          } catch (error) {
+            console.error("Failed to load vaults data:", error);
+            return { data: [], totalCount: 0 };
+          }
+        },
+      })
+    );
+  }, []);
 
   const onExport = async () => {
     if (isExporting) {
