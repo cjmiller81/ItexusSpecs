@@ -1626,18 +1626,25 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       </Box>
                       <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge From')}</Typography>
                     </Box>
-                    {symbolOptionSwap && selectedChain && (() => {
-                      const chainKey = Object.values(CHAIN_MAP).find(
-                        c => c.name.toUpperCase() === selectedChain.toUpperCase()
-                      )?.key || 'ETH';
-                      const colorObj = CHAIN_COLORS[chainKey] || CHAIN_COLORS.ETH;
-                      return (
-                        <Box className="chain-badge" sx={{ background: colorObj.bg, border: colorObj.border, color: colorObj.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                          <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: colorObj.color, boxShadow: `0 0 6px ${colorObj.color}`, mr: 0.5 }} />
-                          {selectedChain}
-                        </Box>
-                      );
-                    })()}
+                      {symbolOptionSwap && selectedChain && (() => {
+                        const chainObj = Object.values(CHAIN_MAP).find(
+                          c => c.name.toUpperCase() === selectedChain.toUpperCase()
+                        );
+                        const chainKey = chainObj?.key || 'ETH';
+                        let lifiChain = lifiChains.find(c => c.key?.toLowerCase?.() === chainKey.toLowerCase());
+                        if (!lifiChain) {
+                          lifiChain = lifiChains.find(c => c.name?.toLowerCase?.() === selectedChain.toLowerCase());
+                        }
+                        const colorMeta = lifiChain && CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] ? CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
+                        return (
+                          <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                            {lifiChain?.logoURI && (
+                              <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
+                            )}
+                            {selectedChain}
+                          </Box>
+                        );
+                      })()}
                   </Box>
                   {/* Token Dropdown + Chain Dropdown */}
                   <Box display="flex" gap={2} mb={1.5}>
@@ -1702,29 +1709,31 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         )}
                       />
                     </Box>
-                    <Box flex={5}>
-                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Chain')}</Typography>
-                      <TextField
-                        variant="outlined"
-                        size="small"
-                        value={selectedChain}
-                        disabled
-                        sx={{
-                          height: '52.7px',
-                          marginBottom: 1,
-                          '& .MuiInputBase-root': {
-                            height: '52.7px',
-                            color: '#6c7383', // darker grey for disabled
-                            fontStyle: 'italic',
-                            backgroundColor: 'inherit',
-                          },
-                          '& .Mui-disabled': {
-                            color: '#6c7383',
-                            fontStyle: 'italic',
-                            WebkitTextFillColor: '#6c7383',
-                          },
-                        }}
-                      />
+                    <Box flex={5} display="flex" flexDirection="column">
+                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem' }}>{t('Chain')}</Typography>
+                      <Box display="flex" alignItems="center" height="52.7px" pl={1} sx={{ backgroundColor: 'inherit', borderRadius: '4px', border: '1px solid #e0e0e0', opacity: 0.4 }}>
+                        {(() => {
+                          const chainObj = Object.values(CHAIN_MAP).find(
+                            c => c.name.toUpperCase() === selectedChain.toUpperCase()
+                          );
+                          const chainKey = chainObj?.key || 'ETH';
+                          // Try to find the chain in lifiChains for logoURI: first by key, then by name (case-insensitive)
+                          let lifiChain = lifiChains.find(c => c.key?.toLowerCase?.() === chainKey.toLowerCase());
+                          if (!lifiChain) {
+                            lifiChain = lifiChains.find(c => c.name?.toLowerCase?.() === selectedChain.toLowerCase());
+                          }
+                          return (
+                            <>
+                              {lifiChain?.logoURI && (
+                                <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 20, height: 20, mr: 1, ml: 0.5 }} />
+                              )}
+                              <Typography sx={{ color: '#97a1b6', fontWeight: 400, fontSize: '1rem', userSelect: 'none' }}>
+                                {selectedChain}
+                              </Typography>
+                            </>
+                          );
+                        })()}
+                      </Box>
                     </Box>
                   </Box>
                   {/* BRIDGE FROM: Token Address + Copy */}
@@ -1791,242 +1800,254 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </Box>
                   </Box>
                 </Box>
-                {/* TO CARD */}
-                <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2, opacity: !symbolOptionSwap ? 0.6 : 1, pointerEvents: !symbolOptionSwap ? 'none' : 'auto', background: !symbolOptionSwap ? 'rgba(54,54,64,0.15)' : undefined }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Box
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          backgroundColor: symbolOptionSwap && selectedBridgeToChainId ? '#219a83' : 'transparent',
-                          border: symbolOptionSwap && selectedBridgeToChainId ? 'none' : '2px solid',
-                          borderColor: !symbolOptionSwap ? 'rgba(81,81,81,1)' : '#219a83',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          mr: 1,
-                        }}
-                      >
-                        {symbolOptionSwap && selectedBridgeToChainId ? (
-                          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="9" cy="9" r="9" fill="#219a83" />
-                            <path d="M5.5 9.5L8 12L12.5 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        ) : (
-                          <Typography sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : '#219a83', fontWeight: 700, fontSize: '1rem' }}>2</Typography>
-                        )}
-                      </Box>
-                      <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge To')}</Typography>
+                {/* TO CARD + Banner Overlay */}
+                <Box sx={{ position: 'relative', mb: 2 }}>
+                  {/* Info Banner absolutely positioned above the card, always visible and not dimmed */}
+                  {!symbolOptionSwap && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 146,
+                        left: 18,
+                        width: '92%',
+                        zIndex: 2,
+                        background: '#219a83',
+                        color: '#fff',
+                        borderRadius: '4px',
+                        py: 1.2,
+                        px: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1rem',
+                        fontWeight: 300,
+                        textAlign: 'center',
+                        boxShadow: 3,
+                      }}
+                    >
+                      Select <span style={{ fontWeight: 700, margin: '0 4px' }}>Current Position</span> in Step 1 to unlock
                     </Box>
-                    {/* Dynamic chain badge for Bridge To (with icon) - only show if selectedBridgeToChainId is set */}
-                    {selectedBridgeToChainId != null && (() => {
-                      const chain = lifiChains.find(c => c.id === selectedBridgeToChainId);
-                      if (!chain) return null;
-                      const colorMeta = CHAIN_COLORS[chain.key?.toUpperCase?.()] || CHAIN_COLORS['ARB'];
-                      return (
-                        <Box className={`chain-${chain.key}`}
+                  )}
+                  <Box sx={{ position: 'relative', borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2, opacity: !symbolOptionSwap ? 0.6 : 1, pointerEvents: !symbolOptionSwap ? 'none' : 'auto', background: !symbolOptionSwap ? 'rgba(54,54,64,0.15)' : undefined }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Box
                           sx={{
-                            borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px',
-                            background: colorMeta.bg,
-                            border: colorMeta.border,
-                            color: colorMeta.color,
-                          }}>
-                          {chain.logoURI && (
-                            <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
+                            width: 24,
+                            height: 24,
+                            borderRadius: '50%',
+                            backgroundColor: symbolOptionSwap && selectedBridgeToChainId ? '#219a83' : 'transparent',
+                            border: symbolOptionSwap && selectedBridgeToChainId ? 'none' : '2px solid',
+                            borderColor: !symbolOptionSwap ? 'rgba(81,81,81,1)' : '#219a83',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            mr: 1,
+                          }}
+                        >
+                          {symbolOptionSwap && selectedBridgeToChainId ? (
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="9" cy="9" r="9" fill="#219a83" />
+                              <path d="M5.5 9.5L8 12L12.5 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          ) : (
+                            <Typography sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : '#219a83', fontWeight: 700, fontSize: '1rem' }}>2</Typography>
                           )}
-                          {chain.name.toUpperCase()}
                         </Box>
-                      );
-                    })()}
-                  </Box>
-                  <Box mb={1.5} display="flex" gap={2}>
-                    <Grid item xs={12} sm={7}>
-                      <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Bridge For')}</Typography>
-                      <Autocomplete
-                        id="bridge_to_token_dropdown"
-                        options={tokenIconsSwapFor?.items ?? []}
-                        getOptionLabel={(option) => option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
-                        value={symbolOptionSwapFor}
-                        onChange={(_e, newValue) => {
-                          if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
-                          onOptionChangeSwapFor(newValue);
-                          if (newValue) {
-                            setInputSearchSwapFor(newValue.name ? `${newValue.sym.toUpperCase()} - ${newValue.name}` : newValue.sym.toUpperCase());
-                          }
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value?.id}
-                        disableClearable={false}
-                        inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` : symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
-                        onInputChange={(_event, newInputValue, reason) => {
-                          if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
-                          if (reason === 'input') {
-                            onOptionChangeSwapFor(null);
-                            setInputSearchSwapFor(newInputValue);
-                          } else if (reason === 'clear') {
-                            onOptionChangeSwapFor(null);
-                            setInputSearchSwapFor('');
-                          }
-                        }}
-                        loading={!tokenIconsSwapFor}
-                        loadingText={<CircularProgress size={18} />}
-                        noOptionsText={tokenIconsSwapFor ? t('NoOptionsOnThisChain') : ''}
-                        disabled={!symbolOptionSwap || !selectedBridgeToChainId}
-                        renderInput={(params) => {
-                          // If locked, override adornments and placeholder
-                          if (!symbolOptionSwap || !selectedBridgeToChainId) {
+                        <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge To')}</Typography>
+                      </Box>
+                      {/* Dynamic chain badge for Bridge To (with icon) - only show if selectedBridgeToChainId is set */}
+                      {selectedBridgeToChainId != null && (() => {
+                        const chain = lifiChains.find(c => c.id === selectedBridgeToChainId);
+                        if (!chain) return null;
+                        const colorMeta = CHAIN_COLORS[chain.key?.toUpperCase?.()] || CHAIN_COLORS['ARB'];
+                        return (
+                          <Box className={`chain-${chain.key}`}
+                            sx={{
+                              borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px',
+                              background: colorMeta.bg,
+                              border: colorMeta.border,
+                              color: colorMeta.color,
+                            }}>
+                            {chain.logoURI && (
+                              <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
+                            )}
+                            {chain.name.toUpperCase()}
+                          </Box>
+                        );
+                      })()}
+                    </Box>
+                    <Box mb={1.5} display="flex" gap={2}>
+                      <Grid item xs={12} sm={7}>
+                        <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Bridge For')}</Typography>
+                        <Autocomplete
+                          id="bridge_to_token_dropdown"
+                          options={tokenIconsSwapFor?.items ?? []}
+                          getOptionLabel={(option) => option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                          value={symbolOptionSwapFor}
+                          onChange={(_e, newValue) => {
+                            if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
+                            onOptionChangeSwapFor(newValue);
+                            if (newValue) {
+                              setInputSearchSwapFor(newValue.name ? `${newValue.sym.toUpperCase()} - ${newValue.name}` : newValue.sym.toUpperCase());
+                            }
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value?.id}
+                          disableClearable={false}
+                          inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` : symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
+                          onInputChange={(_event, newInputValue, reason) => {
+                            if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
+                            if (reason === 'input') {
+                              onOptionChangeSwapFor(null);
+                              setInputSearchSwapFor(newInputValue);
+                            } else if (reason === 'clear') {
+                              onOptionChangeSwapFor(null);
+                              setInputSearchSwapFor('');
+                            }
+                          }}
+                          loading={!tokenIconsSwapFor}
+                          loadingText={<CircularProgress size={18} />}
+                          noOptionsText={tokenIconsSwapFor ? t('NoOptionsOnThisChain') : ''}
+                          disabled={!symbolOptionSwap || !selectedBridgeToChainId}
+                          renderInput={(params) => {
+                            // If locked, override adornments and placeholder
+                            if (!symbolOptionSwap || !selectedBridgeToChainId) {
+                              return (
+                                <TextField
+                                  {...params}
+                                  placeholder={t('Locked')}
+                                  InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                      <InputAdornment position="end">
+                                        <LockIcon sx={{ color: 'rgba(81,81,81,1)' }} />
+                                      </InputAdornment>
+                                    ),
+                                    sx: {
+                                      input: {
+                                        color: 'rgba(81,81,81,1)',
+                                      },
+                                    },
+                                  }}
+                                />
+                              );
+                            }
+                            // ...existing code...
                             return (
                               <TextField
                                 {...params}
-                                placeholder={t('Locked')}
-                                InputProps={{
-                                  ...params.InputProps,
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      <LockIcon sx={{ color: 'rgba(81,81,81,1)' }} />
-                                    </InputAdornment>
-                                  ),
-                                  sx: {
-                                    input: {
-                                      color: 'rgba(81,81,81,1)',
-                                    },
-                                  },
-                                }}
+                                placeholder={t('Search')}
+                                InputProps={params.InputProps}
                               />
                             );
-                          }
-                          // ...existing code...
-                          return (
+                          }}
+                          renderOption={(props, option) => (
+                            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Avatar
+                                src={option.lURI ?? undefined}
+                                alt={option.sym}
+                                sx={{ width: 24, height: 24 }}
+                              />
+                              <Typography variant="body1">
+                                {option.name
+                                  ? `${option.sym.toUpperCase()} - ${option.name}`
+                                  : option.sym.toUpperCase()}
+                              </Typography>
+                            </Box>
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={5} display="flex" flexDirection="column" justifyContent="flex-end">
+                        <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem'}}>{t('Chain')}</Typography>
+                        <Autocomplete
+                          id="bridge_to_chain_dropdown"
+                          options={lifiChains}
+                          getOptionLabel={(option) => option.name}
+                          value={lifiChains.find(chain => chain.id === selectedBridgeToChainId) || null}
+                          onChange={(_e, newValue) => {
+                            setSelectedBridgeToChainId(newValue ? newValue.id : null);
+                            setInputSearchBridgeToChain(newValue ? newValue.name : "");
+                          }}
+                          isOptionEqualToValue={(option, value) => option.id === value?.id}
+                          disableClearable={false}
+                          inputValue={inputSearchBridgeToChain}
+                          onInputChange={(_event, newInputValue, reason) => {
+                            if (reason === 'input') {
+                              setInputSearchBridgeToChain(newInputValue);
+                            } else if (reason === 'clear') {
+                              setInputSearchBridgeToChain("");
+                            }
+                          }}
+                          loading={lifiChainsLoading}
+                          loadingText={<CircularProgress size={18} />}
+                          noOptionsText={lifiChainsError ? t('NoOptionsOnThisChain') : t('SearchChain')}
+                          disabled={!symbolOptionSwap}
+                          renderInput={(params) => (
                             <TextField
                               {...params}
-                              placeholder={t('Search')}
-                              InputProps={params.InputProps}
+                              placeholder={t('SearchChain')}
+                              InputProps={{
+                                ...params.InputProps,
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                ),
+                              }}
                             />
-                          );
-                        }}
-                        renderOption={(props, option) => (
-                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar
-                              src={option.lURI ?? undefined}
-                              alt={option.sym}
-                              sx={{ width: 24, height: 24 }}
-                            />
-                            <Typography variant="body1">
-                              {option.name
-                                ? `${option.sym.toUpperCase()} - ${option.name}`
-                                : option.sym.toUpperCase()}
-                            </Typography>
-                          </Box>
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={5} display="flex" flexDirection="column" justifyContent="flex-end">
-                      <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem'}}>{t('Chain')}</Typography>
-                      <Autocomplete
-                        id="bridge_to_chain_dropdown"
-                        options={lifiChains}
-                        getOptionLabel={(option) => option.name}
-                        value={lifiChains.find(chain => chain.id === selectedBridgeToChainId) || null}
-                        onChange={(_e, newValue) => {
-                          setSelectedBridgeToChainId(newValue ? newValue.id : null);
-                          setInputSearchBridgeToChain(newValue ? newValue.name : "");
-                        }}
-                        isOptionEqualToValue={(option, value) => option.id === value?.id}
-                        disableClearable={false}
-                        inputValue={inputSearchBridgeToChain}
-                        onInputChange={(_event, newInputValue, reason) => {
-                          if (reason === 'input') {
-                            setInputSearchBridgeToChain(newInputValue);
-                          } else if (reason === 'clear') {
-                            setInputSearchBridgeToChain("");
-                          }
-                        }}
-                        loading={lifiChainsLoading}
-                        loadingText={<CircularProgress size={18} />}
-                        noOptionsText={lifiChainsError ? t('NoOptionsOnThisChain') : t('SearchChain')}
-                        disabled={!symbolOptionSwap}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t('SearchChain')}
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <SearchIcon />
-                                </InputAdornment>
-                              ),
+                          )}
+                          renderOption={(props, option) => (
+                            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              {option.logoURI && (
+                                <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
+                              )}
+                              <Typography variant="body1">{option.name}</Typography>
+                            </Box>
+                          )}
+                        />
+                      </Grid>
+                    </Box>
+                    {/* BRIDGE TO: Token Address + Copy */}
+                    {/* Info Banner above Swap For Address row */}
+                    <Box display="flex" alignItems="center" gap={1} mt={1}>
+                      {!symbolOptionSwap ? (<Box sx={{ height: '60px' }}></Box>
+                        ) : symbolOptionSwap && !selectedBridgeToChainId ? (
+                          <Box
+                            sx={{
+                              width: '100%',
+                              background: '#219a83',
+                              color: '#fff',
+                              borderRadius: '4px',
+                              px: 2,
+                              py: 1.2,
+                              mb: 2,
+                              fontWeight: 300,
+                              fontSize: '1rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 1px 6px 0 rgba(33,154,131,0.08)',
                             }}
-                          />
-                        )}
-                        renderOption={(props, option) => (
-                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            {/* Optionally add chain icon here if available: <Avatar src={option.iconUrl} /> */}
-                            <Typography variant="body1">{option.name}</Typography>
+                          >
+                            <span>
+                              Select <b>Chain</b> to unlock <b>Bridge For</b> token selection
+                            </span>
                           </Box>
-                        )}
-                      />
-                    </Grid>
-                  </Box>
-                  {/* BRIDGE TO: Token Address + Copy */}
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    {!symbolOptionSwap ? (
-                      <Box
-                        sx={{
-                          width: '100%',
-                          background: '#219a83',
-                          color: '#fff',
-                          borderRadius: '4px',
-                          py: 1.2,
-                          mb: 2,
-                          px: 2,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '1rem',
-                          fontWeight: 300,
-                          textAlign: 'center',
-                        }}
-                      >
-                        Select <span style={{ fontWeight: 700, margin: '0 4px' }}>Current Position</span> in Step 1 to unlock
-                      </Box>
-                    ) : symbolOptionSwap && !selectedBridgeToChainId ? (
-                      <Box
-                        sx={{
-                          width: '100%',
-                          background: '#219a83',
-                          color: '#fff',
-                          borderRadius: '4px',
-                          px: 2,
-                          py: 1.2,
-                          mb: 2,
-                          fontWeight: 300,
-                          fontSize: '1rem',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 1px 6px 0 rgba(33,154,131,0.08)',
-                        }}
-                      >
-                        <span>
-                          Select <b>Chain</b> to unlock <b>Bridge For</b> token selection
-                        </span>
-                      </Box>
-                    ) : (
-                      <>
-                        <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
-                          {tokenAddressSwapFor ? `${tokenAddressSwapFor.slice(0, 25)}...` : t('SwapForPositionAddress')}
-                        </Typography>
-                        {tokenAddressSwapFor && (
-                          <Tooltip title={t('Copy')}>
-                            <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddressSwapFor); }}>
-                              <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      </>
-                    )}
+                        ) : (
+                        <>
+                          <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+                            {tokenAddressSwapFor ? `${tokenAddressSwapFor.slice(0, 25)}...` : t('SwapForPositionAddress')}
+                          </Typography>
+                          {tokenAddressSwapFor && (
+                            <Tooltip title={t('Copy')}>
+                              <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddressSwapFor); }}>
+                                <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </>
+                      )}
+                    </Box>
                   </Box>
                 </Box>
                 {/* GET ROUTES BUTTON */}
