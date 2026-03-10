@@ -1,3 +1,6 @@
+// LiFi API integration for Bridge feature
+import appAxios from "@/libs/axios/axios";
+
 export interface LifiRoutesRequest {
   fromChainId: number;
   toChainId: number;
@@ -10,8 +13,6 @@ export async function postLifiRoutes(params: LifiRoutesRequest) {
   const resp = await appAxios.post('/api/lifi/routes', params);
   return resp.data;
 }
-// LiFi API integration for Bridge feature
-import appAxios from "@/libs/axios/axios";
 
 export interface LifiTokenResponse {
   address: string;
