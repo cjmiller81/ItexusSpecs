@@ -20,10 +20,10 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { 
-  fetchWallets, 
-  fetchWalletsPortfolio, 
-  useOry, 
+import {
+  fetchWallets,
+  fetchWalletsPortfolio,
+  useOry,
   PasswordResetModal,
   updateTourStatusAsync,
   fetchReactourSettingsAsync
@@ -39,7 +39,7 @@ const TOUR_NAME = "home";
 
 const StartTourButton = () => {
   return (
-    <AnimatedStartTourButton 
+    <AnimatedStartTourButton
       tourId={TOUR_ID}
       sx={{ ml: 2 }}
     />
@@ -262,11 +262,11 @@ useEffect(() => {
     <TourProvider
       steps={steps}
         styles={{
-          popover: (base) => ({ 
-            ...base, 
-            borderRadius: 12, 
-            padding: 16, 
-            background: "#f7f5f2", 
+          popover: (base) => ({
+            ...base,
+            borderRadius: 12,
+            padding: 16,
+            background: "#f7f5f2",
             color: "#6b7280",
             fontSize: "0.95rem",
             lineHeight: 1.8
@@ -292,20 +292,20 @@ useEffect(() => {
             const step = steps[props.currentStep];
             // @ts-ignore - content() signature varies
             const content = typeof step?.content === 'function' ? step.content() : step?.content;
-            
+
             return (
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
                   <Box sx={{
-                    width: 30, 
-                    height: 30, 
+                    width: 30,
+                    height: 30,
                     borderRadius: '50%',
-                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)',
                     color: '#fff',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    fontWeight: 700, 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
                     fontSize: 14,
                     flexShrink: 0,
                     marginTop: "-2px"
@@ -331,13 +331,13 @@ useEffect(() => {
                   <Button
                     variant="contained"
                     onClick={() => setCurrentStep(currentStep - 1)}
-                    sx={{ 
-                      background: '#f7f5f2', 
-                      color: '#4a5568', 
-                      border: '1px solid #e2e8f0', 
-                      boxShadow: 'none', 
+                    sx={{
+                      background: '#f7f5f2',
+                      color: '#4a5568',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: 'none',
                       textTransform: 'none',
-                      '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                      '&:hover': { background: '#f0ece5', boxShadow: 'none' }
                     }}
                   >
                     Prior
@@ -517,10 +517,10 @@ const TourStateSync = ({
 
   useEffect(() => {
     if (!reactourSettings?.tours) return;
-    
+
     const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
     const hasOpenModals = showPasswordResetModal || showWelcomeModal;
-    
+
     if (!viewed && !isOpen && !tourWasOpened && !hasOpenModals) {
       const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
       if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
@@ -533,7 +533,7 @@ const TourStateSync = ({
 
     dispatch(updateTourStatusAsync({
       tourName: TOUR_NAME,
-      update: { 
+      update: {
         step: currentStep,
         viewed: currentStep >= totalSteps - 1 ? true : undefined
       }
