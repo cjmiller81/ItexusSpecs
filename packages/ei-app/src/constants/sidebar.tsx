@@ -1,23 +1,25 @@
-import AutoGraphIcon from "@mui/icons-material/AutoGraph";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import SyncAltIcon from "@mui/icons-material/SyncAlt";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import HomeIcon from "@mui/icons-material/Home";
 import React from "react";
+// Direct imports for better tree-shaking and to avoid barrel import issues
+import HomeIcon from '@mui/icons-material/Home';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import TagIcon from '@mui/icons-material/Tag';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import InfoIcon from '@mui/icons-material/Info';
+import EmailIcon from '@mui/icons-material/Email';
 import i18next, { t } from "i18next";
 import DiscordIcon from "../../public/discord.svg";
 import XIcon from "../../public/x.svg";
 import RedditIcon from "../../public/reddit.svg";
 import TelegramIcon from "../../public/telegram.svg";
 import GitHubIcon from "../../public/gitHub.svg";
+import OpenSourceIcon from "../../public/openSource.svg";
 import { Theme, useTheme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import { MergeIcon } from "lucide-react";
-import SourceIcon from '@mui/icons-material/Source';
-import TagIcon from '@mui/icons-material/Tag';
-import InfoIcon from '@mui/icons-material/Info';
-import SvgIcon from "@mui/icons-material/AutoGraph";
+import SvgIcon from "@mui/material/SvgIcon";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -25,7 +27,7 @@ function getHomeItems(): SidebarListItem[] {
   return [
     {
       title: t("Home", { ns: "SideBar" }),
-      icon: <HomeIcon />,
+      icon: <HomeIcon sx={{ fontSize: 16.5 }} />,
       open: false,
       href: "/",
     },
@@ -36,7 +38,7 @@ function getPlatformsItems(hasPageAccess: (pagePath: string) => boolean): Sideba
   return [
     {
       title: t("Investing", { ns: "SideBar" }),
-      icon: <AutoGraphIcon />,
+      icon: <AutoGraphIcon sx={{ fontSize: 16.5 }} />,
       children: [
         {
           title: t("MarketCapWeighted", { ns: "SideBar" }),
@@ -50,23 +52,24 @@ function getPlatformsItems(hasPageAccess: (pagePath: string) => boolean): Sideba
     },
     {
       title: "Trading",
-      icon: <SyncAltIcon />,
+      icon: <SyncAltIcon sx={{ fontSize: 16.5 }} />,
       children: [
         {
           title: t("TradingSubpage", { ns: "SideBar" }),
           href: "/charts",
           disabled: !hasPageAccess("/charts"),
-        },  
-        {
-          title: t("Derivatives", { ns: "SideBar" }),
-          href: "/derivatives",
-          disabled: !hasPageAccess("/derivatives"),
         },
+        // Derivatives removed - see ARCHIVED_FEATURES.md for restoration code
+        // {
+        //   title: t("Derivatives", { ns: "SideBar" }),
+        //   href: "/derivatives",
+        //   disabled: !hasPageAccess("/derivatives"),
+        // },
       ],
     },
     {
       title: t("Income", { ns: "SideBar" }),
-      icon: <CurrencyExchangeIcon />,
+      icon: <CurrencyExchangeIcon sx={{ fontSize: 16.5 }} />,
       children: [
         {
           title: t("LiquidityPools", { ns: "IncomeSection" }),
@@ -87,7 +90,7 @@ function getToolsItems(hasPageAccess: (pagePath: string) => boolean): SidebarLis
   return [
     {
       title: t("Wallets", { ns: "SideBar" }),
-      icon: <AccountBalanceWalletIcon />,
+      icon: <AccountBalanceWalletIcon sx={{ fontSize: 16.5 }} />,
       children: [
         {
           title: t("Decentralized", { ns: "SideBar" }),
@@ -103,8 +106,9 @@ function getToolsItems(hasPageAccess: (pagePath: string) => boolean): SidebarLis
 
     {
       title: t("TradeAggregator", { ns: "SideBar" }),
-      icon: <MergeIcon width="21px"
-        height="21px" />,
+      icon: <MergeIcon width={16.5}
+        height={16.5}
+        strokeWidth={2} />,
       children: [
         {
           title: t("DEX", { ns: "SideBar" }),
@@ -127,7 +131,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
   return [
     {
       title: t("Social", { ns: "SideBar" }),
-      icon: <TagIcon />, 
+      icon: <TagIcon sx={{ fontSize: 16.5 }} />,
       href: "/social",
       open: false,
       children: [
@@ -135,8 +139,8 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
           title: t("Telegram", { ns: "SideBar" }),
           icon: (
             <TelegramIcon
-              width="21px"
-              height="21px"
+              width={18}
+              height={18}
               fill={fillColor}
               stroke={fillColor}
             />
@@ -147,8 +151,8 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
           title: t("X", { ns: "SideBar" }),
           icon: (
             <XIcon
-              width="21px"
-              height="21px"
+              width={18}
+              height={18}
               fill={fillColor}
               stroke={fillColor}
             />
@@ -159,7 +163,15 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
     },
     {
       title: t("OpenSourceCommunity", { ns: "SideBar" }),
-      icon: <SourceIcon />,
+      icon: (
+        <span style={{ color: fillColor, display: 'flex', alignItems: 'center', width: 16.5, height: 16.5 }}>
+          <OpenSourceIcon
+            width={16.5}
+            height={16.5}
+            style={{ width: '16.5px', height: '16.5px', display: 'block' }}
+          />
+        </span>
+      ),
       href: "/community",
       open: false,
       children: [
@@ -167,8 +179,8 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
           title: t("Discord", { ns: "SideBar" }),
           icon: (
             <DiscordIcon
-              width="21px"
-              height="21px"
+              width={18}
+              height={18}
               fill={fillColor}
               stroke={fillColor}
             />
@@ -179,8 +191,8 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
           title: t("GitHub", { ns: "SideBar" }),
           icon: (
             <GitHubIcon
-              width="23px"
-              height="23px"
+              width={18}
+              height={18}
               fill={fillColor}
               stroke={fillColor}
             />
@@ -191,7 +203,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
     },
     {
       title: t("Updates", { ns: "SideBar" }),
-      icon: <NotificationsActiveIcon />,
+      icon: <NotificationsActiveIcon sx={{ fontSize: 16.5 }} />,
       open: false,
       children: [
         {
@@ -208,16 +220,28 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
 }
 
 function getHelpItems(): SidebarListItem[] {
-  const ThemedIcon = () => {
+  const ThemedEmailIcon = () => {
     const theme = useTheme();
     const color = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
-    return <SvgIcon component={InfoIcon} sx={{ fontSize: 21, color }} />;
+    return <SvgIcon component={EmailIcon} sx={{ fontSize: 16.5, color }} />;
+  };
+
+  const ThemedInfoIcon = () => {
+    const theme = useTheme();
+    const color = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
+    return <SvgIcon component={InfoIcon} sx={{ fontSize: 16.5, color }} />;
   };
 
   return [
     {
+      title: t("Contact", { ns: "SideBar" }),
+      icon: <ThemedEmailIcon />,
+      open: false,
+      href: "mailto:info@elaninsights.com",
+    },
+    {
       title: t("SupportAndLegal", { ns: "SideBar" }),
-      icon: <ThemedIcon />,
+      icon: <ThemedInfoIcon />,
       open: false,
       href: "/support",
     },

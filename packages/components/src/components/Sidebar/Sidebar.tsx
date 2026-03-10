@@ -102,7 +102,7 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
         </StyledDrawerHeader>
         <Box sx={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)" }}>
           <Box sx={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-            <SimpleBarStyled ref={simpleBarRef} sx={{ height: "100%" }}>
+            <SimpleBarStyled ref={simpleBarRef} sx={{ height: "100%", paddingTop: "16px" }}>
               {sidebarItems.filter(item => !item.isDisclaimer).map((item, sidebarItemindex) => (
                 <Box key={sidebarItemindex}>
                   <SidebarSection
@@ -115,9 +115,8 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
                     open={open}
                     toggleSide={toggleSide}
                     isDisclaimer={item.isDisclaimer}
+                    isLastInGroup={true}
                   />
-                  {sidebarItemindex !== sidebarItems.filter(item => !item.isDisclaimer).length - 1 && <Divider 
-                  sx={{backgroundColor: theme.palette.mode === "light" ? "rgba(255, 255, 255, 0.12)" : undefined}}/>}
                 </Box>
               ))}
               
