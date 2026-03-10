@@ -1,15 +1,15 @@
-import { CHAIN_COLORS, CHAIN_MAP } from "./bridgeChains";
-import { fetchLifiChains, sortChains, LifiChain } from "./lifiChains";
-import { BridgeRoutesMockup } from "./bridgeRoutesMockup";
-import {
-  coinGeckoChainId,
-  getGasTokenSymbol,
-  formatNumberWithCommas,
-  extractSymbol,
-  generateErrorMessage
-} from "./tradeAggregatorUtils";
 
 import React, { useEffect, useState } from "react";
+import {
+  getGasTokenSymbol,
+  formatNumberWithCommas,
+  generateErrorMessage,
+  coinGeckoChainId
+} from "./tradeAggregatorUtils";
+
+import { BridgeTab } from "./BridgeTab";
+import { toRawAmount } from "./toRawAmount";
+import { postLifiRoutes } from "./lifiApi";
 import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextField, TableCell, TableRow, TableHead,
   Table,
   TableContainer,
@@ -23,14 +23,11 @@ import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextF
   Avatar,
   Stack,
   CircularProgress,
-  Collapse,
 } from "@mui/material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import LockIcon from '@mui/icons-material/Lock';
 import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useSelector } from "react-redux";
 import { RootState } from "@/libs/redux/RootReducer";
@@ -55,7 +52,6 @@ import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
 import { useSubscription } from "components";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface NewPositionSectionProps {
     selectedWallet: Wallet | null;
@@ -65,6 +61,10 @@ interface NewPositionSectionProps {
   }
 
 export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow})=> {
+  const [selectedTokenRowSwap, setSelectedTokenRowSwap] = useState<WalletBalance | null>(null);
+  const [selectedTokenRowBridge, setSelectedTokenRowBridge] = useState<WalletBalance | null>(null);
+  const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
+  const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
   const theme = useTheme();
   const { t } = useTranslation("NewPositionSection");
   const { getTradeAggregatorQuoteLimit } = useSubscription();
@@ -72,14 +72,18 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
-  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
-  const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
+  const [symbolOptionSwapForSwap, setSymbolOptionSwapForSwap] = useState<TokenSearchItem | null>(null);
+  const [symbolOptionSwapForBridge, setSymbolOptionSwapForBridge] = useState<TokenSearchItem | null>(null);
+  const [inputSearchSwapForSwap, setInputSearchSwapForSwap] = useState("");
+  const [inputSearchSwapForBridge, setInputSearchSwapForBridge] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
   const [useMax,setUseMax] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [lastUpdatedSwap, setLastUpdatedSwap] = useState<string | null>(null);
+  const [lastUpdatedBridge, setLastUpdatedBridge] = useState<string | null>(null);
+  const [hasAttemptedSubmitSwap, setHasAttemptedSubmitSwap] = useState(false);
+  const [hasAttemptedSubmitBridge, setHasAttemptedSubmitBridge] = useState(false);
   const [quoteData, setQuoteData] = useState<any[]>([]);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
@@ -101,31 +105,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
   const [noRouteOpen, setNoRouteOpen] = useState(false);
   const [invalidQuote, setInvalidQuote] = useState<OneInchQuoteResponse[]>([]);
-  const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
-  const [lifiChains, setLifiChains] = useState<LifiChain[]>([]);
-  const [lifiChainsLoading, setLifiChainsLoading] = useState(false);
-  const [lifiChainsError, setLifiChainsError] = useState(false);
-  const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
-    // Fetch LI.FI chains for Bridge To dropdown (with caching/fallback)
-    useEffect(() => {
-      let ignore = false;
-      setLifiChainsLoading(true);
-      fetchLifiChains()
-        .then((chains) => {
-          if (!ignore) {
-            setLifiChains(chains);
-            setLifiChainsError(false);
-          }
-        })
-        .catch(() => {
-          if (!ignore) setLifiChainsError(true);
-        })
-        .finally(() => {
-          if (!ignore) setLifiChainsLoading(false);
-        });
-      return () => { ignore = true; };
-    }, []);
-  
+  const onClearBridgeToTokenAddress = React.useCallback(() => {}, []);
+    
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
   };
@@ -161,6 +142,59 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   };
 
   useEffect(() => {
+      if (activeTab !== "bridge" || !selectedTokenRowBridge) return;
+      if (!selectedTokenRowBridge.tokenName || !selectedTokenRowBridge.chain) return;
+      if (!symbolOptionSwapForBridge) return;
+      const tokenPositionId = (selectedTokenRowBridge as any).id || undefined;
+      const swapForId = (symbolOptionSwapForBridge as any).id || undefined;
+      dispatch(
+        fetchQuoteParameters({
+          tokenPositionSymbol: selectedTokenRowBridge.tokenName,
+          chainName: selectedTokenRowBridge.chain,
+          qty: Number(newBalance) || 1,
+          swapForSymbol: symbolOptionSwapForBridge.sym,
+          tokenPositionId,
+          swapForId,
+        })
+      ).then((result) => {
+        if (fetchQuoteParameters.fulfilled.match(result)) {
+          const data = result.payload;
+          if (data?.fromTokenAddress && data?.toTokenAddress) {
+            setTokenAddress(data.fromTokenAddress);
+            setTokenAddressSwapFor(data.toTokenAddress);
+          } else {
+            setTokenAddress(null);
+            setTokenAddressSwapFor(null);
+          }
+        } else {
+          setTokenAddress(null);
+          setTokenAddressSwapFor(null);
+        }
+      });
+    }, [selectedTokenRowBridge, activeTab, symbolOptionSwapForBridge, newBalance]);
+
+  useEffect(() => {
+    if (activeTab === "bridge" && selectedTokenRow) {
+      setSelectedTokenRowBridge(selectedTokenRow);
+    }
+  }, [selectedTokenRow, activeTab]);
+
+  // Reset Bridge For when Bridge To chain is cleared
+    useEffect(() => {
+      if (activeTab === "bridge" && selectedBridgeToChainId === null) {
+        setSymbolOptionSwapForBridge(null);
+        setInputSearchSwapForBridge("");
+      }
+    }, [selectedBridgeToChainId, activeTab]);
+
+    // Always clear Swap For Address when Bridge For is cleared (Bridge tab)
+  useEffect(() => {
+    if (activeTab === "bridge" && symbolOptionSwapForBridge === null) {
+      setTokenAddressSwapFor(null);
+    }
+  }, [activeTab, symbolOptionSwapForBridge]);
+
+  useEffect(() => {
     const hasError = Boolean(error || quoteError);
 
     if (hasError && !hasShownErrorOnce) {
@@ -194,9 +228,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       token.tokenName?.toUpperCase() === symbolOptionSwap?.sym?.toUpperCase() &&
       token.chain?.toUpperCase() === selectedChain.toUpperCase()
     );
-    
-
-    
     setBalanceRaw(matchedToken?.balance);
   }, [symbolOptionSwap, selectedChain])
 
@@ -205,16 +236,20 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setTokenAddresses([]);
       setTokenIcons(null);
       setSymbolOptionSwap(null);
-      setSymbolOptionSwapFor(null);
-      setInputSearchSwapFor("");
+      setSymbolOptionSwapForSwap(null);
+      setInputSearchSwapForSwap("");
+      setSymbolOptionSwapForBridge(null);
+      setInputSearchSwapForBridge("");
       setSelectedChain("");
       setNewBalance("");
       return;
     }
       setTokenIcons(null);
       setSymbolOptionSwap(null);
-      setSymbolOptionSwapFor(null);
-      setInputSearchSwapFor("");
+      setSymbolOptionSwapForSwap(null);
+      setInputSearchSwapForSwap("");
+      setSymbolOptionSwapForBridge(null);
+      setInputSearchSwapForBridge("");
       setSelectedChain("");
       setNewBalance("");
     
@@ -225,8 +260,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     setTokenAddresses(addresses);
   }, [selectedWallet, filteredRows]);
 
+  // Swap tab: fetch icons for Swap For dropdown
   useEffect(() => {
-    if (!selectedChain) return;
+    if (activeTab !== 'swap' || !selectedChain) return;
 
     const timeoutId = setTimeout(() => {
       const fetchIconsForSwapFor = async () => {
@@ -235,7 +271,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
         try {
           const result = await iconsApi.getIcons(
-            inputSearchSwapFor,
+            inputSearchSwapForSwap,
             0,
             chainId,
             500
@@ -245,12 +281,11 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           console.error('Error loading icons for swap for:', error);
         }
       };
-
       fetchIconsForSwapFor();
     }, 450);
 
     return () => clearTimeout(timeoutId);
-  }, [selectedChain, inputSearchSwapFor]);
+  }, [activeTab, selectedChain, inputSearchSwapForSwap]);
 
 
   useEffect(() => {
@@ -311,19 +346,29 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     ? balanceRaw.toFixed(5)
     : "0.0000";
 
-  useEffect(() => {
-    if (hasAttemptedSubmit) {
+    useEffect(() => {
+    if (hasAttemptedSubmitSwap) {
       setErrorQuote(quoteError);
       setErrorQuoteParametrs(error);
     } else {
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
     }
-  }, [quoteError, error, hasAttemptedSubmit]);
+  }, [quoteError, error, hasAttemptedSubmitSwap]);
+
+  useEffect(() => {
+    if (hasAttemptedSubmitBridge) {
+      setErrorQuote(quoteError);
+      setErrorQuoteParametrs(error);
+    } else {
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
+    }
+  }, [quoteError, error, hasAttemptedSubmitBridge]);
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
-      if (quote.length && symbolOptionSwap && symbolOptionSwapFor) {
+      if (quote.length && symbolOptionSwap && symbolOptionSwapForSwap) {
 
         let chainPrice = 0;
         let swapForToken: any = null;
@@ -362,7 +407,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           ).unwrap();
 
           swapForToken = await dispatch(
-            fetchToken({ id: symbolOptionSwapFor.id })
+            fetchToken({ id: symbolOptionSwapForSwap.id })
           ).unwrap();
 
         } catch (err) {
@@ -411,11 +456,11 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               version: name,
             });
 
-          } else if (isOneInch && symbolOptionSwap && symbolOptionSwapFor && selectedChain) {
+          } else if (isOneInch && symbolOptionSwap && symbolOptionSwapForSwap && selectedChain) {
             deepLink = generateOneInchLink({
               chainName: selectedChain,
               srcTokenAddress: symbolOptionSwap.sym.toUpperCase(),
-              dstTokenAddress: symbolOptionSwapFor.sym.toUpperCase(),
+              dstTokenAddress: symbolOptionSwapForSwap.sym.toUpperCase(),
             });
           }
 
@@ -447,7 +492,92 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     };
 
     fetchProtocolsAndTokens();
-  }, [quote]);
+  }, [activeTab, quote, symbolOptionSwap, symbolOptionSwapForSwap, tokenAddress, tokenAddressSwapFor, newBalance, selectedChain, quoteLoading, dispatch]);
+
+  // Bridge: quotes processing for Bridge tab
+  useEffect(() => {
+    if (activeTab !== 'bridge') return;
+    const fetchProtocolsAndTokens = async () => {
+      if (quote.length && symbolOptionSwap && symbolOptionSwapForBridge) {
+        let chainPrice = 0;
+        let swapForToken: any = null;
+        try {
+          const coinGeckoChainId = (chain: string) => {
+            switch (chain.toLowerCase()) {
+              case "ethereum":
+              case "optimism":
+              case "arbitrum":
+              case "base":
+              case "zksync":
+              case "gnosis":
+              case "linea":
+              case "sonic":
+              case "unichain":
+                return "ethereum";
+              case "bnb chain":
+                return "binancecoin";
+              case "polygon":
+                return "matic-network";
+              case "avalanche":
+                return "avalanche-2";
+              default:
+                return "ethereum";
+            }
+          };
+          const chainPosition = await dispatch(
+            fetchToken({ id: coinGeckoChainId(selectedChain) })
+          ).unwrap();
+          chainPrice = Number(chainPosition.price.toString());
+          await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
+          swapForToken = await dispatch(
+            fetchToken({ id: symbolOptionSwapForBridge.id })
+          ).unwrap();
+        } catch (err) {
+          console.error("Error fetching tokens:", err);
+        }
+        let baseFee = 0;
+        try {
+          const response = await dispatch(fetchGas({ chainName: selectedChain }));
+          if (selectedChain.toUpperCase() !== "BNB CHAIN") {
+            baseFee = response.payload.baseFee;
+          } else {
+            baseFee = response.payload.standard;
+          }
+        } catch (err) {
+          console.error("Error fetching gas:", err);
+        }
+        setInvalidQuote(quote.filter(x => x.error));
+        const processedData = quote.filter(x => !x.error).map((q) => {
+          const firstProtocol = q.protocols[0][0];
+          const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+          const name = names[0];
+          let deepLink: string | null = null;
+          // Bridge deepLink may differ if needed
+          let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
+          const price = estAmount / parseFloat(newBalance);
+          const gasUSD = parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3));
+          if (swapForToken && swapForToken.price) {
+            estAmount = estAmount - (gasUSD / swapForToken.price);
+          }
+          return {
+            name: names[0],
+            gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
+            price: price.toFixed(4),
+            gasUSD: gasUSD,
+            estAmount: estAmount.toFixed(4),
+            deepLink,
+          };
+        });
+        if (processedData.length === 0 && quoteLoading === false) {
+          setShowNoQuotesMessage(true);
+        } else {
+          setShowNoQuotesMessage(false);
+        }
+        setQuoteData(processedData);
+      }
+    };
+    fetchProtocolsAndTokens();
+  }, [activeTab, quote, symbolOptionSwap, symbolOptionSwapForBridge, tokenAddress, tokenAddressSwapFor, newBalance, selectedChain, quoteLoading, dispatch]);
 
   useEffect(() => {
     if (
@@ -522,6 +652,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     } else if (selectedTokenRow && !tokenIcons?.items) {
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
     }
+    setSymbolOptionSwapForSwap(null);
+    setInputSearchSwapForSwap("");
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
   }, [selectedTokenRow, tokenIcons]);
 
   useEffect(() => {
@@ -567,8 +701,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   useEffect(() => {
     if (!selectedTokenRow) {
-      setSymbolOptionSwapFor(null);
-      setInputSearchSwapFor("");
+      setSymbolOptionSwapForSwap(null);
+      setInputSearchSwapForSwap("");
+      setSymbolOptionSwapForBridge(null);
+      setInputSearchSwapForBridge("");
       setSelectedChain("");
       setSymbolOptionSwap(null);
       setSelectedToken(null);
@@ -606,12 +742,12 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [useMax, maxBalance]);
 
   useEffect(() => {
-    if (hasAttemptedSubmit) {
+    if (hasAttemptedSubmitSwap) {
       setErrorMessage(generateErrorMessage({
         symbolOptionSwap,
         filteredRows,
         selectedChain,
-        symbolOptionSwapFor,
+        symbolOptionSwapFor: symbolOptionSwapForSwap,
         newBalance,
         t
       }));
@@ -621,98 +757,131 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setTokenAddress(null);
       setTokenAddressSwapFor(null);
     }
-  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapForSwap, newBalance, hasAttemptedSubmitSwap]);
 
-const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
-  setShowNoQuotesMessage(false);
-  if (value && value.id === symbolOptionSwap?.id) {
-    setSymbolOptionSwapFor(value);
-    setErrorMessage(t("SameTokenError"));
-    return;
-  }
-
-  setSymbolOptionSwapFor(value);
-  setErrorMessage(null);
-
-  // --- Bridge clear logic: if in Bridge tab and Bridge For is cleared, reset bridge results ---
-  if (activeTab === "bridge" && value === null) {
-    setQuoteData([]);
-    setLastUpdated(null);
-    setErrorMessage(null);
-    setShowNoQuotesMessage(false);
-    setErrorQuote(null);
-    setErrorQuoteParametrs(null);
-    setTokenAddress(null);
-    setTokenAddressSwapFor(null);
-    setHasAttemptedSubmit(false);
-  }
-
-  // Fetch token addresses for display if both tokens are selected
-  if (symbolOptionSwap && value && selectedChain && newBalance) {
-    dispatch(
-      fetchQuoteParameters({
-        tokenPositionSymbol: symbolOptionSwap.sym,
-        chainName: selectedChain,
-        qty: Number(newBalance),
-        swapForSymbol: value.sym,
-        tokenPositionId: symbolOptionSwap.id,
-        swapForId: value.id,
-      })
-    ).then((result) => {
-      if (fetchQuoteParameters.fulfilled.match(result)) {
-        const data = result.payload;
-        if (data?.fromTokenAddress && data?.toTokenAddress) {
-          setTokenAddress(data.fromTokenAddress);
-          setTokenAddressSwapFor(data.toTokenAddress);
-        } else {
-          setTokenAddress(null);
-          setTokenAddressSwapFor(null);
-        }
-      } else {
-        setTokenAddress(null);
-        setTokenAddressSwapFor(null);
-      }
-    });
-  }
-};
-
-  const onOptionChangeSwap = (value: TokenSearchItem  | null) => {
-    setShowNoQuotesMessage(false);
-    if (value && value.id === symbolOptionSwapFor?.id) {
-      setSymbolOptionSwap(value);
-      setErrorMessage(t("SameTokenError"));
-      return;
+  useEffect(() => {
+    if (hasAttemptedSubmitBridge) {
+      setErrorMessage(generateErrorMessage({
+        symbolOptionSwap,
+        filteredRows,
+        selectedChain,
+        symbolOptionSwapFor: symbolOptionSwapForBridge,
+        newBalance,
+        t
+      }));
+      setQuoteData([]);
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
     }
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapForBridge, newBalance, hasAttemptedSubmitBridge]);
 
-    if(value === null)
-    {
-      onSelectedTokenChange?.(null,null);
-      // --- Bridge clear logic: if in Bridge tab and Current Position is cleared, reset bridge results ---
-      if (activeTab === "bridge") {
+  const onOptionChangeSwapFor = (value: TokenSearchItem | null, tab: "swap" | "bridge") => {
+    setShowNoQuotesMessage(false);
+    if (tab === "swap") {
+      if (value && value.id === symbolOptionSwap?.id) {
+        setSymbolOptionSwapForSwap(value);
+        setErrorMessage(t("SameTokenError"));
+        return;
+      }
+      setSymbolOptionSwapForSwap(value);
+      setErrorMessage(null);
+      if (value === null) {
+        setHasAttemptedSubmitSwap(false);
+        setLastUpdatedSwap(null);
+      }
+
+      if (symbolOptionSwap && value && selectedChain && newBalance) {
+        dispatch(
+          fetchQuoteParameters({
+            tokenPositionSymbol: symbolOptionSwap.sym,
+            chainName: selectedChain,
+            qty: Number(newBalance),
+            swapForSymbol: value.sym,
+            tokenPositionId: symbolOptionSwap.id,
+            swapForId: value.id,
+          })
+        ).then((result) => {
+          if (fetchQuoteParameters.fulfilled.match(result)) {
+            const data = result.payload;
+            if (data?.fromTokenAddress && data?.toTokenAddress) {
+              setTokenAddress(data.fromTokenAddress);
+              setTokenAddressSwapFor(data.toTokenAddress);
+            } else {
+              setTokenAddress(null);
+              setTokenAddressSwapFor(null);
+            }
+          } else {
+            setTokenAddress(null);
+            setTokenAddressSwapFor(null);
+          }
+        });
+      }
+    } else {
+      if (value && value.id === symbolOptionSwap?.id) {
+        setSymbolOptionSwapForBridge(value);
+        setErrorMessage(t("SameTokenError"));
+        return;
+      }
+      setSymbolOptionSwapForBridge(value);
+      setErrorMessage(null);
+      if (value === null) {
         setQuoteData([]);
-        setLastUpdated(null);
+        setLastUpdatedBridge(null);
         setErrorMessage(null);
         setShowNoQuotesMessage(false);
         setErrorQuote(null);
         setErrorQuoteParametrs(null);
         setTokenAddress(null);
         setTokenAddressSwapFor(null);
-        setHasAttemptedSubmit(false);
+        setHasAttemptedSubmitBridge(false);
       }
     }
+  };
+
+  const onOptionChangeSwap = (value: TokenSearchItem | null) => {
+    setShowNoQuotesMessage(false);
+
+    const swapFor = activeTab === "swap" ? symbolOptionSwapForSwap : symbolOptionSwapForBridge;
+
+    if (value && swapFor && value.id === swapFor.id) {
+      setSymbolOptionSwap(value);
+      setErrorMessage(t("SameTokenError"));
+      return;
+    }
+
+    if (value === null) {
+      onSelectedTokenChange?.(null, null);
+      if (activeTab === "swap") {
+        setHasAttemptedSubmitSwap(false);
+        setLastUpdatedSwap(null);
+      } else if (activeTab === "bridge") {
+        setQuoteData([]);
+        setLastUpdatedBridge(null);
+        setErrorMessage(null);
+        setShowNoQuotesMessage(false);
+        setErrorQuote(null);
+        setErrorQuoteParametrs(null);
+        setTokenAddress(null);
+        setTokenAddressSwapFor(null);
+        setHasAttemptedSubmitBridge(false);
+      }
+    }
+
     setSymbolOptionSwap(value);
     setErrorMessage(null);
 
     // Fetch token addresses for display if both tokens are selected
-    if (value && symbolOptionSwapFor && selectedChain && newBalance) {
+    if (value && swapFor && selectedChain && newBalance) {
       dispatch(
         fetchQuoteParameters({
           tokenPositionSymbol: value.sym,
           chainName: selectedChain,
           qty: Number(newBalance),
-          swapForSymbol: symbolOptionSwapFor.sym,
+          swapForSymbol: swapFor.sym,
           tokenPositionId: value.id,
-          swapForId: symbolOptionSwapFor.id,
+          swapForId: swapFor.id,
         })
       ).then((result) => {
         if (fetchQuoteParameters.fulfilled.match(result)) {
@@ -732,30 +901,30 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
     }
   };
 
-  const handleFetchQuotes = () => {
-    setHasAttemptedSubmit(true);
+
+  const handleFetchQuotesSwap = () => {
+    setHasAttemptedSubmitSwap(true);
+    const swapFor = symbolOptionSwapForSwap;
     const err = generateErrorMessage({
-        symbolOptionSwap,
-        filteredRows,
-        selectedChain,
-        symbolOptionSwapFor,
-        newBalance,
-        t
-      });      
-  
+      symbolOptionSwap,
+      filteredRows,
+      selectedChain,
+      symbolOptionSwapFor: swapFor,
+      newBalance,
+      t
+    });
     if (err) {
       setQuoteData([]);
       setErrorMessage(err);
-      setLastUpdated(null);
+      setLastUpdatedSwap(null);
       setTokenAddress(null);
       setTokenAddressSwapFor(null);
     } else {
       setErrorMessage(null);
-  
       const fetchAndSetAddresses = async () => {
         if (
           symbolOptionSwap &&
-          symbolOptionSwapFor &&
+          swapFor &&
           selectedChain &&
           newBalance
         ) {
@@ -764,12 +933,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               tokenPositionSymbol: symbolOptionSwap.sym,
               chainName: selectedChain,
               qty: Number(newBalance),
-              swapForSymbol: symbolOptionSwapFor.sym,
+              swapForSymbol: swapFor.sym,
               tokenPositionId: symbolOptionSwap.id,
-              swapForId: symbolOptionSwapFor.id,
+              swapForId: swapFor.id,
             })
           );
-    
           if (fetchQuoteParameters.fulfilled.match(result)) {
             const data = result.payload;
             if (data?.fromTokenAddress && data?.toTokenAddress) {
@@ -787,9 +955,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
           }
         }
       };
-    
       fetchAndSetAddresses();
-      
       const now = new Date();
       const formatted = now.toLocaleString(undefined, {
         year: 'numeric',
@@ -799,19 +965,143 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
         minute: '2-digit',
         hour12: false,
       });
-  
-      setLastUpdated(formatted);
+      setLastUpdatedSwap(formatted);
     }
   };
 
+  const handleFetchQuotesBridge = async () => {
+    setHasAttemptedSubmitBridge(true);
+    const swapFor = symbolOptionSwapForBridge;
+    const err = generateErrorMessage({
+      symbolOptionSwap,
+      filteredRows,
+      selectedChain,
+      symbolOptionSwapFor: swapFor,
+      newBalance,
+      t
+    });
+    if (err) {
+      setQuoteData([]);
+      setErrorMessage(err);
+      setLastUpdatedBridge(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
+      return;
+    } else {
+      setErrorMessage(null);
+      const fetchAndSetAddresses = async () => {
+        if (
+          symbolOptionSwap &&
+          swapFor &&
+          selectedChain &&
+          newBalance
+        ) {
+          const result = await dispatch(
+            fetchQuoteParameters({
+              tokenPositionSymbol: symbolOptionSwap.sym,
+              chainName: selectedChain,
+              qty: Number(newBalance),
+              swapForSymbol: swapFor.sym,
+              tokenPositionId: symbolOptionSwap.id,
+              swapForId: swapFor.id,
+            })
+          );
+          if (fetchQuoteParameters.fulfilled.match(result)) {
+            const data = result.payload;
+            if (data?.fromTokenAddress && data?.toTokenAddress) {
+              setTokenAddress(data.fromTokenAddress);
+              setTokenAddressSwapFor(data.toTokenAddress);
+              setShouldFetchQuote(true);
+            } else {
+              setTokenAddress(null);
+              setTokenAddressSwapFor(null);
+            }
+          } else {
+            setTokenAddress(null);
+            setTokenAddressSwapFor(null);
+            console.error("Error API:", result);
+          }
+        }
+      };
+      fetchAndSetAddresses();
+      const now = new Date();
+      const formatted = now.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setLastUpdatedBridge(formatted);
+    }
+
+    /*setErrorMessage(null);
+
+    // Get token addresses and decimals from symbolOptionSwap and swapFor
+    // TokenSearchItem.address is string[], use first address or id fallback
+    const fromTokenAddress = Array.isArray(symbolOptionSwap?.address) ? symbolOptionSwap.address[0] : symbolOptionSwap?.id || '';
+    const toTokenAddress = Array.isArray(swapFor?.address) ? swapFor.address[0] : swapFor?.id || '';
+    // TODO: Get decimals from token details if available, fallback to 18
+    const fromTokenDecimals = 18;
+    // Convert fromAmount to raw amount using BigInt
+    let fromAmountRaw = '0';
+    try {
+      fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
+    } catch (e) {
+      setErrorMessage(t("Invalid amount"));
+      setQuoteData([]);
+      return;
+    }
+
+    // POST to /api/lifi/routes using lifiApi
+    try {
+      const fromChainId = coinGeckoChainId(selectedChain) || 1;
+      const toChainId = selectedBridgeToChainId || 1;
+      const data = await postLifiRoutes({
+        fromChainId,
+        toChainId,
+        fromAmount: fromAmountRaw,
+        fromTokenAddress: String(fromTokenAddress),
+        toTokenAddress: String(toTokenAddress),
+      });
+      if (data.routes && Array.isArray(data.routes)) {
+        setQuoteData(data.routes);
+        setErrorMessage(null);
+      } else {
+        setQuoteData([]);
+        setErrorMessage(t("No bridge routes found"));
+      }
+    } catch (e) {
+      setErrorMessage(t("Error fetching bridge routes"));
+      setQuoteData([]);
+      return;
+    }
+
+    setTokenAddress(String(fromTokenAddress));
+    setTokenAddressSwapFor(String(toTokenAddress));
+    const now = new Date();
+    const formatted = now.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+    setLastUpdatedBridge(formatted);*/
+  };
+
   // Find the selected position from dropdown and update fields as if selected from table
-  const handleCurrentPositionDropdownChange = (event: any, value: TokenSearchItem | null) => {
+  const handleCurrentPositionDropdownChange = async (event: any, value: TokenSearchItem | null) => {
     if (!value) {
       setSymbolOptionSwap(null);
       setSelectedToken(null);
       setSelectedChain("");
       setNewBalance("");
       onSelectedTokenChange?.(null, null);
+      setSelectedTokenRowSwap(null);
+      setSelectedTokenRowBridge(null);
       return;
     }
     setSymbolOptionSwap(value);
@@ -824,10 +1114,14 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
       setSelectedChain(matchedToken.chain?.toUpperCase() || "");
       setNewBalance(matchedToken.balance?.toString() || "");
       onSelectedTokenChange?.(matchedToken.tokenName, matchedToken.chain);
+      setSelectedTokenRowSwap(matchedToken);
+      setSelectedTokenRowBridge(matchedToken);
     } else {
       setSelectedChain("");
       setNewBalance("");
       onSelectedTokenChange?.(value.sym, null);
+      setSelectedTokenRowSwap(null);
+      setSelectedTokenRowBridge(null);
     }
   };
 
@@ -1112,7 +1406,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   <Box>
                     <Stack direction="row" alignItems="center" spacing={1}>
                       <Typography>{t("SwapFor")}</Typography>
-                      {!symbolOptionSwapFor && (
+                      {!symbolOptionSwapForSwap && (
                         <Tooltip
                           title={
                             <Typography sx={{ fontSize: '0.85rem' }}>
@@ -1138,12 +1432,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           ? `${option.sym.toUpperCase()} - ${option.name}`
                           : option.sym.toUpperCase()
                       }
-                      value={symbolOptionSwapFor}
+                      value={symbolOptionSwapForSwap}
                       disabled={!selectedTokenRow}
                       onChange={(_e, newValue) => {
-                        onOptionChangeSwapFor(newValue);
+                        onOptionChangeSwapFor(newValue, "swap");
                         if (newValue) {
-                          setInputSearchSwapFor(
+                          setInputSearchSwapForSwap(
                             newValue.name
                               ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
                               : newValue.sym.toUpperCase()
@@ -1153,19 +1447,19 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       isOptionEqualToValue={(option, value) => option.id === value?.id}
                       disableClearable={false}
                       inputValue={
-                        symbolOptionSwapFor
-                          ? symbolOptionSwapFor.name
-                            ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
-                            : symbolOptionSwapFor.sym.toUpperCase()
-                          : inputSearchSwapFor
+                        symbolOptionSwapForSwap
+                          ? symbolOptionSwapForSwap.name
+                            ? `${symbolOptionSwapForSwap.sym.toUpperCase()} - ${symbolOptionSwapForSwap.name}`
+                            : symbolOptionSwapForSwap.sym.toUpperCase()
+                          : inputSearchSwapForSwap
                       }
                       onInputChange={(_event, newInputValue, reason) => {
                         if (reason === 'input') {
-                          onOptionChangeSwapFor(null);
-                          setInputSearchSwapFor(newInputValue);
+                          onOptionChangeSwapFor(null, "swap");
+                          setInputSearchSwapForSwap(newInputValue);
                         } else if (reason === 'clear') {
-                          onOptionChangeSwapFor(null);
-                          setInputSearchSwapFor('');
+                          onOptionChangeSwapFor(null, "swap");
+                          setInputSearchSwapForSwap('');
                         }
                       }}
                       loading={!!selectedTokenRow && !tokenIconsSwapFor}
@@ -1179,11 +1473,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             ...params.InputProps,
                             startAdornment: (
                               <>
-                                {symbolOptionSwapFor?.lURI ? (
+                                {symbolOptionSwapForSwap?.lURI ? (
                                   <InputAdornment position="start">
                                     <Avatar
-                                      src={symbolOptionSwapFor.lURI}
-                                      alt={symbolOptionSwapFor.sym}
+                                      src={symbolOptionSwapForSwap.lURI}
+                                      alt={symbolOptionSwapForSwap.sym}
                                       sx={{ width: 22, height: 22, mr: 1 }}
                                     />
                                   </InputAdornment>
@@ -1196,7 +1490,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             ),
                             sx: {
                               input: {
-                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                                textTransform: symbolOptionSwapForSwap ? 'uppercase' : 'none',
                               },
                             },
                           }}
@@ -1375,8 +1669,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         <Button
                           id="get_quotes_btn"
                           variant="contained"
-                          onClick={handleFetchQuotes}
-                          disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+                          onClick={handleFetchQuotesSwap}
+                          disabled= {!selectedTokenRow || !symbolOptionSwapForSwap || !newBalance || !selectedChain || !symbolOptionSwap}
                           sx={{
                             backgroundColor: "#219a83",
                             color: "#fff",
@@ -1403,12 +1697,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                            </Box>
                          }
                         >
-                      {t("GetQuotes")}
-                       </Button>
-                       </Box >
-                         {quoteData.length > 0 && lastUpdated && (
+                          {t("GetQuotes")}
+                        </Button>
+                      </Box>
+                         {quoteData.length > 0 && lastUpdatedSwap && (
                            <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1, textAlign: "right",}}>
-                             {t("LastUpdate")}: {lastUpdated}
+                             {t("LastUpdate")}: {lastUpdatedSwap}
                            </Typography>
                          )}
                       </Grid>
@@ -1447,7 +1741,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </TableHead>
 
                     {symbolOptionSwap &&
-                      symbolOptionSwapFor &&
+                      symbolOptionSwapForSwap &&
                       selectedChain &&
                       quoteData &&
                       !errorMessage &&
@@ -1561,17 +1855,17 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </Stack>
                   </Paper>
                 )}
-                {invalidQuote.length > 0 && lastUpdated && (
+                {invalidQuote.length > 0 && lastUpdatedBridge && (
                   <Typography sx={{ color: theme.palette.mode === "dark" ? "#f14f36ff" : "#be3f04ff", fontSize: "0.75rem", marginTop: 1 }}>
                     {invalidQuoteError()}.
                   </Typography>
                 )}
-                {quoteData.length > 0 && lastUpdated && (
+                {quoteData.length > 0 && lastUpdatedSwap && (
                   <Stack spacing={1} sx={{ mt: 1.5 }}>
                     <Stack direction="row" spacing={1} alignItems="flex-start">
                       <AccessTimeIcon sx={{ color: noticeColor, fontSize: "1rem", mt: "2px" }} />
                       <Typography sx={{ color: noticeColor, fontSize: "0.75rem" }}>
-                        {t("MarketDataUpdated", { value: lastUpdated })}
+                        {t("MarketDataUpdated", { value: lastUpdatedSwap })}
                       </Typography>
                     </Stack>
                     <Stack direction="row" spacing={1} alignItems="flex-start">
@@ -1595,551 +1889,37 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
               </Grid> 
             </Grid>            
         ) : (
-            <Grid container spacing={2}>
-              {/* BRIDGE SECTION START */}
-              <Grid item xs={6}>
-                {/* FROM CARD */}
-                <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2, mb: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Box
-                        sx={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          backgroundColor: symbolOptionSwap ? '#219a83' : 'transparent',
-                          border: symbolOptionSwap ? 'none' : '2px solid #219a83',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          mr: 1,
-                        }}
-                      >
-                        {symbolOptionSwap ? (
-                          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="9" cy="9" r="9" fill="#219a83" />
-                            <path d="M5.5 9.5L8 12L12.5 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        ) : (
-                          <Typography sx={{ color: '#219a83', fontWeight: 700, fontSize: '1rem' }}>1</Typography>
-                        )}
-                      </Box>
-                      <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge From')}</Typography>
-                    </Box>
-                      {symbolOptionSwap && selectedChain && (() => {
-                        const chainObj = Object.values(CHAIN_MAP).find(
-                          c => c.name.toUpperCase() === selectedChain.toUpperCase()
-                        );
-                        const chainKey = chainObj?.key || 'ETH';
-                        let lifiChain = lifiChains.find(c => c.key?.toLowerCase?.() === chainKey.toLowerCase());
-                        if (!lifiChain) {
-                          lifiChain = lifiChains.find(c => c.name?.toLowerCase?.() === selectedChain.toLowerCase());
-                        }
-                        const colorMeta = lifiChain && CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] ? CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
-                        return (
-                          <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px' }}>
-                            {lifiChain?.logoURI && (
-                              <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
-                            )}
-                            {selectedChain}
-                          </Box>
-                        );
-                      })()}
-                  </Box>
-                  {/* Token Dropdown + Chain Dropdown */}
-                  <Box display="flex" gap={2} mb={1.5}>
-                    <Box flex={7}>
-                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Current Position')}</Typography>
-                      <Autocomplete
-                        options={tokenIcons?.items ?? []}
-                        getOptionLabel={(option) => option.sym}
-                        value={symbolOptionSwap}
-                        onChange={handleCurrentPositionDropdownChange}
-                        isOptionEqualToValue={(option, value) => option.id === value?.id}
-                        disableClearable={false}
-                        inputValue={symbolOptionSwap ? symbolOptionSwap.name ? `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` : symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
-                        onInputChange={(_event, newInputValue, reason) => {
-                          if (reason === 'clear') {
-                            onOptionChangeSwap(null);
-                          }
-                          setInputSearchSwap(newInputValue);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            placeholder={t('Search')}
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <>
-                                  {symbolOptionSwap?.lURI ? (
-                                    <InputAdornment position="start">
-                                      <Avatar
-                                        src={symbolOptionSwap.lURI}
-                                        alt={symbolOptionSwap.sym} 
-                                        sx={{ width: 22, height: 22, mr: 1 }}
-                                      />
-                                    </InputAdornment>
-                                  ) : (
-                                    <InputAdornment position="start">
-                                      <SearchIcon />
-                                    </InputAdornment>
-                                  )}
-                                </>
-                              ),
-                              sx: {
-                                input: {
-                                  textTransform: symbolOptionSwap ? 'uppercase' : 'none',
-                                },
-                              },
-                            }}
-                          />
-                        )}
-                        renderOption={(props, option) => (
-                          <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar
-                              src={option.lURI ?? undefined}
-                              alt={option.sym}
-                              sx={{ width: 24, height: 24 }}
-                            />
-                            <Typography variant="body1">
-                              {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
-                            </Typography>
-                          </Box>
-                        )}
-                      />
-                    </Box>
-                    <Box flex={5} display="flex" flexDirection="column">
-                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem' }}>{t('Chain')}</Typography>
-                      <Box display="flex" alignItems="center" height="52.7px" pl={1} sx={{ backgroundColor: 'inherit', borderRadius: '4px', border: '1px solid #e0e0e0', opacity: 0.4 }}>
-                        {(() => {
-                          const chainObj = Object.values(CHAIN_MAP).find(
-                            c => c.name.toUpperCase() === selectedChain.toUpperCase()
-                          );
-                          const chainKey = chainObj?.key || 'ETH';
-                          // Try to find the chain in lifiChains for logoURI: first by key, then by name (case-insensitive)
-                          let lifiChain = lifiChains.find(c => c.key?.toLowerCase?.() === chainKey.toLowerCase());
-                          if (!lifiChain) {
-                            lifiChain = lifiChains.find(c => c.name?.toLowerCase?.() === selectedChain.toLowerCase());
-                          }
-                          return (
-                            <>
-                              {lifiChain?.logoURI && (
-                                <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 20, height: 20, mr: 1, ml: 0.5 }} />
-                              )}
-                              <Typography sx={{ color: '#97a1b6', fontWeight: 400, fontSize: '1rem', userSelect: 'none' }}>
-                                {selectedChain}
-                              </Typography>
-                            </>
-                          );
-                        })()}
-                      </Box>
-                    </Box>
-                  </Box>
-                  {/* BRIDGE FROM: Token Address + Copy */}
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
-                      {tokenAddress ? `${tokenAddress.slice(0, 25)}...` : t('TokensAddress')}
-                    </Typography>
-                    {tokenAddress && (
-                      <Tooltip title={t('Copy')}>
-                        <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddress); }}>
-                          <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </Box>
-                  {/* Qty Input */}
-                  <Box mb={1.5} display="flex" gap={2}>
-                    <Box flex={7}>
-                      <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Qty')}</Typography>
-                      <TextField
-                        id="bridge_quantity_input"
-                        variant="outlined"
-                        size="small"
-                        value={formatNumberWithCommas(newBalance)}
-                        onChange={(e) => {
-                          const input = e.target.value.replace(/,/g, "");
-                          const validInput = /^(\d+)?(\.\d*)?$/.test(input);
-                          const numericValue = parseFloat(input);
-                          const max = Number(maxBalance);
-                          if (validInput) {
-                            const [, decimalPart = ""] = input.split(".");
-                            if (decimalPart.length <= 5) {
-                              if (!isNaN(numericValue)) {
-                                setShowNoQuotesMessage(false);
-                                setNewBalance(input);
-                              }
-                              if (input === "" || input === "." || input.endsWith(".")) {
-                                setShowNoQuotesMessage(false);
-                                setNewBalance(input);
-                              }
-                            }
-                          }
-                        }}
-                        type="text"
-                        fullWidth
-                        inputProps={{
-                          inputMode: 'decimal',
-                          min: 0,
-                          style: { MozAppearance: 'textfield' },
-                        }}
-                        sx={{
-                          marginBottom: 1,
-                          '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                            WebkitAppearance: 'none',
-                            margin: 0,
-                          },
-                          '& input[type=number]': { MozAppearance: 'textfield' },
-                          '& .MuiInputBase-root': { height: '52.7px' },
-                          '& .MuiInputLabel-root': { marginTop: '8px' },
-                        }}
-                      />
-                    </Box>
-                    <Box flex={5}>
-                    </Box>
-                  </Box>
-                </Box>
-                {/* TO CARD + Banner Overlay */}
-                <Box sx={{ position: 'relative', mb: 2 }}>
-                  {/* Info Banner absolutely positioned above the card, always visible and not dimmed */}
-                  {!symbolOptionSwap && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 146,
-                        left: 18,
-                        width: '92%',
-                        zIndex: 2,
-                        background: '#219a83',
-                        color: '#fff',
-                        borderRadius: '4px',
-                        py: 1.2,
-                        px: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '1rem',
-                        fontWeight: 300,
-                        textAlign: 'center',
-                        boxShadow: 3,
-                      }}
-                    >
-                      Select <span style={{ fontWeight: 700, margin: '0 4px' }}>Current Position</span> in Step 1 to unlock
-                    </Box>
-                  )}
-                  <Box sx={{ position: 'relative', borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2, opacity: !symbolOptionSwap ? 0.6 : 1, pointerEvents: !symbolOptionSwap ? 'none' : 'auto', background: !symbolOptionSwap ? 'rgba(54,54,64,0.15)' : undefined }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <Box
-                          sx={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: '50%',
-                            backgroundColor: symbolOptionSwap && selectedBridgeToChainId ? '#219a83' : 'transparent',
-                            border: symbolOptionSwap && selectedBridgeToChainId ? 'none' : '2px solid',
-                            borderColor: !symbolOptionSwap ? 'rgba(81,81,81,1)' : '#219a83',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            mr: 1,
-                          }}
-                        >
-                          {symbolOptionSwap && selectedBridgeToChainId ? (
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <circle cx="9" cy="9" r="9" fill="#219a83" />
-                              <path d="M5.5 9.5L8 12L12.5 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          ) : (
-                            <Typography sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : '#219a83', fontWeight: 700, fontSize: '1rem' }}>2</Typography>
-                          )}
-                        </Box>
-                        <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge To')}</Typography>
-                      </Box>
-                      {/* Dynamic chain badge for Bridge To (with icon) - only show if selectedBridgeToChainId is set */}
-                      {selectedBridgeToChainId != null && (() => {
-                        const chain = lifiChains.find(c => c.id === selectedBridgeToChainId);
-                        if (!chain) return null;
-                        const colorMeta = CHAIN_COLORS[chain.key?.toUpperCase?.()] || CHAIN_COLORS['ARB'];
-                        return (
-                          <Box className={`chain-${chain.key}`}
-                            sx={{
-                              borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px',
-                              background: colorMeta.bg,
-                              border: colorMeta.border,
-                              color: colorMeta.color,
-                            }}>
-                            {chain.logoURI && (
-                              <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
-                            )}
-                            {chain.name.toUpperCase()}
-                          </Box>
-                        );
-                      })()}
-                    </Box>
-                    <Box mb={1.5} display="flex" gap={2}>
-                      <Grid item xs={12} sm={7}>
-                        <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Bridge For')}</Typography>
-                        <Autocomplete
-                          id="bridge_to_token_dropdown"
-                          options={tokenIconsSwapFor?.items ?? []}
-                          getOptionLabel={(option) => option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
-                          value={symbolOptionSwapFor}
-                          onChange={(_e, newValue) => {
-                            if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
-                            onOptionChangeSwapFor(newValue);
-                            if (newValue) {
-                              setInputSearchSwapFor(newValue.name ? `${newValue.sym.toUpperCase()} - ${newValue.name}` : newValue.sym.toUpperCase());
-                            }
-                          }}
-                          isOptionEqualToValue={(option, value) => option.id === value?.id}
-                          disableClearable={false}
-                          inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` : symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
-                          onInputChange={(_event, newInputValue, reason) => {
-                            if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
-                            if (reason === 'input') {
-                              onOptionChangeSwapFor(null);
-                              setInputSearchSwapFor(newInputValue);
-                            } else if (reason === 'clear') {
-                              onOptionChangeSwapFor(null);
-                              setInputSearchSwapFor('');
-                            }
-                          }}
-                          loading={!tokenIconsSwapFor}
-                          loadingText={<CircularProgress size={18} />}
-                          noOptionsText={tokenIconsSwapFor ? t('NoOptionsOnThisChain') : ''}
-                          disabled={!symbolOptionSwap || !selectedBridgeToChainId}
-                          renderInput={(params) => {
-                            // If locked, override adornments and placeholder
-                            if (!symbolOptionSwap || !selectedBridgeToChainId) {
-                              return (
-                                <TextField
-                                  {...params}
-                                  placeholder={t('Locked')}
-                                  InputProps={{
-                                    ...params.InputProps,
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        <LockIcon sx={{ color: 'rgba(81,81,81,1)' }} />
-                                      </InputAdornment>
-                                    ),
-                                    sx: {
-                                      input: {
-                                        color: 'rgba(81,81,81,1)',
-                                      },
-                                    },
-                                  }}
-                                />
-                              );
-                            }
-                            // ...existing code...
-                            return (
-                              <TextField
-                                {...params}
-                                placeholder={t('Search')}
-                                InputProps={params.InputProps}
-                              />
-                            );
-                          }}
-                          renderOption={(props, option) => (
-                            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Avatar
-                                src={option.lURI ?? undefined}
-                                alt={option.sym}
-                                sx={{ width: 24, height: 24 }}
-                              />
-                              <Typography variant="body1">
-                                {option.name
-                                  ? `${option.sym.toUpperCase()} - ${option.name}`
-                                  : option.sym.toUpperCase()}
-                              </Typography>
-                            </Box>
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={5} display="flex" flexDirection="column" justifyContent="flex-end">
-                        <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem'}}>{t('Chain')}</Typography>
-                        <Autocomplete
-                          id="bridge_to_chain_dropdown"
-                          options={lifiChains}
-                          getOptionLabel={(option) => option.name}
-                          value={lifiChains.find(chain => chain.id === selectedBridgeToChainId) || null}
-                          onChange={(_e, newValue) => {
-                            setSelectedBridgeToChainId(newValue ? newValue.id : null);
-                            setInputSearchBridgeToChain(newValue ? newValue.name : "");
-                          }}
-                          isOptionEqualToValue={(option, value) => option.id === value?.id}
-                          disableClearable={false}
-                          inputValue={inputSearchBridgeToChain}
-                          onInputChange={(_event, newInputValue, reason) => {
-                            if (reason === 'input') {
-                              setInputSearchBridgeToChain(newInputValue);
-                            } else if (reason === 'clear') {
-                              setInputSearchBridgeToChain("");
-                            }
-                          }}
-                          loading={lifiChainsLoading}
-                          loadingText={<CircularProgress size={18} />}
-                          noOptionsText={lifiChainsError ? t('NoOptionsOnThisChain') : t('SearchChain')}
-                          disabled={!symbolOptionSwap}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              placeholder={t('SearchChain')}
-                              InputProps={{
-                                ...params.InputProps,
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    <SearchIcon />
-                                  </InputAdornment>
-                                ),
-                              }}
-                            />
-                          )}
-                          renderOption={(props, option) => (
-                            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              {option.logoURI && (
-                                <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
-                              )}
-                              <Typography variant="body1">{option.name}</Typography>
-                            </Box>
-                          )}
-                        />
-                      </Grid>
-                    </Box>
-                    {/* BRIDGE TO: Token Address + Copy */}
-                    {/* Info Banner above Swap For Address row */}
-                    <Box display="flex" alignItems="center" gap={1} mt={1}>
-                      {!symbolOptionSwap ? (<Box sx={{ height: '60px' }}></Box>
-                        ) : symbolOptionSwap && !selectedBridgeToChainId ? (
-                          <Box
-                            sx={{
-                              width: '100%',
-                              background: '#219a83',
-                              color: '#fff',
-                              borderRadius: '4px',
-                              px: 2,
-                              py: 1.2,
-                              mb: 2,
-                              fontWeight: 300,
-                              fontSize: '1rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              boxShadow: '0 1px 6px 0 rgba(33,154,131,0.08)',
-                            }}
-                          >
-                            <span>
-                              Select <b>Chain</b> to unlock <b>Bridge For</b> token selection
-                            </span>
-                          </Box>
-                        ) : (
-                        <>
-                          <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
-                            {tokenAddressSwapFor ? `${tokenAddressSwapFor.slice(0, 25)}...` : t('SwapForPositionAddress')}
-                          </Typography>
-                          {tokenAddressSwapFor && (
-                            <Tooltip title={t('Copy')}>
-                              <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddressSwapFor); }}>
-                                <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </>
-                      )}
-                    </Box>
-                  </Box>
-                </Box>
-                {/* GET ROUTES BUTTON */}
-                <Button
-                  id="get_quotes_btn"
-                  variant="contained"
-                  onClick={handleFetchQuotes}
-                  disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
-                  sx={{
-                    backgroundColor: "#219a83",
-                    color: "#fff",
-                    textTransform: "none",
-                    fontWeight: 500,
-                    fontSize: "0.875rem",
-                    "&:hover": {
-                      backgroundColor: "#219a83",
-                  },
-                  }}
-                  startIcon={
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        animation: quoteLoading ? "spin 1s linear infinite" : "none",
-                        "@keyframes spin": {
-                          "0%": { transform: "rotate(0deg)" },
-                          "100%": { transform: "rotate(360deg)" },
-                        },
-                      }}
-                      >
-                      <RefreshIcon />
-                    </Box>
-                  }
-                >
-              {t("GetQuotes")}
-                </Button>
-                {/* Last update + disclaimers */}
-                {lastUpdated && (
-                  <Box sx={{ mt: 1.5 }}>
-                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
-                      <AccessTimeIcon sx={{ color: '#00e5a0', fontSize: '1rem', mt: '2px' }} />
-                      <Typography sx={{ color: '#00e5a0', fontSize: '0.75rem' }}>
-                        Last Updated: {lastUpdated}
-                      </Typography>
-                    </Stack>
-                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
-                      <InfoOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
-                      <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
-                        Prices are estimates and fluctuate based on network conditions.
-                      </Typography>
-                    </Stack>
-                    <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
-                      <WarningAmberRoundedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
-                      <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
-                        Gas fees are estimates only. Final costs determined at execution time.
-                      </Typography>
-                    </Stack>
-                    <Stack direction="row" spacing={1} alignItems="flex-start">
-                      <DescriptionOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
-                      <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
-                        Bridge protocols may apply additional fees. Review all parameters before proceeding.
-                      </Typography>
-                    </Stack>
-                  </Box>
-                )}
-              </Grid>
-              {/* BRIDGE ROUTES CARD */}
-              <Grid item xs={6}>
-                <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.08em' }}>{t('Bridge Routes')}</Typography>
-                    {/* routes count badge */}
-                    {lastUpdated && (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.7rem', color: '#00e5a0', fontWeight: 600 }}>
-                        <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#00e5a0', boxShadow: '0 0 6px #00e5a0' }} />
-                        <span>4 routes found</span>
-                      </Box>
-                    )}
-                  </Box>
-                  {/* Empty state / Loading / Routes list (hardcoded) */}
-                  {!lastUpdated ? (
-                    <Box sx={{ border: '1px dashed #30364a', borderRadius: '10px', p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, textAlign: 'center' }}>
-                      <Box sx={{ width: 48, height: 48, borderRadius: 2, background: 'rgba(0,229,160,0.10)', border: '1px solid rgba(0,229,160,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>⇄</Box>
-                      <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#7680a0' }}>{t('NoRoutesYet', 'No routes yet')}</Typography>
-                      <Typography sx={{ fontSize: '0.78rem', color: '#424b64', maxWidth: 220, lineHeight: 1.5 }}>{t('ConfigureBridgeParams', 'Configure your bridge parameters and click Get Routes to see available options.')}</Typography>
-                    </Box>
-                  ) : (
-                    <BridgeRoutesMockup />
-                  )}
-                </Box>
-              </Grid>
-            </Grid>
+            <BridgeTab
+              t={t}
+              symbolOptionSwap={symbolOptionSwap}
+              tokenIcons={tokenIcons}
+              handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
+              inputSearchSwap={inputSearchSwap}
+              setInputSearchSwap={setInputSearchSwap}
+              formatNumberWithCommas={formatNumberWithCommas}
+              newBalance={newBalance}
+              setNewBalance={setNewBalance}
+              selectedChain={selectedChain}
+              selectedTokenRow={selectedTokenRowBridge}
+              setSelectedTokenRow={setSelectedTokenRowBridge}
+              balanceRaw={balanceRaw}
+              setShowNoQuotesMessage={setShowNoQuotesMessage}
+              onOptionChangeSwap={onOptionChangeSwap}
+              tokenIconsSwapFor={tokenIconsSwapFor}
+              symbolOptionSwapFor={symbolOptionSwapForBridge}
+              onOptionChangeSwapFor={(v) => onOptionChangeSwapFor(v, "bridge")}
+              inputSearchSwapFor={inputSearchSwapForBridge}
+              setInputSearchSwapFor={setInputSearchSwapForBridge}
+              handleFetchQuotes={handleFetchQuotesBridge}
+              quoteLoading={quoteLoading}
+              lastUpdated={lastUpdatedBridge}
+              setTokenIconsSwapFor={setTokenIconsSwapFor}
+              selectedBridgeToChainId={selectedBridgeToChainId}
+              setSelectedBridgeToChainId={setSelectedBridgeToChainId}
+              inputSearchBridgeToChain={inputSearchBridgeToChain}
+              setInputSearchBridgeToChain={setInputSearchBridgeToChain}
+              onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
+            />
         )}
       </Grid>
       </Box>
