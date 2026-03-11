@@ -611,6 +611,100 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
     }
   }));
 
+  const findAllConditionsByValue = useCallback((filter: any, field: string, oldValue: any, path: number[] = []): Array<{ condition: any, path: number[] }> => {
+    const results: Array<{ condition: any, path: number[] }> = [];
+    if (!Array.isArray(filter)) return results;
+
+    if (filter.length === 2 && filter[0] === '!' && Array.isArray(filter[1])) {
+      const nested = findAllConditionsByValue(filter[1], field, oldValue, [...path, 1]);
+      results.push(...nested);
+      return results;
+    }
+
+    for (let i = 0; i < filter.length; i++) {
+      const item = filter[i];
+      if (Array.isArray(item)) {
+        if (item.length === 3 && typeof item[0] === 'string' && item[0] === field && item[2] === oldValue) {
+          results.push({ condition: item, path: [...path, i] });
+        } else {
+          const nested = findAllConditionsByValue(item, field, oldValue, [...path, i]);
+          results.push(...nested);
+        }
+      }
+    }
+    return results;
+  }, []);
+
+  const findConditionByValue = useCallback((filter: any, field: string, oldValue: any): { condition: any, path: number[] } | null => {
+    const all = findAllConditionsByValue(filter, field, oldValue);
+    return all.length > 0 ? all[0] : null;
+  }, [findAllConditionsByValue]);
+
+  const navigateAndReplace = useCallback((filter: any, path: number[], newCondition: any): any => {
+    if (path.length === 0) return newCondition;
+    if (!Array.isArray(filter)) return filter;
+
+    const result = JSON.parse(JSON.stringify(filter));
+    let current = result;
+    for (let i = 0; i < path.length - 1; i++) {
+      const idx = path[i];
+      if (!Array.isArray(current) || idx >= current.length) return filter;
+      current[idx] = JSON.parse(JSON.stringify(current[idx]));
+      current = current[idx];
+    }
+    const finalIdx = path[path.length - 1];
+    if (!Array.isArray(current) || finalIdx >= current.length) return filter;
+    current[finalIdx] = newCondition;
+    return result;
+  }, []);
+
+  const replaceOrAddCondition = useCallback((
+    currentFilter: any,
+    dataField: string,
+    newCondition: any,
+    editingInfo: { field: string | null; oldValue: any; path: number[] | null } | null,
+    oldValue: any
+  ): any => {
+    if (!currentFilter || !Array.isArray(currentFilter) || currentFilter.length === 0) {
+      return newCondition;
+    }
+
+    if (editingInfo && editingInfo.field === dataField && editingInfo.oldValue !== null && editingInfo.oldValue !== undefined) {
+      const matches = findAllConditionsByValue(currentFilter, dataField, editingInfo.oldValue);
+      if (matches.length > 0) {
+        let targetPath: number[] | null = null;
+        if (editingInfo.path && Array.isArray(editingInfo.path)) {
+          const exactMatch = matches.find(m => JSON.stringify(m.path) === JSON.stringify(editingInfo.path));
+          if (exactMatch) targetPath = exactMatch.path;
+        }
+        if (!targetPath) {
+          targetPath = matches[0].path;
+        }
+        return navigateAndReplace(currentFilter, targetPath, newCondition);
+      }
+    }
+
+    const isNegated = currentFilter.length === 2 && currentFilter[0] === '!' && Array.isArray(currentFilter[1]);
+    if (isNegated) {
+      const innerFilter = currentFilter[1];
+      const updatedInner = replaceOrAddCondition(innerFilter, dataField, newCondition, null, oldValue);
+      return ['!', updatedInner];
+    }
+
+    if (currentFilter.length === 3 && typeof currentFilter[0] === 'string' && typeof currentFilter[1] === 'string') {
+      return [currentFilter, 'and', newCondition];
+    }
+
+    const operators = currentFilter.filter((item: any) => item === 'and' || item === 'or');
+    
+    if (operators.length === 0) {
+      return [...currentFilter, 'and', newCondition];
+    }
+
+    const lastOperator = operators[operators.length - 1];
+    return [...currentFilter, lastOperator, newCondition];
+  }, [findAllConditionsByValue, navigateAndReplace]);
+
   const transformFilterFromAnyof = useCallback((filter: any): any => {
     if (!filter || !Array.isArray(filter)) {
       return filter;
@@ -2225,216 +2319,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                     if (filterBuilderRef.current?.instance) {
                                       const fbInstance = filterBuilderRef.current.instance;
                                       let currentFilter = fbInstance.option('value') || [];
-                                      
                                       const newCondition = [e.dataField, e.filterOperation || 'contains', currentValue];
-                                      
-                                      const filterBeforeEdit = filterBeforeEditRef.current;
-                                      const isEditing = editingInfo && 
-                                                        filterBeforeEdit &&
-                                                        editingInfo.field === e.dataField && 
-                                                        editingInfo.oldValue !== null && 
-                                                        editingInfo.oldValue !== undefined &&
-                                                        editingInfo.path !== null &&
-                                                        Array.isArray(editingInfo.path) &&
-                                                        editingInfo.path.length > 0 &&
-                                                        oldValue !== null &&
-                                                        oldValue !== undefined &&
-                                                        editingInfo.oldValue === oldValue;
-                                      
-                                      const getCurrentOperator = (filter: any): string => {
-                                        if (!Array.isArray(filter)) return 'and';
-                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
-                                          const innerOp = getCurrentOperator(filter[1]);
-                                          return innerOp === 'or' ? '!or' : '!and';
-                                        }
-                                        for (const item of filter) {
-                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
-                                            return item;
-                                          }
-                                        }
-                                        return 'and';
-                                      };
-                                      
-                                      const replaceAllOperators = (filter: any, newOperator: string): any => {
-                                        if (!Array.isArray(filter)) return filter;
-                                        const isNot = newOperator.startsWith('!');
-                                        const baseOp = isNot ? newOperator.substring(1) : newOperator;
-                                        if (filter[0] === '!' && Array.isArray(filter[1])) {
-                                          const innerFilter = filter[1].map(item => {
-                                            if (typeof item === 'string' && (item === 'and' || item === 'or')) {
-                                              return baseOp;
-                                            }
-                                            return item;
-                                          });
-                                          return isNot ? ['!', innerFilter] : innerFilter;
-                                        }
-                                        const result = filter.map(item => {
-                                          if (typeof item === 'string' && (item === 'and' || item === 'or')) {
-                                            return baseOp;
-                                          }
-                                          return item;
-                                        });
-                                        return isNot ? ['!', result] : result;
-                                      };
-                                      
-                                      const navigateAndReplace = (filter: any, path: number[], newCondition: any): any => {
-                                        if (path.length === 0) return newCondition;
-                                        if (!Array.isArray(filter)) return filter;
-                                        
-                                        const result = JSON.parse(JSON.stringify(filter));
-                                        
-                                        if (path.length === 1) {
-                                          const idx = path[0];
-                                          
-                                          if (idx < result.length) {
-                                            if (Array.isArray(result[idx]) && result[idx].length === 3) {
-                                              result[idx] = newCondition;
-                                              return result;
-                                            } else {
-                                              return filter;
-                                            }
-                                          } else {
-                                            return filter;
-                                          }
-                                        }
-                                        
-                                        let current = result;
-                                        for (let i = 0; i < path.length - 1; i++) {
-                                          const idx = path[i];
-                                          if (idx < current.length && Array.isArray(current[idx])) {
-                                            current[idx] = [...current[idx]];
-                                            current = current[idx];
-                                          } else {
-                                            return filter;
-                                          }
-                                        }
-                                        
-                                        const finalIdx = path[path.length - 1];
-                                        if (finalIdx < current.length) {
-                                          current[finalIdx] = newCondition;
-                                        } else {
-                                          return filter;
-                                        }
-                                        
-                                        return result;
-                                      };
-                                      
-                                      // Helper function to find condition by field and old value
-                                      // Returns ALL matching conditions to help identify the correct one
-                                      const findAllConditionsByValue = (filter: any, field: string, oldValue: any, path: number[] = []): Array<{ condition: any, path: number[] }> => {
-                                        const results: Array<{ condition: any, path: number[] }> = [];
-                                        
-                                        if (!Array.isArray(filter)) return results;
-                                        
-                                        for (let i = 0; i < filter.length; i++) {
-                                          const item = filter[i];
-                                          if (Array.isArray(item) && item.length === 3 && item[0] === field && item[2] === oldValue) {
-                                            results.push({ condition: item, path: [...path, i] });
-                                          }
-                                          if (Array.isArray(item) && !(item.length === 3 && typeof item[0] === 'string')) {
-                                            const found = findAllConditionsByValue(item, field, oldValue, [...path, i]);
-                                            results.push(...found);
-                                          }
-                                        }
-                                        return results;
-                                      };
-                                      
-                                      const findConditionByValue = (filter: any, field: string, oldValue: any, path: number[] = []): { condition: any, path: number[] } | null => {
-                                        const allMatches = findAllConditionsByValue(filter, field, oldValue, path);
-                                        
-                                        // If we have a saved path, try to match it
-                                        if (editingInfo && editingInfo.path && allMatches.length > 0) {
-                                          const pathMatch = allMatches.find(m => JSON.stringify(m.path) === JSON.stringify(editingInfo.path));
-                                          if (pathMatch) {
-                                            return pathMatch;
-                                          }
-                                        }
-                                        
-                                        // Return first match if any
-                                        return allMatches.length > 0 ? allMatches[0] : null;
-                                      };
-                                      
-                                      const replaceOrAddCondition = (filter: any): any => {
-                                        if (!Array.isArray(filter) || filter.length === 0) {
-                                          return newCondition;
-                                        }
-
-                                        // If editing, try to replace the specific condition
-                                        if (isEditing && editingInfo && editingInfo.path) {
-                                          const pathIsValid = editingInfo.path.length === 1 && 
-                                                             editingInfo.path[0] < filter.length &&
-                                                             Array.isArray(filter[editingInfo.path[0]]) &&
-                                                             filter[editingInfo.path[0]].length === 3 &&
-                                                             filter[editingInfo.path[0]][0] === editingInfo.field &&
-                                                             filter[editingInfo.path[0]][2] === editingInfo.oldValue;
-                                          
-                                          if (pathIsValid) {
-                                            try {
-                                              const replaced = navigateAndReplace(filter, editingInfo.path, newCondition);
-                                              return replaced;
-                                            } catch (error) {
-                                              // Ignore error and continue to fallback logic
-                                            }
-                                          }
-                                          
-                                          if (editingInfo.field !== null) {
-                                            const found = findConditionByValue(filter, editingInfo.field, editingInfo.oldValue);
-                                            if (found) {
-                                              const replaced = navigateAndReplace(filter, found.path, newCondition);
-                                              return replaced;
-                                            }
-                                          }
-                                        }
-
-                                        if (typeof filter[0] === 'string') {
-                                          if (filter[0] === e.dataField) {
-                                            return newCondition;
-                                          }
-                                          return [filter, 'and', newCondition];
-                                        }
-
-                                        const hasOrOperator = filter.includes('or');
-                                        const hasAndOperator = filter.includes('and');
-                                        
-                                        let foundSameField = false;
-                                        let firstSameFieldIndex = -1;
-                                        
-                                        for (let i = 0; i < filter.length; i++) {
-                                          const item = filter[i];
-                                          if (Array.isArray(item) && typeof item[0] === 'string') {
-                                            if (item[0] === e.dataField) {
-                                              foundSameField = true;
-                                              if (firstSameFieldIndex === -1) {
-                                                firstSameFieldIndex = i;
-                                              }
-                                            }
-                                          }
-                                        }
-                                        
-                                        if (foundSameField) {
-                                          const result = [...filter];
-                                          result.splice(firstSameFieldIndex + 1, 0, 'or', newCondition);
-                                          return result;
-                                        }
-                                        
-                                        if (hasOrOperator && !hasAndOperator) {
-                                          return [filter, 'and', newCondition];
-                                        } else {
-                                          const result = [...filter];
-                                          result.push('and', newCondition);
-                                          return result;
-                                        }
-                                      };
-                                      
-                                      let updatedFilter = replaceOrAddCondition(currentFilter);
-                                      const currentOp = getCurrentOperator(currentFilter);
-                                      const newOp = getCurrentOperator(updatedFilter);
-                                      if (currentOp !== newOp && currentFilter.length > 0) {
-                                        updatedFilter = replaceAllOperators(updatedFilter, newOp);
-                                      }
-                                      
+                                      const updatedFilter = replaceOrAddCondition(
+                                        currentFilter,
+                                        e.dataField,
+                                        newCondition,
+                                        editingConditionRef.current,
+                                        e.value
+                                      );
                                       fbInstance.option('value', updatedFilter);
-                                      
                                       setFilterValue(updatedFilter);
                                       
                                       editingConditionRef.current = null;
@@ -2492,87 +2385,37 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                         if (editingTimeoutRef.current) {
                                           clearTimeout(editingTimeoutRef.current);
                                         }
-                                        
+
                                         lastEditingValueRef.current = {
                                           value: args.value,
                                           dataField: e.dataField,
                                           filterOperation: e.filterOperation,
                                         };
-                                        
+
                                         editingTimeoutRef.current = setTimeout(() => {
-                                          if (lastEditingValueRef.current && editingConditionRef.current) {
+                                          if (lastEditingValueRef.current) {
                                             const stored = lastEditingValueRef.current;
-                                            
                                             if (filterBuilderRef.current?.instance) {
                                               const fbInstance = filterBuilderRef.current.instance;
                                               let currentFilter = fbInstance.option('value') || [];
                                               const newCondition = [stored.dataField, stored.filterOperation || 'contains', stored.value];
-                                              
-                                              const editingInfo = editingConditionRef.current;
-                                              const isEditing = editingInfo && 
-                                                                editingInfo.field === stored.dataField && 
-                                                                editingInfo.oldValue !== null && 
-                                                                editingInfo.oldValue !== undefined &&
-                                                                editingInfo.path !== null &&
-                                                                Array.isArray(editingInfo.path) &&
-                                                                editingInfo.path.length > 0;
-                                              
-                                              if (isEditing && editingInfo.path) {
-                                                // Use the same replacement logic as in onClosed
-                                                const navigateAndReplace = (filter: any, path: number[], newCondition: any): any => {
-                                                  if (path.length === 0) return newCondition;
-                                                  if (!Array.isArray(filter)) return filter;
-                                                  
-                                                  const result = JSON.parse(JSON.stringify(filter));
-                                                  
-                                                  if (path.length === 1) {
-                                                    const idx = path[0];
-                                                    if (idx < result.length && Array.isArray(result[idx]) && result[idx].length === 3) {
-                                                      result[idx] = newCondition;
-                                                      return result;
-                                                    }
-                                                  }
-                                                  
-                                                  let current = result;
-                                                  for (let i = 0; i < path.length - 1; i++) {
-                                                    const idx = path[i];
-                                                    if (idx < current.length && Array.isArray(current[idx])) {
-                                                      current[idx] = [...current[idx]];
-                                                      current = current[idx];
-                                                    } else {
-                                                      return filter;
-                                                    }
-                                                  }
-                                                  
-                                                  const finalIdx = path[path.length - 1];
-                                                  if (finalIdx < current.length) {
-                                                    current[finalIdx] = newCondition;
-                                                  }
-                                                  
-                                                  return result;
-                                                };
-                                                
-                                                const pathIsValid = editingInfo.path.length === 1 && 
-                                                                   editingInfo.path[0] < currentFilter.length &&
-                                                                   Array.isArray(currentFilter[editingInfo.path[0]]) &&
-                                                                   currentFilter[editingInfo.path[0]].length === 3 &&
-                                                                   currentFilter[editingInfo.path[0]][0] === editingInfo.field;
-                                                
-                                                if (pathIsValid) {
-                                                  const replaced = navigateAndReplace(currentFilter, editingInfo.path, newCondition);
-                                                  fbInstance.option('value', replaced);
-                                                  setFilterValue(replaced);
-                                                  
-                                                  // Clear editing info after update
-                                                  editingConditionRef.current = null;
-                                                  filterBeforeEditRef.current = null;
-                                                  lastEditingValueRef.current = null;
-                                                }
-                                              }
+                                              const updatedFilter = replaceOrAddCondition(
+                                                currentFilter,
+                                                stored.dataField,
+                                                newCondition,
+                                                editingConditionRef.current,
+                                                e.value
+                                              );
+                                              fbInstance.option('value', updatedFilter);
+                                              setFilterValue(updatedFilter);
+
+                                              editingConditionRef.current = null;
+                                              filterBeforeEditRef.current = null;
+                                              lastEditingValueRef.current = null;
                                             }
                                           }
                                         }, 500);
-                                        
+
                                         if (args.component?.option) {
                                           args.component.option("text", args.value ?? args.component.option("text"));
                                           args.component.option("opened", true);
@@ -2585,251 +2428,19 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                       }
 
                                   setTimeout(() => {
-                                        if (!filterBuilderRef.current?.instance) {
-                                          return;
-                                        }
-
+                                        if (!filterBuilderRef.current?.instance) return;
                                         const fbInstance = filterBuilderRef.current.instance;
                                         let currentFilter = fbInstance.option("value") || [];
                                         const newCondition = [e.dataField, e.filterOperation || "contains", args.value];
-                                      const oldValue = e.value;
-                                        if (typeof e.setValue === "function") {
-                                          e.setValue(args.value);
-                                        }
-                                      
-                                      const getCurrentOperator = (filter: any): string => {
-                                        if (!Array.isArray(filter)) return "and";
-                                        if (filter[0] === "!" && Array.isArray(filter[1])) {
-                                          const innerOp = getCurrentOperator(filter[1]);
-                                      return innerOp === "or" ? "!or" : "!and";
-                                        }
-                                        for (const item of filter) {
-                                      if (typeof item === "string" && (item === "and" || item === "or")) {
-                                            return item;
-                                          }
-                                        }
-                                    return "and";
-                                      };
-                                      
-                                      const replaceAllOperators = (filter: any, newOperator: string): any => {
-                                        if (!Array.isArray(filter)) return filter;
-                                    const isNot = newOperator.startsWith("!");
-                                        const baseOp = isNot ? newOperator.substring(1) : newOperator;
-                                    if (filter[0] === "!" && Array.isArray(filter[1])) {
-                                          const innerFilter = filter[1].map(item => {
-                                        if (typeof item === "string" && (item === "and" || item === "or")) {
-                                              return baseOp;
-                                            }
-                                            return item;
-                                          });
-                                      return isNot ? ["!", innerFilter] : innerFilter;
-                                        }
-                                        const result = filter.map(item => {
-                                      if (typeof item === "string" && (item === "and" || item === "or")) {
-                                            return baseOp;
-                                          }
-                                          return item;
-                                        });
-                                    return isNot ? ["!", result] : result;
-                                      };
-                                      
-                                      // Check if we're editing an existing condition (same logic as in onClosed)
-                                      const editingInfo = editingConditionRef.current;
-                                      const filterBeforeEdit = filterBeforeEditRef.current;
-                                      const isEditing = editingInfo && 
-                                                        filterBeforeEdit &&
-                                                        editingInfo.field === e.dataField && 
-                                                        editingInfo.oldValue !== null && 
-                                                        editingInfo.oldValue !== undefined &&
-                                                        editingInfo.path !== null &&
-                                                        Array.isArray(editingInfo.path) &&
-                                                        editingInfo.path.length > 0 &&
-                                                        oldValue !== null &&
-                                                        oldValue !== undefined &&
-                                                        editingInfo.oldValue === oldValue;
-                                      
-                                      const navigateAndReplace = (filter: any, path: number[], newCondition: any): any => {
-                                        if (path.length === 0) return newCondition;
-                                        if (!Array.isArray(filter)) return filter;
-                                        
-                                        const result = JSON.parse(JSON.stringify(filter));
-                                        
-                                        if (path.length === 1) {
-                                          const idx = path[0];
-                                          if (idx < result.length && Array.isArray(result[idx]) && result[idx].length === 3) {
-                                            result[idx] = newCondition;
-                                            return result;
-                                          }
-                                        }
-                                        
-                                        let current = result;
-                                        for (let i = 0; i < path.length - 1; i++) {
-                                          const idx = path[i];
-                                          if (idx < current.length && Array.isArray(current[idx])) {
-                                            current[idx] = [...current[idx]];
-                                            current = current[idx];
-                                          } else {
-                                            return filter;
-                                          }
-                                        }
-                                        
-                                        const finalIdx = path[path.length - 1];
-                                        if (finalIdx < current.length) {
-                                          current[finalIdx] = newCondition;
-                                        }
-                                        
-                                        return result;
-                                      };
-                                      
-                                      const findConditionByValue = (filter: any, field: string, oldValue: any): { condition: any, path: number[] } | null => {
-                                        if (!Array.isArray(filter)) return null;
-                                        
-                                        for (let i = 0; i < filter.length; i++) {
-                                          const item = filter[i];
-                                          if (Array.isArray(item) && item.length === 3 && item[0] === field && item[2] === oldValue) {
-                                            return { condition: item, path: [i] };
-                                          }
-                                        }
-                                        return null;
-                                      };
-                                      
-                                      const replaceOrAddCondition = (filter: any): any => {
-                                        if (!Array.isArray(filter) || filter.length === 0) {
-                                          return newCondition;
-                                        }
-
-                                        if (isEditing === true && editingInfo && editingInfo.path) {
-                                          const pathIsValid = editingInfo.path.length === 1 && 
-                                                             editingInfo.path[0] < filter.length &&
-                                                             Array.isArray(filter[editingInfo.path[0]]) &&
-                                                             filter[editingInfo.path[0]].length === 3 &&
-                                                             filter[editingInfo.path[0]][0] === editingInfo.field &&
-                                                             filter[editingInfo.path[0]][2] === editingInfo.oldValue;
-                                          
-                                          if (pathIsValid) {
-                                            const replaced = navigateAndReplace(filter, editingInfo.path, newCondition);
-                                            return replaced;
-                                          } else {
-                                            if (editingInfo.field !== null) {
-                                              const found = findConditionByValue(filter, editingInfo.field, editingInfo.oldValue);
-                                              if (found) {
-                                                const replaced = navigateAndReplace(filter, found.path, newCondition);
-                                                return replaced;
-                                              }
-                                            }
-                                          }
-                                        }
-
-                                        if (Array.isArray(filter) && filter.length === 3 && typeof filter[0] === 'string' && typeof filter[1] === 'string') {
-                                          if (filter[0] === e.dataField) {
-                                            return [filter, 'or', newCondition];
-                                          } else {
-                                            return [filter, 'and', newCondition];
-                                          }
-                                        }
-                                        
-                                        const hasOrOperator = filter.includes('or');
-                                        const hasAndOperator = filter.includes('and');
-                                        
-                                        let foundSameField = false;
-                                        let foundConditionIndex = -1;
-                                        let foundConditionPath: number[] = [];
-                                        
-                                        const findConditionWithField = (f: any, path: number[] = []): { found: boolean, index: number, path: number[] } => {
-                                          if (!Array.isArray(f)) return { found: false, index: -1, path: [] };
-                                          
-                                          for (let i = 0; i < f.length; i++) {
-                                            const item = f[i];
-                                            if (item === 'and' || item === 'or') continue;
-                                            
-                                            if (Array.isArray(item) && item.length !== 3 && typeof item !== 'string') {
-                                              const nested = findConditionWithField(item, [...path, i]);
-                                              if (nested.found) {
-                                                return nested;
-                                              }
-                                            }
-                                          }
-                                          
-                                          for (let i = 0; i < f.length; i++) {
-                                            const item = f[i];
-                                            if (item === 'and' || item === 'or') continue;
-                                            
-                                            if (Array.isArray(item) && item.length === 3 && typeof item[0] === 'string' && item[0] === e.dataField) {
-                                              return { found: true, index: i, path: [...path, i] };
-                                            }
-                                          }
-                                          
-                                          return { found: false, index: -1, path: [] };
-                                        };
-                                        
-                                        const fieldSearch = findConditionWithField(filter);
-                                        foundSameField = fieldSearch.found;
-                                        foundConditionIndex = fieldSearch.index;
-                                        foundConditionPath = fieldSearch.path;
-                                        
-                                        if (foundSameField && foundConditionIndex >= 0) {
-                                          const result = JSON.parse(JSON.stringify(filter));
-
-                                          let current = result;
-                                          for (let i = 0; i < foundConditionPath.length - 1; i++) {
-                                            current = current[foundConditionPath[i]];
-                                          }
-                                          const conditionIndex = foundConditionPath[foundConditionPath.length - 1];
-                                          const condition = current[conditionIndex];
-                                          
-                                          const parentArray = current;
-                                          let isInOrGroup = false;
-                                          
-                                          for (let i = 0; i < parentArray.length; i++) {
-                                            if (parentArray[i] === 'or') {
-                                              isInOrGroup = true;
-                                              break;
-                                            }
-                                          }
-                                          
-                                          if (isInOrGroup) {
-                                            parentArray.push('or', newCondition);
-                                          } else {
-                                            current[conditionIndex] = [condition, 'or', newCondition];
-                                          }
-                                          
-                                          return result;
-                                        }
-                                        
-                                        if (hasOrOperator && !hasAndOperator) {
-                                          return [filter, 'and', newCondition];
-                                        } else if (hasAndOperator) {
-                                          const result = JSON.parse(JSON.stringify(filter));
-                                          const lastElement = result[result.length - 1];
-                                          
-                                          if (Array.isArray(lastElement) && lastElement.length === 3 && typeof lastElement[0] === 'string' && lastElement[0] === e.dataField) {
-                                            result[result.length - 1] = [lastElement, 'or', newCondition];
-                                            return result;
-                                          } else if (Array.isArray(lastElement) && lastElement.length === 3 && typeof lastElement[0] === 'string') {
-                                            result[result.length - 1] = [lastElement];
-                                            result.push('and', newCondition);
-                                          } else {
-                                            result.push('and', newCondition);
-                                          }
-                                          
-                                          return result;
-                                        } else {
-                                          const result = [...filter];
-                                          result.push('and', newCondition);
-                                          return result;
-                                        }
-                                      };
-                                      
-                                  let updatedFilter = replaceOrAddCondition(currentFilter);
-                                      const currentOp = getCurrentOperator(currentFilter);
-                                      const newOp = getCurrentOperator(updatedFilter);
-                                      
-                                      if (currentOp !== newOp && currentFilter.length > 0) {
-                                        updatedFilter = replaceAllOperators(updatedFilter, newOp);
-                                      }
-                                      
-                                  fbInstance.option("value", updatedFilter);
-                                  setFilterValue(updatedFilter);
+                                        const updatedFilter = replaceOrAddCondition(
+                                          currentFilter,
+                                          e.dataField,
+                                          newCondition,
+                                          editingConditionRef.current,
+                                          e.value
+                                        );
+                                        fbInstance.option("value", updatedFilter);
+                                        setFilterValue(updatedFilter);
                                   if (typeof e.setValue === "function") {
                                     e.setValue(args.value);
                                     }
@@ -2963,136 +2574,16 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                                 if (filterBuilderRef.current?.instance && e.setValue) {
                                   const fbInstance = filterBuilderRef.current.instance;
                                   let currentFilter = fbInstance.option('value') || [];
-                                  
                                   const newCondition = [e.dataField, e.filterOperation || 'contains', customValue];
-                                  
-                                  const replaceOrAddCondition = (filter: any): any => {
-                                    if (!Array.isArray(filter) || filter.length === 0) {
-                                      return newCondition;
-                                    }
-                                    
-                                    if (typeof filter[0] === 'string') {
-                                      if (filter[0] === e.dataField) {
-                                        return newCondition;
-                                      }
-                                      return [filter, 'and', newCondition];
-                                    }
-                                    
-                                    let foundSameField = false;
-                                    let targetGroup: any = null;
-                                    let targetGroupIndex = -1;
-                                    
-                                    const findFieldGroup = (f: any, parentIndex: number = -1, path: number[] = []): { found: boolean, group: any, groupIndex: number, path: number[] } => {
-                                      if (!Array.isArray(f)) return { found: false, group: null, groupIndex: -1, path: [] };
-                                      
-                                      for (let i = 0; i < f.length; i++) {
-                                        const item = f[i];
-                                        if (item === 'and' || item === 'or') continue;
-                                        
-                                        if (Array.isArray(item) && item.length !== 3 && typeof item !== 'string') {
-                                          const nested = findFieldGroup(item, i, [...path, i]);
-                                          if (nested.found) {
-                                            return nested;
-                                          }
-                                        }
-                                      }
-                                      
-                                      let hasSameField = false;
-                                      let hasOtherFields = false;
-                                      let conditionCount = 0;
-                                      
-                                      for (let i = 0; i < f.length; i++) {
-                                        const item = f[i];
-                                        if (item === 'and' || item === 'or') continue;
-                                        
-                                        if (Array.isArray(item) && item.length === 3 && typeof item[0] === 'string') {
-                                          conditionCount++;
-                                          if (item[0] === e.dataField) {
-                                            hasSameField = true;
-                                          } else {
-                                            hasOtherFields = true;
-                                          }
-                                        }
-                                      }
-                                      
-                                      if (hasSameField && hasOtherFields) {
-                                        return { found: false, group: null, groupIndex: -1, path: [] };
-                                      }
-                                      
-                                      if (hasSameField && !hasOtherFields && conditionCount > 0) {
-                                        return { found: true, group: f, groupIndex: parentIndex, path };
-                                      }
-                                      
-                                      return { found: false, group: null, groupIndex: -1, path: [] };
-                                    };
-                                    
-                                    const fieldSearch = findFieldGroup(filter);
-                                    foundSameField = fieldSearch.found;
-                                    targetGroup = fieldSearch.group;
-                                    targetGroupIndex = fieldSearch.groupIndex;
-                                    
-                                    if (foundSameField && targetGroup) {
-                                      const editingInfo = editingConditionRef.current;
-                                      const isEditing = editingInfo && 
-                                                        editingInfo.field === e.dataField && 
-                                                        editingInfo.oldValue !== null && 
-                                                        editingInfo.oldValue !== undefined;
-                                      
-                                      if (isEditing && editingInfo.oldValue) {
-                                        const result = JSON.parse(JSON.stringify(filter));
-                                        if (targetGroupIndex >= 0) {
-                                          const updatedGroup = targetGroup.map((item: any) => {
-                                            if (Array.isArray(item) && item.length === 3 && item[0] === e.dataField && item[2] === editingInfo.oldValue) {
-                                              return newCondition;
-                                            }
-                                            return item;
-                                          });
-                                          result[targetGroupIndex] = updatedGroup;
-                                        } else {
-                                          const updatedGroup = targetGroup.map((item: any) => {
-                                            if (Array.isArray(item) && item.length === 3 && item[0] === e.dataField && item[2] === editingInfo.oldValue) {
-                                              return newCondition;
-                                            }
-                                            return item;
-                                          });
-                                          return updatedGroup;
-                                        }
-                                        return result;
-                                      } else {
-                                        const result = JSON.parse(JSON.stringify(filter));
-                                        
-                                        if (fieldSearch.path.length > 0) {
-                                          let current = result;
-                                          for (let i = 0; i < fieldSearch.path.length - 1; i++) {
-                                            current = current[fieldSearch.path[i]];
-                                          }
-                                          const finalIndex = fieldSearch.path[fieldSearch.path.length - 1];
-                                          current[finalIndex] = [...targetGroup, 'or', newCondition];
-                                        } else if (targetGroupIndex >= 0) {
-                                          result[targetGroupIndex] = [...targetGroup, 'or', newCondition];
-                                        } else {
-                                          result.push('or', newCondition);
-                                        }
-                                        
-                                        return result;
-                                      }
-                                    }
-
-                                    const hasOrOperator = filter.includes('or');
-                                    const hasAndOperator = filter.includes('and');
-                                    
-                                    if (hasOrOperator && !hasAndOperator) {
-                                      const result = [filter, 'and', newCondition];
-                                      return result;
-                                    }
-
-                                    const result = [...filter, 'and', newCondition];
-                                    return result;
-                                  };
-                                  
-                                  const updatedFilter = replaceOrAddCondition(currentFilter);
-                                  
+                                  const updatedFilter = replaceOrAddCondition(
+                                    currentFilter,
+                                    e.dataField,
+                                    newCondition,
+                                    editingConditionRef.current,
+                                    e.value
+                                  );
                                   fbInstance.option('value', updatedFilter);
+                                  setFilterValue(updatedFilter);
                                   if (typeof e.setValue === "function") {
                                     e.setValue(customValue);
                                   }
