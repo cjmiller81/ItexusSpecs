@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { fetchLifiChains, LifiChain } from "./lifiChains";
 import {
   Box,
@@ -10,20 +10,12 @@ import {
   darken,
   lighten,
   TextField,
-  DialogActions,
-  Dialog,
-  DialogContent,
   Grid,
   useTheme,
-  FormControl,
-  InputLabel,
-  Autocomplete,
-  Avatar,
-  InputAdornment,
   Typography,
-  CircularProgress,
+  CircularProgress
 } from "@mui/material";
-import LockIcon from "@mui/icons-material/Lock";
+import { AddTemporaryPositionDialog } from "./AddTemporaryPositionDialog";
 import { keyframes } from '@mui/system';
 import {
   BasicTable,
@@ -41,7 +33,6 @@ import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 import { Wallet } from "@/models/Wallet/Wallet";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { iconsApi } from "@/services/iconsService";
-import SearchIcon from '@mui/icons-material/Search';
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 import CustomSelectWalletOverlay from "@/components/CustomSelectWalletOverlay";
 import { filterDustTokens } from "components";
@@ -106,6 +97,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
   const [inputSearch, setInputSearch] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isManualUpdate, setIsManualUpdate] = useState(false);
   const [wasManualSelection, setWasManualSelection] = useState(false);
   const [showDust, setShowDust] = useState(false);
@@ -317,33 +309,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
           }
         }
       },[selectedPortfolio, showDust, manualPositions])
-
-  useEffect(() => {
-    if (!selectedChain) return;
-
-    const delayDebounce = setTimeout(() => {
-      const fetchIconsForSwapFor = async () => {
-        const chainId = coinGeckoChainId(selectedChain.name);
-
-        try {
-          const result = await iconsApi.getIcons(
-            inputSearch,
-            0,
-            chainId,
-            500
-          );
-          setTokenIcons(result);
-        } catch (error) {
-          console.error('Error loading icons for swap for:', error);
-        }
-      };
-
-      fetchIconsForSwapFor();
-    }, 600);
-
-    return () => clearTimeout(delayDebounce);
-  }, [selectedChain, inputSearch]);
-
 
     useEffect(() => {
     if (!selectedWallet || isManualUpdate) {
@@ -703,62 +668,47 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 </Select>
               )}
 
-              {selectedWallet?(<>
-                            <Button
-                              id="manual_position_btn"
-                              sx={{
-                                backgroundColor: "#f7f5f2", // Warm off-white
-                                width: "100%",
-                                height: "40px",
-                                color: "#219a83",
-                                justifyContent: "flex-start",
-                                paddingLeft: "15px",
-                                fontSize: "11px bold",
-                              }}
-                              variant="outlined"
-                              onClick={() => {
-                                setSelectedChain(null);
-                                setSymbolOptionSwapFor(null);
-                                setNewBalance("");
-                                setAddPositionError("");
-                                setInputSearch("");
-                                setIsAddingManualPosition(true);
-                              }}>
-                              {t("AddManualPosition")}
-                            </Button>
-                            </>
-                            ) : (
-                              <Button
-                                id="manual_position_btn"
-                                sx={{
-                                  backgroundColor: "#f7f5f2",
-                                  width: "100%",
-                                  height: "40px",
-                                  color: "#219a83",
-                                  justifyContent: "flex-start",
-                                  paddingLeft: "15px",
-                                  fontSize: "11px bold",
-                                  borderColor: "#219a83",
-                                  "&.Mui-disabled": {
-                                    backgroundColor: "transparent",
-                                    borderColor: "#219a83",
-                                    color: "#219a83",
-                                  },
-                                }}
-                                variant="outlined"
-                                disabled
-                                onClick={() => {
-                                  setSelectedChain(null);
-                                  setSymbolOptionSwapFor(null);
-                                  setNewBalance("");
-                                  setAddPositionError("");
-                                  setInputSearch("");
-                                  setIsAddingManualPosition(true);
-                                }}
-                              >
-                              {t("AddManualPosition")}
-                            </Button>
-                            )}
+              {selectedWallet ? (
+                <Button
+                  id="manual_position_btn"
+                  sx={{
+                    backgroundColor: "#f7f5f2",
+                    width: "100%",
+                    height: "40px",
+                    color: "#219a83",
+                    justifyContent: "flex-start",
+                    paddingLeft: "15px",
+                    fontSize: "11px bold",
+                  }}
+                  variant="outlined"
+                  onClick={() => setIsAddDialogOpen(true)}
+                >
+                  {t("AddManualPosition")}
+                </Button>
+              ) : (
+                <Button
+                  id="manual_position_btn"
+                  sx={{
+                    backgroundColor: "#f7f5f2",
+                    width: "100%",
+                    height: "40px",
+                    color: "#219a83",
+                    justifyContent: "flex-start",
+                    paddingLeft: "15px",
+                    fontSize: "11px bold",
+                    borderColor: "#219a83",
+                    "&.Mui-disabled": {
+                      backgroundColor: "transparent",
+                      borderColor: "#219a83",
+                      color: "#219a83",
+                    },
+                  }}
+                  variant="outlined"
+                  disabled
+                >
+                  {t("AddManualPosition")}
+                </Button>
+              )}
 
               <Box sx={{ marginTop: "12px", display: "flex", flexDirection: "column" }}>
                 <Button
@@ -919,215 +869,45 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   }}
                 />
                 </Box>
-              <Dialog
-                open={isAddingManualPosition}
-                onClose={handleCancelManualPosition}>
-                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 450 }}>
-
-                <FormControl fullWidth size="medium" error={!!addPositionError}>
-                  <Autocomplete
-                    id="manual_position_chain_dropdown"
-                    options={lifiChains}
-                    getOptionLabel={(option) => option.name}
-                    value={selectedChain}
-                    onChange={(_e, newValue) => {
-                      setSelectedChain(newValue || null);
-                      setInputSearchBridgeToChain(newValue ? newValue.name : "");
-                      setSymbolOptionSwapFor(null);
-                      setAddPositionError("");
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value?.id}
-                    disableClearable={false}
-                    inputValue={inputSearchBridgeToChain}
-                    onInputChange={(_event, newInputValue, reason) => {
-                      if (reason === 'input') {
-                        setInputSearchBridgeToChain(newInputValue);
-                      } else if (reason === 'clear') {
-                        setInputSearchBridgeToChain("");
-                      }
-                    }}
-                    loading={lifiChainsLoading}
-                    loadingText={<CircularProgress size={18} />}
-                    noOptionsText={lifiChainsError ? t('NoOptionsOnThisChain') : t('Select a Chain first')}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        placeholder={t('Select a Chain first')}
-                        InputProps={{
-                          ...params.InputProps,
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <SearchIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    )}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {option.logoURI && (
-                          <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
-                        )}
-                        <Typography variant="body1">{option.name}</Typography>
-                      </Box>
-                    )}
-                  />
-                  {addPositionError && (
-                    <Box sx={(theme) => ({
-                      color: theme.palette.error.main,
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      marginTop: '4px',
-                    })}>
-                      {addPositionError}
-                    </Box>
-                  )}
-                </FormControl>
-                
-                  <Autocomplete
-                    options={tokenIcons?.items ?? []}
-                    getOptionLabel={(option) =>
-                      option.name
-                        ? `${option.sym.toUpperCase()} - ${option.name}`
-                        : option.sym.toUpperCase()
-                    }
-                    value={symbolOptionSwapFor}
-                    onChange={(_e, newValue) => {
-                      onOptionChange(newValue);
-                      if (newValue) {
-                        setInputSearch(
-                          newValue.name
-                            ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
-                            : newValue.sym.toUpperCase()
-                        );
-                      }
-                    }}
-                    isOptionEqualToValue={(option, value) => option.id === value?.id}
-                    disableClearable={false}
-                    inputValue={
-                      symbolOptionSwapFor
-                        ? symbolOptionSwapFor.name
-                          ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
-                          : symbolOptionSwapFor.sym.toUpperCase()
-                        : inputSearch
-                    }
-                    onInputChange={(_event, newInputValue, reason) => {
-                      if (reason === 'input') {
-                        onOptionChange(null);
-                        setInputSearch(newInputValue);
-                      } else if (reason === 'clear') {
-                        onOptionChange(null);
-                        setInputSearch('');
-                      }
-                    }}
-                    disabled={!selectedChain}
-                    renderInput={(params) => {
-                      if (!selectedChain) {
-                        return (
-                          <TextField
-                            {...params}
-                            placeholder={t('Locked until Chain is selected')}
-                            InputProps={{
-                              ...params.InputProps,
-                              startAdornment: (
-                                <InputAdornment position="start">
-                                  <LockIcon sx={{ color: 'rgba(129, 129, 129, 1)' }} />
-                                </InputAdornment>
-                              ),
-                              sx: {
-                                input: {
-                                  color: 'rgba(81,81,81,1)',
-                                },
-                              },
-                            }}
-                          />
-                        );
-                      }
-                      return (
-                        <TextField
-                          {...params}
-                          placeholder={t('Search')}
-                          InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                              symbolOptionSwapFor?.lURI ? (
-                                <InputAdornment position="start">
-                                  <Avatar
-                                    src={symbolOptionSwapFor.lURI}
-                                    alt={symbolOptionSwapFor.sym}
-                                    sx={{ width: 22, height: 22, mr: 1 }}
-                                  />
-                                </InputAdornment>
-                              ) : (
-                                <InputAdornment position="start">
-                                  <SearchIcon />
-                                </InputAdornment>
-                              )
-                            ),
-                            sx: {
-                              input: {
-                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
-                              },
-                            },
-                          }}
-                        />
-                      );
-                    }}
-                    renderOption={(props, option) => (
-                      <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Avatar
-                          src={option.lURI ?? undefined}
-                          alt={option.sym}
-                          sx={{ width: 24, height: 24 }}
-                        />
-                        <Typography variant="body1">
-                          {option.name
-                            ? `${option.sym.toUpperCase()} - ${option.name}`
-                            : option.sym.toUpperCase()}
-                        </Typography>
-                      </Box>
-                    )}
-                  />
-                    <TextField
-                      label={t('Qty')}
-                      variant="outlined"
-                      size="medium"
-                      value={newBalance}
-                      onChange={e => setNewBalance(e.target.value)}
-                      type="number"
-                      fullWidth
-                      disabled={!selectedChain || !symbolOptionSwapFor}
-                      placeholder={(!selectedChain || !symbolOptionSwapFor) ? t('Locked until Token is selected') : ''}
-                      InputProps={(!selectedChain || !symbolOptionSwapFor) ? {
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockIcon sx={{ color: 'rgba(129, 129, 129, 1)', ml: -0.5 }} />
-                          </InputAdornment>
-                        ),
-                        sx: {
-                          input: {
-                            color: 'rgba(81,81,81,1)',
-                            ml: 0.5
-                          },
-                        },
-                      } : {}}
-                    />
-                </DialogContent>
-                <DialogActions>
-                  <Button
-                    variant="outlined"
-                    onClick={handleSaveManualPosition}
-                    disabled={Boolean(addPositionError) || !symbolOptionSwapFor || !newBalance || !selectedChain}
-                  >
-                    {t("Add")}
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={handleCancelManualPosition}>
-                    {t("Cancel")}
-                  </Button>
-                </DialogActions>
-              </Dialog>
+              <AddTemporaryPositionDialog
+                open={isAddDialogOpen}
+                onClose={() => {
+                  setAddPositionError("");
+                  setIsAddDialogOpen(false);
+                }}
+                lifiChains={lifiChains}
+                lifiChainsLoading={lifiChainsLoading}
+                lifiChainsError={lifiChainsError}
+                tokenIcons={tokenIcons}
+                fetchTokenIcons={useCallback((chainName, search) => {
+                  const chainId = coinGeckoChainId(chainName);
+                  iconsApi.getIcons(search, 0, chainId, 500).then(setTokenIcons).catch(() => {});
+                }, [])}
+                onAdd={(chain, token, qty) => {
+                  // Prevent duplicate manual positions
+                  const exists = manualPositions.some(
+                    row => row.tokenName?.toLowerCase() === token.sym.toLowerCase() &&
+                      row.chain?.toLowerCase() === chain.name.toLowerCase()
+                  );
+                  if (exists) {
+                    setAddPositionError(t("TokenAlreadyExists"));
+                    return;
+                  }
+                  const newRow = {
+                    tokenName: token.sym,
+                    chain: chain.name,
+                    balance: parseFloat(qty),
+                    tokenAddress: token?.address?.[0],
+                  };
+                  setManualPositions(prev => [newRow, ...prev]);
+                  setAddPositionError("");
+                  setIsAddDialogOpen(false);
+                  setIsManualUpdate(true);
+                }}
+                addPositionError={addPositionError}
+                setAddPositionError={setAddPositionError}
+                t={t}
+              />
             </Grid>
           </Grid>
         </Grid>
