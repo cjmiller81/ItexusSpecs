@@ -173,7 +173,8 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
                     <Box flex={5} display="flex" flexDirection="column">
                       <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem' }}>{t('Chain')}</Typography>
                       <Box display="flex" alignItems="center" height="52.7px" pl={1} sx={{ backgroundColor: 'inherit', borderRadius: '4px', border: '1px solid #e0e0e0', opacity: 0.4 }}>
-                        {(() => {
+                        {/* Only show chain info if a position is selected */}
+                        {symbolOptionSwap && selectedChain && (() => {
                           const chainObj = Object.values(CHAIN_MAP).find(
                             c => c.name.toUpperCase() === selectedChain.toUpperCase()
                           );
