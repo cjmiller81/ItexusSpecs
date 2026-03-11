@@ -1,0 +1,294 @@
+import React, { useEffect, useState } from "react";
+import { fetchLifiChains, LifiChain } from "./lifiChains";
+import { getLifiToken } from "./lifiApi";
+import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import { BridgeFromCard } from "./BridgeFromCard";
+import { BridgeToCard } from "./BridgeToCard";
+import { BridgeRoutesMockup } from "./bridgeRoutesMockup";
+import { iconsApi } from "@/services/iconsService";
+
+export const BridgeTab = ({
+  t,
+  symbolOptionSwap,
+  tokenIcons,
+  handleCurrentPositionDropdownChange,
+  inputSearchSwap,
+  setInputSearchSwap,
+  formatNumberWithCommas,
+  newBalance,
+  setNewBalance,
+  selectedChain,
+  selectedTokenRow,
+  setSelectedTokenRow,
+  balanceRaw,
+  setShowNoQuotesMessage,
+  onOptionChangeSwap,
+  tokenIconsSwapFor,
+  symbolOptionSwapFor,
+  onOptionChangeSwapFor,
+  inputSearchSwapFor,
+  setInputSearchSwapFor,
+  handleFetchQuotes,
+  quoteLoading,
+  lastUpdated,
+  setTokenIconsSwapFor,
+  selectedBridgeToChainId,
+  setSelectedBridgeToChainId,
+  inputSearchBridgeToChain,
+  setInputSearchBridgeToChain,
+  onClearBridgeToTokenAddress
+}) => {
+    useEffect(() => {
+      if (!symbolOptionSwapFor && typeof onClearBridgeToTokenAddress === 'function') {
+        setBridgeToTokenAddress(null);
+        onClearBridgeToTokenAddress();
+      }
+    }, [symbolOptionSwapFor, onClearBridgeToTokenAddress]);
+  const [lifiChains, setLifiChains] = useState<LifiChain[]>([]);
+  const [lifiChainsLoading, setLifiChainsLoading] = useState(false);
+  const [lifiChainsError, setLifiChainsError] = useState(false);
+  const [bridgeFromTokenAddress, setBridgeFromTokenAddress] = useState<string | null>(null);
+  const [bridgeFromTokenDecimals, setBridgeFromTokenDecimals] = useState<number | null>(null);
+  const [bridgeFromTokenPriceUSD, setBridgeFromTokenPriceUSD] = useState<string | null>(null);
+  const [bridgeToTokenAddress, setBridgeToTokenAddress] = useState<string | null>(null);
+  const theme = useTheme();
+
+  useEffect(() => {
+    let ignore = false;
+    setLifiChainsLoading(true);
+    fetchLifiChains()
+      .then((chains) => {
+        if (!ignore) {
+          setLifiChains(chains);
+          setLifiChainsError(false);
+        }
+      })
+      .catch(() => {
+        if (!ignore) setLifiChainsError(true);
+      })
+      .finally(() => {
+        if (!ignore) setLifiChainsLoading(false);
+      });
+    return () => { ignore = true; };
+  }, []);
+
+  useEffect(() => {
+    const fetchLifiTokenInfo = async () => {
+      // Only for Bridge tab, with selected position
+      if (!selectedTokenRow) {
+        setBridgeFromTokenAddress(null);
+        setBridgeFromTokenDecimals(null);
+        setBridgeFromTokenPriceUSD(null);
+        return;
+      }
+      // Find chainId for LiFi (from lifiChains)
+      const chainName = selectedTokenRow.chain?.toUpperCase();
+      const lifiChain = lifiChains.find(
+        (c: LifiChain) => c.name.toUpperCase() === chainName
+      );
+      if (!lifiChain) {
+        setBridgeFromTokenAddress(null);
+        setBridgeFromTokenDecimals(null);
+        setBridgeFromTokenPriceUSD(null);
+        return;
+      }
+      const chainId = lifiChain.id;
+      const tokenAddress = selectedTokenRow.tokenAddress;
+      if (!tokenAddress) {
+        setBridgeFromTokenAddress(null);
+        setBridgeFromTokenDecimals(null);
+        setBridgeFromTokenPriceUSD(null);
+        return;
+      }
+      try {
+        const token = await getLifiToken(chainId, tokenAddress);
+        setBridgeFromTokenAddress(token.address);
+        setBridgeFromTokenDecimals(token.decimals);
+        setBridgeFromTokenPriceUSD(token.priceUSD || null);
+      } catch (e) {
+        setBridgeFromTokenAddress(null);
+        setBridgeFromTokenDecimals(null);
+        setBridgeFromTokenPriceUSD(null);
+      }
+    };
+    fetchLifiTokenInfo();
+  }, [selectedTokenRow, lifiChains]);
+
+  useEffect(() => {
+    if (!symbolOptionSwapFor || !selectedBridgeToChainId) {
+      return;
+    }
+    let ignore = false;
+    const fetchLifiTokenInfo = async () => {
+      try {
+        const token = await getLifiToken(selectedBridgeToChainId, symbolOptionSwapFor.address?.[0] || symbolOptionSwapFor.id);
+        if (!ignore) {
+          setBridgeToTokenAddress(token.address);
+        }
+      } catch (e) {
+        // Do not clear here, only clear on chain/token clear
+      }
+    };
+    fetchLifiTokenInfo();
+    return () => { ignore = true; };
+  }, [symbolOptionSwapFor, selectedBridgeToChainId]);
+
+  useEffect(() => {
+    if (!selectedBridgeToChainId) return;
+
+    const timeoutId = setTimeout(() => {
+      const fetchIconsForBridgeFor = async () => {
+        const chainId = selectedBridgeToChainId;
+        if (!chainId) return;
+        try {
+          const result = await iconsApi.getIcons(
+            inputSearchSwapFor,
+            0,
+            chainId,
+            500
+          );
+          if (typeof setTokenIconsSwapFor === 'function') setTokenIconsSwapFor(result);
+        } catch (error) {
+          console.error('Error loading icons for bridge for:', error);
+        }
+      };
+      fetchIconsForBridgeFor();
+    }, 450);
+    return () => clearTimeout(timeoutId);
+  }, [selectedBridgeToChainId, inputSearchSwapFor]);
+
+  return (
+    <Grid container spacing={2}>
+    <Grid item xs={6}>
+      <BridgeFromCard
+        symbolOptionSwap={symbolOptionSwap}
+        tokenIcons={tokenIcons}
+        handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
+        inputSearchSwap={inputSearchSwap}
+        setInputSearchSwap={setInputSearchSwap}
+        bridgeFromTokenAddress={bridgeFromTokenAddress}
+        formatNumberWithCommas={formatNumberWithCommas}
+        newBalance={newBalance}
+        setNewBalance={setNewBalance}
+        selectedChain={selectedChain}
+        selectedTokenRow={selectedTokenRow}
+        lifiChains={lifiChains}
+        balanceRaw={balanceRaw}
+        setShowNoQuotesMessage={setShowNoQuotesMessage}
+        onOptionChangeSwap={onOptionChangeSwap}
+      />
+      <BridgeToCard
+        t={t}
+        theme={theme}
+        symbolOptionSwap={symbolOptionSwap}
+        tokenIconsSwapFor={tokenIconsSwapFor}
+        symbolOptionSwapFor={symbolOptionSwapFor}
+        onOptionChangeSwapFor={onOptionChangeSwapFor}
+        inputSearchSwapFor={inputSearchSwapFor}
+        setInputSearchSwapFor={setInputSearchSwapFor}
+        selectedBridgeToChainId={selectedBridgeToChainId}
+        setSelectedBridgeToChainId={setSelectedBridgeToChainId}
+        inputSearchBridgeToChain={inputSearchBridgeToChain}
+        setInputSearchBridgeToChain={setInputSearchBridgeToChain}
+        lifiChains={lifiChains}
+        lifiChainsLoading={lifiChainsLoading}
+        lifiChainsError={lifiChainsError}
+        bridgeToTokenAddress={bridgeToTokenAddress}
+      />
+      {/* GET ROUTES BUTTON */}
+      <Button
+        id="get_quotes_btn"
+        variant="contained"
+        onClick={handleFetchQuotes}
+        disabled={!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+        sx={{
+          backgroundColor: "#219a83",
+          color: "#fff",
+          textTransform: "none",
+          fontWeight: 500,
+          fontSize: "0.875rem",
+          "&:hover": {
+            backgroundColor: "#219a83",
+          },
+        }}
+        startIcon={
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              animation: quoteLoading ? "spin 1s linear infinite" : "none",
+              "@keyframes spin": {
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(360deg)" },
+              },
+            }}
+          >
+            <RefreshIcon />
+          </Box>
+        }
+      >
+        {t("GetQuotes")}
+      </Button>
+      {/* Last update + disclaimers */}
+      {lastUpdated && (
+        <Box sx={{ mt: 1.5 }}>
+          <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
+            <AccessTimeIcon sx={{ color: '#00e5a0', fontSize: '1rem', mt: '2px' }} />
+            <Typography sx={{ color: '#00e5a0', fontSize: '0.75rem' }}>
+              Last Updated: {lastUpdated}
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
+            <InfoOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+            <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+              Prices are estimates and fluctuate based on network conditions.
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
+            <WarningAmberRoundedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+            <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+              Gas fees are estimates only. Final costs determined at execution time.
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={1} alignItems="flex-start">
+            <DescriptionOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+            <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+              Bridge protocols may apply additional fees. Review all parameters before proceeding.
+            </Typography>
+          </Stack>
+        </Box>
+      )}
+    </Grid>
+    {/* BRIDGE ROUTES CARD */}
+    <Grid item xs={6}>
+      <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.08em' }}>{t('Bridge Routes')}</Typography>
+          {/* routes count badge */}
+          {lastUpdated && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.7rem', color: '#00e5a0', fontWeight: 600 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#00e5a0', boxShadow: '0 0 6px #00e5a0' }} />
+              <span>4 routes found</span>
+            </Box>
+          )}
+        </Box>
+        {/* Empty state / Loading / Routes list (hardcoded) */}
+        {!lastUpdated ? (
+          <Box sx={{ border: '1px dashed #30364a', borderRadius: '10px', p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, textAlign: 'center' }}>
+            <Box sx={{ width: 48, height: 48, borderRadius: 2, background: 'rgba(0,229,160,0.10)', border: '1px solid rgba(0,229,160,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>⇄</Box>
+            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#7680a0' }}>{t('NoRoutesYet', 'No routes yet')}</Typography>
+            <Typography sx={{ fontSize: '0.78rem', color: '#424b64', maxWidth: 220, lineHeight: 1.5 }}>{t('ConfigureBridgeParams', 'Configure your bridge parameters and click Get Routes to see available options.')}</Typography>
+          </Box>
+        ) : (
+          <BridgeRoutesMockup />
+        )}
+      </Box>
+    </Grid>
+    </Grid>
+  );
+}
