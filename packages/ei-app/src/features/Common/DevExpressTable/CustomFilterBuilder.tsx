@@ -51,23 +51,24 @@ import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
 import { PrefilterTabs, PrefilterCategories } from "@/types/filter";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
 import { MainTab, MAIN_TABS } from "@/components/CategoryFiltersSection";
+import { reactourService } from "../../../../../components/src/services/reactourService";
 
 const FILTER_BUILDER_TOUR_ID = "filter_builder_v1";
+const FILTER_BUILDER_TOUR_VIEWED_KEY = "EI_TOUR_filter_builder_v1_VIEWED";
 
 const TourManager = () => {
   const { isOpen, currentStep } = useTour();
 
   useEffect(() => {
     if (isOpen) {
-        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_VIEWED`, "1");
-
+      reactourService.updateTourStatus(FILTER_BUILDER_TOUR_VIEWED_KEY, { viewed: true });
     }
   }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && currentStep >= 0) {
-        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_STEP`, currentStep.toString());
-
+      // Optionally, persist current step to backend if needed
+      // reactourService.updateTourStatus(FILTER_BUILDER_TOUR_ID, { step: currentStep });
     }
   }, [isOpen, currentStep]);
 
@@ -144,23 +145,16 @@ const TourPortalManager = ({ isTourOpen }: {
   useEffect(() => {
     if (isTourOpen) {
       setIsOpen(true);
-      
-      const savedStep = localStorage.getItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_STEP`);
-      if (savedStep && !isNaN(Number(savedStep))) {
-        const stepNumber = Number(savedStep);
-        setTimeout(() => {
-          setCurrentStep(stepNumber);
-        }, 100);
-      }
     } else {
       setIsOpen(false);
     }
-  }, [isTourOpen, setIsOpen, setCurrentStep]);
+  }, [isTourOpen, setIsOpen]);
 
   useEffect(() => {
     if (isTourOpen && currentStep >= 0) {
-        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_STEP`, currentStep.toString());
-        localStorage.setItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_VIEWED`, "1");
+      reactourService.updateTourStatus(FILTER_BUILDER_TOUR_VIEWED_KEY, { viewed: true });
+      // Optionally, persist current step
+      // reactourService.updateTourStatus(FILTER_BUILDER_TOUR_ID, { step: currentStep });
     }
   }, [isTourOpen, currentStep]);
 
@@ -173,15 +167,36 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
   onStartTourRef: React.MutableRefObject<(() => void) | null>
 }) => {
   const [isTourOpen, setIsTourOpen] = useState(false);
+  const [loadingTourViewed, setLoadingTourViewed] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    if (isModalOpen) {
+      setLoadingTourViewed(true);
+      reactourService.getReactourSettings().then(settings => {
+        const viewed = settings?.tours?.[FILTER_BUILDER_TOUR_VIEWED_KEY] === 1;
+        if (mounted) {
+          setIsTourOpen(!viewed);
+          setLoadingTourViewed(false);
+        }
+      }).catch(() => {
+        if (mounted) {
+          setIsTourOpen(false);
+          setLoadingTourViewed(false);
+        }
+      });
+    } else {
+      setIsTourOpen(false);
+    }
+    return () => { mounted = false; };
+  }, [isModalOpen]);
 
   const handleStartTour = () => {
     setIsTourOpen(currentValue => {
       if (currentValue) {
-        setTimeout(() => {
-          setIsTourOpen(true);
-        }, 100);
-        return false;
+        return true;
       } else {
+        reactourService.updateTourStatus(FILTER_BUILDER_TOUR_VIEWED_KEY, { viewed: true });
         return true;
       }
     });
@@ -190,17 +205,6 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
   useEffect(() => {
     onStartTourRef.current = handleStartTour;
   });
-
-  useEffect(() => {
-    if (isModalOpen && !isTourOpen) {
-      const isTourViewed = localStorage.getItem(`EI_TOUR_${FILTER_BUILDER_TOUR_ID}_VIEWED`) === "1";
-      if (!isTourViewed) {
-        setTimeout(() => {
-          setIsTourOpen(true);
-        }, 1000); 
-      }
-    }
-  }, [isModalOpen, isTourOpen]);
 
   useEffect(() => {
     if (!isModalOpen && isTourOpen) {
@@ -270,7 +274,7 @@ const TourPortal = ({ tourSteps, isModalOpen, onStartTourRef }: {
     }
   }, [isTourOpen]);
 
-  if (typeof window === 'undefined' || !isModalOpen) {
+  if (typeof window === 'undefined' || !isModalOpen || loadingTourViewed) {
     return null;
   }
 
