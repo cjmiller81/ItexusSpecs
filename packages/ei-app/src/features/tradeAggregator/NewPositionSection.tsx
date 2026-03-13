@@ -987,61 +987,16 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setTokenAddress(null);
       setTokenAddressSwapFor(null);
       return;
-    } else {
-      setErrorMessage(null);
-      const fetchAndSetAddresses = async () => {
-        if (
-          symbolOptionSwap &&
-          swapFor &&
-          selectedChain &&
-          newBalance
-        ) {
-          const result = await dispatch(
-            fetchQuoteParameters({
-              tokenPositionSymbol: symbolOptionSwap.sym,
-              chainName: selectedChain,
-              qty: Number(newBalance),
-              swapForSymbol: swapFor.sym,
-              tokenPositionId: symbolOptionSwap.id,
-              swapForId: swapFor.id,
-            })
-          );
-          if (fetchQuoteParameters.fulfilled.match(result)) {
-            const data = result.payload;
-            if (data?.fromTokenAddress && data?.toTokenAddress) {
-              setTokenAddress(data.fromTokenAddress);
-              setTokenAddressSwapFor(data.toTokenAddress);
-              setShouldFetchQuote(true);
-            } else {
-              setTokenAddress(null);
-              setTokenAddressSwapFor(null);
-            }
-          } else {
-            setTokenAddress(null);
-            setTokenAddressSwapFor(null);
-            console.error("Error API:", result);
-          }
-        }
-      };
-      fetchAndSetAddresses();
-      const now = new Date();
-      const formatted = now.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-      setLastUpdatedBridge(formatted);
     }
 
-    /*setErrorMessage(null);
+    setErrorMessage(null);
 
-    // Get token addresses and decimals from symbolOptionSwap and swapFor
-    // TokenSearchItem.address is string[], use first address or id fallback
-    const fromTokenAddress = Array.isArray(symbolOptionSwap?.address) ? symbolOptionSwap.address[0] : symbolOptionSwap?.id || '';
-    const toTokenAddress = Array.isArray(swapFor?.address) ? swapFor.address[0] : swapFor?.id || '';
+    const fromTokenAddress = selectedTokenRowBridge?.tokenAddress || '';
+    const toTokenAddress = symbolOptionSwapForBridge?.address
+      ? Array.isArray(symbolOptionSwapForBridge.address)
+        ? symbolOptionSwapForBridge.address[0]
+        : symbolOptionSwapForBridge.address
+      : '';
     // TODO: Get decimals from token details if available, fallback to 18
     const fromTokenDecimals = 18;
     // Convert fromAmount to raw amount using BigInt
@@ -1065,13 +1020,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         fromTokenAddress: String(fromTokenAddress),
         toTokenAddress: String(toTokenAddress),
       });
-      if (data.routes && Array.isArray(data.routes)) {
-        setQuoteData(data.routes);
-        setErrorMessage(null);
-      } else {
-        setQuoteData([]);
-        setErrorMessage(t("No bridge routes found"));
-      }
+      setQuoteData(Array.isArray(data.routes) ? data.routes : []);
+      setErrorMessage((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No bridge routes found"));
     } catch (e) {
       setErrorMessage(t("Error fetching bridge routes"));
       setQuoteData([]);
@@ -1089,7 +1039,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       minute: '2-digit',
       hour12: false,
     });
-    setLastUpdatedBridge(formatted);*/
+    setLastUpdatedBridge(formatted);
   };
 
   // Find the selected position from dropdown and update fields as if selected from table
@@ -1919,6 +1869,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               inputSearchBridgeToChain={inputSearchBridgeToChain}
               setInputSearchBridgeToChain={setInputSearchBridgeToChain}
               onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
+              quoteData={quoteData as any[]}
+              errorMessage={errorMessage as string | null}
+              chains={[]}
             />
         )}
       </Grid>

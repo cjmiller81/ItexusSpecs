@@ -9,8 +9,43 @@ import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { BridgeFromCard } from "./BridgeFromCard";
 import { BridgeToCard } from "./BridgeToCard";
-import { BridgeRoutesMockup } from "./bridgeRoutesMockup";
+import { BridgeRoutesPanel } from "./BridgeRoutesPanel";
 import { iconsApi } from "@/services/iconsService";
+
+interface BridgeTabProps {
+  t: any;
+  symbolOptionSwap: any;
+  tokenIcons: any;
+  handleCurrentPositionDropdownChange: any;
+  inputSearchSwap: string;
+  setInputSearchSwap: (v: string) => void;
+  formatNumberWithCommas: (v: string) => string;
+  newBalance: string;
+  setNewBalance: (v: string) => void;
+  selectedChain: string;
+  selectedTokenRow: any;
+  setSelectedTokenRow: (v: any) => void;
+  balanceRaw: number | undefined;
+  setShowNoQuotesMessage: (v: React.SetStateAction<boolean>) => void;
+  onOptionChangeSwap: (v: any) => void;
+  tokenIconsSwapFor: any;
+  symbolOptionSwapFor: any;
+  onOptionChangeSwapFor: (v: any) => void;
+  inputSearchSwapFor: string;
+  setInputSearchSwapFor: (v: string) => void;
+  handleFetchQuotes: () => void;
+  quoteLoading: boolean;
+  lastUpdated: string | null;
+  setTokenIconsSwapFor: (v: any) => void;
+  selectedBridgeToChainId: number | null;
+  setSelectedBridgeToChainId: (v: number | null) => void;
+  inputSearchBridgeToChain: string;
+  setInputSearchBridgeToChain: (v: string) => void;
+  onClearBridgeToTokenAddress: () => void;
+  quoteData?: any[];
+  errorMessage?: string | null;
+  chains?: any[];
+}
 
 export const BridgeTab = ({
   t,
@@ -41,8 +76,11 @@ export const BridgeTab = ({
   setSelectedBridgeToChainId,
   inputSearchBridgeToChain,
   setInputSearchBridgeToChain,
-  onClearBridgeToTokenAddress
-}) => {
+  onClearBridgeToTokenAddress,
+  quoteData = [],
+  errorMessage = null,
+  chains = [],
+}: BridgeTabProps) => {
     useEffect(() => {
       if (!symbolOptionSwapFor && typeof onClearBridgeToTokenAddress === 'function') {
         setBridgeToTokenAddress(null);
@@ -267,26 +305,14 @@ export const BridgeTab = ({
     {/* BRIDGE ROUTES CARD */}
     <Grid item xs={6}>
       <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.08em' }}>{t('Bridge Routes')}</Typography>
-          {/* routes count badge */}
-          {lastUpdated && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.7rem', color: '#00e5a0', fontWeight: 600 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#00e5a0', boxShadow: '0 0 6px #00e5a0' }} />
-              <span>4 routes found</span>
-            </Box>
-          )}
-        </Box>
         {/* Empty state / Loading / Routes list (hardcoded) */}
-        {!lastUpdated ? (
-          <Box sx={{ border: '1px dashed #30364a', borderRadius: '10px', p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, textAlign: 'center' }}>
-            <Box sx={{ width: 48, height: 48, borderRadius: 2, background: 'rgba(0,229,160,0.10)', border: '1px solid rgba(0,229,160,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>⇄</Box>
-            <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, color: '#7680a0' }}>{t('NoRoutesYet', 'No routes yet')}</Typography>
-            <Typography sx={{ fontSize: '0.78rem', color: '#424b64', maxWidth: 220, lineHeight: 1.5 }}>{t('ConfigureBridgeParams', 'Configure your bridge parameters and click Get Routes to see available options.')}</Typography>
-          </Box>
-        ) : (
-          <BridgeRoutesMockup />
-        )}
+        <BridgeRoutesPanel
+          routes={quoteData}
+          chains={chains.length ? chains : lifiChains}
+          loading={quoteLoading}
+          error={errorMessage}
+          lastUpdated={lastUpdated}
+        />
       </Box>
     </Grid>
     </Grid>
