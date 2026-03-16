@@ -883,13 +883,24 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   iconsApi.getIcons(search, 0, chainId, 500).then(setTokenIcons).catch(() => {});
                 }, [])}
                 onAdd={(chain, token, qty) => {
-                  // Prevent duplicate manual positions
-                  const exists = manualPositions.some(
-                    row => row.tokenName?.toLowerCase() === token.sym.toLowerCase() &&
-                      row.chain?.toLowerCase() === chain.name.toLowerCase()
+                  // Prevent duplicate manual positions or wallet positions
+                  const tokenNameLower = token.sym.toLowerCase();
+                  const chainNameLower = chain.name.toLowerCase();
+                  // Check manual positions
+                  const existsManual = manualPositions.some(
+                    row => row.tokenName?.toLowerCase() === tokenNameLower &&
+                      row.chain?.toLowerCase() === chainNameLower
                   );
-                  if (exists) {
-                    setAddPositionError(t("TokenAlreadyExists"));
+                  // Check wallet positions
+                  const selectedPortfolio = portfolioWalletData.find(
+                    (p) => p.walletAddress === selectedWallet?.address
+                  )?.tokenHoldings || [];
+                  const existsWallet = selectedPortfolio.some(
+                    row => row.symbol?.toLowerCase() === tokenNameLower &&
+                      normalizeNetworkName(row.network)?.toLowerCase() === chainNameLower
+                  );
+                  if (existsManual || existsWallet) {
+                    setAddPositionError(t("Positions already exists in loaded wallet"));
                     return;
                   }
                   const newRow = {
