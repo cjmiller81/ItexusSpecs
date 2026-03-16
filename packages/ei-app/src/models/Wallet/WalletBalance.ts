@@ -3,5 +3,6 @@ export interface WalletBalance {
   name?: string,
   chain?: string,
   balance: number,
-  tokenAddress?: string
+  tokenAddress?: string,
+  decimals?: number
 }

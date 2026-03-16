@@ -997,8 +997,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         ? symbolOptionSwapForBridge.address[0]
         : symbolOptionSwapForBridge.address
       : '';
-    // TODO: Get decimals from token details if available, fallback to 18
-    const fromTokenDecimals = 18;
+
+    const fromTokenDecimals = typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18;
+
     // Convert fromAmount to raw amount using BigInt
     let fromAmountRaw = '0';
     try {
@@ -1872,6 +1873,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               quoteData={quoteData as any[]}
               errorMessage={errorMessage as string | null}
               chains={[]}
+              bridgeFromTokenDecimals={typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18}
             />
         )}
       </Grid>

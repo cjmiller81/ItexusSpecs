@@ -293,6 +293,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
             chain: normalizeNetworkName(token.network),
             balance: token.balance,
             tokenAddress: token.tokenAddress,
+            decimals: token.decimals
           }));
           
           const combinedData = [...portfolioData, ...manualPositions];
@@ -526,12 +527,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
         mt={2}
         spacing={0}
         container
-        xs={12}
         sx={{ width: '100%' }}
       >
         <Grid
           container
-          xs={12}
           spacing={1}
           sx={{ width: '100%' }}
         >

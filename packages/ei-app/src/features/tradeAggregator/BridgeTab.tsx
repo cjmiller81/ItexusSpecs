@@ -45,6 +45,7 @@ interface BridgeTabProps {
   quoteData?: any[];
   errorMessage?: string | null;
   chains?: any[];
+  bridgeFromTokenDecimals: number | null;
 }
 
 export const BridgeTab = ({
