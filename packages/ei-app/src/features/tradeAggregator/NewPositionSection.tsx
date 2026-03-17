@@ -714,24 +714,33 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   
   useEffect(() => {
-    if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
+    if (!symbolOptionSwap || !selectedWallet) {
       setSelectedToken(null);
-      setNewBalance("")
+      setNewBalance("");
       return;
     }
-  
-    setNewBalance(maxBalance.toString());
-    const matchedToken = filteredRows.find(token => 
-      token.tokenName?.toUpperCase() === symbolOptionSwap.sym?.toUpperCase() &&
-      token.chain?.toUpperCase() === selectedChain.toUpperCase()
-    );
-  
+
+    // Try to find the token by symbol and chain (case-insensitive, trimmed)
+    const matchedToken = filteredRows.find(token => {
+      const tokenSym = token.tokenName?.toUpperCase().trim();
+      const selSym = symbolOptionSwap.sym?.toUpperCase().trim();
+      const tokenChain = token.chain?.toUpperCase().trim();
+      const selChain = selectedChain?.toUpperCase().trim();
+      // If selectedChain is empty, fallback to tokenChain match only by symbol
+      if (!selChain) {
+        return tokenSym === selSym;
+      }
+      return tokenSym === selSym && tokenChain === selChain;
+    });
+
     if (matchedToken) {
       setSelectedToken(matchedToken.tokenName || null);
-      onSelectedTokenChange?.(matchedToken.tokenName, selectedChain);
+      setNewBalance(matchedToken.balance?.toString() || "");
+      onSelectedTokenChange?.(matchedToken.tokenName, matchedToken.chain);
     } else {
       setSelectedToken(null);
-      onSelectedTokenChange?.(null,null);
+      setNewBalance("");
+      onSelectedTokenChange?.(null, null);
     }
   }, [symbolOptionSwap, selectedChain, selectedWallet, filteredRows]);
 
@@ -997,8 +1006,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         ? symbolOptionSwapForBridge.address[0]
         : symbolOptionSwapForBridge.address
       : '';
-    // TODO: Get decimals from token details if available, fallback to 18
-    const fromTokenDecimals = 18;
+
+    const fromTokenDecimals = typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18;
+
     // Convert fromAmount to raw amount using BigInt
     let fromAmountRaw = '0';
     try {
@@ -1872,6 +1882,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               quoteData={quoteData as any[]}
               errorMessage={errorMessage as string | null}
               chains={[]}
+              bridgeFromTokenDecimals={typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18}
             />
         )}
       </Grid>

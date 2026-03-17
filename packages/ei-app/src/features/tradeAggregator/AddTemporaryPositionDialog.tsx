@@ -96,6 +96,10 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
               setInputSearchBridgeToChain(newValue ? newValue.name : "");
               setSymbolOptionSwapFor(null);
               setAddPositionError("");
+              if (!newValue) {
+                setInputSearch("");
+                setNewBalance("");
+              }
             }}
             isOptionEqualToValue={(option, value) => option.id === value?.id}
             disableClearable={false}
@@ -105,6 +109,9 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
                 setInputSearchBridgeToChain(newInputValue);
               } else if (reason === 'clear') {
                 setInputSearchBridgeToChain("");
+                setSymbolOptionSwapFor(null);
+                setInputSearch("");
+                setNewBalance("");
               }
             }}
             loading={lifiChainsLoading}
@@ -160,6 +167,8 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
                   ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
                   : newValue.sym.toUpperCase()
               );
+            } else {
+              setNewBalance("");
             }
           }}
           isOptionEqualToValue={(option, value) => option.id === value?.id}
@@ -175,9 +184,11 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
             if (reason === 'input') {
               onOptionChange(null);
               setInputSearch(newInputValue);
+              setNewBalance("");
             } else if (reason === 'clear') {
               onOptionChange(null);
               setInputSearch('');
+              setNewBalance("");
             }
           }}
           disabled={!selectedChain}

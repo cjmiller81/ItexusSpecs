@@ -293,6 +293,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
             chain: normalizeNetworkName(token.network),
             balance: token.balance,
             tokenAddress: token.tokenAddress,
+            decimals: token.decimals
           }));
           
           const combinedData = [...portfolioData, ...manualPositions];
@@ -447,28 +448,19 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
     setWasManualSelection(true);
     const selectedId = newSelection.length > 0 ? String(newSelection[0]) : null;
-    
+
     if (selectedId) {
       const selectedToken = filteredRows.find(row => {
-    if (!row.tokenName || !row.chain) return false;
-      const id = `${row.tokenName.toLowerCase()}-${row.chain.toLowerCase()}`;
-      return id === selectedId;
-    }) ?? null;
+        if (!row.tokenName || !row.chain) return false;
+        const id = `${row.tokenName.toLowerCase()}-${row.chain.toLowerCase()}`;
+        return id === selectedId;
+      }) ?? null;
 
-              const isSupportedChainToken = selectedToken && selectedToken.chain && 
-         isSupportedChain(selectedToken.chain);
-
-       if (isSupportedChainToken) {
-        if (onTokenChange) {
-          onTokenChange(selectedToken);
-        }
-        setSelectedRows(selectedId);
-      } else {
-        if (onTokenChange) {
-          onTokenChange(null);
-        }
-        setSelectedRows(null);
+      // Allow selection of any token, even if chain is not supported
+      if (onTokenChange) {
+        onTokenChange(selectedToken);
       }
+      setSelectedRows(selectedId);
     } else {
       if (onTokenChange) {
         onTokenChange(null);
@@ -526,12 +518,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
         mt={2}
         spacing={0}
         container
-        xs={12}
         sx={{ width: '100%' }}
       >
         <Grid
           container
-          xs={12}
           spacing={1}
           sx={{ width: '100%' }}
         >
@@ -884,13 +874,24 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   iconsApi.getIcons(search, 0, chainId, 500).then(setTokenIcons).catch(() => {});
                 }, [])}
                 onAdd={(chain, token, qty) => {
-                  // Prevent duplicate manual positions
-                  const exists = manualPositions.some(
-                    row => row.tokenName?.toLowerCase() === token.sym.toLowerCase() &&
-                      row.chain?.toLowerCase() === chain.name.toLowerCase()
+                  // Prevent duplicate manual positions or wallet positions
+                  const tokenNameLower = token.sym.toLowerCase();
+                  const chainNameLower = chain.name.toLowerCase();
+                  // Check manual positions
+                  const existsManual = manualPositions.some(
+                    row => row.tokenName?.toLowerCase() === tokenNameLower &&
+                      row.chain?.toLowerCase() === chainNameLower
                   );
-                  if (exists) {
-                    setAddPositionError(t("TokenAlreadyExists"));
+                  // Check wallet positions
+                  const selectedPortfolio = portfolioWalletData.find(
+                    (p) => p.walletAddress === selectedWallet?.address
+                  )?.tokenHoldings || [];
+                  const existsWallet = selectedPortfolio.some(
+                    row => row.symbol?.toLowerCase() === tokenNameLower &&
+                      normalizeNetworkName(row.network)?.toLowerCase() === chainNameLower
+                  );
+                  if (existsManual || existsWallet) {
+                    setAddPositionError(t("Positions already exists in loaded wallet"));
                     return;
                   }
                   const newRow = {
