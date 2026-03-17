@@ -448,28 +448,19 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
     setWasManualSelection(true);
     const selectedId = newSelection.length > 0 ? String(newSelection[0]) : null;
-    
+
     if (selectedId) {
       const selectedToken = filteredRows.find(row => {
-    if (!row.tokenName || !row.chain) return false;
-      const id = `${row.tokenName.toLowerCase()}-${row.chain.toLowerCase()}`;
-      return id === selectedId;
-    }) ?? null;
+        if (!row.tokenName || !row.chain) return false;
+        const id = `${row.tokenName.toLowerCase()}-${row.chain.toLowerCase()}`;
+        return id === selectedId;
+      }) ?? null;
 
-              const isSupportedChainToken = selectedToken && selectedToken.chain && 
-         isSupportedChain(selectedToken.chain);
-
-       if (isSupportedChainToken) {
-        if (onTokenChange) {
-          onTokenChange(selectedToken);
-        }
-        setSelectedRows(selectedId);
-      } else {
-        if (onTokenChange) {
-          onTokenChange(null);
-        }
-        setSelectedRows(null);
+      // Allow selection of any token, even if chain is not supported
+      if (onTokenChange) {
+        onTokenChange(selectedToken);
       }
+      setSelectedRows(selectedId);
     } else {
       if (onTokenChange) {
         onTokenChange(null);
