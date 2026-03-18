@@ -72,7 +72,16 @@ export const BridgeRouteCard = ({
               {route.tags?.includes('RECOMMENDED') && <Chip label="⭐ BEST" size="small" sx={{ background: 'rgba(245,200,66,0.12)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
               {route.tags?.includes('FASTEST') && <Chip label="⚡ FASTEST" size="small" sx={{ background: 'rgba(91,140,245,0.12)', color: '#5b8cf5', border: '1px solid rgba(91,140,245,0.4)', fontWeight: 700, fontSize: '0.63rem', height: 20, ml: 1 }} />}
             </Box>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.12rem', color: selected ? '#00e5a0' : '#23263a' }}>{formatAmount(adjustedToAmount, 4)} {route.toToken?.symbol ?? ''}</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '1.12rem', color: selected ? '#00e5a0' : theme.palette.mode === 'dark' ? '#e4e8f5' : '#23263a', letterSpacing: 0.01 }}>
+                {formatAmount(adjustedToAmount, 4)} {route.toToken?.symbol ?? ''}
+              </Typography>
+              {/*{adjustedToAmountUSD > 0 && (
+                <Typography sx={{ fontWeight: 500, fontSize: '0.82rem', color: '#7680a0', mt: 0.2 }}>
+                  ≈ ${formatAmount(adjustedToAmountUSD, 2)}
+                </Typography>
+              )}*/}
+            </Box>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.72rem', color: '#7F8AA1', fontWeight: 700 }}>

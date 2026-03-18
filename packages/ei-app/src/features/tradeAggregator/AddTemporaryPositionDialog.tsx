@@ -94,12 +94,10 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
             onChange={(_e, newValue) => {
               setSelectedChain(newValue || null);
               setInputSearchBridgeToChain(newValue ? newValue.name : "");
-              setSymbolOptionSwapFor(null);
+              setSymbolOptionSwapFor(null); // Clear Token field
+              setInputSearch(""); // Always clear token search input
+              setNewBalance(""); // Always clear Qty field
               setAddPositionError("");
-              if (!newValue) {
-                setInputSearch("");
-                setNewBalance("");
-              }
             }}
             isOptionEqualToValue={(option, value) => option.id === value?.id}
             disableClearable={false}
