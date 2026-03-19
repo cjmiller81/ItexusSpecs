@@ -28,13 +28,8 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
       <Box
         sx={{
           padding: '20px 16px',
-          borderTop: `1px solid ${theme.palette.mode === 'dark'
-            ? 'rgba(255, 255, 255, 0.06)'
-            : 'rgba(0, 0, 0, 0.06)'}`,
           marginTop: '24px',
           transition: 'all 0.2s ease',
-
-          // Add hover state
           '&:hover': {
             '& .disclaimer-title': {
               color: theme.palette.mode === 'dark'
