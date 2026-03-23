@@ -150,6 +150,16 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             PriceId: newPlan.id,
           })
         ).unwrap();
+
+        // Explicitly refresh subscriptions and product after first plan selection
+        const updatedSubscriptions = await dispatch(fetchSubscriptionsAsync(billing?.id)).unwrap();
+        const activeSubscription = updatedSubscriptions?.find(sub => sub.status === "active" || sub.status === "trialing");
+        if (activeSubscription?.items?.data?.[0]?.price?.product) {
+          const productData = await dispatch(fetchProductAsync(activeSubscription.items.data[0].price.product)).unwrap();
+          dispatch(setProduct(productData));
+        }
+        dispatch(addMessage({ message: t("PlanUpgraded") }));
+        setSelectedPlanId(newPlan.id);
       } else {
         const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
 
