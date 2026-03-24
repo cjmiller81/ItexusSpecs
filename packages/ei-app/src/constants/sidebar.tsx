@@ -161,6 +161,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
         },
       ],
     },
+    /*
     {
       title: t("OpenSourceCommunity", { ns: "SideBar" }),
       icon: (
@@ -201,6 +202,7 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
         },
       ],
     },
+    */
     {
       title: t("Updates", { ns: "SideBar" }),
       icon: <NotificationsActiveIcon sx={{ fontSize: 16.5 }} />,
