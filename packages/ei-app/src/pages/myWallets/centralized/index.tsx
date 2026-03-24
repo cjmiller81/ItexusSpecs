@@ -58,11 +58,18 @@ export default function CEXWallets(){
       }
     };
 
-    // OAuth 2.0 URL (replace with your real client_id and redirect_uri)
-    const COINBASE_AUTH_URL = "https://www.coinbase.com/oauth/authorize?response_type=code&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&scope=wallet:accounts:read";
+
+    // OAuth 2.0 URL using env client_id
+    const COINBASE_CLIENT_ID = process.env.NEXT_PUBLIC_COINBASE_CLIENT_ID || "";
+    const getCoinbaseAuthUrl = () => {
+      const redirectUri = typeof window !== "undefined"
+        ? window.location.origin + "/auth/coinbase-callback"
+        : "";
+      return `https://www.coinbase.com/oauth/authorize?response_type=code&client_id=${encodeURIComponent(COINBASE_CLIENT_ID)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=wallet:accounts:read`;
+    };
 
     const handleCoinbaseConnect = () => {
-      window.open(COINBASE_AUTH_URL, "_blank", "noopener,noreferrer");
+      window.open(getCoinbaseAuthUrl(), "_blank", "noopener,noreferrer");
     };
 
     const handleCloseCoinbaseDialog = () => {
