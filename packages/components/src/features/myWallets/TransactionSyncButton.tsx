@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { appAxios } from "../../lib/axios/customAxios";
 import { toast } from "react-toastify";
 
-const COOLDOWN_MINUTES = 15;
+const COOLDOWN_MINUTES = 10;
 const COOLDOWN_MS = COOLDOWN_MINUTES * 60 * 1000;
 const STORAGE_KEY = "syncCooldownEnd";
 
@@ -145,7 +145,7 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
         } catch (err) {
           console.error("Polling failed", err);
         }
-      }, 60000); // poll every 1 minute
+      }, 15000); // poll every 1 minute
     } catch (err) {
       console.error("Sync failed", err);
       setError("Sync failed — try again");
