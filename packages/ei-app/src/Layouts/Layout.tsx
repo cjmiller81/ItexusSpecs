@@ -29,7 +29,7 @@ export default function Layout({ children }: Props) {
   const { session, logOut } = useOry()
   const { t } = useTranslation("Header")
   const isDarkMode = mode === 'dark';
-  const logoSrc = isDarkMode ? "/ElanInsightsLight.png" : "/ElanInsights.png"
+  const logoSrc = isDarkMode ? "/ELAN_INSIGHTS_one_line_brand_icon_150ppi_dark.png" : "/ELAN_INSIGHTS_one_line_brand_icon_150ppi.png"
 
   useEffect(() => {
     const loadBillingData = async () => {
