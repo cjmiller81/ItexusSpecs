@@ -500,7 +500,9 @@
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",
-    "UploadChangeImage": "Upload/Change Your Profile Image"
+    "UploadChangeImage": "Upload/Change Your Profile Image",
+    "ImageFormat": "Image formats: JPG or PNG",
+    "FileSizeLimit": "File size limit: 1 MB"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Value"

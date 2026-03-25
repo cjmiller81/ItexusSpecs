@@ -58,17 +58,18 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
       disablePadding
       sx={{ display: "block", padding: 0 }}>
       <StyledListItemButton
-      selected={isSelected}
+        selected={isSelected}
         sx={{
-          height: "40px",
-          minHeight: "40px",
-          paddingTop: "12px",
-          paddingBottom: "12px",
-          paddingLeft: "17px",
-          paddingRight: "20px",
+          height: isSidebarOpened ? "40px" : "42px",
+          minHeight: isSidebarOpened ? "40px" : "42px",
+          paddingTop: isSidebarOpened ? "12px" : "0px",
+          paddingBottom: isSidebarOpened ? "12px" : "0px",
+          paddingLeft: isSidebarOpened ? "17px" : "0px",
+          paddingRight: isSidebarOpened ? "20px" : "0px",
           borderLeft: "3px solid transparent",
           borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
-          transition: "background-color 0.2s ease",
+          transition: "background-color 0.2s ease, height 0.2s, padding 0.2s",
+          justifyContent: isSidebarOpened ? "flex-start" : "center",
           "&.Mui-selected": {
             borderLeft: `3px solid ${theme.palette.primary.main}`,
             backgroundColor: theme.palette.mode === "dark"
@@ -96,38 +97,49 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
           <ListItemIcon
             sx={{
               minWidth: 0,
-              mr: 1.5,
-              justifyContent: "center",
+              mr: isSidebarOpened ? 1.5 : 0,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: isSidebarOpened ? 17 : 24,
+              height: isSidebarOpened ? 17 : 24,
               color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+              transition: 'all 0.2s',
+              '& svg': {
+                fontSize: isSidebarOpened ? 17 : 24,
+                transition: 'font-size 0.2s',
+              },
             }}>
             {item.icon}
           </ListItemIcon>
         )}
-        <ListItemText
-          primary={item.title}
-          sx={{
-            opacity: 1,
-            textAlign: "left",
-            flex: 1,
-            "& .MuiListItemText-primary": {
-              color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
-            }
-          }}
-          primaryTypographyProps={{
-            variant: "body1",
+        {isSidebarOpened && (
+          <ListItemText
+            primary={item.title}
+            sx={{
+              opacity: 1,
+              textAlign: "left",
+              flex: 1,
+              "& .MuiListItemText-primary": {
+                color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+              }
+            }}
+            primaryTypographyProps={{
+              variant: "body1",
               sx: {
                 fontSize: "15px ",
                 fontWeight: 550,
-            }
-          }}
-        />
-        {item.children && (
+              }
+            }}
+          />
+        )}
+        {item.children && isSidebarOpened && (
           <ExpandMore
             sx={{
               fontSize: "16px",
               marginLeft: "auto",
               transform: open ? "rotate(90deg)" : "rotate(0deg)",
-              transition: "transform 0.2s ease",
+              transition: "transform 0.2s ease, font-size 0.2s",
               color: theme.palette.mode === "light"
                 ? "rgba(255, 255, 255, 0.6)"
                 : "rgba(255, 255, 255, 0.5)",
