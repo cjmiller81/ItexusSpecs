@@ -116,61 +116,72 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                 <ListItemButton
                   selected={isSelected}
                   sx={{
-                  height: "40px",
-                  minHeight: "40px",
-                  paddingTop: "12px",
-                  paddingBottom: "12px",
-                  paddingLeft: "17px",
-                  paddingRight: "20px",
-                  borderLeft: "3px solid transparent",
-                  justifyContent: "flex-start",
-                  borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
-                  transition: "background-color 0.2s ease",
-                  "&.Mui-selected": {
-                    borderLeft: `3px solid ${theme.palette.primary.main}`,
-                    backgroundColor: theme.palette.mode === "dark"
-                      ? "rgba(33, 154, 131, 0.08)"
-                      : "rgba(33, 154, 131, 0.06)",
-                    color: theme.palette.primary.main,
-                    fontWeight: 600,
-                    "& .MuiListItemIcon-root": {
+                    height: open ? "40px" : "42px",
+                    minHeight: open ? "40px" : "42px",
+                    paddingTop: open ? "12px" : "0px",
+                    paddingBottom: open ? "12px" : "0px",
+                    paddingLeft: open ? "17px" : "0px",
+                    paddingRight: open ? "20px" : "0px",
+                    borderLeft: "3px solid transparent",
+                    justifyContent: open ? "flex-start" : "center",
+                    borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
+                    transition: "background-color 0.2s ease, height 0.2s, padding 0.2s",
+                    "&.Mui-selected": {
+                      borderLeft: `3px solid ${theme.palette.primary.main}`,
+                      backgroundColor: theme.palette.mode === "dark"
+                        ? "rgba(33, 154, 131, 0.08)"
+                        : "rgba(33, 154, 131, 0.06)",
                       color: theme.palette.primary.main,
+                      fontWeight: 600,
+                      "& .MuiListItemIcon-root": {
+                        color: theme.palette.primary.main,
+                      },
+                      "&:hover": {
+                        backgroundColor: theme.palette.mode === "dark"
+                          ? "rgba(33, 154, 131, 0.12)"
+                          : "rgba(33, 154, 131, 0.10)",
+                      },
                     },
                     "&:hover": {
                       backgroundColor: theme.palette.mode === "dark"
-                        ? "rgba(33, 154, 131, 0.12)"
-                        : "rgba(33, 154, 131, 0.10)",
+                        ? "rgba(255, 255, 255, 0.05)"
+                        : "rgba(0, 0, 0, 0.03)",
                     },
-                  },
-                  "&:hover": {
-                    backgroundColor: theme.palette.mode === "dark"
-                      ? "rgba(255, 255, 255, 0.05)"
-                      : "rgba(0, 0, 0, 0.03)",
-                  },
-                }}>
+                  }}>
                   {item.icon && (
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
-                        mr: 1.5,
-                        justifyContent: "center",
+                        mr: open ? 1.5 : 0,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: open ? 17 : 24,
+                        height: open ? 17 : 24,
                         color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+                        transition: 'all 0.2s',
+                        '& svg': {
+                          fontSize: open ? 17 : 24,
+                          transition: 'font-size 0.2s',
+                        },
                       }}>
                       {item.icon}
                     </ListItemIcon>
                   )}
-                  <ListItemText
-                    primary={item.title}
-                    primaryTypographyProps={{
-                      variant: "body1",
-                      sx: {
-                        fontSize: "15px ",
-                        fontWeight: 600,
-                        color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
-                      }
-                    }}
-                    sx={{ textAlign: "left" }}
-                  />
+                  {open && (
+                    <ListItemText
+                      primary={item.title}
+                      primaryTypographyProps={{
+                        variant: "body1",
+                        sx: {
+                          fontSize: "15px ",
+                          fontWeight: 600,
+                          color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+                        }
+                      }}
+                      sx={{ textAlign: "left" }}
+                    />
+                  )}
                 </ListItemButton>
               </AppLink>
             </Box>
