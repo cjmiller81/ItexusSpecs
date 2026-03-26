@@ -346,11 +346,15 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           caption="Actions"
           alignment="center"
           allowHiding={false}
-          cellRender={({ data }) =>
-            data.add_liquidity_url ? (
+          cellRender={({ data }) => {
+            // Fallback logic for Add Liquidity button
+            const vaultUrl = data.id ? `https://app.beefy.com/vault/${data.id}` : null;
+            const depositUrl = data.add_liquidity_url ?? vaultUrl;
+            if (!depositUrl) return null;
+            return (
               <AddLiquidityButton variant="contained">
                 <a
-                  href={data.add_liquidity_url}
+                  href={depositUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -366,8 +370,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
                   Add Liquidity&nbsp;&rarr;
                 </a>
               </AddLiquidityButton>
-            ) : null
-          }
+            );
+          }}
         />
         <Column
           dataField="name"
