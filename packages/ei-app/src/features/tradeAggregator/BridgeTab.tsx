@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchLifiChains, LifiChain } from "./lifiChains";
 import { getLifiToken } from "./lifiApi";
 import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
+import EastIcon from '@mui/icons-material/East';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -218,45 +219,71 @@ export const BridgeTab = ({
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={6}>
-        <BridgeFromCard
-          symbolOptionSwap={symbolOptionSwap}
-          tokenIcons={tokenIcons}
-          handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
-          inputSearchSwap={inputSearchSwap}
-          setInputSearchSwap={setInputSearchSwap}
-          bridgeFromTokenAddress={bridgeFromTokenAddress}
-          formatNumberWithCommas={formatNumberWithCommas}
-          newBalance={newBalance}
-          setNewBalance={setNewBalance}
-          selectedChain={selectedChain}
-          selectedTokenRow={selectedTokenRow}
-          lifiChains={lifiChains}
-          balanceRaw={balanceRaw}
-          setShowNoQuotesMessage={setShowNoQuotesMessage}
-          onOptionChangeSwap={onOptionChangeSwap}
-        />
-        <BridgeToCard
-          t={t}
-          theme={theme}
-          symbolOptionSwap={symbolOptionSwap}
-          tokenIconsSwapFor={tokenIconsSwapFor}
-          symbolOptionSwapFor={symbolOptionSwapFor}
-          onOptionChangeSwapFor={onOptionChangeSwapFor}
-          inputSearchSwapFor={inputSearchSwapFor}
-          setInputSearchSwapFor={setInputSearchSwapFor}
-          selectedBridgeToChainId={selectedBridgeToChainId}
-          setSelectedBridgeToChainId={setSelectedBridgeToChainId}
-          inputSearchBridgeToChain={inputSearchBridgeToChain}
-          setInputSearchBridgeToChain={setInputSearchBridgeToChain}
-          lifiChains={lifiChains}
-          lifiChainsLoading={lifiChainsLoading}
-          lifiChainsError={lifiChainsError}
-          bridgeToTokenAddress={bridgeToTokenAddress}
-        />
-        {/* GET ROUTES BUTTON */}
-        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
+      {/* Top row: From | Arrow | To */}
+      <Grid item xs={12}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+          <Box sx={{ flex: 5 }}>
+            <BridgeFromCard
+              symbolOptionSwap={symbolOptionSwap}
+              tokenIcons={tokenIcons}
+              handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
+              inputSearchSwap={inputSearchSwap}
+              setInputSearchSwap={setInputSearchSwap}
+              bridgeFromTokenAddress={bridgeFromTokenAddress}
+              formatNumberWithCommas={formatNumberWithCommas}
+              newBalance={newBalance}
+              setNewBalance={setNewBalance}
+              selectedChain={selectedChain}
+              selectedTokenRow={selectedTokenRow}
+              lifiChains={lifiChains}
+              balanceRaw={balanceRaw}
+              setShowNoQuotesMessage={setShowNoQuotesMessage}
+              onOptionChangeSwap={onOptionChangeSwap}
+            />
+          </Box>
+          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 180 }}>
+            <EastIcon sx={{ fontSize: 38, color: '#219a83', background: '#fff', borderRadius: '50%', boxShadow: 2, p: 1 }} />
+          </Box>
+          <Box sx={{ flex: 5 }}>
+            <BridgeToCard
+              t={t}
+              theme={theme}
+              symbolOptionSwap={symbolOptionSwap}
+              tokenIconsSwapFor={tokenIconsSwapFor}
+              symbolOptionSwapFor={symbolOptionSwapFor}
+              onOptionChangeSwapFor={onOptionChangeSwapFor}
+              inputSearchSwapFor={inputSearchSwapFor}
+              setInputSearchSwapFor={setInputSearchSwapFor}
+              selectedBridgeToChainId={selectedBridgeToChainId}
+              setSelectedBridgeToChainId={setSelectedBridgeToChainId}
+              inputSearchBridgeToChain={inputSearchBridgeToChain}
+              setInputSearchBridgeToChain={setInputSearchBridgeToChain}
+              lifiChains={lifiChains}
+              lifiChainsLoading={lifiChainsLoading}
+              lifiChainsError={lifiChainsError}
+              bridgeToTokenAddress={bridgeToTokenAddress}
+            />
+          </Box>
+        </Box>
+      </Grid>
+      {/* New card: Get Quotes, Clear Bridge, timestamp, disclaimers */}
+      <Grid item xs={12}>
+        <Box sx={{
+          borderRadius: '12px',
+          border: '1.5px solid',
+          borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5',
+          background: theme.palette.mode === 'dark' ? 'rgba(36,36,40,0.95)' : '#fff',
+          boxShadow: 3,
+          p: 3,
+          mt: 0,
+          mb: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 2,
+        }}>
+          {/* Top row: buttons + last updated */}
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 2, mb: 1 }}>
             <Button
               id="get_quotes_btn"
               variant="contained"
@@ -266,6 +293,7 @@ export const BridgeTab = ({
                 backgroundColor: "#219a83",
                 color: "#fff",
                 textTransform: "none",
+                ml: 2,
                 fontWeight: 500,
                 fontSize: "0.875rem",
                 "&:hover": {
@@ -290,15 +318,15 @@ export const BridgeTab = ({
             >
               {t("GetQuotes")}
             </Button>
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
             <Button
               variant="outlined"
               color="inherit"
               onClick={handleClearBridgeTrade}
               sx={(theme) => ({
                 ml: 2,
-                fontWeight: 700,
+                height: 34,
+                fontWeight: 500,
+                fontSize: "0.875rem",
                 letterSpacing: 1,
                 color: theme.palette.mode === 'dark' ? '#fff' : '#222',
                 borderColor: '#e0e0e0,0.4',
@@ -313,46 +341,46 @@ export const BridgeTab = ({
                 },
               })}
             >
-              <Box component="span" sx={{ fontWeight: 500, mr: 0.5 }}>
-                CLEAR BRIDGE TRADE
-              </Box>
+                Clear Bridge
             </Button>
+            {/* Last updated block */}
+            {lastUpdated && (
+              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2, flex: 1, minWidth: 0 }}>
+                <AccessTimeIcon sx={{ color: '#00e5a0', fontSize: '1rem', mr: 0.5 }} />
+                <Typography sx={{ color: '#00e5a0', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {t('LastUpdated')}: {lastUpdated}
+                </Typography>
+              </Box>
+            )}
           </Box>
+          {/* Disclaimers row */}
+          {lastUpdated && (
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', width: '100%', gap: 3, background: 'none', p: 0, mt: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <InfoOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+                <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+                  Prices are estimates and fluctuate based on network conditions.
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <WarningAmberRoundedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+                <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+                  Gas fees are estimates only. Final costs determined at execution time.
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <DescriptionOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
+                <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
+                  Bridge protocols may apply additional fees. Review all parameters before proceeding.
+                </Typography>
+              </Box>
+            </Box>
+          )}
         </Box>
-        {/* Last update + disclaimers */}
-        {lastUpdated && (
-          <Box sx={{ mt: 1.5 }}>
-            <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
-              <AccessTimeIcon sx={{ color: '#00e5a0', fontSize: '1rem', mt: '2px' }} />
-              <Typography sx={{ color: '#00e5a0', fontSize: '0.75rem' }}>
-                Last Updated: {lastUpdated}
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
-              <InfoOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
-              <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
-                Prices are estimates and fluctuate based on network conditions.
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 0.5 }}>
-              <WarningAmberRoundedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
-              <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
-                Gas fees are estimates only. Final costs determined at execution time.
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="flex-start">
-              <DescriptionOutlinedIcon sx={{ color: '#fbc02d', fontSize: '1rem', mt: '2px' }} />
-              <Typography sx={{ color: '#fbc02d', fontSize: '0.75rem' }}>
-                Bridge protocols may apply additional fees. Review all parameters before proceeding.
-              </Typography>
-            </Stack>
-          </Box>
-        )}
       </Grid>
       {/* BRIDGE ROUTES CARD */}
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2 }}>
-          {/* Empty state / Loading / Routes list (hardcoded) */}
           <BridgeRoutesPanel
             routes={quoteData}
             chains={chains.length ? chains : lifiChains}
@@ -364,4 +392,4 @@ export const BridgeTab = ({
       </Grid>
     </Grid>
   );
-}
+};

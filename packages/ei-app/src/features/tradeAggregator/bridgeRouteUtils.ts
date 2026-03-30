@@ -5,7 +5,15 @@ export function toRawAmount(userInput: string, decimals: number): string {
 }
 
 export function fromRawAmount(rawString: string, decimals: number): number {
-  const raw = BigInt(rawString);
+  if (rawString === undefined || rawString === null || rawString === "") {
+    return 0;
+  }
+  let raw: bigint;
+  try {
+    raw = BigInt(rawString);
+  } catch (e) {
+    return 0;
+  }
   const factor = BigInt(10 ** decimals);
   const whole = raw / factor;
   const frac = raw % factor;

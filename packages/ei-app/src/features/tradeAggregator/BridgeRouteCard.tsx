@@ -122,9 +122,11 @@ export const BridgeRouteCard = ({
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <Box sx={{ borderTop: '1px solid #30364a', background: (theme.palette.mode === 'dark' ? '#13151e' : '#fff'), p: 2 }}>
           <Typography sx={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: '#7680a0', mb: 2 }}>How to execute this route</Typography>
-          {displaySteps.map((step: any, sidx: number) => (
-            <Box key={sidx} sx={{ display: 'flex', flexDirection: 'column', gap: 2, position: 'relative', mb: 2 }}>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+          {/* Horizontal stepper */}
+          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'left', gap: 2, mb: 3 }}>
+            {displaySteps.map((step: any, sidx: number) => (
+              <React.Fragment key={sidx}>
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ width: 28, height: 28, borderRadius: '50%', background: '#23263a', border: '1px solid #30364a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.68rem', fontWeight: 700, color: step.type === 'swap' ? '#5b8cf5' : '#00e5a0', mt: 0.5 }}>{sidx + 1}</Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', px: 1, py: 0.5, borderRadius: 1, mb: 0.5, background: step.type === 'swap' ? 'rgba(91,140,245,0.12)' : 'rgba(0,229,160,0.10)', color: step.type === 'swap' ? '#5b8cf5' : '#00e5a0', border: '1px solid', borderColor: step.type === 'swap' ? 'rgba(91,140,245,0.3)' : 'rgba(0,229,160,0.28)' }}>{step.type === 'swap' ? '⇄ Swap' : '⇌ Bridge'}</Box>
@@ -166,48 +168,53 @@ export const BridgeRouteCard = ({
                   </Box>
                 </Box>
               </Box>
+              </React.Fragment>
+            ))}
+          </Box>
+          {displaySteps.map((step: any, sidx: number) => (
+            <Box key={sidx} sx={{ display: 'flex', flexDirection: 'column', gap: 2, position: 'relative', mb: 2 }}>
               {/* Protocol Fees Box (Conditional) */}
-              {(() => {
-                const protocolFees = (step.estimate?.feeCosts || []).filter((f: any) => f.name !== "LIFI Fixed Fee");
-                if (protocolFees.length === 0) return null;
+                {(() => {
+                  const protocolFees = (step.estimate?.feeCosts || []).filter((f: any) => f.name !== "LIFI Fixed Fee");
+                  if (protocolFees.length === 0) return null;
 
-                const protocolKey = step.toolDetails?.key;
-                const protocolName = (step.toolDetails?.name || '').toUpperCase();
-                let domain = protocolName + '.LINK';
-                if (protocolKey && PROTOCOL_URLS[protocolKey]) {
-                  const url = PROTOCOL_URLS[protocolKey];
-                  domain = url.replace(/^https?:\/\//, '').split('/')[0].toUpperCase();
-                }
-                return (
-                  <Box sx={{ background: (theme.palette.mode === 'dark' ? '#23263a' : 'rgba(0,229,160,0.01)'), borderRadius: 1, p: 2, border: '1px solid #30364a', width: '100%' }}>
-                    <Typography fontWeight={600} fontSize={12} mb={1} sx={{ color: '#7680a0', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                      {protocolName} PROTOCOL FEES (APPLIED BY {domain})
-                    </Typography>
-                    {protocolFees.map((fee: any, i: number) => (
-                      <Box key={i} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, color: '#e4e8f5', mb: 0.5 }}>
-                        <span style={{ fontWeight: 400, fontSize: 13, color: '#7680a0' }}>{fee.name}</span>
-                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 400, fontSize: 13, color: '#7680a0' }}>
-                          {formatAmount(fromRawAmount(fee.amount, fee.token.decimals), 6)} {fee.token.symbol} · <span style={{ color: '#7680a0', fontWeight: 400 }}>${parseFloat(fee.amountUSD).toFixed(3)}</span>
-                        </span>
-                      </Box>
-                    ))}
+                  const protocolKey = step.toolDetails?.key;
+                  const protocolName = (step.toolDetails?.name || '').toUpperCase();
+                  let domain = protocolName + '.LINK';
+                  if (protocolKey && PROTOCOL_URLS[protocolKey]) {
+                    const url = PROTOCOL_URLS[protocolKey];
+                    domain = url.replace(/^https?:\/\//, '').split('/')[0].toUpperCase();
+                  }
+                  return (
+                    <Box sx={{ background: (theme.palette.mode === 'dark' ? '#23263a' : 'rgba(0,229,160,0.01)'), borderRadius: 1, p: 2, border: '1px solid #30364a', width: '100%' }}>
+                      <Typography fontWeight={600} fontSize={12} mb={1} sx={{ color: '#7680a0', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                        {protocolName} PROTOCOL FEES (APPLIED BY {domain})
+                      </Typography>
+                      {protocolFees.map((fee: any, i: number) => (
+                        <Box key={i} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, color: '#e4e8f5', mb: 0.5 }}>
+                          <span style={{ fontWeight: 400, fontSize: 13, color: '#7680a0' }}>{fee.name}</span>
+                          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 400, fontSize: 13, color: '#7680a0' }}>
+                            {formatAmount(fromRawAmount(fee.amount, fee.token.decimals), 6)} {fee.token.symbol} · <span style={{ color: '#7680a0', fontWeight: 400 }}>${parseFloat(fee.amountUSD).toFixed(3)}</span>
+                          </span>
+                        </Box>
+                      ))}
+                    </Box>
+                  );
+                })()}
+                {/* Minimum Received Row (last step only) */}
+                {sidx === displaySteps.length - 1 && (
+                  <Box sx={{ background: (theme.palette.mode === 'dark' ? '#23263a' : 'rgba(0,229,160,0.01)'), borderRadius: 1, p: 1.5, mb: 1, display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <span style={{ fontSize: 13, color: '#5b8cf5', fontWeight: 400 }}>🛡</span>
+                      <Typography fontSize={13} fontWeight={400} sx={{ color: '#5b8cf5', letterSpacing: 0.01 }}>
+                        Estimated minimum received
+                      </Typography>
+                    </Box>
+                    <span style={{ color: '#5b8cf5', fontWeight: 400, fontSize: 13 }}>
+                      ~{formatAmount(adjustedToAmountMin, 4)} {route.toToken.symbol}
+                    </span>
                   </Box>
-                );
-              })()}
-              {/* Minimum Received Row (last step only) */}
-              {sidx === displaySteps.length - 1 && (
-                <Box sx={{ background: (theme.palette.mode === 'dark' ? '#23263a' : 'rgba(0,229,160,0.01)'), borderRadius: 1, p: 1.5, mb: 1, display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <span style={{ fontSize: 13, color: '#5b8cf5', fontWeight: 400 }}>🛡</span>
-                    <Typography fontSize={13} fontWeight={400} sx={{ color: '#5b8cf5', letterSpacing: 0.01 }}>
-                      Estimated minimum received
-                    </Typography>
-                  </Box>
-                  <span style={{ color: '#5b8cf5', fontWeight: 400, fontSize: 13 }}>
-                    ~{formatAmount(adjustedToAmountMin, 4)} {route.toToken.symbol}
-                  </span>
-                </Box>
-              )}
+                )}
             </Box>
           ))}
           <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #30364a', display: 'flex', alignItems: 'flex-start', gap: 1, fontSize: '0.72rem', color: '#7680a0', lineHeight: 1.45 }}>

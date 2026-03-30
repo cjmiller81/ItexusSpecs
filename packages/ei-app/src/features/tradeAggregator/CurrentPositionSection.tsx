@@ -2,14 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import { fetchLifiChains, LifiChain } from "./lifiChains";
 import {
   Box,
-  styled,
   Select,
   SelectChangeEvent,
   Button,
   MenuItem,
-  darken,
-  lighten,
-  TextField,
   Grid,
   useTheme,
   Typography,
@@ -18,9 +14,7 @@ import {
 import { AddTemporaryPositionDialog } from "./AddTemporaryPositionDialog";
 import { keyframes } from '@mui/system';
 import {
-  BasicTable,
   fetchWalletsPortfolio,
-  nativeBarSx,
   PaginatedList,
 } from "components";
 import { useTranslation } from "react-i18next";
@@ -36,6 +30,7 @@ import { iconsApi } from "@/services/iconsService";
 import CustomNoWalletOverlay from "@/components/CustomNoWalletOverlay";
 import CustomSelectWalletOverlay from "@/components/CustomSelectWalletOverlay";
 import { filterDustTokens } from "components";
+import { WalletsTable } from "./WalletsTable";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { isSupportedChain } from "@/utils/supportedChains";
@@ -485,33 +480,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     }
   };
 
-  const handleCancelManualPosition = () => {
-    setSelectedChain(null);
-    setSymbolOptionSwapFor(null);
-    setNewBalance("");
-    setAddPositionError("");
-    setIsAddingManualPosition(false);
-  };
-
-  const handleSaveManualPosition = () => {
-    if (symbolOptionSwapFor && newBalance && selectedChain) {
-      const newRow: WalletBalance = {
-        tokenName: symbolOptionSwapFor.sym,
-        chain: normalizeNetworkName(selectedChain.name),
-        balance: parseFloat(newBalance),
-        tokenAddress: symbolOptionSwapFor?.address?.[0],
-      };
-
-      setManualPositions(prevPositions => [newRow, ...prevPositions]);
-      setIsAddingManualPosition(false);
-      setIsManualUpdate(true);
-    }
-  };
-
-  const onOptionChange = (value: TokenSearchItem | null) => {
-    setSymbolOptionSwapFor(value);
-  };
-
   return (
     <>
       <Grid
@@ -556,12 +524,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 marginLeft: "0%",
                 marginRight: { lg: "0%", md: "1%", xs: "0%" },
                 position: 'relative',
-                width: { xs: '100%', md: 'auto' },
+                width: { xs: '100%', md: '34%' },
                 minWidth: 0,
                 paddingRight: { xs: 0, md: 2 },
                 paddingBottom: { xs: 2, md: 0 },
-                flex: { xs: 'unset', md: 1 },
-                maxWidth: { xs: '100%', md: '40%' },
+                flex: { xs: 'unset', md: '0 0 34%' },
+                maxWidth: { xs: '100%', md: '34%' },
               }}
             >
 
@@ -774,11 +742,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 marginLeft: { lg: "4%", md: "2%", xs: "0%" },
                 marginRight: { lg: "0%", md: "1%", xs: "0%" },
                 position: 'relative',
-                width: { xs: '100%', md: 'auto' },
+                width: { xs: '100%', md: '62%' },
                 minWidth: 0,
                 paddingLeft: { xs: 0, md: 2 },
-                flex: { xs: 'unset', md: 1 },
-                maxWidth: { xs: '100%', md: '60%' },
+                flex: { xs: 'unset', md: '0 0 62%' },
+                maxWidth: { xs: '100%', md: '62%' },
               }}
             >
                
@@ -790,7 +758,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                  {selectedWallet !== undefined ? (
                    <Box display="flex" alignItems="center" sx={{ visibility: selectedWallet ? 'visible' : 'hidden' }}>
                      <InfoOutlinedIcon sx={{ color: "#666", fontSize: 18, mr: 0.5 }} />
-                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8rem" }}>
+                     <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8rem", whiteSpace: 'nowrap' }}>
                        {t("TableDisplaysTokenPositionsOnly")}
                      </Typography>
                    </Box>
@@ -806,7 +774,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                    ) : (
                      <RemoveRedEyeIcon sx={{ color: "#666", fontSize: 20, mr: 0.5 }} />
                    )}
-                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.875rem" }}>
+                   <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.875rem", whiteSpace: 'nowrap' }}>
                      {showDust ? "Hide Dust" : "Show Dust"}
                    </Typography>
                  </Box>
@@ -815,7 +783,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 <Box id="token_list">
                   <WalletsTable
                     sx={{
-                      ...tableScrollSx,
                       width: "100%",
                       '& .MuiDataGrid-virtualScroller': {
                         border: (!wallets || wallets.length === 0) ? '2px dashed #219a83' : 'none',
@@ -823,41 +790,41 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                         overflow: (!wallets || wallets.length === 0) ? 'hidden !important' : 'auto',
                       },
                     }}
-                  hideFooter
-                  defaultRowsPerPage={100}
-                  rowSelection={true}
-                  rowSelectionModel={selectedRows ? [selectedRows] : []}
-                  checkboxSelection={false}
-                  apiRef={apiRef}
-                  getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
-                  columns={getIndexResultWalletTableColumns()}
-                  rows={filteredRows}
-                  onRowSelectionModelChange={handleSelectionChange}
-                  slots={{
-                    noRowsOverlay: NoRowsOverlayComponent,
-                  }}
-                  getRowClassName={(params) => {
-                    const isSupportedChainRow = params.row.chain && 
-                      isSupportedChain(params.row.chain);
-                    if (!isSupportedChainRow) {
-                      return 'unsupported-chain-row';
-                    }
-                    if (selectedRows &&
-                        `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
-                      return 'selected-row';
-                    }
-                    return '';
-                  }}
-                  componentsProps={{
-                    row: (params) => {
+                    hideFooter
+                    defaultRowsPerPage={100}
+                    rowSelection={true}
+                    rowSelectionModel={selectedRows ? [selectedRows] : []}
+                    checkboxSelection={false}
+                    apiRef={apiRef}
+                    getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
+                    columns={getIndexResultWalletTableColumns()}
+                    rows={filteredRows}
+                    onRowSelectionModelChange={handleSelectionChange}
+                    components={{
+                      NoRowsOverlay: NoRowsOverlayComponent,
+                    }}
+                    getRowClassName={(params) => {
                       const isSupportedChainRow = params.row.chain && 
                         isSupportedChain(params.row.chain);
-                      return {
-                        title: isSupportedChainRow ? t("ClickToLoadCurrentPosition") : `${params.row.chain} chain is not supported for selection`
-                      };
-                    }
-                  }}
-                />
+                      if (!isSupportedChainRow) {
+                        return 'unsupported-chain-row';
+                      }
+                      if (selectedRows &&
+                          `${params.row.tokenName?.toLowerCase()}-${params.row.chain?.toLowerCase()}` === selectedRows) {
+                        return 'selected-row';
+                      }
+                      return '';
+                    }}
+                    componentsProps={{
+                      row: (params) => {
+                        const isSupportedChainRow = params.row.chain && 
+                          isSupportedChain(params.row.chain);
+                        return {
+                          title: isSupportedChainRow ? t("ClickToLoadCurrentPosition") : `${params.row.chain} chain is not supported for selection`
+                        };
+                      }
+                    }}
+                  />
                 </Box>
               <AddTemporaryPositionDialog
                 open={isAddDialogOpen}
@@ -917,85 +884,3 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   );
 };
 
-const tableScrollSx = {
-  "& .MuiDataGrid-virtualScroller": {
-    ...nativeBarSx,
-  },
-};
-
-export const WalletsTable = styled(BasicTable)(({ theme }) => ({
-  width: "100%",
-  minHeight: "425px",
-  mt: 2,
-  display: "grid",
-  "& .MuiDataGrid-virtualScroller": {
-    overflowY: "auto !important",
-    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "transparent",
-  },
-  "& .MuiDataGrid-main": {
-    height: "auto",
-    maxHeight: "425px",
-  },
-  "& .MuiDataGrid-columnHeaders": {
-    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",
-  },
-  "& .MuiDataGrid-footerContainer": {
-    height: "40px",
-  },
-  "& .MuiDataGrid-row": {
-    maxHeight: "1000px !important",
-  },
-  ".MuiDataGrid-cell--withRenderer ": {
-    maxHeight: "1000px !important",
-  },
-  "& .MuiDataGrid-row--editing": {
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: theme.palette.primary.main,
-  },
-  "& .MuiDataGrid-cell--editing[data-field=walletName]": {
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: theme.palette.primary.main,
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? darken(theme.palette.primary.main, 0.6)
-        : lighten(theme.palette.primary.main, 0.7),
-  },
-  ".MuiDataGrid-withBorderColor": {
-    bgColor: "transparent",
-  }, 
-  // FIX: Prevent horizontal scrollbar on hover
-  "& .MuiDataGrid-row:hover": {
-    cursor: "pointer",
-    backgroundColor: theme.palette.mode === "light" ? "#e3f2fd" : "#1a237e",
-    border: "none !important",
-  },
-  "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
-    backgroundColor: theme.palette.mode === "light" ? "#219a83" : darken(theme.palette.primary.main, 0.2),
-    border: "none !important",
-  },
-  "& .unsupported-chain-row": {
-    cursor: "not-allowed",
-    opacity: 0.6,
-  },
-  "& .unsupported-chain-row:hover": {
-    cursor: "not-allowed",
-    backgroundColor: theme.palette.mode === "light" ? "#f5f5f5" : "#2a2a2a",
-    border: "none !important",
-  },
-  "& .unsupported-chain-row:hover .MuiDataGrid-cell": {
-    backgroundColor: "transparent",
-    border: "none !important",
-  },
-  "& .selected-row .MuiDataGrid-cell": {
-    backgroundColor: "transparent",
-  },
-  "& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cell:focus": {
-    outline: "none",
-  },
-  "& .MuiDataGrid-cell": {
-    cursor: "pointer",
-    userSelect: "none",
-  },
-}));

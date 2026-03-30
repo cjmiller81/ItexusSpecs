@@ -51,19 +51,52 @@ export const BridgeRoutesPanel = ({
   }
 
   return (
-    <Box>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6" sx={{ flex: 1 }}>
-                Bridge Routes
-            </Typography>
-            {/* routes count badge */}
-            {lastUpdated && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.7rem', color: '#00e5a0', fontWeight: 600 }}>
-                <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#00e5a0', boxShadow: '0 0 6px #00e5a0' }} />
-                <span>{routes.length} route{routes.length !== 1 ? "s" : ""} found</span>
-            </Box>
-            )}
-        </Box>
+    <Box
+      sx={{
+        maxHeight: '600px',
+        overflowY: 'auto',
+        pr: 1,
+        // Modern custom scrollbar (like WalletsTable)
+        scrollbarColor: `${theme.palette.grey[700]} ${theme.palette.background.paper}`,
+        scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-track': {
+          width: '8px',
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: theme.palette.mode === 'dark'
+            ? theme.palette.grey[800]
+            : theme.palette.grey[400],
+          borderRadius: '8px',
+          minHeight: '24px',
+          border: `2px solid ${theme.palette.background.paper}`,
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: theme.palette.mode === 'dark'
+            ? theme.palette.grey[600]
+            : theme.palette.grey[600],
+        },
+        '&::-webkit-scrollbar-corner': {
+          background: 'transparent',
+        },
+      }}
+    >
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6" sx={{ flex: 1 }}>
+          Bridge Routes
+        </Typography>
+        {/* routes count badge */}
+        {lastUpdated && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '0.7rem', color: '#00e5a0', fontWeight: 600 }}>
+            <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#00e5a0', boxShadow: '0 0 6px #00e5a0' }} />
+            <span>{routes.length} route{routes.length !== 1 ? "s" : ""} found</span>
+          </Box>
+        )}
+      </Box>
       {routes.map((route: any, idx: number) => (
         <BridgeRouteCard
           key={route.id || idx}

@@ -307,7 +307,7 @@ export default function Dex() {
           </Box>
 
         <Grid container spacing={1}>
-          <Grid item xs={12} md={4.9}>
+          <Grid item xs={12} md={6}>
             <Typography
               variant="h6"
               component="div"
@@ -322,7 +322,7 @@ export default function Dex() {
               onClearTokenAndChain={clearSelectedTokenAndChain}/>
           </Grid>
 
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={6}>
           <Typography
             variant="h6"
             component="div"

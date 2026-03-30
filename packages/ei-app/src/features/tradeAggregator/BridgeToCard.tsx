@@ -42,6 +42,13 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
   lifiChainsError,
   bridgeToTokenAddress,
 }) => {
+
+  const filteredChains = lifiChains.filter(chain => {
+    if (!symbolOptionSwap || !symbolOptionSwap.chain) return true;
+
+    return chain.name.toLowerCase() !== symbolOptionSwap.chain.toLowerCase();
+  });
+
   return (
     <Box sx={{ position: 'relative', mb: 2 }}>
       {/* Info Banner absolutely positioned above the card, always visible and not dimmed */}
@@ -71,7 +78,7 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
         </Box>
       )}
       <Box sx={{ position: 'relative', borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : 'rgba(48,54,74,0.5)', p: 2, mb: 2, opacity: !symbolOptionSwap ? 0.6 : 1, pointerEvents: !symbolOptionSwap ? 'none' : 'auto', background: !symbolOptionSwap ? 'rgba(54,54,64,0.15)' : undefined }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box display="flex" justifyContent="space-between" alignItems="flex-end" mb={1.5}>
           <Box display="flex" alignItems="center" gap={1}>
             <Box
               sx={{
@@ -110,6 +117,7 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                   background: colorMeta.bg,
                   border: colorMeta.border,
                   color: colorMeta.color,
+                  mb: 0.5,
                 }}>
                 {chain.logoURI && (
                   <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
@@ -119,8 +127,67 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
             );
           })()}
         </Box>
-        <Box mb={1.5} display="flex" gap={2}>
-          <Grid item xs={12} sm={7}>
+        {/* Chain and Bridge For in one row */}
+        <Box mb={1.5} display="flex" gap={2} alignItems="flex-end">
+          <Box flex={6} display="flex" flexDirection="column">
+            <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem'}}>{t('Chain')}</Typography>
+            <Autocomplete
+              id="bridge_to_chain_dropdown"
+              options={filteredChains}
+              getOptionLabel={(option) => option.name}
+              value={filteredChains.find((chain: any) => chain.id === selectedBridgeToChainId) || null}
+              onChange={(_e, newValue) => {
+                setSelectedBridgeToChainId(newValue ? newValue.id : null);
+                setInputSearchBridgeToChain(newValue ? newValue.name : "");
+              }}
+              isOptionEqualToValue={(option, value) => option.id === value?.id}
+              disableClearable={false}
+              inputValue={inputSearchBridgeToChain}
+              onInputChange={(_event, newInputValue, reason) => {
+                if (reason === 'input') {
+                  setInputSearchBridgeToChain(newInputValue);
+                } else if (reason === 'clear') {
+                  setInputSearchBridgeToChain("");
+                }
+              }}
+              loading={lifiChainsLoading}
+              loadingText={<CircularProgress size={18} />}
+              noOptionsText={lifiChainsError ? t('NoOptionsOnThisChain') : t('Search Chain')}
+              disabled={!symbolOptionSwap}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder={t('Search Chain')}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: selectedBridgeToChainId ? (
+                      (() => {
+                        const chain = filteredChains.find((c: any) => c.id === selectedBridgeToChainId);
+                        return chain && chain.logoURI ? (
+                          <InputAdornment position="start">
+                            <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 20, height: 20, mr: 0 }} />
+                          </InputAdornment>
+                        ) : null;
+                      })()
+                    ) : (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {option.logoURI && (
+                    <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
+                  )}
+                  <Typography variant="body1">{option.name}</Typography>
+                </Box>
+              )}
+            />
+          </Box>
+          <Box flex={6}>
             <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Bridge For')}</Typography>
             <Autocomplete
               id="bridge_to_token_dropdown"
@@ -174,7 +241,6 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                     />
                   );
                 }
-                // ...existing code...
                 return (
                   <TextField
                     {...params}
@@ -198,59 +264,9 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                 </Box>
               )}
             />
-          </Grid>
-          <Grid item xs={12} sm={5} display="flex" flexDirection="column" justifyContent="flex-end">
-            <Typography variant="caption" sx={{ color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), fontWeight: 600, textTransform: 'none', fontSize: '0.85rem'}}>{t('Chain')}</Typography>
-            <Autocomplete
-              id="bridge_to_chain_dropdown"
-              options={lifiChains}
-              getOptionLabel={(option) => option.name}
-              value={lifiChains.find((chain: any) => chain.id === selectedBridgeToChainId) || null}
-              onChange={(_e, newValue) => {
-                setSelectedBridgeToChainId(newValue ? newValue.id : null);
-                setInputSearchBridgeToChain(newValue ? newValue.name : "");
-              }}
-              isOptionEqualToValue={(option, value) => option.id === value?.id}
-              disableClearable={false}
-              inputValue={inputSearchBridgeToChain}
-              onInputChange={(_event, newInputValue, reason) => {
-                if (reason === 'input') {
-                  setInputSearchBridgeToChain(newInputValue);
-                } else if (reason === 'clear') {
-                  setInputSearchBridgeToChain("");
-                }
-              }}
-              loading={lifiChainsLoading}
-              loadingText={<CircularProgress size={18} />}
-              noOptionsText={lifiChainsError ? t('NoOptionsOnThisChain') : t('Search Chain')}
-              disabled={!symbolOptionSwap}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder={t('Search Chain')}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {option.logoURI && (
-                    <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
-                  )}
-                  <Typography variant="body1">{option.name}</Typography>
-                </Box>
-              )}
-            />
-          </Grid>
+          </Box>
         </Box>
         {/* BRIDGE TO: Token Address + Copy */}
-        {/* Info Banner above Swap For Address row */}
         <Box display="flex" alignItems="center" gap={1} mt={1}>
           {!symbolOptionSwap ? (<Box sx={{ height: '60px' }}></Box>
             ) : symbolOptionSwap && !selectedBridgeToChainId ? (
