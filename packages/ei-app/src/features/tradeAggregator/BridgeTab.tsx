@@ -262,6 +262,15 @@ export const BridgeTab = ({
               lifiChainsLoading={lifiChainsLoading}
               lifiChainsError={lifiChainsError}
               bridgeToTokenAddress={bridgeToTokenAddress}
+              bridgeFromChainId={(() => {
+                // Try to get the chain id of the selected Bridge From chain
+                if (selectedTokenRow && selectedTokenRow.chain) {
+                  const chainName = selectedTokenRow.chain.toUpperCase();
+                  const lifiChain = lifiChains.find((c) => c.name.toUpperCase() === chainName);
+                  return lifiChain ? lifiChain.id : null;
+                }
+                return null;
+              })()}
             />
           </Box>
         </Box>

@@ -1042,11 +1042,20 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setSelectedTokenRowBridge(null);
       return;
     }
-    setSymbolOptionSwap(value);
-    setSelectedToken(value.sym);
-    // Find the matching row in filteredRows to get chain and balance
+
+    let tokenWithIcon: TokenSearchItem | null = null;
+    if (tokenIcons?.items) {
+      tokenWithIcon = tokenIcons.items.find(
+        (item) => item.id === value.id || item.sym?.toUpperCase() === value.sym?.toUpperCase()
+      ) || null;
+    }
+
+    const tokenToSet = tokenWithIcon || value;
+    setSymbolOptionSwap(tokenToSet);
+    setSelectedToken(tokenToSet.sym);
+
     const matchedToken = filteredRows.find(token =>
-      token.tokenName?.toUpperCase() === value.sym?.toUpperCase()
+      token.tokenName?.toUpperCase() === tokenToSet.sym?.toUpperCase()
     );
     if (matchedToken) {
       setSelectedChain(matchedToken.chain?.toUpperCase() || "");
@@ -1057,7 +1066,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     } else {
       setSelectedChain("");
       setNewBalance("");
-      onSelectedTokenChange?.(value.sym, null);
+      onSelectedTokenChange?.(tokenToSet.sym, null);
       setSelectedTokenRowSwap(null);
       setSelectedTokenRowBridge(null);
     }

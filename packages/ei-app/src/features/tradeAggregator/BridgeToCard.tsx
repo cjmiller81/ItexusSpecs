@@ -22,6 +22,7 @@ interface BridgeToCardProps {
   lifiChainsLoading: boolean;
   lifiChainsError: boolean;
   bridgeToTokenAddress: string | null;
+  bridgeFromChainId?: number | null; // new prop
 }
 
 export const BridgeToCard: React.FC<BridgeToCardProps> = ({
@@ -41,9 +42,15 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
   lifiChainsLoading,
   lifiChainsError,
   bridgeToTokenAddress,
+  bridgeFromChainId,
 }) => {
 
   const filteredChains = lifiChains.filter(chain => {
+    // Exclude the Bridge From chain by id if provided
+    if (bridgeFromChainId != null) {
+      if (chain.id === bridgeFromChainId) return false;
+    }
+
     if (!symbolOptionSwap || !symbolOptionSwap.chain) return true;
 
     return chain.name.toLowerCase() !== symbolOptionSwap.chain.toLowerCase();
@@ -241,11 +248,26 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                     />
                   );
                 }
+                let startAdornment = params.InputProps.startAdornment;
+                if (symbolOptionSwapFor?.lURI) {
+                  startAdornment = (
+                    <InputAdornment position="start">
+                      <Avatar
+                        src={symbolOptionSwapFor.lURI}
+                        alt={symbolOptionSwapFor.sym}
+                        sx={{ width: 20, height: 20, mr: 0 }}
+                      />
+                    </InputAdornment>
+                  );
+                }
                 return (
                   <TextField
                     {...params}
                     placeholder={t('Search')}
-                    InputProps={params.InputProps}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment,
+                    }}
                   />
                 );
               }}

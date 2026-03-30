@@ -184,11 +184,26 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
                     />
                   );
                 }
+                let startAdornment = params.InputProps.startAdornment;
+                if (symbolOptionSwapFor?.lURI) {
+                  startAdornment = (
+                    <InputAdornment position="start">
+                      <Avatar
+                        src={symbolOptionSwapFor.lURI}
+                        alt={symbolOptionSwapFor.sym}
+                        sx={{ width: 20, height: 20, mr: 0 }}
+                      />
+                    </InputAdornment>
+                  );
+                }
                 return (
                   <TextField
                     {...params}
                     placeholder={'Search'}
-                    InputProps={params.InputProps}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment,
+                    }}
                   />
                 );
               }}
