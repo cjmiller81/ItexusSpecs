@@ -8,6 +8,7 @@ export const NewSwapRoutesPanel = ({
   loading,
   error,
   lastUpdated,
+  hasRequested = false,
 }: any) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [expandedIdx, setExpandedIdx] = useState(0);
@@ -29,22 +30,76 @@ export const NewSwapRoutesPanel = ({
       </Box>
     );
   }
-  if (!routes) {
+  if (!hasRequested) {
     return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography variant="h6">⇄ No swap routes yet</Typography>
-        <Typography color="text.secondary">
-          Configure your swap parameters and click Get Quotes to see available options.
+      <Box
+        sx={{
+          p: 4,
+          textAlign: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 340,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: '50%',
+              background: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[200],
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="16" fill="none" />
+              <path d="M16 8v12M16 20l-4-4m4 4l4-4" stroke="#00e5a0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Box>
+        </Box>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+          Routes will appear here
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, mb: 1, mt: 2 }}>
+          <Typography sx={{ fontWeight: 500, fontSize: '1rem', color: theme.palette.text.secondary }}>
+            <span style={{ fontWeight: 700, color: '#00e5a0' }}>①</span> Fill in Swap From details
+          </Typography>
+          <Typography sx={{ fontWeight: 500, fontSize: '1rem', color: theme.palette.text.secondary }}>
+            <span style={{ fontWeight: 700, color: '#00e5a0' }}>②</span> Fill in Swap To details
+          </Typography>
+          <Typography sx={{ fontWeight: 500, fontSize: '1rem', color: theme.palette.text.secondary }}>
+            <span style={{ fontWeight: 700, color: '#00e5a0' }}>③</span> Click &quot;Get Quotes&quot; button
+          </Typography>
+        </Box>
+        <Typography color="text.secondary" sx={{ mt: 1, fontSize: '0.95rem' }}>
+          Swap route options will load here after all 3 steps have been completed
         </Typography>
       </Box>
     );
   }
-  if (routes.length === 0) {
+  if (!routes || routes.length === 0) {
     return (
-      <Box sx={{ p: 4, textAlign: "center" }}>
-        <Typography variant="h6">⚠ No swap routes available</Typography>
-        <Typography color="text.secondary">
-          No swap routes were found for this token pair and amount. Try a different token, chain, or amount.
+      <Box sx={{ p: 4, textAlign: "center", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.8rem', mb: 1 }}>
+            ⚠
+        </Typography>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+          No swap routes were found this token pair and quantity
+        </Typography>
+        <Typography color="text.secondary" sx={{ maxWidth: 520 }}>
+          Try a different quantity if liquidity is low or try when market volume is higher. It is possible liquidity may simply not be available for your selected pair and chain.
         </Typography>
       </Box>
     );

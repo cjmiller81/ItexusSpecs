@@ -385,8 +385,9 @@ export const BridgeTab = ({
             routes={quoteData}
             chains={chains.length ? chains : lifiChains}
             loading={quoteLoading}
-            error={errorMessage}
+            error={quoteData && quoteData.length === 0 ? null : errorMessage}
             lastUpdated={lastUpdated}
+            hasRequested={!!lastUpdated || !!quoteLoading}
           />
         </Box>
       </Grid>
