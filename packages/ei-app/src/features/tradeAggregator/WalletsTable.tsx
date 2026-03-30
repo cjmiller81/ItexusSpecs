@@ -1,7 +1,14 @@
 import { styled } from "@mui/material";
 import { BasicTable } from "components";
+import React from "react";
 
-export const WalletsTable = styled(BasicTable)(({ theme }) => ({
+interface WalletsTableProps {
+  maxHeight?: number | string;
+}
+
+export const WalletsTable = styled(
+  (props: React.ComponentProps<typeof BasicTable> & WalletsTableProps) => <BasicTable {...props} />
+)(({ theme, maxHeight }) => ({
   width: "100%",
   minHeight: "425px",
   mt: 2,
@@ -39,6 +46,7 @@ export const WalletsTable = styled(BasicTable)(({ theme }) => ({
   },
   "& .MuiDataGrid-main": {
     height: "auto",
+    maxHeight: maxHeight ? (typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight) : "580px",
   },
   "& .MuiDataGrid-columnHeaders": {
     backgroundColor: theme.palette.mode === "light" ? "#f5f5f5": "transparent",

@@ -74,15 +74,46 @@ interface CurrentPositionSectionProps {
 
 export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> = 
 ({ onWalletChange,onFilteredRowsChange, selectedToken,selectedChainNewPosition,onTokenChange,onClearTokenAndChain }) => {
+  // Ref for the root container
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  // State for dynamic height
+  const [dynamicHeight, setDynamicHeight] = useState<number | undefined>(undefined);
+  const [defaultHeight, setDefaultHeight] = useState<number>(700);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
+  const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
+
+  // Listen for NewPositionSection height changes
+  useEffect(() => {
+    const updateHeight = () => {
+      const newSection = document.getElementById('new-position-section-root');
+      if (newSection && rootRef.current && defaultHeight) {
+        const newHeight = newSection.offsetHeight;
+        if (newHeight > defaultHeight) {
+          setDynamicHeight(newHeight);
+        } else {
+          setDynamicHeight(undefined);
+        }
+      }
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    const observer = new MutationObserver(updateHeight);
+    const newSection = document.getElementById('new-position-section-root');
+    if (newSection) {
+      observer.observe(newSection, { childList: true, subtree: true, attributes: true });
+    }
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      observer.disconnect();
+    };
+  }, [defaultHeight]);
   const theme = useTheme();
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
-  const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [isAddingManualPosition, setIsAddingManualPosition] = useState<boolean>(false);
-  const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
   const [filteredWalletData, setFilteredWalletData] = useState<WalletBalance[]>([]);
   const [positionRows, setPositionRows] = useState<PositionAllocation[]>([]);
   const [selectedRows, setSelectedRows] = useState<string | null>(null);
@@ -495,6 +526,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
         >
           <Grid
             id="current_position_section"
+            ref={rootRef}
             item
             xs={12}
             container
@@ -512,6 +544,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
               display: 'flex',
               gap: { xs: 2, md: 0 },
               padding: { xs: 1, sm: 2 },
+              height: dynamicHeight
+                ? `${dynamicHeight}px`
+                : `${defaultHeight}px`,
+              overflow: 'auto',
             }}
           >
             <Grid
@@ -790,6 +826,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                         overflow: (!wallets || wallets.length === 0) ? 'hidden !important' : 'auto',
                       },
                     }}
+                    maxHeight={(dynamicHeight ?? defaultHeight) - 120}
                     hideFooter
                     defaultRowsPerPage={100}
                     rowSelection={true}

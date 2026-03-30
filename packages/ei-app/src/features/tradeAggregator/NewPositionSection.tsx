@@ -1068,6 +1068,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   return (
     <Grid
+      id="new-position-section-root"
       container
       direction="column"
       sx={{
