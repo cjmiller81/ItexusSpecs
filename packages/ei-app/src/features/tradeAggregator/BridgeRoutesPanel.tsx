@@ -11,7 +11,7 @@ export const BridgeRoutesPanel = ({
   hasRequested = false,
 }: any) => {
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [expandedIdx, setExpandedIdx] = useState(0);
+  const [expandedIdx, setExpandedIdx] = useState(-1);
   const theme = useTheme();
 
   if (loading) {
