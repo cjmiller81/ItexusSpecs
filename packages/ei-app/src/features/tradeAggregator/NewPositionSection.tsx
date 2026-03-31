@@ -161,6 +161,10 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       if (activeTab === "bridge" && selectedBridgeToChainId === null) {
         setSymbolOptionSwapForBridge(null);
         setInputSearchSwapForBridge("");
+        setLastUpdatedBridge(null);
+        setQuoteLoadingBridge(false);
+        setQuoteDataBridge([]);
+        setErrorMessageBridge(null);
       }
     }, [selectedBridgeToChainId, activeTab]);
 
