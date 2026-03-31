@@ -186,8 +186,13 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
     >
       {/* Cooldown timer (show only after sync completes) */}
       {!syncing && isCooldownActive && (
-        <div className="sync-cooldown-timer" aria-hidden>
-          {remainingText}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <span className="sync-cooldown-timer" style={{ marginBottom: 0, fontWeight: 500 }}>
+            Re-synch timer
+          </span>
+          <span className="sync-cooldown-timer" aria-hidden>
+            {remainingText}
+          </span>
         </div>
       )}
 
