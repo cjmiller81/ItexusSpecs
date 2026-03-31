@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   getGasTokenSymbol,
   formatNumberWithCommas,
@@ -100,6 +100,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
   const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
+  // Cancel flag for clearing quotes
+  const cancelQuotes = useRef(false);
   const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
@@ -780,6 +782,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       if (value === null) {
         setHasAttemptedSubmitSwap(false);
         setLastUpdatedSwap(null);
+        cancelQuotes.current = true; // Cancel any pending quotes
+        setQuoteLoadingSwap(false); // Stop spinner
       }
 
       if (symbolOptionSwap && value && selectedChain && newBalance) {
@@ -826,6 +830,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         setTokenAddress(null);
         setTokenAddressSwapFor(null);
         setHasAttemptedSubmitBridge(false);
+        cancelQuotes.current = true; // Cancel any pending bridge quotes
+        setQuoteLoadingBridge(false); // Stop spinner
       }
     }
   };
@@ -846,6 +852,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       if (activeTab === "swap") {
         setHasAttemptedSubmitSwap(false);
         setLastUpdatedSwap(null);
+        cancelQuotes.current = true; // Cancel any pending quotes
+        setQuoteLoadingSwap(false); // Stop spinner
       } else if (activeTab === "bridge") {
         setQuoteDataSwap([]);
         setLastUpdatedBridge(null);
@@ -856,6 +864,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         setTokenAddress(null);
         setTokenAddressSwapFor(null);
         setHasAttemptedSubmitBridge(false);
+        cancelQuotes.current = true; // Cancel any pending bridge quotes
+        setQuoteLoadingBridge(false); // Stop spinner
       }
     }
 
@@ -895,6 +905,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const handleFetchQuotesSwap = async () => {
     setHasAttemptedSubmitSwap(true);
     setQuoteLoadingSwap(true);
+    cancelQuotes.current = false; // Reset cancel flag on new fetch
     const swapFor = symbolOptionSwapForSwap;
     const err = generateErrorMessage({
       symbolOptionSwap,
@@ -940,98 +951,113 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         fromTokenAddress: String(fromTokenAddress),
         toTokenAddress: String(toTokenAddress),
       });
-      setQuoteDataSwap(Array.isArray(data.routes) ? data.routes : []);
-      setErrorMessageSwap((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No swap routes found"));
+      if (!cancelQuotes.current) {
+        setQuoteDataSwap(Array.isArray(data.routes) ? data.routes : []);
+        setErrorMessageSwap((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No swap routes found"));
+      }
     } catch (e) {
-      setErrorMessageSwap(t("Error fetching swap routes"));
-      setQuoteDataSwap([]);
+      if (!cancelQuotes.current) {
+        setErrorMessageSwap(t("Error fetching swap routes"));
+        setQuoteDataSwap([]);
+      }
       setQuoteLoadingSwap(false);
       return;
     }
-    setTokenAddress(String(fromTokenAddress));
-    setTokenAddressSwapFor(String(toTokenAddress));
-    const now = new Date();
-    const formatted = now.toLocaleString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-    setLastUpdatedSwap(formatted);
+    if (!cancelQuotes.current) {
+      setTokenAddress(String(fromTokenAddress));
+      setTokenAddressSwapFor(String(toTokenAddress));
+      const now = new Date();
+      const formatted = now.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setLastUpdatedSwap(formatted);
+    }
     setQuoteLoadingSwap(false);
   };
 
   const handleFetchQuotesBridge = async () => {
-          setHasAttemptedSubmitBridge(true);
-          setQuoteLoadingBridge(true);
-          const swapFor = symbolOptionSwapForBridge;
-          const err = generateErrorMessage({
-            symbolOptionSwap,
-            filteredRows,
-            selectedChain,
-            symbolOptionSwapFor: swapFor,
-            newBalance,
-            t
-          });
-          if (err) {
-            setQuoteDataBridge([]);
-            setErrorMessageBridge(err);
-            setLastUpdatedBridge(null);
-            setTokenAddress(null);
-            setTokenAddressSwapFor(null);
-            setQuoteLoadingBridge(false);
-            return;
-          }
-          setErrorMessageBridge(null);
-          const fromTokenAddress = selectedTokenRowBridge?.tokenAddress || '';
-          const toTokenAddress = symbolOptionSwapForBridge?.address
-            ? Array.isArray(symbolOptionSwapForBridge.address)
-              ? symbolOptionSwapForBridge.address[0]
-              : symbolOptionSwapForBridge.address
-            : '';
-          const fromTokenDecimals = typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18;
-          // Convert fromAmount to raw amount using BigInt
-          let fromAmountRaw = '0';
-          try {
-            fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
-          } catch (e) {
-            setErrorMessageBridge(t("Invalid amount"));
-            setQuoteDataBridge([]);
-            return;
-          }
-          // POST to /api/lifi/routes using lifiApi
-          try {
-            const fromChainId = coinGeckoChainId(selectedChain) || 1;
-            const toChainId = selectedBridgeToChainId || 1;
-            const data = await postLifiRoutes({
-              fromChainId,
-              toChainId,
-              fromAmount: fromAmountRaw,
-              fromTokenAddress: String(fromTokenAddress),
-              toTokenAddress: String(toTokenAddress),
-            });
-            setQuoteDataBridge(Array.isArray(data.routes) ? data.routes : []);
-            setErrorMessageBridge((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No bridge routes found"));
-          } catch (e) {
-            setErrorMessageBridge(t("Error fetching bridge routes"));
-            setQuoteDataBridge([]);
-            return;
-          }
-          setTokenAddress(String(fromTokenAddress));
-          setTokenAddressSwapFor(String(toTokenAddress));
-          const now = new Date();
-          const formatted = now.toLocaleString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          });
-          setLastUpdatedBridge(formatted);
-          setQuoteLoadingBridge(false);
+    setHasAttemptedSubmitBridge(true);
+    setQuoteLoadingBridge(true);
+    cancelQuotes.current = false; // Reset cancel flag on new fetch
+    const swapFor = symbolOptionSwapForBridge;
+    const err = generateErrorMessage({
+      symbolOptionSwap,
+      filteredRows,
+      selectedChain,
+      symbolOptionSwapFor: swapFor,
+      newBalance,
+      t
+    });
+    if (err) {
+      setQuoteDataBridge([]);
+      setErrorMessageBridge(err);
+      setLastUpdatedBridge(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
+      setQuoteLoadingBridge(false);
+      return;
+    }
+    setErrorMessageBridge(null);
+    const fromTokenAddress = selectedTokenRowBridge?.tokenAddress || '';
+    const toTokenAddress = symbolOptionSwapForBridge?.address
+      ? Array.isArray(symbolOptionSwapForBridge.address)
+        ? symbolOptionSwapForBridge.address[0]
+        : symbolOptionSwapForBridge.address
+      : '';
+    const fromTokenDecimals = typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18;
+    // Convert fromAmount to raw amount using BigInt
+    let fromAmountRaw = '0';
+    try {
+      fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
+    } catch (e) {
+      setErrorMessageBridge(t("Invalid amount"));
+      setQuoteDataBridge([]);
+      setQuoteLoadingBridge(false);
+      return;
+    }
+    // POST to /api/lifi/routes using lifiApi
+    try {
+      const fromChainId = coinGeckoChainId(selectedChain) || 1;
+      const toChainId = selectedBridgeToChainId || 1;
+      const data = await postLifiRoutes({
+        fromChainId,
+        toChainId,
+        fromAmount: fromAmountRaw,
+        fromTokenAddress: String(fromTokenAddress),
+        toTokenAddress: String(toTokenAddress),
+      });
+      if (!cancelQuotes.current) {
+        setQuoteDataBridge(Array.isArray(data.routes) ? data.routes : []);
+        setErrorMessageBridge((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No bridge routes found"));
+      }
+    } catch (e) {
+      if (!cancelQuotes.current) {
+        setErrorMessageBridge(t("Error fetching bridge routes"));
+        setQuoteDataBridge([]);
+      }
+      setQuoteLoadingBridge(false);
+      return;
+    }
+    if (!cancelQuotes.current) {
+      setTokenAddress(String(fromTokenAddress));
+      setTokenAddressSwapFor(String(toTokenAddress));
+      const now = new Date();
+      const formatted = now.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setLastUpdatedBridge(formatted);
+    }
+    setQuoteLoadingBridge(false);
   };
 
   // Find the selected position from dropdown and update fields as if selected from table
