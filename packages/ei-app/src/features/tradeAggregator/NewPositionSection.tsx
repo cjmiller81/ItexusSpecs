@@ -743,7 +743,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         newBalance,
         t
       }));
-      setQuoteDataSwap([]);
+      // setQuoteDataSwap([]);
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
       setTokenAddress(null);
@@ -761,7 +761,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         newBalance,
         t
       }));
-      setQuoteDataBridge([]);
+      // setQuoteDataBridge([]);
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
       setTokenAddress(null);
@@ -925,13 +925,23 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       return;
     }
     setErrorMessageSwap(null);
-    const fromTokenAddress = tokenAddress || '';
+    const fromTokenAddress =
+      tokenAddress ||
+      (selectedTokenRowSwap?.tokenAddress
+        ? selectedTokenRowSwap.tokenAddress
+        : selectedTokenRow?.tokenAddress || '');
     const toTokenAddress = swapFor?.address
       ? Array.isArray(swapFor.address)
         ? swapFor.address[0]
         : swapFor.address
       : '';
-    const fromTokenDecimals = typeof selectedTokenRowSwap?.decimals === 'number' ? selectedTokenRowSwap.decimals : 18;
+
+    let fromTokenDecimals = 18;
+    if (typeof selectedTokenRowSwap?.decimals === 'number') {
+      fromTokenDecimals = selectedTokenRowSwap.decimals;
+    } else if (typeof selectedTokenRow?.decimals === 'number') {
+      fromTokenDecimals = selectedTokenRow.decimals;
+    }
     let fromAmountRaw = '0';
     try {
       fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
