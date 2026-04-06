@@ -5,6 +5,7 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarListItem } from "./types";
 import { AppLink } from "../common";
 import { useRouter } from "next/router";
+import {APP_CONSTANTS} from "../../constants/strings";
 
 interface Props {
   sectionName: string;
@@ -32,14 +33,10 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
           transition: 'all 0.2s ease',
           '&:hover': {
             '& .disclaimer-title': {
-              color: theme.palette.mode === 'dark'
-                ? 'rgba(255, 255, 255, 0.65)'
-                : 'rgba(0, 0, 0, 0.70)',
+              color: 'rgba(255, 255, 255, 0.65)',
             },
             '& .disclaimer-body': {
-              color: theme.palette.mode === 'dark'
-                ? 'rgba(255, 255, 255, 0.55)'
-                : 'rgba(0, 0, 0, 0.60)',
+              color: 'rgba(255, 255, 255, 0.55)',
             }
           }
         }}
@@ -51,9 +48,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
             fontSize: '10px',
             fontWeight: 600,
             letterSpacing: '0.08em',
-            color: theme.palette.mode === 'dark'
-              ? 'rgba(255, 255, 255, 0.45)'
-              : 'rgba(0, 0, 0, 0.50)',
+            color: 'rgba(255, 255, 255, 0.45)',
             display: 'block',
             marginBottom: '8px',
             textTransform: 'uppercase',
@@ -69,9 +64,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
           sx={{
             fontSize: '11px',
             lineHeight: 1.5,
-            color: theme.palette.mode === 'dark'
-              ? 'rgba(255, 255, 255, 0.35)'
-              : 'rgba(0, 0, 0, 0.40)',
+            color: 'rgba(255, 255, 255, 0.35)',
             fontWeight: 400,
             letterSpacing: '0.02em',
             display: 'block',
@@ -80,7 +73,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
             wordWrap: "break-word"
           }}
         >
-          Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.
+          {APP_CONSTANTS.DISCLAIMER_TEXT}
         </Typography>
       </Box>
     );
@@ -90,7 +83,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
     <List
       sx={{
         width: "100%",
-        bgcolor: theme.palette.mode === "light" ? "#363640" : "background.paper",
+        bgcolor: "#363640",
         pb: 0,
         pt: 0,
         overflowX: "hidden",
@@ -124,28 +117,22 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                     paddingRight: open ? "20px" : "0px",
                     borderLeft: "3px solid transparent",
                     justifyContent: open ? "flex-start" : "center",
-                    borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
+                    borderRadius: "8px",
                     transition: "background-color 0.2s ease, height 0.2s, padding 0.2s",
                     "&.Mui-selected": {
                       borderLeft: `3px solid ${theme.palette.primary.main}`,
-                      backgroundColor: theme.palette.mode === "dark"
-                        ? "rgba(33, 154, 131, 0.08)"
-                        : "rgba(33, 154, 131, 0.06)",
+                      backgroundColor: "rgba(33, 154, 131, 0.08)",
                       color: theme.palette.primary.main,
                       fontWeight: 600,
                       "& .MuiListItemIcon-root": {
                         color: theme.palette.primary.main,
                       },
                       "&:hover": {
-                        backgroundColor: theme.palette.mode === "dark"
-                          ? "rgba(33, 154, 131, 0.12)"
-                          : "rgba(33, 154, 131, 0.10)",
+                        backgroundColor: "rgba(33, 154, 131, 0.12)",
                       },
                     },
                     "&:hover": {
-                      backgroundColor: theme.palette.mode === "dark"
-                        ? "rgba(255, 255, 255, 0.05)"
-                        : "rgba(0, 0, 0, 0.03)",
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
                     },
                   }}>
                   {item.icon && (
@@ -158,7 +145,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                         alignItems: 'center',
                         width: open ? 17 : 24,
                         height: open ? 17 : 24,
-                        color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+                        color: "#ffffff",
                         transition: 'all 0.2s',
                         '& svg': {
                           fontSize: open ? 17 : 24,
@@ -176,7 +163,7 @@ export const SidebarSection = ({ sectionName, items, open, onSetItemOpen, toggle
                         sx: {
                           fontSize: "15px ",
                           fontWeight: 600,
-                          color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+                          color: "#ffffff",
                         }
                       }}
                       sx={{ textAlign: "left" }}

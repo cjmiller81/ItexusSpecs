@@ -151,7 +151,7 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
             </Box>
             {sidebarItems.find(item => item.isDisclaimer) && open && (
               <Box sx={{ flexShrink: 0 }}>
-                <Divider sx={{ color: "lightgray" }} />
+                <Divider sx={{ color: "lightgray", borderColor: "gray" }} />
                 <SidebarSection
                   sectionName=""
                   items={sidebarItems.find(item => item.isDisclaimer)?.sidebarListItems || []}

@@ -20,6 +20,7 @@ import { Theme, useTheme } from "@mui/system";
 import { SidebarItems, SidebarListItem } from "components/src/components/Sidebar/types";
 import { MergeIcon } from "lucide-react";
 import SvgIcon from "@mui/material/SvgIcon";
+import {APP_CONSTANTS} from "../../../components/src/constants/strings";
 
 i18next.setDefaultNamespace("SideBar");
 
@@ -224,13 +225,13 @@ function getCommunityItems(theme: Theme): SidebarListItem[] {
 function getHelpItems(): SidebarListItem[] {
   const ThemedEmailIcon = () => {
     const theme = useTheme();
-    const color = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
+    const color = "#ffffff";
     return <SvgIcon component={EmailIcon} sx={{ fontSize: 16.5, color }} />;
   };
 
   const ThemedInfoIcon = () => {
     const theme = useTheme();
-    const color = theme.palette.mode === "dark" ? "#ffffff" : "#696969";
+    const color = "#ffffff";
     return <SvgIcon component={InfoIcon} sx={{ fontSize: 16.5, color }} />;
   };
 
@@ -256,7 +257,7 @@ function getDisclaimerItems(): SidebarListItem[] {
       title: "Disclaimer",
       children: [
         {
-          title: "Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.",
+          title: APP_CONSTANTS.DISCLAIMER_TEXT,
           href: "/support",
         },
       ],

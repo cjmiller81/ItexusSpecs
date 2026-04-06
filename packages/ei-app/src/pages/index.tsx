@@ -199,9 +199,22 @@ useEffect(() => {
       position: "bottom"
     },
     {
-      selector: "#ei-news-filter",
+      selector: "#ei-crypto-news",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsAndCalendarEvents")}</Typography>
+         <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("CryptoNews")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsEvents")}</Typography>
+        </Box>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#ei-crypto-calendar",
+      content: () => (
+         <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("CryptoCalendar")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterCalendarEvents")}</Typography>
+        </Box>
       ),
       position: "right"
     },
@@ -228,33 +241,32 @@ useEffect(() => {
     {
       selector: "#ei-investing-card",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("InvestingStrategies")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+        </Box>
       ),
       position: "top"
     },
     {
       selector: "#ei-income-card",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("IncomeStrategies")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+        </Box>
       ),
       position: "top"
     },
     {
       selector: "#ei-theme-toggle",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
-      ),
-      position: "left"
-    },
-    {
-      selector: "#homepage",
-      content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ThankYouTitle")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("LightDarkMode")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
         </Box>
       ),
-      position: "top"
+      position: "left"
     }
   ];
 
@@ -417,6 +429,7 @@ useEffect(() => {
           xs={12}
           md={12}
           lg={2}
+          id="ei-crypto-news"
           sx={{ display: 'flex' }}>
           <CryptoNewsTile
             title={t("CryptoNewsTile")}
@@ -460,7 +473,8 @@ useEffect(() => {
             item
             xs={12}
             md={12}
-            lg={2}>
+            lg={2}
+            id="ei-crypto-calendar">
             <CryptoCalendar
               loading={isCalendarLoading}
               title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}

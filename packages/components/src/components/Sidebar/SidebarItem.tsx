@@ -67,29 +67,23 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
           paddingLeft: isSidebarOpened ? "17px" : "0px",
           paddingRight: isSidebarOpened ? "20px" : "0px",
           borderLeft: "3px solid transparent",
-          borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
+          borderRadius: "8px",
           transition: "background-color 0.2s ease, height 0.2s, padding 0.2s",
           justifyContent: isSidebarOpened ? "flex-start" : "center",
           "&.Mui-selected": {
             borderLeft: `3px solid ${theme.palette.primary.main}`,
-            backgroundColor: theme.palette.mode === "dark"
-              ? "rgba(33, 154, 131, 0.08)"
-              : "rgba(33, 154, 131, 0.06)",
+            backgroundColor: "rgba(33, 154, 131, 0.08)",
             color: theme.palette.primary.main,
             fontWeight: 600,
             "& .MuiListItemIcon-root": {
               color: theme.palette.primary.main,
             },
             "&:hover": {
-              backgroundColor: theme.palette.mode === "dark"
-                ? "rgba(33, 154, 131, 0.12)"
-                : "rgba(33, 154, 131, 0.10)",
+              backgroundColor: "rgba(33, 154, 131, 0.12)",
             },
           },
           "&:hover": {
-            backgroundColor: theme.palette.mode === "dark"
-              ? "rgba(255, 255, 255, 0.05)"
-              : "rgba(0, 0, 0, 0.03)",
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
           },
         }}
         onClick={() => setOpen(!open)}>
@@ -103,7 +97,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               alignItems: 'center',
               width: isSidebarOpened ? 17 : 24,
               height: isSidebarOpened ? 17 : 24,
-              color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+              color: "#ffffff",
               transition: 'all 0.2s',
               '& svg': {
                 fontSize: isSidebarOpened ? 17 : 24,
@@ -121,7 +115,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               textAlign: "left",
               flex: 1,
               "& .MuiListItemText-primary": {
-                color: theme.palette.mode === "light" ? "#ffffff" : theme.palette.text.primary,
+                color: "#ffffff",
               }
             }}
             primaryTypographyProps={{
@@ -140,9 +134,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
               marginLeft: "auto",
               transform: open ? "rotate(90deg)" : "rotate(0deg)",
               transition: "transform 0.2s ease, font-size 0.2s",
-              color: theme.palette.mode === "light"
-                ? "rgba(255, 255, 255, 0.6)"
-                : "rgba(255, 255, 255, 0.5)",
+              color: "rgba(255, 255, 255, 0.5)",
             }}
           />
         )}
@@ -180,12 +172,10 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                   }
                   label="Coming Soon"
                   sx={{
-                    background: theme.palette.mode === 'light'
-                      ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%)'
-                      : 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.2) 100%)',
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.2) 100%)',
                     border: '1px solid rgba(59, 130, 246, 0.4)',
                     borderRadius: '20px',
-                    color: theme.palette.mode === 'light' ? theme.palette.primary.dark : '#60a5fa',
+                    color: '#60a5fa',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px',
@@ -280,13 +270,11 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                       pl: 4,
                       justifyContent: "flex-start",
                       borderLeft: "3px solid transparent",
-                      borderRadius: theme.palette.mode === "light" ? "0px" : "8px",
+                      borderRadius: "8px",
                       transition: "background-color 0.2s ease",
                       "&.Mui-selected": {
                         borderLeft: `3px solid ${theme.palette.primary.main}`,
-                        backgroundColor: theme.palette.mode === "dark"
-                          ? "rgba(33, 154, 131, 0.08)"
-                          : "rgba(33, 154, 131, 0.06)",
+                        backgroundColor: "rgba(33, 154, 131, 0.08)",
                         color: theme.palette.primary.main,
                         fontWeight: 600,
                         "& .MuiListItemIcon-root": {
@@ -296,15 +284,11 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                           color: theme.palette.primary.main,
                         },
                         "&:hover": {
-                          backgroundColor: theme.palette.mode === "dark"
-                            ? "rgba(33, 154, 131, 0.12)"
-                            : "rgba(33, 154, 131, 0.10)",
+                          backgroundColor: "rgba(33, 154, 131, 0.12)",
                         },
                       },
                       "&:hover": {
-                        backgroundColor: theme.palette.mode === "dark"
-                          ? "rgba(255, 255, 255, 0.05)"
-                          : "rgba(0, 0, 0, 0.03)",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
                       },
                     }}
                   >
@@ -313,7 +297,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                       sx={{
                         textAlign: "left",
                         '& .MuiListItemText-primary': {
-                          color: 'inherit',
+                          color: '#ffffff',
                         }
                       }}
                       primaryTypographyProps={{
@@ -323,7 +307,7 @@ export function SidebarItem({ item, isSidebarOpened, open, setOpen }: Props) {
                           fontWeight: 400,
                           letterSpacing: '0.01em',
                           opacity: 0.90,
-                          color: theme.palette.mode === "light" ? "#ffffff" : "lightgray",
+                          color: "lightgray",
                         }
                       }}
                     />
