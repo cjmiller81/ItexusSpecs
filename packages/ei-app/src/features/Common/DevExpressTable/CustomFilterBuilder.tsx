@@ -1939,7 +1939,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
       <TourPortal tourSteps={tourSteps} isModalOpen={filterBuilderOpen} onStartTourRef={startTourRef} />
       <StyledAdaptivePageBox sx={{ width: "100%" }}>
         {/* Filter Tree with Popover */}
-        <Box sx={{ position: "relative", display: 'inline-block', mr: 1 }}>
+        <Box id="filter_presets" sx={{ position: "relative", display: 'inline-block', mr: 1 }}>
           <Button
             onClick={handleFilterTreeOpen}
             sx={{

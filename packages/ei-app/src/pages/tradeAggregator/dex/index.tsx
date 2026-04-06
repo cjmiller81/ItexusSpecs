@@ -119,47 +119,6 @@ export default function Dex() {
           <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourTokenTradeText")}</Typography>
         ),
         position: "right"
-      },
-      {
-        selector: "#quantity_input",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourTradeQuantityText")}</Typography>
-        ),
-        position: "left"
-      },
-      {
-        selector: "#target_token_dropdown",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourTargetTokenText")}</Typography>
-        ),
-        position: "left"
-      },
-      {
-        selector: "#get_quotes_btn",
-        content: () => (
-          <Box sx={{ color: "#1a1a1a" }}>
-            <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("DexAggregatorTourQuotesTitle")}</Typography>
-            <Typography sx={{ color: "#4a5568" }}>{t("DexAggregatorTourQuotesText", { quoteCount: getTradeAggregatorQuoteLimit() })}</Typography>
-          </Box>
-        ),
-        position: "top"
-      },
-      {
-        selector: "#routes_list",
-        content: () => (
-          <Box sx={{ color: "#1a1a1a" }}>
-            <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("DexAggregatorTourRoutesTitle")}</Typography>
-            <Typography sx={{ color: "#4a5568" }}>{t("DexAggregatorTourRoutesText")}</Typography>
-          </Box>
-        ),
-        position: "top"
-      },
-      {
-        selector: "#execute_section",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourExecuteText")}</Typography>
-        ),
-        position: "bottom"
       }
     ];
 
