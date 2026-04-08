@@ -54,7 +54,7 @@ export function BillingApiUsageCard() {
 
   return (
     <Box width="100%" mb={3}>
-      <Paper elevation={4} sx={{ bgcolor: cardColor, borderRadius: 3, p: 3, width: '75%', maxWidth: 1200 }}>
+      <Paper elevation={4} sx={{ bgcolor: cardColor, borderRadius: 3, p: 3, width: '100%', maxWidth: 800 }}>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 600, color: captionColor }}>API Usage This Month</Typography>
