@@ -34,6 +34,18 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const paymentMethods = useSelector((state: RootState) => state.billing.paymentMethods);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [activeSubscription, setActiveSubscription] = useState<any>(null);
+
+  useEffect(() => {
+      if (subscriptions?.length) {
+          const active = subscriptions
+              .filter(sub => sub.status === "active" || sub.status === "trialing")
+              .sort((a, b) => b.created - a.created)[0];
+          setActiveSubscription(active);
+      } else {
+          setActiveSubscription(null);
+      }
+  }, [subscriptions]);
 
   useEffect(() => {
     const initializeBilling = async () => {
@@ -418,7 +430,7 @@ export const BillingContainer = ({ ...props }: StackProps) => {
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
-  const activeSubscription = subscriptions?.find((sub) => sub.status === "active" || sub.status === "trialing");
+
   const handleCancelPlan = async () => {
     if (!activeSubscription) return;
     setCancelLoading(true);
@@ -492,7 +504,9 @@ export const BillingContainer = ({ ...props }: StackProps) => {
       <Stack {...props}>
         <Box display="flex" width="100%" gap={3} mb={3}>
         <Box flex={1} minWidth={0}>
-          <BillingApiUsageCard />
+          <BillingApiUsageCard
+            currentPeriodEnd={activeSubscription?.items?.data?.[0]?.current_period_end}
+          />
         </Box>
         <Box flex={1} minWidth={0}>
           <ProfileContainer
