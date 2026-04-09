@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button as MuiButton } from "@mui/material";
 import { Grid, Card, Stack, Typography, Button, List, ListItem, ListItemText } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import CheckOutlined from "@ant-design/icons/CheckOutlined";
@@ -25,6 +26,7 @@ export type BillingPlanProps = {
 };
 
 export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPlan,selectedPlanId,products,duplicatePlans }) => {
+  const [confirmSwitchOpen, setConfirmSwitchOpen] = useState(false);
   const theme = useTheme();
   const { t } = useTranslation(["BillingPlan"]);
   const [pricingPeriod, setPricingPeriod] = useState<"year" | "month" | undefined>(plan.recurring?.interval === "month" ? "month" : "year");
@@ -149,21 +151,59 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           )}
 
           {nickname !== "Enterprise" && (
+            <>
+              <Button
+                onClick={() => setConfirmSwitchOpen(true)}
+                sx={{
+                  height: "40px",
+                  "&.Mui-disabled": {
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
+                  },
+                }}
+                variant={isSelected ? "contained" : "outlined"}
+                fullWidth
+                disabled={isSelected}
+              >
+                {buttonLabel}
+              </Button>
+              {/* Confirmation Modal for Switch to Plan */}
+              <Dialog open={confirmSwitchOpen} onClose={() => setConfirmSwitchOpen(false)}>
+                <DialogTitle>{t('SwitchToPlan', 'Switch Plan')}</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    {t('SwitchPlanConfirmText', 'Are you sure you want to switch to this subscription plan?')}
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <MuiButton onClick={() => setConfirmSwitchOpen(false)}>
+                    {t('No', 'No')}
+                  </MuiButton>
+                  <MuiButton
+                    onClick={() => {
+                      setConfirmSwitchOpen(false);
+                      onSelectPlan?.(pricingPeriod === "year" ? yearlyPlan : monthlyPlan);
+                    }}
+                    variant="contained"
+                    color="primary"
+                  >
+                    {t('Yes', 'Yes, Switch Plan')}
+                  </MuiButton>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
+          {/* Cancel Plan button under Current Plan, only for active plan */}
+          {nickname !== "Enterprise" && isSelected && typeof window !== 'undefined' && (window as any).showCancelPlanButton !== false && (
             <Button
-            onClick={() => onSelectPlan?.(pricingPeriod === "year" ? yearlyPlan : monthlyPlan)}
-            sx={{
-              height: "40px",
-              "&.Mui-disabled": {
-                backgroundColor: theme.palette.primary.main,
-                color: theme.palette.primary.contrastText,
-              },
-            }}
-            variant={isSelected ? "contained" : "outlined"}
-            fullWidth
-            disabled={isSelected}
-          >
-            {buttonLabel}
-          </Button>         
+              variant="outlined"
+              color="error"
+              fullWidth
+              sx={{ mt: 1, fontWeight: 700, height: "40px" }}
+              onClick={() => typeof window !== 'undefined' && (window as any).onCancelPlan && (window as any).onCancelPlan()}
+            >
+              {t('CancelPlan', 'Cancel Plan')}
+            </Button>
           )}
 
           <List sx={{ m: 0, p: 0, marginTop: "auto", "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } } }} component="ul">

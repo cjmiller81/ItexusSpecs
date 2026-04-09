@@ -537,7 +537,11 @@
     "BilledYearly": "Billed yearly",
     "BilledMonthly": "Billed monthly",
     "SwitchToPlan": "Switch to plan",
+    "SwitchPlanConfirmText": "Are you sure you want to switch to this subscription plan?",
     "CurrentPlan": "Current plan",
+    "CancelPlan": "Cancel plan",
+    "CancelPlanTitle": "Cancel Subscription",
+    "CancelPlanConfirmText": "Are you sure you want to cancel your current subscription plan?",
     "SelectThisPlan": "Select this plan",
     "Upgrade": "Upgrade"
   },

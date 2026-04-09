@@ -10,7 +10,11 @@ interface ApiUsageStatus {
   allowedRequests: number;
 }
 
-export function BillingApiUsageCard() {
+interface BillingApiUsageCardProps {
+  currentPeriodEnd?: number;
+}
+
+export function BillingApiUsageCard( {currentPeriodEnd}: BillingApiUsageCardProps ) {
   const theme = useTheme();
   const [usage, setUsage] = useState<ApiUsageStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +45,12 @@ export function BillingApiUsageCard() {
     return `${startDate.toLocaleString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleString('en-US', { month: 'short', day: 'numeric' })}`;
   };
 
+  const formatPeriodFromTimestamps = (end?: number) => {
+      if (!end) return '--';
+      const endDate = new Date(end * 1000);
+      return `${endDate.toLocaleString('en-US', { month: 'short', day: 'numeric' })}`;
+  };
+
   const percentageUsed = usage && usage.allowedRequests > 0 ? (usage.totalRequests / usage.allowedRequests) * 100 : 0;
   const remainingCalls = usage ? usage.allowedRequests - usage.totalRequests : 0;
   const averageDailyUse = usage && usage.startDate && usage.endDate ?
@@ -54,12 +64,15 @@ export function BillingApiUsageCard() {
 
   return (
     <Box width="100%" mb={3}>
-      <Paper elevation={4} sx={{ bgcolor: cardColor, borderRadius: 3, p: 3, width: '75%', maxWidth: 1200 }}>
+      <Paper elevation={4} sx={{ bgcolor: cardColor, borderRadius: 3, p: 3, width: '100%', maxWidth: 800 }}>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 600, color: captionColor }}>API Usage This Month</Typography>
             <Typography variant="body2" sx={{ color: labelColor, mt: 0.5 }}>
               Billing period: {usage ? formatPeriod(usage.startDate, usage.endDate) : '--'}
+            </Typography>
+            <Typography variant="body2" sx={{ color: labelColor, mt: 0.5 }}>
+                Renews on: {formatPeriodFromTimestamps(currentPeriodEnd)}
             </Typography>
           </Box>
           <Box textAlign="right">

@@ -5,7 +5,7 @@ import { AppContainer } from "../../components"
 import { PageTitle } from "../../components/TextDisplay/PageTitle"
 
 interface Props extends BoxProps {
-  title: string
+  title?: string
   endAdortment?: React.ReactNode
   contentBgColor?: string
 }
@@ -14,10 +14,12 @@ export const ProfileContainer = ({ title, endAdortment, contentBgColor, children
   return (
     <Box {...props}>
       <AppContainer sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-        <HeaderContainer>
-          <HeaderPageTitle>{title}</HeaderPageTitle>
-          {endAdortment}
-        </HeaderContainer>
+        {title && (
+          <HeaderContainer>
+            <HeaderPageTitle>{title}</HeaderPageTitle>
+            {endAdortment}
+          </HeaderContainer>
+        )}
         <TopBordered sx={(theme) => ({ 
           display: "flex", 
           flexDirection: "column", 
