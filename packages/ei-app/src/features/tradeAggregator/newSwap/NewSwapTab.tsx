@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetchLifiChains, LifiChain } from "../lifiChains";
+import { useLifiChainMap } from "@/common/lifiChainContext";
+import { lifiChainMapToArray } from "../lifiChains";
 import { getLifiToken } from "../lifiApi";
 import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import EastIcon from '@mui/icons-material/East';
@@ -83,34 +84,13 @@ export const NewSwapTab = ({
   errorMessage = null,
   chains = [],
 }: NewSwapTabProps) => {
-  const [lifiChains, setLifiChains] = useState<LifiChain[]>([]);
-  const [lifiChainsLoading, setLifiChainsLoading] = useState(false);
-  const [lifiChainsError, setLifiChainsError] = useState(false);
+  const { lifiChainMap, isLoading: lifiChainsLoading, error: lifiChainsError } = useLifiChainMap();
+  const lifiChains = lifiChainMapToArray(lifiChainMap);
   const [swapFromTokenAddress, setSwapFromTokenAddress] = useState<string | null>(null);
   const [swapFromTokenDecimals, setSwapFromTokenDecimals] = useState<number | null>(null);
   const [swapFromTokenPriceUSD, setSwapFromTokenPriceUSD] = useState<string | null>(null);
   const [swapToTokenAddress, setSwapToTokenAddress] = useState<string | null>(null);
   const theme = useTheme();
-
-  useEffect(() => {
-    let ignore = false;
-    setLifiChainsLoading(true);
-    fetchLifiChains()
-      .then((chains) => {
-        if (!ignore) {
-          setLifiChains(chains);
-          setLifiChainsError(false);
-        }
-      })
-      .catch(() => {
-        if (!ignore) setLifiChainsError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLifiChainsLoading(false);
-      });
-    return () => { ignore = true; };
-  }, []);
-
 
   useEffect(() => {
     const fetchLifiTokenInfo = async () => {

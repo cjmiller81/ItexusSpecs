@@ -16,6 +16,7 @@ import {
   fetchReactourSettingsAsync,
   useAppSelector,
 } from "components"
+import { useLifiChainMap } from "@/common/lifiChainContext"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -37,6 +38,7 @@ const StartTourButton = () => {
 };
 
 export default function ProfilePage() {
+  const { lifiChainMap } = useLifiChainMap();
   const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
   const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
   const { onUpdateAvatar, session, onUpdateProfile } = useOry()
@@ -292,7 +294,7 @@ export default function ProfilePage() {
               <SecurityContainer />
             </TabPanel>
             <TabPanel value="wallets">
-              <WalletsContainer />
+              <WalletsContainer lifiChainMap={lifiChainMap} />
             </TabPanel>
             <TabPanel value="billing">
             <Elements stripe={stripePromise}>

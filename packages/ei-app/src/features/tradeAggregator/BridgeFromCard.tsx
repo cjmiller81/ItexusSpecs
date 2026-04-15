@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useTranslation } from "react-i18next";
 import { CHAIN_COLORS, CHAIN_MAP } from "./bridgeChains";
-import { fetchLifiChains, sortChains, LifiChain } from "./lifiChains";
+import { LifiChain } from "@/common/lifiChainContext";
 import SearchIcon from '@mui/icons-material/Search';
 
 interface BridgeFromCardProps {

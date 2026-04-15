@@ -28,6 +28,7 @@ import {
   updateTourStatusAsync,
   fetchReactourSettingsAsync
 } from "components";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -124,12 +125,14 @@ export default function HomePage() {
     if (wallets === null) dispatch(fetchWallets(null));
   }, [wallets,dispatch]);
 
+  const { lifiChainMap } = useLifiChainMap();
+
   useEffect(() => {
-    if (wallets && wallets.length > 0) {
+    if (wallets && wallets.length > 0 && lifiChainMap) {
       const addresses = wallets.map(w => w.address);
-         dispatch(fetchWalletsPortfolio(addresses));
+      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
     }
-  }, [wallets, dispatch]);
+  }, [wallets, dispatch, lifiChainMap]);
 
   useEffect(() => {
     if (!wallets || wallets.length === 0) return;
