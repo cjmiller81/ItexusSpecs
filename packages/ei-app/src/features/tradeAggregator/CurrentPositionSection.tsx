@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { fetchLifiChains, LifiChain } from "./lifiChains";
+import { useLifiChainMap, LifiChain } from "@/common/lifiChainContext";
+import { lifiChainMapToArray } from "./lifiChains";
 import {
   Box,
   Select,
@@ -191,29 +192,10 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     return network.charAt(0).toUpperCase() + network.slice(1).toLowerCase();
   };
 
-  const [lifiChains, setLifiChains] = useState<LifiChain[]>([]);
-  const [lifiChainsLoading, setLifiChainsLoading] = useState(false);
-  const [lifiChainsError, setLifiChainsError] = useState(false);
+  const { lifiChainMap, isLoading: lifiChainsLoading, error } = useLifiChainMap();
+  const lifiChains = lifiChainMapToArray(lifiChainMap);
+  const lifiChainsError = !!error;
   const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
-
-  useEffect(() => {
-    let ignore = false;
-    setLifiChainsLoading(true);
-    fetchLifiChains()
-      .then((chains) => {
-        if (!ignore) {
-          setLifiChains(chains);
-          setLifiChainsError(false);
-        }
-      })
-      .catch(() => {
-        if (!ignore) setLifiChainsError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLifiChainsLoading(false);
-      });
-    return () => { ignore = true; };
-  }, []);
 
   // Sync inputSearchBridgeToChain with selectedChain
   useEffect(() => {
@@ -230,12 +212,12 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(false);
 
   useEffect(() => {
-    if (wallets && wallets.length > 0) {
+    if (wallets && wallets.length > 0 && lifiChainMap) {
       const addresses = wallets.map(w => w.address);
       setIsPortfolioLoading(true);
-      dispatch(fetchWalletsPortfolio(addresses));
+      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
     }
-  }, [wallets, dispatch]);
+  }, [wallets, dispatch, lifiChainMap]);
 
   // When portfolioWalletData changes, stop loading
   useEffect(() => {
@@ -298,13 +280,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   useEffect(() => {
     dispatch(fetchWallets(null));
   }, []);
-
-  useEffect(() => {
-      if (wallets && wallets.length > 0) {
-        const addresses = wallets.map(w => w.address);
-           dispatch(fetchWalletsPortfolio(addresses));
-      }
-    }, [wallets, dispatch]);
 
     const selectedPortfolio = portfolioWalletData.find(
       (p) => p.walletAddress === selectedWallet?.address

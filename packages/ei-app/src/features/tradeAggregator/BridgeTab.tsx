@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetchLifiChains, LifiChain } from "./lifiChains";
+import { useLifiChainMap, LifiChain } from "@/common/lifiChainContext";
+import { lifiChainMapToArray } from "./lifiChains";
 import { getLifiToken } from "./lifiApi";
 import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import EastIcon from '@mui/icons-material/East';
@@ -89,33 +90,14 @@ export const BridgeTab = ({
         onClearBridgeToTokenAddress();
       }
     }, [symbolOptionSwapFor, onClearBridgeToTokenAddress]);
-  const [lifiChains, setLifiChains] = useState<LifiChain[]>([]);
-  const [lifiChainsLoading, setLifiChainsLoading] = useState(false);
-  const [lifiChainsError, setLifiChainsError] = useState(false);
+  const { lifiChainMap, isLoading: lifiChainsLoading, error } = useLifiChainMap();
+  const lifiChains = lifiChainMapToArray(lifiChainMap);
+  const lifiChainsError = !!error;
   const [bridgeFromTokenAddress, setBridgeFromTokenAddress] = useState<string | null>(null);
   const [bridgeFromTokenDecimals, setBridgeFromTokenDecimals] = useState<number | null>(null);
   const [bridgeFromTokenPriceUSD, setBridgeFromTokenPriceUSD] = useState<string | null>(null);
   const [bridgeToTokenAddress, setBridgeToTokenAddress] = useState<string | null>(null);
   const theme = useTheme();
-
-  useEffect(() => {
-    let ignore = false;
-    setLifiChainsLoading(true);
-    fetchLifiChains()
-      .then((chains) => {
-        if (!ignore) {
-          setLifiChains(chains);
-          setLifiChainsError(false);
-        }
-      })
-      .catch(() => {
-        if (!ignore) setLifiChainsError(true);
-      })
-      .finally(() => {
-        if (!ignore) setLifiChainsLoading(false);
-      });
-    return () => { ignore = true; };
-  }, []);
 
   useEffect(() => {
     const fetchLifiTokenInfo = async () => {

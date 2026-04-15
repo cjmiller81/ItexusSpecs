@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import SearchIcon from "@mui/icons-material/Search";
-import { LifiChain } from "./lifiChains";
+import { LifiChain } from "@/common/lifiChainContext";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 
 interface AddTemporaryPositionDialogProps {
