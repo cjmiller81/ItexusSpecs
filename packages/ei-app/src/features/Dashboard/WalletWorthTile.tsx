@@ -2,7 +2,8 @@ import { CompareToValues } from "@/libs/redux/Slices/Shared";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardTile, DashboardTileProps } from "./DashboardTile";
-import { useTheme, ToggleButton, ToggleButtonGroup, Box } from "@mui/material";
+import { useTheme, Box } from "@mui/material";
+import { TabSelector } from '../../../../components/src/components/common/TabSelector';
 import { AppChartHome } from "@/components/Charts/AppChartHome";
 import { ApexOptions } from "apexcharts";
 
@@ -93,56 +94,15 @@ export const WalletWorthTile: FC<Props> = ({
       }}
       rightHeaderContent={
         <Box display="flex" alignItems="center" gap={2}>
-          <ToggleButtonGroup
-            exclusive
-            size="small"
+          <TabSelector
+            options={[
+              { label: t("Growth"), value: "growth" },
+              { label: t("Value"), value: "value" },
+            ]}
             value={selectedSection}
-            onChange={(_, newValue) => {
-              if (newValue !== null) {
-                setSelectedSection(newValue);
-              }
-            }}
-            aria-label="Select chart type"
-          >
-            <ToggleButton
-              value="growth"
-              sx={{
-                textTransform: "none",
-                "&.Mui-selected": {
-                  color: "#000",
-                  backgroundColor: "#f7f5f2",
-                  "&:hover": { backgroundColor: "#f7f5f2" },
-                },
-                "&:not(.Mui-selected)": {
-                  color: "#000",
-                  backgroundColor: "#e5ddd5",
-                  "&:hover": { backgroundColor: "#e5ddd5" },
-                },
-                borderColor: "#e5ddd5",
-              }}
-            >
-              {t("Growth")}
-            </ToggleButton>
-            <ToggleButton
-              value="value"
-              sx={{
-                textTransform: "none",
-                "&.Mui-selected": {
-                  color: "#000",
-                  backgroundColor: "#f7f5f2",
-                  "&:hover": { backgroundColor: "#f7f5f2" },
-                },
-                "&:not(.Mui-selected)": {
-                  color: "#000",
-                  backgroundColor: "#e5ddd5",
-                  "&:hover": { backgroundColor: "#e5ddd5" },
-                },
-                borderColor: "#e5ddd5",
-              }}
-            >
-              {t("Value")}
-            </ToggleButton>
-          </ToggleButtonGroup>
+            onChange={v => setSelectedSection(v as "growth" | "value")}
+            sx={{ minHeight: 36 }}
+          />
         </Box>
       }
       {...props}

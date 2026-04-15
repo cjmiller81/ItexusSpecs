@@ -3,7 +3,8 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { Box, BoxProps, MenuItem, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { TabSelector } from "../../../../components/src/components/common/TabSelector";
+import { tabIcons } from "../../../../components/src/components/common/tabIcons";
 import {
   AppDatePicker,
   AppSelect,
@@ -109,60 +110,15 @@ export const HistoricalWalletsWorth = ({
             {title}
           </StyledTypographyWalletsWorthTitle>
         )}
-          <ToggleButtonGroup
-            exclusive
-            size="small"
+          <TabSelector
+            options={[
+              { label: t("Growth"), value: "growth", icon: tabIcons.growth },
+              { label: t("Value"), value: "value", icon: tabIcons.value },
+            ]}
             value={selectedSection}
-            onChange={(_, newValue) => {
-              if (newValue !== null) setSelectedSection(newValue);
-            }}
+            onChange={v => setSelectedSection(v as "growth" | "value")}
             sx={{ marginTop: 0 }}
-          >
-            <ToggleButton
-              value="growth"
-              sx={{
-                "&.Mui-selected": {
-                  color: "#000",
-                  backgroundColor: "#f7f5f2",
-                  "&:hover": {
-                    backgroundColor: "#f7f5f2",
-                  },
-                },
-                "&:not(.Mui-selected)": {
-                  color: "#000",
-                  backgroundColor: "#e5ddd5",
-                  "&:hover": {
-                    backgroundColor: "#e5ddd5",
-                  },
-                },
-                borderColor: "#e5ddd5",
-              }}
-            >
-              {t("Growth")}
-            </ToggleButton>
-            <ToggleButton
-              value="value"
-              sx={{
-                "&.Mui-selected": {
-                  color: "#000",
-                  backgroundColor: "#f7f5f2",
-                  "&:hover": {
-                    backgroundColor: "#f7f5f2",
-                  },
-                },
-                "&:not(.Mui-selected)": {
-                  color: "#000",
-                  backgroundColor: "#e5ddd5",
-                  "&:hover": {
-                    backgroundColor: "#e5ddd5",
-                  },
-                },
-                borderColor: "#e5ddd5",
-              }}
-            >
-              {t("Value")}
-            </ToggleButton>
-          </ToggleButtonGroup>
+          />
         <StyledWalletWorthMenu>
           <AppSelect
             tooltip={t("Period", { ns: "Tooltips" })}
