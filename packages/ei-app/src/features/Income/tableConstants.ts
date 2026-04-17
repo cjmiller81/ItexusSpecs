@@ -100,31 +100,37 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.APY,
     dataField: DefiField.APY,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.ApyBase,
     dataField: DefiField.ApyBase,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.APYReward,
     dataField: DefiField.APYReward,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.ApyMean30d,
     dataField: DefiField.ApyMean30d,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.ApyPct1D,
     dataField: DefiField.ApyPct1D,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.ApyPct7D,
     dataField: DefiField.ApyPct7D,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.Stablecoin,
@@ -165,6 +171,7 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.ApyBase7d,
     dataField: DefiField.ApyBase7d,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   {
     caption: DefiLabel.VolumeUsd1d,
@@ -180,6 +187,7 @@ export const defiFilterBuilderFields: FilterBuilderItems[] = [
     caption: DefiLabel.ApyBaseInception,
     dataField: DefiField.ApyBaseInception,
     dataType: "number",
+    format: "#,##0.##'%'",
   },
   /*{
     caption: DefiLabel.DepositWithdrawFees,

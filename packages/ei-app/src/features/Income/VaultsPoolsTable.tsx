@@ -198,16 +198,16 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
 
   const formatTimestamp = (unixSeconds: number, fallbackText = 'N/A') => {
     if (!unixSeconds || unixSeconds === 0) return fallbackText;
-    
+
     const date = new Date(unixSeconds * 1000);
-    
+
     const hours   = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
     const month   = String(date.getMonth() + 1).padStart(2, '0');
     const day     = String(date.getDate()).padStart(2, '0');
     const year    = date.getFullYear();
-    
+
     return `${hours}:${minutes}:${seconds} ${month}/${day}/${year}`;
   };
 
@@ -230,7 +230,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         showRowLines={true}
         showBorders={true}
         filterBuilder={{
-          customOperations: [],
+          customOperations: [{ name: "contains", caption: "Contains" }],
           allowHierarchicalFields: true,
         }}
         filterValue={
@@ -423,6 +423,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={false}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           caption="Safety"
@@ -477,6 +478,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
             return value * 100;
           }}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField="displayLpFee"
@@ -487,6 +489,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           visible={false}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField="displayTradingApr"
@@ -497,6 +500,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           visible={false}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField="strategyTypeId"
