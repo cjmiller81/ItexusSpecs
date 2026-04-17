@@ -148,7 +148,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
-  const onApplyFilter = (filter: string | any[] | (() => any) | null, isExternalFiltering = false) => {
+  const onApplyFilter = (filter: string | any[] | (() => any) | null) => {
     let transformedFilter = filter;
     if (filter && Array.isArray(filter)) {
       transformedFilter = transformFilterFromAnyof(filter);
@@ -160,15 +160,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
 
     filterRef.current?.onUpdateFilter(transformedFilter || []);
 
-    if (!transformedFilter) {
-      datagrid.current?.instance.clearFilter();
-    } else {
-      datagrid.current?.instance.filter(transformedFilter);
-    }
-
-    if (isExternalFiltering) {
-      setCurrentFilter(transformedFilter as object[]);
-    }
+    setCurrentFilter(transformedFilter as object[] | null | undefined);
   };
 
   const onContentReady = () => {
@@ -293,7 +285,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
                   onApplyFilter(null);
                 }}
                 onApply={filter => {
-                  onApplyFilter(filter, true);
+                  onApplyFilter(filter);
                 }}
                 filterToApply={currentFilterRef.current}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
