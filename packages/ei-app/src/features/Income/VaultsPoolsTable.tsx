@@ -385,9 +385,11 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataField="boost"
           caption="Boosts"
           alignment="left"
-          dataType="string"
+          dataType="number"
           allowHiding={true}
           visible={false}
+          allowHeaderFiltering={false}
+          format="#,##0.##"
         />
         <Column
           dataField="platformId"
