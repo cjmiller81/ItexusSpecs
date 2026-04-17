@@ -2032,7 +2032,8 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             },
           }}
           color="success"
-          onClick={() => {
+          onClick={(event) => {
+            (event.currentTarget as HTMLElement).blur();
             setFilterBuilderOpen(true);
           }}
           startIcon={<TuneIcon />}>

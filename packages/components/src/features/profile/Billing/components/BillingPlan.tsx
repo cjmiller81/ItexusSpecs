@@ -153,7 +153,10 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           {nickname !== "Enterprise" && (
             <>
               <Button
-                onClick={() => setConfirmSwitchOpen(true)}
+                onClick={(event) => {
+                  (event.currentTarget as HTMLElement).blur();
+                  setConfirmSwitchOpen(true);
+                }}
                 sx={{
                   height: "40px",
                   "&.Mui-disabled": {

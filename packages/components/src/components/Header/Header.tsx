@@ -78,7 +78,7 @@ useEffect(() => {
     if (msLeft <= 0) {
       setRemaining(0);
       setModes("seconds");
-      router.push("/login");
+      router.push("/ui/login");
       return;
     }
 
