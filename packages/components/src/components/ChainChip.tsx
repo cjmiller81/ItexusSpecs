@@ -1,5 +1,6 @@
 import React from "react";
 import { EnrichedTokenPosition, LifiChain } from "../utils/enrichTokenPositions";
+import { useTheme } from "@mui/material/styles";
 
 interface ChainChipProps {
   lifiChain: LifiChain | null;
@@ -7,9 +8,11 @@ interface ChainChipProps {
 }
 
 export const ChainChip: React.FC<ChainChipProps> = ({ lifiChain, networkName }) => {
+  const theme = useTheme();
+  const themeClass = theme.palette.mode === 'light' ? 'theme-light' : 'theme-dark';
   if (lifiChain) {
     return (
-      <div className="chain-chip">
+      <div className={`${themeClass} chain-chip`} style={{ border: `1px solid ${theme.palette.mode === 'light' ? "#e0e0e0" : "#4E4E57"}` }}>
         {lifiChain.logoURI && (
           <img
             src={lifiChain.logoURI}
@@ -26,43 +29,10 @@ export const ChainChip: React.FC<ChainChipProps> = ({ lifiChain, networkName }) 
     );
   }
   return (
-    <div className="chain-chip chain-chip--unsupported">
-      <span className="chain-chip__dot" />
+    <div className={`${themeClass} chain-chip chain-chip--unsupported`}>
+      <span className={`${themeClass} chain-chip__dot`} />
       <span>{networkName}</span>
     </div>
   );
 };
 
-// CSS-in-JS styles (for MUI's sx or styled-components, or use as global CSS)
-export const chainChipStyles = `
-.chain-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #363640;
-  border: 1px solid #4E4E57;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 12px;
-  color: #E0E0E0;
-  white-space: nowrap;
-}
-.chain-chip img {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-.chain-chip--unsupported {
-  opacity: 0.55;
-  border-color: #4E4E57;
-}
-.chain-chip__dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #6B6B7A;
-  flex-shrink: 0;
-}
-`;

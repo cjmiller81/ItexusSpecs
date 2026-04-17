@@ -20,6 +20,7 @@ interface NewSwapToCardProps {
   // New: always use the chain from Swap From
   selectedChain: string;
   lifiChains: any[];
+  displayChainName?: string;
 }
 
 export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
@@ -33,6 +34,7 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
   setInputSearchSwapFor,
   swapToTokenAddress: swapToTokenAddressProp,
   selectedChain,
+  displayChainName,
   lifiChains,
 }) => {
   const [swapToTokenAddress, setSwapToTokenAddress] = useState<string | null>(swapToTokenAddressProp ?? null);
@@ -114,15 +116,15 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
           {/* Chain badge for Swap To: always use the same chain as Swap From */}
           {symbolOptionSwap && selectedChain && (() => {
             const lifiChain = lifiChains.find(
-              (c) => c.name?.toUpperCase() === selectedChain.toUpperCase() || c.key?.toUpperCase() === selectedChain.toUpperCase()
+              (c) => c.name?.toUpperCase() === displayChainName?.toUpperCase() || c.key?.toUpperCase() === selectedChain.toUpperCase()
             );
             const colorMeta = lifiChain && CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] ? CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
             return (
               <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px', mb: 0.5 }}>
                 {lifiChain?.logoURI && (
-                  <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
+                  <Avatar src={lifiChain.logoURI} alt={displayChainName || selectedChain} sx={{ width: 18, height: 18, mr: 0.5 }} />
                 )}
-                {lifiChain?.name ?? selectedChain}
+                {displayChainName || selectedChain}
               </Box>
             );
           })()}

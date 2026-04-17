@@ -35,7 +35,6 @@ import { filterDustTokens } from "components";
 import { WalletsTable } from "./WalletsTable";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { isSupportedChain } from "@/utils/supportedChains";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 const pulseGlow = keyframes`
@@ -305,6 +304,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
             tokenName: token.symbol,
             name: token.name,
             chain: normalizeNetworkName(token.network),
+            chainId: token.chainId,
             balance: token.balance,
             tokenAddress: token.tokenAddress,
             decimals: token.decimals,
@@ -830,8 +830,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                       NoRowsOverlay: NoRowsOverlayComponent,
                     }}
                     getRowClassName={(params) => {
-                      const isSupportedChainRow = params.row.chain && 
-                        isSupportedChain(params.row.chain);
+                      const chainId = params.row.chainId;
+                      const isSupportedChainRow = chainId && lifiChainMap && lifiChainMap.has(chainId);
                       if (!isSupportedChainRow) {
                         return 'unsupported-chain-row';
                       }
@@ -843,8 +843,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     }}
                     componentsProps={{
                       row: (params) => {
-                        const isSupportedChainRow = params.row.chain && 
-                          isSupportedChain(params.row.chain);
+                        const chainId = params.row.chainId;
+                        const isSupportedChainRow = chainId && lifiChainMap && lifiChainMap.has(chainId);
                         return {
                           title: isSupportedChainRow ? t("ClickToLoadCurrentPosition") : `${params.row.chain} chain is not supported for selection`
                         };
@@ -891,6 +891,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     tokenName: token.sym,
                     name: token?.name || undefined,
                     chain: chain.name,
+                    chainId: chain.id,
                     balance: parseFloat(qty),
                     tokenAddress: token?.address?.[0],
                     logoUrl: token?.lURI || undefined,
