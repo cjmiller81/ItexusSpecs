@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { lifiChainMapToArray } from "../lifiChains";
-import { getLifiToken } from "../lifiApi";
 import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import EastIcon from '@mui/icons-material/East';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -12,7 +11,6 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { NewSwapFromCard } from "./NewSwapFromCard";
 import { NewSwapToCard } from "./NewSwapToCard";
 import { NewSwapRoutesPanel } from "./NewSwapRoutesPanel";
-import { iconsApi } from "@/services/iconsService";
 
 interface NewSwapTabProps {
   t: any;
@@ -25,6 +23,7 @@ interface NewSwapTabProps {
   newBalance: string;
   setNewBalance: (v: string) => void;
   selectedChain: string;
+  displayChainName?: string;
   selectedTokenRow: any;
   setSelectedTokenRow: (v: any) => void;
   balanceRaw: number | undefined;
@@ -62,6 +61,7 @@ export const NewSwapTab = ({
   newBalance,
   setNewBalance,
   selectedChain,
+  displayChainName,
   selectedTokenRow,
   setSelectedTokenRow,
   balanceRaw,
@@ -157,6 +157,7 @@ export const NewSwapTab = ({
               setInputSearchSwapFor={setInputSearchSwapFor}
               swapToTokenAddress={swapToTokenAddress}
               selectedChain={selectedChain}
+              displayChainName={displayChainName}
               lifiChains={lifiChains}
             />
           </Box>

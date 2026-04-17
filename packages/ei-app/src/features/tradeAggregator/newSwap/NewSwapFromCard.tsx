@@ -52,7 +52,7 @@ export const NewSwapFromCard: React.FC<NewSwapFromCardProps> = ({
     fromTokenDecimals: selectedTokenRow.decimals,
     fromChainLogoURI: selectedTokenRow.lifiChain?.logoURI ?? null,
     fromChainName: selectedTokenRow.lifiChain?.name ?? (selectedTokenRow.network?.name || selectedTokenRow.chain || ""),
-    fromChainKey: selectedTokenRow.lifiChain?.coin
+    fromChainKey: selectedTokenRow.lifiChain?.key
   } : null;
 
   return (

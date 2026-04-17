@@ -18,6 +18,7 @@ export interface TokenHolding {
   chain: string;
   logoUrl: string;
   decimals: number;
+  chainId?: number;
 }
 
 export interface DeFiPosition {

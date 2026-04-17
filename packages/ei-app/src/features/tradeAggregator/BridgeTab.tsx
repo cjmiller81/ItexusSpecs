@@ -25,6 +25,7 @@ interface BridgeTabProps {
   newBalance: string;
   setNewBalance: (v: string) => void;
   selectedChain: string;
+  displayChainName?: string;
   selectedTokenRow: any;
   setSelectedTokenRow: (v: any) => void;
   balanceRaw: number | undefined;
@@ -62,6 +63,7 @@ export const BridgeTab = ({
   newBalance,
   setNewBalance,
   selectedChain,
+  displayChainName,
   selectedTokenRow,
   setSelectedTokenRow,
   balanceRaw,
@@ -215,6 +217,7 @@ export const BridgeTab = ({
               lifiChainsLoading={lifiChainsLoading}
               lifiChainsError={lifiChainsError}
               bridgeToTokenAddress={bridgeToTokenAddress}
+              displayChainName={displayChainName}
               bridgeFromChainId={(() => {
                 // Try to get the chain id of the selected Bridge From chain
                 if (selectedTokenRow && selectedTokenRow.chain) {

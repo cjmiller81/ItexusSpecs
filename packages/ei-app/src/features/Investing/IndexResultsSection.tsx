@@ -139,10 +139,11 @@ export const IndexResultsSection = ({
       if (wallet) {
         const tokens = toTableTokensModelFromWallet(wallet);
         setFilteredWalletData(
-          tokens.map(({ tokenName, chainName, balance }) => ({
+          tokens.map(({ tokenName, chainName, balance, chainId }) => ({
             tokenName,
             chain: chainName,
             balance: balance,
+            chainId,
           }))
         );
       } else {

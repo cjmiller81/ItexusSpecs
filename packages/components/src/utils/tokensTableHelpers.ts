@@ -6,6 +6,7 @@ export interface WalletTokensTableModel extends Asset {
   price?: number
   usdAmount?: number
   chainName: string
+  chainId?: number
 }
 
 export const toTableTokensModelsFromPortfolio = (portfolioData: WalletPortfolioResponse[]): WalletTokensTableModel[] => {
@@ -19,6 +20,7 @@ export const toTableTokensModelsFromPortfolio = (portfolioData: WalletPortfolioR
         price: token.price,
         usdAmount: token.balanceUSD,
         chainName: token.chain,
+        chainId: token.chainId,
         logoUrl: token.logoUrl,
         decimals: token.decimals,
         name: token.tokenName
@@ -38,7 +40,8 @@ export const toTableTokensModelFromWallet = (wallet: WalletPortfolioResponse): W
       chainName: token.chain,
       logoUrl: token.logoUrl,
       decimals: token.decimals,
-      name: token.tokenName
+      name: token.tokenName,
+      chainId: token.chainId
     }))
 }
 

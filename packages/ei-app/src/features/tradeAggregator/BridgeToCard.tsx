@@ -23,6 +23,7 @@ interface BridgeToCardProps {
   lifiChainsError: boolean;
   bridgeToTokenAddress: string | null;
   bridgeFromChainId?: number | null; // new prop
+  displayChainName?: string;
 }
 
 export const BridgeToCard: React.FC<BridgeToCardProps> = ({
@@ -43,6 +44,7 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
   lifiChainsError,
   bridgeToTokenAddress,
   bridgeFromChainId,
+  displayChainName
 }) => {
 
   const filteredChains = lifiChains.filter(chain => {
