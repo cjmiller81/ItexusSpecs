@@ -1,4 +1,6 @@
 import React from "react";
+import { ChainChip } from "../../../components/ChainChip";
+import "../../../components/ChainChip.css";
 import { Box, Typography, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card } from "@mui/material";
 import { useAppSelector } from "../../../slices";
 import { useTranslation } from "react-i18next";
@@ -39,6 +41,7 @@ const WalletTokensOverview: React.FC<WalletTokensOverviewProps> = ({
     token: token.symbol,
     name: token.name,
     network: token.network,
+    lifiChain: token.lifiChain ?? null,
     logo: token.logoUrl,
     balance: token.balance,
     price: token.price,
@@ -115,21 +118,10 @@ const networkMap: Record<string, string> = {
                       </Box>
                     </TableCell>
                     <TableCell>
-                      <Box
-                        display="inline-block"
-                        px={1}
-                        py={0.5}
-                        border="1px solid"
-                        borderColor="rgba(148,163,184,0.3)"
-                        borderRadius={1}
-                        fontSize={12}
-                        sx={(theme) => ({
-                          color: theme.palette.mode === "dark" ? "rgba(203,213,225,1)" : "#000",
-                          bgcolor: "rgba(71,85,105,0.2)",
-                        })}
-                      >
-                        {networkMap[row.network] ?? row.network}
-                      </Box>
+                      <ChainChip
+                        lifiChain={row.lifiChain}
+                        networkName={typeof row.network === 'object' && row.network?.name ? row.network.name : String(row.network)}
+                      />
                     </TableCell>
                     <TableCell align="left">
                       <Typography fontSize={14}>

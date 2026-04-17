@@ -2,6 +2,8 @@ import { CurrentPositionSection } from "@/features/tradeAggregator/CurrentPositi
 import { NewPositionSection } from "@/features/tradeAggregator/NewPositionSection";
 import { Wallet } from "@/models/Wallet/Wallet";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import { enrichTokenPositions, EnrichedTokenPosition } from "../../../../../components/src/utils/enrichTokenPositions";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import { Box, Grid, Typography, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import React from "react";
@@ -80,12 +82,13 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function Dex() {
+  const { lifiChainMap, isLoading: lifiChainsLoading } = useLifiChainMap();
     const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
     const { t } = useTranslation("IndexModelingSection");
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
     const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
-    const [selectedTokenRow, setSelectedTokenRow] = useState<WalletBalance | null>(null);
+    const [selectedTokenRow, setSelectedTokenRow] = useState<EnrichedTokenPosition | null>(null);
     const { getTradeAggregatorQuoteLimit } = useSubscription();
 
     const steps: StepType[] = [
@@ -139,7 +142,12 @@ export default function Dex() {
     };
 
     const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
-      setSelectedTokenRow(tokenRow);
+      if (tokenRow && lifiChainMap) {
+        const [enriched] = enrichTokenPositions([tokenRow], lifiChainMap);
+        setSelectedTokenRow(enriched || null);
+      } else {
+        setSelectedTokenRow(null);
+      }
     };
 
     const handleWalletChange = (newWallet: Wallet | null) => {
@@ -292,7 +300,7 @@ export default function Dex() {
           <NewPositionSection
             selectedWallet={selectedWallet}
             onSelectedTokenChange={handleSelectedTokenChange}
-            filteredRows={filteredRows}
+            filteredRows={lifiChainMap ? enrichTokenPositions(filteredRows, lifiChainMap) : []}
             selectedTokenRow={selectedTokenRow}
           />
         </Grid>

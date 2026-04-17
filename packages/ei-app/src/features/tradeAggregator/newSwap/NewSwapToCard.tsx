@@ -117,13 +117,12 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
               (c) => c.name?.toUpperCase() === selectedChain.toUpperCase() || c.key?.toUpperCase() === selectedChain.toUpperCase()
             );
             const colorMeta = lifiChain && CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] ? CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
-            // You may want to use CHAIN_COLORS here for color, as in Swap From
             return (
               <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px', mb: 0.5 }}>
                 {lifiChain?.logoURI && (
                   <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
                 )}
-                {selectedChain}
+                {lifiChain?.name ?? selectedChain}
               </Box>
             );
           })()}

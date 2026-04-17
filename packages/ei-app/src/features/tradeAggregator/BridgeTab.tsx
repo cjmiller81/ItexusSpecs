@@ -48,6 +48,7 @@ interface BridgeTabProps {
   errorMessage?: string | null;
   chains?: any[];
   bridgeFromTokenDecimals: number | null;
+  isUnsupported: boolean | null;
 }
 
 export const BridgeTab = ({
@@ -83,6 +84,7 @@ export const BridgeTab = ({
   quoteData = [],
   errorMessage = null,
   chains = [],
+  isUnsupported = false,
 }: BridgeTabProps) => {
     useEffect(() => {
       if (!symbolOptionSwapFor && typeof onClearBridgeToTokenAddress === 'function') {
@@ -99,47 +101,18 @@ export const BridgeTab = ({
   const [bridgeToTokenAddress, setBridgeToTokenAddress] = useState<string | null>(null);
   const theme = useTheme();
 
+  // Use enriched token fields directly for Bridge From
   useEffect(() => {
-    const fetchLifiTokenInfo = async () => {
-      // Only for Bridge tab, with selected position
-      if (!selectedTokenRow) {
-        setBridgeFromTokenAddress(null);
-        setBridgeFromTokenDecimals(null);
-        setBridgeFromTokenPriceUSD(null);
-        return;
-      }
-      // Find chainId for LiFi (from lifiChains)
-      const chainName = selectedTokenRow.chain?.toUpperCase();
-      const lifiChain = lifiChains.find(
-        (c: LifiChain) => c.name.toUpperCase() === chainName
-      );
-      if (!lifiChain) {
-        setBridgeFromTokenAddress(null);
-        setBridgeFromTokenDecimals(null);
-        setBridgeFromTokenPriceUSD(null);
-        return;
-      }
-      const chainId = lifiChain.id;
-      const tokenAddress = selectedTokenRow.tokenAddress;
-      if (!tokenAddress) {
-        setBridgeFromTokenAddress(null);
-        setBridgeFromTokenDecimals(null);
-        setBridgeFromTokenPriceUSD(null);
-        return;
-      }
-      try {
-        const token = await getLifiToken(chainId, tokenAddress);
-        setBridgeFromTokenAddress(token.address);
-        setBridgeFromTokenDecimals(token.decimals);
-        setBridgeFromTokenPriceUSD(token.priceUSD || null);
-      } catch (e) {
-        setBridgeFromTokenAddress(null);
-        setBridgeFromTokenDecimals(null);
-        setBridgeFromTokenPriceUSD(null);
-      }
-    };
-    fetchLifiTokenInfo();
-  }, [selectedTokenRow, lifiChains]);
+    if (!selectedTokenRow) {
+      setBridgeFromTokenAddress(null);
+      setBridgeFromTokenDecimals(null);
+      setBridgeFromTokenPriceUSD(null);
+      return;
+    }
+    setBridgeFromTokenAddress(selectedTokenRow.tokenAddress ?? null);
+    setBridgeFromTokenDecimals(typeof selectedTokenRow.decimals === 'number' ? selectedTokenRow.decimals : null);
+    setBridgeFromTokenPriceUSD(selectedTokenRow.priceUSD ?? null);
+  }, [selectedTokenRow]);
 
   useEffect(() => {
     if (!symbolOptionSwapFor || !selectedBridgeToChainId) {
@@ -211,13 +184,11 @@ export const BridgeTab = ({
               handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
               inputSearchSwap={inputSearchSwap}
               setInputSearchSwap={setInputSearchSwap}
-              bridgeFromTokenAddress={bridgeFromTokenAddress}
               formatNumberWithCommas={formatNumberWithCommas}
               newBalance={newBalance}
               setNewBalance={setNewBalance}
-              selectedChain={selectedChain}
               selectedTokenRow={selectedTokenRow}
-              lifiChains={lifiChains}
+              setSelectedTokenRow={setSelectedTokenRow}
               balanceRaw={balanceRaw}
               setShowNoQuotesMessage={setShowNoQuotesMessage}
               onOptionChangeSwap={onOptionChangeSwap}
@@ -279,7 +250,7 @@ export const BridgeTab = ({
               id="get_quotes_btn"
               variant="contained"
               onClick={handleFetchQuotes}
-              disabled={!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+              disabled={isUnsupported || !selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
               sx={{
                 backgroundColor: "#219a83",
                 color: "#fff",

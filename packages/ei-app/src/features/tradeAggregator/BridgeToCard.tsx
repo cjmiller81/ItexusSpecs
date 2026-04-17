@@ -129,7 +129,7 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                 {chain.logoURI && (
                   <Avatar src={chain.logoURI} alt={chain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
                 )}
-                {chain.name.toUpperCase()}
+                {chain.name}
               </Box>
             );
           })()}
