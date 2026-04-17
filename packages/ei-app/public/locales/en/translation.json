@@ -648,7 +648,6 @@
     "TourQuickSortText": "Quickly sort and filter the table in the first two rows",
     "TourCurrentFilterText": "Your current filter appears\nhere. Click the text to edit it.",
     "TourPrebuiltFiltersText": "Your pre-built filters appear\nhere",
-    "TourPrebuiltFiltersStep8Text": "Select a pre-build strategy filter here to update the Model Results below.",
     "TourCustomFiltersTitle": "Custom Filters",
     "TourCustomFiltersText": "View the filter-builder videos and build your own",
     "TourExportText": "Export table to a spreadsheet\n(subscription only)",
