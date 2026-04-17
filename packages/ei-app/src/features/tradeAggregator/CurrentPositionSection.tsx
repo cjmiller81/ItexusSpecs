@@ -889,9 +889,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   }
                   const newRow = {
                     tokenName: token.sym,
+                    name: token?.name || undefined,
                     chain: chain.name,
                     balance: parseFloat(qty),
                     tokenAddress: token?.address?.[0],
+                    logoUrl: token?.lURI || undefined,
                   };
                   setManualPositions(prev => [newRow, ...prev]);
                   setAddPositionError("");
