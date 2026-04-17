@@ -1,8 +1,18 @@
-import { ErrorBrowserLocationChangeRequired, GenericError, SelfServiceFlowExpiredError } from "@ory/client"
+import {
+  ErrorBrowserLocationChangeRequired,
+  GenericError,
+  SelfServiceFlowExpiredError,
+} from "@ory/client"
 import { AxiosError } from "axios"
 import Router from "next/router"
 import React, { useEffect, useState } from "react"
 import { ory } from "../lib/sdk"
+import { authLogger } from "../../../utils/authLogger"
+
+type OryErrorResponseData = Partial<ErrorBrowserLocationChangeRequired> &
+  Partial<SelfServiceFlowExpiredError> & {
+    error?: GenericError
+  }
 
 export const HandleError = (
   getFlow: ((flowId: string) => Promise<void | AxiosError>) | undefined = undefined,
@@ -14,52 +24,71 @@ export const HandleError = (
     const inDevEnvironment = !!process && process.env.NODE_ENV === "development"
 
     if (!error.response || error.response?.status === 0) {
-      let errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
-      window.location.href = `/ui/error?error=${encodeURIComponent(inDevEnvironment ? JSON.stringify(error) : errorMsg)}`
+      const errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
+      window.location.href = `/ui/error?error=${encodeURIComponent(
+        inDevEnvironment ? JSON.stringify(error) : errorMsg,
+      )}`
       return Promise.resolve()
     }
 
-    const responseData = (error.response?.data as ErrorBrowserLocationChangeRequired) || {}
-    const responseError = responseData?.error as GenericError
+    const responseData = (error.response?.data as OryErrorResponseData) || {}
+    const responseError = responseData?.error as GenericError | undefined
 
     switch (error.response?.status) {
       case 400: {
-        if (responseError?.id == "session_already_available") {
+        if (responseError?.id === "session_already_available") {
           await Router.push("/")
           return Promise.resolve()
         }
 
-        // the request could contain invalid parameters which would set error messages in the flow
-        if (setFlow !== undefined) {
-          console.warn("sdkError 400: update flow data")
+        // For `update*Flow` endpoints, a 400 body is the updated flow with
+        // validation messages — we feed it into local state to re-render the
+        // form with errors. For `createBrowser*Flow` (and other non-flow
+        // endpoints), a 400 body is a bare `{ error: GenericError }` with no
+        // `ui` — pushing that into flow state would crash renderers that
+        // read `flow.ui.nodes`. Guard by checking for a `ui` field.
+        const looksLikeFlow =
+          responseData !== null &&
+          typeof responseData === "object" &&
+          "ui" in (responseData as Record<string, unknown>) &&
+          (responseData as { ui?: { nodes?: unknown } }).ui?.nodes !== undefined
+
+        if (setFlow !== undefined && looksLikeFlow) {
+          authLogger.debug("sdkError 400: update flow data")
           setFlow(responseData)
           return Promise.resolve()
         }
         break
       }
-      // we have no session or the session is invalid
+      // We have no session or the session is invalid.
       case 401: {
-        console.warn("handleError hook 401: Navigate to /ui/login")
+        authLogger.debug("sdkError 401: navigating to /ui/login")
         await Router.push("/ui/login")
         return Promise.resolve()
       }
       case 403: {
-        // the user might have a session, but would require 2FA (Two-Factor Authentication)
+        // The user might have a session but would require 2FA step-up.
         if (responseError?.id === "session_aal2_required") {
           await Router.push("/ui/login?aal2=true")
           Router.reload()
           return Promise.resolve()
         }
 
-        if (responseError?.id === "session_refresh_required" && responseData.redirect_browser_to) {
-          console.warn("sdkError 403: Redirect browser to", responseData.redirect_browser_to)
+        if (
+          responseError?.id === "session_refresh_required" &&
+          responseData.redirect_browser_to
+        ) {
+          authLogger.debug(
+            "sdkError 403: redirect_browser_to",
+            responseData.redirect_browser_to,
+          )
           window.location.href = responseData.redirect_browser_to
           return Promise.resolve()
         }
         break
       }
       case 404: {
-        console.warn("sdkError 404: Navigate to Error")
+        authLogger.debug("sdkError 404: navigating to /ui/error")
         const errorMsg = {
           data: error.response?.data || error,
           status: error.response?.status,
@@ -67,92 +96,88 @@ export const HandleError = (
           url: window.location.href,
         }
 
-        await Router.push(`/ui/error?error=${encodeURIComponent(JSON.stringify(errorMsg))}`)
+        await Router.push(
+          `/ui/error?error=${encodeURIComponent(JSON.stringify(errorMsg))}`,
+        )
         return Promise.resolve()
       }
-      // error.id handling
-      //    "self_service_flow_expired"
+      // error.id handling: "self_service_flow_expired"
       case 410: {
-        if (getFlow !== undefined && (responseData as SelfServiceFlowExpiredError).use_flow_id !== undefined) {
-          console.warn("sdkError 410: Update flow");
-          return getFlow((responseData as SelfServiceFlowExpiredError).use_flow_id || "").catch(flowError => {
-            // Something went seriously wrong - log and redirect to defaultNav if possible
-            console.error(flowError);
+        const expired = responseData as SelfServiceFlowExpiredError
+        if (getFlow !== undefined && expired.use_flow_id !== undefined) {
+          authLogger.debug("sdkError 410: refreshing flow")
+          return getFlow(expired.use_flow_id || "").catch(flowError => {
+            authLogger.error("sdkError 410: flow refresh failed", flowError)
 
             if (defaultNav !== undefined) {
-              console.log('here')
-              void Router.push(defaultNav);
+              void Router.push(defaultNav)
             } else {
-              // Rethrow error when can't navigate and let caller handle
-              throw flowError;
+              // Rethrow when we can't navigate and let the caller handle.
+              throw flowError
             }
-          });
+          })
         } else if (defaultNav !== undefined) {
-          console.warn("sdkError 410: Navigate to", defaultNav);
-          await Router.push(defaultNav);
-          return Promise.resolve();
+          authLogger.debug("sdkError 410: navigating to", defaultNav)
+          await Router.push(defaultNav)
+          return Promise.resolve()
         }
-        break;
+        break
       }
-      // we need to parse the response and follow the `redirect_browser_to` URL
-      // this could be when the user needs to perform a 2FA challenge
-      // or passwordless login
+      // We need to parse the response and follow `redirect_browser_to`. This
+      // can happen when the user needs to perform 2FA or passwordless login.
       case 422: {
         if (responseData.redirect_browser_to !== undefined) {
-          const currentUrl = new URL(window.location.href);
-          const redirect = new URL(responseData.redirect_browser_to);
+          const currentUrl = new URL(window.location.href)
+          const redirect = new URL(responseData.redirect_browser_to)
 
-          // host name has changed, then change location
           if (currentUrl.host !== redirect.host) {
-            console.warn("sdkError 422: Host changed redirect");
-            window.location.href = responseData.redirect_browser_to;
-            return Promise.resolve();
+            authLogger.debug("sdkError 422: host changed, redirecting")
+            window.location.href = responseData.redirect_browser_to
+            return Promise.resolve()
           }
 
-          // Path has changed
-          // TODO: @see: https://github.com/ory/elements/pull/169/files
-          // TODO: @see: https://github.com/ory/elements/pull/180/files
           if (currentUrl.pathname !== redirect.pathname) {
-            console.warn("sdkError 422: Update path");
-            await Router.push(redirect.pathname + redirect.search);
-            return Promise.resolve();
+            authLogger.debug("sdkError 422: updating path")
+            await Router.push(redirect.pathname + redirect.search)
+            return Promise.resolve()
           }
 
-          // for webauthn we need to reload the flow
-          const flowId = redirect.searchParams.get("flow");
+          // For webauthn we need to reload the flow.
+          const flowId = redirect.searchParams.get("flow")
 
           if (flowId != null && getFlow !== undefined) {
-            // get new flow data based on the flow id in the redirect url
-            console.warn("sdkError 422: Update flow");
+            authLogger.debug("sdkError 422: refreshing flow")
             return getFlow(flowId).catch(flowError => {
-              // Something went seriously wrong - log and redirect to defaultNav if possible
-              console.error(flowError);
+              authLogger.error("sdkError 422: flow refresh failed", flowError)
 
               if (defaultNav !== undefined) {
-                void Router.push(defaultNav);
+                void Router.push(defaultNav)
               } else {
-                // Rethrow error when can't navigate and let caller handle
-                throw flowError;
+                throw flowError
               }
             })
           } else {
-            console.warn("sdkError 422: Redirect browser to");
-            window.location.href = responseData.redirect_browser_to;
-            return Promise.resolve();
+            authLogger.debug("sdkError 422: redirect_browser_to")
+            window.location.href = responseData.redirect_browser_to
+            return Promise.resolve()
           }
         }
       }
     }
 
     if (fatalToError) {
-      console.warn("sdkError: fatal error redirect to /ui/error")
-      const errorData: any = error.response?.data
-      let errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
+      authLogger.error("sdkError: fatal error, redirecting to /ui/error")
+      const errorData = (error.response?.data as OryErrorResponseData) || {}
+      const errorMsg = `${error.message ?? ""} ${error.cause ?? ""}`
 
       await Router.push({
         pathname: "/ui/error",
         query: {
-          error: JSON.stringify(inDevEnvironment ? JSON.stringify(error) : errorMsg, null, 2),
+          error: JSON.stringify(
+            inDevEnvironment ? JSON.stringify(error) : errorMsg,
+            null,
+            2,
+          ),
           id: errorData.error?.id,
           flowType: Router.pathname,
         },
@@ -164,19 +189,28 @@ export const HandleError = (
   }
 }
 
-// Returns a function which will log the user out
+/**
+ * Returns a function which will log the user out.
+ *
+ * The logout flow is created once per mount; calling the returned function
+ * submits the logout token. Errors during both stages are routed through the
+ * shared error handler rather than being silently swallowed.
+ */
 export function LogoutLink(): () => void {
   const [logoutToken, setLogoutToken] = useState<string>("")
   const handleError = HandleError()
 
   useEffect(() => {
+    // Run once on mount — without an empty deps array this would re-run on
+    // every render and create a new logout flow each time.
     ory
       .createBrowserLogoutFlow()
       .then(({ data }) => {
         setLogoutToken(data.logout_token)
       })
       .catch((err: AxiosError) => handleError(err))
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return () => {
     if (logoutToken) {
@@ -184,7 +218,7 @@ export function LogoutLink(): () => void {
         .updateLogoutFlow({ token: logoutToken })
         .then(() => Router.push("/"))
         .catch(error => {
-          console.error("Logout error:", error.message)
+          authLogger.error("Logout submission failed", error)
           void Router.push("/")
         })
     }

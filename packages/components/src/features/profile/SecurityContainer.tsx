@@ -39,7 +39,7 @@ const TotpAuthenticatorSchema = object({
 type TotpAuthenticatorModel = InferType<typeof TotpAuthenticatorSchema>
 
 export const SecurityContainer = ({ ...props }: BoxProps) => {
-  const { onChangePassword, settingsFlow, onTotpUnlink, createSettingsFow, onTotpSubmit } = useOry()
+  const { onChangePassword, settingsFlow, onTotpUnlink, createSettingsFlow, onTotpSubmit } = useOry()
   const { t } = useTranslation("SecurityContainer")
   const dispatch = useAppDispatch()
   const [showPassword, setShowPassword] = useState(false)
@@ -60,9 +60,13 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
 
   useEffect(() => {
     setSettingsFlowCreating(true)
-    createSettingsFow()
-      .then()
+    createSettingsFlow()
+      .catch(() => {
+        // createSettingsFlow already logs via authLogger; swallow here so
+        // the mount effect doesn't blow up the component tree.
+      })
       .finally(() => setSettingsFlowCreating(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

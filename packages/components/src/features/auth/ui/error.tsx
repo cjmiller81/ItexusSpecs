@@ -7,7 +7,11 @@ import { HandleError } from "../utils/hooks"
 import { StyledAuthContainer } from "./StyledAuthContainer"
 import ProtectedByOryLabel from "./protectedByOryLabel"
 import { Box, Button, Typography, Collapse, Stack } from "@mui/material"
-import { Session } from "@ory/client"
+import { GenericError, Session } from "@ory/client"
+
+interface OryFlowErrorData {
+  error?: GenericError
+}
 import { styled } from "@mui/material/styles"
 
 const ErrorCard = styled(Box)(({ theme }) => ({
@@ -80,12 +84,12 @@ export const ErrorUi = ({ env }: ErrorUiProps): React.JSX.Element => {
         .getFlowError({ id: String(id) })
         .then(({ data }) => {
           setError(JSON.stringify(data, null, 2))
-          setErrorMessage((data as any)?.error?.message || null)
+          setErrorMessage((data as OryFlowErrorData)?.error?.message || null)
         })
         .catch(err => {
           setError(JSON.stringify(err, null, 2))
           setErrorMessage(null)
-      })
+        })
     }
   }, [err, id, router.isReady, handleError])
 

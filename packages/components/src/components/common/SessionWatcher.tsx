@@ -11,13 +11,21 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useOry } from "../../features";
 import { useTranslation } from "react-i18next";
+import { authLogger } from "../../utils/authLogger";
 
 interface SessionWatcherProps {
-  logOut?: () => void;
+  /**
+   * Optional override for the logout callback. When omitted (the common
+   * case) SessionWatcher pulls `logOut` from the Ory context so auto-logout
+   * on session expiry always fires even when the host app doesn't thread
+   * the prop through.
+   */
+  logOut?: () => void | Promise<void>;
 }
 
 export const SessionWatcher = ({ logOut }: SessionWatcherProps) => {
-  const { session } = useOry();
+  const { session, logOut: oryLogOut } = useOry();
+  const effectiveLogOut = logOut ?? oryLogOut;
   const [remainingMinutes, setRemainingMinutes] = useState<number | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -41,14 +49,23 @@ export const SessionWatcher = ({ logOut }: SessionWatcherProps) => {
 
     if (minutesLeft <= 0) {
       setShowWarning(false);
-      if (logOut) logOut();
+      try {
+        const result = effectiveLogOut();
+        if (result && typeof (result as Promise<void>).catch === "function") {
+          (result as Promise<void>).catch(err => {
+            authLogger.error("SessionWatcher: auto logOut failed", err);
+          });
+        }
+      } catch (err) {
+        authLogger.error("SessionWatcher: auto logOut threw", err);
+      }
     }
   };
 
   updateCountdown();
   const intervalId = setInterval(updateCountdown, 1000);
   return () => clearInterval(intervalId);
-}, [session, logOut, dismissed]);
+}, [session, effectiveLogOut, dismissed]);
 
 const handleClose = () => {
   setShowWarning(false);

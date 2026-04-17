@@ -12,9 +12,15 @@ interface CustomRecoveryFormProps {
   flow: RecoveryFlow
   onSubmit: (values: UpdateRecoveryFlowBody) => void
   onResend?: (email: string) => void
+  /**
+   * Optional subtitle shown under the "Recover your account" heading.
+   * Falls back to an empty string so we don't render a placeholder like
+   * "__________".
+   */
+  subtitle?: string
 }
 
-export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit, onResend }) => {
+export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit, onResend, subtitle = "" }) => {
   const router = useRouter()
   const [values, setValues] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
@@ -218,21 +224,25 @@ export const CustomRecoveryForm: FC<CustomRecoveryFormProps> = ({ flow, onSubmit
           </h1>
         </Box>
 
-        <Box
-          sx={{
-            textAlign: 'center',
-            marginBottom: '2rem',
-          }}
-        >
-          <p style={{ 
-            color: '#ffffff', 
-            margin: 0,
-            fontWeight: 900,
-            fontSize: '0.875rem',
-          }}>
-            __________
-          </p>
-        </Box>
+        {subtitle ? (
+          <Box
+            sx={{
+              textAlign: 'center',
+              marginBottom: '2rem',
+            }}
+          >
+            <p style={{ 
+              color: '#ffffff', 
+              margin: 0,
+              fontWeight: 900,
+              fontSize: '0.875rem',
+            }}>
+              {subtitle}
+            </p>
+          </Box>
+        ) : (
+          <Box sx={{ marginBottom: '1.5rem' }} />
+        )}
 
         {flow.ui.messages && flow.ui.messages.length > 0 && (
           <Box sx={{ marginBottom: '1.5rem' }}>

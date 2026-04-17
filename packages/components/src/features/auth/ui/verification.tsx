@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { ory } from "../lib/sdk"
 import { ActionCard, CenterLink, MarginCard } from "../styled"
 import { Flow } from "./Flow"
+import { authLogger } from "../../../utils/authLogger"
 
 const Verification: NextPage = () => {
   const [flow, setFlow] = useState<VerificationFlow>()
@@ -22,82 +23,79 @@ const Verification: NextPage = () => {
       return
     }
 
-    // If ?flow=.. was in the URL, we fetch it
+    // If ?flow=.. was in the URL, we fetch it.
     if (flowId) {
       ory
         .getVerificationFlow({ id: String(flowId) })
-        .then(({ data }) => {
-          setFlow(data)
-        })
+        .then(({ data }) => setFlow(data))
         .catch((err: AxiosError) => {
           switch (err.response?.status) {
             case 410:
-            // Status code 410 means the request has expired - so let's load a fresh flow!
+            // 410 — flow expired. Load a fresh one.
             case 403:
-              // Status code 403 implies some other issue (e.g. CSRF) - let's reload!
-              return router.push("/verification")
+              // 403 — typically a CSRF issue. Reload.
+              router.push("/ui/verification")
+              return
           }
-
-          throw err
+          authLogger.error("getVerificationFlow failed", err)
         })
       return
     }
 
-    // Otherwise we initialize it
+    // Otherwise initialize a new flow.
     ory
       .createBrowserVerificationFlow({
         returnTo: returnTo ? String(returnTo) : undefined,
       })
-      .then(({ data }) => {
-        setFlow(data)
-      })
+      .then(({ data }) => setFlow(data))
       .catch((err: AxiosError) => {
-        switch (err.response?.status) {
-          case 400:
-            // Status code 400 implies the user is already signed in
-            return router.push("/")
+        if (err.response?.status === 400) {
+          // Already signed in — send them home.
+          router.push("/")
+          return
         }
-
-        throw err
+        authLogger.error("createBrowserVerificationFlow failed", err)
       })
   }, [flowId, router, router.isReady, returnTo, flow])
 
   const onSubmit = async (values: UpdateVerificationFlowBody) => {
-    await router
-      // On submission, add the flow ID to the URL but do not navigate. This prevents the user loosing
-      // their data when they reload the page.
-      .push(`/verification?flow=${flow?.id}`, undefined, { shallow: true })
+    try {
+      // Add the flow ID to the URL (shallow) so reloading doesn't lose data.
+      await router.push(`/ui/verification?flow=${flow?.id}`, undefined, {
+        shallow: true,
+      })
 
-    ory
-      .updateVerificationFlow({
+      const { data } = await ory.updateVerificationFlow({
         flow: String(flow?.id),
         updateVerificationFlowBody: values,
       })
-      .then(({ data }) => {
-        // Form submission was successful, show the message to the user!
-        setFlow(data)
-      })
-      .catch((err: AxiosError<any, any>) => {
-        switch (err.response?.status) {
-          case 400:
-            // Status code 400 implies the form validation had an error
-            setFlow(err.response?.data)
-            break
-          case 410:
-            const newFlowID = err.response.data.use_flow_id
-            router
-              // On submission, add the flow ID to the URL but do not navigate. This prevents the user loosing
-              // their data when they reload the page.
-              .push(`/verification?flow=${newFlowID}`, undefined, {
-                shallow: true,
-              })
+      setFlow(data)
+    } catch (err) {
+      const axiosErr = err as AxiosError<VerificationFlow & { use_flow_id?: string }>
+      const status = axiosErr.response?.status
 
-            ory.getVerificationFlow({ id: newFlowID }).then(({ data }) => setFlow(data))
-            break
+      if (status === 400 && axiosErr.response?.data) {
+        // Form validation error — Ory returns the updated flow in the body.
+        setFlow(axiosErr.response.data)
+        return
+      }
+
+      if (status === 410 && axiosErr.response?.data?.use_flow_id) {
+        const newFlowID = axiosErr.response.data.use_flow_id
+        await router.push(`/ui/verification?flow=${newFlowID}`, undefined, {
+          shallow: true,
+        })
+        try {
+          const { data } = await ory.getVerificationFlow({ id: newFlowID })
+          setFlow(data)
+        } catch (refreshErr) {
+          authLogger.error("getVerificationFlow (refresh) failed", refreshErr)
         }
+        return
+      }
 
-        throw err
-      })
+      authLogger.error("updateVerificationFlow failed", err)
+    }
   }
 
   return (
