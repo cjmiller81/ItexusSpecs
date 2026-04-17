@@ -10,7 +10,7 @@ export interface LifiChain {
   mainnet: boolean;
 }
 
-type LifiChainMap = Map<number, LifiChain>;
+export type LifiChainMap = Map<number, LifiChain>;
 
 interface LifiChainContextValue {
   lifiChainMap: LifiChainMap | null;

@@ -18,10 +18,10 @@ export const toTableTokensModelsFromPortfolio = (portfolioData: WalletPortfolioR
         balance: token.balance,
         price: token.price,
         usdAmount: token.balanceUSD,
-        chainName: token.network,
+        chainName: token.chain,
         logoUrl: token.logoUrl,
         decimals: token.decimals,
-        name: token.name
+        name: token.tokenName
       }))
   )
 }
@@ -35,10 +35,10 @@ export const toTableTokensModelFromWallet = (wallet: WalletPortfolioResponse): W
       balance: token.balance,
       price: token.price,
       usdAmount: token.balanceUSD,
-      chainName: token.network,
+      chainName: token.chain,
       logoUrl: token.logoUrl,
       decimals: token.decimals,
-      name: token.name
+      name: token.tokenName
     }))
 }
 

@@ -48,6 +48,7 @@ interface NewSwapTabProps {
   errorMessage?: string | null;
   chains?: any[];
   bridgeFromTokenDecimals: number | null;
+  isUnsupported: boolean | null;
 }
 
 export const NewSwapTab = ({
@@ -83,6 +84,7 @@ export const NewSwapTab = ({
   quoteData = [],
   errorMessage = null,
   chains = [],
+  isUnsupported = false,
 }: NewSwapTabProps) => {
   const { lifiChainMap, isLoading: lifiChainsLoading, error: lifiChainsError } = useLifiChainMap();
   const lifiChains = lifiChainMapToArray(lifiChainMap);
@@ -93,42 +95,16 @@ export const NewSwapTab = ({
   const theme = useTheme();
 
   useEffect(() => {
-    const fetchLifiTokenInfo = async () => {
-      if (!selectedTokenRow) {
-        setSwapFromTokenAddress(null);
-        setSwapFromTokenDecimals(null);
-        setSwapFromTokenPriceUSD(null);
-        return;
-      }
-      const chainName = selectedTokenRow.chain?.toUpperCase();
-      const lifiChain = lifiChains.find((c) => c.name.toUpperCase() === chainName);
-      if (!lifiChain) {
-        setSwapFromTokenAddress(null);
-        setSwapFromTokenDecimals(null);
-        setSwapFromTokenPriceUSD(null);
-        return;
-      }
-      const chainId = lifiChain.id;
-      const tokenAddress = selectedTokenRow.tokenAddress;
-      if (!tokenAddress) {
-        setSwapFromTokenAddress(null);
-        setSwapFromTokenDecimals(null);
-        setSwapFromTokenPriceUSD(null);
-        return;
-      }
-      try {
-        const token = await getLifiToken(chainId, tokenAddress);
-        setSwapFromTokenAddress(token.address);
-        setSwapFromTokenDecimals(token.decimals);
-        setSwapFromTokenPriceUSD(token.priceUSD || null);
-      } catch (e) {
-        setSwapFromTokenAddress(null);
-        setSwapFromTokenDecimals(null);
-        setSwapFromTokenPriceUSD(null);
-      }
-    };
-    fetchLifiTokenInfo();
-  }, [selectedTokenRow, lifiChains]);
+    if (!selectedTokenRow) {
+      setSwapFromTokenAddress(null);
+      setSwapFromTokenDecimals(null);
+      setSwapFromTokenPriceUSD(null);
+      return;
+    }
+    setSwapFromTokenAddress(selectedTokenRow.tokenAddress ?? null);
+    setSwapFromTokenDecimals(typeof selectedTokenRow.decimals === 'number' ? selectedTokenRow.decimals : null);
+    setSwapFromTokenPriceUSD(selectedTokenRow.priceUSD ?? null);
+  }, [selectedTokenRow]);
 
   // Handler to clear all swap trade fields
   const handleClearNewSwapTrade = () => {
@@ -155,14 +131,12 @@ export const NewSwapTab = ({
               handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
               inputSearchSwap={inputSearchSwap}
               setInputSearchSwap={setInputSearchSwap}
-              swapFromTokenAddress={swapFromTokenAddress}
               setSwapFromTokenAddress={setSwapFromTokenAddress}
               formatNumberWithCommas={formatNumberWithCommas}
               newBalance={newBalance}
               setNewBalance={setNewBalance}
-              selectedChain={selectedChain}
               selectedTokenRow={selectedTokenRow}
-              lifiChains={lifiChains}
+              setSelectedTokenRow={setSelectedTokenRow}
               balanceRaw={balanceRaw}
               setShowNoQuotesMessage={setShowNoQuotesMessage}
               onOptionChangeSwap={onOptionChangeSwap}
@@ -210,7 +184,7 @@ export const NewSwapTab = ({
               id="newswap_get_quotes_btn"
               variant="contained"
               onClick={handleFetchQuotes}
-              disabled={!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+              disabled={isUnsupported ||!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
               sx={{
                 backgroundColor: "#219a83",
                 color: "#fff",

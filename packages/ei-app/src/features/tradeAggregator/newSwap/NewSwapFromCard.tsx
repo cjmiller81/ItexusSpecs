@@ -11,18 +11,15 @@ interface NewSwapFromCardProps {
   handleCurrentPositionDropdownChange: (event: any, value: any) => void;
   inputSearchSwap: string;
   setInputSearchSwap: (val: string) => void;
-  swapFromTokenAddress: string | null;
   setSwapFromTokenAddress: (val: string | null) => void;
   formatNumberWithCommas: (val: string) => string;
   newBalance: string;
   setNewBalance: (val: string) => void;
-  selectedChain: string;
   selectedTokenRow: any;
   setSelectedTokenRow?: (row: any) => void;
   balanceRaw: number | undefined;
   setShowNoQuotesMessage: (value: React.SetStateAction<boolean>) => void;
   onOptionChangeSwap: (value: any) => void;
-  lifiChains?: any[];
 }
 export const NewSwapFromCard: React.FC<NewSwapFromCardProps> = ({
   symbolOptionSwap,
@@ -30,23 +27,34 @@ export const NewSwapFromCard: React.FC<NewSwapFromCardProps> = ({
   handleCurrentPositionDropdownChange,
   inputSearchSwap,
   setInputSearchSwap,
-  swapFromTokenAddress,
   setSwapFromTokenAddress,
   formatNumberWithCommas,
   newBalance,
   setNewBalance,
-  selectedChain,
   selectedTokenRow,
   setSelectedTokenRow,
   balanceRaw,
   setShowNoQuotesMessage,
-  onOptionChangeSwap,
-  lifiChains = []
+  onOptionChangeSwap
 }) => {
   const theme = useTheme();
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
     : "0.0000";
+
+  // --- NEW: Bridge From State (enriched token) ---
+  const bridgeFromState = selectedTokenRow && typeof selectedTokenRow === 'object' ? {
+    fromChainId: selectedTokenRow.chainId,
+    fromTokenAddress: selectedTokenRow.tokenAddress,
+    fromAmount: selectedTokenRow.balanceRaw ?? selectedTokenRow.balanceRawString ?? selectedTokenRow.balanceRaw,
+    fromTokenSymbol: selectedTokenRow.tokenName,
+    fromTokenUrl: selectedTokenRow.logoUrl,
+    fromTokenDecimals: selectedTokenRow.decimals,
+    fromChainLogoURI: selectedTokenRow.lifiChain?.logoURI ?? null,
+    fromChainName: selectedTokenRow.lifiChain?.name ?? (selectedTokenRow.network?.name || selectedTokenRow.chain || ""),
+    fromChainKey: selectedTokenRow.lifiChain?.coin
+  } : null;
+
   return (
     <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2, mb: 2 }}>
       <Box display="flex" justifyContent="space-between" alignItems="flex-end" mb={1.5}>
@@ -76,20 +84,16 @@ export const NewSwapFromCard: React.FC<NewSwapFromCardProps> = ({
           <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>Swap From</Typography>
         </Box>
         {/* Chain badge above Current Position, right aligned (Bridge style) */}
-        {symbolOptionSwap && selectedChain && (() => {
-          const lifiChain = lifiChains.find(
-            (c) => c.name?.toUpperCase() === selectedChain.toUpperCase() || c.key?.toUpperCase() === selectedChain.toUpperCase()
-          );
-          const colorMeta = lifiChain && CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] ? CHAIN_COLORS[lifiChain.key?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
+       {bridgeFromState && (() => {
+          const colorMeta = CHAIN_COLORS[bridgeFromState.fromChainKey?.toUpperCase?.()] ? CHAIN_COLORS[bridgeFromState.fromChainKey?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
           return (
-            <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px', mb: 0.5 }}>
-                {lifiChain?.logoURI && (
-                <Avatar src={lifiChain.logoURI} alt={lifiChain.name} sx={{ width: 18, height: 18, mr: 0.5 }} />
-                )}
-                {selectedChain}
-            </Box>
-          );
-        })()}
+          <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px', mb: 0.5 }}>
+            {bridgeFromState.fromChainLogoURI && (
+              <Avatar src={bridgeFromState.fromChainLogoURI} alt={bridgeFromState.fromChainName} sx={{ width: 18, height: 18, mr: 0.5 }} />
+            )}
+            {bridgeFromState.fromChainName}
+          </Box>
+        );})()}
       </Box>
       {/* Current Position and Qty in one row */}
       <Box display="flex" gap={2} mb={1.5} alignItems="flex-end">
@@ -137,10 +141,10 @@ export const NewSwapFromCard: React.FC<NewSwapFromCardProps> = ({
                   ...params.InputProps,
                   startAdornment: (
                     <>
-                      {symbolOptionSwap?.lURI ? (
+                      {symbolOptionSwap ? (
                         <InputAdornment position="start">
                           <Avatar
-                            src={symbolOptionSwap.lURI}
+                            src={bridgeFromState?.fromTokenUrl || symbolOptionSwap.lURI}
                             alt={symbolOptionSwap.sym}
                             sx={{ width: 20, height: 20, mr: 0 }}
                           />
@@ -222,11 +226,11 @@ export const NewSwapFromCard: React.FC<NewSwapFromCardProps> = ({
       {/* SWAP FROM: Token Address + Copy */}
       <Box display="flex" alignItems="center" gap={1} mt={1}>
         <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
-          {swapFromTokenAddress ? `${swapFromTokenAddress.slice(0, 25)}...` : 'Token Address'}
+          {bridgeFromState?.fromTokenAddress ? `${bridgeFromState.fromTokenAddress.slice(0, 25)}...` : 'Token Address'}
         </Typography>
-        {swapFromTokenAddress && (
+        {bridgeFromState?.fromTokenAddress && (
           <Tooltip title={'Copy'}>
-            <IconButton size="small" onClick={() => { navigator.clipboard.writeText(swapFromTokenAddress); }}>
+            <IconButton size="small" onClick={() => { navigator.clipboard.writeText(bridgeFromState.fromTokenAddress); }}>
               <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
             </IconButton>
           </Tooltip>

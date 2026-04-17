@@ -1,0 +1,16 @@
+.unsupportedChainNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(78, 78, 87, 0.3);
+  border: 1px solid #4E4E57;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: #A0A0B0;
+  line-height: 1.5;
+}
+.unsupportedChainNotice strong {
+  color: #E0E0E0;
+}

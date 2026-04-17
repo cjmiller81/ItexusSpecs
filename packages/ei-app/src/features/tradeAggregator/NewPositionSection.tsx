@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import {
   getGasTokenSymbol,
@@ -25,6 +24,8 @@ import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextF
   Stack,
   CircularProgress,
 } from "@mui/material";
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import styles from "./unsupported-chain-notice.module.css";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
@@ -54,16 +55,20 @@ import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
 import { useSubscription } from "components";
 
+import { EnrichedTokenPosition } from "../../../../components/src/utils/enrichTokenPositions";
+
 interface NewPositionSectionProps {
-    selectedWallet: Wallet | null;
-    onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
-    filteredRows: WalletBalance[]; 
-    selectedTokenRow: WalletBalance | null;
-  }
+  selectedWallet: Wallet | null;
+  onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
+  filteredRows: EnrichedTokenPosition[];
+  selectedTokenRow: EnrichedTokenPosition | null;
+}
 
 export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow}) => {
-  const [selectedTokenRowSwap, setSelectedTokenRowSwap] = useState<WalletBalance | null>(null);
-  const [selectedTokenRowBridge, setSelectedTokenRowBridge] = useState<WalletBalance | null>(null);
+  // Check if selected token is not bridgeable
+  const isUnsupported = selectedTokenRow && selectedTokenRow.isBridgeable === false;
+  const [selectedTokenRowSwap, setSelectedTokenRowSwap] = useState<EnrichedTokenPosition | null>(null);
+  const [selectedTokenRowBridge, setSelectedTokenRowBridge] = useState<EnrichedTokenPosition | null>(null);
   const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
   const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
   const theme = useTheme();
@@ -214,32 +219,27 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     setBalanceRaw(matchedToken?.balance);
   }, [symbolOptionSwap, selectedChain])
 
+
+  const resetAllState = () => {
+    setTokenAddresses([]);
+    setTokenIcons(null);
+    setSymbolOptionSwap(null);
+    setSymbolOptionSwapForSwap(null);
+    setInputSearchSwapForSwap("");
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+    setSelectedChain("");
+    setNewBalance("");
+  };
+
   useEffect(() => {
     if (!selectedWallet) {
-      setTokenAddresses([]);
-      setTokenIcons(null);
-      setSymbolOptionSwap(null);
-      setSymbolOptionSwapForSwap(null);
-      setInputSearchSwapForSwap("");
-      setSymbolOptionSwapForBridge(null);
-      setInputSearchSwapForBridge("");
-      setSelectedChain("");
-      setNewBalance("");
+      resetAllState();
       return;
     }
-      setTokenIcons(null);
-      setSymbolOptionSwap(null);
-      setSymbolOptionSwapForSwap(null);
-      setInputSearchSwapForSwap("");
-      setSymbolOptionSwapForBridge(null);
-      setInputSearchSwapForBridge("");
-      setSelectedChain("");
-      setNewBalance("");
-    
     const addresses: string[] = filteredRows
       .map((token) => token.tokenAddress)
       .filter((address): address is string => typeof address === 'string' && address !== '');
-
     setTokenAddresses(addresses);
   }, [selectedWallet, filteredRows]);
 
@@ -269,61 +269,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
     return () => clearTimeout(timeoutId);
   }, [activeTab, selectedChain, inputSearchSwapForSwap]);
-
-
-  useEffect(() => {
-    const fetchIcons = async () => {
-    if (tokenAddresses.length === 0) return;
-
-    const nonEmptyChainsCount = filteredRows.length > 0 ? 1 : 0;
-
-    let pageSize = tokenAddresses?.length + nonEmptyChainsCount + 50;
-
-    try {
-      const result = await iconsApi.getIconsV2(
-        undefined,
-        0,
-        pageSize,
-        tokenAddresses
-      );
-
-      const walletTokenNamesLower = new Set(
-        filteredRows.map(row => row?.tokenName?.toLowerCase())
-      );
-
-      const filteredItems = result.items.filter(item => {
-        return walletTokenNamesLower.has(item.sym.toLowerCase());
-      });
-
-      const virtualTokens = filteredRows
-        .filter(row => {
-          const hasIcon = filteredItems.some(item => 
-            item.sym.toLowerCase() === row.tokenName?.toLowerCase()
-          );
-          return !hasIcon;
-        })
-        .map(row => ({
-          id: `virtual-${row.tokenName?.toLowerCase()}`,
-          sym: row.tokenName || '',
-          name: row.name || '',
-          address: [row.tokenAddress || ''],
-          lURI: undefined,
-          mCap: 0,
-          mSup: null,
-        }));
-
-      setTokenIcons({
-        ...result,
-        items: [...filteredItems, ...virtualTokens],
-      });
-
-    } catch (error) {
-      console.error('Error loading icons:', error);
-    }
-    };
-
-    fetchIcons();
-  }, [tokenAddresses, filteredRows]);
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -625,7 +570,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           sym: selectedTokenRow.tokenName || '',
           name: selectedTokenRow.name || '',
           address: [selectedTokenRow.tokenAddress || ''],
-          lURI: undefined,
+          lURI: selectedTokenRow.logoUrl,
           mCap: 0,
           mSup: null,
         };
@@ -648,7 +593,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         sym: row.tokenName || '',
         name: row.name || '',
         address: [row.tokenAddress || ''],
-        lURI: undefined,
+        lURI: row.logoUrl,
         mCap: 0,
         mSup: null,
       }));
@@ -671,9 +616,9 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       const virtualToken = {
         id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
         sym: selectedTokenRow.tokenName || '',
-        name: selectedTokenRow.name || '',
+        name: selectedTokenRow.chain || '',
         address: [selectedTokenRow.tokenAddress || ''],
-        lURI: undefined,
+        lURI: selectedTokenRow.logoUrl,
         mCap: 0,
         mSup: null,
       };
@@ -682,20 +627,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     }
   }, [selectedTokenRow, tokenIcons?.items]);
 
-  useEffect(() => {
-    if (!selectedTokenRow) {
-      setSymbolOptionSwapForSwap(null);
-      setInputSearchSwapForSwap("");
-      setSymbolOptionSwapForBridge(null);
-      setInputSearchSwapForBridge("");
-      setSelectedChain("");
-      setSymbolOptionSwap(null);
-      setSelectedToken(null);
-      setNewBalance("");
-    }
-  }, [selectedTokenRow]);
-
-  
   useEffect(() => {
     if (!symbolOptionSwap || !selectedWallet) {
       setSelectedToken(null);
@@ -1207,6 +1138,14 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           </Button>
         </Box>
 
+      {isUnsupported && (
+        <div className={styles.unsupportedChainNotice} style={{ margin: '16px auto', maxWidth: 420 }}>
+          <InfoIcon sx={{ color: '#f1b036', mt: '2px', fontSize: 20 }} />
+          <span>
+            <strong>Bridge/Swap not supported for this token.</strong> Please select a bridgeable token to continue.
+          </span>
+        </div>
+      )}
       <Grid item>
         {activeTab === "swap" ? (
           // NewSwapTab is now rendered for the Swap tab. The old implementation is preserved below in comments for easy restoration.
@@ -1245,6 +1184,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                           onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
                           chains={[]}
                           bridgeFromTokenDecimals={null}
+                          isUnsupported={isUnsupported}
                         />
                         {/*
                         // --- OLD SWAP TAB IMPLEMENTATION ---
@@ -1975,6 +1915,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
               chains={[]}
               bridgeFromTokenDecimals={typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18}
+              isUnsupported={isUnsupported}
             />
         )}
       </Grid>

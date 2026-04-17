@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useRef, useMemo } from "react";
 import { useLifiChainMap, LifiChain } from "@/common/lifiChainContext";
 import { lifiChainMapToArray } from "./lifiChains";
 import {
@@ -210,14 +211,26 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
   
   // Loading state for wallet positions (portfolio fetch)
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(false);
+  
+  const addresses = useMemo(
+    () => (wallets && wallets.length > 0 ? wallets.map(w => w.address) : []),
+    [wallets]
+  );
+
+  const prevWalletRef = useRef<Wallet | null>(null);
+  const prevLifiChainMapRef = useRef(lifiChainMap);
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap) {
-      const addresses = wallets.map(w => w.address);
+    const walletChanged = selectedWallet?.address !== prevWalletRef.current?.address;
+    const lifiChainMapChanged = lifiChainMap !== prevLifiChainMapRef.current;
+
+    if (selectedWallet && lifiChainMap && (walletChanged || lifiChainMapChanged)) {
       setIsPortfolioLoading(true);
-      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
+      dispatch(fetchWalletsPortfolio({ addresses: [selectedWallet.address], lifiChainMap }));
+      prevWalletRef.current = selectedWallet;
+      prevLifiChainMapRef.current = lifiChainMap;
     }
-  }, [wallets, dispatch, lifiChainMap]);
+  }, [selectedWallet, lifiChainMap]);
 
   // When portfolioWalletData changes, stop loading
   useEffect(() => {
@@ -294,7 +307,8 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
             chain: normalizeNetworkName(token.network),
             balance: token.balance,
             tokenAddress: token.tokenAddress,
-            decimals: token.decimals
+            decimals: token.decimals,
+            logoUrl: token.logoUrl
           }));
           
           const combinedData = [...portfolioData, ...manualPositions];
@@ -346,7 +360,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
       
       const portfolioData = selectedPortfolio ? selectedPortfolio.map(token => ({
         tokenName: token.symbol,
-        chain: normalizeNetworkName(token.network),
+        chain: normalizeNetworkName(token.chain),
       })) : [];
       
       const allTokens = [...portfolioData, ...manualPositions];
@@ -809,7 +823,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                     checkboxSelection={false}
                     apiRef={apiRef}
                     getRowId={(x) => `${x.tokenName.toLowerCase()}-${x.chain.toLowerCase()}`}
-                    columns={getIndexResultWalletTableColumns()}
+                    columns={getIndexResultWalletTableColumns(lifiChainMap)}
                     rows={filteredRows}
                     onRowSelectionModelChange={handleSelectionChange}
                     components={{
@@ -867,7 +881,7 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   )?.tokenHoldings || [];
                   const existsWallet = selectedPortfolio.some(
                     row => row.symbol?.toLowerCase() === tokenNameLower &&
-                      normalizeNetworkName(row.network)?.toLowerCase() === chainNameLower
+                      normalizeNetworkName(row.chain)?.toLowerCase() === chainNameLower
                   );
                   if (existsManual || existsWallet) {
                     setAddPositionError(t("Positions already exists in loaded wallet"));
@@ -875,9 +889,11 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                   }
                   const newRow = {
                     tokenName: token.sym,
+                    name: token?.name || undefined,
                     chain: chain.name,
                     balance: parseFloat(qty),
                     tokenAddress: token?.address?.[0],
+                    logoUrl: token?.lURI || undefined,
                   };
                   setManualPositions(prev => [newRow, ...prev]);
                   setAddPositionError("");

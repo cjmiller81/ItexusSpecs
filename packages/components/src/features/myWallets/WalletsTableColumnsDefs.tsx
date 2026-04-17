@@ -10,6 +10,8 @@ import { GridActionsCellItem, GridColDef, GridRowId, GridRowModes, GridRowModesM
 import i18next, { t } from "i18next"
 import { ChangeEvent } from "react"
 import { AppToolTip } from "../../components"
+import { ChainChip } from "../../components/ChainChip";
+import "../../components/ChainChip.css";
 import { Wallet } from "../../models"
 import CustomTooltip from "../../components/common/CustomTooltip"
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";

@@ -9,17 +9,16 @@ export interface LifiChain {
 
 
 export interface UniversalTokenPosition {
-  name: string;
-  symbol: string;
-  tokenAddress: string;
+  tokenName?: string;
+  name?: string;
+  symbol?: string;
+  tokenAddress?: string;
   balance: number;
   balanceRaw?: string;
-  balanceUSD: number;
-  price: number;
-  decimals: number;
+  decimals?: number;
   imgUrlV2?: string | null;
   logoUrl?: string | null;
-  network: string | { name: string; chainId?: number; slug?: string };
+  chain?: string;
   chainId?: number;
   // ...other fields
 }
@@ -36,12 +35,8 @@ function resolveChainId(token: UniversalTokenPosition, lifiChainMap: Map<number,
   let networkName = '';
   let networkSlug = '';
   let networkChainId: number | undefined = undefined;
-  if (typeof token.network === 'string') {
-    networkName = token.network;
-  } else if (typeof token.network === 'object' && token.network !== null) {
-    networkName = token.network.name || '';
-    networkSlug = token.network.slug || '';
-    networkChainId = token.network.chainId;
+  if (typeof token.chain === 'string') {
+    networkName = token.chain;
   }
   if (typeof networkChainId === 'number') return networkChainId;
   let foundId: number | undefined = undefined;
