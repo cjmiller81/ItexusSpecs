@@ -1,21 +1,3 @@
-export function coinGeckoChainId(chain: string): number | undefined {
-  switch (chain.toLowerCase()) {
-    case "ethereum": return 1;
-    case "optimism": return 10;
-    case "arbitrum": return 42161;
-    case "bnb chain": return 56;
-    case "polygon": return 137;
-    case "avalanche": return 43114;
-    case "base": return 8453;
-    case "zksync": return 324;
-    case "gnosis": return 100;
-    case "linea": return 59144;
-    case "sonic": return 146;
-    case "unichain": return 130;
-    default: return undefined;
-  }
-}
-
 export function getGasTokenSymbol(chain: string): string {
   const chainMap: Record<string, string> = {
     "ETHEREUM": "ETH",

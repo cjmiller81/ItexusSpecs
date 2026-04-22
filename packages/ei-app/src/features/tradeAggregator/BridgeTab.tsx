@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useLifiChainMap, LifiChain } from "@/common/lifiChainContext";
 import { lifiChainMapToArray } from "./lifiChains";
 import { getLifiToken } from "./lifiApi";
+import { postLifiRoutes } from "./lifiApi";
+import { toRawAmount } from "./toRawAmount";
 import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import EastIcon from '@mui/icons-material/East';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -13,9 +15,9 @@ import { BridgeFromCard } from "./BridgeFromCard";
 import { BridgeToCard } from "./BridgeToCard";
 import { BridgeRoutesPanel } from "./BridgeRoutesPanel";
 import { iconsApi } from "@/services/iconsService";
+import { useTranslation } from "react-i18next";
 
 interface BridgeTabProps {
-  t: any;
   symbolOptionSwap: any;
   tokenIcons: any;
   handleCurrentPositionDropdownChange: any;
@@ -36,24 +38,18 @@ interface BridgeTabProps {
   onOptionChangeSwapFor: (v: any) => void;
   inputSearchSwapFor: string;
   setInputSearchSwapFor: (v: string) => void;
-  handleFetchQuotes: () => void;
-  quoteLoading: boolean;
-  lastUpdated: string | null;
   setTokenIconsSwapFor: (v: any) => void;
   selectedBridgeToChainId: number | null;
   setSelectedBridgeToChainId: (v: number | null) => void;
   inputSearchBridgeToChain: string;
   setInputSearchBridgeToChain: (v: string) => void;
   onClearBridgeToTokenAddress: () => void;
-  quoteData?: any[];
-  errorMessage?: string | null;
   chains?: any[];
   bridgeFromTokenDecimals: number | null;
   isUnsupported: boolean | null;
 }
 
 export const BridgeTab = ({
-  t,
   symbolOptionSwap,
   tokenIcons,
   handleCurrentPositionDropdownChange,
@@ -74,17 +70,12 @@ export const BridgeTab = ({
   onOptionChangeSwapFor,
   inputSearchSwapFor,
   setInputSearchSwapFor,
-  handleFetchQuotes,
-  quoteLoading,
-  lastUpdated,
   setTokenIconsSwapFor,
   selectedBridgeToChainId,
   setSelectedBridgeToChainId,
   inputSearchBridgeToChain,
   setInputSearchBridgeToChain,
   onClearBridgeToTokenAddress,
-  quoteData = [],
-  errorMessage = null,
   chains = [],
   isUnsupported = false,
 }: BridgeTabProps) => {
@@ -117,13 +108,20 @@ export const BridgeTab = ({
   }, [selectedTokenRow]);
 
   useEffect(() => {
+    if (!symbolOptionSwapFor) {
+      setQuoteData([]);
+      setErrorMessage(null);
+      setLastUpdated(null);
+    }
+  }, [symbolOptionSwapFor]);
+  useEffect(() => {
     if (!symbolOptionSwapFor || !selectedBridgeToChainId) {
       return;
     }
     let ignore = false;
     const fetchLifiTokenInfo = async () => {
       try {
-        const token = await getLifiToken(selectedBridgeToChainId, symbolOptionSwapFor.address?.[0] || symbolOptionSwapFor.id);
+        const token = await getLifiToken(selectedBridgeToChainId, symbolOptionSwapFor.sym);
         if (!ignore) {
           setBridgeToTokenAddress(token.address);
         }
@@ -172,6 +170,65 @@ export const BridgeTab = ({
     if (typeof setInputSearchBridgeToChain === 'function') setInputSearchBridgeToChain("");
     if (typeof setShowNoQuotesMessage === 'function') setShowNoQuotesMessage(false);
     // Optionally clear other bridge-related state if needed
+  };
+
+  const [quoteData, setQuoteData] = useState<any[]>([]);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { t } = useTranslation("NewPositionSection");
+
+  const handleFetchQuotesBridge = async () => {
+    setQuoteLoading(true);
+    setErrorMessage(null);
+    // Validate required fields
+    if (!symbolOptionSwap || !symbolOptionSwapFor || !selectedTokenRow || !selectedBridgeToChainId || !newBalance) {
+      setErrorMessage(t("Missing required fields"));
+      setQuoteLoading(false);
+      return;
+    }
+    const fromTokenAddress = selectedTokenRow.tokenAddress || '';
+    const toTokenAddress = bridgeToTokenAddress || '';
+    const fromTokenDecimals = typeof selectedTokenRow.decimals === 'number' ? selectedTokenRow.decimals : 18;
+    let fromAmountRaw = '0';
+    try {
+      fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
+    } catch (e) {
+      setErrorMessage(t("Invalid amount"));
+      setQuoteLoading(false);
+      return;
+    }
+    try {
+      let fromChainId = 1;
+      if (lifiChainMap) {
+        const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow.lifiChain?.name?.toLowerCase());
+        fromChainId = chainEntry?.id || 1;
+      }
+      const toChainId = selectedBridgeToChainId;
+      const data = await postLifiRoutes({
+        fromChainId,
+        toChainId,
+        fromAmount: fromAmountRaw,
+        fromTokenAddress: String(fromTokenAddress),
+        toTokenAddress: String(toTokenAddress),
+      });
+      setQuoteData(Array.isArray(data.routes) ? data.routes : []);
+      setErrorMessage((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No bridge routes found"));
+      const now = new Date();
+      const formatted = now.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setLastUpdated(formatted);
+    } catch (e) {
+      setErrorMessage(t("Error fetching bridge routes"));
+      setQuoteData([]);
+    }
+    setQuoteLoading(false);
   };
 
   return (
@@ -252,7 +309,7 @@ export const BridgeTab = ({
             <Button
               id="get_quotes_btn"
               variant="contained"
-              onClick={handleFetchQuotes}
+              onClick={handleFetchQuotesBridge}
               disabled={isUnsupported || !selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
               sx={{
                 backgroundColor: "#219a83",

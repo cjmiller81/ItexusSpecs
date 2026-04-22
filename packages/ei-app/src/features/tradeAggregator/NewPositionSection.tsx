@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import {
   getGasTokenSymbol,
   formatNumberWithCommas,
-  generateErrorMessage,
-  coinGeckoChainId
+  generateErrorMessage
 } from "./tradeAggregatorUtils";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 
 import { BridgeTab } from "./BridgeTab";
 import { NewSwapTab } from "./newSwap/NewSwapTab";
@@ -65,6 +65,7 @@ interface NewPositionSectionProps {
 }
 
 export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow}) => {
+  const { lifiChainMap } = useLifiChainMap();
   // Check if selected token is not bridgeable
   const isUnsupported = selectedTokenRow && selectedTokenRow.isBridgeable === false;
   const [selectedTokenRowSwap, setSelectedTokenRowSwap] = useState<EnrichedTokenPosition | null>(null);
@@ -204,17 +205,21 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [selectedChain])     
 
   useEffect(()=> {
-    if (!symbolOptionSwap || !selectedChain) {
+    if (!symbolOptionSwap || !selectedTokenRow?.lifiChain?.name) {
         setSelectedDexs([]);
         setIsDexEnabled(false);
     }
 
-    const chainId = coinGeckoChainId(selectedChain);
-      if (!chainId) return;
+    let chainId: number | undefined = undefined;
+    if (lifiChainMap) {
+      const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
+      chainId = chainEntry?.id;
+    }
+    if (!chainId) return;
 
     const matchedToken = filteredRows.find(token => 
       token.tokenName?.toUpperCase() === symbolOptionSwap?.sym?.toUpperCase() &&
-      token.chain?.toUpperCase() === selectedChain.toUpperCase()
+      token.chain?.toUpperCase() === selectedTokenRow?.lifiChain?.name.toUpperCase()
     );
     setBalanceRaw(matchedToken?.balance);
   }, [symbolOptionSwap, selectedChain])
@@ -245,11 +250,15 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   // Swap tab: fetch icons for Swap For dropdown
   useEffect(() => {
-    if (activeTab !== 'swap' || !selectedChain) return;
+    if (activeTab !== 'swap' || !selectedTokenRow?.lifiChain?.name) return;
 
     const timeoutId = setTimeout(() => {
       const fetchIconsForSwapFor = async () => {
-        const chainId = coinGeckoChainId(selectedChain);
+        let chainId: number | undefined = undefined;
+        if (lifiChainMap) {
+          const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
+          chainId = chainEntry?.id;
+        }
         if (!chainId) return;
 
         try {
@@ -832,175 +841,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     }
   };
 
-
-  const handleFetchQuotesSwap = async () => {
-    setHasAttemptedSubmitSwap(true);
-    setQuoteLoadingSwap(true);
-    cancelQuotes.current = false; // Reset cancel flag on new fetch
-    const swapFor = symbolOptionSwapForSwap;
-    const err = generateErrorMessage({
-      symbolOptionSwap,
-      filteredRows,
-      selectedChain,
-      symbolOptionSwapFor: swapFor,
-      newBalance,
-      t
-    });
-    if (err) {
-      setQuoteDataSwap([]);
-      setErrorMessageSwap(err);
-      setLastUpdatedSwap(null);
-      setTokenAddress(null);
-      setTokenAddressSwapFor(null);
-      setQuoteLoadingSwap(false);
-      return;
-    }
-    setErrorMessageSwap(null);
-    const fromTokenAddress =
-      tokenAddress ||
-      (selectedTokenRowSwap?.tokenAddress
-        ? selectedTokenRowSwap.tokenAddress
-        : selectedTokenRow?.tokenAddress || '');
-    const toTokenAddress = swapFor?.address
-      ? Array.isArray(swapFor.address)
-        ? swapFor.address[0]
-        : swapFor.address
-      : '';
-
-    let fromTokenDecimals = 18;
-    if (typeof selectedTokenRowSwap?.decimals === 'number') {
-      fromTokenDecimals = selectedTokenRowSwap.decimals;
-    } else if (typeof selectedTokenRow?.decimals === 'number') {
-      fromTokenDecimals = selectedTokenRow.decimals;
-    }
-    let fromAmountRaw = '0';
-    try {
-      fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
-    } catch (e) {
-      setErrorMessageSwap(t("Invalid amount"));
-      setQuoteDataSwap([]);
-      setQuoteLoadingSwap(false);
-      return;
-    }
-    try {
-      const fromChainId = coinGeckoChainId(selectedChain) || 1;
-      const toChainId = fromChainId; // For swap, both on same chain
-      const data = await postLifiRoutes({
-        fromChainId,
-        toChainId,
-        fromAmount: fromAmountRaw,
-        fromTokenAddress: String(fromTokenAddress),
-        toTokenAddress: String(toTokenAddress),
-      });
-      if (!cancelQuotes.current) {
-        setQuoteDataSwap(Array.isArray(data.routes) ? data.routes : []);
-        setErrorMessageSwap((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No swap routes found"));
-      }
-    } catch (e) {
-      if (!cancelQuotes.current) {
-        setErrorMessageSwap(t("Error fetching swap routes"));
-        setQuoteDataSwap([]);
-      }
-      setQuoteLoadingSwap(false);
-      return;
-    }
-    if (!cancelQuotes.current) {
-      setTokenAddress(String(fromTokenAddress));
-      setTokenAddressSwapFor(String(toTokenAddress));
-      const now = new Date();
-      const formatted = now.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-      setLastUpdatedSwap(formatted);
-    }
-    setQuoteLoadingSwap(false);
-  };
-
-  const handleFetchQuotesBridge = async () => {
-    setHasAttemptedSubmitBridge(true);
-    setQuoteLoadingBridge(true);
-    cancelQuotes.current = false; // Reset cancel flag on new fetch
-    const swapFor = symbolOptionSwapForBridge;
-    const err = generateErrorMessage({
-      symbolOptionSwap,
-      filteredRows,
-      selectedChain,
-      symbolOptionSwapFor: swapFor,
-      newBalance,
-      t
-    });
-    if (err) {
-      setQuoteDataBridge([]);
-      setErrorMessageBridge(err);
-      setLastUpdatedBridge(null);
-      setTokenAddress(null);
-      setTokenAddressSwapFor(null);
-      setQuoteLoadingBridge(false);
-      return;
-    }
-    setErrorMessageBridge(null);
-    const fromTokenAddress = selectedTokenRowBridge?.tokenAddress || '';
-    const toTokenAddress = symbolOptionSwapForBridge?.address
-      ? Array.isArray(symbolOptionSwapForBridge.address)
-        ? symbolOptionSwapForBridge.address[0]
-        : symbolOptionSwapForBridge.address
-      : '';
-    const fromTokenDecimals = typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18;
-    // Convert fromAmount to raw amount using BigInt
-    let fromAmountRaw = '0';
-    try {
-      fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
-    } catch (e) {
-      setErrorMessageBridge(t("Invalid amount"));
-      setQuoteDataBridge([]);
-      setQuoteLoadingBridge(false);
-      return;
-    }
-    // POST to /api/lifi/routes using lifiApi
-    try {
-      const fromChainId = coinGeckoChainId(selectedChain) || 1;
-      const toChainId = selectedBridgeToChainId || 1;
-      const data = await postLifiRoutes({
-        fromChainId,
-        toChainId,
-        fromAmount: fromAmountRaw,
-        fromTokenAddress: String(fromTokenAddress),
-        toTokenAddress: String(toTokenAddress),
-      });
-      if (!cancelQuotes.current) {
-        setQuoteDataBridge(Array.isArray(data.routes) ? data.routes : []);
-        setErrorMessageBridge((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No bridge routes found"));
-      }
-    } catch (e) {
-      if (!cancelQuotes.current) {
-        setErrorMessageBridge(t("Error fetching bridge routes"));
-        setQuoteDataBridge([]);
-      }
-      setQuoteLoadingBridge(false);
-      return;
-    }
-    if (!cancelQuotes.current) {
-      setTokenAddress(String(fromTokenAddress));
-      setTokenAddressSwapFor(String(toTokenAddress));
-      const now = new Date();
-      const formatted = now.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-      });
-      setLastUpdatedBridge(formatted);
-    }
-    setQuoteLoadingBridge(false);
-  };
-
   // Find the selected position from dropdown and update fields as if selected from table
   const handleCurrentPositionDropdownChange = async (event: any, value: TokenSearchItem | null) => {
     if (!value) {
@@ -1151,7 +991,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           // NewSwapTab is now rendered for the Swap tab. The old implementation is preserved below in comments for easy restoration.
                       <>
                         <NewSwapTab
-                          t={t}
                           symbolOptionSwap={symbolOptionSwap}
                           tokenIcons={tokenIcons}
                           handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
@@ -1172,11 +1011,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
                           onOptionChangeSwapFor={(v) => onOptionChangeSwapFor(v, "swap")}
                           inputSearchSwapFor={inputSearchSwapForSwap}
                           setInputSearchSwapFor={setInputSearchSwapForSwap}
-                          handleFetchQuotes={handleFetchQuotesSwap}
-                          quoteLoading={quoteLoadingSwap}
-                          lastUpdated={lastUpdatedSwap}
-                          quoteData={quoteDataSwap}
-                          errorMessage={errorMessageSwap}
                           setTokenIconsSwapFor={setTokenIconsSwapFor}
                           selectedBridgeToChainId={selectedBridgeToChainId}
                           setSelectedBridgeToChainId={setSelectedBridgeToChainId}
@@ -1883,7 +1717,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
             </Grid> */           
         ) : (
             <BridgeTab
-              t={t}
               symbolOptionSwap={symbolOptionSwap}
               tokenIcons={tokenIcons}
               handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
@@ -1904,11 +1737,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               onOptionChangeSwapFor={(v) => onOptionChangeSwapFor(v, "bridge")}
               inputSearchSwapFor={inputSearchSwapForBridge}
               setInputSearchSwapFor={setInputSearchSwapForBridge}
-              handleFetchQuotes={handleFetchQuotesBridge}
-              quoteLoading={quoteLoadingBridge}
-              lastUpdated={lastUpdatedBridge}
-              quoteData={quoteDataBridge}
-              errorMessage={errorMessageBridge}
               setTokenIconsSwapFor={setTokenIconsSwapFor}
               selectedBridgeToChainId={selectedBridgeToChainId}
               setSelectedBridgeToChainId={setSelectedBridgeToChainId}

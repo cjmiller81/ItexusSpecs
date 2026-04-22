@@ -151,35 +151,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
     setShowDust(prev => !prev);
   };
 
-    const coinGeckoChainId = (chain: string) => {
-               switch (chain.toLowerCase()) {
-                 case "ethereum":
-                   return 1;
-                 case "optimism":
-                   return 10;
-                 case "arbitrum":
-                   return 42161;
-                 case "bnb chain":
-                   return 56;
-                 case "polygon":
-                   return 137;
-                 case "avalanche":
-                   return 43114;
-                 case "base":
-                   return 8453;
-                 case "zksync":
-                   return 324;
-                 case "gnosis":
-                   return 100;
-                 case "linea":
-                   return 59144;
-                 case "sonic":
-                   return 146;
-                 case "unichain":
-                   return 130;
-               }
-             };
-
   const normalizeNetworkName = (network: string): string => {
     if (!network) return "";
     
@@ -863,9 +834,13 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 lifiChainsError={lifiChainsError}
                 tokenIcons={tokenIcons}
                 fetchTokenIcons={useCallback((chainName, search) => {
-                  const chainId = coinGeckoChainId(chainName);
+                  let chainId: number | undefined = undefined;
+                  if (lifiChainMap) {
+                    const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === chainName.toLowerCase());
+                    chainId = chainEntry?.id;
+                  }
                   iconsApi.getIcons(search, 0, chainId, 500).then(setTokenIcons).catch(() => {});
-                }, [])}
+                }, [lifiChainMap])}
                 onAdd={(chain, token, qty) => {
                   // Prevent duplicate manual positions or wallet positions
                   const tokenNameLower = token.sym.toLowerCase();
