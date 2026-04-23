@@ -31,11 +31,11 @@ export interface LifiTokenResponse {
 /**
  * Fetch token info from LiFi API
  * @param chainId Source chain ID
- * @param tokenAddress Token contract address
+ * @param tokenKey Тicker/key ('SOL', 'USDT', 'ETH')
  */
-export async function getLifiToken(chainId: number, tokenAddress: string): Promise<LifiTokenResponse> {
+export async function getLifiToken(chainId: number, tokenKey: string): Promise<LifiTokenResponse> {
   const resp = await appAxios.get(`/api/lifi/token`, {
-    params: { chainId, tokenAddress },
+    params: { chainId, tokenAddress: tokenKey },
   });
   return resp.data;
 }

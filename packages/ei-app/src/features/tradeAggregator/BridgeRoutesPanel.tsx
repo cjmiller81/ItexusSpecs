@@ -92,14 +92,11 @@ export const BridgeRoutesPanel = ({
   if (!routes || routes.length === 0) {
     return (
       <Box sx={{ p: 4, textAlign: "center", display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 180 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.8rem', mb: 1 }}>
-          ⚠
-        </Typography>
         <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-          No bridge routes were found this token pair and quantity
+          ⚠ No routes available
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 520 }}>
-          Try a different quantity if liquidity is low or try when market volume is higher. It is possible liquidity may simply not be available for your selected pair and chain.
+          No bridge routes were found for this token pair amount. Try a different token, chain or amount.
         </Typography>
       </Box>
     );
