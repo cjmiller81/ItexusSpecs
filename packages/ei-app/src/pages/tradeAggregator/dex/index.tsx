@@ -3,6 +3,7 @@ import { NewPositionSection } from "@/features/tradeAggregator/NewPositionSectio
 import { Wallet } from "@/models/Wallet/Wallet";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { enrichTokenPositions, EnrichedTokenPosition } from "../../../../../components/src/utils/enrichTokenPositions";
+import { getLifiToken } from "../../../features/tradeAggregator/lifiApi";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { Box, Grid, Typography, Button } from "@mui/material";
 import { useState, useEffect } from "react";
@@ -89,6 +90,7 @@ export default function Dex() {
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
     const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
     const [selectedTokenRow, setSelectedTokenRow] = useState<EnrichedTokenPosition | null>(null);
+    const [tokenRowLoading, setTokenRowLoading] = useState(false);
     const { getTradeAggregatorQuoteLimit } = useSubscription();
 
     const steps: StepType[] = [
@@ -141,10 +143,28 @@ export default function Dex() {
       setSelectedTokenRow(null);
     };
 
-    const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
+
+    // When a token row is selected, fetch its address from /api/lifi/token and update selectedTokenRow
+    const handleSelectedTokenRowChange = async (tokenRow: WalletBalance | null) => {
       if (tokenRow && lifiChainMap) {
-        const [enriched] = enrichTokenPositions([tokenRow], lifiChainMap);
-        setSelectedTokenRow(enriched || null);
+        setTokenRowLoading(true);
+        try {
+          // Enrich with chain data first
+          const [enriched] = enrichTokenPositions([tokenRow], lifiChainMap);
+          if (!enriched || !enriched.chainId || !enriched.tokenName) {
+            setSelectedTokenRow(null);
+            setTokenRowLoading(false);
+            return;
+          }
+          // Fetch address from /api/lifi/token using chainId and tokenName
+          const lifiToken = await getLifiToken(enriched.chainId, enriched.tokenName);
+          // Defensive: if address exists, update enriched object
+          setSelectedTokenRow({ ...enriched, tokenAddress: lifiToken?.address ?? undefined });
+        } catch (e) {
+          setSelectedTokenRow(null);
+        } finally {
+          setTokenRowLoading(false);
+        }
       } else {
         setSelectedTokenRow(null);
       }
