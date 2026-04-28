@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography, Avatar, Grid, Autocomplete, TextField, InputAdornment, Tooltip, IconButton, CircularProgress } from "@mui/material";
+import { VirtualizedListbox } from "./VirtualizedListbox";
 import LockIcon from "@mui/icons-material/Lock";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SearchIcon from "@mui/icons-material/Search";
@@ -273,6 +274,7 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                   />
                 );
               }}
+              ListboxComponent={VirtualizedListbox}
               renderOption={(props, option) => (
                 <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Avatar

@@ -248,55 +248,56 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     setTokenAddresses(addresses);
   }, [selectedWallet, filteredRows]);
 
-  // Swap tab: fetch tokens for Swap For dropdown using getLifiTokens
+  // Swap tab: fetch tokens for Swap For dropdown using getLifiTokens (with cache)
+  const swapForTokensCache = React.useRef<{ [chainId: number]: any[] }>({});
   useEffect(() => {
     if (activeTab !== 'swap' || !selectedTokenRow?.lifiChain?.name) return;
 
-    const timeoutId = setTimeout(() => {
-      const fetchTokensForSwapFor = async () => {
-        let chainId: number | undefined = undefined;
-        if (lifiChainMap) {
-          const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
-          chainId = chainEntry?.id;
-        }
-        if (!chainId) return;
+    let chainId: number | undefined = undefined;
+    if (lifiChainMap) {
+      const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
+      chainId = chainEntry?.id;
+    }
+    if (!chainId) return;
 
+    const fetchAndCacheTokens = async () => {
+      if (!swapForTokensCache.current[chainId!]) {
         try {
-          const tokens = await getLifiTokens(chainId);
-          // Filter by inputSearchSwapForSwap (symbol or name)
-          const filtered = tokens.filter(token => {
-            const search = inputSearchSwapForSwap.trim().toLowerCase();
-            if (!search) return true;
-            return (
-              token.symbol?.toLowerCase().includes(search) ||
-              token.name?.toLowerCase().includes(search)
-            );
-          });
-          // Map LifiTokenResponse to TokenSearchItem
-          const mapped = filtered.map(token => ({
-            address: [token.address],
-            id: token.address,
-            lURI: token.logoURI || null,
-            mCap: token.marketCapUSD || 0,
-            mSup: null,
-            name: token.name || null,
-            sym: token.symbol,
-          }));
-          setTokenIconsSwapFor({
-            items: mapped,
-            pageNumber: 0,
-            totalPages: 1,
-            totalCount: mapped.length,
-            hasPreviousPage: false,
-            hansNextPage: false,
-          });
-        } catch (error) {
-          console.error('Error loading tokens for swap for:', error);
+          const tokens = await getLifiTokens(chainId!);
+          swapForTokensCache.current[chainId!] = tokens;
+        } catch (err) {
+          swapForTokensCache.current[chainId!] = [];
         }
-      };
-      fetchTokensForSwapFor();
-    }, 450);
+      }
+      const tokens = swapForTokensCache.current[chainId!] || [];
+      const filtered = tokens.filter(token => {
+        const search = inputSearchSwapForSwap.trim().toLowerCase();
+        if (!search) return true;
+        return (
+          token.symbol?.toLowerCase().includes(search) ||
+          token.name?.toLowerCase().includes(search)
+        );
+      });
+      const mapped = filtered.map(token => ({
+        address: [token.address],
+        id: token.address,
+        lURI: token.logoURI || null,
+        mCap: token.marketCapUSD || 0,
+        mSup: null,
+        name: token.name || null,
+        sym: token.symbol,
+      }));
+      setTokenIconsSwapFor({
+        items: mapped,
+        pageNumber: 0,
+        totalPages: 1,
+        totalCount: mapped.length,
+        hasPreviousPage: false,
+        hansNextPage: false,
+      });
+    };
 
+    const timeoutId = setTimeout(fetchAndCacheTokens, 450);
     return () => clearTimeout(timeoutId);
   }, [activeTab, selectedChain, inputSearchSwapForSwap]);
 

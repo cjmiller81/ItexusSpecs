@@ -133,48 +133,47 @@ export const BridgeTab = ({
     return () => { ignore = true; };
   }, [symbolOptionSwapFor, selectedBridgeToChainId]);
 
+  const bridgeForTokensCache = React.useRef<{ [chainId: number]: any[] }>({});
   useEffect(() => {
     if (!selectedBridgeToChainId) return;
 
-    const timeoutId = setTimeout(() => {
-      const fetchTokensForBridgeFor = async () => {
-        const chainId = selectedBridgeToChainId;
-        if (!chainId) return;
+    const fetchAndCacheTokens = async () => {
+      if (!bridgeForTokensCache.current[selectedBridgeToChainId]) {
         try {
-          const tokens = await getLifiTokens(chainId);
-          // Filter by inputSearchSwapFor (symbol or name)
-          const filtered = tokens.filter(token => {
-            const search = inputSearchSwapFor.trim().toLowerCase();
-            if (!search) return true;
-            return (
-              token.symbol?.toLowerCase().includes(search) ||
-              token.name?.toLowerCase().includes(search)
-            );
-          });
-          // Map LifiTokenResponse to TokenSearchItem for Autocomplete
-          const mapped = filtered.map(token => ({
-            address: [token.address],
-            id: token.address,
-            lURI: token.logoURI || null,
-            mCap: token.marketCapUSD || 0,
-            mSup: null,
-            name: token.name || null,
-            sym: token.symbol,
-          }));
-          if (typeof setTokenIconsSwapFor === 'function') setTokenIconsSwapFor({
-            items: mapped,
-            pageNumber: 0,
-            totalPages: 1,
-            totalCount: mapped.length,
-            hasPreviousPage: false,
-            hansNextPage: false,
-          });
+          const tokens = await getLifiTokens(selectedBridgeToChainId);
+          bridgeForTokensCache.current[selectedBridgeToChainId] = tokens;
         } catch (error) {
-          console.error('Error loading tokens for bridge for:', error);
+          bridgeForTokensCache.current[selectedBridgeToChainId] = [];
         }
-      };
-      fetchTokensForBridgeFor();
-    }, 450);
+      }
+      const tokens = bridgeForTokensCache.current[selectedBridgeToChainId] || [];
+      const filtered = tokens.filter(token => {
+        const search = inputSearchSwapFor.trim().toLowerCase();
+        if (!search) return true;
+        return (
+          token.symbol?.toLowerCase().includes(search) ||
+          token.name?.toLowerCase().includes(search)
+        );
+      });
+      const mapped = filtered.map(token => ({
+        address: [token.address],
+        id: token.address,
+        lURI: token.logoURI || null,
+        mCap: token.marketCapUSD || 0,
+        mSup: null,
+        name: token.name || null,
+        sym: token.symbol,
+      }));
+      if (typeof setTokenIconsSwapFor === 'function') setTokenIconsSwapFor({
+        items: mapped,
+        pageNumber: 0,
+        totalPages: 1,
+        totalCount: mapped.length,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      });
+    };
+    const timeoutId = setTimeout(fetchAndCacheTokens, 450);
     return () => clearTimeout(timeoutId);
   }, [selectedBridgeToChainId, inputSearchSwapFor]);
 

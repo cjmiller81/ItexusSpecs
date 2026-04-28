@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Avatar, Autocomplete, TextField, InputAdornment, Tooltip, IconButton, CircularProgress } from "@mui/material";
+import { VirtualizedListbox } from "../VirtualizedListbox";
 import LockIcon from "@mui/icons-material/Lock";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SearchIcon from "@mui/icons-material/Search";
@@ -195,6 +196,7 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
                   />
                 );
               }}
+              ListboxComponent={VirtualizedListbox}
               renderOption={(props, option) => (
                 <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Avatar
