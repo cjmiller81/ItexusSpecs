@@ -1,3 +1,14 @@
+/**
+ * Fetch all tokens for a chain from LiFi API
+ * @param chainId Chain ID
+ */
+export async function getLifiTokens(chainId: number): Promise<LifiTokenResponse[]> {
+  const resp = await appAxios.get(`/api/lifi/tokens`, {
+    params: { chainId },
+  });
+
+  return resp.data?.tokens?.[chainId] || [];
+}
 // LiFi API integration for Bridge feature
 import appAxios from "@/libs/axios/axios";
 

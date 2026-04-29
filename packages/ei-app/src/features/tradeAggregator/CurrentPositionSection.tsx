@@ -832,15 +832,6 @@ export const CurrentPositionSection : React.FC<CurrentPositionSectionProps> =
                 lifiChains={lifiChains}
                 lifiChainsLoading={lifiChainsLoading}
                 lifiChainsError={lifiChainsError}
-                tokenIcons={tokenIcons}
-                fetchTokenIcons={useCallback((chainName, search) => {
-                  let chainId: number | undefined = undefined;
-                  if (lifiChainMap) {
-                    const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === chainName.toLowerCase());
-                    chainId = chainEntry?.id;
-                  }
-                  iconsApi.getIcons(search, 0, chainId, 500).then(setTokenIcons).catch(() => {});
-                }, [lifiChainMap])}
                 onAdd={(chain, token, qty) => {
                   // Prevent duplicate manual positions or wallet positions
                   const tokenNameLower = token.sym.toLowerCase();

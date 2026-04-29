@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Avatar, Autocomplete, TextField, InputAdornment, Tooltip, IconButton, CircularProgress } from "@mui/material";
+import { VirtualizedListbox } from "../VirtualizedListbox";
 import LockIcon from "@mui/icons-material/Lock";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SearchIcon from "@mui/icons-material/Search";
@@ -37,25 +38,12 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
   displayChainName,
   lifiChains,
 }) => {
-  const [swapToTokenAddress, setSwapToTokenAddress] = useState<string | null>(swapToTokenAddressProp ?? null);
 
-  useEffect(() => {
-    if (!symbolOptionSwapFor || !tokenIconsSwapFor) {
-      setSwapToTokenAddress(null);
-      return;
-    }
-    // Find the selected token in the tokens-searchV2 response
-    const found = (tokenIconsSwapFor.items || []).find(
-      (item: any) => item.id === symbolOptionSwapFor.id
-    );
-    if (found && found.address) {
-      // address can be array or string
-      const addr = Array.isArray(found.address) ? found.address[0] : found.address;
-      setSwapToTokenAddress(addr);
-    } else {
-      setSwapToTokenAddress(null);
-    }
-  }, [symbolOptionSwapFor, tokenIconsSwapFor]);
+  const tokenAddress = symbolOptionSwapFor
+    ? Array.isArray(symbolOptionSwapFor.address)
+      ? symbolOptionSwapFor.address[0]
+      : symbolOptionSwapFor.address
+    : null;
 
   return (
     <Box sx={{ position: 'relative', mb: 2 }}>
@@ -208,6 +196,7 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
                   />
                 );
               }}
+              ListboxComponent={VirtualizedListbox}
               renderOption={(props, option) => (
                 <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Avatar
@@ -232,11 +221,11 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
           ) : (
             <>
               <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
-                {swapToTokenAddress ? `${swapToTokenAddress.slice(0, 25)}...` : 'Token Address'}
+                {tokenAddress ? `${tokenAddress.slice(0, 25)}...` : 'Token Address'}
               </Typography>
-              {swapToTokenAddress && (
+              {tokenAddress && (
                 <Tooltip title={'Copy'}>
-                  <IconButton size="small" onClick={() => { navigator.clipboard.writeText(swapToTokenAddress); }}>
+                  <IconButton size="small" onClick={() => { navigator.clipboard.writeText(tokenAddress); }}>
                     <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
                   </IconButton>
                 </Tooltip>

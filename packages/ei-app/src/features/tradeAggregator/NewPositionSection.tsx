@@ -36,7 +36,7 @@ import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
 import { fetchDex, fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "components";
 import { dexWebsites } from "@/constants/dexWebsites";
-import { iconsApi } from "@/services/iconsService";
+import { getLifiTokens } from "./lifiApi";
 import { PaginatedList } from "components";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
@@ -248,34 +248,56 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     setTokenAddresses(addresses);
   }, [selectedWallet, filteredRows]);
 
-  // Swap tab: fetch icons for Swap For dropdown
+  // Swap tab: fetch tokens for Swap For dropdown using getLifiTokens (with cache)
+  const swapForTokensCache = React.useRef<{ [chainId: number]: any[] }>({});
   useEffect(() => {
     if (activeTab !== 'swap' || !selectedTokenRow?.lifiChain?.name) return;
 
-    const timeoutId = setTimeout(() => {
-      const fetchIconsForSwapFor = async () => {
-        let chainId: number | undefined = undefined;
-        if (lifiChainMap) {
-          const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
-          chainId = chainEntry?.id;
-        }
-        if (!chainId) return;
+    let chainId: number | undefined = undefined;
+    if (lifiChainMap) {
+      const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
+      chainId = chainEntry?.id;
+    }
+    if (!chainId) return;
 
+    const fetchAndCacheTokens = async () => {
+      if (!swapForTokensCache.current[chainId!]) {
         try {
-          const result = await iconsApi.getIcons(
-            inputSearchSwapForSwap,
-            0,
-            chainId,
-            500
-          );
-          setTokenIconsSwapFor(result);
-        } catch (error) {
-          console.error('Error loading icons for swap for:', error);
+          const tokens = await getLifiTokens(chainId!);
+          swapForTokensCache.current[chainId!] = tokens;
+        } catch (err) {
+          swapForTokensCache.current[chainId!] = [];
         }
-      };
-      fetchIconsForSwapFor();
-    }, 450);
+      }
+      const tokens = swapForTokensCache.current[chainId!] || [];
+      const filtered = tokens.filter(token => {
+        const search = inputSearchSwapForSwap.trim().toLowerCase();
+        if (!search) return true;
+        return (
+          token.symbol?.toLowerCase().includes(search) ||
+          token.name?.toLowerCase().includes(search)
+        );
+      });
+      const mapped = filtered.map(token => ({
+        address: [token.address],
+        id: token.address,
+        lURI: token.logoURI || null,
+        mCap: token.marketCapUSD || 0,
+        mSup: null,
+        name: token.name || null,
+        sym: token.symbol,
+      }));
+      setTokenIconsSwapFor({
+        items: mapped,
+        pageNumber: 0,
+        totalPages: 1,
+        totalCount: mapped.length,
+        hasPreviousPage: false,
+        hansNextPage: false,
+      });
+    };
 
+    const timeoutId = setTimeout(fetchAndCacheTokens, 450);
     return () => clearTimeout(timeoutId);
   }, [activeTab, selectedChain, inputSearchSwapForSwap]);
 
@@ -724,33 +746,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         setLastUpdatedSwap(null);
         cancelQuotes.current = true; // Cancel any pending quotes
         setQuoteLoadingSwap(false); // Stop spinner
-      }
-
-      if (symbolOptionSwap && value && selectedChain && newBalance) {
-        dispatch(
-          fetchQuoteParameters({
-            tokenPositionSymbol: symbolOptionSwap.sym,
-            chainName: selectedChain,
-            qty: Number(newBalance),
-            swapForSymbol: value.sym,
-            tokenPositionId: symbolOptionSwap.id,
-            swapForId: value.id,
-          })
-        ).then((result) => {
-          if (fetchQuoteParameters.fulfilled.match(result)) {
-            const data = result.payload;
-            if (data?.fromTokenAddress && data?.toTokenAddress) {
-              setTokenAddress(data.fromTokenAddress);
-              setTokenAddressSwapFor(data.toTokenAddress);
-            } else {
-              setTokenAddress(null);
-              setTokenAddressSwapFor(null);
-            }
-          } else {
-            setTokenAddress(null);
-            setTokenAddressSwapFor(null);
-          }
-        });
       }
     } else {
       if (value && value.id === symbolOptionSwap?.id) {

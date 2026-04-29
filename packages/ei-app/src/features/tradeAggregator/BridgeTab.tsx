@@ -14,7 +14,7 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { BridgeFromCard } from "./BridgeFromCard";
 import { BridgeToCard } from "./BridgeToCard";
 import { BridgeRoutesPanel } from "./BridgeRoutesPanel";
-import { iconsApi } from "@/services/iconsService";
+import { getLifiTokens } from "./lifiApi";
 import { useTranslation } from "react-i18next";
 
 interface BridgeTabProps {
@@ -133,27 +133,47 @@ export const BridgeTab = ({
     return () => { ignore = true; };
   }, [symbolOptionSwapFor, selectedBridgeToChainId]);
 
+  const bridgeForTokensCache = React.useRef<{ [chainId: number]: any[] }>({});
   useEffect(() => {
     if (!selectedBridgeToChainId) return;
 
-    const timeoutId = setTimeout(() => {
-      const fetchIconsForBridgeFor = async () => {
-        const chainId = selectedBridgeToChainId;
-        if (!chainId) return;
+    const fetchAndCacheTokens = async () => {
+      if (!bridgeForTokensCache.current[selectedBridgeToChainId]) {
         try {
-          const result = await iconsApi.getIcons(
-            inputSearchSwapFor,
-            0,
-            chainId,
-            500
-          );
-          if (typeof setTokenIconsSwapFor === 'function') setTokenIconsSwapFor(result);
+          const tokens = await getLifiTokens(selectedBridgeToChainId);
+          bridgeForTokensCache.current[selectedBridgeToChainId] = tokens;
         } catch (error) {
-          console.error('Error loading icons for bridge for:', error);
+          bridgeForTokensCache.current[selectedBridgeToChainId] = [];
         }
-      };
-      fetchIconsForBridgeFor();
-    }, 450);
+      }
+      const tokens = bridgeForTokensCache.current[selectedBridgeToChainId] || [];
+      const filtered = tokens.filter(token => {
+        const search = inputSearchSwapFor.trim().toLowerCase();
+        if (!search) return true;
+        return (
+          token.symbol?.toLowerCase().includes(search) ||
+          token.name?.toLowerCase().includes(search)
+        );
+      });
+      const mapped = filtered.map(token => ({
+        address: [token.address],
+        id: token.address,
+        lURI: token.logoURI || null,
+        mCap: token.marketCapUSD || 0,
+        mSup: null,
+        name: token.name || null,
+        sym: token.symbol,
+      }));
+      if (typeof setTokenIconsSwapFor === 'function') setTokenIconsSwapFor({
+        items: mapped,
+        pageNumber: 0,
+        totalPages: 1,
+        totalCount: mapped.length,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      });
+    };
+    const timeoutId = setTimeout(fetchAndCacheTokens, 450);
     return () => clearTimeout(timeoutId);
   }, [selectedBridgeToChainId, inputSearchSwapFor]);
 
