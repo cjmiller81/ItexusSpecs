@@ -122,7 +122,7 @@ export const BridgeTab = ({
     const fetchLifiTokenInfo = async () => {
       try {
         const token = await getLifiToken(selectedBridgeToChainId, symbolOptionSwapFor.sym);
-        if (!ignore) {
+        if (!ignore && token) {
           setBridgeToTokenAddress(token.address);
         }
       } catch (e) {
@@ -147,15 +147,7 @@ export const BridgeTab = ({
         }
       }
       const tokens = bridgeForTokensCache.current[selectedBridgeToChainId] || [];
-      const filtered = tokens.filter(token => {
-        const search = inputSearchSwapFor.trim().toLowerCase();
-        if (!search) return true;
-        return (
-          token.symbol?.toLowerCase().includes(search) ||
-          token.name?.toLowerCase().includes(search)
-        );
-      });
-      const mapped = filtered.map(token => ({
+      const mapped = tokens.map(token => ({
         address: [token.address],
         id: token.address,
         lURI: token.logoURI || null,
@@ -175,7 +167,7 @@ export const BridgeTab = ({
     };
     const timeoutId = setTimeout(fetchAndCacheTokens, 450);
     return () => clearTimeout(timeoutId);
-  }, [selectedBridgeToChainId, inputSearchSwapFor]);
+  }, [selectedBridgeToChainId]);
 
   // Handler to clear all bridge trade fields
   const handleClearBridgeTrade = () => {

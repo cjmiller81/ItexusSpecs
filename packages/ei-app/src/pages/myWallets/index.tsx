@@ -30,7 +30,7 @@ export default function MyWalletsPage() {
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
-  const [totalAmount,setTotalAmount] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
 
   const { t } = useTranslation("MyWalletsPage");
@@ -109,7 +109,7 @@ export default function MyWalletsPage() {
         wallets={wallets}
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
-        totalAmount = {totalAmount}
+        totalAmount={totalAmount}
         addWalletModalOpen={addWalletModalOpen}
         setAddWalletModalOpen={setAddWalletModalOpen}
       />

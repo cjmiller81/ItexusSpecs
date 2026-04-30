@@ -73,6 +73,13 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
   const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
   const theme = useTheme();
+
+  const handleBridgeToChainIdChange = (id: number | null) => {
+    setSelectedBridgeToChainId(id);
+    // Reset selected token for bridge when target chain changes
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+  };
   const { t } = useTranslation("NewPositionSection");
   const { getTradeAggregatorQuoteLimit } = useSubscription();
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
@@ -219,7 +226,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
     const matchedToken = filteredRows.find(token => 
       token.tokenName?.toUpperCase() === symbolOptionSwap?.sym?.toUpperCase() &&
-      token.chain?.toUpperCase() === selectedTokenRow?.lifiChain?.name.toUpperCase()
+      token.chainId === selectedTokenRow?.chainId
     );
     setBalanceRaw(matchedToken?.balance);
   }, [symbolOptionSwap, selectedChain])
@@ -233,52 +240,55 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     setInputSearchSwapForSwap("");
     setSymbolOptionSwapForBridge(null);
     setInputSearchSwapForBridge("");
+    setInputSearchSwap("");
     setSelectedChain("");
     setNewBalance("");
   };
 
   useEffect(() => {
+    resetAllState();
+    
     if (!selectedWallet) {
-      resetAllState();
       return;
     }
     const addresses: string[] = filteredRows
       .map((token) => token.tokenAddress)
       .filter((address): address is string => typeof address === 'string' && address !== '');
     setTokenAddresses(addresses);
-  }, [selectedWallet, filteredRows]);
+  }, [selectedWallet]);
 
   // Swap tab: fetch tokens for Swap For dropdown using getLifiTokens (with cache)
-  const swapForTokensCache = React.useRef<{ [chainId: number]: any[] }>({});
+  // Swap tab: fetch and filter tokens for Swap For dropdown (using cache)
+  const [tokensForCurrentChain, setTokensForCurrentChain] = useState<any[]>([]);
+
   useEffect(() => {
-    if (activeTab !== 'swap' || !selectedTokenRow?.lifiChain?.name) return;
+    let chainId: number | undefined;
 
-    let chainId: number | undefined = undefined;
-    if (lifiChainMap) {
-      const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
-      chainId = chainEntry?.id;
-    }
-    if (!chainId) return;
-
-    const fetchAndCacheTokens = async () => {
-      if (!swapForTokensCache.current[chainId!]) {
-        try {
-          const tokens = await getLifiTokens(chainId!);
-          swapForTokensCache.current[chainId!] = tokens;
-        } catch (err) {
-          swapForTokensCache.current[chainId!] = [];
-        }
-      }
-      const tokens = swapForTokensCache.current[chainId!] || [];
-      const filtered = tokens.filter(token => {
-        const search = inputSearchSwapForSwap.trim().toLowerCase();
-        if (!search) return true;
-        return (
-          token.symbol?.toLowerCase().includes(search) ||
-          token.name?.toLowerCase().includes(search)
+    if (activeTab === "swap") {
+      const chainName = selectedTokenRow?.lifiChain?.name || selectedChain;
+      if (chainName && lifiChainMap) {
+        const chainEntry = Array.from(lifiChainMap.values()).find(
+          (c) => c.name.toLowerCase() === chainName.toLowerCase()
         );
-      });
-      const mapped = filtered.map(token => ({
+        chainId = chainEntry?.id;
+      }
+    } else {
+      chainId = selectedBridgeToChainId || undefined;
+    }
+
+    if (!chainId) {
+      setTokensForCurrentChain([]);
+      return;
+    }
+
+    getLifiTokens(chainId).then(setTokensForCurrentChain).catch(() => setTokensForCurrentChain([]));
+  }, [activeTab, selectedTokenRow?.lifiChain?.name, selectedChain, selectedBridgeToChainId, lifiChainMap]);
+
+  useEffect(() => {
+    const processTokens = () => {
+      const tokens = tokensForCurrentChain || [];
+      
+      const mapped = tokens.map((token) => ({
         address: [token.address],
         id: token.address,
         lURI: token.logoURI || null,
@@ -287,19 +297,34 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         name: token.name || null,
         sym: token.symbol,
       }));
+
+      // Force-include the selected token and deduplicate
+      const currentToken = activeTab === "swap" ? symbolOptionSwapForSwap : symbolOptionSwapForBridge;
+      const combined = currentToken ? [currentToken, ...mapped] : mapped;
+      
+      // Use a Map to ensure unique tokens by ID or Address
+      const uniqueMap = new Map();
+      combined.forEach(item => {
+        const key = item.id || (item.address?.[0]?.toLowerCase());
+        if (key && !uniqueMap.has(key)) {
+          uniqueMap.set(key, item);
+        }
+      });
+
+      const finalItems = Array.from(uniqueMap.values());
+
       setTokenIconsSwapFor({
-        items: mapped,
+        items: finalItems,
         pageNumber: 0,
         totalPages: 1,
-        totalCount: mapped.length,
         hasPreviousPage: false,
         hansNextPage: false,
+        totalCount: finalItems.length,
       });
     };
 
-    const timeoutId = setTimeout(fetchAndCacheTokens, 450);
-    return () => clearTimeout(timeoutId);
-  }, [activeTab, selectedChain, inputSearchSwapForSwap]);
+    processTokens();
+  }, [tokensForCurrentChain, activeTab, symbolOptionSwapForSwap, symbolOptionSwapForBridge]);
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
@@ -588,22 +613,24 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     if (selectedTokenRow && tokenIcons?.items) {
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
 
-      const matchedToken = tokenIcons.items.find(token =>
-        token.sym?.toUpperCase() === selectedTokenRow.tokenName?.toUpperCase()
-      );
+      const targetId = `${selectedTokenRow.tokenName?.toLowerCase().trim()}-${selectedTokenRow.chainId}`;
+      const matchedToken = tokenIcons.items.find(token => token.id === targetId);
 
       if (matchedToken) {
         setSymbolOptionSwap(matchedToken);
         setSelectedToken(matchedToken.sym);
       } else {
         const virtualToken = {
-          id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+          id: `${selectedTokenRow.tokenName?.toLowerCase().trim()}-${selectedTokenRow.chainId}`,
           sym: selectedTokenRow.tokenName || '',
           name: selectedTokenRow.name || '',
           address: [selectedTokenRow.tokenAddress || ''],
           lURI: selectedTokenRow.logoUrl,
           mCap: 0,
           mSup: null,
+          chainId: selectedTokenRow.chainId,
+          chain: selectedTokenRow.chain,
+          tokenName: selectedTokenRow.tokenName,
         };
         setSymbolOptionSwap(virtualToken);
         setSelectedToken(virtualToken.sym);
@@ -611,23 +638,62 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     } else if (selectedTokenRow && !tokenIcons?.items) {
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
     }
+
+    // Reset subordinate dropdowns when selection changes
     setSymbolOptionSwapForSwap(null);
     setInputSearchSwapForSwap("");
     setSymbolOptionSwapForBridge(null);
     setInputSearchSwapForBridge("");
+    setSelectedBridgeToChainId(null);
+    setInputSearchBridgeToChain("");
+    setQuoteDataBridge([]);
+    setLastUpdatedBridge(null);
+    setErrorMessageBridge(null);
+    setShowNoQuotesMessage(false);
+    
+    if (!selectedTokenRow) {
+      setSymbolOptionSwap(null);
+      setSelectedToken(null);
+      setSelectedChain("");
+      setNewBalance("");
+      if (onSelectedTokenChange) {
+        onSelectedTokenChange(null, null);
+      }
+    }
   }, [selectedTokenRow, tokenIcons]);
 
   useEffect(() => {
-    if (filteredRows.length > 0) {
-      const virtualTokens = filteredRows.map(row => ({
-        id: `virtual-${row.tokenName?.toLowerCase()}`,
-        sym: row.tokenName || '',
-        name: row.name || '',
-        address: [row.tokenAddress || ''],
-        lURI: row.logoUrl,
-        mCap: 0,
-        mSup: null,
-      }));
+    if (filteredRows && filteredRows.length > 0) {
+      const uniqueTokensMap = new Map();
+      const labelCounts = new Map();
+      
+      filteredRows.forEach(row => {
+        const symbol = row.tokenName?.toUpperCase().trim() || "";
+        const chain = row.chain?.toUpperCase().trim() || "";
+        const key = `${symbol}-${chain}`;
+        
+        if (symbol && !uniqueTokensMap.has(key)) {
+          const baseLabel = `${symbol}-${row.name || ""}`;
+          const count = labelCounts.get(baseLabel) || 0;
+          labelCounts.set(baseLabel, count + 1);
+          const invisibleSuffix = "\u200B".repeat(count);
+
+          uniqueTokensMap.set(key, {
+            id: `${symbol.toLowerCase()}-${row.chainId}`,
+            sym: row.tokenName || "",
+            name: (row.name || "") + invisibleSuffix,
+            address: [row.tokenAddress || ""],
+            lURI: row.logoUrl,
+            mCap: 0,
+            mSup: null,
+            chainId: row.chainId,
+            chain: row.chain,
+            tokenName: row.tokenName,
+          });
+        }
+      });
+
+      const virtualTokens = Array.from(uniqueTokensMap.values());
 
       setTokenIcons({
         items: virtualTokens,
@@ -645,7 +711,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
       
       const virtualToken = {
-        id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+        id: `${selectedTokenRow.tokenName?.toLowerCase()}-${selectedTokenRow.chainId}`,
         sym: selectedTokenRow.tokenName || '',
         name: selectedTokenRow.chain || '',
         address: [selectedTokenRow.tokenAddress || ''],
@@ -681,7 +747,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     if (matchedToken) {
       setSelectedToken(matchedToken.tokenName || null);
       setNewBalance(matchedToken.balance?.toString() || "");
-      onSelectedTokenChange?.(matchedToken.tokenName, matchedToken.chain);
+      // REMOVED onSelectedTokenChange from here to break the loop
     } else {
       setSelectedToken(null);
       setNewBalance("");
@@ -838,12 +904,18 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
 
   // Find the selected position from dropdown and update fields as if selected from table
   const handleCurrentPositionDropdownChange = async (event: any, value: TokenSearchItem | null) => {
+    setSymbolOptionSwap(value);
+    if (value) {
+      onSelectedTokenChange?.(value.tokenName || value.sym, { name: value.chain, id: value.chainId });
+    } else {
+      onSelectedTokenChange?.(null, null);
+    }
+    
     if (!value) {
       setSymbolOptionSwap(null);
       setSelectedToken(null);
       setSelectedChain("");
       setNewBalance("");
-      onSelectedTokenChange?.(null, null);
       setSelectedTokenRowSwap(null);
       setSelectedTokenRowBridge(null);
       return;
@@ -860,21 +932,36 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     setSymbolOptionSwap(tokenToSet);
     setSelectedToken(tokenToSet.sym);
 
-    const matchedToken = filteredRows.find(token =>
-      token.tokenName?.toUpperCase() === tokenToSet.sym?.toUpperCase()
-    );
-    if (matchedToken) {
-      setSelectedChain(matchedToken.chain?.toUpperCase() || "");
-      setNewBalance(matchedToken.balance?.toString() || "");
-      onSelectedTokenChange?.(matchedToken.tokenName, matchedToken.chain);
-      setSelectedTokenRowSwap(matchedToken);
-      setSelectedTokenRowBridge(matchedToken);
-    } else {
-      setSelectedChain("");
-      setNewBalance("");
-      onSelectedTokenChange?.(tokenToSet.sym, null);
-      setSelectedTokenRowSwap(null);
-      setSelectedTokenRowBridge(null);
+    // Reset Step 2 (Bridge To / Swap For)
+    setSymbolOptionSwapForSwap(null);
+    setInputSearchSwapForSwap("");
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+    setSelectedBridgeToChainId(null);
+    setInputSearchBridgeToChain("");
+    setQuoteDataBridge([]);
+    setLastUpdatedBridge(null);
+    setErrorMessageBridge(null);
+    setShowNoQuotesMessage(false);
+    setQuoteDataSwap([]); // Also reset swap quotes
+
+    // If we have a match in the portfolio for this specific token+chain, set it as the row
+    if (value && value.chainId) {
+      const portfolioMatch = filteredRows.find(token => 
+        token.tokenName?.toUpperCase() === value.sym?.toUpperCase() && 
+        token.chainId === value.chainId
+      );
+      if (portfolioMatch) {
+        setSelectedChain(portfolioMatch.chain?.toUpperCase() || "");
+        setNewBalance(portfolioMatch.balance?.toString() || "");
+        setSelectedTokenRowSwap(portfolioMatch);
+        setSelectedTokenRowBridge(portfolioMatch);
+      } else {
+        setSelectedChain(value.chain?.toUpperCase() || "");
+        setNewBalance("");
+        setSelectedTokenRowSwap(null);
+        setSelectedTokenRowBridge(null);
+      }
     }
   };
 
@@ -1734,7 +1821,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               setInputSearchSwapFor={setInputSearchSwapForBridge}
               setTokenIconsSwapFor={setTokenIconsSwapFor}
               selectedBridgeToChainId={selectedBridgeToChainId}
-              setSelectedBridgeToChainId={setSelectedBridgeToChainId}
+              setSelectedBridgeToChainId={handleBridgeToChainIdChange}
               inputSearchBridgeToChain={inputSearchBridgeToChain}
               setInputSearchBridgeToChain={setInputSearchBridgeToChain}
               onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
