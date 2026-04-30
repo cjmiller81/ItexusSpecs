@@ -161,14 +161,31 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
                 }}
               />
             )}
-            renderOption={(props, option) => (
-              <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {option.logoURI && (
-                  <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
-                )}
-                <Typography variant="body1">{option.name}</Typography>
-              </Box>
-            )}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props as any;
+              return (
+                <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {option.logoURI && (
+                    <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
+                  )}
+                  <Typography variant="body1">{option.name}</Typography>
+                </Box>
+              );
+            }}
+            filterOptions={(options, state) => {
+              const search = state.inputValue.toLowerCase().trim();
+              const currentLabel = selectedChain ? selectedChain.name.toLowerCase().trim() : "";
+              if (!search || search === currentLabel) {
+                return options;
+              }
+              return options.filter(o => 
+                o.name.toLowerCase().includes(search)
+              );
+            }}
+            onFocus={(e) => {
+               const input = e.target as HTMLInputElement;
+               if (input.select) input.select();
+            }}
           />
           {addPositionError && (
             <Box sx={(theme) => ({
@@ -201,7 +218,7 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
               setNewBalance("");
             }
           }}
-          isOptionEqualToValue={(option, value) => option.id === value?.id}
+          isOptionEqualToValue={(option, value) => (option.id === value?.id) || (option.address?.[0] === value?.address?.[0])}
           disableClearable={false}
           inputValue={
             symbolOptionSwapFor
@@ -275,20 +292,44 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
               />
             );
           }}
-          renderOption={(props, option) => (
-            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar
-                src={option.lURI ?? undefined}
-                alt={option.sym}
-                sx={{ width: 24, height: 24 }}
-              />
-              <Typography variant="body1">
-                {option.name
-                  ? `${option.sym.toUpperCase()} - ${option.name}`
-                  : option.sym.toUpperCase()}
-              </Typography>
-            </Box>
-          )}
+          renderOption={(props, option) => {
+            const { key, ...optionProps } = props as any;
+            return (
+              <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Avatar
+                  src={option.lURI ?? undefined}
+                  alt={option.sym}
+                  sx={{ width: 24, height: 24 }}
+                />
+                <Typography variant="body1">
+                  {option.name
+                    ? `${option.sym.toUpperCase()} - ${option.name}`
+                    : option.sym.toUpperCase()}
+                </Typography>
+              </Box>
+            );
+          }}
+          filterOptions={(options, state) => {
+            const search = state.inputValue.toLowerCase().trim();
+            const currentLabel = symbolOptionSwapFor 
+              ? (symbolOptionSwapFor.name 
+                  ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` 
+                  : symbolOptionSwapFor.sym.toUpperCase()).toLowerCase().trim()
+              : "";
+
+            if (!search || search === currentLabel) {
+              return options;
+            }
+
+            return options.filter(o => 
+              o.sym.toLowerCase().includes(search) || 
+              (o.name && o.name.toLowerCase().includes(search))
+            );
+          }}
+          onFocus={(e) => {
+             const input = e.target as HTMLInputElement;
+             if (input.select) input.select();
+          }}
         />
         <TextField
           label={t('Qty')}

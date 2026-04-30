@@ -1,29 +1,6 @@
-/**
- * Fetch all tokens for a chain from LiFi API
- * @param chainId Chain ID
- */
-export async function getLifiTokens(chainId: number): Promise<LifiTokenResponse[]> {
-  const resp = await appAxios.get(`/api/lifi/tokens`, {
-    params: { chainId },
-  });
-
-  return resp.data?.tokens?.[chainId] || [];
-}
-// LiFi API integration for Bridge feature
 import appAxios from "@/libs/axios/axios";
 
-export interface LifiRoutesRequest {
-  fromChainId: number;
-  toChainId: number;
-  fromAmount: string;
-  fromTokenAddress: string;
-  toTokenAddress: string;
-}
-
-export async function postLifiRoutes(params: LifiRoutesRequest) {
-  const resp = await appAxios.post('/api/lifi/routes', params);
-  return resp.data;
-}
+const tokensCache: Record<number, LifiTokenResponse[]> = {};
 
 export interface LifiTokenResponse {
   address: string;
@@ -39,14 +16,62 @@ export interface LifiTokenResponse {
   tags?: string[];
 }
 
-/**
- * Fetch token info from LiFi API
- * @param chainId Source chain ID
- * @param tokenKey Тicker/key ('SOL', 'USDT', 'ETH')
- */
-export async function getLifiToken(chainId: number, tokenKey: string): Promise<LifiTokenResponse> {
-  const resp = await appAxios.get(`/api/lifi/token`, {
-    params: { chainId, tokenAddress: tokenKey },
-  });
+export interface LifiRoutesRequest {
+  fromChainId: number;
+  toChainId: number;
+  fromAmount: string;
+  fromTokenAddress: string;
+  toTokenAddress: string;
+}
+
+export async function postLifiRoutes(params: LifiRoutesRequest) {
+  const resp = await appAxios.post(`/api/lifi/routes`, params);
   return resp.data;
+}
+
+/**
+ * Fetch all tokens for a chain from LiFi API
+ * @param chainId Chain ID
+ */
+export async function getLifiTokens(chainId: number): Promise<LifiTokenResponse[]> {
+  if (chainId <= 0) {
+    return [];
+  }
+
+  if (tokensCache[chainId]) {
+    return tokensCache[chainId];
+  }
+
+  try {
+    const resp = await appAxios.get(`/api/lifi/tokens`, {
+      params: { chainId },
+    });
+
+    const tokensByChain = resp.data?.tokens || {};
+    const tokens = tokensByChain[chainId] || tokensByChain[chainId.toString()] || [];
+    tokensCache[chainId] = tokens;
+    return tokens;
+  } catch (e) {
+    console.error(`Error fetching tokens for chain ${chainId}:`, e);
+    return [];
+  }
+}
+
+/**
+ * Fetch token info from LiFi API list (cached)
+ * @param chainId Source chain ID
+ * @param tokenKey Ticker/symbol or address
+ */
+export async function getLifiToken(chainId: number, tokenKey: string): Promise<LifiTokenResponse | null> {
+  if (!tokenKey) return null;
+
+  // Search in cache only. No redundant individual requests per user requirements.
+  const cachedTokens = await getLifiTokens(chainId);
+  const found = cachedTokens.find(t => 
+    t.symbol?.toLowerCase() === tokenKey.toLowerCase() || 
+    t.address?.toLowerCase() === tokenKey.toLowerCase() ||
+    t.name?.toLowerCase() === tokenKey.toLowerCase()
+  );
+
+  return found || null;
 }

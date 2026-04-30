@@ -30,7 +30,7 @@ const TOUR_NAME = "profile";
 
 const StartTourButton = () => {
   return (
-    <AnimatedStartTourButton 
+    <AnimatedStartTourButton
       tourId={TOUR_ID}
       sx={{ ml: 2 }}
     />
@@ -141,11 +141,11 @@ export default function ProfilePage() {
     <TourProvider
       steps={steps}
       styles={{
-        popover: (base) => ({ 
-          ...base, 
-          borderRadius: 12, 
-          padding: 16, 
-          background: "#f7f5f2", 
+        popover: (base) => ({
+          ...base,
+          borderRadius: 12,
+          padding: 16,
+          background: "#f7f5f2",
           color: "#6b7280",
           fontSize: "0.95rem",
           lineHeight: 1.8
@@ -171,20 +171,20 @@ export default function ProfilePage() {
           const step = steps[props.currentStep];
           // @ts-ignore - content() signature varies
           const content = typeof step?.content === 'function' ? step.content() : step?.content;
-          
+
           return (
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
                 <Box sx={{
-                  width: 30, 
-                  height: 30, 
+                  width: 30,
+                  height: 30,
                   borderRadius: '50%',
-                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)',
                   color: '#fff',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  fontWeight: 700, 
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
                   fontSize: 14,
                   flexShrink: 0,
                   marginTop: "-2px"
@@ -210,13 +210,13 @@ export default function ProfilePage() {
                 <Button
                   variant="contained"
                   onClick={() => setCurrentStep(currentStep - 1)}
-                  sx={{ 
-                    background: '#f7f5f2', 
-                    color: '#4a5568', 
-                    border: '1px solid #e2e8f0', 
-                    boxShadow: 'none', 
+                  sx={{
+                    background: '#f7f5f2',
+                    color: '#4a5568',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: 'none',
                     textTransform: 'none',
-                    '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                    '&:hover': { background: '#f0ece5', boxShadow: 'none' }
                   }}
                 >
                   Prior
@@ -250,7 +250,7 @@ export default function ProfilePage() {
             <StartTourButton />
           </Box>
           <TabContext value={value}>
-            <StyledTabList 
+            <StyledTabList
               onChange={(_event, newValue) => handleChange(newValue)}
               id="profile-header-tabs"
             >
@@ -297,9 +297,9 @@ export default function ProfilePage() {
               <WalletsContainer lifiChainMap={lifiChainMap} />
             </TabPanel>
             <TabPanel value="billing">
-            <Elements stripe={stripePromise}>
-        <BillingContainer />
-      </Elements>
+              <Elements stripe={stripePromise}>
+                <BillingContainer />
+              </Elements>
             </TabPanel>
           </TabContext>
         </ProfileContainer>
@@ -346,9 +346,9 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 
   useEffect(() => {
     if (!reactourSettings?.tours) return;
-    
+
     const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
-    
+
     if (!viewed && !isOpen && !tourWasOpened) {
       const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
       if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
@@ -361,7 +361,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 
     dispatch(updateTourStatusAsync({
       tourName: TOUR_NAME,
-      update: { 
+      update: {
         step: currentStep,
         viewed: currentStep >= totalSteps - 1 ? true : undefined
       }
@@ -378,6 +378,6 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
       setTourWasOpened(true);
     }
   }, [isOpen, tourWasOpened, dispatch]);
-  
+
   return null;
 };

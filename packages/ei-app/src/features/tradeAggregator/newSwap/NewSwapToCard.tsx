@@ -6,7 +6,6 @@ import LockIcon from "@mui/icons-material/Lock";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SearchIcon from "@mui/icons-material/Search";
 import { CHAIN_COLORS } from "./../bridgeChains";
-// import { getLifiToken } from "../lifiApi";
 
 interface NewSwapToCardProps {
   t: any;
@@ -102,7 +101,7 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
             <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: !symbolOptionSwap ? 'rgba(81,81,81,1)' : (theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray"), letterSpacing: '0.06em', textTransform: 'none' }}>Swap To</Typography>
           </Box>
           {/* Chain badge for Swap To: always use the same chain as Swap From */}
-          {symbolOptionSwap && selectedChain && (() => {
+          {selectedChain && (() => {
             const lifiChain = lifiChains.find(
               (c) => c.name?.toUpperCase() === displayChainName?.toUpperCase() || c.key?.toUpperCase() === selectedChain.toUpperCase()
             );
@@ -133,9 +132,11 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
                   setInputSearchSwapFor(newValue.name ? `${newValue.sym.toUpperCase()} - ${newValue.name}` : newValue.sym.toUpperCase());
                 }
               }}
-              isOptionEqualToValue={(option, value) => option.id === value?.id}
+              isOptionEqualToValue={(option, value) => 
+                option.id === value?.id || 
+                (!!option.address?.[0] && !!value?.address?.[0] && option.address[0].toLowerCase() === value.address[0].toLowerCase())
+              }
               disableClearable={false}
-              inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` : symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
               onInputChange={(_event, newInputValue, reason) => {
                 if (!symbolOptionSwap) return; // locked
                 if (reason === 'input') {
@@ -197,20 +198,40 @@ export const NewSwapToCard: React.FC<NewSwapToCardProps> = ({
                 );
               }}
               ListboxComponent={VirtualizedListbox}
-              renderOption={(props, option) => (
-                <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Avatar
-                    src={option.lURI ?? undefined}
-                    alt={option.sym}
-                    sx={{ width: 24, height: 24 }}
-                  />
-                  <Typography variant="body1">
-                    {option.name
-                      ? `${option.sym.toUpperCase()} - ${option.name}`
-                      : option.sym.toUpperCase()}
-                  </Typography>
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...optionProps } = props as any;
+                return (
+                  <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar
+                      src={option.lURI ?? undefined}
+                      alt={option.sym}
+                      sx={{ width: 24, height: 24 }}
+                    />
+                    <Typography variant="body1">
+                      {option.name
+                        ? `${option.sym.toUpperCase()} - ${option.name}`
+                        : option.sym.toUpperCase()}
+                    </Typography>
+                  </Box>
+                );
+              }}
+              filterOptions={(options, state) => {
+                const search = state.inputValue.toLowerCase().trim();
+                const currentLabel = symbolOptionSwapFor 
+                  ? (symbolOptionSwapFor.name 
+                      ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` 
+                      : symbolOptionSwapFor.sym.toUpperCase()).toLowerCase().trim()
+                  : "";
+                if (!search || search === currentLabel) return options;
+                return options.filter(o => 
+                  o.sym.toLowerCase().includes(search) || 
+                  (o.name && o.name.toLowerCase().includes(search))
+                );
+              }}
+              onFocus={(e) => {
+                 const input = e.target as HTMLInputElement;
+                 if (input.select) input.select();
+              }}
             />
           </Box>
         </Box>

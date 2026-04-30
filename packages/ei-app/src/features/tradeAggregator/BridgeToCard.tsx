@@ -150,7 +150,10 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                 setSelectedBridgeToChainId(newValue ? newValue.id : null);
                 setInputSearchBridgeToChain(newValue ? newValue.name : "");
               }}
-              isOptionEqualToValue={(option, value) => option.id === value?.id}
+              isOptionEqualToValue={(option, value) => 
+                option.id === value?.id || 
+                (!!option.address?.[0] && !!value?.address?.[0] && option.address[0].toLowerCase() === value.address[0].toLowerCase())
+              }
               disableClearable={false}
               inputValue={inputSearchBridgeToChain}
               onInputChange={(_event, newInputValue, reason) => {
@@ -187,14 +190,30 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                   }}
                 />
               )}
-              renderOption={(props, option) => (
-                <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {option.logoURI && (
-                    <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
-                  )}
-                  <Typography variant="body1">{option.name}</Typography>
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...optionProps } = props as any;
+                return (
+                  <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {option.logoURI && (
+                      <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
+                    )}
+                    <Typography variant="body1">{option.name}</Typography>
+                  </Box>
+                );
+              }}
+              filterOptions={(options, state) => {
+                const selectedChainObj = filteredChains.find((chain: any) => chain.id === selectedBridgeToChainId);
+                if (state.inputValue === (selectedChainObj ? selectedChainObj.name : "")) {
+                  return options;
+                }
+                return options.filter(o => 
+                  o.name.toLowerCase().includes(state.inputValue.toLowerCase())
+                );
+              }}
+              onFocus={(e) => {
+                 const input = e.target as HTMLInputElement;
+                 if (input.select) input.select();
+              }}
             />
           </Box>
           <Box flex={6}>
@@ -211,9 +230,11 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                   setInputSearchSwapFor(newValue.name ? `${newValue.sym.toUpperCase()} - ${newValue.name}` : newValue.sym.toUpperCase());
                 }
               }}
-              isOptionEqualToValue={(option, value) => option.id === value?.id}
+              isOptionEqualToValue={(option, value) => 
+                option.id === value?.id || 
+                (!!option.address?.[0] && !!value?.address?.[0] && option.address[0].toLowerCase() === value.address[0].toLowerCase())
+              }
               disableClearable={false}
-              inputValue={symbolOptionSwapFor ? symbolOptionSwapFor.name ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` : symbolOptionSwapFor.sym.toUpperCase() : inputSearchSwapFor}
               onInputChange={(_event, newInputValue, reason) => {
                 if (!symbolOptionSwap || !selectedBridgeToChainId) return; // locked
                 if (reason === 'input') {
@@ -275,20 +296,44 @@ export const BridgeToCard: React.FC<BridgeToCardProps> = ({
                 );
               }}
               ListboxComponent={VirtualizedListbox}
-              renderOption={(props, option) => (
-                <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Avatar
-                    src={option.lURI ?? undefined}
-                    alt={option.sym}
-                    sx={{ width: 24, height: 24 }}
-                  />
-                  <Typography variant="body1">
-                    {option.name
-                      ? `${option.sym.toUpperCase()} - ${option.name}`
-                      : option.sym.toUpperCase()}
-                  </Typography>
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...optionProps } = props as any;
+                return (
+                  <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar
+                      src={option.lURI ?? undefined}
+                      alt={option.sym}
+                      sx={{ width: 24, height: 24 }}
+                    />
+                    <Typography variant="body1">
+                      {option.name
+                        ? `${option.sym.toUpperCase()} - ${option.name}`
+                        : option.sym.toUpperCase()}
+                    </Typography>
+                  </Box>
+                );
+              }}
+              filterOptions={(options, state) => {
+                const search = state.inputValue.toLowerCase().trim();
+                const currentLabel = symbolOptionSwapFor 
+                  ? (symbolOptionSwapFor.name 
+                      ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` 
+                      : symbolOptionSwapFor.sym.toUpperCase()).toLowerCase().trim()
+                  : "";
+
+                if (!search || search === currentLabel) {
+                  return options;
+                }
+
+                return options.filter(o => 
+                  o.sym.toLowerCase().includes(search) || 
+                  (o.name && o.name.toLowerCase().includes(search))
+                );
+              }}
+              onFocus={(e) => {
+                 const input = e.target as HTMLInputElement;
+                 if (input.select) input.select();
+              }}
             />
           </Box>
         </Box>
