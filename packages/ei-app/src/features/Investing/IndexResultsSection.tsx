@@ -40,6 +40,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useAppDispatch } from "@/libs/redux/Store";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { getIndexResultWalletTableColumns } from "@/constants/ColumnsDefs/IndexResultWalletTable";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import { getIndexPositionTableColumns } from "@/constants/ColumnsDefs/IndexResultPositionTable";
 import { PositionAllocation } from "@/models/Wallet/PositionAllocation";
 
@@ -84,6 +85,7 @@ export const IndexResultsSection = ({
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
   const apiRef = useGridApiRef();
   const dispatch = useAppDispatch();
+  const { lifiChainMap } = useLifiChainMap();
   const [selectedWallet, setSelectedWallet] = useState<SelectedWallet | null>(null);
   const [newToken, setNewToken] = useState<string>("");
   const [newBalance, setNewBalance] = useState<string>("");
@@ -137,10 +139,11 @@ export const IndexResultsSection = ({
       if (wallet) {
         const tokens = toTableTokensModelFromWallet(wallet);
         setFilteredWalletData(
-          tokens.map(({ tokenName, chainName, balance }) => ({
+          tokens.map(({ tokenName, chainName, balance, chainId }) => ({
             tokenName,
             chain: chainName,
             balance: balance,
+            chainId,
           }))
         );
       } else {
@@ -477,7 +480,7 @@ export const IndexResultsSection = ({
                   checkboxSelection={true}
                   apiRef={apiRef}
                   getRowId={x => x.tokenName}
-                  columns={getIndexResultWalletTableColumns()}
+                  columns={getIndexResultWalletTableColumns(lifiChainMap)}
                   rows={filteredRows}
                   rowSelectionModel={selectedRows}
                   onRowSelectionModelChange={handleSelectionChange}

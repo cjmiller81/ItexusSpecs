@@ -33,6 +33,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import LockIcon from "@mui/icons-material/Lock";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import { TabSelector } from '../../../../components/src/components/common/TabSelector';
 import { Exchange, useGetCountriesQuery, useGetExchangesQuery, useGetExchangesTickerQuery, useGetCoinGeckoPricesQuery, useGetExchangesWithTickersQuery } from './TradeTableApi';
 import { skipToken } from "@reduxjs/toolkit/query";
 import ArbitrageMatrix from './ArbitrageMatrix';
@@ -674,54 +675,15 @@ export function TradeTable() {
           }}
       >
       
-      <Grid item container spacing={2} sx={{ marginBottom: 2 }}>
-        <Grid item>
-           <Button
-             variant={activeTab === "Trading Pairs" ? "contained" : "outlined"}
-             color="primary"
-             onClick={() => setActiveTab("Trading Pairs")}
-             startIcon={<SwapVertIcon sx={{ 
-               color: activeTab === "Trading Pairs" ? "#000" : "#000" 
-             }} />}
-             sx={{
-               textTransform: "none",
-               fontWeight: 500,
-               fontSize: "0.875rem",
-               backgroundColor: activeTab === "Trading Pairs" ? "#f7f5f2" : "#e5ddd5",
-               color: activeTab === "Trading Pairs" ? "#000" : "#000",
-               borderColor: "#e5ddd5",
-               "&:hover": {
-                 backgroundColor: activeTab === "Trading Pairs" ? "#f7f5f2" : "#e5ddd5",
-                 borderColor: "#e5ddd5",
-               },
-             }}>
-               {t("TradingPairs")}
-           </Button>
-        </Grid>
-          <Grid item>
-           <Button
-             variant={activeTab === "Arbitrage Matrix" ? "contained" : "outlined"}
-             color="primary"
-             onClick={() => setActiveTab("Arbitrage Matrix")}
-             startIcon={<TrendingUpIcon sx={{ 
-               color: activeTab === "Arbitrage Matrix" ? "#000" : "#000" 
-             }} />}
-             sx={{
-               textTransform: "none",
-               fontWeight: 500,
-               fontSize: "0.875rem",
-               backgroundColor: activeTab === "Arbitrage Matrix" ? "#f7f5f2" : "#e5ddd5",
-               color: activeTab === "Arbitrage Matrix" ? "#000" : "#000",
-               borderColor: "#e5ddd5",
-               "&:hover": {
-                 backgroundColor: activeTab === "Arbitrage Matrix" ? "#f7f5f2" : "#e5ddd5",
-                 borderColor: "#e5ddd5",
-               },
-             }}>
-               {t("ArbitrageMatrix")}
-           </Button>
-         </Grid>
-      </Grid>
+      <TabSelector
+        options={[
+          { label: t("TradingPairs"), value: "Trading Pairs", icon: <SwapVertIcon sx={{ fontSize: 18 }} /> },
+          { label: t("ArbitrageMatrix"), value: "Arbitrage Matrix", icon: <TrendingUpIcon sx={{ fontSize: 18 }} /> },
+        ]}
+        value={activeTab}
+        onChange={setActiveTab as (v: string) => void}
+        sx={{ mb: 2, mt: 0, height: 36 }}
+      />
 
       {activeTab === "Trading Pairs" ? (
         <>

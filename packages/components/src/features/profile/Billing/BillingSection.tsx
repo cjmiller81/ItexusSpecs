@@ -2,6 +2,7 @@ import { Box, Button, Stack, StackProps, styled, Typography, useMediaQuery, useT
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BillingApiUsageCard } from "./BillingApiUsageCard";
 import { useSelector } from "react-redux";
 import { YesNoDialog } from "../../../components";
 import { PageTitle } from "../../../components/TextDisplay/PageTitle";
@@ -17,6 +18,7 @@ import { PaymentCardModel } from "./models/PaymentCardModel";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
 import { Product } from "./models/Product";
 import { PlanModel } from "./models/PlanModel";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 
 export const BillingContainer = ({ ...props }: StackProps) => {
   const { t } = useTranslation(["BillingContainer"]);
@@ -32,6 +34,18 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   const paymentMethods = useSelector((state: RootState) => state.billing.paymentMethods);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [activeSubscription, setActiveSubscription] = useState<any>(null);
+
+  useEffect(() => {
+      if (subscriptions?.length) {
+          const active = subscriptions
+              .filter(sub => sub.status === "active" || sub.status === "trialing")
+              .sort((a, b) => b.created - a.created)[0];
+          setActiveSubscription(active);
+      } else {
+          setActiveSubscription(null);
+      }
+  }, [subscriptions]);
 
   useEffect(() => {
     const initializeBilling = async () => {
@@ -149,6 +163,16 @@ export const BillingContainer = ({ ...props }: StackProps) => {
             PriceId: newPlan.id,
           })
         ).unwrap();
+
+        // Explicitly refresh subscriptions and product after first plan selection
+        const updatedSubscriptions = await dispatch(fetchSubscriptionsAsync(billing?.id)).unwrap();
+        const activeSubscription = updatedSubscriptions?.find(sub => sub.status === "active" || sub.status === "trialing");
+        if (activeSubscription?.items?.data?.[0]?.price?.product) {
+          const productData = await dispatch(fetchProductAsync(activeSubscription.items.data[0].price.product)).unwrap();
+          dispatch(setProduct(productData));
+        }
+        dispatch(addMessage({ message: t("PlanUpgraded") }));
+        setSelectedPlanId(newPlan.id);
       } else {
         const currentPlan = plans.find((plan) => plan.id === selectedPlanId);
 
@@ -404,6 +428,33 @@ export const BillingContainer = ({ ...props }: StackProps) => {
   
   const duplicatePlans = plans.filter(plan => planCounts[plan.product] > 1 && plan.active === true);
 
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+
+  const handleCancelPlan = async () => {
+    if (!activeSubscription) return;
+    setCancelLoading(true);
+    try {
+      await dispatch(cancelSubscriptionAsync({ SubscriptionId: activeSubscription.id })).unwrap();
+      if (billing?.id) {
+        await dispatch(fetchSubscriptionsAsync(billing.id));
+      }
+      await dispatch(getBillingAsync());
+      setSelectedPlanId(null);
+      dispatch(addMessage({ message: t("PlanCancelled") }));
+      setCancelModalOpen(false);
+    } catch (err) {
+      dispatch(addMessage({ message: t("PlanCancelError") }));
+    } finally {
+      setCancelLoading(false);
+    }
+  };
+
+  if (typeof window !== 'undefined') {
+    (window as any).showCancelPlanButton = !!activeSubscription;
+    (window as any).onCancelPlan = () => setCancelModalOpen(true);
+  }
+
   return (
     <>
       <YesNoDialog
@@ -432,7 +483,69 @@ export const BillingContainer = ({ ...props }: StackProps) => {
         ) : <></>}
       </PaymentMethodModal>
 
+      {/* Cancel Plan Confirmation Modal */}
+      <Dialog open={cancelModalOpen} onClose={() => setCancelModalOpen(false)}>
+        <DialogTitle>{t('CancelPlanTitle', 'Cancel Subscription')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('CancelPlanConfirmText', 'Are you sure you want to cancel your current subscription plan?')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCancelModalOpen(false)} disabled={cancelLoading}>
+            {t('No', 'No')}
+          </Button>
+          <Button onClick={handleCancelPlan} color="error" variant="contained" disabled={cancelLoading}>
+            {t('Yes', 'Yes, Cancel Plan')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Stack {...props}>
+        <Box display="flex" width="100%" gap={3} mb={3}>
+        <Box flex={1} minWidth={0}>
+          <BillingApiUsageCard
+            currentPeriodEnd={activeSubscription?.items?.data?.[0]?.current_period_end}
+          />
+        </Box>
+        <Box flex={1} minWidth={0}>
+          <ProfileContainer
+            mt={0}
+            contentBgColor="#f0ece5"
+            endAdortment={
+              <Button
+                onClick={() => setPaymentMethodModal(true)}
+                sx={{ minWidth: "160px", alignSelf: "center" }}
+                variant="contained">
+                {t("AddPayment")}
+              </Button>
+            }
+            title={t("PaymentMethods")}>
+            {cards.map((card, index) => (
+              <PaymentCardTableRow
+                key={index}
+                isDefault={card.isDefault}
+                number={card.number}
+                onDelete={() => setCardToDeleteIndex(index)}
+                onSetDefault={() => handleSetDefaultCard(paymentMethods[index].id)}
+                sx={{
+                  borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
+                  borderWidth: "1px",
+                  borderColor: theme.palette.divider,
+                }}
+                {...props}
+              />
+            ))}
+
+            {!cards.length && (
+              <Typography sx={{ margin: "auto", paddingY: 10 }} variant="h5">
+                {t("NoPaymentMethods")}
+              </Typography>
+            )}
+          </ProfileContainer>
+        </Box>
+      </Box>
+
         <PageTitle>{t("Plans")}</PageTitle>
 
         <PlansContainer>
@@ -453,41 +566,6 @@ export const BillingContainer = ({ ...props }: StackProps) => {
               ))}
           </Grid>
         </PlansContainer>
-
-        <ProfileContainer
-          mt={3}
-          contentBgColor="#f0ece5"
-          endAdortment={
-            <Button
-              onClick={() => setPaymentMethodModal(true)}
-              sx={{ minWidth: "160px", alignSelf: "center" }}
-              variant="contained">
-              {t("AddPayment")}
-            </Button>
-          }
-          title={t("PaymentMethods")}>
-          {cards.map((card, index) => (
-          <PaymentCardTableRow
-            key={index}
-            isDefault={card.isDefault}
-            number={card.number}
-            onDelete={() => setCardToDeleteIndex(index)}
-            onSetDefault={() => handleSetDefaultCard(paymentMethods[index].id)}
-            sx={{
-              borderBottom: cards.length && index !== cards.length - 1 ? "solid" : "none",
-              borderWidth: "1px",
-              borderColor: theme.palette.divider,
-            }}
-            {...props}
-          />
-        ))}
-
-          {!cards.length && (
-            <Typography sx={{ margin: "auto", paddingY: 10 }} variant="h5">
-              {t("NoPaymentMethods")}
-            </Typography>
-          )}
-        </ProfileContainer>
       </Stack>
     </>
   );

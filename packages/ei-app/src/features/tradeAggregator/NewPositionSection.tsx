@@ -1,4 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  getGasTokenSymbol,
+  formatNumberWithCommas,
+  generateErrorMessage
+} from "./tradeAggregatorUtils";
+import { useLifiChainMap } from "@/common/lifiChainContext";
+
+import { BridgeTab } from "./BridgeTab";
+import { NewSwapTab } from "./newSwap/NewSwapTab";
+import { toRawAmount } from "./toRawAmount";
+import { postLifiRoutes } from "./lifiApi";
 import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextField, TableCell, TableRow, TableHead,
   Table,
   TableContainer,
@@ -13,6 +24,8 @@ import {Grid, Button, useTheme, Typography, FormControl, MenuItem, Select, TextF
   Stack,
   CircularProgress,
 } from "@mui/material";
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import styles from "./unsupported-chain-notice.module.css";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTranslation } from "react-i18next";
 import { Wallet } from "@/models/Wallet/Wallet";
@@ -23,7 +36,7 @@ import { RootState } from "@/libs/redux/RootReducer";
 import { useAppDispatch } from "@/libs/redux/Store";
 import { fetchDex, fetchGas, fetchQuote, fetchQuoteParameters, fetchToken } from "components";
 import { dexWebsites } from "@/constants/dexWebsites";
-import { iconsApi } from "@/services/iconsService";
+import { getLifiTokens } from "./lifiApi";
 import { PaginatedList } from "components";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import SearchIcon from '@mui/icons-material/Search';
@@ -42,31 +55,55 @@ import NoRouteDialog from "./NoRouteDialog";
 import { OneInchQuoteResponse } from "components";
 import { useSubscription } from "components";
 
-interface NewPositionSectionProps {
-    selectedWallet: Wallet | null;
-    onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
-    filteredRows: WalletBalance[]; 
-    selectedTokenRow: WalletBalance | null;
-  }
+import { EnrichedTokenPosition } from "../../../../components/src/utils/enrichTokenPositions";
 
-export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow})=> {
+interface NewPositionSectionProps {
+  selectedWallet: Wallet | null;
+  onSelectedTokenChange?: (tokenInfo: any, chainInfo: any) => void;
+  filteredRows: EnrichedTokenPosition[];
+  selectedTokenRow: EnrichedTokenPosition | null;
+}
+
+export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selectedWallet, onSelectedTokenChange, filteredRows, selectedTokenRow}) => {
+  const { lifiChainMap } = useLifiChainMap();
+  // Check if selected token is not bridgeable
+  const isUnsupported = selectedTokenRow && selectedTokenRow.isBridgeable === false;
+  const [selectedTokenRowSwap, setSelectedTokenRowSwap] = useState<EnrichedTokenPosition | null>(null);
+  const [selectedTokenRowBridge, setSelectedTokenRowBridge] = useState<EnrichedTokenPosition | null>(null);
+  const [selectedBridgeToChainId, setSelectedBridgeToChainId] = useState<number | null>(null);
+  const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
   const theme = useTheme();
+
+  const handleBridgeToChainIdChange = (id: number | null) => {
+    setSelectedBridgeToChainId(id);
+    // Reset selected token for bridge when target chain changes
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+  };
   const { t } = useTranslation("NewPositionSection");
   const { getTradeAggregatorQuoteLimit } = useSubscription();
   const [activeTab, setActiveTab] = useState<"swap" | "bridge">("swap");
   const [selectedChain, setSelectedChain] = useState("");
   const [newBalance, setNewBalance] = useState<string>("");
   const [symbolOptionSwap, setSymbolOptionSwap] = useState<TokenSearchItem | null>(null);
-  const [symbolOptionSwapFor, setSymbolOptionSwapFor] = useState<TokenSearchItem | null>(null);
-  const [inputSearchSwapFor, setInputSearchSwapFor] = useState("");
+  const [symbolOptionSwapForSwap, setSymbolOptionSwapForSwap] = useState<TokenSearchItem | null>(null);
+  const [symbolOptionSwapForBridge, setSymbolOptionSwapForBridge] = useState<TokenSearchItem | null>(null);
+  const [inputSearchSwapForSwap, setInputSearchSwapForSwap] = useState("");
+  const [inputSearchSwapForBridge, setInputSearchSwapForBridge] = useState("");
   const [inputSearchSwap, setInputSearchSwap] = useState("");
   const [useMax,setUseMax] = useState<boolean>(true);
   const [selectedToken, setSelectedToken] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
-  const extractSymbol = (label: string) => label.split(" ")[0].toUpperCase();
-  const [quoteData, setQuoteData] = useState<any[]>([]);
+  const [lastUpdatedSwap, setLastUpdatedSwap] = useState<string | null>(null);
+  const [hasAttemptedSubmitSwap, setHasAttemptedSubmitSwap] = useState(false);
+  const [quoteDataSwap, setQuoteDataSwap] = useState<any[]>([]);
+  const [quoteLoadingSwap, setQuoteLoadingSwap] = useState(false);
+  const [errorMessageSwap, setErrorMessageSwap] = useState<string | null>(null);
+  const [lastUpdatedBridge, setLastUpdatedBridge] = useState<string | null>(null);
+  const [hasAttemptedSubmitBridge, setHasAttemptedSubmitBridge] = useState(false);
+  const [quoteDataBridge, setQuoteDataBridge] = useState<any[]>([]);
+  const [quoteLoadingBridge, setQuoteLoadingBridge] = useState(false);
+  const [errorMessageBridge, setErrorMessageBridge] = useState<string | null>(null);
   const dispatch = useAppDispatch();
   const { data, error, quote, quoteError, quoteLoading} = useSelector((state: RootState) => state.dex);
   const [errorQuote, setErrorQuote] = useState<string | null>("");
@@ -76,6 +113,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [tokenAddressSwapFor,setTokenAddressSwapFor] = useState<string | null>(null);
   const [shouldFetchQuote, setShouldFetchQuote] = useState(false);
   const [showNoQuotesMessage, setShowNoQuotesMessage] = useState(false);
+  // Cancel flag for clearing quotes
+  const cancelQuotes = useRef(false);
   const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
   const [tokenIcons, setTokenIcons] = useState<PaginatedList<TokenSearchItem> | null>(null);
   const [tokenIconsSwapFor, setTokenIconsSwapFor] = useState<PaginatedList<TokenSearchItem> | null>(null);
@@ -87,7 +126,8 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   const [isDexDropdownOpen, setIsDexDropdownOpen] = useState(false);
   const [noRouteOpen, setNoRouteOpen] = useState(false);
   const [invalidQuote, setInvalidQuote] = useState<OneInchQuoteResponse[]>([]);
-  
+  const onClearBridgeToTokenAddress = React.useCallback(() => {}, []);
+    
   const handleRemoveDex = (dexId: string) => {
     setSelectedDexs(selectedDexs.filter(dex => dex.id !== dexId));
   };
@@ -123,6 +163,34 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   };
 
   useEffect(() => {
+  }, [selectedTokenRowBridge, activeTab, symbolOptionSwapForBridge, newBalance]);
+
+  useEffect(() => {
+    if (activeTab === "bridge" && selectedTokenRow) {
+      setSelectedTokenRowBridge(selectedTokenRow);
+    }
+  }, [selectedTokenRow, activeTab]);
+
+  // Reset Bridge For when Bridge To chain is cleared
+    useEffect(() => {
+      if (activeTab === "bridge" && selectedBridgeToChainId === null) {
+        setSymbolOptionSwapForBridge(null);
+        setInputSearchSwapForBridge("");
+        setLastUpdatedBridge(null);
+        setQuoteLoadingBridge(false);
+        setQuoteDataBridge([]);
+        setErrorMessageBridge(null);
+      }
+    }, [selectedBridgeToChainId, activeTab]);
+
+    // Always clear Swap For Address when Bridge For is cleared (Bridge tab)
+  useEffect(() => {
+    if (activeTab === "bridge" && symbolOptionSwapForBridge === null) {
+      setTokenAddressSwapFor(null);
+    }
+  }, [activeTab, symbolOptionSwapForBridge]);
+
+  useEffect(() => {
     const hasError = Boolean(error || quoteError);
 
     if (hasError && !hasShownErrorOnce) {
@@ -136,22 +204,6 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [error, quoteError, hasShownErrorOnce]);
 
 
-  const coinGeckoChainId = (chain: string) => {
-          switch (chain.toLowerCase()) {
-            case "ethereum": return 1;
-            case "optimism": return 10;
-            case "arbitrum": return 42161;
-            case "bnb chain": return 56;
-            case "polygon": return 137;
-            case "avalanche": return 43114;
-            case "base": return 8453;
-            case "zksync": return 324;
-            case "gnosis": return 100;
-            case "linea": return 59144;
-            case "sonic": return 146;
-            case "unichain": return 130;
-          }
-  };
 
   useEffect(() => {
     if (symbolOptionSwap && selectedChain && isDexEnabled) {
@@ -160,148 +212,147 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [selectedChain])     
 
   useEffect(()=> {
-    if (!symbolOptionSwap || !selectedChain) {
+    if (!symbolOptionSwap || !selectedTokenRow?.lifiChain?.name) {
         setSelectedDexs([]);
         setIsDexEnabled(false);
     }
 
-    const chainId = coinGeckoChainId(selectedChain);
-      if (!chainId) return;
+    let chainId: number | undefined = undefined;
+    if (lifiChainMap) {
+      const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow?.lifiChain?.name.toLowerCase());
+      chainId = chainEntry?.id;
+    }
+    if (!chainId) return;
 
     const matchedToken = filteredRows.find(token => 
       token.tokenName?.toUpperCase() === symbolOptionSwap?.sym?.toUpperCase() &&
-      token.chain?.toUpperCase() === selectedChain.toUpperCase()
+      token.chainId === selectedTokenRow?.chainId
     );
-    
-
-    
     setBalanceRaw(matchedToken?.balance);
   }, [symbolOptionSwap, selectedChain])
 
+
+  const resetAllState = () => {
+    setTokenAddresses([]);
+    setTokenIcons(null);
+    setSymbolOptionSwap(null);
+    setSymbolOptionSwapForSwap(null);
+    setInputSearchSwapForSwap("");
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+    setInputSearchSwap("");
+    setSelectedChain("");
+    setNewBalance("");
+  };
+
   useEffect(() => {
+    resetAllState();
+    
     if (!selectedWallet) {
-      setTokenAddresses([]);
-      setTokenIcons(null);
-      setSymbolOptionSwap(null);
-      setSymbolOptionSwapFor(null);
-      setInputSearchSwapFor("");
-      setSelectedChain("");
-      setNewBalance("");
       return;
     }
-      setTokenIcons(null);
-      setSymbolOptionSwap(null);
-      setSymbolOptionSwapFor(null);
-      setInputSearchSwapFor("");
-      setSelectedChain("");
-      setNewBalance("");
-    
     const addresses: string[] = filteredRows
       .map((token) => token.tokenAddress)
       .filter((address): address is string => typeof address === 'string' && address !== '');
-
     setTokenAddresses(addresses);
-  }, [selectedWallet, filteredRows]);
+  }, [selectedWallet]);
+
+  // Swap tab: fetch tokens for Swap For dropdown using getLifiTokens (with cache)
+  // Swap tab: fetch and filter tokens for Swap For dropdown (using cache)
+  const [tokensForCurrentChain, setTokensForCurrentChain] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!selectedChain) return;
+    let chainId: number | undefined;
 
-    const timeoutId = setTimeout(() => {
-      const fetchIconsForSwapFor = async () => {
-        const chainId = coinGeckoChainId(selectedChain);
-        if (!chainId) return;
-
-        try {
-          const result = await iconsApi.getIcons(
-            inputSearchSwapFor,
-            0,
-            chainId,
-            500
-          );
-          setTokenIconsSwapFor(result);
-        } catch (error) {
-          console.error('Error loading icons for swap for:', error);
-        }
-      };
-
-      fetchIconsForSwapFor();
-    }, 450);
-
-    return () => clearTimeout(timeoutId);
-  }, [selectedChain, inputSearchSwapFor]);
-
-
-  useEffect(() => {
-    const fetchIcons = async () => {
-    if (tokenAddresses.length === 0) return;
-
-    const nonEmptyChainsCount = filteredRows.length > 0 ? 1 : 0;
-
-    let pageSize = tokenAddresses?.length + nonEmptyChainsCount + 50;
-
-    try {
-      const result = await iconsApi.getIconsV2(
-        undefined,
-        0,
-        pageSize,
-        tokenAddresses
-      );
-
-      const walletTokenNamesLower = new Set(
-        filteredRows.map(row => row?.tokenName?.toLowerCase())
-      );
-
-      const filteredItems = result.items.filter(item => {
-        return walletTokenNamesLower.has(item.sym.toLowerCase());
-      });
-
-      const virtualTokens = filteredRows
-        .filter(row => {
-          const hasIcon = filteredItems.some(item => 
-            item.sym.toLowerCase() === row.tokenName?.toLowerCase()
-          );
-          return !hasIcon;
-        })
-        .map(row => ({
-          id: `virtual-${row.tokenName?.toLowerCase()}`,
-          sym: row.tokenName || '',
-          name: row.name || '',
-          address: [row.tokenAddress || ''],
-          lURI: undefined,
-          mCap: 0,
-          mSup: null,
-        }));
-
-      setTokenIcons({
-        ...result,
-        items: [...filteredItems, ...virtualTokens],
-      });
-
-    } catch (error) {
-      console.error('Error loading icons:', error);
+    if (activeTab === "swap") {
+      const chainName = selectedTokenRow?.lifiChain?.name || selectedChain;
+      if (chainName && lifiChainMap) {
+        const chainEntry = Array.from(lifiChainMap.values()).find(
+          (c) => c.name.toLowerCase() === chainName.toLowerCase()
+        );
+        chainId = chainEntry?.id;
+      }
+    } else {
+      chainId = selectedBridgeToChainId || undefined;
     }
+
+    if (!chainId) {
+      setTokensForCurrentChain([]);
+      return;
+    }
+
+    getLifiTokens(chainId).then(setTokensForCurrentChain).catch(() => setTokensForCurrentChain([]));
+  }, [activeTab, selectedTokenRow?.lifiChain?.name, selectedChain, selectedBridgeToChainId, lifiChainMap]);
+
+  useEffect(() => {
+    const processTokens = () => {
+      const tokens = tokensForCurrentChain || [];
+      
+      const mapped = tokens.map((token) => ({
+        address: [token.address],
+        id: token.address,
+        lURI: token.logoURI || null,
+        mCap: token.marketCapUSD || 0,
+        mSup: null,
+        name: token.name || null,
+        sym: token.symbol,
+      }));
+
+      // Force-include the selected token and deduplicate
+      const currentToken = activeTab === "swap" ? symbolOptionSwapForSwap : symbolOptionSwapForBridge;
+      const combined = currentToken ? [currentToken, ...mapped] : mapped;
+      
+      // Use a Map to ensure unique tokens by ID or Address
+      const uniqueMap = new Map();
+      combined.forEach(item => {
+        const key = item.id || (item.address?.[0]?.toLowerCase());
+        if (key && !uniqueMap.has(key)) {
+          uniqueMap.set(key, item);
+        }
+      });
+
+      const finalItems = Array.from(uniqueMap.values());
+
+      setTokenIconsSwapFor({
+        items: finalItems,
+        pageNumber: 0,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hansNextPage: false,
+        totalCount: finalItems.length,
+      });
     };
 
-    fetchIcons();
-  }, [tokenAddresses, filteredRows]);
+    processTokens();
+  }, [tokensForCurrentChain, activeTab, symbolOptionSwapForSwap, symbolOptionSwapForBridge]);
 
   const maxBalance = balanceRaw !== undefined && balanceRaw !== null
     ? balanceRaw.toFixed(5)
     : "0.0000";
 
-  useEffect(() => {
-    if (hasAttemptedSubmit) {
+    useEffect(() => {
+    if (hasAttemptedSubmitSwap) {
       setErrorQuote(quoteError);
       setErrorQuoteParametrs(error);
     } else {
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
     }
-  }, [quoteError, error, hasAttemptedSubmit]);
+  }, [quoteError, error, hasAttemptedSubmitSwap]);
+
+  useEffect(() => {
+    if (hasAttemptedSubmitBridge) {
+      setErrorQuote(quoteError);
+      setErrorQuoteParametrs(error);
+    } else {
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
+    }
+  }, [quoteError, error, hasAttemptedSubmitBridge]);
 
   useEffect(() => {
     const fetchProtocolsAndTokens = async () => {
-      if (quote.length && symbolOptionSwap && symbolOptionSwapFor) {
+      if (quote.length && symbolOptionSwap && symbolOptionSwapForSwap) {
 
         let chainPrice = 0;
         let swapForToken: any = null;
@@ -340,7 +391,7 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
           ).unwrap();
 
           swapForToken = await dispatch(
-            fetchToken({ id: symbolOptionSwapFor.id })
+            fetchToken({ id: symbolOptionSwapForSwap.id })
           ).unwrap();
 
         } catch (err) {
@@ -389,11 +440,11 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
               version: name,
             });
 
-          } else if (isOneInch && symbolOptionSwap && symbolOptionSwapFor && selectedChain) {
+          } else if (isOneInch && symbolOptionSwap && symbolOptionSwapForSwap && selectedChain) {
             deepLink = generateOneInchLink({
               chainName: selectedChain,
               srcTokenAddress: symbolOptionSwap.sym.toUpperCase(),
-              dstTokenAddress: symbolOptionSwapFor.sym.toUpperCase(),
+              dstTokenAddress: symbolOptionSwapForSwap.sym.toUpperCase(),
             });
           }
 
@@ -420,12 +471,97 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
         } else {
           setShowNoQuotesMessage(false);
         }
-        setQuoteData(processedData);
+        setQuoteDataSwap(processedData);
       }
     };
 
     fetchProtocolsAndTokens();
-  }, [quote]);
+  }, [activeTab, quote, symbolOptionSwap, symbolOptionSwapForSwap, tokenAddress, tokenAddressSwapFor, newBalance, selectedChain, quoteLoading, dispatch]);
+
+  // Bridge: quotes processing for Bridge tab
+  useEffect(() => {
+    if (activeTab !== 'bridge') return;
+    const fetchProtocolsAndTokens = async () => {
+      if (quote.length && symbolOptionSwap && symbolOptionSwapForBridge) {
+        let chainPrice = 0;
+        let swapForToken: any = null;
+        try {
+          const coinGeckoChainId = (chain: string) => {
+            switch (chain.toLowerCase()) {
+              case "ethereum":
+              case "optimism":
+              case "arbitrum":
+              case "base":
+              case "zksync":
+              case "gnosis":
+              case "linea":
+              case "sonic":
+              case "unichain":
+                return "ethereum";
+              case "bnb chain":
+                return "binancecoin";
+              case "polygon":
+                return "matic-network";
+              case "avalanche":
+                return "avalanche-2";
+              default:
+                return "ethereum";
+            }
+          };
+          const chainPosition = await dispatch(
+            fetchToken({ id: coinGeckoChainId(selectedChain) })
+          ).unwrap();
+          chainPrice = Number(chainPosition.price.toString());
+          await dispatch(fetchToken({ id: symbolOptionSwap.id })).unwrap();
+          swapForToken = await dispatch(
+            fetchToken({ id: symbolOptionSwapForBridge.id })
+          ).unwrap();
+        } catch (err) {
+          console.error("Error fetching tokens:", err);
+        }
+        let baseFee = 0;
+        try {
+          const response = await dispatch(fetchGas({ chainName: selectedChain }));
+          if (selectedChain.toUpperCase() !== "BNB CHAIN") {
+            baseFee = response.payload.baseFee;
+          } else {
+            baseFee = response.payload.standard;
+          }
+        } catch (err) {
+          console.error("Error fetching gas:", err);
+        }
+        setInvalidQuote(quote.filter(x => x.error));
+        const processedData = quote.filter(x => !x.error).map((q) => {
+          const firstProtocol = q.protocols[0][0];
+          const names = firstProtocol.map((step: any) => step.name).filter(Boolean);
+          const name = names[0];
+          let deepLink: string | null = null;
+          // Bridge deepLink may differ if needed
+          let estAmount = Number(q.dstAmount) / Math.pow(10, q.dstToken.decimals);
+          const price = estAmount / parseFloat(newBalance);
+          const gasUSD = parseFloat((((q.gas * baseFee) / 1e18) * chainPrice).toFixed(3));
+          if (swapForToken && swapForToken.price) {
+            estAmount = estAmount - (gasUSD / swapForToken.price);
+          }
+          return {
+            name: names[0],
+            gas: parseFloat(((q.gas * baseFee) / 1e18).toFixed(6)),
+            price: price.toFixed(4),
+            gasUSD: gasUSD,
+            estAmount: estAmount.toFixed(4),
+            deepLink,
+          };
+        });
+        if (processedData.length === 0 && quoteLoading === false) {
+          setShowNoQuotesMessage(true);
+        } else {
+          setShowNoQuotesMessage(false);
+        }
+        setQuoteDataBridge(processedData);
+      }
+    };
+    fetchProtocolsAndTokens();
+  }, [activeTab, quote, symbolOptionSwap, symbolOptionSwapForBridge, tokenAddress, tokenAddressSwapFor, newBalance, selectedChain, quoteLoading, dispatch]);
 
   useEffect(() => {
     if (
@@ -477,22 +613,24 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     if (selectedTokenRow && tokenIcons?.items) {
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
 
-      const matchedToken = tokenIcons.items.find(token =>
-        token.sym?.toUpperCase() === selectedTokenRow.tokenName?.toUpperCase()
-      );
+      const targetId = `${selectedTokenRow.tokenName?.toLowerCase().trim()}-${selectedTokenRow.chainId}`;
+      const matchedToken = tokenIcons.items.find(token => token.id === targetId);
 
       if (matchedToken) {
         setSymbolOptionSwap(matchedToken);
         setSelectedToken(matchedToken.sym);
       } else {
         const virtualToken = {
-          id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+          id: `${selectedTokenRow.tokenName?.toLowerCase().trim()}-${selectedTokenRow.chainId}`,
           sym: selectedTokenRow.tokenName || '',
           name: selectedTokenRow.name || '',
           address: [selectedTokenRow.tokenAddress || ''],
-          lURI: undefined,
+          lURI: selectedTokenRow.logoUrl,
           mCap: 0,
           mSup: null,
+          chainId: selectedTokenRow.chainId,
+          chain: selectedTokenRow.chain,
+          tokenName: selectedTokenRow.tokenName,
         };
         setSymbolOptionSwap(virtualToken);
         setSelectedToken(virtualToken.sym);
@@ -500,19 +638,62 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
     } else if (selectedTokenRow && !tokenIcons?.items) {
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
     }
+
+    // Reset subordinate dropdowns when selection changes
+    setSymbolOptionSwapForSwap(null);
+    setInputSearchSwapForSwap("");
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+    setSelectedBridgeToChainId(null);
+    setInputSearchBridgeToChain("");
+    setQuoteDataBridge([]);
+    setLastUpdatedBridge(null);
+    setErrorMessageBridge(null);
+    setShowNoQuotesMessage(false);
+    
+    if (!selectedTokenRow) {
+      setSymbolOptionSwap(null);
+      setSelectedToken(null);
+      setSelectedChain("");
+      setNewBalance("");
+      if (onSelectedTokenChange) {
+        onSelectedTokenChange(null, null);
+      }
+    }
   }, [selectedTokenRow, tokenIcons]);
 
   useEffect(() => {
-    if (filteredRows.length > 0) {
-      const virtualTokens = filteredRows.map(row => ({
-        id: `virtual-${row.tokenName?.toLowerCase()}`,
-        sym: row.tokenName || '',
-        name: row.name || '',
-        address: [row.tokenAddress || ''],
-        lURI: undefined,
-        mCap: 0,
-        mSup: null,
-      }));
+    if (filteredRows && filteredRows.length > 0) {
+      const uniqueTokensMap = new Map();
+      const labelCounts = new Map();
+      
+      filteredRows.forEach(row => {
+        const symbol = row.tokenName?.toUpperCase().trim() || "";
+        const chain = row.chain?.toUpperCase().trim() || "";
+        const key = `${symbol}-${chain}`;
+        
+        if (symbol && !uniqueTokensMap.has(key)) {
+          const baseLabel = `${symbol}-${row.name || ""}`;
+          const count = labelCounts.get(baseLabel) || 0;
+          labelCounts.set(baseLabel, count + 1);
+          const invisibleSuffix = "\u200B".repeat(count);
+
+          uniqueTokensMap.set(key, {
+            id: `${symbol.toLowerCase()}-${row.chainId}`,
+            sym: row.tokenName || "",
+            name: (row.name || "") + invisibleSuffix,
+            address: [row.tokenAddress || ""],
+            lURI: row.logoUrl,
+            mCap: 0,
+            mSup: null,
+            chainId: row.chainId,
+            chain: row.chain,
+            tokenName: row.tokenName,
+          });
+        }
+      });
+
+      const virtualTokens = Array.from(uniqueTokensMap.values());
 
       setTokenIcons({
         items: virtualTokens,
@@ -530,11 +711,11 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
       setSelectedChain(selectedTokenRow.chain?.toUpperCase() || "");
       
       const virtualToken = {
-        id: `virtual-${selectedTokenRow.tokenName?.toLowerCase()}`,
+        id: `${selectedTokenRow.tokenName?.toLowerCase()}-${selectedTokenRow.chainId}`,
         sym: selectedTokenRow.tokenName || '',
-        name: selectedTokenRow.name || '',
+        name: selectedTokenRow.chain || '',
         address: [selectedTokenRow.tokenAddress || ''],
-        lURI: undefined,
+        lURI: selectedTokenRow.logoUrl,
         mCap: 0,
         mSup: null,
       };
@@ -544,36 +725,33 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [selectedTokenRow, tokenIcons?.items]);
 
   useEffect(() => {
-    if (!selectedTokenRow) {
-      setSymbolOptionSwapFor(null);
-      setInputSearchSwapFor("");
-      setSelectedChain("");
-      setSymbolOptionSwap(null);
+    if (!symbolOptionSwap || !selectedWallet) {
       setSelectedToken(null);
       setNewBalance("");
-    }
-  }, [selectedTokenRow]);
-
-  
-  useEffect(() => {
-    if (!symbolOptionSwap || !selectedChain || !selectedWallet) {
-      setSelectedToken(null);
-      setNewBalance("")
       return;
     }
-  
-    setNewBalance(maxBalance.toString());
-    const matchedToken = filteredRows.find(token => 
-      token.tokenName?.toUpperCase() === symbolOptionSwap.sym?.toUpperCase() &&
-      token.chain?.toUpperCase() === selectedChain.toUpperCase()
-    );
-  
+
+    // Try to find the token by symbol and chain (case-insensitive, trimmed)
+    const matchedToken = filteredRows.find(token => {
+      const tokenSym = token.tokenName?.toUpperCase().trim();
+      const selSym = symbolOptionSwap.sym?.toUpperCase().trim();
+      const tokenChain = token.chain?.toUpperCase().trim();
+      const selChain = selectedChain?.toUpperCase().trim();
+      // If selectedChain is empty, fallback to tokenChain match only by symbol
+      if (!selChain) {
+        return tokenSym === selSym;
+      }
+      return tokenSym === selSym && tokenChain === selChain;
+    });
+
     if (matchedToken) {
       setSelectedToken(matchedToken.tokenName || null);
-      onSelectedTokenChange?.(matchedToken.tokenName, selectedChain);
+      setNewBalance(matchedToken.balance?.toString() || "");
+      // REMOVED onSelectedTokenChange from here to break the loop
     } else {
       setSelectedToken(null);
-      onSelectedTokenChange?.(null,null);
+      setNewBalance("");
+      onSelectedTokenChange?.(null, null);
     }
   }, [symbolOptionSwap, selectedChain, selectedWallet, filteredRows]);
 
@@ -584,152 +762,206 @@ export const NewPositionSection: React.FC<NewPositionSectionProps> = ({ selected
   }, [useMax, maxBalance]);
 
   useEffect(() => {
-    if (hasAttemptedSubmit) {
-      setErrorMessage(generateErrorMessage());
-      setQuoteData([]);
+    if (hasAttemptedSubmitSwap) {
+      setErrorMessageSwap(generateErrorMessage({
+        symbolOptionSwap,
+        filteredRows,
+        selectedChain,
+        symbolOptionSwapFor: symbolOptionSwapForSwap,
+        newBalance,
+        t
+      }));
+      // setQuoteDataSwap([]);
       setErrorQuote(null);
       setErrorQuoteParametrs(null);
       setTokenAddress(null);
       setTokenAddressSwapFor(null);
     }
-  }, [symbolOptionSwap, selectedChain, symbolOptionSwapFor, newBalance, hasAttemptedSubmit]);
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapForSwap, newBalance, hasAttemptedSubmitSwap]);
 
-const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
-  setShowNoQuotesMessage(false);
-  if (value && value.id === symbolOptionSwap?.id) {
-    setSymbolOptionSwapFor(value);
-    setErrorMessage(t("SameTokenError"));
-    return;
-  }
+  useEffect(() => {
+    if (hasAttemptedSubmitBridge) {
+      setErrorMessageBridge(generateErrorMessage({
+        symbolOptionSwap,
+        filteredRows,
+        selectedChain,
+        symbolOptionSwapFor: symbolOptionSwapForBridge,
+        newBalance,
+        t
+      }));
+      // setQuoteDataBridge([]);
+      setErrorQuote(null);
+      setErrorQuoteParametrs(null);
+      setTokenAddress(null);
+      setTokenAddressSwapFor(null);
+    }
+  }, [symbolOptionSwap, selectedChain, symbolOptionSwapForBridge, newBalance, hasAttemptedSubmitBridge]);
 
-  setSymbolOptionSwapFor(value);
-  setErrorMessage(null);
-};
-
-  const onOptionChangeSwap = (value: TokenSearchItem  | null) => {
+  const onOptionChangeSwapFor = (value: TokenSearchItem | null, tab: "swap" | "bridge") => {
     setShowNoQuotesMessage(false);
-    if (value && value.id === symbolOptionSwapFor?.id) {
+    if (tab === "swap") {
+      if (value && value.id === symbolOptionSwap?.id) {
+        setSymbolOptionSwapForSwap(value);
+        setErrorMessageSwap(t("SameTokenError"));
+        return;
+      }
+      setSymbolOptionSwapForSwap(value);
+      setErrorMessageSwap(null);
+      if (value === null) {
+        setHasAttemptedSubmitSwap(false);
+        setLastUpdatedSwap(null);
+        cancelQuotes.current = true; // Cancel any pending quotes
+        setQuoteLoadingSwap(false); // Stop spinner
+      }
+    } else {
+      if (value && value.id === symbolOptionSwap?.id) {
+        setSymbolOptionSwapForBridge(value);
+        setErrorMessageBridge(t("SameTokenError"));
+        return;
+      }
+      setSymbolOptionSwapForBridge(value);
+      setErrorMessageBridge(null);
+      if (value === null) {
+        setQuoteDataBridge([]);
+        setLastUpdatedBridge(null);
+        setErrorMessageBridge(null);
+        setShowNoQuotesMessage(false);
+        setErrorQuote(null);
+        setErrorQuoteParametrs(null);
+        setTokenAddress(null);
+        setTokenAddressSwapFor(null);
+        setHasAttemptedSubmitBridge(false);
+        cancelQuotes.current = true; // Cancel any pending bridge quotes
+        setQuoteLoadingBridge(false); // Stop spinner
+      }
+    }
+  };
+
+  const onOptionChangeSwap = (value: TokenSearchItem | null) => {
+    setShowNoQuotesMessage(false);
+
+    const swapFor = activeTab === "swap" ? symbolOptionSwapForSwap : symbolOptionSwapForBridge;
+
+    if (value && swapFor && value.id === swapFor.id) {
       setSymbolOptionSwap(value);
-      setErrorMessage(t("SameTokenError"));
+      setErrorMessageSwap(t("SameTokenError"));
       return;
     }
 
-    if(value === null)
-    {
-      onSelectedTokenChange?.(null,null);
+    if (value === null) {
+      onSelectedTokenChange?.(null, null);
+      if (activeTab === "swap") {
+        setHasAttemptedSubmitSwap(false);
+        setLastUpdatedSwap(null);
+        cancelQuotes.current = true; // Cancel any pending quotes
+        setQuoteLoadingSwap(false); // Stop spinner
+      } else if (activeTab === "bridge") {
+        setQuoteDataSwap([]);
+        setLastUpdatedBridge(null);
+        setErrorMessageSwap(null);
+        setShowNoQuotesMessage(false);
+        setErrorQuote(null);
+        setErrorQuoteParametrs(null);
+        setTokenAddress(null);
+        setTokenAddressSwapFor(null);
+        setHasAttemptedSubmitBridge(false);
+        cancelQuotes.current = true; // Cancel any pending bridge quotes
+        setQuoteLoadingBridge(false); // Stop spinner
+      }
     }
-    
+
     setSymbolOptionSwap(value);
-    setErrorMessage(null);
-  };
+    setErrorMessageSwap(null);
 
-  const getGasTokenSymbol = (chain: string): string => {
-    const chainMap: Record<string, string> = {
-      "ETHEREUM": "ETH",
-      "OPTIMISM": "ETH",
-      "ARBITRUM": "ETH",
-      "BASE": "ETH",
-      "ZKSYNC": "ETH",
-      "GNOSIS": "ETH",
-      "LINEA": "ETH",
-      "SONIC": "ETH",
-      "UNICHAIN": "ETH",
-      "BNB CHAIN": "BNB",
-      "POLYGON": "MATIC",
-      "AVALANCHE": "AVAX",
-    };
-    return chainMap[chain.toUpperCase()] || "";
-  };  
-
-  const generateErrorMessage = () => {
-    const errors: string[] = [];
-  
-    const selectedSymbol = symbolOptionSwap?.sym?.toUpperCase();
-    const tokenExistsInFilteredRows = filteredRows.some(
-      token => token.tokenName?.toUpperCase() === selectedSymbol
-    );
-  
-    if (!symbolOptionSwap) {
-      errors.push(t("TokenPosition"));
-    } else if (!tokenExistsInFilteredRows) {
-      return t("SelectedError");
-    }
-  
-    if (!selectedChain) errors.push(t("Chain"));
-    if (!symbolOptionSwapFor) errors.push(t("SwapFor"));
-    if (!newBalance || isNaN(Number(newBalance)) || Number(newBalance) <= 0) errors.push(t("Qty"));
-  
-    return errors.length > 0 ? `${t("MissingInputs")}: ${errors.join(", ")}` : null;
-  };
-
-  const formatNumberWithCommas = (value: string) => {
-    const [intPart, decimalPart] = value.split(".");
-    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return decimalPart !== undefined ? `${formattedInt}.${decimalPart}` : formattedInt;
-  };
-
-  const handleFetchQuotes = () => {
-    setHasAttemptedSubmit(true);
-    const err = generateErrorMessage();      
-  
-    if (err) {
-      setQuoteData([]);
-      setErrorMessage(err);
-      setLastUpdated(null);
-      setTokenAddress(null);
-      setTokenAddressSwapFor(null);
-    } else {
-      setErrorMessage(null);
-  
-      const fetchAndSetAddresses = async () => {
-        if (
-          symbolOptionSwap &&
-          symbolOptionSwapFor &&
-          selectedChain &&
-          newBalance
-        ) {
-          const result = await dispatch(
-            fetchQuoteParameters({
-              tokenPositionSymbol: symbolOptionSwap.sym,
-              chainName: selectedChain,
-              qty: Number(newBalance),
-              swapForSymbol: symbolOptionSwapFor.sym,
-              tokenPositionId: symbolOptionSwap.id,
-              swapForId: symbolOptionSwapFor.id,
-            })
-          );
-    
-          if (fetchQuoteParameters.fulfilled.match(result)) {
-            const data = result.payload;
-            if (data?.fromTokenAddress && data?.toTokenAddress) {
-              setTokenAddress(data.fromTokenAddress);
-              setTokenAddressSwapFor(data.toTokenAddress);
-              setShouldFetchQuote(true);
-            } else {
-              setTokenAddress(null);
-              setTokenAddressSwapFor(null);
-            }
+    // Fetch token addresses for display if both tokens are selected
+    if (value && swapFor && selectedChain && newBalance) {
+      dispatch(
+        fetchQuoteParameters({
+          tokenPositionSymbol: value.sym,
+          chainName: selectedChain,
+          qty: Number(newBalance),
+          swapForSymbol: swapFor.sym,
+          tokenPositionId: value.id,
+          swapForId: swapFor.id,
+        })
+      ).then((result) => {
+        if (fetchQuoteParameters.fulfilled.match(result)) {
+          const data = result.payload;
+          if (data?.fromTokenAddress && data?.toTokenAddress) {
+            setTokenAddress(data.fromTokenAddress);
+            setTokenAddressSwapFor(data.toTokenAddress);
           } else {
             setTokenAddress(null);
             setTokenAddressSwapFor(null);
-            console.error("Error API:", result);
           }
+        } else {
+          setTokenAddress(null);
+          setTokenAddressSwapFor(null);
         }
-      };
-    
-      fetchAndSetAddresses();
-      
-      const now = new Date();
-      const formatted = now.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
       });
-  
-      setLastUpdated(formatted);
+    }
+  };
+
+  // Find the selected position from dropdown and update fields as if selected from table
+  const handleCurrentPositionDropdownChange = async (event: any, value: TokenSearchItem | null) => {
+    setSymbolOptionSwap(value);
+    if (value) {
+      onSelectedTokenChange?.(value.tokenName || value.sym, { name: value.chain, id: value.chainId });
+    } else {
+      onSelectedTokenChange?.(null, null);
+    }
+    
+    if (!value) {
+      setSymbolOptionSwap(null);
+      setSelectedToken(null);
+      setSelectedChain("");
+      setNewBalance("");
+      setSelectedTokenRowSwap(null);
+      setSelectedTokenRowBridge(null);
+      return;
+    }
+
+    let tokenWithIcon: TokenSearchItem | null = null;
+    if (tokenIcons?.items) {
+      tokenWithIcon = tokenIcons.items.find(
+        (item) => item.id === value.id || item.sym?.toUpperCase() === value.sym?.toUpperCase()
+      ) || null;
+    }
+
+    const tokenToSet = tokenWithIcon || value;
+    setSymbolOptionSwap(tokenToSet);
+    setSelectedToken(tokenToSet.sym);
+
+    // Reset Step 2 (Bridge To / Swap For)
+    setSymbolOptionSwapForSwap(null);
+    setInputSearchSwapForSwap("");
+    setSymbolOptionSwapForBridge(null);
+    setInputSearchSwapForBridge("");
+    setSelectedBridgeToChainId(null);
+    setInputSearchBridgeToChain("");
+    setQuoteDataBridge([]);
+    setLastUpdatedBridge(null);
+    setErrorMessageBridge(null);
+    setShowNoQuotesMessage(false);
+    setQuoteDataSwap([]); // Also reset swap quotes
+
+    // If we have a match in the portfolio for this specific token+chain, set it as the row
+    if (value && value.chainId) {
+      const portfolioMatch = filteredRows.find(token => 
+        token.tokenName?.toUpperCase() === value.sym?.toUpperCase() && 
+        token.chainId === value.chainId
+      );
+      if (portfolioMatch) {
+        setSelectedChain(portfolioMatch.chain?.toUpperCase() || "");
+        setNewBalance(portfolioMatch.balance?.toString() || "");
+        setSelectedTokenRowSwap(portfolioMatch);
+        setSelectedTokenRowBridge(portfolioMatch);
+      } else {
+        setSelectedChain(value.chain?.toUpperCase() || "");
+        setNewBalance("");
+        setSelectedTokenRowSwap(null);
+        setSelectedTokenRowBridge(null);
+      }
     }
   };
 
@@ -738,6 +970,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
 
   return (
     <Grid
+      id="new-position-section-root"
       container
       direction="column"
       sx={{
@@ -758,57 +991,125 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
           filter: isWalletSelected ? 'none' : 'grayscale(50%)',
         }}
       >
-        <Grid item container spacing={2} sx={{ marginBottom: 2 }}>
-          <Grid item>
-            <Button
-              variant={activeTab === "swap" ? "contained" : "outlined"}
-              color="primary"
-              onClick={() => setActiveTab("swap")}
-            sx={{
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "0.875rem",
-              backgroundColor: activeTab === "swap" ? "#f7f5f2" : "#e5ddd5",
-              color: activeTab === "swap" ? "#000" : "#000",
-              borderColor: "#e5ddd5",
-              "&:hover": {
-                backgroundColor: activeTab === "swap" ? "#f7f5f2" : "#e5ddd5",
-                borderColor: "#e5ddd5",
-              },
-            }}
-          >
-            {t("Swap")}
-          </Button>
-        </Grid>
 
-         
-        <Grid item>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: theme.palette.mode === 'dark' ? '#2a2b36' : '#e5e7ef',
+            borderRadius: '10px',
+            p: '2px',
+            width: { xs: '100%', sm: 'auto' },
+            maxWidth: 256,
+            minWidth: 176,
+            marginBottom: 2,
+            marginX: 'auto',
+          }}
+        >
           <Button
-            variant={activeTab === "bridge" ? "contained" : "outlined"}
-            color="primary"
-            onClick={() => setActiveTab("bridge")}
+            onClick={() => setActiveTab('swap')}
+            startIcon={<span style={{fontSize:14,marginRight:2,display:'flex',alignItems:'center'}}>⇄</span>}
             sx={{
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "0.875rem",
-              backgroundColor: activeTab === "bridge" ? "#f7f5f2" : "#e5ddd5",
-              color: activeTab === "bridge" ? "#000" : "#000",
-              borderColor: "#e5ddd5",
-              "&:hover": {
-                backgroundColor: activeTab === "bridge" ? "#f7f5f2" : "#e5ddd5",
-                borderColor: "#e5ddd5",
+              flex: 1,
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.8rem',
+              boxShadow: 'none',
+              background: activeTab === 'swap' ? '#1ec28b' : 'transparent',
+              color: activeTab === 'swap' ? '#fff' : theme.palette.mode === 'dark' ? '#bdbdbd' : '#222',
+              transition: 'background 0.2s',
+              minWidth: 0,
+              px: 2.4,
+              py: 0.88,
+              height: 32,
+              '&:hover': {
+                background: activeTab === 'swap' ? '#1ec28b' : 'rgba(30,194,139,0.08)',
+                color: activeTab === 'swap' ? '#fff' : theme.palette.mode === 'dark' ? '#bdbdbd' : '#222',
               },
             }}
+            disableElevation
           >
-            {t("Bridge")}
+            {t('Swap')}
           </Button>
-        </Grid>
-        
-      </Grid>
+          <Button
+            onClick={() => setActiveTab('bridge')}
+            startIcon={<span style={{fontSize:14,marginRight:2,display:'flex',alignItems:'center'}}>⛓</span>}
+            sx={{
+              flex: 1,
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.8rem',
+              boxShadow: 'none',
+              background: activeTab === 'bridge' ? '#1ec28b' : 'transparent',
+              color: activeTab === 'bridge' ? '#fff' : theme.palette.mode === 'dark' ? '#bdbdbd' : '#222',
+              transition: 'background 0.2s',
+              minWidth: 0,
+              px: 2.4,
+              py: 0.88,
+              height: 32,
+              ml: 0.8,
+              '&:hover': {
+                background: activeTab === 'bridge' ? '#1ec28b' : 'rgba(30,194,139,0.08)',
+                color: activeTab === 'bridge' ? '#fff' : theme.palette.mode === 'dark' ? '#bdbdbd' : '#222',
+              },
+            }}
+            disableElevation
+          >
+            {t('Bridge')}
+          </Button>
+        </Box>
 
+      {isUnsupported && (
+        <div className={styles.unsupportedChainNotice} style={{ margin: '16px auto', maxWidth: 420 }}>
+          <InfoIcon sx={{ color: '#f1b036', mt: '2px', fontSize: 20 }} />
+          <span>
+            <strong>Bridge/Swap not supported for this token.</strong> Please select a bridgeable token to continue.
+          </span>
+        </div>
+      )}
       <Grid item>
         {activeTab === "swap" ? (
-            <Grid container spacing={2}>
+          // NewSwapTab is now rendered for the Swap tab. The old implementation is preserved below in comments for easy restoration.
+                      <>
+                        <NewSwapTab
+                          symbolOptionSwap={symbolOptionSwap}
+                          tokenIcons={tokenIcons}
+                          handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
+                          inputSearchSwap={inputSearchSwap}
+                          setInputSearchSwap={setInputSearchSwap}
+                          formatNumberWithCommas={formatNumberWithCommas}
+                          newBalance={newBalance}
+                          setNewBalance={setNewBalance}
+                          selectedChain={selectedChain}
+                          displayChainName={selectedTokenRow?.lifiChain?.name || ""}
+                          selectedTokenRow={selectedTokenRow}
+                          setSelectedTokenRow={setSelectedTokenRowSwap}
+                          balanceRaw={balanceRaw}
+                          setShowNoQuotesMessage={setShowNoQuotesMessage}
+                          onOptionChangeSwap={onOptionChangeSwap}
+                          tokenIconsSwapFor={tokenIconsSwapFor}
+                          symbolOptionSwapFor={symbolOptionSwapForSwap}
+                          onOptionChangeSwapFor={(v) => onOptionChangeSwapFor(v, "swap")}
+                          inputSearchSwapFor={inputSearchSwapForSwap}
+                          setInputSearchSwapFor={setInputSearchSwapForSwap}
+                          setTokenIconsSwapFor={setTokenIconsSwapFor}
+                          selectedBridgeToChainId={selectedBridgeToChainId}
+                          setSelectedBridgeToChainId={setSelectedBridgeToChainId}
+                          inputSearchBridgeToChain={inputSearchBridgeToChain}
+                          setInputSearchBridgeToChain={setInputSearchBridgeToChain}
+                          onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
+                          chains={[]}
+                          bridgeFromTokenDecimals={null}
+                          isUnsupported={isUnsupported}
+                        />
+                        {/*
+                        // --- OLD SWAP TAB IMPLEMENTATION ---
+                        // To restore, replace the <NewSwapTab ... /> above with the code below.
+                        // <Grid container spacing={2}> ... (full old Swap tab code) ... </Grid>
+                        */}
+                      </>
+            /*<Grid container spacing={2}>
                 <Grid item xs={3.7}>
                   <Box>
                     <Stack direction="row" alignItems="center" spacing={1}>
@@ -835,7 +1136,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         options={tokenIcons?.items ?? []}
                         getOptionLabel={(option) => option.sym}
                         value={symbolOptionSwap}
-                        onChange={(_e, newValue) => onOptionChangeSwap(newValue)}
+                        onChange={handleCurrentPositionDropdownChange}
                         isOptionEqualToValue={(option, value) => option.id === value?.id}
                         disableClearable={false}
                         inputValue={symbolOptionSwap ? symbolOptionSwap.name ?
@@ -1014,7 +1315,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                   <Box>
                     <Stack direction="row" alignItems="center" spacing={1}>
                       <Typography>{t("SwapFor")}</Typography>
-                      {!symbolOptionSwapFor && (
+                      {!symbolOptionSwapForSwap && (
                         <Tooltip
                           title={
                             <Typography sx={{ fontSize: '0.85rem' }}>
@@ -1040,12 +1341,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                           ? `${option.sym.toUpperCase()} - ${option.name}`
                           : option.sym.toUpperCase()
                       }
-                      value={symbolOptionSwapFor}
+                      value={symbolOptionSwapForSwap}
                       disabled={!selectedTokenRow}
                       onChange={(_e, newValue) => {
-                        onOptionChangeSwapFor(newValue);
+                        onOptionChangeSwapFor(newValue, "swap");
                         if (newValue) {
-                          setInputSearchSwapFor(
+                          setInputSearchSwapForSwap(
                             newValue.name
                               ? `${newValue.sym.toUpperCase()} - ${newValue.name}`
                               : newValue.sym.toUpperCase()
@@ -1055,19 +1356,19 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                       isOptionEqualToValue={(option, value) => option.id === value?.id}
                       disableClearable={false}
                       inputValue={
-                        symbolOptionSwapFor
-                          ? symbolOptionSwapFor.name
-                            ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}`
-                            : symbolOptionSwapFor.sym.toUpperCase()
-                          : inputSearchSwapFor
+                        symbolOptionSwapForSwap
+                          ? symbolOptionSwapForSwap.name
+                            ? `${symbolOptionSwapForSwap.sym.toUpperCase()} - ${symbolOptionSwapForSwap.name}`
+                            : symbolOptionSwapForSwap.sym.toUpperCase()
+                          : inputSearchSwapForSwap
                       }
                       onInputChange={(_event, newInputValue, reason) => {
                         if (reason === 'input') {
-                          onOptionChangeSwapFor(null);
-                          setInputSearchSwapFor(newInputValue);
+                          onOptionChangeSwapFor(null, "swap");
+                          setInputSearchSwapForSwap(newInputValue);
                         } else if (reason === 'clear') {
-                          onOptionChangeSwapFor(null);
-                          setInputSearchSwapFor('');
+                          onOptionChangeSwapFor(null, "swap");
+                          setInputSearchSwapForSwap('');
                         }
                       }}
                       loading={!!selectedTokenRow && !tokenIconsSwapFor}
@@ -1081,11 +1382,11 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             ...params.InputProps,
                             startAdornment: (
                               <>
-                                {symbolOptionSwapFor?.lURI ? (
+                                {symbolOptionSwapForSwap?.lURI ? (
                                   <InputAdornment position="start">
                                     <Avatar
-                                      src={symbolOptionSwapFor.lURI}
-                                      alt={symbolOptionSwapFor.sym}
+                                      src={symbolOptionSwapForSwap.lURI}
+                                      alt={symbolOptionSwapForSwap.sym}
                                       sx={{ width: 22, height: 22, mr: 1 }}
                                     />
                                   </InputAdornment>
@@ -1098,7 +1399,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                             ),
                             sx: {
                               input: {
-                                textTransform: symbolOptionSwapFor ? 'uppercase' : 'none',
+                                textTransform: symbolOptionSwapForSwap ? 'uppercase' : 'none',
                               },
                             },
                           }}
@@ -1277,8 +1578,8 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                         <Button
                           id="get_quotes_btn"
                           variant="contained"
-                          onClick={handleFetchQuotes}
-                          disabled= {!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
+                          onClick={handleFetchQuotesSwap}
+                          disabled= {!selectedTokenRow || !symbolOptionSwapForSwap || !newBalance || !selectedChain || !symbolOptionSwap}
                           sx={{
                             backgroundColor: "#219a83",
                             color: "#fff",
@@ -1305,12 +1606,12 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                            </Box>
                          }
                         >
-                      {t("GetQuotes")}
-                       </Button>
-                       </Box >
-                         {quoteData.length > 0 && lastUpdated && (
+                          {t("GetQuotes")}
+                        </Button>
+                      </Box>
+                         {quoteData.length > 0 && lastUpdatedSwap && (
                            <Typography sx={{ color: "#3acd40", fontSize: "0.875rem", marginTop: 1, textAlign: "right",}}>
-                             {t("LastUpdate")}: {lastUpdated}
+                             {t("LastUpdate")}: {lastUpdatedSwap}
                            </Typography>
                          )}
                       </Grid>
@@ -1349,7 +1650,7 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </TableHead>
 
                     {symbolOptionSwap &&
-                      symbolOptionSwapFor &&
+                      symbolOptionSwapForSwap &&
                       selectedChain &&
                       quoteData &&
                       !errorMessage &&
@@ -1463,17 +1764,17 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     </Stack>
                   </Paper>
                 )}
-                {invalidQuote.length > 0 && lastUpdated && (
+                {invalidQuote.length > 0 && lastUpdatedBridge && (
                   <Typography sx={{ color: theme.palette.mode === "dark" ? "#f14f36ff" : "#be3f04ff", fontSize: "0.75rem", marginTop: 1 }}>
                     {invalidQuoteError()}.
                   </Typography>
                 )}
-                {quoteData.length > 0 && lastUpdated && (
+                {quoteData.length > 0 && lastUpdatedSwap && (
                   <Stack spacing={1} sx={{ mt: 1.5 }}>
                     <Stack direction="row" spacing={1} alignItems="flex-start">
                       <AccessTimeIcon sx={{ color: noticeColor, fontSize: "1rem", mt: "2px" }} />
                       <Typography sx={{ color: noticeColor, fontSize: "0.75rem" }}>
-                        {t("MarketDataUpdated", { value: lastUpdated })}
+                        {t("MarketDataUpdated", { value: lastUpdatedSwap })}
                       </Typography>
                     </Stack>
                     <Stack direction="row" spacing={1} alignItems="flex-start">
@@ -1495,12 +1796,43 @@ const onOptionChangeSwapFor = (value: TokenSearchItem  | null) => {
                     onClose={() => setNoRouteOpen(false)}
                   />
               </Grid> 
-            </Grid>            
+            </Grid> */           
         ) : (
-            <Typography sx={{ fontSize: "20px" }}>{t("ComingSoon")}</Typography>
+            <BridgeTab
+              symbolOptionSwap={symbolOptionSwap}
+              tokenIcons={tokenIcons}
+              handleCurrentPositionDropdownChange={handleCurrentPositionDropdownChange}
+              inputSearchSwap={inputSearchSwap}
+              setInputSearchSwap={setInputSearchSwap}
+              formatNumberWithCommas={formatNumberWithCommas}
+              newBalance={newBalance}
+              setNewBalance={setNewBalance}
+              selectedChain={selectedChain}
+              displayChainName={selectedTokenRowBridge?.lifiChain?.name || ""}
+              selectedTokenRow={selectedTokenRowBridge}
+              setSelectedTokenRow={setSelectedTokenRowBridge}
+              balanceRaw={balanceRaw}
+              setShowNoQuotesMessage={setShowNoQuotesMessage}
+              onOptionChangeSwap={onOptionChangeSwap}
+              tokenIconsSwapFor={tokenIconsSwapFor}
+              symbolOptionSwapFor={symbolOptionSwapForBridge}
+              onOptionChangeSwapFor={(v) => onOptionChangeSwapFor(v, "bridge")}
+              inputSearchSwapFor={inputSearchSwapForBridge}
+              setInputSearchSwapFor={setInputSearchSwapForBridge}
+              setTokenIconsSwapFor={setTokenIconsSwapFor}
+              selectedBridgeToChainId={selectedBridgeToChainId}
+              setSelectedBridgeToChainId={handleBridgeToChainIdChange}
+              inputSearchBridgeToChain={inputSearchBridgeToChain}
+              setInputSearchBridgeToChain={setInputSearchBridgeToChain}
+              onClearBridgeToTokenAddress={onClearBridgeToTokenAddress}
+              chains={[]}
+              bridgeFromTokenDecimals={typeof selectedTokenRowBridge?.decimals === 'number' ? selectedTokenRowBridge.decimals : 18}
+              isUnsupported={isUnsupported}
+            />
         )}
       </Grid>
       </Box>
     </Grid>
   );
 };
+

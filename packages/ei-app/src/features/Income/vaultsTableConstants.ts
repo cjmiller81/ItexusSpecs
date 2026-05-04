@@ -48,8 +48,7 @@ export const vaultsFilterBuilderFields: FilterBuilderItems[] = [
   {
     caption: DefiLabel.Boost,
     dataField: DefiField.Boost,
-    dataType: "string",
-    filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
+    dataType: "number",
   },
   {
     caption: DefiLabel.PlatformId,
@@ -63,8 +62,8 @@ export const vaultsFilterBuilderFields: FilterBuilderItems[] = [
     dataType: "number",
   },
   {
-    caption: DefiLabel.APY,
-    dataField: DefiField.APY,
+    caption: "APY",
+    dataField: "displayApy",
     dataType: "number",
   },
   {

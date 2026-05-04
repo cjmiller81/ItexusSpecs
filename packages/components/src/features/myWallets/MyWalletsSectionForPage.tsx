@@ -1,8 +1,8 @@
-import { Box, BoxProps, Button, Card, CircularProgress, SelectChangeEvent, Tab, Tabs, Typography } from "@mui/material";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
+import { Box, BoxProps, Card, CircularProgress, SelectChangeEvent, Typography, Button } from "@mui/material";
 import { styled, useMediaQuery, useTheme } from "@mui/system";
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { TabSelector } from "../../components/common/TabSelector";
+import { tabIcons } from "../../components/common/tabIcons";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
   GridCellParams,
   GridEventListener,
@@ -251,40 +251,14 @@ export const MyWalletsSectionForPage = ({
           borderBottom: `1px solid ${theme.palette.divider}`,
           flexShrink: 0,
         }}>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            onClick={() => setActiveTab("positions")}
-            size="small"
-            startIcon={<ImportExportIcon sx={{ fontSize: 20 }} />}
-            sx={{
-              textTransform: "none",
-              color: "#000",
-              backgroundColor: activeTab === "positions" ? "#f7f5f2" : "#e5ddd5",
-              "&:hover": {
-                backgroundColor: activeTab === "positions" ? "#f7f5f2" : "#e5ddd5",
-              },
-              border: "1px solid #e5ddd5",
-              borderRadius: "4px",
-            }}>
-            {t("Positions", { ns: "MyWalletsPage", defaultValue: "Positions" })}
-          </Button>
-          <Button
-            onClick={() => setActiveTab("history")}
-            size="small"
-            startIcon={<TrendingUpIcon sx={{ fontSize: 20 }} />}
-            sx={{
-              textTransform: "none",
-              color: "#000",
-              backgroundColor: activeTab === "history" ? "#f7f5f2" : "#e5ddd5",
-              "&:hover": {
-                backgroundColor: activeTab === "history" ? "#f7f5f2" : "#e5ddd5",
-              },
-              border: "1px solid #e5ddd5",
-              borderRadius: "4px",
-            }}>
-            {t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" })}
-          </Button>
-        </Box>
+        <TabSelector
+          options={[
+            { label: t("Positions", { ns: "MyWalletsPage", defaultValue: "Positions" }), value: "positions", icon: tabIcons.positions },
+            { label: t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" }), value: "history", icon: tabIcons.history },
+          ]}
+          value={activeTab}
+          onChange={setActiveTab as (v: string) => void}
+        />
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
           {isExpandedView && (
             <Typography

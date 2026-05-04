@@ -24,12 +24,12 @@ export function exportTransactionsXlsx(transactions: Transaction[], options: Exp
       Type: (r.type || '-').toUpperCase(),
       Protocol: r.protocol || '-',
       'Token In': r.tokenIn || '-',
-      'Amount In': r.amountIn || '-',
-      'USD In': r.usdIn || '-',
+      'Amount In': r.amountIn && r.amountIn !== '-' ? Number(r.amountIn) : '',
+      'USD In': r.usdIn && r.usdIn !== '-' ? Number(r.usdIn) : '',
       'Token Out': r.tokenOut || '-',
-      'Amount Out': r.amountOut || '-',
-      'USD Out': r.usdOut || '-',
-      'Gas USD': (typeof r.gasUsd === 'number') ? r.gasUsd.toFixed(4) : '-',
+      'Amount Out': r.amountOut && r.amountOut !== '-' ? Number(r.amountOut) : '',
+      'USD Out': r.usdOut && r.usdOut !== '-' ? Number(r.usdOut) : '',
+      'Gas USD': r.gasUsd && r.gasUsd !== '-' ? Number(r.gasUsd) : '',
       Spam: r.spam?.isSpam ? 'Yes' : 'No',
       'Spam Score': r.spam?.score?.toString() ?? '-',
       Hash: r.hash || '-',
@@ -40,6 +40,18 @@ export function exportTransactionsXlsx(transactions: Transaction[], options: Exp
   const worksheet = XLSX.utils.json_to_sheet(rows);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
+
+    // E=4 (Amount In), F=5 (USD In), G=6 (Token Out), H=7 (Amount Out), I=8 (USD Out), J=9 (Gas USD)
+  const numberColumnIndices = [7, 8, 10, 11, 12];  // 0-based indices для Amount In, USD In, Amount Out, USD Out, Gas USD
+  
+  for (let rowIdx = 2; rowIdx <= rows.length + 1; rowIdx++) {
+    numberColumnIndices.forEach(colIdx => {
+      const cellRef = XLSX.utils.encode_cell({ r: rowIdx - 1, c: colIdx });
+      if (worksheet[cellRef]) {
+        worksheet[cellRef].z = '0.00##############';
+      }
+    });
+  }
 
   worksheet['!cols'] = [
     { wch: 12 }, // Date
@@ -151,12 +163,12 @@ function expandTransactions(transactions: Transaction[]) {
     const outflows = tx.transfers?.filter(t => t.direction === 'out') ?? [];
 
     const tokensIn = inflows.map(t => t.symbol ?? '-');
-    const amountsIn = inflows.map(t => (t.amount !== undefined ? String(t.amount) : '-'));
-    const usdIn = inflows.map(t => (t.usdValue !== undefined ? Number(t.usdValue).toFixed(4) : '-'));
+    const amountsIn = inflows.map(t => (t.amount !== undefined ? t.amount : '-'));
+    const usdIn = inflows.map(t => (t.usdValue !== undefined ? t.usdValue : '-'));
 
     const tokensOut = outflows.map(t => t.symbol ?? '-');
-    const amountsOut = outflows.map(t => (t.amount !== undefined ? String(t.amount) : '-'));
-    const usdOut = outflows.map(t => (t.usdValue !== undefined ? Number(t.usdValue).toFixed(4) : '-'));
+    const amountsOut = outflows.map(t => (t.amount !== undefined ? t.amount : '-'));
+    const usdOut = outflows.map(t => (t.usdValue !== undefined ? t.usdValue : '-'));
 
     const max = Math.max(tokensIn.length, tokensOut.length, 1);
 

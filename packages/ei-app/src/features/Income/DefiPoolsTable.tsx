@@ -110,7 +110,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
-  
+
   const [currentFilter, setCurrentFilter] = useState<object[] | string[] | null | undefined>();
   const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
   const filterRef = useRef<CustomFilterBuilderRef>(null);
@@ -125,10 +125,10 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const categoryHeaderFilterRef = useRef<any>(null);
 
   const prevExternalFilterRef = useRef<object[] | null | undefined>(undefined);
-  
+
   useEffect(() => {
     const hasExternalFilterChanged = externalFilter !== prevExternalFilterRef.current;
-    
+
     if (hasExternalFilterChanged && externalFilter !== undefined) {
       if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
         if (hasCategoryFilter(externalFilter)) {
@@ -147,7 +147,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         }
       }
     }
-    
+
     prevExternalFilterRef.current = externalFilter;
   }, [externalFilter, currentFilter]);
 
@@ -176,12 +176,12 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
 
       if (node.length === 3 && typeof node[0] === "string") {
         const [field, op, value] = node;
-        
+
         if (field === "category" && op === "anyof" && Array.isArray(value)) {
           values.push(...value.filter(v => typeof v === "string"));
           return;
         }
-        
+
         if (field === "category" && (op === "contains" || op === "=")) {
           if (typeof value === "string") {
             values.push(value);
@@ -189,7 +189,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         }
         return;
       }
-      
+
       for (let i = 0; i < node.length; i++) {
         const item = node[i];
         if (item === "or" || item === "and") {
@@ -202,7 +202,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     };
 
     walk(filter);
-    
+
     return Array.from(new Set(values));
   }, []);
 
@@ -211,11 +211,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
 
     const check = (node: any): boolean => {
       if (!Array.isArray(node)) return false;
-      
+
       if (node.length === 3 && typeof node[0] === "string" && node[0] === "category") {
         return true;
       }
-      
+
       for (let i = 0; i < node.length; i++) {
         const item = node[i];
         if (item === "or" || item === "and") continue;
@@ -223,7 +223,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           return true;
         }
       }
-      
+
       return false;
     };
 
@@ -283,19 +283,19 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
         let column = this;
         if (filterValues) {
           let selectedValue = filterValues;
-  
+
           if (selectedValue && selectedFilterOperation === "=" && column.dataField === "category") {
             return [column.dataField, "=", selectedValue];
           }
-  
+
           if (selectedValue && selectedFilterOperation === "=") {
             return [column.dataField, "contains", selectedValue];
           }
-  
+
           if (selectedFilterOperation === "contains") {
             return [column.dataField, "contains", selectedValue];
           }
-  
+
           if (Array.isArray(selectedValue) && selectedValue.length > 0) {
             if (selectedValue.length === 1) {
               return [column.dataField, "contains", selectedValue[0]];
@@ -310,7 +310,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
             });
             return result;
           }
-  
+
           return column.defaultCalculateFilterExpression.apply(this, arguments);
         }
         return column.defaultCalculateFilterExpression.apply(this, arguments);
@@ -323,11 +323,11 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
   const onApplyFilter = useCallback(
     (filter: string | any[] | (() => any)) => {
       let newFilter = filter as object[] | string[] | null;
-      
+
       if (newFilter && Array.isArray(newFilter)) {
         newFilter = transformFilterFromAnyof(newFilter);
       }
-      
+
       if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
         if (newFilter && Array.isArray(newFilter) && newFilter.length > 0) {
           if (hasCategoryFilter(newFilter)) {
@@ -342,7 +342,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
       } else {
         setCurrentFilter(newFilter);
       }
-      
+
       if (datagrid.current?.instance) {
         setTimeout(() => {
           try {
@@ -365,7 +365,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
     },
     [externalFilter, datagrid, categoryHeaderFilterDataSource, hasCategoryFilter, transformFilterFromAnyof],
   );
-  
+
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
     if (filterPanelTextDiv) {
@@ -439,9 +439,9 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           const instance = datagrid.current?.instance;
           if (!instance) return;
 
-          const isCategoryHeaderFilterOpened = 
-            e.fullName === "columns[category].headerFilter.visible" && 
-            e.name === "visible" && 
+          const isCategoryHeaderFilterOpened =
+            e.fullName === "columns[category].headerFilter.visible" &&
+            e.name === "visible" &&
             e.value === true;
 
           if (isCategoryHeaderFilterOpened) {
@@ -451,7 +451,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                   dataSource: categoryHeaderFilterDataSource,
                 },
               });
-              
+
               let attemptCount = 0;
               const maxAttempts = 3;
               const setFilterValues = () => {
@@ -462,14 +462,14 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                       dataSource: categoryHeaderFilterDataSource,
                     },
                   });
-                  
+
                   const filterValues = selectedCategoryValues.length > 0 ? selectedCategoryValues : null;
                   instance.columnOption("category", {
                     headerFilter: {
                       filterValues: filterValues,
                     },
                   });
-                  
+
                   if (attemptCount < maxAttempts) {
                     setTimeout(setFilterValues, 150);
                   }
@@ -480,7 +480,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
                   }
                 }
               };
-              
+
               setTimeout(setFilterValues, 100);
             } catch (error) {
               console.error("[DefiPoolsTable] ❌ Could not set category HeaderFilter dataSource:", error);
@@ -506,7 +506,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
             setIsColumnChooserOpen(e.value === true);
           }
         }}>
-          
+
         <FilterRow visible={true} />
         <FilterPanel
           visible={true}
@@ -555,7 +555,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           <Item location="before">
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
-                ref={filterRef}             
+                ref={filterRef}
                 filterType="liquidity-pool"
                 filterBuilderFields={defiFilterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
@@ -722,6 +722,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
           width="auto"
         />
         <Column
@@ -733,6 +734,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
           width="auto"
         />
         <Column
@@ -744,6 +746,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
           width="auto"
         />
 
@@ -756,6 +759,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.Il7d}
@@ -766,6 +770,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.ApyMean30d}
@@ -776,6 +781,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
           width="auto"
         />
         {/*<Column
@@ -787,6 +793,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageFieldWithZero}
+          format="#,##0.##'%'"
           width="auto"
         />
         <Column
@@ -798,6 +805,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHiding={true}
           allowHeaderFiltering={false}
           customizeText={toPercentageFieldWithZero}
+          format="#,##0.##'%'"
           width="auto"
         />*/}
         <Column
@@ -830,6 +838,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.ApyPct1D}
@@ -840,6 +849,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.ApyPct7D}
@@ -850,6 +860,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.RewardTokens}
@@ -868,6 +879,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.Mu}
@@ -878,6 +890,7 @@ export const DefiPoolsTable: FC<IPrefilterTokensTable> = ({
           allowHeaderFiltering={false}
           allowHiding={true}
           customizeText={toPercentageField}
+          format="#,##0.##'%'"
         />
         <Column
           dataField={DefiField.Count}

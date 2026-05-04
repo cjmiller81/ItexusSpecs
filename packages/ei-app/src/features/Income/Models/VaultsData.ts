@@ -14,7 +14,8 @@ export type VaultsData = {
   };
   apy?: number;
   risks?: string[];
-  boost?: string;
+  assets?: string[];
+  boost?: number;
   stablecoin?: boolean;
   rewardTokens?: string[];
   poolMeta?: string | null;
@@ -30,4 +31,5 @@ export type VaultsData = {
   tradingApr?: number;
   strategyTypeId?: string;
   earnedToken?: string;
+  add_liquidity_url?: string;
 };

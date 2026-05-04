@@ -20,6 +20,7 @@ import PrivacyNoticeSection from "@/features/Support/Privacy";
 import SupportCenterSection from "@/features/Support/SupportCenterSection";
 import CompliancePage from "@/features/Support/CompliancePage";
 import FaqSection from "@/features/Support/Faq";
+import {APP_CONSTANTS} from "../../../../components/src/constants/strings";
 
 export default function Support() {
   const { t } = useTranslation("Support");
@@ -96,7 +97,7 @@ export default function Support() {
                 lineHeight: 1.5
               }}
             >
-              Elan Insights provides research and analytics only. Nothing on elaninsights.com or elaninsights.io constitutes investment recommendations. Users remain in full control of their own accounts and are solely responsible for their own financial decisions. Please see links to our policies and terms above for further information.
+              {APP_CONSTANTS.DISCLAIMER_TEXT}  
             </Typography>
           </Box>
         </CardContent>

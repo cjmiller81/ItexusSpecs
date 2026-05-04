@@ -13,6 +13,7 @@ import {
   selectWallets,
   updateWallet,
 } from "components";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,7 +30,7 @@ export default function MyWalletsPage() {
   const [toDate, setToDate] = useState<Date | null>(new Date());
   const [isDatesValid, setIsDatesValid] = useState<boolean>(true);
   const dispatch = useAppDispatch();
-  const [totalAmount,setTotalAmount] = useState<number>(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
 
   const { t } = useTranslation("MyWalletsPage");
@@ -73,12 +74,14 @@ export default function MyWalletsPage() {
     if (wallets === null) dispatch(fetchWallets(null));
   }, [dispatch, wallets]);
 
+  const { lifiChainMap } = useLifiChainMap();
+
   useEffect(() => {
-    if (wallets && wallets.length > 0) {
+    if (wallets && wallets.length > 0 && lifiChainMap) {
       const addresses = wallets.map(w => w.address);
-      dispatch(fetchWalletsPortfolio(addresses));
+      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
     }
-  }, [wallets, dispatch]);
+  }, [wallets, dispatch, lifiChainMap]);
 
   const onChartRefresh = () => {
     fetchHistoricalData();
@@ -106,7 +109,7 @@ export default function MyWalletsPage() {
         wallets={wallets}
         onSelectedRowsChanged={rows => onRowsChanged(rows)}
         onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
-        totalAmount = {totalAmount}
+        totalAmount={totalAmount}
         addWalletModalOpen={addWalletModalOpen}
         setAddWalletModalOpen={setAddWalletModalOpen}
       />

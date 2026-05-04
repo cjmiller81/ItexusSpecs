@@ -1,5 +1,7 @@
 import { GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import i18next from "i18next";
+import { ChainChip } from "../../components/ChainChip";
+import "../../components/ChainChip.css";
 
 export const getTokenNamesColumns = (): GridColDef[] => {
   return [
@@ -9,6 +11,15 @@ export const getTokenNamesColumns = (): GridColDef[] => {
       width: 100,
       disableExport: true,
       disableColumnMenu: true,
+      renderCell: (params) => {
+        const token = params.row;
+        return (
+          <ChainChip
+            lifiChain={token.lifiChain ?? null}
+            networkName={typeof token.network === 'object' && token.network?.name ? token.network.name : String(token.network ?? token.chainName)}
+          />
+        );
+      },
     },
     {
       field: "tokenName",

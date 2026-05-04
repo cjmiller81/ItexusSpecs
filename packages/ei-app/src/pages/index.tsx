@@ -20,14 +20,15 @@ import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
-import { 
-  fetchWallets, 
-  fetchWalletsPortfolio, 
-  useOry, 
+import {
+  fetchWallets,
+  fetchWalletsPortfolio,
+  useOry,
   PasswordResetModal,
   updateTourStatusAsync,
   fetchReactourSettingsAsync
 } from "components";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -39,7 +40,7 @@ const TOUR_NAME = "home";
 
 const StartTourButton = () => {
   return (
-    <AnimatedStartTourButton 
+    <AnimatedStartTourButton
       tourId={TOUR_ID}
       sx={{ ml: 2 }}
     />
@@ -124,12 +125,14 @@ export default function HomePage() {
     if (wallets === null) dispatch(fetchWallets(null));
   }, [wallets,dispatch]);
 
+  const { lifiChainMap } = useLifiChainMap();
+
   useEffect(() => {
-    if (wallets && wallets.length > 0) {
+    if (wallets && wallets.length > 0 && lifiChainMap) {
       const addresses = wallets.map(w => w.address);
-         dispatch(fetchWalletsPortfolio(addresses));
+      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
     }
-  }, [wallets, dispatch]);
+  }, [wallets, dispatch, lifiChainMap]);
 
   useEffect(() => {
     if (!wallets || wallets.length === 0) return;
@@ -199,9 +202,22 @@ useEffect(() => {
       position: "bottom"
     },
     {
-      selector: "#ei-news-filter",
+      selector: "#ei-crypto-news",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsAndCalendarEvents")}</Typography>
+         <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("CryptoNews")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsEvents")}</Typography>
+        </Box>
+      ),
+      position: "right"
+    },
+    {
+      selector: "#ei-crypto-calendar",
+      content: () => (
+         <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("CryptoCalendar")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterCalendarEvents")}</Typography>
+        </Box>
       ),
       position: "right"
     },
@@ -228,33 +244,32 @@ useEffect(() => {
     {
       selector: "#ei-investing-card",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("InvestingStrategies")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+        </Box>
       ),
       position: "top"
     },
     {
       selector: "#ei-income-card",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+        <Box>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("IncomeStrategies")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+        </Box>
       ),
       position: "top"
     },
     {
       selector: "#ei-theme-toggle",
       content: () => (
-        <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
-      ),
-      position: "left"
-    },
-    {
-      selector: "#homepage",
-      content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ThankYouTitle")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: "pre-line" }}>{t("ThankYouText")}</Typography>
+          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("LightDarkMode")}</Typography>
+          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
         </Box>
       ),
-      position: "top"
+      position: "left"
     }
   ];
 
@@ -262,11 +277,11 @@ useEffect(() => {
     <TourProvider
       steps={steps}
         styles={{
-          popover: (base) => ({ 
-            ...base, 
-            borderRadius: 12, 
-            padding: 16, 
-            background: "#f7f5f2", 
+          popover: (base) => ({
+            ...base,
+            borderRadius: 12,
+            padding: 16,
+            background: "#f7f5f2",
             color: "#6b7280",
             fontSize: "0.95rem",
             lineHeight: 1.8
@@ -292,20 +307,20 @@ useEffect(() => {
             const step = steps[props.currentStep];
             // @ts-ignore - content() signature varies
             const content = typeof step?.content === 'function' ? step.content() : step?.content;
-            
+
             return (
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
                   <Box sx={{
-                    width: 30, 
-                    height: 30, 
+                    width: 30,
+                    height: 30,
                     borderRadius: '50%',
-                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', 
+                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)',
                     color: '#fff',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    fontWeight: 700, 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
                     fontSize: 14,
                     flexShrink: 0,
                     marginTop: "-2px"
@@ -331,13 +346,13 @@ useEffect(() => {
                   <Button
                     variant="contained"
                     onClick={() => setCurrentStep(currentStep - 1)}
-                    sx={{ 
-                      background: '#f7f5f2', 
-                      color: '#4a5568', 
-                      border: '1px solid #e2e8f0', 
-                      boxShadow: 'none', 
+                    sx={{
+                      background: '#f7f5f2',
+                      color: '#4a5568',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: 'none',
                       textTransform: 'none',
-                      '&:hover': { background: '#f0ece5', boxShadow: 'none' } 
+                      '&:hover': { background: '#f0ece5', boxShadow: 'none' }
                     }}
                   >
                     Prior
@@ -417,6 +432,7 @@ useEffect(() => {
           xs={12}
           md={12}
           lg={2}
+          id="ei-crypto-news"
           sx={{ display: 'flex' }}>
           <CryptoNewsTile
             title={t("CryptoNewsTile")}
@@ -460,7 +476,8 @@ useEffect(() => {
             item
             xs={12}
             md={12}
-            lg={2}>
+            lg={2}
+            id="ei-crypto-calendar">
             <CryptoCalendar
               loading={isCalendarLoading}
               title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
@@ -517,10 +534,10 @@ const TourStateSync = ({
 
   useEffect(() => {
     if (!reactourSettings?.tours) return;
-    
+
     const viewed = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_VIEWED`] === 1;
     const hasOpenModals = showPasswordResetModal || showWelcomeModal;
-    
+
     if (!viewed && !isOpen && !tourWasOpened && !hasOpenModals) {
       const stepFromDb = reactourSettings.tours[`EI_TOUR_${TOUR_ID}_STEP`] || 0;
       if (!isNaN(stepFromDb)) setCurrentStep(stepFromDb);
@@ -533,7 +550,7 @@ const TourStateSync = ({
 
     dispatch(updateTourStatusAsync({
       tourName: TOUR_NAME,
-      update: { 
+      update: {
         step: currentStep,
         viewed: currentStep >= totalSteps - 1 ? true : undefined
       }

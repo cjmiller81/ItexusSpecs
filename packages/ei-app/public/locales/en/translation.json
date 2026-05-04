@@ -31,7 +31,7 @@
     "HowBuildFilter": "How to Build a Filter",
     "HowBuildLogicGate": "About Each Logic Gate",
     "FilterBuilderIntroGuide": "Filter Builder Intro",
-    "BuildingNORGate" :"Building the NOR Gate",
+    "BuildingNORGate": "Building the NOR Gate",
     "BuildingNANDGate": "Building the NAND Gate",
     "BuildingORGate": "Building the OR Gate",
     "BuildingANDGate": "Building the AND Gate",
@@ -159,18 +159,22 @@
     "StartTour": "Start Tour",
     "CryptoDataMiningAnalyticsDecisionModeling": "Crypto data mining, analytics & decision modeling - democratizing crypto Alpha",
     "ClickHereToAccessYourProfile": "Click here to access your profile, manage wallets, and configure your subscription",
-    "FilterNewsAndCalendarEvents": "Filter news and calendar events to\nstay updated with relevant crypto information",
+    "CryptoNews": "Crypto News",
+    "FilterNewsEvents": "Filter news events to\nstay updated with relevant crypto information",
+    "CryptoCalendar": "Crypto Calendar",
+    "FilterCalendarEvents": "Filter calendar events to\nstay updated with relevant crypto information",
     "PlatformsContainStrategies": "Platforms contain strategies - the engine of EI. Click each to explore modules",
     "ProfileSettings": "Profile & Settings",
     "WelcomeToElanInsights": "Welcome to Elan Insights",
     "PlatformStrategies": "Platform Strategies",
     "AdvancedTools": "Advanced Tools",
     "ToolsEnableCustomizedAnalysis": "Tools enable customized analysis. Click each to explore modules",
-    "SnapshotOfTheInvestingStrategy": "View of Investing Strategy. Click strategy card to open.",
-    "SnapshotOfTheIncomeStrategy": "View of Income Strategy.\nClick strategy card to open.",
-    "ChangeBetweenLightAndDarkModes": "Change between light and dark\nmodes for your viewing preference",
-    "ThankYouTitle": "Thank You!",
-    "ThankYouText": "Thank you for participating in this v1 'Alpha' group. I deeply appreciate your help on this! Please go through the site, fill out the survey and return to me at your earliest opportunity."
+    "InvestingStrategies": "Investing Strategies",
+    "SnapshotOfTheInvestingStrategy": "View of Investing Strategies.\nClick strategy card to open.",
+    "IncomeStrategies": "Income Strategies",
+    "SnapshotOfTheIncomeStrategy": "View of Income Strategies.\nClick strategy card to open.",
+    "LightDarkMode": "Light/Dark Mode",
+    "ChangeBetweenLightAndDarkModes": "Change between light and dark\nmodes for your viewing preference"
   },
   "SecurityContainer": {
     "UnlinkTotp": "Unlink authentication app",
@@ -221,7 +225,7 @@
     "DexAggregatorTourSectionText": "You are in the Trade Aggregator/DEX section",
     "DexAggregatorTourManualPositionText": "You may add a manual position to your chosen wallet",
     "DexAggregatorTourWalletChoiceText": "Choose one among your wallets",
-    "DexAggregatorTourTokenTradeText": "Click a token to find the best\ntrade route.",
+    "DexAggregatorTourTokenTradeText": "Click a token to find\nthe best trade route.",
     "DexAggregatorTourTradeQuantityText": "Input trade quantity of current\nposition",
     "DexAggregatorTourTargetTokenText": "Input target token (same chain is automatic). Bridges coming soon!",
     "DexAggregatorTourQuotesTitle": "Get Best Quotes",
@@ -272,12 +276,12 @@
     "ConfirmSend": "Confirm Send",
     "ExchangeNameAlreadyExists": "Exchange name already exists",
     "KrakenAPIInstructions": "Kraken API Instructions:",
-    "OnceLoggedIntoKraken":"1.Once logged into Kraken, make sure you are in Kraken Pro and click the user profile icon.",
+    "OnceLoggedIntoKraken": "1.Once logged into Kraken, make sure you are in Kraken Pro and click the user profile icon.",
     "ThenClickSetting": "2.Then click 'Setting', then 'Connections & API', then click the 'Create API Key' button.",
     "NextFillInTheForm": "3.Next, fill in the form as shown below, and click 'Generate Key'.",
-    "BeSureToCopyPasteEachAPIKeys":"Be sure to copy and paste each of the API keys, one dithered gray (API Key), and one white (Private Key), and paste them each one-at-a-time to the appropriate fields above.",
+    "BeSureToCopyPasteEachAPIKeys": "Be sure to copy and paste each of the API keys, one dithered gray (API Key), and one white (Private Key), and paste them each one-at-a-time to the appropriate fields above.",
     "IMPORTANTBeSure": "IMPORTANT: Be sure to do this before closing the Kraken add API Key window; you will immediately lose visibility to these keys as soon as you do so.",
-    "TokensToTrade":"Tokens To Trade",
+    "TokensToTrade": "Tokens To Trade",
     "TokenAlreadyExists": "Token already exists on the selected chain!",
     "ClickToLoadCurrentPosition": "Click to load Current Position",
     "TradeAggregatorDexFull": "Trade Aggregator: Decentralized Exchanges",
@@ -318,7 +322,7 @@
     "SendTradeExchange": "Send Trade to Exchange",
     "ExchangeTradePairs": "Exchange trade pairs",
     "ConfirmTransaction": "Confirm Transaction",
-    "TransactionResults": "Transaction Results", 
+    "TransactionResults": "Transaction Results",
     "OrderId": "Order Id",
     "AmountFilled": "Amount Filled",
     "MarketSymbol": "Symbol",
@@ -372,7 +376,7 @@
     "SelectExchangesYouWantToPriceAgainst": "Select the Exchanges you want to price against from the dropdown. Pro Tip: Use the \"Filter Exchange by Country\" to focus on exchanges in your region",
     "UseTheFilterExchangeByCountry": "Use the 'Filter Exchange by Country' to focus on exchanges in your region.",
     "ProTip": "Pro Tip:",
-    "ReadAsRow":"💡 Read as: Rows ('Exchange A') minus Columns ('Exchange B')",
+    "ReadAsRow": "💡 Read as: Rows ('Exchange A') minus Columns ('Exchange B')",
     "UnderstandingPriceDifferentials": "Understanding Price Differentials",
     "TheoreticalSpreadsBasedOnSpotPrices": "Theoretical spreads based on spot prices",
     "TheoreticalSpreadsBasedOnSpotPricesAtSinglePointInTime": "Theoretical spreads based on spot prices at a single point in time.",
@@ -451,7 +455,7 @@
     "EstAmount": "Est. Net Amount",
     "MarketDataUpdatedAs": "Market data updated as of: {{value}}. Execution prices and gas costs are estimates only and fluctuate based on real-time network conditions. DEXs may apply additional trading fees. Review all transaction parameters at the linked DEX.",
     "SameTokenError": "You have selected the same Swap For Token as your Current Token Position, please your review and change your Swap selections",
-    "NoQuotesFound":"No Quotes Found",
+    "NoQuotesFound": "No Quotes Found",
     "GetBestRoutes": "Get Best Routes",
     "DEXChooser": "DEX Chooser",
     "SelectTokenToSwapFrom": "Select token to swap from",
@@ -500,7 +504,9 @@
   },
   "ProfilePicture": {
     "UploadAvatar": "Upload Image/Avatar",
-    "UploadChangeImage": "Upload/Change Your Profile Image"
+    "UploadChangeImage": "Upload/Change Your Profile Image",
+    "ImageFormat": "Image formats: JPG or PNG",
+    "FileSizeLimit": "File size limit: 1 MB"
   },
   "TotalWalletsWorthCard": {
     "TotalWalletWorth": "Total Wallet Value"
@@ -531,7 +537,11 @@
     "BilledYearly": "Billed yearly",
     "BilledMonthly": "Billed monthly",
     "SwitchToPlan": "Switch to plan",
+    "SwitchPlanConfirmText": "Are you sure you want to switch to this subscription plan?",
     "CurrentPlan": "Current plan",
+    "CancelPlan": "Cancel plan",
+    "CancelPlanTitle": "Cancel Subscription",
+    "CancelPlanConfirmText": "Are you sure you want to cancel your current subscription plan?",
     "SelectThisPlan": "Select this plan",
     "Upgrade": "Upgrade"
   },
@@ -565,6 +575,7 @@
     "CEXWallets": "CEX Wallets",
     "Centralized": "Centralized (CEX)",
     "Decentralized": "Decentralized (Web3)",
+    "Contact": "Contact",
     "SupportAndLegal": "Support and Legal",
     "DEX": "Decentralized (DEX)",
     "Help": "Help"
@@ -615,8 +626,7 @@
     "IsElanInsightsRegulatedFinancialEntity": "Is Elan Insights a regulated financial entity?",
     "ElanInsightsIsNonCustodialSaaS": "No. Elan Insights is not a broker-dealer, investment adviser, exchange, or money transmitter. It doesn’t hold funds, execute trades, or provide investment advice, making it exempt from regulations in numerous jurisdictions (SEC, FINRA, CFTC, etc.)..",
     "ElanInsightsIs": "Elan Insights is a non-custodial SaaS platform offering cryptocurrency analytics, data mining, and decision-modeling tools. It integrates with centralized exchanges (e.g., Kraken, Coinbase) listed on CoinGecko, 1inch, or DeFiLlama via view-only API keys to display account data and provide a trade aggregator tool that generates links to exchange websites for user-initiated trades.\nThe platform is available in many countries including the U.S., EU, UK, Singapore, Australia, Canada, UAE, Saudi Arabia, Hong Kong, Switzerland, India, Brazil, Mexico, El Salvador, Panama, Chile, Argentina, Colombia, Nigeria, Turkey, Thailand, Malta, Estonia, Portugal, Liechtenstein, Georgia, and Cayman Islands, but not to residents of Japan or South Korea, including those using VPNs or anonymizing technologies."
- },
-
+  },
   "MarketCapPage": {
     "EqualWeightedChartTitle": "Historical Market Cap Equal Weight Index",
     "WeightedChartTitle": "Historical Market Cap Weighted Index",
@@ -638,7 +648,6 @@
     "TourQuickSortText": "Quickly sort and filter the table in the first two rows",
     "TourCurrentFilterText": "Your current filter appears\nhere. Click the text to edit it.",
     "TourPrebuiltFiltersText": "Your pre-built filters appear\nhere",
-    "TourPrebuiltFiltersStep8Text": "Select a pre-build strategy filter here to update the Model Results below.",
     "TourCustomFiltersTitle": "Custom Filters",
     "TourCustomFiltersText": "View the filter-builder videos and build your own",
     "TourExportText": "Export table to a spreadsheet\n(subscription only)",
@@ -702,7 +711,6 @@
     "Value": "Value",
     "ProcentOfPotfolio": "% of Potfolio"
   },
-
   "WalletDeFiOverview": {
     "Claimable": "Claimable",
     "Supplied": "Supplied"
@@ -773,7 +781,7 @@
     "NoMoreСurrentEventsForThisDate": "No More Сurrent Events for this Date"
   },
   "Vaults": {
-    "VaultsPageTitle": "Beefy Vaults Yield Rankings and Filtering",
+    "VaultsPageTitle": "Vaults Yield Rankings and Filtering",
     "VaultsTitle": "Prefilter Vaults",
     "TourIncomeStrategyTitle": "Income Strategy Platform",
     "TourIncomeStrategyText": "You are in the Income strategy section",
@@ -786,8 +794,8 @@
     "TourIncomeCurrentFilterText": "Your current filter appears\nhere. Click the text to edit it.",
     "TourIncomeExportText": "Export table to a spreadsheet\n(subscription only)"
   },
-  "Modals":{
-    "SwapRouteNotFound":"Swap Route Not Found",
+  "Modals": {
+    "SwapRouteNotFound": "Swap Route Not Found",
     "WeCouldntFindSwapRouteForThisTokenPair": "We couldn't find a swap route for this token pair. This could be due to:",
     "InsufficientLiquidity": "Insufficient liquidity",
     "UnsupportedTokenPair": "Unsupported token pair",
@@ -807,12 +815,40 @@
     "DEX quote requests are not available in {{plan}} plan": "DEX quote requests are not available in {{plan}} plan",
     "This feature is not available in your current plan": "This feature is not available in your current plan"
   },
-  "Social":{
-    "Telegram":"Telegram",
+  "Social": {
+    "Telegram": "Telegram",
     "Twitter": "X",
     "Discord": "Discord",
     "GitHub": "GitHub",
     "Education": "Education",
     "Blog": "Blog"
+  },
+  "WelcomeModal": {
+    "Title": "Welcome to the Elan Insights Beta!",
+    "IntroText": "Welcome to the frontier of crypto intelligence. You are among the first to explore Elan Insights. Help us shape the future of institutional-grade retail research.",
+    "AboutBetaTest": "About This Beta Test",
+    "UseWebApp": "Use the Web App",
+    "Profile": "Start by completing your profile and connecting your wallets to see real-time performance across all your chains.",
+    "AnalyticsPlatforms": "Toggle between our Investing, Income, and Trading dashboards to find the data that fits your strategy.",
+    "InvestingDesc": "• Investing - Explore market cap weighted and equal weight index strategies",
+    "IncomeDesc": "• Income - Discover yield opportunities in liquidity pools and vaults",
+    "TradingDesc": "• Trading - Access real-time charts and technical analysis tools",
+    "Tools": "Tools:",
+    "DEXTradeAggregatorDesc": "• DEX Trade Aggregator - Find the best swap routes across decentralized exchanges",
+    "CEXTradeAggregatorDesc": "• CEX Trade Aggregator - Compare prices across centralized exchanges",
+    "GiveUsFeedback": "Give Us Feedback",
+    "FeedbackDesc1": "• Complete our beta survey to share your experience",
+    "FeedbackDesc2": "• Report any bugs or issues you encounter",
+    "FeedbackDesc3": "• Suggest features you'd like to see in future releases",
+    "RewardsForYourTime": "We value your brainpower. Completing the Beta survey and survey earns you permanent status and additional discounted access.",
+    "LifetimeDiscount": "Lifetime Discount",
+    "LifetimeDiscountDesc": "Beta testers who complete the survey will receive a permanent discount on future subscriptions.",
+    "BetaTesterBadge": "Beta Tester Badge",
+    "BetaTesterBadgeDesc": "Earn an exclusive badge on your profile recognizing your contribution to the platform.",
+    "FreeTrial": "Extended Free Trial",
+    "FreeTrialDesc": "Enjoy extended access to premium features during the beta testing period.",
+    "ThankYouMessage": "We truly appreciate your participation and look forward to building the future of crypto analytics together.",
+    "FounderSignature": "— The Elan Insights Team",
+    "CloseButton": "Get Started"
   }
 }

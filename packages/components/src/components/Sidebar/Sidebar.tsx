@@ -1,6 +1,6 @@
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from "react";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
@@ -20,6 +20,11 @@ interface Props {
 type SimpleBarRefType = React.ElementRef<typeof SimpleBar>;
 
 export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+      setIsClient(true);
+    }, []);
   const theme = useTheme();
   const [opened, setOpened] = useState(new Map<string, boolean>());
   const [hasScroll, setHasScroll] = useState(false);
@@ -37,29 +42,31 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
   }, []);
 
   const handleSetItemOpen = (title: string, index: number, newOpen: boolean) => {
-  if (simpleBarRef.current) {
-    const scrollEl = simpleBarRef.current.getScrollElement();
-    if (scrollEl) {
-      scrollPosition.current = scrollEl.scrollTop;
+    if (simpleBarRef.current) {
+      const scrollEl = simpleBarRef.current.getScrollElement();
+      if (scrollEl) {
+        scrollPosition.current = scrollEl.scrollTop;
+      }
     }
-  }
-  setOpened(prevOpened => {
-    const newOpened = new Map(prevOpened);
-    newOpened.set(`${index}-${title}`, newOpen);
-    return newOpened;
-  });
-  
-  setTimeout(checkScroll, 0);
-};
+    setOpened(prevOpened => {
+      const newOpened = new Map(prevOpened);
+      newOpened.set(`${index}-${title}`, newOpen);
+      return newOpened;
+    });
+  };
 
   useEffect(() => {
-  if (simpleBarRef.current) {
-    const scrollEl = simpleBarRef.current.getScrollElement();
-    if (scrollEl) {
-      scrollEl.scrollTop = scrollPosition.current;
+    if (simpleBarRef.current) {
+      const scrollEl = simpleBarRef.current.getScrollElement();
+      if (scrollEl) {
+        scrollEl.scrollTop = scrollPosition.current;
+      }
     }
-  }
-}, [opened]);
+  }, [opened]);
+
+  useLayoutEffect(() => {
+    checkScroll();
+  }, [opened]);
 
   useEffect(() => {
     checkScroll();
@@ -91,66 +98,72 @@ export function Sidebar({ open, toggleSide, sidebarItems }: Props) {
   }));
 
   return (
-    <StyledDrawer 
-      variant="permanent" 
-      open={open}>
-      <>
-        <StyledDrawerHeader>
-          <IconButton onClick={() => toggleSide(false)}>
-            {theme.direction === "rtl" ? <ChevronRight /> : <ChevronLeft />}
-          </IconButton>
-        </StyledDrawerHeader>
-        <Box sx={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)" }}>
-          <Box sx={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-            <SimpleBarStyled ref={simpleBarRef} sx={{ height: "100%" }}>
-              {sidebarItems.filter(item => !item.isDisclaimer).map((item, sidebarItemindex) => (
-                <Box key={sidebarItemindex}>
-                  <SidebarSection
-                    sectionName={item.title !== "Home" ? item.title : ""}
-                    items={item.sidebarListItems.map(item => ({
-                      ...item,
-                      open: Boolean(opened.get(`${sidebarItemindex}-${item.title}`) || false),
-                    }))}
-                    onSetItemOpen={(title, open) => handleSetItemOpen(title, sidebarItemindex, open)}
-                    open={open}
-                    toggleSide={toggleSide}
-                    isDisclaimer={item.isDisclaimer}
-                  />
-                  {sidebarItemindex !== sidebarItems.filter(item => !item.isDisclaimer).length - 1 && <Divider 
-                  sx={{backgroundColor: theme.palette.mode === "light" ? "rgba(255, 255, 255, 0.12)" : undefined}}/>}
-                </Box>
-              ))}
-              
-              {sidebarItems.find(item => item.isDisclaimer) && hasScroll && open && (
-                <Box>
-                  <Divider sx={{color: "lighgray"}}/>
-                  <SidebarSection
-                    sectionName=""
-                    items={sidebarItems.find(item => item.isDisclaimer)?.sidebarListItems || []}
-                    onSetItemOpen={() => {}}
-                    open={open}
-                    toggleSide={toggleSide}
-                    isDisclaimer={true}
-                  />
+      <StyledDrawer 
+        variant="permanent" 
+        open={open}>
+        <>
+          <StyledDrawerHeader>
+            <IconButton onClick={() => toggleSide(false)}>
+              {theme.direction === "rtl" ? <ChevronRight /> : <ChevronLeft />}
+            </IconButton>
+          </StyledDrawerHeader>
+          <Box sx={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)" }}>
+            <Box sx={{ flex: 1, minHeight: 0, height: "100%", paddingTop: "16px", overflow: "hidden" }}>
+              {isClient ? (
+                <SimpleBarStyled ref={simpleBarRef} sx={{ height: "100%" }}>
+                  {sidebarItems.filter(item => !item.isDisclaimer).map((item, sidebarItemindex) => (
+                    <Box key={sidebarItemindex}>
+                      <SidebarSection
+                        sectionName={item.title !== "Home" ? item.title : ""}
+                        items={item.sidebarListItems.map(item => ({
+                          ...item,
+                          open: Boolean(opened.get(`${sidebarItemindex}-${item.title}`) || false),
+                        }))}
+                        onSetItemOpen={(title, open) => handleSetItemOpen(title, sidebarItemindex, open)}
+                        open={open}
+                        toggleSide={toggleSide}
+                        isDisclaimer={item.isDisclaimer}
+                        isLastInGroup={true}
+                      />
+                    </Box>
+                  ))}
+                </SimpleBarStyled>
+              ) : (
+                <Box sx={{ height: "100%", minHeight: '400px', overflowY: 'auto' }}>
+                  {sidebarItems.filter(item => !item.isDisclaimer).map((item, sidebarItemindex) => (
+                    <Box key={sidebarItemindex}>
+                      <SidebarSection
+                        sectionName={item.title !== "Home" ? item.title : ""}
+                        items={item.sidebarListItems.map(item => ({
+                          ...item,
+                          open: Boolean(opened.get(`${sidebarItemindex}-${item.title}`) || false),
+                        }))}
+                        onSetItemOpen={(title, open) => handleSetItemOpen(title, sidebarItemindex, open)}
+                        open={open}
+                        toggleSide={toggleSide}
+                        isDisclaimer={item.isDisclaimer}
+                        isLastInGroup={true}
+                      />
+                    </Box>
+                  ))}
                 </Box>
               )}
-            </SimpleBarStyled>
-          </Box>
-          
-          {sidebarItems.find(item => item.isDisclaimer) && !hasScroll && open && (
-            <Box sx={{ flexShrink: 0 }}>
-              <SidebarSection
-                sectionName=""
-                items={sidebarItems.find(item => item.isDisclaimer)?.sidebarListItems || []}
-                onSetItemOpen={() => {}}
-                open={open}
-                toggleSide={toggleSide}
-                isDisclaimer={true}
-              />
             </Box>
-          )}
-        </Box>
-      </>
-    </StyledDrawer>
+            {sidebarItems.find(item => item.isDisclaimer) && open && (
+              <Box sx={{ flexShrink: 0 }}>
+                <Divider sx={{ color: "lightgray", borderColor: "gray" }} />
+                <SidebarSection
+                  sectionName=""
+                  items={sidebarItems.find(item => item.isDisclaimer)?.sidebarListItems || []}
+                  onSetItemOpen={() => {}}
+                  open={open}
+                  toggleSide={toggleSide}
+                  isDisclaimer={true}
+                />
+              </Box>
+            )}
+          </Box>
+        </>
+      </StyledDrawer>
   );
 }

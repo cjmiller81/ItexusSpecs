@@ -16848,7 +16848,7 @@ __metadata:
     react-player: "npm:^2.15.1"
     react-redux: "npm:^7.2.8"
     react-syntax-highlighter: "npm:^15.5.0"
-    react-toastify: "npm:^7.0.0"
+    react-toastify: "npm:^11.0.5"
     react-ts-tradingview-widgets: "npm:^1.2.5"
     react-turnstile: "npm:^1.1.4"
     react-window: "npm:^1.8.10"
@@ -29694,15 +29694,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-toastify@npm:^7.0.0":
-  version: 7.0.4
-  resolution: "react-toastify@npm:7.0.4"
+"react-toastify@npm:^11.0.5":
+  version: 11.0.5
+  resolution: "react-toastify@npm:11.0.5"
   dependencies:
-    clsx: "npm:^1.1.1"
+    clsx: "npm:^2.1.1"
   peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: 10c0/2aa396f2aefe4c30498eca3e4bbb560c1b6503065808c98003711cc6273bc1328160cb2a2e844e05ff29ee8d52ad9094d0ebd6ea233d32e38f8516c859c009d6
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: 10c0/50f5b81323ebb1957b2efd0963fac24aa1407155d16ab756ffd6d0f42f8af17e796b3958a9fce13e9d1b945d6c3a5a9ebf13529478474d8a2af4bf1dd0db67d2
   languageName: node
   linkType: hard
 
