@@ -84,27 +84,31 @@ export const walletsSlice = createAppSlice({
     ),
 
    fetchWalletsPortfolio: create.asyncThunk(
-  async (addresses: string[], thunkApi) => {
-    try {
-      const response = await walletsApi.getWalletsPortfolio(addresses);
-      return response;
-    } catch (error) {
-      return thunkApi.rejectWithValue("Failed to fetch wallet portfolio");
+    async (
+      params: { addresses: string[]; lifiChainMap?: Map<number, any> },
+      thunkApi
+    ) => {
+      const { addresses, lifiChainMap } = params;
+      try {
+        const response = await walletsApi.getWalletsPortfolio(addresses, lifiChainMap);
+        return response;
+      } catch (error) {
+        return thunkApi.rejectWithValue("Failed to fetch wallet portfolio");
+      }
+    },
+    {
+      pending: state => {
+        state.statusFetchingPortfolio = "loading";
+      },
+      fulfilled: (state, action: PayloadAction<WalletPortfolioResponse[]>) => {
+        state.statusFetchingPortfolio = "idle";
+        state.portfolioWalletData = action.payload;
+      },
+      rejected: state => {
+        state.statusFetchingPortfolio = "failed";
+      },
     }
-  },
-  {
-    pending: state => {
-      state.statusFetchingPortfolio = "loading";
-    },
-    fulfilled: (state, action: PayloadAction<WalletPortfolioResponse[]>) => {
-      state.statusFetchingPortfolio = "idle";
-      state.portfolioWalletData = action.payload;
-    },
-    rejected: state => {
-      state.statusFetchingPortfolio = "failed";
-    },
-  }
-),
+  ),
 
 
     setWalletsFilter: create.reducer((state, action: PayloadAction<WalletsFilter>) => {

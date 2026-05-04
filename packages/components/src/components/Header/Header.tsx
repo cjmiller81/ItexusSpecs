@@ -5,6 +5,7 @@ import { Box, IconButton, PaletteMode, Toolbar, Typography, Button } from "@mui/
 import { StyledAppBar } from "./StyledAppBar";
 import { ThemeToggler } from "./ThemeToggler";
 import { UserMenu } from "./UserMenu";
+import { ApiUsageStatus } from "./ApiUsageStatus";
 import { useOry } from '../../features/auth/layouts/OryAuthGateway';
 import { useRouter } from 'next/router';
 
@@ -77,7 +78,7 @@ useEffect(() => {
     if (msLeft <= 0) {
       setRemaining(0);
       setModes("seconds");
-      router.push("/login");
+      router.push("/ui/login");
       return;
     }
 
@@ -149,6 +150,7 @@ useEffect(() => {
                 </Button>
               </Box>
             )}
+            <ApiUsageStatus />
             <ThemeToggler onToggleMode={toggleTheme} mode={mode} />
             <Box sx={{ mr: 1 }}>
               <UserMenu logOut={handleLogOut} defaultAvatar={defaultAvatar} avatarUrl={avatarUrl} />

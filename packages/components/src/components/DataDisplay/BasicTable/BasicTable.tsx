@@ -3,9 +3,13 @@ import { styled } from "@mui/material";
 import { DataGrid, DataGridProps } from "@mui/x-data-grid";
 import TablePagination from "@mui/material/TablePagination";
 
-export function BasicTable({ rows, columns, ...props }: DataGridProps) {
+interface BasicTableProps extends DataGridProps {
+  defaultRowsPerPage?: number;
+}
+
+export function BasicTable({ rows, columns, defaultRowsPerPage = 10, ...props }: BasicTableProps) {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
 
   const paginatedRows = rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 

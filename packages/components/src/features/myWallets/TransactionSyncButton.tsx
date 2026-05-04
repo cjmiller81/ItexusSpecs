@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { appAxios } from "../../lib/axios/customAxios";
+import { toast } from "react-toastify";
 
-const COOLDOWN_MINUTES = 15;
+const COOLDOWN_MINUTES = 10;
 const COOLDOWN_MS = COOLDOWN_MINUTES * 60 * 1000;
 const STORAGE_KEY = "syncCooldownEnd";
 
@@ -16,6 +17,7 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
   const [remainingText, setRemainingText] = useState<string>("");
   const [isHovering, setIsHovering] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPatienceMsg, setShowPatienceMsg] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const pollRef = useRef<number | null>(null);
 
@@ -86,10 +88,21 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
     if (cooldownEnd && Date.now() < cooldownEnd) return;
 
     setSyncing(true);
+    setShowPatienceMsg(true);
     try {
       // Start the sync process by calling the POST endpoint
       const initialStatus = await appAxios.post(`/api/wallet/${walletAddress}/sync`);
       const initialTimestamps = extractTimestamps(initialStatus.data.chains);
+
+      // Immediately notify TransactionSyncStatus of the initial sync state
+      const chains = initialStatus.data.chains || [];
+      const totalChains = chains.length;
+      const syncedChains = chains.filter((c: any) => !c.sync_in_progress).length;
+      window.dispatchEvent(
+        new CustomEvent("walletSyncStatusUpdated", {
+          detail: { walletAddress, syncedChains, totalChains },
+        })
+      );
 
       pollRef.current = window.setInterval(async () => {
         try {
@@ -107,7 +120,10 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
           );
 
           // Check if all chains are synced
-          if (syncedChains === totalChains) {
+          const allSynced = Array.from(currentTimestamps.values()).every(
+            (v) => v.sync_in_progress === false
+          );
+          if (allSynced) {
             window.clearInterval(pollRef.current!);
             pollRef.current = null;
 
@@ -118,6 +134,8 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
               })
             );
 
+            toast.success("Sync completed!", { position: "top-center", autoClose: 5000 });
+            setShowPatienceMsg(false);
             startCooldown();
             if (onSyncComplete) {
               onSyncComplete();
@@ -127,27 +145,28 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
         } catch (err) {
           console.error("Polling failed", err);
         }
-      }, 15000);
+      }, 15000); // poll every 1 minute
     } catch (err) {
       console.error("Sync failed", err);
       setError("Sync failed — try again");
       setSyncing(false);
+      setShowPatienceMsg(false);
       // tooltip visibility is controlled by hover OR syncing OR cooldown
     }
   }
 
   function extractTimestamps(chains: any[]) {
-    const timestamps = new Map<string, string>();
+    const timestamps = new Map<string, { last_synced_at: string; sync_in_progress: boolean }>();
     chains.forEach((chain) => {
-      timestamps.set(chain.chain_name, chain.last_synced_at);
+      timestamps.set(chain.chain_name, { last_synced_at: chain.last_synced_at, sync_in_progress: chain.sync_in_progress });
     });
     return timestamps;
   }
 
-  function countSyncedChains(initial: Map<string, string>, current: Map<string, string>) {
+  function countSyncedChains(initial: Map<string, { last_synced_at: string; sync_in_progress: boolean }>, current: Map<string, { last_synced_at: string; sync_in_progress: boolean }>) {
     let count = 0;
     current.forEach((timestamp, chain) => {
-      if (!initial.has(chain) || new Date(timestamp) > new Date(initial.get(chain)!)) {
+      if (!initial.has(chain) || !timestamp.sync_in_progress) {
         count++;
       }
     });
@@ -161,14 +180,19 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
 
   return (
     <div
-      style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 8 }}
+      style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 8, flexDirection: "column" }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Cooldown timer */}
-      {isCooldownActive && (
-        <div className="sync-cooldown-timer" aria-hidden>
-          {remainingText}
+      {/* Cooldown timer (show only after sync completes) */}
+      {!syncing && isCooldownActive && (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <span className="sync-cooldown-timer" style={{ marginBottom: 0, fontWeight: 500 }}>
+            Re-synch timer
+          </span>
+          <span className="sync-cooldown-timer" aria-hidden>
+            {remainingText}
+          </span>
         </div>
       )}
 
@@ -193,6 +217,13 @@ export const TransactionSyncButton: React.FC<Props> = ({ walletAddress, onSyncCo
             ? `Available in ${remainingText.replace(/[()]/g, "")}`
             : "Click to fetch latest transactions"}
           <span className="tooltip-arrow" />
+        </div>
+      )}
+
+      {/* Patience message below progress indicator */}
+      {showPatienceMsg && (
+        <div style={{ marginTop: 8, color: '#888', fontSize: 13, maxWidth: 320 }}>
+          Syncing this wallet may take a while, please be patient. You will be notified when sync has completed.
         </div>
       )}
 

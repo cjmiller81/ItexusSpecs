@@ -4,7 +4,7 @@ import { CssBaseline, useTheme } from "@mui/material"
 import Box from "@mui/material/Box"
 import { styled } from "@mui/material/styles"
 import { fetchSubscriptionsAsync, getBillingAsync, Header, RootState, Sidebar, StyledDrawerHeader, toggleSideBar, toggleTheme, useOry, fetchProductAsync, setProduct, createBillingAsync } from "components"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useSelector } from "react-redux"
 import { useSubscription } from "components"
@@ -21,16 +21,15 @@ export default function Layout({ children }: Props) {
   const billing = useSelector((state: RootState) => state.billing)
   const currentPlan = (billing.product?.name?.split(" ")[0]) ?? null;
   const { hasPageAccess } = useSubscription()
-  const [sideBarOptions, setSideBarOptions] = useState(() => getSidebarMenuItems(theme, hasPageAccess))
-
-  useEffect(() => {
-    setSideBarOptions(getSidebarMenuItems(theme, hasPageAccess))
-  }, [theme, billing.product?.metadata, billing.subscriptions])
+  const sideBarOptions = useMemo(
+    () => getSidebarMenuItems(theme, hasPageAccess),
+    [theme, hasPageAccess]
+  )
 
   const { session, logOut } = useOry()
   const { t } = useTranslation("Header")
   const isDarkMode = mode === 'dark';
-  const logoSrc = isDarkMode ? "/ElanInsightsLight.png" : "/ElanInsights.png"
+  const logoSrc = isDarkMode ? "/ELAN_INSIGHTS_one_line_brand_icon_150ppi_dark.png" : "/ELAN_INSIGHTS_one_line_brand_icon_150ppi.png"
 
   useEffect(() => {
     const loadBillingData = async () => {

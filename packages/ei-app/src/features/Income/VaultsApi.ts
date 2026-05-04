@@ -5,7 +5,15 @@ export const vaultsApi = createApi({
   reducerPath: "vaults",
   baseQuery: axiosBaseQuery(),
   endpoints: build => ({
-    getAllData: build.query<any, void>({ query: () => ({ url: "/api/beefy/vaults", method: "get" }) }),
+    getAllData: build.query<any, any>({
+      query: (params = {}) => {
+        return {
+          url: "/api/beefy/vaults",
+          method: "get",
+          params,
+        };
+      },
+    }),
   }),
 });
 

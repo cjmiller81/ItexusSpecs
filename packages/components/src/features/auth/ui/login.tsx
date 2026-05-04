@@ -31,24 +31,13 @@ export const Login: FC<LoginProps> = ({ env }) => {
 
   const isRefreshFlowIdNeeded = useFlowIdExpirationTimer(flow);
 
-  const getFlow = useCallback(
-    (id: string) =>
-      // If ?flow=.. was in the URL, we fetch it
-      ory
-        .getLoginFlow({ id })
-        .then(({ data }) => {
-          setFlow(data);
-        })
-        .catch(handleError),
-    [],
-  );
 
   const handleError = useCallback(
     (error: AxiosError) => {
       const handle = HandleError(getFlow, setFlow, "/ui/login", true);
       return handle(error);
     },
-    [getFlow],
+    []
   );
 
   // Create a new login flow, preserving aal2 if requested.
@@ -87,6 +76,22 @@ export const Login: FC<LoginProps> = ({ env }) => {
       });
   }, [refresh, aalParam, returnTo, isAal2, router]);
 
+  const getFlow = useCallback(
+    (id: string) =>
+      ory
+        .getLoginFlow({ id })
+        .then(({ data }) => {
+          setFlow(data);
+        })
+        .catch((error: AxiosError) => {
+          if (error.response?.status === 410 || error.response?.status === 404) {
+            createFlow();
+          } else {
+            handleError(error);
+          }
+        }),
+    [createFlow, handleError],
+  );
 
   useEffect(() => {
     if (!router.isReady) {

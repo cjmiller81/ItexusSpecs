@@ -2,6 +2,9 @@ import { CurrentPositionSection } from "@/features/tradeAggregator/CurrentPositi
 import { NewPositionSection } from "@/features/tradeAggregator/NewPositionSection";
 import { Wallet } from "@/models/Wallet/Wallet";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import { enrichTokenPositions, EnrichedTokenPosition } from "../../../../../components/src/utils/enrichTokenPositions";
+import { getLifiToken } from "../../../features/tradeAggregator/lifiApi";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import { Box, Grid, Typography, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import React from "react";
@@ -9,7 +12,7 @@ import { PageAccessGuard } from "@/components/PageAccessGuard";
 import { useTranslation } from "react-i18next";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
-import { useSubscription, updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
+import { updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 
 const TOUR_ID = "dex_aggregator_v1";
@@ -80,13 +83,14 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function Dex() {
+  const { lifiChainMap } = useLifiChainMap();
     const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null);
     const { t } = useTranslation("IndexModelingSection");
     const [selectedToken, setSelectedToken] = useState<string | null>(null);
     const [selectedChain, setSelectedChain] = useState<string | null>(null);
+    const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
     const [filteredRows, setFilteredRows] = useState<WalletBalance[]>([]);
-    const [selectedTokenRow, setSelectedTokenRow] = useState<WalletBalance | null>(null);
-    const { getTradeAggregatorQuoteLimit } = useSubscription();
+    const [selectedTokenRow, setSelectedTokenRow] = useState<EnrichedTokenPosition | null>(null);
 
     const steps: StepType[] = [
       {
@@ -119,73 +123,98 @@ export default function Dex() {
           <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourTokenTradeText")}</Typography>
         ),
         position: "right"
-      },
-      {
-        selector: "#quantity_input",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourTradeQuantityText")}</Typography>
-        ),
-        position: "left"
-      },
-      {
-        selector: "#target_token_dropdown",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a" }}>{t("DexAggregatorTourTargetTokenText")}</Typography>
-        ),
-        position: "left"
-      },
-      {
-        selector: "#get_quotes_btn",
-        content: () => (
-          <Box sx={{ color: "#1a1a1a" }}>
-            <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("DexAggregatorTourQuotesTitle")}</Typography>
-            <Typography sx={{ color: "#4a5568" }}>{t("DexAggregatorTourQuotesText", { quoteCount: getTradeAggregatorQuoteLimit() })}</Typography>
-          </Box>
-        ),
-        position: "top"
-      },
-      {
-        selector: "#routes_list",
-        content: () => (
-          <Box sx={{ color: "#1a1a1a" }}>
-            <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("DexAggregatorTourRoutesTitle")}</Typography>
-            <Typography sx={{ color: "#4a5568" }}>{t("DexAggregatorTourRoutesText")}</Typography>
-          </Box>
-        ),
-        position: "top"
-      },
-      {
-        selector: "#execute_section",
-        content: () => (
-          <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("DexAggregatorTourExecuteText")}</Typography>
-        ),
-        position: "bottom"
       }
     ];
 
     const handleSelectedTokenChange = (tokenInfo: any, chainInfo: any) => {
-      setSelectedToken(tokenInfo);
-      setSelectedChain(chainInfo);
+      setSelectedToken(tokenInfo || null);
+      setSelectedChain(chainInfo?.name || chainInfo || null);
+      setSelectedChainId(chainInfo?.id || null);
       
-      if(tokenInfo === null)
-      {
-        setSelectedTokenRow(null)
+      if (!tokenInfo) {
+        setSelectedTokenRow(null);
       }
     };
 
     const clearSelectedTokenAndChain = () => {
       setSelectedToken(null);
       setSelectedChain(null);
+      setSelectedChainId(null);
       setSelectedTokenRow(null);
     };
 
-    const handleSelectedTokenRowChange = (tokenRow: WalletBalance | null) => {
-      setSelectedTokenRow(tokenRow);
-    };
+
+    // When a token row is selected, fetch its address from /api/lifi/token and update selectedTokenRow
+    const handleSelectedTokenRowChange = React.useCallback(async (tokenRow: WalletBalance | null) => {
+      if (tokenRow && tokenRow.chainId !== undefined && lifiChainMap) {
+        try {
+          // Find the chain directly by ID from the map to avoid brittle name mapping
+          const lifiChain = lifiChainMap.get(tokenRow.chainId);
+          const [enriched] = enrichTokenPositions([tokenRow], lifiChainMap);
+          
+          if (!enriched || !lifiChain) {
+            setSelectedTokenRow(null);
+            return;
+          }
+
+          // Use the cached chain list to find the address. No more singular requests.
+          const lifiToken = await getLifiToken(enriched.chainId, enriched.tokenName || '');
+          
+          // Combine data: priority to LiFi metadata (address, logo, etc.) but keep our balance/etc.
+          setSelectedTokenRow({ 
+            ...enriched, 
+            chain: tokenRow.chain, // keep original display name
+            tokenAddress: lifiToken?.address || enriched.tokenAddress,
+            lifiChain: enriched.lifiChain,
+            decimals: lifiToken?.decimals || enriched.decimals
+          });
+        } catch (e) {
+          console.error("Error enriching token row:", e);
+          setSelectedTokenRow(null);
+        }
+      } else {
+        setSelectedTokenRow(null);
+      }
+    }, [lifiChainMap]);
 
     const handleWalletChange = (newWallet: Wallet | null) => {
         setSelectedWallet(newWallet);
+        clearSelectedTokenAndChain();
       };
+
+
+    // Synchronize selectedTokenRow with selectedToken/selectedChain dropdowns
+    useEffect(() => {
+      // CRITICAL: Only sync if we have a complete selection (symbol AND chainId)
+      // This prevents partial updates from snapping the selection to Ethereum (Row 1)
+      if (!selectedToken || !selectedChainId || !lifiChainMap) return;
+
+        // If we are in the middle of clearing, don't try to restore
+        if (selectedToken === null || selectedChain === null) return;
+
+        const isMatch = selectedTokenRow && 
+          selectedTokenRow.tokenName?.toLowerCase() === selectedToken.toLowerCase() &&
+          (selectedChainId ? selectedTokenRow.chainId === selectedChainId : selectedTokenRow.chain?.toLowerCase() === selectedChain.toLowerCase());
+          
+        if (!isMatch) {
+          const matchingRow = filteredRows.find(
+            row => row.tokenName?.toLowerCase() === selectedToken.toLowerCase() && 
+            (selectedChainId ? row.chainId === selectedChainId : row.chain?.toLowerCase() === selectedChain.toLowerCase())
+          );
+          if (matchingRow) {
+            handleSelectedTokenRowChange(matchingRow);
+          } else {
+            // Create a virtual row for tokens not in the user's portfolio
+            const virtualRow: any = {
+              tokenName: selectedToken,
+              chain: selectedChain,
+              chainId: selectedChainId,
+              balance: 0,
+            };
+            handleSelectedTokenRowChange(virtualRow);
+          }
+        }
+    }, [selectedToken, selectedChain, selectedChainId, lifiChainMap, selectedWallet, filteredRows, handleSelectedTokenRowChange, selectedTokenRow]);
     
   return (
     <PageAccessGuard requiredPage="/tradeAggregator/dex">
@@ -307,7 +336,7 @@ export default function Dex() {
           </Box>
 
         <Grid container spacing={1}>
-          <Grid item xs={12} md={4.9}>
+          <Grid item xs={12} md={6}>
             <Typography
               variant="h6"
               component="div"
@@ -317,12 +346,13 @@ export default function Dex() {
             </Typography>
             <CurrentPositionSection onWalletChange={handleWalletChange} selectedToken={selectedToken}
               selectedChainNewPosition={selectedChain}
+              selectedChainId={selectedChainId}
               onFilteredRowsChange={setFilteredRows}
               onTokenChange={handleSelectedTokenRowChange}
               onClearTokenAndChain={clearSelectedTokenAndChain}/>
           </Grid>
 
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={6}>
           <Typography
             variant="h6"
             component="div"
@@ -330,10 +360,11 @@ export default function Dex() {
           >
             {t("NewPosition")}
           </Typography>
-          <NewPositionSection
-            selectedWallet={selectedWallet}
+          <NewPositionSection 
+            key={selectedWallet?.walletId || selectedWallet?.address || 'no-wallet'}
+            selectedWallet={selectedWallet} 
             onSelectedTokenChange={handleSelectedTokenChange}
-            filteredRows={filteredRows}
+            filteredRows={lifiChainMap ? enrichTokenPositions(filteredRows, lifiChainMap) : []}
             selectedTokenRow={selectedTokenRow}
           />
         </Grid>

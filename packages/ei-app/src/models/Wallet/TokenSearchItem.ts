@@ -6,4 +6,7 @@ export interface TokenSearchItem {
   mSup?: string | null
   name?: string | null
   sym: string
+  chain?: string
+  chainId?: number
+  tokenName?: string
 }

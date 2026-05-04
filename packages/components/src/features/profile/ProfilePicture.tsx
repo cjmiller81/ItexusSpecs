@@ -52,6 +52,20 @@ export const ProfilePicture = ({onAvatarChanged, isAvatarUploading, defaultAvata
           variant="body1">
           {t("UploadChangeImage")}
         </Typography>
+        <Typography
+          textAlign={"center"}
+          variant="caption"
+          color="text.secondary"
+          sx={{ mb: -3 }}>
+          {t("ImageFormat")}
+        </Typography>
+        <Typography
+          textAlign={"center"}
+          variant="caption"
+          color="text.secondary"
+          sx={{ mb: 0 }}>
+          {t("FileSizeLimit")}
+        </Typography>
         <LoadingButton
           loading={isAvatarUploading}
           sx={{ minWidth: "140px" }}

@@ -16,6 +16,7 @@ import {
   getCurrentTokensValueFromZapper,
   fetchReactourSettingsAsync,
 } from "components";
+import { useLifiChainMap } from "@/common/lifiChainContext";
 import moment from "moment";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -163,17 +164,18 @@ export default function MyWalletsPage() {
     }
   }, [isDatesValid, fromDate, toDate, symbolOption?.id, symbolOption?.label, dispatch]);
 
+  const { lifiChainMap } = useLifiChainMap();
+
   useEffect(() => {
-    if (wallets && wallets.length > 0) {
+    if (wallets && wallets.length > 0 && lifiChainMap) {
       const addresses = wallets.map(w => w.address);
       const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
       const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
-      
       if (addressesChanged || portfolioWalletData.length === 0) {
-        dispatch(fetchWalletsPortfolio(addresses));
+        dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
       }
     }
-  }, [wallets, dispatch, portfolioWalletData]);
+  }, [wallets, dispatch, portfolioWalletData, lifiChainMap]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
@@ -238,19 +240,20 @@ export default function MyWalletsPage() {
       const selectedAddresses = selectedWallets.map(w => w.address);
       const availableAddresses = portfolioWalletData.map(w => w.walletAddress);
       const allSelectedWalletsHaveData = selectedAddresses.every(addr => availableAddresses.includes(addr));
-      
       if (allSelectedWalletsHaveData) {
         fetchHistoricalData();
       } else {
         const allAddresses = wallets?.map(w => w.address) || [];
-        dispatch(fetchWalletsPortfolio(allAddresses)).then(() => {
-          fetchHistoricalData();
-        });
+        if (lifiChainMap) {
+          dispatch(fetchWalletsPortfolio({ addresses: allAddresses, lifiChainMap })).then(() => {
+            fetchHistoricalData();
+          });
+        }
       }
     } else {
       setTotalAmount(0);
     }
-  }, [selectedWallets, dispatch, fetchHistoricalData, portfolioWalletData, wallets]);
+  }, [selectedWallets, dispatch, fetchHistoricalData, portfolioWalletData, wallets, lifiChainMap]);
 
   useEffect(() => {
     if (selectedWallets.length) {
@@ -269,9 +272,11 @@ export default function MyWalletsPage() {
   const onChartRefresh = () => {
     if (selectedWallets.length > 0) {
       const allAddresses = wallets?.map(w => w.address) || [];
-      dispatch(fetchWalletsPortfolio(allAddresses)).then(() => {
-        fetchHistoricalData();
-      });
+      if (lifiChainMap) {
+        dispatch(fetchWalletsPortfolio({ addresses: allAddresses, lifiChainMap })).then(() => {
+          fetchHistoricalData();
+        });
+      }
     } else {
       fetchHistoricalData();
     }

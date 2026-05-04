@@ -6,6 +6,7 @@ import { CapHistoricalWeightedDate } from "../models/wallet/capHistoricalWeighte
 import { apiDateFormatString } from "../constants/common"
 import { Exchange } from "../models/wallet/exchange"
 import { WalletPortfolioResponse } from "../models/wallet/walletPortfolio"
+import { enrichTokenPositions } from "../utils/enrichTokenPositions";
 
 export const walletsApi = {
   getWalletsAssets: async (): Promise<Wallet[]> => {
@@ -72,11 +73,15 @@ export const walletsApi = {
     return response.data
   },
 
-  getWalletsPortfolio: async (addresses: string[]): Promise<WalletPortfolioResponse[]> => {
-      const response = await appAxios.post(`/api/portfolio/batch`, addresses);
-      return response.data;
-    }
+  getWalletsPortfolio: async (addresses: string[], lifiChainMap?: Map<number, any>): Promise<WalletPortfolioResponse[]> => {
+    const response = await appAxios.post(`/api/portfolio/batch`, addresses);
+    if (!lifiChainMap) return response.data;
+    return response.data.map((portfolio: WalletPortfolioResponse) => ({
+      ...portfolio,
+      tokenHoldings: enrichTokenPositions(portfolio.tokenHoldings, lifiChainMap)
+    }));
   }
+}
 
 function ToUtcDateFormatted(date: Date) {
   return moment(date).utc().format(apiDateFormatString)

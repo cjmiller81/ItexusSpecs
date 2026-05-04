@@ -1,11 +1,24 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import i18next, { t } from "i18next";
-import { Typography, Box } from "@mui/material";
+import { Typography } from "@mui/material";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
+import { LifiChainMap } from "@/common/lifiChainContext";
+import { ChainChip } from "../../../../components/src/components/ChainChip";
 
 i18next.setDefaultNamespace("ColumnsDefs");
 
-export const getIndexResultWalletTableColumns = (): GridColDef<WalletBalance>[] => {
+export const getIndexResultWalletTableColumns = (lifiChainMap: LifiChainMap | null): GridColDef<WalletBalance>[] => {
+  const getLifiChain = (chain: string | undefined, chainId?: number) => {
+    if (!lifiChainMap) return null;
+    if (chainId && lifiChainMap.has(chainId)) return lifiChainMap.get(chainId) ?? null;
+    if (chain) {
+      const found = Array.from(lifiChainMap.values()).find(
+        c => c.name.toLowerCase() === chain.toLowerCase() || c.key.toLowerCase() === chain.toLowerCase()
+      );
+      return found ?? null;
+    }
+    return null;
+  };
   return [
     {
       field: "symbol",
@@ -41,22 +54,15 @@ export const getIndexResultWalletTableColumns = (): GridColDef<WalletBalance>[] 
       filterable: false,
       flex: 1,
       disableColumnMenu: true,
-      renderCell: (params: GridRenderCellParams<WalletBalance, any, any>) => (
-        <Box
-          px={1}
-          py={0.5}
-          border="1px solid"
-          borderColor="rgba(148,163,184,0.3)"
-          borderRadius={1}
-          fontSize={12}
-          sx={(theme) => ({
-            color: theme.palette.mode === "dark" ? "rgba(203,213,225,1)" : "#000",
-            bgcolor: "rgba(71,85,105,0.2)",
-          })}
-        >
-          {params.row.chain}
-        </Box>
-      ),
+      renderCell: (params: GridRenderCellParams<WalletBalance, any, any>) => {
+        const lifiChain = getLifiChain(params.row.chain, params.row.chainId);
+        return (
+          <ChainChip
+            lifiChain={lifiChain}
+            networkName={params.row.chain || ""}
+          />
+        );
+      },
     },
 
     {

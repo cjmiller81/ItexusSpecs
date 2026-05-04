@@ -15,9 +15,11 @@ import {
 import { MyWalletsSection } from "../myWallets/MyWalletsSection"
 import { Wallet } from "../../models"
 
-interface Props extends BoxProps {}
+interface Props extends BoxProps {
+  lifiChainMap?: Map<number, any> | null;
+}
 
-export const WalletsContainer = ({ ...props }: Props) => {
+export const WalletsContainer = ({ lifiChainMap, ...props }: Props) => {
   const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, exchanges, portfolioWalletData } = useAppSelector(
     state => state.wallets,
   )
@@ -25,12 +27,12 @@ export const WalletsContainer = ({ ...props }: Props) => {
 
   const dispatch = useAppDispatch()
 
-   useEffect(() => {
-      if (wallets && wallets.length > 0) {
-        const addresses = wallets.map(w => w.address);
-        dispatch(fetchWalletsPortfolio(addresses));
-      }
-    }, [wallets, dispatch]);
+  useEffect(() => {
+    if (wallets && wallets.length > 0 && lifiChainMap) {
+      const addresses = wallets.map(w => w.address);
+      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
+    }
+  }, [wallets, dispatch, lifiChainMap]);
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null))

@@ -12,7 +12,9 @@ export const getIncomeTokensColumnsDefs = (): GridColDef<PoolData>[] => {
       sortable: false,
       editable: false,
       filterable: false,
-      maxWidth: 70,
+      width: 90,
+      minWidth: 80,
+      maxWidth: 100,
       disableColumnMenu: true,
       valueFormatter: params => params?.value?.toUpperCase(),
     },
@@ -23,7 +25,8 @@ export const getIncomeTokensColumnsDefs = (): GridColDef<PoolData>[] => {
       editable: false,
       filterable: false,
       flex: 1,
-  
+      minWidth: 140,
+      maxWidth: 260,
       disableColumnMenu: true,
       renderCell: (params: GridRenderCellParams<PoolData, any, any>) => {
         const url = `${process.env.LAMA_PROJECT_ICONS_URL}/icons/protocols/${params.row.project}?w=48&h=48`;
