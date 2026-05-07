@@ -132,7 +132,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
+  const { wallets, statusFetchingWallets, statusFetchingPortfolio, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
     state => state.wallets,
   );
   const { chartData, chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
@@ -242,18 +242,11 @@ export default function MyWalletsPage() {
       const allSelectedWalletsHaveData = selectedAddresses.every(addr => availableAddresses.includes(addr));
       if (allSelectedWalletsHaveData) {
         fetchHistoricalData();
-      } else {
-        const allAddresses = wallets?.map(w => w.address) || [];
-        if (lifiChainMap) {
-          dispatch(fetchWalletsPortfolio({ addresses: allAddresses, lifiChainMap })).then(() => {
-            fetchHistoricalData();
-          });
-        }
       }
     } else {
       setTotalAmount(0);
     }
-  }, [selectedWallets, dispatch, fetchHistoricalData, portfolioWalletData, wallets, lifiChainMap]);
+  }, [selectedWallets, fetchHistoricalData, portfolioWalletData]);
 
   useEffect(() => {
     if (selectedWallets.length) {
@@ -514,6 +507,7 @@ export default function MyWalletsPage() {
             sx={{ mt: 4 }}
             onFetchPage={fetchLookupPage}
             chartDataLoading={statstatusFetchingHistoricalData === "loading"}
+            chartLoading={statusFetchingPortfolio === "loading"}
             lookupOption={symbolOption}
             chartAxisTicks={yAxisTicks}
             chartSeries={selectedWallets.length === 0 ? growthZeroSeries : chartSeries}

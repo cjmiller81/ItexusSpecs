@@ -1,6 +1,6 @@
 import { AppChart } from "@/components/Charts/AppChart";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Box, BoxProps, MenuItem, Stack } from "@mui/material";
+import { Box, BoxProps, CircularProgress, MenuItem, Stack } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { DateValidationError, PickerChangeHandlerContext } from "@mui/x-date-pickers";
 import { TabSelector } from "../../../../components/src/components/common/TabSelector";
@@ -38,6 +38,7 @@ interface Props extends BoxProps {
   maxChartValue: number;
   chartAxisTicks: number;
   chartDataLoading?: boolean;
+  chartLoading?: boolean;
   onToggleSeries: (seriesIndex: 0 | 1) => void;
   submitButtonDisabled: boolean;
   sumbitButtonText?: string;
@@ -66,6 +67,7 @@ export const HistoricalWalletsWorth = ({
   maxChartValue,
   chartAxisTicks,
   chartDataLoading,
+  chartLoading,
   onToggleSeries,
   submitButtonDisabled,
   chartSeries,
@@ -201,7 +203,23 @@ export const HistoricalWalletsWorth = ({
           </LoadingButton>
         </StyledWalletWorthMenu>
       </StyledWalletWorthMenuContainer>
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ position: 'relative', width: "100%" }}>
+          {chartLoading && (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(0,0,0,0.15)',
+                borderRadius: 1,
+                zIndex: 1,
+              }}
+            >
+              <CircularProgress sx={{ color: 'success.main' }} size={48} />
+            </Box>
+          )}
           {selectedSection === "growth" ? (
             <AppChart
               series={chartSeries || []}

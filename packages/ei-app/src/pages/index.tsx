@@ -79,6 +79,7 @@ export default function HomePage() {
   const wallets = useAppSelector(state => state.wallets.wallets);
   const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
+  const statusFetchingPortfolio = useAppSelector(state => state.wallets.statusFetchingPortfolio);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
   const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData)
@@ -406,6 +407,7 @@ useEffect(() => {
           sx={{ display: 'flex' }}>
           <WalletWorthTile
             loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
+            chartLoading={statusFetchingPortfolio === "loading"}
             icon={<AccountBalanceWalletIcon />}
             chartDataGrowth={totalWalletWorthChartData}
             chartDataValue={totalWalletWorthValueChartData}
