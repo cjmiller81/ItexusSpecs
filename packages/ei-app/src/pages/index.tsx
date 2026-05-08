@@ -129,11 +129,15 @@ export default function HomePage() {
   const { lifiChainMap } = useLifiChainMap();
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap) {
+    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== 'loading') {
       const addresses = wallets.map(w => w.address);
-      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
+      const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
+      const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
+      if (addressesChanged || portfolioWalletData.length === 0) {
+        dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
+      }
     }
-  }, [wallets, dispatch, lifiChainMap]);
+  }, [wallets, dispatch, lifiChainMap, statusFetchingPortfolio, portfolioWalletData]);
 
   useEffect(() => {
     if (!wallets || wallets.length === 0) return;

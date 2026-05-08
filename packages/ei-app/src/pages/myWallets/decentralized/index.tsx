@@ -167,7 +167,7 @@ export default function MyWalletsPage() {
   const { lifiChainMap } = useLifiChainMap();
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap) {
+    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== 'loading') {
       const addresses = wallets.map(w => w.address);
       const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
       const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
@@ -175,7 +175,7 @@ export default function MyWalletsPage() {
         dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
       }
     }
-  }, [wallets, dispatch, portfolioWalletData, lifiChainMap]);
+  }, [wallets, dispatch, portfolioWalletData, lifiChainMap, statusFetchingPortfolio]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
