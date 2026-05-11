@@ -132,7 +132,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
+  const { wallets, statusFetchingWallets, statusFetchingPortfolio, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
     state => state.wallets,
   );
   const { chartData, chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
@@ -167,7 +167,7 @@ export default function MyWalletsPage() {
   const { lifiChainMap } = useLifiChainMap();
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap) {
+    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== 'loading') {
       const addresses = wallets.map(w => w.address);
       const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
       const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
@@ -175,7 +175,7 @@ export default function MyWalletsPage() {
         dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
       }
     }
-  }, [wallets, dispatch, portfolioWalletData, lifiChainMap]);
+  }, [wallets, dispatch, portfolioWalletData, lifiChainMap, statusFetchingPortfolio]);
 
   useEffect(() => {
     if (chartData?.seriesData) {
@@ -242,18 +242,11 @@ export default function MyWalletsPage() {
       const allSelectedWalletsHaveData = selectedAddresses.every(addr => availableAddresses.includes(addr));
       if (allSelectedWalletsHaveData) {
         fetchHistoricalData();
-      } else {
-        const allAddresses = wallets?.map(w => w.address) || [];
-        if (lifiChainMap) {
-          dispatch(fetchWalletsPortfolio({ addresses: allAddresses, lifiChainMap })).then(() => {
-            fetchHistoricalData();
-          });
-        }
       }
     } else {
       setTotalAmount(0);
     }
-  }, [selectedWallets, dispatch, fetchHistoricalData, portfolioWalletData, wallets, lifiChainMap]);
+  }, [selectedWallets, fetchHistoricalData, portfolioWalletData]);
 
   useEffect(() => {
     if (selectedWallets.length) {
@@ -514,6 +507,7 @@ export default function MyWalletsPage() {
             sx={{ mt: 4 }}
             onFetchPage={fetchLookupPage}
             chartDataLoading={statstatusFetchingHistoricalData === "loading"}
+            chartLoading={statusFetchingPortfolio === "loading"}
             lookupOption={symbolOption}
             chartAxisTicks={yAxisTicks}
             chartSeries={selectedWallets.length === 0 ? growthZeroSeries : chartSeries}
