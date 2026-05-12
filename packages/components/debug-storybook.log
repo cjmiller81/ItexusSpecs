@@ -1,0 +1,26 @@
+[14:13:47.129] [INFO] storybook v10.3.6
+[14:13:47.236] [WARN] Multiple main files found in your configDir (C:\Users\Ben\Documents\KVK\ItexusSpecs\packages\components\.storybook).
+Storybook will use the first one found and ignore the others. Please remove the extra files.
+[14:13:47.373] [INFO] Loading main config failed as the file does not seem to be valid ESM. Trying a temporary fix, please ensure the main config is valid ESM.
+[14:13:47.384] [ERROR] [38;2;241;97;97mSyntaxError: Identifier 'dirname' has already been declared[39m
+    at compileSourceTextModule (node:internal/modules/esm/utils:340:16)
+    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:146:18)
+    at #translate (node:internal/modules/esm/loader:431:12)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:478:27)
+    at async ModuleJob._link (node:internal/modules/esm/module_job:110:19)
+[14:13:47.386] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.
+[14:13:47.394] [WARN]   Failed to load preset: "C:/Users/Ben/Documents/KVK/ItexusSpecs/packages/components/.storybook/main.js"
+[14:13:47.398] [ERROR] [38;2;241;97;97mReferenceError: require is not defined in ES module scope, you can use import instead
+This file is being treated as an ES module because it has a '.js' file extension and '.\package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.[39m
+    at getAbsolutePath (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/packages/components/.storybook/main.js:8:18)
+    at file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/packages/components/.storybook/main.js:18:5
+    at ModuleJob.run (node:internal/modules/esm/module_job:263:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)
+    at async importModule (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/node_modules/storybook/dist/_node-chunks/chunk-OWMIR4VJ.js:737:11)
+    at async loadMainConfig (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/node_modules/storybook/dist/_node-chunks/chunk-H4PWFMMO.js:11703:12)
+    at async buildDevStandalone (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/node_modules/storybook/dist/core-server/index.js:7953:16)
+    at async withTelemetry (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/node_modules/storybook/dist/_node-chunks/chunk-UYONHJJP.js:225:12)
+    at async dev (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/node_modules/storybook/dist/bin/core.js:2736:3)
+    at async _Command.<anonymous> (file:///C:/Users/Ben/Documents/KVK/ItexusSpecs/node_modules/storybook/dist/bin/core.js:2806:92)
+[14:13:47.424] [INFO] Loading main config failed as the file does not seem to be valid ESM. Trying a temporary fix, please ensure the main config is valid ESM.

@@ -13,14 +13,19 @@ A monorepo containing three Next.js trading-platform applications (`ei`, `echo`,
 
 ## Prerequisites
 
-- **Node.js** ≥ 20.10 (declared in each workspace's `engines`)
-- **Corepack** enabled — ships with Node 16.10+. This auto-provisions the correct Yarn version from `"packageManager"` in `package.json` (Yarn 4.2.1). If you've never used Corepack, enable it once:
+- **Node.js** ≥ 20.19 (or ≥ 22.12). This floor is set by Storybook 10.x / Vite 6 — earlier Node 20.x will install but won't run Storybook.
+- **Corepack** enabled — ships with Node 16.10+. This auto-provisions the correct Yarn version from `"packageManager"` in `package.json` (Yarn 4.2.1). Enable it once per Node install:
   ```shell
   corepack enable
   ```
+  > **Heads-up:** Corepack's `yarn` shim lives inside the *active* Node version's bin directory. If you switch Node versions later (e.g. via nvm), re-run `corepack enable` to recreate the shim under the new Node.
 - **Git** — required for the pre-commit hook to work
 
 You do **not** need to install Yarn or Lerna globally. Both are managed by the workspace.
+
+### Windows + nvm-windows note
+
+If you use [`nvm-windows`](https://github.com/coreybutler/nvm-windows), both `nvm use <version>` and `corepack enable` create symlinks under `C:\Program Files\nodejs\`, which Windows protects. Run those two commands once from a terminal opened with **Run as administrator**; afterwards you can use a normal terminal for the rest of the workflow.
 
 ## Initial setup
 
@@ -28,6 +33,13 @@ You do **not** need to install Yarn or Lerna globally. Both are managed by the w
 git clone <repo-url>
 cd <repo>
 yarn install
+```
+
+Verify your toolchain before continuing:
+
+```shell
+node -v          # ≥ 20.19.0 (or ≥ 22.12.0)
+yarn --version   # 4.2.1
 ```
 
 That's it. `yarn install` automatically:
@@ -148,4 +160,58 @@ Each app uses Jest with Next.js's preset and `@testing-library/react`.
 
 ## Storybook
 
-Storybook is configured for `packages/components` but not yet fully wired up. The current scripts (`yarn storybook`, `yarn build:storybook`) are placeholders pending the Storybook 10.x installation work tracked separately.
+The `packages/components` library is wired up with **Storybook 10.x** using the [`@storybook/nextjs-vite`](https://storybook.js.org/docs/get-started/frameworks/nextjs-vite) framework. The Vite-based Next.js framework provides the right runtime mocks (`next/link`, `next/image`, `next/router`, `next/navigation`, fonts, etc.) so components that depend on Next APIs render correctly in stories.
+
+### Commands
+
+```shell
+yarn storybook         # start the Storybook dev server at http://localhost:6006
+yarn build:storybook   # build the static Storybook site into packages/components/storybook-static/
+```
+
+Both commands delegate to the `components` workspace via Lerna.
+
+### Configuration
+
+| File | Purpose |
+| --- | --- |
+| `packages/components/.storybook/main.ts` | Framework + addons + story glob (`../src/**/*.stories.@(ts\|tsx\|mdx)`) |
+| `packages/components/.storybook/preview.ts` | Global parameters (controls, a11y) shared by every story |
+
+Enabled addons:
+
+- `@storybook/addon-docs` — autodocs from TS types + JSDoc
+- `@storybook/addon-a11y` — accessibility checks via axe-core
+- `msw-storybook-addon` — per-story HTTP mocking via [MSW](https://mswjs.io/), backed by `packages/components/public/mockServiceWorker.js`
+
+### Writing stories
+
+Stories live next to the components they document, under `packages/components/src/**/*.stories.tsx`. Two reference stories are included:
+
+| Story | Demonstrates |
+| --- | --- |
+| `src/components/common/inputs/AppInputLabel.stories.tsx` | Plain prop-driven component with multiple visual variants and `argTypes` |
+| `src/components/Header/ApiUsageStatus.stories.tsx` | Component that fetches data via `appAxios` — three stories (`Default`, `Loading`, `Error`) each provide their own MSW handler |
+
+### Mocking HTTP in stories
+
+For components that hit the network, declare MSW handlers under the story's `parameters.msw.handlers`:
+
+```ts
+import { delay, http, HttpResponse } from "msw"
+
+export const Loading: Story = {
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("*/api/some/endpoint", async () => {
+          await delay("infinite")
+          return HttpResponse.json({})
+        }),
+      ],
+    },
+  },
+}
+```
+
+Use `"*/..."` path prefixes so handlers match regardless of the runtime `baseURL`. Requests that don't match any handler pass through to the network (`onUnhandledRequest: "bypass"`), keeping Storybook's own asset requests quiet.

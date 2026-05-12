@@ -5,7 +5,7 @@
   "version": "1.0.13",
   "main": "./src/index.tsx",
   "engines": {
-    "node": ">=20.10.0"
+    "node": ">=20.19.0 <21 || >=22.12.0"
   },
   "workspaces": {
     "nohoist": []
@@ -30,8 +30,18 @@
     "@ory/client": "^1.9.0",
     "@ory/elements-react": "^1.1.0",
     "@ory/integrations": "^1.1.5",
+    "next": "^14.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "use-file-picker": "^2.1.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.3.0",
+    "@storybook/addon-docs": "^10.3.0",
+    "@storybook/nextjs-vite": "^10.3.0",
+    "msw": "^2.2.2",
+    "msw-storybook-addon": "^2.0.7",
+    "storybook": "^10.3.0",
+    "vite": "^6.0.0"
   }
 }
