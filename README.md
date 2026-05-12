@@ -24,7 +24,7 @@ You can define `nohoist` for yarn workspaces. See: https://classic.yarnpkg.com/b
 More on defining `nohoist`. See: https://stackoverflow.com/a/59701469
 You may need to add `nohoist` to the `package.json` IN the sub packages. e.g. `./packages/ei-app/package.json`
 
-### Usage: 
+### Usage:
 
 ##### Component Library:
 
@@ -65,24 +65,3 @@ To start the production `ei-app` web app, run:
 yarn start:ei
 ```
 This will start a production server at `http://localhost:3000`.
-
-##### SVT Web App:
-
-To start the `svt-app` web app development server, run:
-```shell
-yarn start:svt
-```
-This will start a development server at `http://localhost:3000`.
-
-To build the `svt-app` web app , run:
-```shell
-yarn build:svt
-```
-This will create a production build in the `packages/svt-app/build` directory.
-
-##### TDA Web App:
-
-To start the `tda-app` web app development server, run: 
-```shell
-yarn start:tda
-```
