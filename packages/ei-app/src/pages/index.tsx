@@ -80,6 +80,7 @@ export default function HomePage() {
   const wallets = useAppSelector(state => state.wallets.wallets);
   const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
+  const statusFetchingPortfolio = useAppSelector(state => state.wallets.statusFetchingPortfolio);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
   const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData)
@@ -129,11 +130,15 @@ export default function HomePage() {
   const { lifiChainMap } = useLifiChainMap();
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap) {
+    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== 'loading') {
       const addresses = wallets.map(w => w.address);
-      dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
+      const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
+      const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
+      if (addressesChanged || portfolioWalletData.length === 0) {
+        dispatch(fetchWalletsPortfolio({ addresses, lifiChainMap }));
+      }
     }
-  }, [wallets, dispatch, lifiChainMap]);
+  }, [wallets, dispatch, lifiChainMap, statusFetchingPortfolio, portfolioWalletData]);
 
   useEffect(() => {
     if (!wallets || wallets.length === 0) return;
@@ -405,14 +410,15 @@ useEffect(() => {
           md={6}
           lg={5}
           sx={{ display: 'flex' }}>
-          <Require2FA>
-            <WalletWorthTile
-              loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
-              icon={<AccountBalanceWalletIcon />}
-              chartDataGrowth={totalWalletWorthChartData}
-              chartDataValue={totalWalletWorthValueChartData}
-              sx={{ width: '100%' }}
-            />
+        <Require2FA>
+          <WalletWorthTile
+            loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
+            chartLoading={statusFetchingPortfolio === "loading"}
+            icon={<AccountBalanceWalletIcon />}
+            chartDataGrowth={totalWalletWorthChartData}
+            chartDataValue={totalWalletWorthValueChartData}
+            sx={{ width: '100%' }}
+          />
           </Require2FA>
         </Grid>
         <Grid

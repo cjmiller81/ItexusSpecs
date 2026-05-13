@@ -2,7 +2,7 @@ import { CompareToValues } from "@/libs/redux/Slices/Shared";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardTile, DashboardTileProps } from "./DashboardTile";
-import { useTheme, Box } from "@mui/material";
+import { useTheme, Box, CircularProgress } from "@mui/material";
 import { TabSelector } from '../../../../components/src/components/common/TabSelector';
 import { AppChartHome } from "@/components/Charts/AppChartHome";
 import { ApexOptions } from "apexcharts";
@@ -13,6 +13,7 @@ type Props = Omit<
 > & {
   chartDataGrowth: CompareToValues | null;
   chartDataValue: CompareToValues | null;
+  chartLoading?: boolean;
 };
 
 enum ThemeMode {
@@ -24,6 +25,7 @@ export const WalletWorthTile: FC<Props> = ({
   icon,
   chartDataGrowth,
   chartDataValue,
+  chartLoading,
   ...props
 }) => {
   const { t } = useTranslation("WalletWorthTile");
@@ -107,18 +109,35 @@ export const WalletWorthTile: FC<Props> = ({
       }
       {...props}
     >
-      <AppChartHome
-        sx={{ backgroundColor }}
-        series={[
-          {
-            name: selectedSection === "growth" ? t("Growth") : t("Value"),
-            data: series,
-          },
-        ]}
-        height={398}
-        optionsOverrides={chartOptions}
-        key={selectedSection}
-      />
+      <Box sx={{ position: 'relative' }}>
+        <AppChartHome
+          sx={{ backgroundColor }}
+          series={[
+            {
+              name: selectedSection === "growth" ? t("Growth") : t("Value"),
+              data: series,
+            },
+          ]}
+          height={398}
+          optionsOverrides={chartOptions}
+          key={selectedSection}
+        />
+        {chartLoading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0,0,0,0.15)',
+              borderRadius: 1,
+            }}
+          >
+            <CircularProgress sx={{ color: 'success.main' }} size={48} />
+          </Box>
+        )}
+      </Box>
     </DashboardTile>
   );
 };
