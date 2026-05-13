@@ -26,7 +26,8 @@ import {
   useOry,
   PasswordResetModal,
   updateTourStatusAsync,
-  fetchReactourSettingsAsync
+  fetchReactourSettingsAsync,
+  Require2FA
 } from "components";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
@@ -404,13 +405,15 @@ useEffect(() => {
           md={6}
           lg={5}
           sx={{ display: 'flex' }}>
-          <WalletWorthTile
-            loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
-            icon={<AccountBalanceWalletIcon />}
-            chartDataGrowth={totalWalletWorthChartData}
-            chartDataValue={totalWalletWorthValueChartData}
-            sx={{ width: '100%' }}
-          />
+          <Require2FA>
+            <WalletWorthTile
+              loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
+              icon={<AccountBalanceWalletIcon />}
+              chartDataGrowth={totalWalletWorthChartData}
+              chartDataValue={totalWalletWorthValueChartData}
+              sx={{ width: '100%' }}
+            />
+          </Require2FA>
         </Grid>
         <Grid
           item
