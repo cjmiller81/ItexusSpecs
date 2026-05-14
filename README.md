@@ -13,7 +13,7 @@ A monorepo containing three Next.js trading-platform applications (`ei`, `echo`,
 
 ## Prerequisites
 
-- **Node.js** ≥ 20.19 (or ≥ 22.12). This floor is set by Storybook 10.x / Vite 6 — earlier Node 20.x will install but won't run Storybook.
+- **Node.js** = 24.x
 - **Corepack** enabled — ships with Node 16.10+. This auto-provisions the correct Yarn version from `"packageManager"` in `package.json` (Yarn 4.2.1). Enable it once per Node install:
   ```shell
   corepack enable
@@ -38,7 +38,7 @@ yarn install
 Verify your toolchain before continuing:
 
 ```shell
-node -v          # ≥ 20.19.0 (or ≥ 22.12.0)
+node -v          # 24.x
 yarn --version   # 4.2.1
 ```
 

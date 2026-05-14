@@ -10,7 +10,7 @@ export interface FeatureAccessGuardProps {
   children: ReactNode;
   currentCount?: number; // For features with limits like saved strategies or wallet connections
   filterType?: string; // For saveStrategy feature - the type of filter being saved
-  savedFilters?: Array<{ filterType?: string; isPublic?: boolean }>; // For saveStrategy feature - saved filter rows for limit checks
+  savedFilters?: Array<{ filterType?: string | null; isPublic?: boolean }>; // For saveStrategy feature - saved filter rows for limit checks
   showTooltip?: boolean;
   tooltipPlacement?: "top" | "bottom" | "left" | "right";
   disabled?: boolean; // Allow external disabling

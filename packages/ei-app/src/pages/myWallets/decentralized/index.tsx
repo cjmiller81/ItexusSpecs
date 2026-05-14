@@ -19,9 +19,9 @@ import {
 } from "components";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import moment from "moment";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { TourProvider, useTour, StepType, components } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../../components/AnimatedStartTourButton";
 import { useAppDispatch } from "@/libs/redux/Store";
 import { setAccordionState, updateTourStatusAsync } from "components";
@@ -34,12 +34,14 @@ import { useSubscription } from "components";
 const TOUR_ID = "decentralized_v1";
 const TOUR_NAME = "decentralized";
 
+type WalletsTourContentProps = ComponentProps<typeof components.Content>;
+
 const StartTourButton = () => {
   const { setIsOpen, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
 
   const openAllAccordions = () => {
-    const accordionKeys = ['WalletsOverviewPanel', 'MyWalletsSectionForPage'];
+    const accordionKeys = ["WalletsOverviewPanel", "MyWalletsSectionForPage"];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
@@ -54,7 +56,7 @@ const StartTourButton = () => {
       setCurrentStep(isNaN(savedStep) ? 0 : savedStep);
       setIsOpen(true);
     } catch (error) {
-      console.error('Failed to fetch tour data:', error);
+      console.error("Failed to fetch tour data:", error);
       setCurrentStep(0);
       setIsOpen(true);
     }
@@ -73,10 +75,10 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
   const [tourWasOpened, setTourWasOpened] = useState(false);
-  const reactourSettings = useAppSelector((state) => state.reactour.settings);
+  const reactourSettings = useAppSelector(state => state.reactour.settings);
 
   const openAllAccordions = () => {
-    const accordionKeys = ['WalletsOverviewPanel', 'MyWalletsSectionForPage'];
+    const accordionKeys = ["WalletsOverviewPanel", "MyWalletsSectionForPage"];
     accordionKeys.forEach(key => {
       dispatch(setAccordionState({ key, open: true }));
     });
@@ -87,7 +89,7 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
       try {
         await dispatch(fetchReactourSettingsAsync()).unwrap();
       } catch (error) {
-        console.error('Failed to fetch tour settings:', error);
+        console.error("Failed to fetch tour settings:", error);
       }
     };
     loadTourData();
@@ -109,21 +111,25 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   useEffect(() => {
     if (!isOpen) return;
 
-    dispatch(updateTourStatusAsync({
-      tourName: TOUR_NAME,
-      update: {
-        step: currentStep,
-        viewed: currentStep >= totalSteps - 1 ? true : undefined
-      }
-    }));
+    dispatch(
+      updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: {
+          step: currentStep,
+          viewed: currentStep >= totalSteps - 1 ? true : undefined,
+        },
+      }),
+    );
   }, [currentStep, totalSteps, isOpen, dispatch]);
 
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
-      dispatch(updateTourStatusAsync({
-        tourName: TOUR_NAME,
-        update: { viewed: true }
-      }));
+      dispatch(
+        updateTourStatusAsync({
+          tourName: TOUR_NAME,
+          update: { viewed: true },
+        }),
+      );
     } else if (isOpen) {
       setTourWasOpened(true);
     }
@@ -133,12 +139,16 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function MyWalletsPage() {
-  const { wallets, statusFetchingWallets, statusFetchingPortfolio, totalWalletsWorthData, selectedWallets, portfolioWalletData } = useAppSelector(
-    state => state.wallets,
-  );
+  const {
+    wallets,
+    statusFetchingWallets,
+    statusFetchingPortfolio,
+    totalWalletsWorthData,
+    selectedWallets,
+    portfolioWalletData,
+  } = useAppSelector(state => state.wallets);
   const { chartData, chartSeries, maxChartValue, minChartValue, period, yAxisTicks, statstatusFetchingHistoricalData } =
     useAppSelector(state => state.walletWorthChart);
-
 
   const [symbolOption, setSymbolOption] = useState<LookUpOption | null>(null);
   const [fromDate, setFromDate] = useState<Date | null>(moment().subtract(30, "day").toDate());
@@ -168,7 +178,7 @@ export default function MyWalletsPage() {
   const { lifiChainMap } = useLifiChainMap();
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== 'loading') {
+    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== "loading") {
       const addresses = wallets.map(w => w.address);
       const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
       const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
@@ -196,10 +206,12 @@ export default function MyWalletsPage() {
 
   const growthZeroSeries = useMemo<ChartSeries[]>(() => {
     if (chartData?.seriesData) {
-      return [{
-        name: "Growth",
-        data: chartData.seriesData.map(point => ({ x: point.historyDate, y: 0 })),
-      }];
+      return [
+        {
+          name: "Growth",
+          data: chartData.seriesData.map(point => ({ x: point.historyDate, y: 0 })),
+        },
+      ];
     }
     return [];
   }, [chartData]);
@@ -230,7 +242,7 @@ export default function MyWalletsPage() {
         }
       });
     } catch (error) {
-      console.error('Error calculating total USD amount:', error);
+      console.error("Error calculating total USD amount:", error);
     }
 
     return totalUsdAmount;
@@ -267,9 +279,10 @@ export default function MyWalletsPage() {
     if (selectedWallets.length > 0) {
       const allAddresses = wallets?.map(w => w.address) || [];
       if (lifiChainMap) {
-        dispatch(fetchWalletsPortfolio({ addresses: allAddresses, lifiChainMap })).then(() => {
+        void (async () => {
+          await dispatch(fetchWalletsPortfolio({ addresses: allAddresses, lifiChainMap }));
           fetchHistoricalData();
-        });
+        })();
       }
     } else {
       fetchHistoricalData();
@@ -301,39 +314,51 @@ export default function MyWalletsPage() {
       selector: "#wallet_header",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourWalletSectionTitle")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("TourWalletSectionTitle")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("TourWalletSectionText")}</Typography>
         </Box>
       ),
-      position: "bottom"
+      position: "bottom",
     },
     {
       selector: "#wallet_link_info",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourWalletLinkRequirementTitle")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("TourWalletLinkRequirementTitle")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("TourWalletLinkRequirementText")}</Typography>
         </Box>
       ),
-      position: "bottom"
+      position: "bottom",
     },
     {
       selector: "#wallet_selector",
       content: () => (
-        <Typography sx={{ color: "#1a1a1a", whiteSpace: 'pre-line' }}>{t("TourWalletMultipleText")}</Typography>
+        <Typography sx={{ color: "#1a1a1a", whiteSpace: "pre-line" }}>{t("TourWalletMultipleText")}</Typography>
       ),
-      position: "right"
+      position: "right",
     },
     {
       selector: "#wallet_chart",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("TourWalletChartTitle")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("TourWalletChartTitle")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("TourWalletChartText")}</Typography>
         </Box>
       ),
-      position: "top"
-    }
+      position: "top",
+    },
   ];
 
   return (
@@ -367,9 +392,9 @@ export default function MyWalletsPage() {
         }}
         showBadge={false}
         components={{
-          Content: (props: any) => {
+          Content: (props: WalletsTourContentProps) => {
             const step = steps[props.currentStep];
-            // @ts-ignore - content() signature varies
+            // @ts-expect-error - content() signature varies
             const content = typeof step?.content === 'function' ? step.content() : step?.content;
 
             return (

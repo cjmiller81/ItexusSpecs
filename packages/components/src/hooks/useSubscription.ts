@@ -83,7 +83,7 @@ export function useSubscription() {
   );
 
   const canSaveStrategyByType = useCallback(
-    (filterType: string, savedFilters: Array<{ filterType?: string; isPublic?: boolean }>): boolean => {
+    (filterType: string, savedFilters: Array<{ filterType?: string | null; isPublic?: boolean }>): boolean => {
       if (!subscription.isActive) {
         return false;
       }

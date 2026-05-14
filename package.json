@@ -3,21 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": ">=20.19.0 <21 || >=22.12.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev:ei": "lerna run dev --parallel --scope ei-app --scope components",
-    "build:ei": "lerna run build --stream --scope ei-app --include-filtered-dependencies",
+    "build:ei": "lerna run build --stream --scope ei-app --include-dependencies",
     "start:ei": "lerna run start --scope ei-app",
     "start:ei:local": "lerna run start:local --scope ei-app",
     "lint:ei": "lerna run lint --scope ei-app",
     "dev:echo": "lerna run dev --parallel --scope echo-app --scope components",
-    "build:echo": "lerna run build --stream --scope echo-app --include-filtered-dependencies",
+    "build:echo": "lerna run build --stream --scope echo-app --include-dependencies",
     "start:echo": "lerna run start --scope echo-app",
     "start:echo:local": "lerna run start:local --scope echo-app",
     "lint:echo": "lerna run lint --scope echo-app",
     "dev:dpd": "lerna run dev --parallel --scope dpd-app --scope components",
-    "build:dpd": "lerna run build --stream --scope dpd-app --include-filtered-dependencies",
+    "build:dpd": "lerna run build --stream --scope dpd-app --include-dependencies",
     "start:dpd": "lerna run start --scope dpd-app",
     "start:dpd:local": "lerna run start:local --scope dpd-app",
     "lint:dpd": "lerna run lint --scope dpd-app",
