@@ -10454,6 +10454,7 @@ __metadata:
     react-apexcharts: "npm:^1.4.1"
     react-dom: "npm:^18.2.0"
     react-i18next: "npm:^14.0.5"
+    react-icons: "npm:^5.4.0"
     react-number-format: "npm:^5.4.5"
     react-redux: "npm:^7.2.8"
     react-toastify: "npm:^11.0.5"
@@ -17000,6 +17001,15 @@ __metadata:
     react-native:
       optional: true
   checksum: 10c0/d6da148d5dd1635f57d7a85bdd5c6e1f1404982112358a5efa9f6f47d505a00e4650237d5fc94b4381dcb336c134d500268a7157e06e2b2f0293a2bcd7ec2812
+  languageName: node
+  linkType: hard
+
+"react-icons@npm:^5.4.0":
+  version: 5.6.0
+  resolution: "react-icons@npm:5.6.0"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/addba1ebfd45cdf7f69291d0c93df64fca1271cfdb66df657abd223e3451c73356b035f50e75858627dd182b02129596c79eaaaa45d32eb52658e443a992645c
   languageName: node
   linkType: hard
 

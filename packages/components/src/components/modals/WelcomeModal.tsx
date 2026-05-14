@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -12,11 +12,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from '@mui/material';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useTranslation } from "react-i18next";
 
-interface WelcomeModalProps {
+export interface WelcomeModalProps {
   open: boolean;
   onClose: () => void;
 }
@@ -32,21 +32,20 @@ const SurveyButton = () => {
         backgroundColor: "#219a83",
         color: "white",
         "&:hover": {
-          backgroundColor: "#219a83"
-        }
+          backgroundColor: "#219a83",
+        },
       }}
       onClick={() => {
         // Open survey link in new tab: https://forms.gle/NhcLMGVZZyphnsK8A
         window.open("https://forms.gle/NhcLMGVZZyphnsK8A", "_blank");
-      }}
-    >
+      }}>
       Beta Survey
     </Button>
   );
 };
 
 export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => {
-  const { t } = useTranslation('WelcomeModal');
+  const { t } = useTranslation("WelcomeModal");
 
   return (
     <Dialog
@@ -58,17 +57,24 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
       sx={{ zIndex: 10001 }} // Even higher than PasswordResetModal
     >
       <DialogTitle>
-        <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-          {t('Title')}
+        <Typography
+          variant="h5"
+          component="div"
+          sx={{ fontWeight: "bold" }}>
+          {t("Title")}
         </Typography>
       </DialogTitle>
       <DialogContent dividers>
-        <Typography variant="body1" paragraph>
-          {t('IntroText')}
+        <Typography
+          variant="body1"
+          paragraph>
+          {t("IntroText")}
         </Typography>
 
-        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-          {t('AboutBetaTest')}
+        <Typography
+          variant="h6"
+          sx={{ mt: 2, mb: 1, fontWeight: "bold" }}>
+          {t("AboutBetaTest")}
         </Typography>
 
         <List dense>
@@ -78,20 +84,34 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('UseWebApp')}
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}>
+                  {t("UseWebApp")}
                 </Typography>
               }
               secondary={
                 <>
-                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>{t('Profile')}</Typography>
-                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>{t('AnalyticsPlatforms')}</Typography>
-                  <Typography variant="body2">{t('InvestingDesc')}</Typography>
-                  <Typography variant="body2">{t('IncomeDesc')}</Typography>
-                  <Typography variant="body2">{t('TradingDesc')}</Typography>
-                  <Typography variant="body2" sx={{ mt: 1, fontWeight: 'bold' }}>{t('Tools')}</Typography>
-                  <Typography variant="body2">{t('DEXTradeAggregatorDesc')}</Typography>
-                  <Typography variant="body2">{t('CEXTradeAggregatorDesc')}</Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, fontWeight: "bold" }}>
+                    {t("Profile")}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, fontWeight: "bold" }}>
+                    {t("AnalyticsPlatforms")}
+                  </Typography>
+                  <Typography variant="body2">{t("InvestingDesc")}</Typography>
+                  <Typography variant="body2">{t("IncomeDesc")}</Typography>
+                  <Typography variant="body2">{t("TradingDesc")}</Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, fontWeight: "bold" }}>
+                    {t("Tools")}
+                  </Typography>
+                  <Typography variant="body2">{t("DEXTradeAggregatorDesc")}</Typography>
+                  <Typography variant="body2">{t("CEXTradeAggregatorDesc")}</Typography>
                 </>
               }
             />
@@ -102,23 +122,27 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('GiveUsFeedback')} <SurveyButton />
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}>
+                  {t("GiveUsFeedback")} <SurveyButton />
                 </Typography>
               }
               secondary={
                 <>
-                  <Typography variant="body2">{t('FeedbackDesc1')}</Typography>
-                  <Typography variant="body2">{t('FeedbackDesc2')}</Typography>
-                  <Typography variant="body2">{t('FeedbackDesc3')}</Typography>
+                  <Typography variant="body2">{t("FeedbackDesc1")}</Typography>
+                  <Typography variant="body2">{t("FeedbackDesc2")}</Typography>
+                  <Typography variant="body2">{t("FeedbackDesc3")}</Typography>
                 </>
               }
             />
           </ListItem>
         </List>
 
-        <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
-          {t('RewardsForYourTime')}
+        <Typography
+          variant="h6"
+          sx={{ mt: 2, mb: 1, fontWeight: "bold" }}>
+          {t("RewardsForYourTime")}
         </Typography>
         <List dense>
           <ListItem>
@@ -127,11 +151,13 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('LifetimeDiscount')}
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}>
+                  {t("LifetimeDiscount")}
                 </Typography>
               }
-              secondary={t('LifetimeDiscountDesc')}
+              secondary={t("LifetimeDiscountDesc")}
             />
           </ListItem>
           <ListItem>
@@ -140,11 +166,13 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('BetaTesterBadge')}
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}>
+                  {t("BetaTesterBadge")}
                 </Typography>
               }
-              secondary={t('BetaTesterBadgeDesc')}
+              secondary={t("BetaTesterBadgeDesc")}
             />
           </ListItem>
           <ListItem>
@@ -153,25 +181,34 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
             </ListItemIcon>
             <ListItemText
               primary={
-                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                  {t('FreeTrial')}
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}>
+                  {t("FreeTrial")}
                 </Typography>
               }
-              secondary={t('FreeTrialDesc')}
+              secondary={t("FreeTrialDesc")}
             />
           </ListItem>
         </List>
 
-        <Typography variant="body1" sx={{ mt: 3, fontStyle: 'italic' }}>
-          {t('ThankYouMessage')}
+        <Typography
+          variant="body1"
+          sx={{ mt: 3, fontStyle: "italic" }}>
+          {t("ThankYouMessage")}
         </Typography>
-        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-          {t('FounderSignature')}
+        <Typography
+          variant="body1"
+          sx={{ fontWeight: "bold" }}>
+          {t("FounderSignature")}
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} variant="contained" color="primary">
-          {t('CloseButton')}
+        <Button
+          onClick={onClose}
+          variant="contained"
+          color="primary">
+          {t("CloseButton")}
         </Button>
       </DialogActions>
     </Dialog>

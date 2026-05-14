@@ -65,5 +65,12 @@ export default tseslint.config(
     },
   },
 
+  {
+    files: ["packages/components/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
+
   prettier,
 );

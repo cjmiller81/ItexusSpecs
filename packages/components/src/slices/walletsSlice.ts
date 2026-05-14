@@ -1,8 +1,9 @@
-import { PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, type Slice } from "@reduxjs/toolkit";
 import moment from "moment";
 import { Wallet } from "../models/wallet/wallet";
 import { walletsApi } from "../services/walletsService";
 import { toTotalTokensBalancesFromPortfolio } from "../utils";
+import type { LifiChain } from "../utils/enrichTokenPositions";
 import { createAppSlice } from "./createAppSlice";
 import { RootState } from "./store";
 import { IExchange } from "../models";
@@ -53,7 +54,19 @@ type AddressModel = {
   isPersonal: boolean;
 };
 
-export const walletsSlice = createAppSlice({
+function readAxiosLikeResponse(error: unknown): { status?: number; data?: unknown } | undefined {
+  if (typeof error !== "object" || error === null || !("response" in error)) {
+    return undefined;
+  }
+  const nested = (error as { response?: unknown }).response;
+  if (typeof nested !== "object" || nested === null) {
+    return undefined;
+  }
+  const { status, data } = nested as { status?: number; data?: unknown };
+  return { status, data };
+}
+
+export const walletsSlice: Slice<WalletsState> = createAppSlice({
   name: "wallets",
   initialState,
   reducers: create => ({
@@ -62,10 +75,11 @@ export const walletsSlice = createAppSlice({
         try {
           await walletsApi.addWallets(wallet.address, wallet.walletName, wallet.isPersonal);
           thunkApi.dispatch(fetchWallets(null));
-        } catch (error: any) {
-          if (error.response && error.response.status === 400) {
+        } catch (error: unknown) {
+          const response = readAxiosLikeResponse(error);
+          if (response?.status === 400) {
             console.error(error);
-            return thunkApi.rejectWithValue({ error: error.response.data });
+            return thunkApi.rejectWithValue({ error: response.data });
           }
           return thunkApi.rejectWithValue({ error: "Failed to add wallet" });
         }
@@ -83,33 +97,29 @@ export const walletsSlice = createAppSlice({
       },
     ),
 
-   fetchWalletsPortfolio: create.asyncThunk(
-    async (
-      params: { addresses: string[]; lifiChainMap?: Map<number, any> },
-      thunkApi
-    ) => {
-      const { addresses, lifiChainMap } = params;
-      try {
-        const response = await walletsApi.getWalletsPortfolio(addresses, lifiChainMap);
-        return response;
-      } catch (error) {
-        return thunkApi.rejectWithValue("Failed to fetch wallet portfolio");
-      }
-    },
-    {
-      pending: state => {
-        state.statusFetchingPortfolio = "loading";
+    fetchWalletsPortfolio: create.asyncThunk(
+      async (params: { addresses: string[]; lifiChainMap?: Map<number, LifiChain> }, thunkApi) => {
+        const { addresses, lifiChainMap } = params;
+        try {
+          const response = await walletsApi.getWalletsPortfolio(addresses, lifiChainMap);
+          return response;
+        } catch (_error) {
+          return thunkApi.rejectWithValue("Failed to fetch wallet portfolio");
+        }
       },
-      fulfilled: (state, action: PayloadAction<WalletPortfolioResponse[]>) => {
-        state.statusFetchingPortfolio = "idle";
-        state.portfolioWalletData = action.payload;
+      {
+        pending: state => {
+          state.statusFetchingPortfolio = "loading";
+        },
+        fulfilled: (state, action: PayloadAction<WalletPortfolioResponse[]>) => {
+          state.statusFetchingPortfolio = "idle";
+          state.portfolioWalletData = action.payload;
+        },
+        rejected: state => {
+          state.statusFetchingPortfolio = "failed";
+        },
       },
-      rejected: state => {
-        state.statusFetchingPortfolio = "failed";
-      },
-    }
-  ),
-
+    ),
 
     setWalletsFilter: create.reducer((state, action: PayloadAction<WalletsFilter>) => {
       state.currentWalletsFilter = action.payload;
@@ -153,10 +163,10 @@ export const walletsSlice = createAppSlice({
           };
         }
         const selectedWalletAddresses = state.wallets.selectedWallets.map(wallet => wallet.address);
-        const filteredPortfolioData = state.wallets.portfolioWalletData.filter(
-          portfolio => selectedWalletAddresses.includes(portfolio.walletAddress)
+        const filteredPortfolioData = state.wallets.portfolioWalletData.filter(portfolio =>
+          selectedWalletAddresses.includes(portfolio.walletAddress),
         );
-        
+
         const historicalWalletsData = await walletsApi.getHistoricalWalletData(
           toTotalTokensBalancesFromPortfolio(filteredPortfolioData),
           moment().add(-1, "d").toDate(),

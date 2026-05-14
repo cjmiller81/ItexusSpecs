@@ -1,8 +1,8 @@
-import { Alert, Box } from "@mui/material"
-import { UiText } from "@ory/client"
+import { Alert, Box } from "@mui/material";
+import { UiText } from "@ory/client";
 
-interface MessageProps {
-  message: UiText
+export interface MessageProps {
+  message: UiText;
 }
 
 export const Message = ({ message }: MessageProps) => {
@@ -10,17 +10,17 @@ export const Message = ({ message }: MessageProps) => {
     <Alert severity={message.type === "error" ? "error" : "info"}>
       <Box data-testid={`ui/message/${message.id}`}>{message.text}</Box>
     </Alert>
-  )
-}
+  );
+};
 
-interface MessagesProps {
-  messages?: Array<UiText>
+export interface MessagesProps {
+  messages?: Array<UiText>;
 }
 
 export const Messages = ({ messages }: MessagesProps) => {
   if (!messages) {
     // No messages? Do nothing.
-    return null
+    return null;
   }
 
   return (
@@ -32,5 +32,5 @@ export const Messages = ({ messages }: MessagesProps) => {
         />
       ))}
     </div>
-  )
-}
+  );
+};

@@ -9,12 +9,12 @@ export interface OnFetchCoinsResponse {
   items: CoinsLookUpOption[];
 }
 
-interface Props extends Omit<CoinsLookupProps, "options"> {
+export interface CoinsLookupVirtualizedProps extends Omit<CoinsLookupProps, "options"> {
   pageSize: number;
   onFetchPage: (pageNumber: number) => Promise<OnFetchCoinsResponse>;
 }
 
-export function CoinsLookupVirtualized({ inputValue, pageSize, onFetchPage, ...props }: Props) {
+export function CoinsLookupVirtualized({ inputValue, pageSize, onFetchPage, ...props }: CoinsLookupVirtualizedProps) {
   const [lookupRenderProps, setLookupRenderProps] = useState<ListOnItemsRenderedProps>({
     overscanStartIndex: 0,
     overscanStopIndex: 0,

@@ -1,6 +1,6 @@
-import { Box, BoxProps } from "@mui/material"
-import { useEffect, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../../slices"
+import { Box, BoxProps } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../slices";
 import {
   createWallet,
   deleteExchange,
@@ -11,21 +11,22 @@ import {
   fetchWalletsPortfolio,
   selectWallets,
   updateWallet,
-} from "../../slices/walletsSlice"
-import { MyWalletsSection } from "../myWallets/MyWalletsSection"
-import { Wallet } from "../../models"
+} from "../../slices/walletsSlice";
+import { MyWalletsSection } from "../myWallets/MyWalletsSection";
+import { Wallet } from "../../models";
+import type { WalletPortfolioResponse } from "../../models/wallet/walletPortfolio";
+import type { LifiChain } from "../../utils/enrichTokenPositions";
 
-interface Props extends BoxProps {
-  lifiChainMap?: Map<number, any> | null;
+export interface WalletsContainerProps extends BoxProps {
+  lifiChainMap?: Map<number, LifiChain> | null;
 }
 
-export const WalletsContainer = ({ lifiChainMap, ...props }: Props) => {
-  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, exchanges, portfolioWalletData } = useAppSelector(
-    state => state.wallets,
-  )
-  const [totalAmount,setTotalAmount] = useState<number>(0);
+export const WalletsContainer = ({ lifiChainMap, ...props }: WalletsContainerProps) => {
+  const { wallets, statusFetchingWallets, totalWalletsWorthData, selectedWallets, exchanges, portfolioWalletData } =
+    useAppSelector(state => state.wallets);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (wallets && wallets.length > 0 && lifiChainMap) {
@@ -35,21 +36,21 @@ export const WalletsContainer = ({ lifiChainMap, ...props }: Props) => {
   }, [wallets, dispatch, lifiChainMap]);
 
   useEffect(() => {
-    if (wallets === null) dispatch(fetchWallets(null))
-  }, [dispatch])
+    if (wallets === null) dispatch(fetchWallets(null));
+  }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchExchanges(null))
-  }, [dispatch])
+    dispatch(fetchExchanges(null));
+  }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchTotalWalletsWorthData({}))
-  }, [selectedWallets])
+    dispatch(fetchTotalWalletsWorthData({}));
+  }, [selectedWallets]);
 
-  const calculateTotalUsdAmount = (selectedWallets: Wallet[], portfolioData: any[]): number => {
+  const calculateTotalUsdAmount = (selected: Wallet[], portfolioData: WalletPortfolioResponse[]): number => {
     let totalUsdAmount = 0;
 
-    selectedWallets.forEach(wallet => {
+    selected.forEach(wallet => {
       const portfolioWallet = portfolioData.find(p => p.walletAddress === wallet.address);
       if (portfolioWallet) {
         totalUsdAmount += portfolioWallet.totalValueUSD;
@@ -83,5 +84,5 @@ export const WalletsContainer = ({ lifiChainMap, ...props }: Props) => {
         totalAmount={totalAmount}
       />
     </Box>
-  )
-}
+  );
+};

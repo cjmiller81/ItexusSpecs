@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
-import { Box, BoxProps, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import {
+  Box,
+  BoxProps,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { ProfileContainer } from "./ProfileContainer";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -7,26 +18,37 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useSearchParams } from "next/navigation";
 import { appAxios } from "../../lib/axios/customAxios";
 
-interface Props extends BoxProps {
-  getSchwabAccountList: () => void,
-  resetConnectedAccounts: () => void,
-  getSchwabConnectUrl: () => void,
-  disconnect: () => void,
-  connectedAccounts: any[],
-  schwabConnectUrl: string
+export interface BrokerageConnectionContainerProps extends BoxProps {
+  getSchwabAccountList: () => void;
+  resetConnectedAccounts: () => void;
+  getSchwabConnectUrl: () => void;
+  disconnect: () => void;
+  // Schwab account list shape is consumed as `{ accountNumber, status }` rows.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  connectedAccounts: any[];
+  schwabConnectUrl: string;
 }
 
-export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnectedAccounts, getSchwabConnectUrl, connectedAccounts, schwabConnectUrl, disconnect, children, ...props }: Props) => {
+export const BrokerageConnectionContainer = ({
+  getSchwabAccountList,
+  resetConnectedAccounts,
+  getSchwabConnectUrl,
+  connectedAccounts,
+  schwabConnectUrl,
+  disconnect,
+  children,
+  ...props
+}: BrokerageConnectionContainerProps) => {
   const { t } = useTranslation("BrokerageConnectionContainer");
   const [isConnected, setIsConnected] = useState(false);
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const isConnectedBackend = searchParams.get("isConnected");
   const [refreshTokenExpiration, setRefreshTokenExpiration] = useState<string | null>(null);
 
-  useEffect(() =>{
+  useEffect(() => {
     getSchwabConnectUrl();
     getSchwabAccountList();
-  },[])
+  }, []);
 
   useEffect(() => {
     const fetchRefreshTokenExpiration = async () => {
@@ -40,7 +62,7 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
         }
       }
     };
-  
+
     fetchRefreshTokenExpiration();
   }, [isConnected]);
 
@@ -51,23 +73,23 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
       disconnect();
       resetConnectedAccounts();
     }
-    setIsConnected((prev) => !prev);
+    setIsConnected(prev => !prev);
   };
 
   useEffect(() => {
     if (isConnectedBackend) {
       getSchwabAccountList();
-      setIsConnected(true)
+      setIsConnected(true);
     }
-  },[isConnectedBackend])
+  }, [isConnectedBackend]);
 
   useEffect(() => {
-    if(connectedAccounts.length > 0){
-      setIsConnected(true)
-    }else{
-      setIsConnected(false)
+    if (connectedAccounts.length > 0) {
+      setIsConnected(true);
+    } else {
+      setIsConnected(false);
     }
-  }, [connectedAccounts])
+  }, [connectedAccounts]);
 
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
@@ -77,7 +99,7 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false
+      hour12: false,
     });
   };
 
@@ -86,25 +108,30 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
       <ProfileContainer
         width={"30%"}
         title="Connect Account"
-        sx={{ display: "flex", flexDirection: "column" }}
-      >
+        sx={{ display: "flex", flexDirection: "column" }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {!isConnected ? (
             <Button
-            href={schwabConnectUrl}
+              href={schwabConnectUrl}
               sx={{
                 backgroundColor: "blue",
                 color: "white",
                 textTransform: "none",
                 width: "95%",
                 "&:hover": { backgroundColor: "#0033cc" },
-              }}
-            >
+              }}>
               {t("ConnectToSchwab")}
             </Button>
           ) : (
             <>
-              <Box sx={{ display: "flex", alignItems: "center", color: "#4caf50", fontWeight: "bold", padding: "6px 12px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  color: "#4caf50",
+                  fontWeight: "bold",
+                  padding: "6px 12px",
+                }}>
                 <CheckCircleIcon sx={{ marginRight: 1 }} />
                 <Typography variant="body2">{t("ConnectedToSchwab")}</Typography>
               </Box>
@@ -116,8 +143,7 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
                   color: "white",
                   textTransform: "none",
                   "&:hover": { backgroundColor: "#cc0000" },
-                }}
-              >
+                }}>
                 {t("Disconnect")}
               </Button>
 
@@ -131,63 +157,69 @@ export const BrokerageConnectionContainer = ({ getSchwabAccountList, resetConnec
               </Typography>
 
               <Button
-              href={schwabConnectUrl}
+                href={schwabConnectUrl}
                 sx={{
                   backgroundColor: "#8dcd89",
                   color: "white",
                   width: "95%",
                   textTransform: "none",
                   "&:hover": { backgroundColor: "#77dd77" },
-                }}
-              >
+                }}>
                 {t("Reauthorize")}
               </Button>
             </>
           )}
         </Box>
       </ProfileContainer>
-      <ProfileContainer width={"50%"} title="Connected Account(s)" sx={{ display: "flex", flexDirection: "column" }}>
+      <ProfileContainer
+        width={"50%"}
+        title="Connected Account(s)"
+        sx={{ display: "flex", flexDirection: "column" }}>
         <TableContainer sx={{ backgroundColor: "transparent" }}>
           <Table sx={{ minWidth: 650, borderCollapse: "collapse", tableLayout: "fixed" }}>
             <TableHead>
               <TableRow>
-                <TableCell align="left" sx={{ fontWeight: "bold", border: "1px solid #616161", width: "50%" }}>
+                <TableCell
+                  align="left"
+                  sx={{ fontWeight: "bold", border: "1px solid #616161", width: "50%" }}>
                   {t("AccountNumber")}
                 </TableCell>
-                <TableCell align="left" sx={{ fontWeight: "bold", border: "1px solid #616161", width: "50%" }}>
+                <TableCell
+                  align="left"
+                  sx={{ fontWeight: "bold", border: "1px solid #616161", width: "50%" }}>
                   {t("Status")}
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {connectedAccounts?.length === 0 ? (
-                <TableRow>
-                  
-                </TableRow>
+                <TableRow></TableRow>
               ) : (
                 connectedAccounts?.map((account, index) => (
                   <TableRow key={index}>
-                    <TableCell align="left" sx={{ border: "1px solid #616161", width: "50%" }}>
+                    <TableCell
+                      align="left"
+                      sx={{ border: "1px solid #616161", width: "50%" }}>
                       {account.accountNumber}
                     </TableCell>
-                    <TableCell align="left" sx={{ border: "1px solid #616161", width: "50%" }}>
+                    <TableCell
+                      align="left"
+                      sx={{ border: "1px solid #616161", width: "50%" }}>
                       <Box
                         sx={{
                           display: "inline-block",
-                          backgroundColor: "rgba(76, 175, 80, 0.2)", 
+                          backgroundColor: "rgba(76, 175, 80, 0.2)",
                           color: "#4caf50",
-                          border: "2px solid #2e7d32", 
-                          borderRadius: "16px", 
+                          border: "2px solid #2e7d32",
+                          borderRadius: "16px",
                           padding: "4px 12px",
                           fontWeight: "bold",
                           textAlign: "center",
                           pointerEvents: "none",
-                        }}
-                      >
+                        }}>
                         {account.status}
                       </Box>
                     </TableCell>
-
                   </TableRow>
                 ))
               )}

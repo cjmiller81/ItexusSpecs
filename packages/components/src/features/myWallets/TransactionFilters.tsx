@@ -5,9 +5,7 @@ import { Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 
-interface DateRange { from: string; to: string; }
-
-interface FiltersProps {
+export interface TransactionFiltersProps {
   preset: string;
   setPreset: (v: string) => void;
   fromDate: Date | undefined;
@@ -25,29 +23,32 @@ interface FiltersProps {
   uniqueTokens: string[];
 }
 
-export function TransactionFilters(props: FiltersProps) {
+export function TransactionFilters(props: TransactionFiltersProps) {
   const theme = useTheme();
-  const today = new Date().toISOString().slice(0, 10);
   const { t } = useTranslation("HistoricalWalletsWorth");
   const maxFromDate = (props.toDate ? moment(props.toDate).add(-1, "d") : moment().add(-1, "d")).toDate();
   const minToDate = props.fromDate ? moment(props.fromDate).add(1, "d").toDate() : undefined;
 
-  const filterColors = useMemo(() => ({ 
-    backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#fff",
-    color: theme.palette.mode === "dark" ? "#cbd5e1" : "#4E4E57",
-    borderColor: theme.palette.mode === "dark" ? "#4E4E57" : "#B5B1B1" 
-  }), [theme]);
+  const filterColors = useMemo(
+    () => ({
+      backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#fff",
+      color: theme.palette.mode === "dark" ? "#cbd5e1" : "#4E4E57",
+      borderColor: theme.palette.mode === "dark" ? "#4E4E57" : "#B5B1B1",
+    }),
+    [theme],
+  );
 
   return (
-    <div className="filters" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+    <div
+      className="filters"
+      style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
       {/* Date Preset / Custom */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <select
           className="filter-select"
           value={props.preset}
-          onChange={(e) => props.setPreset(e.target.value)}
-          style={filterColors}
-        >
+          onChange={e => props.setPreset(e.target.value)}
+          style={filterColors}>
           <option value="all">All Time</option>
           <option value="last_7">Last 7 Days</option>
           <option value="last_30">Last 30 Days</option>
@@ -59,15 +60,14 @@ export function TransactionFilters(props: FiltersProps) {
           <Stack
             gap={1}
             direction="row"
-            style={{ marginTop: -22  }}
-          >
+            style={{ marginTop: -22 }}>
             <AppDatePicker
               className="date-input"
               tooltip={t("Required", { ns: "Tooltips" })}
               required
               disableFuture
               value={props.fromDate}
-              onChange={(date) => {
+              onChange={date => {
                 props.setPreset("custom");
                 props.setFromDate(date ?? undefined);
               }}
@@ -81,7 +81,7 @@ export function TransactionFilters(props: FiltersProps) {
               required
               disableFuture
               value={props.toDate}
-              onChange={(date) => {
+              onChange={date => {
                 props.setPreset("custom");
                 props.setToDate(date ?? undefined);
               }}
@@ -95,16 +95,14 @@ export function TransactionFilters(props: FiltersProps) {
             <>
               <button
                 className="apply-btn"
-                onClick={() => props.onApplyCustom()}
-              >
+                onClick={() => props.onApplyCustom()}>
                 Apply
               </button>
               <button
                 className="clear-btn"
                 onClick={() => {
                   props.setPreset("all");
-                }}
-              >
+                }}>
                 Reset
               </button>
             </>
@@ -116,9 +114,8 @@ export function TransactionFilters(props: FiltersProps) {
       <select
         className="filter-select"
         value={props.typeFilter}
-        onChange={(e) => props.setTypeFilter(e.target.value)}
-        style={filterColors}
-      >
+        onChange={e => props.setTypeFilter(e.target.value)}
+        style={filterColors}>
         <option value="all">All Types</option>
         <option value="deposit">Deposit</option>
         <option value="withdraw">Withdraw</option>
@@ -147,8 +144,7 @@ export function TransactionFilters(props: FiltersProps) {
       {/* Spam Toggle */}
       <button
         className={`spam-toggle ${!props.hideSpam ? "showing-all" : ""}`}
-        onClick={() => props.setHideSpam(!props.hideSpam)}
-      >
+        onClick={() => props.setHideSpam(!props.hideSpam)}>
         <span className="spam-toggle-label">
           {props.hideSpam ? "👁 Show All Transactions" : "🚫 Hide Spam Transactions"}
         </span>

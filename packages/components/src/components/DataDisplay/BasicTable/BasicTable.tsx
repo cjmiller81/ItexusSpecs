@@ -3,7 +3,7 @@ import { styled } from "@mui/material";
 import { DataGrid, DataGridProps } from "@mui/x-data-grid";
 import TablePagination from "@mui/material/TablePagination";
 
-interface BasicTableProps extends DataGridProps {
+export interface BasicTableProps extends DataGridProps {
   defaultRowsPerPage?: number;
 }
 
@@ -46,7 +46,7 @@ export function BasicTable({ rows, columns, defaultRowsPerPage = 10, ...props }:
   );
 }
 
-const StyledDataGrid = styled(DataGrid)(({}) => ({
+const StyledDataGrid = styled(DataGrid)(() => ({
   ".MuiDataGrid-cellContent": {
     fontSize: "14px",
   },
