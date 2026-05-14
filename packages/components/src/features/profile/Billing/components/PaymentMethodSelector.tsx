@@ -20,13 +20,22 @@ const cardModelSchema = Yup.object().shape({
 
 export type CardModel = InferType<typeof cardModelSchema>;
 
-type Props = StackProps & {
+export type PaymentMethodSelectorProps = StackProps & {
   onAttachCard: (cardData: CardModel) => void;
   onClose: () => void;
+  // Aligned with `CardPaymentForm` and `BillingSection` which also pass
+  // the Stripe payment-methods array as `any[]`. Tightening this here
+  // would force the rest of the billing-section refactor.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   paymentMethods: any[];
 };
 
-export const PaymentMethodSelector: FC<Props> = ({ onClose, onAttachCard,paymentMethods, ...props }) => {
+export const PaymentMethodSelector: FC<PaymentMethodSelectorProps> = ({
+  onClose,
+  onAttachCard,
+  paymentMethods,
+  ...props
+}) => {
   const [tab, setTab] = useState<TabsType>("card");
   const { t } = useTranslation("PaymentMethodSelector");
   return (
@@ -47,7 +56,12 @@ export const PaymentMethodSelector: FC<Props> = ({ onClose, onAttachCard,payment
         />
       ) : (
         <>
-          <Typography fontSize={14} fontWeight={400} variant="h6">{t("ComingSoon")}</Typography>
+          <Typography
+            fontSize={14}
+            fontWeight={400}
+            variant="h6">
+            {t("ComingSoon")}
+          </Typography>
           <SaveChancelButtons
             disableSaveButton
             sx={{ position: "absolute", bottom: theme => theme.spacing(2), right: theme => theme.spacing(2) }}

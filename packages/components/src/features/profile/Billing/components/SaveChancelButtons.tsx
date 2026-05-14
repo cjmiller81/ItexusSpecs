@@ -4,13 +4,13 @@ import Stack from "@mui/system/Stack";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 
-type Props = StackProps & {
+export type SaveChancelButtonsProps = StackProps & {
   disableSaveButton?: boolean;
   onCancel: () => void;
   onSave?: () => void;
 };
 
-export const SaveChancelButtons: FC<Props> = ({ onSave, onCancel, disableSaveButton, ...props }) => {
+export const SaveChancelButtons: FC<SaveChancelButtonsProps> = ({ onSave, onCancel, disableSaveButton, ...props }) => {
   const { t } = useTranslation("CardPaymentForm");
   return (
     <Stack

@@ -17,7 +17,7 @@ export function NumericFormatCustom(props) {
       }}
       thousandSeparator=","
       decimalSeparator="."
-      isNumericString
+      valueIsNumericString
     />
   );
 }

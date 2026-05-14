@@ -1,4 +1,4 @@
-import AppleIcon from '@mui/icons-material/Apple';
+import AppleIcon from "@mui/icons-material/Apple";
 import PaymentIcon from "@mui/icons-material/Payment";
 import { Typography } from "@mui/material";
 import Stack from "@mui/system/Stack";
@@ -6,11 +6,11 @@ import { StackProps } from "@mui/system";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { SelectableButton } from "./SelectableButton";
-import { GooglePaySvg } from './GooglePaySvg';
+import { GooglePaySvg } from "./GooglePaySvg";
 
 export type TabsType = "card" | "apple-pay" | "google-pay" | "crypto";
 
-type PaymentTabsProps = StackProps & {
+export type PaymentTabsProps = StackProps & {
   tab: TabsType;
   onTabChange: (tab: TabsType) => void;
 };

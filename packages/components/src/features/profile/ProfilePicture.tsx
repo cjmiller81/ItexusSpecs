@@ -1,32 +1,38 @@
-import { Avatar, Box, BoxProps, Button, Typography } from "@mui/material"
-import { useTranslation } from "react-i18next"
-import { useFilePicker } from "use-file-picker"
-import { FileAmountLimitValidator, FileTypeValidator } from "use-file-picker/validators"
-import { ProfileContainer } from "./ProfileContainer"
-import { useEffect } from "react"
-import { LoadingButton } from "@mui/lab"
+import { Avatar, Box, BoxProps, Button, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useFilePicker } from "use-file-picker";
+import { FileAmountLimitValidator, FileTypeValidator } from "use-file-picker/validators";
+import { ProfileContainer } from "./ProfileContainer";
+import { useEffect } from "react";
+import { LoadingButton } from "@mui/lab";
 
-type Props = BoxProps & {
-  onAvatarChanged: (file: File) => void
-  isAvatarUploading?: boolean,
-  avatarUrl?: string,
-  defaultAvatarSrc?: string
-}
+export type ProfilePictureProps = BoxProps & {
+  onAvatarChanged: (file: File) => void;
+  isAvatarUploading?: boolean;
+  avatarUrl?: string;
+  defaultAvatarSrc?: string;
+};
 
-export const ProfilePicture = ({onAvatarChanged, isAvatarUploading, defaultAvatarSrc, avatarUrl, ...props }: Props) => {
-  const { t } = useTranslation("ProfilePicture")
+export const ProfilePicture = ({
+  onAvatarChanged,
+  isAvatarUploading,
+  defaultAvatarSrc,
+  avatarUrl,
+  ...props
+}: ProfilePictureProps) => {
+  const { t } = useTranslation("ProfilePicture");
   const { openFilePicker, filesContent, errors, plainFiles } = useFilePicker({
     readAs: "DataURL",
     accept: "image/*",
     multiple: false,
     validators: [new FileAmountLimitValidator({ max: 1 }), new FileTypeValidator(["jpg", "png", "jpeg"])],
-  })
+  });
 
   useEffect(() => {
-    if(plainFiles && plainFiles.length){
-      onAvatarChanged(plainFiles[0])
+    if (plainFiles && plainFiles.length) {
+      onAvatarChanged(plainFiles[0]);
     }
-  }, [filesContent])
+  }, [filesContent]);
 
   return (
     <ProfileContainer
@@ -75,5 +81,5 @@ export const ProfilePicture = ({onAvatarChanged, isAvatarUploading, defaultAvata
         </LoadingButton>
       </Box>
     </ProfileContainer>
-  )
-}
+  );
+};

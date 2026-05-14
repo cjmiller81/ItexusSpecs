@@ -1,9 +1,9 @@
-import { Typography, styled } from "@mui/material"
-import { UiNode, UiNodeTextAttributes, UiText } from "@ory/client"
+import { Typography, styled } from "@mui/material";
+import { UiNode, UiNodeTextAttributes, UiText } from "@ory/client";
 
-interface Props {
-  node: UiNode
-  attributes: UiNodeTextAttributes
+export interface NodeTextProps {
+  node: UiNode;
+  attributes: UiNodeTextAttributes;
 }
 
 const ScrollableCodeBox = styled("code")(() => ({
@@ -11,26 +11,27 @@ const ScrollableCodeBox = styled("code")(() => ({
   color: "black",
   border: "solid 1px",
   textAlign: "center",
-}))
+}));
 
-export const Content = ({ attributes }: Props) => {
-  let secretsToRender: any = []
-  const attributeSecrets = (attributes.text.context as any).secrets;
-  if (typeof attributeSecrets === "string"){
-    secretsToRender = [{text: attributeSecrets}]
-  }
-  else{
-    secretsToRender = attributeSecrets || []
+export const Content = ({ attributes }: NodeTextProps) => {
+  type LookupSecretContext = { secrets?: string | UiText[] };
+  const ctx = attributes.text.context as LookupSecretContext | undefined;
+  const attributeSecrets = ctx?.secrets;
+  let secretsToRender: Array<UiText | { text: string }> = [];
+  if (typeof attributeSecrets === "string") {
+    secretsToRender = [{ text: attributeSecrets }];
+  } else {
+    secretsToRender = attributeSecrets || [];
   }
 
-  const secrets = secretsToRender.map((text: UiText, k: number) => (
+  const secrets = secretsToRender.map((text, k: number) => (
     <div
       key={k}
       data-testid={`node/text/${attributes.id}/lookup_secret`}>
       {/* Used lookup_secret has ID 1050014 */}
-      <code>{text.id === 1050014 ? "Used" : text.text}</code>
+      <code>{"id" in text && text.id === 1050014 ? "Used" : text.text}</code>
     </div>
-  ))
+  ));
   switch (attributes.text.id) {
     case 1050015:
       // This text node contains lookup secrets. Let's make them a bit more beautiful!
@@ -40,17 +41,17 @@ export const Content = ({ attributes }: Props) => {
           data-testid={`node/text/${attributes.id}/text`}>
           <div className="row">{secrets}</div>
         </div>
-      )
+      );
   }
 
   return (
     <div data-testid={`node/text/${attributes.id}/text`}>
       <ScrollableCodeBox>{attributes.text.text}</ScrollableCodeBox>
     </div>
-  )
-}
+  );
+};
 
-export const NodeText = ({ node, attributes }: Props) => {
+export const NodeText = ({ node, attributes }: NodeTextProps) => {
   return (
     <>
       <Typography
@@ -63,5 +64,5 @@ export const NodeText = ({ node, attributes }: Props) => {
         attributes={attributes}
       />
     </>
-  )
-}
+  );
+};

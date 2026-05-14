@@ -11,16 +11,19 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-interface CentralizedWalletModalProps {
+export interface CentralizedWalletModalProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (selectedService: "Kraken" | "Coinbase") => void;
+  /** Keeps the dialog in the React tree (no document.body portal). Use in Storybook docs so the backdrop does not cover the whole UI. */
+  disableModalPortal?: boolean;
 }
 
 export const CentralizedWalletModal: React.FC<CentralizedWalletModalProps> = ({
   open,
   onClose,
-  onConfirm,
+  onConfirm: _onConfirm,
+  disableModalPortal = false,
 }) => {
   const [selectedService, setSelectedService] = useState<"Kraken" | "Coinbase" | "">("");
   const { t } = useTranslation("IndexModelingSection");
@@ -29,7 +32,10 @@ export const CentralizedWalletModal: React.FC<CentralizedWalletModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      disablePortal={disableModalPortal}>
       <DialogTitle>{t("SelectService")}</DialogTitle>
       <DialogContent>
         <Select

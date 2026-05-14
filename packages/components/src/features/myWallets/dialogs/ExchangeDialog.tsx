@@ -2,12 +2,14 @@ import React from "react";
 import { Typography, Select, MenuItem, Dialog, DialogContent, DialogTitle, SelectChangeEvent } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-interface ExchangeDialogProps {
+export interface ExchangeDialogProps {
   open: boolean;
-  selectedService: any;
+  selectedService: string[];
   onClose: () => void;
   onServiceChange: (event: SelectChangeEvent<string>) => void;
   title: string[];
+  /** Storybook docs: avoid portaling the dialog to `document.body`. */
+  disableModalPortal?: boolean;
 }
 
 export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
@@ -15,13 +17,15 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
   selectedService,
   onClose,
   onServiceChange,
-  title,
+  title: _title,
+  disableModalPortal = false,
 }) => {
   const { t } = useTranslation("IndexModelingSection");
   return (
     <Dialog
       open={open}
       onClose={onClose}
+      disablePortal={disableModalPortal}
       fullWidth
       sx={{
         "& .MuiPaper-root": {
@@ -38,7 +42,7 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
         </Typography>
         <Select
           fullWidth
-          value={selectedService?.value || ""}
+          value=""
           onChange={onServiceChange}
           displayEmpty
           sx={{

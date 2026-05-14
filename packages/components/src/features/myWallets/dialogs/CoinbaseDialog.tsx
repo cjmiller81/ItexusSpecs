@@ -3,16 +3,30 @@ import { Box, Typography, TextField, Button, Dialog, DialogActions, DialogConten
 import { useTranslation } from "react-i18next";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTheme } from "@mui/material/styles";
-import { FormikProps } from "formik";
+import type { FormikProps } from "formik";
 
-interface CoinbaseDialogProps {
-  open: boolean;
-  formik: FormikProps<any>;
-  onClose: () => void;
-  onChainNameChange: (name: string) => void;
+export interface CexConnectionFormValues {
+  chainName: string;
+  apiKey: string;
+  apiSecret: string;
 }
 
-export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, onChainNameChange, onClose }) => {
+export interface CoinbaseDialogProps {
+  open: boolean;
+  formik: FormikProps<CexConnectionFormValues>;
+  onClose: () => void;
+  onChainNameChange: (name: string) => void;
+  /** Storybook docs: avoid portaling the dialog to `document.body`. */
+  disableModalPortal?: boolean;
+}
+
+export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({
+  open,
+  formik,
+  onChainNameChange,
+  onClose,
+  disableModalPortal = false,
+}) => {
   const { t } = useTranslation("IndexModelingSection");
   const theme = useTheme();
 
@@ -20,6 +34,7 @@ export const CoinbaseDialog: React.FC<CoinbaseDialogProps> = ({ open, formik, on
     <Dialog
       open={open}
       onClose={onClose}
+      disablePortal={disableModalPortal}
       fullWidth
       maxWidth="sm">
       <DialogTitle>{t("ConnectCoinbaseExchange")}</DialogTitle>

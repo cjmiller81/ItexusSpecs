@@ -1,22 +1,22 @@
-import { Button } from "@mui/material"
-import { UiNode, UiNodeAnchorAttributes } from "@ory/client"
+import { Button } from "@mui/material";
+import type { MouseEvent } from "react";
+import { UiNode, UiNodeAnchorAttributes } from "@ory/client";
 
-interface Props {
-  node: UiNode
-  attributes: UiNodeAnchorAttributes
+export interface NodeAnchorProps {
+  node: UiNode;
+  attributes: UiNodeAnchorAttributes;
 }
 
-export const NodeAnchor = ({ attributes }: Props) => {
+export const NodeAnchor = ({ attributes }: NodeAnchorProps) => {
   return (
     <Button
       data-testid={`node/anchor/${attributes.id}`}
-      onClick={(e: any) => {
-        e.stopPropagation()
-        e.preventDefault()
-        window.location.href = attributes.href
-      }}
-    >
+      onClick={(e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+        window.location.href = attributes.href;
+      }}>
       {attributes.title.text}
     </Button>
-  )
-}
+  );
+};

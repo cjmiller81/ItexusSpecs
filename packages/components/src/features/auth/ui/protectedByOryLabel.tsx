@@ -1,11 +1,13 @@
-import { Box, Link, Typography } from "@mui/material"
-import React from "react"
+import { Box, Link, Typography } from "@mui/material";
+import React from "react";
 
-interface ProtectedByOryLabelProps { env: { termsUrl: string, appTermsUrl: string } }
+export interface ProtectedByOryLabelProps {
+  env: { termsUrl: string; appTermsUrl: string };
+}
 
 export const ProtectedByOryLabel = ({ env }: ProtectedByOryLabelProps): React.JSX.Element => {
-  const termsUrl = env.termsUrl || env.appTermsUrl || ""
-  const hasTerms = Boolean(termsUrl && termsUrl.trim().length > 0)
+  const termsUrl = env.termsUrl || env.appTermsUrl || "";
+  const hasTerms = Boolean(termsUrl && termsUrl.trim().length > 0);
 
   return (
     <Box
@@ -31,7 +33,10 @@ export const ProtectedByOryLabel = ({ env }: ProtectedByOryLabelProps): React.JS
           fontSize=".625rem">
           Protected by
         </Typography>
-        <img src="/oryIcon.svg" alt="Ory" />
+        <img
+          src="/oryIcon.svg"
+          alt="Ory"
+        />
       </Box>
 
       {/* Right-aligned Terms link */}
@@ -54,7 +59,7 @@ export const ProtectedByOryLabel = ({ env }: ProtectedByOryLabelProps): React.JS
         </Box>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default ProtectedByOryLabel
+export default ProtectedByOryLabel;

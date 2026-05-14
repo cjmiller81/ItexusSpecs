@@ -9,6 +9,9 @@ import {
   FormControl,
   Button,
   TablePagination,
+  CircularProgress,
+  Alert,
+  AlertTitle,
 } from "@mui/material";
 import { Wallet } from "../../models";
 import { useTranslation } from "react-i18next";
@@ -16,8 +19,6 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { useTransactionHistory } from "../../hooks/useTransactionHistory";
 import { formatAddress } from "../../utils/formatters";
 import { exportTransactionsXlsx, ExportOptions } from "../../utils/exportXlsx";
-import { Spinner, Center } from "@chakra-ui/react";
-import { Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 import { TransactionFilters } from "./TransactionFilters";
 import { TransactionRow } from "./TransactionRow";
 import "./TransactionHistory.css";
@@ -66,7 +67,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
       setHasUserSelectedWallet(true);
       return walletAddress;
     }
-    
+
     // If we have a selected wallet ID from user selection
     if (selectedWalletId && wallets) {
       const selectedWallet = wallets.find(w => w.walletId === selectedWalletId);
@@ -75,7 +76,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         return selectedWallet.address;
       }
     }
-    
+
     // No selection yet
     setHasUserSelectedWallet(false);
     return "";
@@ -207,22 +208,31 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
 
   if (loading) {
     return (
-      <Center py={10}>
-        <Spinner size="lg" thickness="4px" speed="0.65s" color="purple.400" />
-      </Center>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 10 }}>
+        <CircularProgress size={48} thickness={4} sx={{ color: "#9F7AEA" }} />
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <Alert status="error" variant="subtle" flexDirection="column" textAlign="center" py={6}>
-        <AlertIcon boxSize="40px" mr={0} />
-        <AlertTitle mt={4} mb={1} fontSize="lg">
+      <Alert
+        severity="error"
+        sx={{
+          flexDirection: "column",
+          textAlign: "center",
+          alignItems: "center",
+          py: 6,
+          "& .MuiAlert-icon": { fontSize: 40, mr: 0, mb: 1, padding: 0 },
+          "& .MuiAlert-message": { width: "100%" },
+        }}
+      >
+        <AlertTitle sx={{ mt: 2, mb: 1, fontSize: "1.125rem" }}>
           Something went wrong
         </AlertTitle>
-        <AlertDescription maxWidth="sm">
+        <Box sx={{ maxWidth: 360, mx: "auto" }}>
           {error.message}
-        </AlertDescription>
+        </Box>
       </Alert>
     );
   }
@@ -303,7 +313,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
                 onClick={async () => {
                   try {
                     const allTransactions = await fetchAllTransactionsForExport();
-                    
+
                     if (allTransactions.length === 0) {
                       console.warn('No transactions to export');
                       return;

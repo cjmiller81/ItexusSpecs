@@ -5,12 +5,12 @@ import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import BlockIcon from "@mui/icons-material/Block";
 
-interface FeatureAccessGuardProps {
+export interface FeatureAccessGuardProps {
   feature: "saveStrategy" | "tableExport" | "tradeAggregatorQuoteDEX" | "walletConnectionCEX" | "walletConnectionDEX";
   children: ReactNode;
   currentCount?: number; // For features with limits like saved strategies or wallet connections
   filterType?: string; // For saveStrategy feature - the type of filter being saved
-  savedFilters?: any[]; // Array of saved filters for checking limits by type
+  savedFilters?: Array<{ filterType?: string | null; isPublic?: boolean }>; // For saveStrategy feature - saved filter rows for limit checks
   showTooltip?: boolean;
   tooltipPlacement?: "top" | "bottom" | "left" | "right";
   disabled?: boolean; // Allow external disabling
@@ -26,7 +26,14 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
   tooltipPlacement = "top",
   disabled: externalDisabled = false,
 }) => {
-  const { subscription, canSaveStrategy, canSaveStrategyByType, canExportTable, canConnectWallet, getTradeAggregatorQuoteLimit } = useSubscription();
+  const {
+    subscription,
+    canSaveStrategy,
+    canSaveStrategyByType,
+    canExportTable,
+    canConnectWallet,
+    getTradeAggregatorQuoteLimit,
+  } = useSubscription();
   const router = useRouter();
   const { t } = useTranslation("AccessControl");
 
@@ -50,15 +57,18 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
         limit = subscription.plan.featureLimits.savedStrategyCount;
         if (!isFeatureAvailable) {
           if (filterType) {
-            tooltipMessage = t("You have reached the limit of {{limit}} saved {{filterType}} strategies for {{plan}} plan", { 
-              limit, 
-              filterType, 
-              plan: subscription.plan.name 
-            });
+            tooltipMessage = t(
+              "You have reached the limit of {{limit}} saved {{filterType}} strategies for {{plan}} plan",
+              {
+                limit,
+                filterType,
+                plan: subscription.plan.name,
+              },
+            );
           } else {
-            tooltipMessage = t("You have reached the limit of {{limit}} saved strategies for {{plan}} plan", { 
-              limit, 
-              plan: subscription.plan.name 
+            tooltipMessage = t("You have reached the limit of {{limit}} saved strategies for {{plan}} plan", {
+              limit,
+              plan: subscription.plan.name,
             });
           }
         }
@@ -77,17 +87,25 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
         }
         break;
       case "walletConnectionCEX":
-        isFeatureAvailable = canConnectWallet('CEX', currentCount);
+        isFeatureAvailable = canConnectWallet("CEX", currentCount);
         limit = subscription.plan.featureLimits.walletConncectionCountCEX;
         if (!isFeatureAvailable) {
-          tooltipMessage = t("You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan", { limit, type: 'CEX', plan: subscription.plan.name });
+          tooltipMessage = t("You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan", {
+            limit,
+            type: "CEX",
+            plan: subscription.plan.name,
+          });
         }
         break;
       case "walletConnectionDEX":
-        isFeatureAvailable = canConnectWallet('DEX', currentCount);
+        isFeatureAvailable = canConnectWallet("DEX", currentCount);
         limit = subscription.plan.featureLimits.walletConncectionCountDEX;
         if (!isFeatureAvailable) {
-          tooltipMessage = t("You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan", { limit, type: 'DEX', plan: subscription.plan.name });
+          tooltipMessage = t("You have reached the limit of {{limit}} {{type}} wallet connections for {{plan}} plan", {
+            limit,
+            type: "DEX",
+            plan: subscription.plan.name,
+          });
         }
         break;
       default:
@@ -97,10 +115,10 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
   }
 
   const renderContent = (
-    <Box sx={{ display: 'inline-block', cursor: isFeatureAvailable && !externalDisabled ? 'pointer' : 'not-allowed' }}>
+    <Box sx={{ display: "inline-block", cursor: isFeatureAvailable && !externalDisabled ? "pointer" : "not-allowed" }}>
       {React.Children.map(children, child => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
+        if (React.isValidElement<{ disabled?: boolean }>(child)) {
+          return React.cloneElement(child, {
             disabled: !isFeatureAvailable || externalDisabled,
           });
         }
@@ -113,24 +131,24 @@ export const FeatureAccessGuard: React.FC<FeatureAccessGuardProps> = ({
     return (
       <Tooltip
         title={
-          <Stack spacing={1} sx={{ p: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <BlockIcon sx={{ color: 'error.main', fontSize: 20 }} />
+          <Stack
+            spacing={1}
+            sx={{ p: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <BlockIcon sx={{ color: "error.main", fontSize: 20 }} />
               <Typography variant="body2">{tooltipMessage}</Typography>
             </Box>
             <Button
               variant="contained"
               color="primary"
               size="small"
-              onClick={() => router.push("/profile/billing")}
-            >
+              onClick={() => router.push("/profile/billing")}>
               {t("Upgrade Plan")}
             </Button>
           </Stack>
         }
         placement={tooltipPlacement}
-        arrow
-      >
+        arrow>
         {renderContent}
       </Tooltip>
     );

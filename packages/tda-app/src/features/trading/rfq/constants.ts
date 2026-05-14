@@ -1,1 +1,0 @@
-export const logoUrl = "https://tda-gui-v2.vercel.app/static/images/dark.png?auto=compress&cs=tinysrgb&dpr=1&w=500"

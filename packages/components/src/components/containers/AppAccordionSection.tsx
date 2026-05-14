@@ -14,14 +14,18 @@ import { useTheme } from "@mui/material/styles";
 import { PageTitle } from "../TextDisplay/PageTitle";
 import { StatePersistedAccordion, StatePersistedAccordionProps } from "./StatePersistedAccordion";
 
-interface Props extends StatePersistedAccordionProps {
+export interface AppAccordionSectionProps extends StatePersistedAccordionProps {
   headerChildren?: React.ReactNode;
   title?: string;
   tooltip: string;
 }
 
 const CustomTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} arrow classes={{ popper: className }} />
+  <Tooltip
+    {...props}
+    arrow
+    classes={{ popper: className }}
+  />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
     color: theme.palette.mode === "dark" ? "#7CB9E8" : "#219a83",
@@ -48,8 +52,8 @@ const StyledStatePersistedAccordion = styled(StatePersistedAccordion)(({ theme }
   },
 }));
 
-export const StyledAccordionSummary = styled(AccordionSummary)(({theme}) => ({
-  backgroundColor:theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
+export const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#363640" : "#f7f5f2",
   borderTopLeftRadius: 10,
   borderTopRightRadius: 10,
   borderBottomLeftRadius: 10,
@@ -64,21 +68,18 @@ export const AppAccordionSection = ({
   title,
   tooltip,
   ...props
-}: Props) => {
+}: AppAccordionSectionProps) => {
   const theme = useTheme();
 
   return (
     <StyledStatePersistedAccordion
       className="index-modeling-section-container"
       defaultExpanded
-      {...props}
-    >
+      {...props}>
       <StyledAccordionSummary
         expandIcon={
           <CustomTooltip title={tooltip}>
-            <IconButton
-              sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}
-            >
+            <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
               <ArrowBackIosNewOutlinedIcon
                 sx={{
                   "& path": {
@@ -97,10 +98,11 @@ export const AppAccordionSection = ({
           "&.MuiAccordionSummary-root:hover": {
             cursor: "default !important",
           },
-        }}
-      >
+        }}>
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <PageTitle sx={{ width: "100%" }} onClick={(e) => e.stopPropagation()}>
+          <PageTitle
+            sx={{ width: "100%" }}
+            onClick={e => e.stopPropagation()}>
             {title}
           </PageTitle>
           {headerChildren}
@@ -111,8 +113,7 @@ export const AppAccordionSection = ({
           bgcolor: "background.paper",
           borderBottomLeftRadius: 10,
           borderBottomRightRadius: 10,
-        }}
-      >
+        }}>
         {children}
       </AccordionDetails>
     </StyledStatePersistedAccordion>
