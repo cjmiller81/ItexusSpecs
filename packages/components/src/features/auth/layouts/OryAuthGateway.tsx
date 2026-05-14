@@ -16,6 +16,7 @@ type OryContextType = {
   settingsFlow?: SettingsFlow
   logOut: () => Promise<void>
   renewSession: () => Promise<void>
+  refreshSession: () => Promise<void>
   onUpdateProfile: (firstName: string, lastName: string) => Promise<void>
   createSettingsFow: () => Promise<SettingsFlow>
   onChangePassword: (password: string) => Promise<void>
@@ -131,30 +132,41 @@ export function OryAuthGateway({
 
   const onTotpSubmit = async (code: string): Promise<void> => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
-    await ory
-      .updateSettingsFlow({
-        flow: currentSettingsFlow.id,
-        updateSettingsFlowBody: {
-          totp_code: code,
-          method: "totp",
-          csrf_token: csrfToken,
-        },
-      })
-      .then(flow => setCurrentSettingsFlow(flow.data))
+    const flow = await ory.updateSettingsFlow({
+      flow: currentSettingsFlow.id,
+      updateSettingsFlowBody: {
+        totp_code: code,
+        method: "totp",
+        csrf_token: csrfToken,
+      },
+    })
+    setCurrentSettingsFlow(flow.data)
+    try {
+      const { data } = await ory.toSession()
+      setSession(data)
+    } catch (err) {
+      // If in-place refresh fails, leave session as-is; caller can fallback to renewSession
+      console.error("refresh session after totp submit failed:", err)
+    }
   }
 
   const onTotpUnlink = async (): Promise<void> => {
     if (!currentSettingsFlow) throw Error("Settings flow is not created.")
-    await ory
-      .updateSettingsFlow({
-        flow: currentSettingsFlow.id,
-        updateSettingsFlowBody: {
-          totp_unlink: true,
-          method: "totp",
-          csrf_token: csrfToken,
-        },
-      })
-      .then(flow => setCurrentSettingsFlow(flow.data))
+    const flow = await ory.updateSettingsFlow({
+      flow: currentSettingsFlow.id,
+      updateSettingsFlowBody: {
+        totp_unlink: true,
+        method: "totp",
+        csrf_token: csrfToken,
+      },
+    })
+    setCurrentSettingsFlow(flow.data)
+    try {
+      const { data } = await ory.toSession()
+      setSession(data)
+    } catch (err) {
+      console.error("refresh session after totp unlink failed:", err)
+    }
   }
 
   const handleLogout = async () => {
@@ -186,6 +198,20 @@ const renewSession = async (): Promise<void> => {
   }
 };
 
+const refreshSession = async (): Promise<void> => {
+  try {
+    const { data } = await ory.toSession()
+    setSession(data)
+  } catch (err) {
+    console.error("refreshSession failed:", err)
+    try {
+      await renewSession()
+    } catch (e) {
+      console.error("renewSession fallback failed:", e)
+    }
+  }
+}
+
   
   useEffect(() => {
     // If the router is not ready yet, or we already have a session, do nothing.
@@ -214,6 +240,7 @@ const renewSession = async (): Promise<void> => {
       settingsFlow: currentSettingsFlow,
       logOut: handleLogout,
       renewSession,
+      refreshSession,
       onChangePassword,
       createSettingsFow,
       onUpdateProfile,
@@ -227,6 +254,7 @@ const renewSession = async (): Promise<void> => {
       onChangePassword,
       handleLogout,
       renewSession,
+      refreshSession,
       onUpdateProfile,
       createSettingsFow,
       onTotpSubmit,
