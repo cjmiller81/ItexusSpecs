@@ -1,5 +1,5 @@
 import { TextField, Button, Link, Box, Typography } from "@mui/material";
-import { LoginFlow, UiNodeInputAttributes, UiNodeAnchorAttributes, UpdateLoginFlowBody } from "@ory/client";
+import { LoginFlow, UiText, UpdateLoginFlowBody } from "@ory/client";
 import {
   isUiNodeInputAttributes,
   isUiNodeAnchorAttributes,
@@ -17,9 +17,15 @@ interface CustomLoginFormProps {
   isRefreshFlowIdNeeded: boolean;
   onSubmit: (values: UpdateLoginFlowBody) => Promise<unknown> | void;
   onRefreshFlowId: () => void;
+  /**
+   * Optional subtitle shown under the "Sign In" heading.
+   * Falls back to an empty string when omitted so we don't render a
+   * placeholder like "_______________".
+   */
+  subtitle?: string;
 }
 
-export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowIdNeeded, onRefreshFlowId, onSubmit }) => {
+export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowIdNeeded, onRefreshFlowId, onSubmit, subtitle = "" }) => {
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -29,6 +35,13 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowI
   const [isBrowser, setIsBrowser] = useState(false);
 
   const { t } = useTranslation("ory")
+
+  // Defensive: if upstream accidentally hands us a non-flow object (e.g. a
+  // raw error body from a failed createBrowserLoginFlow call) we don't want
+  // the whole app to unmount with a "Cannot read properties of undefined
+  // (reading 'nodes')" crash. Render nothing and let the parent handle it.
+  const nodes = flow?.ui?.nodes;
+  const hasValidFlow = Array.isArray(nodes);
 
   useEffect(() => {
     // Ensure Turnstile is only rendered client-side
@@ -41,6 +54,7 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowI
 
   // Initialize values from flow
   useEffect(() => {
+    if (!Array.isArray(flow?.ui?.nodes)) return;
     const initialValues: Record<string, string> = {}
     flow.ui.nodes.forEach((node) => {
       if (isUiNodeInputAttributes(node.attributes)) {
@@ -57,6 +71,14 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowI
       return hasChanges ? initialValues : prev;
     })
   }, [flow]);
+
+  // Every subsequent statement expects `flow.ui.nodes` to be a real array of
+  // Ory UI nodes. If we got handed a malformed flow (e.g. an error body from
+  // a failed `createBrowser*Flow`) bail out before dereferencing anything.
+  // This must come after all hook calls above to comply with rules of hooks.
+  if (!hasValidFlow) {
+    return null;
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -195,10 +217,9 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowI
 
   const logoUrl = process.env.NEXT_PUBLIC_ORY_CARD_IMAGE_URL || "/ElanInsightsLight.png";
 
-  const globalMessages =
-    (flow.ui.messages ?? [])
-      .map(m => (m as any)?.text)
-      .filter((m): m is string => Boolean(m));
+  const globalMessages = (flow.ui.messages ?? [])
+    .map((m: UiText) => m?.text)
+    .filter((m): m is string => Boolean(m));
 
   return (
     <Box
@@ -262,21 +283,25 @@ export const CustomLoginForm: FC<CustomLoginFormProps> = ({ flow, isRefreshFlowI
           </h1>
         </Box>
 
-        <Box
-          sx={{
-            textAlign: 'center',
-            marginBottom: '2rem',
-          }}
-        >
-          <p style={{ 
-            color: '#ffffff', 
-            margin: 0,
-            fontWeight: 800,
-            fontSize: '0.875rem',
-          }}>
-            _______________
-          </p>
-        </Box>
+        {subtitle ? (
+          <Box
+            sx={{
+              textAlign: 'center',
+              marginBottom: '2rem',
+            }}
+          >
+            <p style={{ 
+              color: '#ffffff', 
+              margin: 0,
+              fontWeight: 800,
+              fontSize: '0.875rem',
+            }}>
+              {subtitle}
+            </p>
+          </Box>
+        ) : (
+          <Box sx={{ marginBottom: '1.5rem' }} />
+        )}
 
         {!isRefreshFlowIdNeeded && (
           <>

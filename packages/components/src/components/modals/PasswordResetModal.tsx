@@ -16,6 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import { useOry, addError, addMessage, useAppDispatch, AppFormTextField, WelcomeModal } from 'components';
 import { parseOryErrorMessage } from '../../utils/parseOryErrors';
+import { authLogger } from '../../utils/authLogger';
 import { Formik, Form } from 'formik';
 import { InferType, object, string } from 'yup';
 import i18n from 'i18next';
@@ -44,7 +45,7 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
 }) => {
   const { t } = useTranslation('SecurityContainer');
   const dispatch = useAppDispatch();
-  const { onChangePassword, createSettingsFow } = useOry();
+  const { onChangePassword, createSettingsFlow } = useOry();
   
   const [newPasswordLoading, setNewPasswordLoading] = useState(false);
   const [settingsFlowCreating, setSettingsFlowCreating] = useState(false);
@@ -56,17 +57,15 @@ export const PasswordResetModal: React.FC<PasswordResetModalProps> = ({
     if (open) {
       setHasExpiredFlow(false);
       setSettingsFlowCreating(true);
-      createSettingsFow()
-        .then(() => {
-          // Settings flow created successfully
-        })
+      createSettingsFlow()
         .catch(error => {
-          console.error('Failed to create settings flow:', error);
+          authLogger.error('PasswordResetModal: createSettingsFlow failed', error);
         })
         .finally(() => {
           setSettingsFlowCreating(false);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const onSubmitNewPassword = async (password: string, resetForm: Function) => {

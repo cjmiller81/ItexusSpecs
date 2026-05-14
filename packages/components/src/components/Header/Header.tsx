@@ -8,6 +8,8 @@ import { UserMenu } from "./UserMenu";
 import { ApiUsageStatus } from "./ApiUsageStatus";
 import { useOry } from '../../features/auth/layouts/OryAuthGateway';
 import { useRouter } from 'next/router';
+import { authLogger } from '../../utils/authLogger';
+import { safeReturnTo } from '../../features/auth/utils/safeReturnTo';
 
 
 interface Props {
@@ -38,7 +40,10 @@ export function Header({
     const storedReturnTo = localStorage.getItem("return_to");
     if (storedReturnTo) {
       localStorage.removeItem("return_to");
-      router.push(storedReturnTo);
+      // Validate against same-origin before redirecting. localStorage can be
+      // written from anywhere we execute JS, so we treat the value as
+      // untrusted.
+      router.push(safeReturnTo(storedReturnTo, "/"));
     }
   }
 
@@ -106,7 +111,7 @@ useEffect(() => {
       setShowCountdown(false)
       setTimeout(() => setShowCountdown(true), 0)
     } catch (err) {
-      console.error(err)
+      authLogger.error("Header: renewSession failed", err)
       router.push("/ui/login")
     }
   }

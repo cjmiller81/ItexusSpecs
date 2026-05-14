@@ -8,6 +8,7 @@ import { ory } from "../lib/sdk"
 import { ActionCard, CenterLink } from "../styled/index"
 import { Flow, Methods } from "./Flow"
 import { Messages } from "./Messages"
+import { authLogger } from "../../../utils/authLogger"
 
 interface Props {
   flow?: SettingsFlow
@@ -41,68 +42,70 @@ const Settings: NextPage = () => {
       return
     }
 
-    // If ?flow=.. was in the URL, we fetch it
+    // If ?flow=.. was in the URL, we fetch it.
     if (flowId) {
-      ory.getSettingsFlow({ id: String(flowId) }).then(({ data }) => {
-        setFlow(data)
-      })
+      ory
+        .getSettingsFlow({ id: String(flowId) })
+        .then(({ data }) => setFlow(data))
+        .catch((err: AxiosError) => {
+          authLogger.error("getSettingsFlow failed", err)
+        })
       return
     }
 
-    // Otherwise we initialize it
+    // Otherwise we initialize a new flow.
     ory
       .createBrowserSettingsFlow({
         returnTo: String(returnTo || ""),
       })
-      .then(({ data }) => {
-        setFlow(data)
+      .then(({ data }) => setFlow(data))
+      .catch((err: AxiosError) => {
+        authLogger.error("createBrowserSettingsFlow failed", err)
       })
   }, [flowId, router, router.isReady, returnTo, flow])
 
-  const onSubmit = (values: UpdateSettingsFlowBody) => {
-    router
-      // On submission, add the flow ID to the URL but do not navigate. This prevents the user loosing
-      // his data when she/he reloads the page.
-      .push(`/ui/settings?flow=${flow?.id}`, undefined, { shallow: true })
-      .then(() =>
-        ory
-          .updateSettingsFlow({
-            flow: String(flow?.id),
-            updateSettingsFlowBody: values,
-          })
-          .then(({ data }) => {
-            // The settings have been saved and the flow was updated. Let's show it to the user!
-            setFlow(data)
+  const onSubmit = async (values: UpdateSettingsFlowBody) => {
+    try {
+      // On submission, add the flow ID to the URL but do not navigate. This
+      // prevents the user losing data if they reload the page.
+      await router.push(`/ui/settings?flow=${flow?.id}`, undefined, {
+        shallow: true,
+      })
 
-            // continue_with is a list of actions that the user might need to take before the settings update is complete.
-            // It could, for example, contain a link to the verification form.
-            if (data.continue_with) {
-              for (const item of data.continue_with) {
-                switch (item.action) {
-                  case "show_verification_ui":
-                    router.push("/verification?flow=" + item.flow.id)
-                    return
-                }
-              }
-            }
+      const { data } = await ory.updateSettingsFlow({
+        flow: String(flow?.id),
+        updateSettingsFlowBody: values,
+      })
 
-            if (data.return_to) {
-              window.location.href = data.return_to
-              return
-            }
-          })
-          // .catch(handleFlowError(router, "settings", setFlow))
-          .catch(async (err: AxiosError<any, any>) => {
-            // If the previous handler did not catch the error it's most likely a form validation error
-            if (err.response?.status === 400) {
-              // Yup, it is!
-              setFlow(err.response?.data)
-              return
-            }
+      // The settings have been saved and the flow was updated. Let's show it
+      // to the user.
+      setFlow(data)
 
-            return Promise.reject(err)
-          }),
-      )
+      // `continue_with` is a list of actions the user might need to take
+      // before the settings update is complete (e.g. email verification).
+      if (data.continue_with) {
+        for (const item of data.continue_with) {
+          if (item.action === "show_verification_ui") {
+            router.push(`/ui/verification?flow=${item.flow.id}`)
+            return
+          }
+        }
+      }
+
+      if (data.return_to) {
+        window.location.href = data.return_to
+        return
+      }
+    } catch (err) {
+      const axiosErr = err as AxiosError<SettingsFlow>
+      // 400 usually means form validation error — Ory returns the updated
+      // flow in the body so we just re-render it.
+      if (axiosErr.response?.status === 400 && axiosErr.response.data) {
+        setFlow(axiosErr.response.data)
+        return
+      }
+      authLogger.error("updateSettingsFlow failed", err)
+    }
   }
 
   return (

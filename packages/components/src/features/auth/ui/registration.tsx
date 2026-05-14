@@ -1,5 +1,9 @@
 import { Button, Stack, Typography, Box } from "@mui/material"
-import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
+import {
+  GenericError,
+  RegistrationFlow,
+  UpdateRegistrationFlowBody,
+} from "@ory/client"
 import { AxiosError } from "axios"
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useState, useMemo } from "react"
@@ -9,6 +13,11 @@ import { Loader } from "../components/loader"
 import { HandleError } from "../utils/hooks"
 import { ory } from "../lib/sdk"
 import { StyledAuthContainer } from "./StyledAuthContainer"
+import { authLogger } from "../../../utils/authLogger"
+
+interface OryRegistrationErrorResponse {
+  error?: GenericError
+}
 
 const Registration: FC<{}> = () => {
   const [flow, setFlow] = useState<RegistrationFlow>()
@@ -54,15 +63,16 @@ const Registration: FC<{}> = () => {
           setFlow(data)
           router.push(`/ui/registration?flow=${data.id}`)
         })
-        .catch((error: AxiosError) => {
-          const errorId = (error.response?.data as any)?.error?.id
+        .catch((error: AxiosError<OryRegistrationErrorResponse>) => {
+          const errorId = error.response?.data?.error?.id
           if (errorId === "self_service_flow_disabled") {
             setError("New user registration is currently disabled")
           } else {
+            authLogger.error("createBrowserRegistrationFlow failed", error)
             handleError(error)
           }
         }),
-    [handleError],
+    [handleError, router],
   )
 
   const registrationConfig = useMemo(() => {
@@ -85,17 +95,18 @@ const Registration: FC<{}> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady])
 
-  const submitFlow = (values: UpdateRegistrationFlowBody) => {
-    ory
-      .updateRegistrationFlow({
+  const submitFlow = async (values: UpdateRegistrationFlowBody) => {
+    try {
+      await ory.updateRegistrationFlow({
         flow: String(flow?.id),
         updateRegistrationFlowBody: values,
       })
-      // We logged in successfully! Let's bring the user home.
-      .then(() => {
-        router.push("/")
-      })
-      .catch(handleError)
+      // We registered successfully — bring the user home.
+      router.push("/")
+    } catch (err) {
+      authLogger.error("updateRegistrationFlow failed", err)
+      handleError(err as AxiosError)
+    }
   }
 
   if (error) {
