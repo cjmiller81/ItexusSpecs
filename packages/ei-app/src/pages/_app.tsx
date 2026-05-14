@@ -1,6 +1,5 @@
 import "../libs/i18n/i18n"
 import RootLayout from "@/Layouts/RootLayout"
-import { LifiChainProvider } from "../common/lifiChainContext";
 import "@ory/elements-react/theme/styles.css"
 import "devextreme/dist/css/dx.common.css"
 import 'simplebar-react/dist/simplebar.min.css';
@@ -47,12 +46,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
       <>
         {mocksStarted && (
-          <LifiChainProvider>
             <RootLayout {...extendedPageProps}>
               <SessionWatcher />
               <Component {...extendedPageProps} />
             </RootLayout>
-          </LifiChainProvider>
         )}
         {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

@@ -5,7 +5,7 @@ import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
 import { useTheme } from "@mui/material/styles";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
 import { useTranslation } from "react-i18next";
-import { CHAIN_COLORS, CHAIN_MAP } from "./bridgeChains";
+import { CHAIN_COLORS } from "./bridgeChains";
 import { LifiChain } from "@/common/lifiChainContext";
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -22,7 +22,7 @@ interface BridgeFromCardProps {
   setSelectedTokenRow?: (row: any) => void;
   balanceRaw: number | undefined;
   setShowNoQuotesMessage: (value: React.SetStateAction<boolean>) => void;
-  onOptionChangeSwap: (value: TokenSearchItem  | null) => void;
+  onOptionChangeSwap: (value: TokenSearchItem | null) => void;
 }
 
 export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
@@ -55,11 +55,11 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
     fromTokenUrl: selectedTokenRow.logoUrl,
     fromTokenDecimals: selectedTokenRow.decimals,
     fromChainLogoURI: selectedTokenRow.lifiChain?.logoURI ?? null,
-    fromChainName: selectedTokenRow.lifiChain?.name ?? (selectedTokenRow.network?.name || selectedTokenRow.chain || ""),
-    fromChainKey: selectedTokenRow.lifiChain?.coin
+    fromChainName: selectedTokenRow.lifiChain?.name ?? selectedTokenRow.chain ?? "",
+    fromChainKey: selectedTokenRow.lifiChain?.key ?? null
   } : null;
 
-    return (
+  return (
     <Box sx={{ borderRadius: '10px', border: '1px solid', borderColor: theme.palette.mode === 'dark' ? 'rgba(81, 81, 81, 1)' : '#e4e8f5', p: 2, mb: 2 }}>
       <Box display="flex" justifyContent="space-between" alignItems="flex-end" mb={1.5}>
         <Box display="flex" alignItems="center" gap={1}>
@@ -79,17 +79,16 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
             {symbolOptionSwap ? (
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="9" cy="9" r="9" fill="#219a83" />
-                <path d="M5.5 9.5L8 12L12.5 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M5.5 9.5L8 12L12.5 7.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             ) : (
               <Typography sx={{ color: '#219a83', fontWeight: 700, fontSize: '1rem' }}>1</Typography>
             )}
           </Box>
-          <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge From')}</Typography>
+          <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: theme.palette.mode === "dark" ? "rgba(255, 255, 255)" : "gray", letterSpacing: '0.06em', textTransform: 'none' }}>{t('Bridge From')}</Typography>
         </Box>
-        {/* Chain badge above Current Position, right aligned */}
-        {bridgeFromState && (() => {
-          const colorMeta = CHAIN_COLORS[bridgeFromState.fromChainKey?.toUpperCase?.()] ? CHAIN_COLORS[bridgeFromState.fromChainKey?.toUpperCase?.()] : CHAIN_COLORS['ARB'];
+        {bridgeFromState && bridgeFromState.fromChainKey && (() => {
+          const colorMeta = CHAIN_COLORS[bridgeFromState.fromChainKey.toUpperCase()] || CHAIN_COLORS['ARB'];
           return (
           <Box className="chain-badge" sx={{ background: colorMeta.bg, border: colorMeta.border, color: colorMeta.color, borderRadius: '4px', px: 1.5, py: 0.5, fontWeight: 700, fontSize: '0.68rem', display: 'flex', alignItems: 'center', gap: '7px', mb: 0.5 }}>
             {bridgeFromState.fromChainLogoURI && (
@@ -97,16 +96,15 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
             )}
             {bridgeFromState.fromChainName}
           </Box>
-        );
-        })()}
+        );})()}
       </Box>
       {/* Current Position and Qty in one row */}
       <Box display="flex" gap={2} mb={1.5} alignItems="flex-end">
         <Box flex={7}>
-          <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Current Position')}</Typography>
+          <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ? "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Current Position')}</Typography>
           <Autocomplete
             options={tokenIcons?.items ?? []}
-            getOptionLabel={(option) => option.sym}
+            getOptionLabel={(option) => option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
             value={symbolOptionSwap}
             onChange={(event, value) => {
               handleCurrentPositionDropdownChange(event, value);
@@ -116,9 +114,11 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
                 setSelectedTokenRow(null);
               }
             }}
-            isOptionEqualToValue={(option, value) => option.id === value?.id}
+            isOptionEqualToValue={(option, value) => 
+              option.id === value?.id || 
+              (!!option.address?.[0] && !!value?.address?.[0] && option.address[0].toLowerCase() === value.address[0].toLowerCase())
+            }
             disableClearable={false}
-            inputValue={symbolOptionSwap ? symbolOptionSwap.name ? `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` : symbolOptionSwap.sym.toUpperCase() : inputSearchSwap}
             onInputChange={(_event, newInputValue, reason) => {
               if (reason === 'clear') {
                 onOptionChangeSwap(null);
@@ -156,22 +156,42 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
                 }}
               />
             )}
-            renderOption={(props, option) => (
-              <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Avatar
-                  src={option.lURI ?? undefined}
-                  alt={option.sym}
-                  sx={{ width: 24, height: 24 }}
-                />
-                <Typography variant="body1">
-                  {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
-                </Typography>
-              </Box>
-            )}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props as any;
+              return (
+                <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Avatar
+                    src={option.lURI ?? undefined}
+                    alt={option.sym}
+                    sx={{ width: 24, height: 24 }}
+                  />
+                  <Typography variant="body1">
+                    {option.name ? `${option.sym.toUpperCase()} - ${option.name}` : option.sym.toUpperCase()}
+                  </Typography>
+                </Box>
+              );
+            }}
+            filterOptions={(options, state) => {
+              const search = state.inputValue.toLowerCase().trim();
+              const currentLabel = symbolOptionSwap 
+                ? (symbolOptionSwap.name 
+                    ? `${symbolOptionSwap.sym.toUpperCase()} - ${symbolOptionSwap.name}` 
+                    : symbolOptionSwap.sym.toUpperCase()).toLowerCase().trim()
+                : "";
+              if (!search || search === currentLabel) return options;
+              return options.filter(o => 
+                o.sym.toLowerCase().includes(search) || 
+                (o.name && o.name.toLowerCase().includes(search))
+              );
+            }}
+            onFocus={(e) => {
+               const input = e.target as HTMLInputElement;
+               if (input.select) input.select();
+            }}
           />
         </Box>
         <Box flex={5} display="flex" flexDirection="column" alignItems="flex-end">
-          <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ?  "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Qty')}</Typography>
+          <Typography variant="caption" sx={{ color: theme.palette.mode === "dark" ? "rgba(255, 255, 255)" : "gray", fontWeight: 600, textTransform: 'none', fontSize: '0.85rem', mb: 0.5 }}>{t('Qty')}</Typography>
           <TextField
             id="bridge_quantity_input"
             variant="outlined"
@@ -216,19 +236,18 @@ export const BridgeFromCard: React.FC<BridgeFromCardProps> = ({
           />
         </Box>
       </Box>
-                  {/* BRIDGE FROM: Token Address + Copy */}
-                  <Box display="flex" alignItems="center" gap={1} mt={1}>
-                    <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
-                      {bridgeFromState?.fromTokenAddress ? `${bridgeFromState.fromTokenAddress.slice(0, 25)}...` : t('TokensAddress')}
-                    </Typography>
-                    {bridgeFromState?.fromTokenAddress && (
-                      <Tooltip title={t('Copy')}>
-                        <IconButton size="small" onClick={() => { navigator.clipboard.writeText(bridgeFromState.fromTokenAddress); }}>
-                          <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                  </Box>
-                </Box>
+      <Box display="flex" alignItems="center" gap={1} mt={1}>
+        <Typography sx={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.75rem', color: '#7680a0', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px' }}>
+          {selectedTokenRow?.tokenAddress ? `${selectedTokenRow.tokenAddress.slice(0, 25)}...` : 'Token Address'}
+        </Typography>
+        {selectedTokenRow?.tokenAddress && (
+          <Tooltip title={'Copy'}>
+            <IconButton size="small" onClick={() => { navigator.clipboard.writeText(selectedTokenRow.tokenAddress); }}>
+              <ContentCopyIcon fontSize="small" sx={{ color: '#7680a0' }} />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Box>
+    </Box>
   );
 };

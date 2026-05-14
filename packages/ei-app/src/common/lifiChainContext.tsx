@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import appAxios from "@/libs/axios/axios";
+import { appAxios } from "components";
 
 export interface LifiChain {
   id: number;

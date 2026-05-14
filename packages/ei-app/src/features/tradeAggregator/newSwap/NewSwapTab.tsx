@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { lifiChainMapToArray } from "../lifiChains";
-import { getLifiToken } from "../lifiApi";
 import { Grid, Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import EastIcon from '@mui/icons-material/East';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -12,10 +11,11 @@ import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { NewSwapFromCard } from "./NewSwapFromCard";
 import { NewSwapToCard } from "./NewSwapToCard";
 import { NewSwapRoutesPanel } from "./NewSwapRoutesPanel";
-import { iconsApi } from "@/services/iconsService";
+import { postLifiRoutes } from "../lifiApi";
+import { toRawAmount } from "../toRawAmount";
+import { useTranslation } from "react-i18next";
 
 interface NewSwapTabProps {
-  t: any;
   symbolOptionSwap: any;
   tokenIcons: any;
   handleCurrentPositionDropdownChange: any;
@@ -25,6 +25,7 @@ interface NewSwapTabProps {
   newBalance: string;
   setNewBalance: (v: string) => void;
   selectedChain: string;
+  displayChainName?: string;
   selectedTokenRow: any;
   setSelectedTokenRow: (v: any) => void;
   balanceRaw: number | undefined;
@@ -35,24 +36,18 @@ interface NewSwapTabProps {
   onOptionChangeSwapFor: (v: any) => void;
   inputSearchSwapFor: string;
   setInputSearchSwapFor: (v: string) => void;
-  handleFetchQuotes: () => void;
-  quoteLoading: boolean;
-  lastUpdated: string | null;
   setTokenIconsSwapFor: (v: any) => void;
   selectedBridgeToChainId: number | null;
   setSelectedBridgeToChainId: (v: number | null) => void;
   inputSearchBridgeToChain: string;
   setInputSearchBridgeToChain: (v: string) => void;
   onClearBridgeToTokenAddress: () => void;
-  quoteData?: any[];
-  errorMessage?: string | null;
   chains?: any[];
   bridgeFromTokenDecimals: number | null;
   isUnsupported: boolean | null;
 }
 
 export const NewSwapTab = ({
-  t,
   symbolOptionSwap,
   tokenIcons,
   handleCurrentPositionDropdownChange,
@@ -62,6 +57,7 @@ export const NewSwapTab = ({
   newBalance,
   setNewBalance,
   selectedChain,
+  displayChainName,
   selectedTokenRow,
   setSelectedTokenRow,
   balanceRaw,
@@ -72,17 +68,12 @@ export const NewSwapTab = ({
   onOptionChangeSwapFor,
   inputSearchSwapFor,
   setInputSearchSwapFor,
-  handleFetchQuotes,
-  quoteLoading,
-  lastUpdated,
   setTokenIconsSwapFor,
   selectedBridgeToChainId,
   setSelectedBridgeToChainId,
   inputSearchBridgeToChain,
   setInputSearchBridgeToChain,
   onClearBridgeToTokenAddress,
-  quoteData = [],
-  errorMessage = null,
   chains = [],
   isUnsupported = false,
 }: NewSwapTabProps) => {
@@ -93,6 +84,11 @@ export const NewSwapTab = ({
   const [swapFromTokenPriceUSD, setSwapFromTokenPriceUSD] = useState<string | null>(null);
   const [swapToTokenAddress, setSwapToTokenAddress] = useState<string | null>(null);
   const theme = useTheme();
+  const [quoteData, setQuoteData] = useState<any[]>([]);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { t } = useTranslation("NewPositionSection");
 
   useEffect(() => {
     if (!selectedTokenRow) {
@@ -106,6 +102,15 @@ export const NewSwapTab = ({
     setSwapFromTokenPriceUSD(selectedTokenRow.priceUSD ?? null);
   }, [selectedTokenRow]);
 
+  // Clear routes and error when Swap For is cleared
+  useEffect(() => {
+    if (!symbolOptionSwapFor) {
+      setQuoteData([]);
+      setErrorMessage(null);
+      setLastUpdated(null);
+    }
+  }, [symbolOptionSwapFor]);
+
   // Handler to clear all swap trade fields
   const handleClearNewSwapTrade = () => {
     if (typeof setSelectedTokenRow === 'function') setSelectedTokenRow(null);
@@ -117,6 +122,61 @@ export const NewSwapTab = ({
     if (typeof setSelectedBridgeToChainId === 'function') setSelectedBridgeToChainId(null);
     if (typeof setInputSearchBridgeToChain === 'function') setInputSearchBridgeToChain("");
     if (typeof setShowNoQuotesMessage === 'function') setShowNoQuotesMessage(false);
+  };
+
+  const handleFetchQuotesSwap = async () => {
+    setQuoteLoading(true);
+    setErrorMessage(null);
+    if (!symbolOptionSwap || !symbolOptionSwapFor || !selectedTokenRow || !newBalance || !selectedChain) {
+      setErrorMessage(t("Missing required fields"));
+      setQuoteLoading(false);
+      return;
+    }
+    const fromTokenAddress = selectedTokenRow.tokenAddress || '';
+    const toTokenAddress = swapToTokenAddress || (symbolOptionSwapFor?.address ? (Array.isArray(symbolOptionSwapFor.address) ? symbolOptionSwapFor.address[0] : symbolOptionSwapFor.address) : '');
+    let fromTokenDecimals = 18;
+    if (typeof selectedTokenRow.decimals === 'number') {
+      fromTokenDecimals = selectedTokenRow.decimals;
+    }
+    let fromAmountRaw = '0';
+    try {
+      fromAmountRaw = toRawAmount(newBalance, fromTokenDecimals);
+    } catch (e) {
+      setErrorMessage(t("Invalid amount"));
+      setQuoteLoading(false);
+      return;
+    }
+    try {
+      let fromChainId = 1;
+      if (lifiChainMap) {
+        const chainEntry = Array.from(lifiChainMap.values()).find(c => c.name.toLowerCase() === selectedTokenRow.lifiChain?.name?.toLowerCase());
+        fromChainId = chainEntry?.id || 1;
+      }
+      const toChainId = fromChainId; // For swap, both on same chain
+      const data = await postLifiRoutes({
+        fromChainId,
+        toChainId,
+        fromAmount: fromAmountRaw,
+        fromTokenAddress: String(fromTokenAddress),
+        toTokenAddress: String(toTokenAddress),
+      });
+      setQuoteData(Array.isArray(data.routes) ? data.routes : []);
+      setErrorMessage((Array.isArray(data.routes) && data.routes.length > 0) ? null : t("No swap routes found"));
+      const now = new Date();
+      const formatted = now.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      setLastUpdated(formatted);
+    } catch (e) {
+      setErrorMessage(t("Error fetching swap routes"));
+      setQuoteData([]);
+    }
+    setQuoteLoading(false);
   };
 
   return (
@@ -157,6 +217,7 @@ export const NewSwapTab = ({
               setInputSearchSwapFor={setInputSearchSwapFor}
               swapToTokenAddress={swapToTokenAddress}
               selectedChain={selectedChain}
+              displayChainName={displayChainName}
               lifiChains={lifiChains}
             />
           </Box>
@@ -183,7 +244,7 @@ export const NewSwapTab = ({
             <Button
               id="newswap_get_quotes_btn"
               variant="contained"
-              onClick={handleFetchQuotes}
+              onClick={handleFetchQuotesSwap}
               disabled={isUnsupported ||!selectedTokenRow || !symbolOptionSwapFor || !newBalance || !selectedChain || !symbolOptionSwap}
               sx={{
                 backgroundColor: "#219a83",

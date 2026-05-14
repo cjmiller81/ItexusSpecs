@@ -28,6 +28,7 @@ export const CHAIN_MAP = {
   59144: { key: "LINEA", name: "Linea"     },
   146:   { key: "SONIC", name: "Sonic"     },
   130:   { key: "UNI",   name: "Unichain"  },
+  1151111081099710: { key: "SOL", name: "Solana" },
 };
 
 export const SUPPORTED_CHAINS = [
@@ -43,4 +44,5 @@ export const SUPPORTED_CHAINS = [
   { chainId: 59144, key: "LINEA", name: "Linea"     },
   { chainId: 146,   key: "SONIC", name: "Sonic"     },
   { chainId: 130,   key: "UNI",   name: "Unichain"  },
+  { chainId: 1151111081099710, key: "SOL", name: "Solana" },
 ];

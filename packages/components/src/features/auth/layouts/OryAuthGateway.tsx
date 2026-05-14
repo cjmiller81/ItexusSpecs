@@ -37,6 +37,7 @@ type OryContextType = {
   settingsFlow?: SettingsFlow
   logOut: () => Promise<void>
   renewSession: () => Promise<void>
+  refreshSession: () => Promise<void>
   onUpdateProfile: (firstName: string, lastName: string) => Promise<void>
   createSettingsFlow: () => Promise<SettingsFlow>
   /**
@@ -221,6 +222,8 @@ export function OryAuthGateway({
           },
         })
         setCurrentSettingsFlow(data)
+        const { session } = await ory.toSession()
+        setSession(session)
       } catch (error) {
         authLogger.error("updateSettingsFlow(totp) failed", error)
         throw error
@@ -241,6 +244,8 @@ export function OryAuthGateway({
         },
       })
       setCurrentSettingsFlow(data)
+      const { session } = await ory.toSession()
+      setSession(session)
     } catch (error) {
       authLogger.error("updateSettingsFlow(totp_unlink) failed", error)
       throw error
@@ -279,6 +284,21 @@ export function OryAuthGateway({
     }
   }, [router])
 
+const refreshSession = async (): Promise<void> => {
+  try {
+    const { data } = await ory.toSession()
+    setSession(data)
+  } catch (err) {
+    console.error("refreshSession failed:", err)
+    try {
+      await renewSession()
+    } catch (e) {
+      console.error("renewSession fallback failed:", e)
+    }
+  }
+}
+
+
   useEffect(() => {
     // Don't probe the session on auth pages — those pages create/load their
     // own flows and probing can race with them.
@@ -309,6 +329,7 @@ export function OryAuthGateway({
       settingsFlow: currentSettingsFlow,
       logOut: handleLogout,
       renewSession,
+      refreshSession,
       onChangePassword,
       createSettingsFlow,
       // Deprecated alias — see note on OryContextType.
@@ -324,6 +345,7 @@ export function OryAuthGateway({
       onChangePassword,
       handleLogout,
       renewSession,
+      refreshSession,
       onUpdateProfile,
       createSettingsFlow,
       onTotpSubmit,

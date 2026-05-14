@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,8 @@ import LockIcon from "@mui/icons-material/Lock";
 import SearchIcon from "@mui/icons-material/Search";
 import { LifiChain } from "@/common/lifiChainContext";
 import { TokenSearchItem } from "@/models/Wallet/TokenSearchItem";
+import { getLifiTokens } from "./lifiApi";
+import { VirtualizedListbox } from "./VirtualizedListbox";
 
 interface AddTemporaryPositionDialogProps {
   open: boolean;
@@ -24,8 +26,6 @@ interface AddTemporaryPositionDialogProps {
   lifiChains: LifiChain[];
   lifiChainsLoading: boolean;
   lifiChainsError: boolean;
-  tokenIcons: { items: TokenSearchItem[] } | null;
-  fetchTokenIcons: (chainName: string, search: string) => void;
   onAdd: (chain: LifiChain, token: TokenSearchItem, qty: string) => void;
   addPositionError: string;
   setAddPositionError: (err: string) => void;
@@ -38,8 +38,6 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
   lifiChains,
   lifiChainsLoading,
   lifiChainsError,
-  tokenIcons,
-  fetchTokenIcons,
   onAdd,
   addPositionError,
   setAddPositionError,
@@ -50,6 +48,8 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
   const [inputSearchBridgeToChain, setInputSearchBridgeToChain] = useState("");
   const [inputSearch, setInputSearch] = useState("");
   const [newBalance, setNewBalance] = useState("");
+  const [tokenIcons, setTokenIcons] = useState<{ items: TokenSearchItem[] } | null>(null);
+  const tokensCache = useRef<{ [chainId: number]: any[] }>({});
 
   useEffect(() => {
     if (selectedChain) {
@@ -60,12 +60,44 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
   }, [selectedChain]);
 
   useEffect(() => {
-    if (!selectedChain) return;
-    const delayDebounce = setTimeout(() => {
-      fetchTokenIcons(selectedChain.name, inputSearch);
-    }, 600);
-    return () => clearTimeout(delayDebounce);
-  }, [selectedChain, inputSearch, fetchTokenIcons]);
+    if (!selectedChain) {
+      setTokenIcons(null);
+      return;
+    }
+    let chainId: number | undefined = selectedChain.id;
+    if (!chainId) return;
+    const fetchAndCacheTokens = async () => {
+      if (!tokensCache.current[chainId!]) {
+        try {
+          const tokens = await getLifiTokens(chainId!);
+          tokensCache.current[chainId!] = tokens;
+        } catch (err) {
+          tokensCache.current[chainId!] = [];
+        }
+      }
+      const tokens = tokensCache.current[chainId!] || [];
+      const search = inputSearch.trim().toLowerCase();
+      const filtered = tokens.filter(token => {
+        if (!search) return true;
+        return (
+          token.symbol?.toLowerCase().includes(search) ||
+          token.name?.toLowerCase().includes(search)
+        );
+      });
+      const mapped = filtered.map(token => ({
+        address: [token.address],
+        id: token.address,
+        lURI: token.logoURI || null,
+        mCap: token.marketCapUSD || 0,
+        mSup: null,
+        name: token.name || null,
+        sym: token.symbol,
+      }));
+      setTokenIcons({ items: mapped });
+    };
+    const timeoutId = setTimeout(fetchAndCacheTokens, 450);
+    return () => clearTimeout(timeoutId);
+  }, [selectedChain, inputSearch]);
 
   useEffect(() => {
     if (!open) {
@@ -129,14 +161,31 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
                 }}
               />
             )}
-            renderOption={(props, option) => (
-              <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                {option.logoURI && (
-                  <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
-                )}
-                <Typography variant="body1">{option.name}</Typography>
-              </Box>
-            )}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props as any;
+              return (
+                <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {option.logoURI && (
+                    <Avatar src={option.logoURI} alt={option.name} sx={{ width: 20, height: 20, mr: 1 }} />
+                  )}
+                  <Typography variant="body1">{option.name}</Typography>
+                </Box>
+              );
+            }}
+            filterOptions={(options, state) => {
+              const search = state.inputValue.toLowerCase().trim();
+              const currentLabel = selectedChain ? selectedChain.name.toLowerCase().trim() : "";
+              if (!search || search === currentLabel) {
+                return options;
+              }
+              return options.filter(o => 
+                o.name.toLowerCase().includes(search)
+              );
+            }}
+            onFocus={(e) => {
+               const input = e.target as HTMLInputElement;
+               if (input.select) input.select();
+            }}
           />
           {addPositionError && (
             <Box sx={(theme) => ({
@@ -169,7 +218,7 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
               setNewBalance("");
             }
           }}
-          isOptionEqualToValue={(option, value) => option.id === value?.id}
+          isOptionEqualToValue={(option, value) => (option.id === value?.id) || (option.address?.[0] === value?.address?.[0])}
           disableClearable={false}
           inputValue={
             symbolOptionSwapFor
@@ -190,6 +239,7 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
             }
           }}
           disabled={!selectedChain}
+          ListboxComponent={VirtualizedListbox}
           renderInput={(params) => {
             if (!selectedChain) {
               return (
@@ -242,20 +292,44 @@ export const AddTemporaryPositionDialog: React.FC<AddTemporaryPositionDialogProp
               />
             );
           }}
-          renderOption={(props, option) => (
-            <Box component="li" {...props} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar
-                src={option.lURI ?? undefined}
-                alt={option.sym}
-                sx={{ width: 24, height: 24 }}
-              />
-              <Typography variant="body1">
-                {option.name
-                  ? `${option.sym.toUpperCase()} - ${option.name}`
-                  : option.sym.toUpperCase()}
-              </Typography>
-            </Box>
-          )}
+          renderOption={(props, option) => {
+            const { key, ...optionProps } = props as any;
+            return (
+              <Box key={key} component="li" {...optionProps} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Avatar
+                  src={option.lURI ?? undefined}
+                  alt={option.sym}
+                  sx={{ width: 24, height: 24 }}
+                />
+                <Typography variant="body1">
+                  {option.name
+                    ? `${option.sym.toUpperCase()} - ${option.name}`
+                    : option.sym.toUpperCase()}
+                </Typography>
+              </Box>
+            );
+          }}
+          filterOptions={(options, state) => {
+            const search = state.inputValue.toLowerCase().trim();
+            const currentLabel = symbolOptionSwapFor 
+              ? (symbolOptionSwapFor.name 
+                  ? `${symbolOptionSwapFor.sym.toUpperCase()} - ${symbolOptionSwapFor.name}` 
+                  : symbolOptionSwapFor.sym.toUpperCase()).toLowerCase().trim()
+              : "";
+
+            if (!search || search === currentLabel) {
+              return options;
+            }
+
+            return options.filter(o => 
+              o.sym.toLowerCase().includes(search) || 
+              (o.name && o.name.toLowerCase().includes(search))
+            );
+          }}
+          onFocus={(e) => {
+             const input = e.target as HTMLInputElement;
+             if (input.select) input.select();
+          }}
         />
         <TextField
           label={t('Qty')}

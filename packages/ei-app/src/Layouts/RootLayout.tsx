@@ -1,4 +1,5 @@
 import { OryAuthGateway, useCentralizedTourMigration } from "components"
+import { LifiChainProvider } from "@/common/lifiChainContext"
 import NotificationProvider from "@/hooks/notification-hook"
 import { appPersistor } from "@/libs/redux/Store"
 import { AppThemeProvider } from "@/providers/AppThemeProvider"
@@ -29,8 +30,9 @@ const MigrationGate: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
 export default function RootLayout({ children }: IRootProps) {
   return (
-    <OryAuthGateway 
+    <OryAuthGateway
     changePasswordRoute={`${window.location.origin}/`}>
+      <LifiChainProvider>
       <StoreProvider>
         <PersistGate
           loading={null}
@@ -52,6 +54,7 @@ export default function RootLayout({ children }: IRootProps) {
           </MigrationGate>
         </PersistGate>
       </StoreProvider>
+      </LifiChainProvider>
     </OryAuthGateway>
   )
 }
