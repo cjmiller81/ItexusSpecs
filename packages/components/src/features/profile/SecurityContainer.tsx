@@ -39,7 +39,7 @@ const TotpAuthenticatorSchema = object({
 type TotpAuthenticatorModel = InferType<typeof TotpAuthenticatorSchema>
 
 export const SecurityContainer = ({ ...props }: BoxProps) => {
-  const { onChangePassword, settingsFlow, onTotpUnlink, createSettingsFow, onTotpSubmit } = useOry()
+  const { onChangePassword, settingsFlow, onTotpUnlink, createSettingsFow, onTotpSubmit, refreshSession } = useOry()
   const { t } = useTranslation("SecurityContainer")
   const dispatch = useAppDispatch()
   const [showPassword, setShowPassword] = useState(false)
@@ -203,32 +203,30 @@ export const SecurityContainer = ({ ...props }: BoxProps) => {
 
   const onSubmitCode = async (code: string) => {
     setCodeLoading(true)
-    onTotpSubmit(code)
-      .then(() => {
-        dispatch(addMessage({ message: t("ApplicationLinked") }))
-      })
-      .catch(error => {
-        const errorMessage = parseOryErrorMessage(error);
-        dispatch(addError({ message: errorMessage, autoClose: false }));
-      })
-      .finally(() => {
-        setCodeLoading(false)
-      })
+    try {
+      await onTotpSubmit(code)
+      await refreshSession()
+      dispatch(addMessage({ message: t("ApplicationLinked") }))
+    } catch (error) {
+      const errorMessage = parseOryErrorMessage(error)
+      dispatch(addError({ message: errorMessage, autoClose: false }))
+    } finally {
+      setCodeLoading(false)
+    }
   }
 
   const onTotpUnlinkHandle = async () => {
     setCodeLoading(true)
-    onTotpUnlink()
-      .then(() => {
-        dispatch(addMessage({ message: t("ApplicationUnlinked") }))
-      })
-      .catch(error => {
-        const errorMessage = parseOryErrorMessage(error);
-        dispatch(addError({ message: errorMessage, autoClose: false }));
-      })
-      .finally(() => {
-        setCodeLoading(false)
-      })
+    try {
+      await onTotpUnlink()
+      await refreshSession()
+      dispatch(addMessage({ message: t("ApplicationUnlinked") }))
+    } catch (error) {
+      const errorMessage = parseOryErrorMessage(error)
+      dispatch(addError({ message: errorMessage, autoClose: false }))
+    } finally {
+      setCodeLoading(false)
+    }
   }
 
   const renderTotpInfo = () => (

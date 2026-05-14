@@ -15,6 +15,7 @@ import {
   updateTourStatusAsync,
   fetchReactourSettingsAsync,
   useAppSelector,
+  Require2FA,
 } from "components"
 import { useLifiChainMap } from "@/common/lifiChainContext"
 import { useRouter } from "next/router"
@@ -45,11 +46,17 @@ export default function ProfilePage() {
   const dispatch = useAppDispatch()
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
   const router = useRouter()
-  const routeParams = (router.query.tab as string[]) || undefined
 
-  const [value, setValue] = useState<string>(
-    routeParams && (router.query.tab as string[]).length ? routeParams[0] : "details",
-  )
+  const [value, setValue] = useState<string>('details')
+
+  // Keep `value` synced with both catch-all `router.query.tab` and query param `?tab=`
+  useEffect(() => {
+    const rawTab = router.query.tab
+    let tab = 'details'
+    if (Array.isArray(rawTab) && rawTab.length) tab = rawTab[0]
+    else if (typeof rawTab === 'string' && rawTab.length) tab = rawTab
+    setValue(tab)
+  }, [router.query.tab])
   const { t } = useTranslation("ProfilePage")
 
   const steps: StepType[] = [
@@ -96,15 +103,9 @@ export default function ProfilePage() {
   ];
 
   useEffect(() => {
-    router.push(
-      {
-        pathname: `${value}`,
-      },
-      undefined,
-      {
-        shallow: true,
-      },
-    )
+    // Navigate to the canonical profile path for the selected tab.
+    // Use a full navigation so tab children mount reliably.
+    router.push(`/profile/${value}`, undefined, { shallow: false })
   }, [value])
 
   const handleChange = (newValue: string) => {
@@ -263,11 +264,11 @@ export default function ProfilePage() {
                 label={t("SECURITY")}
                 value="security"
               />
-              <Tab
-                label={t("WALLETS")}
-                value="wallets"
-                data-tour="profile-tab-wallets"
-              />
+                <Tab
+                  label={t("WALLETS")}
+                  value="wallets"
+                  data-tour="profile-tab-wallets"
+                />
               <Tab
                 label={t("BILLING")}
                 value="billing"
@@ -294,7 +295,9 @@ export default function ProfilePage() {
               <SecurityContainer />
             </TabPanel>
             <TabPanel value="wallets">
+              <Require2FA>
               <WalletsContainer lifiChainMap={lifiChainMap} />
+              </Require2FA>
             </TabPanel>
             <TabPanel value="billing">
               <Elements stripe={stripePromise}>
