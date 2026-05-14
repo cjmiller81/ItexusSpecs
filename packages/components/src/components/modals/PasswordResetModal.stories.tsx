@@ -7,11 +7,10 @@ import Typography from "@mui/material/Typography";
 import { PasswordResetModal, type PasswordResetModalProps } from "./PasswordResetModal";
 
 // PasswordResetModal is a Formik-validated dialog that calls Ory's
-// onChangePassword. It opens a settings flow on mount via createSettingsFow
-// (the default mock in preview.tsx returns a stub flow synchronously, so
-// the LoadingButton is enabled immediately in stories — to exercise the
-// "Initializing..." state, override createSettingsFow with a delayed
-// resolution under parameters.oryContext).
+// onChangePassword. It opens a settings flow on mount via createSettingsFlow
+// (the default mock in preview.tsx returns a stub flow, so the LoadingButton
+// is enabled immediately in stories — to exercise the "Initializing..." state,
+// override createSettingsFlow with a delayed resolution under parameters.oryContext).
 //
 // The dialog itself is a portal, so stories that render it open use
 // docs.story.inline = false to keep the autodocs page readable.

@@ -70,6 +70,8 @@ export const Login: FC<LoginProps> = ({ env }) => {
         ...(oryReturnTo ? { returnTo: oryReturnTo } : {}),
       });
 
+      setFlow(data);
+
       const qs = [`flow=${data.id}`];
       if (isAal2) qs.push("aal2=true");
       if (refresh) qs.push("refresh=true");

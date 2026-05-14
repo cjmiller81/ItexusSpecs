@@ -5,9 +5,10 @@ import { oryDefaultStacks, oryHandlers } from "../../../storybookMocks/oryHandle
 // Page-level Pages-Router component that brokers Ory's
 // `createBrowserLoginFlow` / `getLoginFlow` / `toSession` /
 // `updateLoginFlow` calls, then renders `CustomLoginForm` inside
-// `StyledAuthContainer`. After `createBrowserLoginFlow` resolves, the
-// page sets local `flow` state (same pattern as `Recovery`) so the form
-// mounts even when the iframe URL is not updated by `router.replace`.
+// `StyledAuthContainer`. After `createBrowserLoginFlow` resolves,
+// `setFlow(data)` runs (same idea as `Recovery`) so the form mounts
+// even when `router.replace` does not update mocked `router.query` in
+// Storybook; `?flow=` still hydrates via `getLoginFlow`.
 const meta = {
   title: "Auth/Pages/Login",
   component: Login,

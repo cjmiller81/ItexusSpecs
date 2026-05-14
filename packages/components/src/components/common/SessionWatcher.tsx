@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { authLogger } from "../../utils/authLogger";
 
 export interface SessionWatcherProps {
-  logOut?: () => void;
+  logOut?: () => void | Promise<void>;
 }
 
 export const SessionWatcher = ({ logOut }: SessionWatcherProps) => {
@@ -36,12 +36,9 @@ export const SessionWatcher = ({ logOut }: SessionWatcherProps) => {
       if (minutesLeft <= 0) {
         setShowWarning(false);
         try {
-          const result = effectiveLogOut();
-          if (result && typeof (result as Promise<void>).catch === "function") {
-            (result as Promise<void>).catch(err => {
-              authLogger.error("SessionWatcher: auto logOut failed", err);
-            });
-          }
+          void Promise.resolve(effectiveLogOut()).catch(err => {
+            authLogger.error("SessionWatcher: auto logOut failed", err);
+          });
         } catch (err) {
           authLogger.error("SessionWatcher: auto logOut threw", err);
         }

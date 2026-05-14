@@ -7,24 +7,24 @@ import { OryAuthGateway } from "./OryAuthGateway";
 
 /**
  * Production wrap from `ei-app` `RootLayout.tsx`: provides `OryGatewayContext`,
- * hydrates session via `ory.toSession()` when `window.location.pathname` is not
+ * hydrates session via `ory.toSession()` when `router.asPath` (Pages Router) is not
  * an auth-only route, and renders auth pages on `/ui/login`, `/ui/settings`, etc.
  *
- * Storybook iframes use a non-auth pathname (e.g. `/iframe.html`), so with MSW
- * `whoami` returning a session, the **main app `children`** branch should appear
- * after the effect resolves.
+ * With MSW `whoami` returning a session and `parameters.nextjs.router.asPath` set to
+ * a non-auth path (e.g. `/`), the **main app `children`** branch should appear after
+ * the effect resolves.
  */
 const meta = {
   title: "Auth/OryAuthGateway",
   component: OryAuthGateway,
   parameters: {
     layout: "padded",
-    // `OryAuthGateway` uses `useRouter()` from `next/navigation` (logout / renew paths).
+    // `OryAuthGateway` uses `useRouter()` from `next/router` (Pages Router).
+    // Mock it with `parameters.nextjs.router` — not `appDirectory` / `navigation`
+    // (those apply to `next/navigation` only).
     nextjs: {
-      appDirectory: true,
-      navigation: {
-        pathname: "/",
-        query: {},
+      router: {
+        asPath: "/",
       },
     },
     msw: {
@@ -33,7 +33,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Top-level Ory session boundary. Auth routes use `window.location.pathname` (not Next `usePathname`); `useRouter` from `next/navigation` is only used for redirects — stories set `parameters.nextjs.appDirectory` so the App Router mock is mounted.",
+          "Top-level Ory session boundary. Auth routes render when `next/router`'s `asPath` matches a configured auth path; otherwise, after `ory.toSession()` resolves, the main app `children` render. Stories set `parameters.nextjs.router.asPath` (Pages Router mock).",
       },
     },
   },
