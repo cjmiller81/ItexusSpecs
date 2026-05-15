@@ -15,6 +15,7 @@ export type DashboardTileProps = Omit<StackProps, 'title'> & {
     text?: string;
     onClick?: () => void;
     alwaysVisible?: boolean;
+    disabled?: boolean;
   };
 };
 
@@ -87,11 +88,12 @@ export const DashboardTile: FC<DashboardTileProps> = ({
         </Stack>
 
         <Stack direction="row" alignItems="center" gap={1}>
-          {sectionLink && (isHovered || sectionLink.alwaysVisible) && (
-            <SectionLink 
-              href={sectionLink.href} 
+          {sectionLink && (isHovered || sectionLink.alwaysVisible || sectionLink.disabled) && (
+            <SectionLink
+              href={sectionLink.href}
               text={sectionLink.text}
               onClick={sectionLink.onClick}
+              disabled={sectionLink.disabled}
             />
           )}
           {rightHeaderContent}

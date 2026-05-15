@@ -5,6 +5,7 @@ import Box from "@mui/material/Box"
 import { styled } from "@mui/material/styles"
 import { fetchSubscriptionsAsync, getBillingAsync, Header, RootState, Sidebar, StyledDrawerHeader, toggleSideBar, toggleTheme, useOry, fetchProductAsync, setProduct, createBillingAsync } from "components"
 import { useEffect, useMemo } from "react"
+import { DevPlanSwitcher } from "@/components/DevPlanSwitcher"
 import { useTranslation } from "react-i18next"
 import { useSelector } from "react-redux"
 import { useSubscription } from "components"
@@ -92,6 +93,7 @@ export default function Layout({ children }: Props) {
         <CssBaseline />
         {children}
       </Box>
+      {process.env.NODE_ENV !== 'production' && <DevPlanSwitcher />}
     </StyledRoot>
   )
 }

@@ -1,4 +1,5 @@
 import { CompareToValues } from "@/libs/redux/Slices/Shared";
+import { useSubscription } from "components";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardTile, DashboardTileProps } from "./DashboardTile";
@@ -30,6 +31,7 @@ export const WalletWorthTile: FC<Props> = ({
 }) => {
   const { t } = useTranslation("WalletWorthTile");
   const theme = useTheme();
+  const { isFreePlan } = useSubscription();
 
   const backgroundColor =
     theme.palette.mode === ThemeMode.DARK ? "transparent" : "#fff";
@@ -92,7 +94,8 @@ export const WalletWorthTile: FC<Props> = ({
       title={t("WalletsPerformance")}
       sectionLink={{
         href: "/myWallets/decentralized",
-        text: t("GoToFullPage")
+        text: t("GoToFullPage"),
+        disabled: isFreePlan,
       }}
       rightHeaderContent={
         <Box display="flex" alignItems="center" gap={2}>

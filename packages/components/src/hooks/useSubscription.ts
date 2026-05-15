@@ -1,10 +1,11 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { 
-  UserSubscription, 
+import {
+  UserSubscription,
   getPlanFromStripeSubscription,
-  DEFAULT_FREE_PLAN 
+  DEFAULT_FREE_PLAN,
+  getDevPlanOverride,
 } from '../types/subscription';
 import { RootState } from 'components';
 
@@ -25,36 +26,43 @@ export function useSubscription() {
     }
   }, [hasData, delayComplete]);
   
+  const devOverride = useMemo(() => {
+    if (process.env.NODE_ENV === 'production') return null;
+    return getDevPlanOverride();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const isLoading = useMemo(() => {
-    if (!hasData) {
-      return true;
-    }
-    
-    if (!delayComplete) {
-      return true;
-    }
-    
+    if (devOverride) return false;
+    if (!hasData) return true;
+    if (!delayComplete) return true;
     return false;
-  }, [hasData, delayComplete]);
-  
+  }, [devOverride, hasData, delayComplete]);
+
   const subscription = useMemo((): UserSubscription => {
+    if (devOverride) {
+      return {
+        plan: devOverride.plan,
+        isActive: devOverride.isActive,
+        customerId: billing.billing?.id || undefined,
+      };
+    }
+
     // Get subscription data from billing state
     const stripeSubscription = billing.subscriptions?.[0]; // Get first subscription from array
-    
+
     // Check if subscription is active
     const isActive = stripeSubscription?.status === 'active' || stripeSubscription?.status === 'trialing';
-    
+
     // Determine plan from Stripe subscription data
     const plan = getPlanFromStripeSubscription(stripeSubscription, billing.product);
-    
-    const result = {
+
+    return {
       plan,
       isActive,
-      customerId: billing.billing?.id || undefined
+      customerId: billing.billing?.id || undefined,
     };
-    
-    return result;
-  }, [billing.subscriptions, billing.billing?.id, billing.product]);
+  }, [devOverride, billing.subscriptions, billing.billing?.id, billing.product]);
 
   // Helper functions for access control
   const hasPageAccess = useCallback((pagePath: string): boolean => {

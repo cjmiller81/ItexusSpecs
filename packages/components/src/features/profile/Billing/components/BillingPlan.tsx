@@ -179,7 +179,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
                   </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                  <MuiButton onClick={() => setConfirmSwitchOpen(false)}>
+                  <MuiButton onClick={() => setConfirmSwitchOpen(false)} sx={{ color: "text.primary" }}>
                     {t('No', 'No')}
                   </MuiButton>
                   <MuiButton

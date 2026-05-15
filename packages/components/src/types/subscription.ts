@@ -56,6 +56,68 @@ export function createSubscriptionPlanFromMetadata(
   };
 }
 
+// ─── Dev-only plan override ──────────────────────────────────────────────────
+export const DEV_PLAN_STORAGE_KEY = '__DEV_PLAN__';
+
+export const DEV_PLAN_PRESETS: Record<string, { plan: SubscriptionPlan; isActive: boolean }> = {
+  free: {
+    isActive: false,
+    plan: DEFAULT_FREE_PLAN,
+  },
+  basic: {
+    isActive: true,
+    plan: {
+      id: 'basic',
+      name: 'Basic',
+      pageAccess: ['*'],
+      featureLimits: {
+        savedStrategyCount: 5,
+        tableExport: false,
+        tradeAggregatorQuoteCountDEX: 5,
+        walletConncectionCountCEX: 1,
+        walletConncectionCountDEX: 2,
+      },
+    },
+  },
+  power: {
+    isActive: true,
+    plan: {
+      id: 'power',
+      name: 'Power',
+      pageAccess: ['*'],
+      featureLimits: {
+        savedStrategyCount: 20,
+        tableExport: true,
+        tradeAggregatorQuoteCountDEX: 20,
+        walletConncectionCountCEX: 3,
+        walletConncectionCountDEX: 6,
+      },
+    },
+  },
+  pro: {
+    isActive: true,
+    plan: {
+      id: 'pro',
+      name: 'Pro',
+      pageAccess: ['*'],
+      featureLimits: {
+        savedStrategyCount: 100,
+        tableExport: true,
+        tradeAggregatorQuoteCountDEX: 100,
+        walletConncectionCountCEX: 10,
+        walletConncectionCountDEX: 12,
+      },
+    },
+  },
+};
+
+export function getDevPlanOverride(): { plan: SubscriptionPlan; isActive: boolean } | null {
+  if (typeof window === 'undefined') return null;
+  const key = localStorage.getItem(DEV_PLAN_STORAGE_KEY);
+  return key ? (DEV_PLAN_PRESETS[key] ?? null) : null;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Helper function to determine plan from Stripe subscription data
 export function getPlanFromStripeSubscription(subscription: any, productData?: any): SubscriptionPlan {
   if (!subscription || !subscription.items || !subscription.items.data || subscription.items.data.length === 0) {
