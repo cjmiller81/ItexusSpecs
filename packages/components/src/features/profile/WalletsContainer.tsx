@@ -13,6 +13,7 @@ import {
   updateWallet,
 } from "../../slices/walletsSlice";
 import { MyWalletsSection } from "../myWallets/MyWalletsSection";
+import { WalletPlanGate } from "../myWallets/WalletPlanGate"
 import { Wallet } from "../../models";
 import type { WalletPortfolioResponse } from "../../models/wallet/walletPortfolio";
 import type { LifiChain } from "../../utils/enrichTokenPositions";
@@ -70,6 +71,7 @@ export const WalletsContainer = ({ lifiChainMap, ...props }: WalletsContainerPro
 
   return (
     <Box {...props}>
+      <WalletPlanGate wallets={wallets}>
       <MyWalletsSection
         onUpdateWallet={wallet => dispatch(updateWallet(wallet))}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
@@ -83,6 +85,7 @@ export const WalletsContainer = ({ lifiChainMap, ...props }: WalletsContainerPro
         onDeleteExchange={exchange => dispatch(deleteExchange(exchange))}
         totalAmount={totalAmount}
       />
+      </WalletPlanGate>
     </Box>
   );
 };

@@ -1,8 +1,12 @@
 import { useMemo, useCallback, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
-import { UserSubscription, getPlanFromStripeSubscription, DEFAULT_FREE_PLAN } from "../types/subscription";
-import { RootState } from "components";
+import {
+  UserSubscription,
+  getPlanFromStripeSubscription,
+  DEFAULT_FREE_PLAN,
+} from '../types/subscription';
+import { RootState } from 'components';
 
 export function useSubscription() {
   const billing = useSelector((state: RootState) => state.billing);
@@ -20,16 +24,10 @@ export function useSubscription() {
       return () => clearTimeout(timer);
     }
   }, [hasData, delayComplete]);
-
+  
   const isLoading = useMemo(() => {
-    if (!hasData) {
-      return true;
-    }
-
-    if (!delayComplete) {
-      return true;
-    }
-
+    if (!hasData) return true;
+    if (!delayComplete) return true;
     return false;
   }, [hasData, delayComplete]);
 
@@ -38,18 +36,16 @@ export function useSubscription() {
     const stripeSubscription = billing.subscriptions?.[0]; // Get first subscription from array
 
     // Check if subscription is active
-    const isActive = stripeSubscription?.status === "active" || stripeSubscription?.status === "trialing";
+    const isActive = stripeSubscription?.status === 'active' || stripeSubscription?.status === 'trialing';
 
     // Determine plan from Stripe subscription data
     const plan = getPlanFromStripeSubscription(stripeSubscription, billing.product);
 
-    const result = {
+    return {
       plan,
       isActive,
       customerId: billing.billing?.id || undefined,
     };
-
-    return result;
   }, [billing.subscriptions, billing.billing?.id, billing.product]);
 
   // Helper functions for access control

@@ -23,6 +23,8 @@ import { TransactionFilters } from "./TransactionFilters";
 import { TransactionRow } from "./TransactionRow";
 import "./TransactionHistory.css";
 import { useTheme } from "@mui/system";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useSubscription } from "../../hooks/useSubscription";
 import { TransactionSyncStatus } from "./TransactionSyncStatus";
 import { TransactionSyncButton } from "./TransactionSyncButton";
 
@@ -53,9 +55,24 @@ function computeRange(days: number | null): DateRange {
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAddress, wallets }) => {
   const { t } = useTranslation("MyWalletsPage");
+  const { getWalletConnectionLimit, isFreePlan } = useSubscription();
+  const walletLimit = isFreePlan ? 0 : getWalletConnectionLimit("DEX");
   // local selection when wallets list is provided
   const [selectedWalletId, setSelectedWalletId] = useState<string>("");
   const [hasUserSelectedWallet, setHasUserSelectedWallet] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!selectedWalletId) return;
+    if (!wallets || wallets.length === 0) {
+      setSelectedWalletId("");
+      setHasUserSelectedWallet(false);
+      return;
+    }
+    if (!wallets.some(w => w.walletId === selectedWalletId)) {
+      setSelectedWalletId("");
+      setHasUserSelectedWallet(false);
+    }
+  }, [wallets, selectedWalletId]);
 
   // Determine if we're in "selection mode" (wallets provided but no explicit walletAddress)
   const isSelectionMode = !walletAddress && wallets && wallets.length > 0;
@@ -237,6 +254,16 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     );
   }
 
+  if (!wallets || wallets.length === 0) {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 8 }}>
+        <Typography variant="body2" color="text.secondary">
+          {t("NoWalletsForHistory", { defaultValue: "No wallets connected — add a wallet to view transaction history" })}
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <div className="transaction-history">
       <div className="header" style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
@@ -262,11 +289,20 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
               "& .MuiSelect-icon": { color: "white" },
             }}
           >
-            {wallets?.map(wallet => (
-              <MenuItem key={wallet.walletId} value={wallet.walletId}>
-                {wallet.walletName || wallet.address}
-              </MenuItem>
-            ))}
+            {wallets?.map((wallet, index) => {
+              const isDisabled = walletLimit > 0 && index >= walletLimit;
+              return (
+                <MenuItem
+                  key={wallet.walletId}
+                  value={wallet.walletId}
+                  disabled={isDisabled}
+                  sx={isDisabled ? { opacity: 0.5, gap: 1 } : {}}
+                >
+                  {wallet.walletName || wallet.address}
+                  {isDisabled && <LockOutlinedIcon sx={{ fontSize: "0.85rem", ml: "auto" }} />}
+                </MenuItem>
+              );
+            })}
           </Select>
 
           {resolvedAddress && (

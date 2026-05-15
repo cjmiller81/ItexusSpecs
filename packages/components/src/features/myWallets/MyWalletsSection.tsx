@@ -28,6 +28,7 @@ import { krakenApi } from "../../services/krakenService";
 import { getDexWalletsColumns } from "./DexWalletsTableColumnsDefs";
 import { ExpandableRowDex } from "./TokensRowDex";
 import { DexWalletsTable } from "./DexWalletTable";
+import { WalletLimitOverlay } from "./WalletLimitOverlay";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -297,6 +298,7 @@ export const MyWalletsSection = ({
             />
           )}
         </Box>
+        <WalletLimitOverlay wallets={wallets}>
         <DexWalletsTable
           loading={wallets === null && loading}
           disableVirtualization
@@ -345,6 +347,7 @@ export const MyWalletsSection = ({
           rowSelectionModel={selectedWalletsIds}
           checkboxSelection={true}
         />
+        </WalletLimitOverlay>
       </Box>
     </Box>
   );

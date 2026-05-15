@@ -160,7 +160,7 @@ export default function MyWalletsPage() {
   const theme = useTheme();
   const [addWalletModalOpen, setAddWalletModalOpen] = useState<boolean>(false);
   const { t } = useTranslation("MyWalletsPage");
-  const { canConnectWallet } = useSubscription();
+  const { canConnectWallet, isFreePlan, getWalletConnectionLimit, isLoading: isSubscriptionLoading } = useSubscription();
 
   const fetchHistoricalData = useCallback(() => {
     if (isDatesValid && fromDate && toDate) {
@@ -274,6 +274,26 @@ export default function MyWalletsPage() {
       dispatch(fetchWallets(null));
     }
   }, [dispatch, wallets]);
+
+  useEffect(() => {
+    if (isSubscriptionLoading || !wallets || !selectedWallets.length) return;
+
+    if (isFreePlan) {
+      dispatch(selectWallets([]));
+      return;
+    }
+
+    const limit = getWalletConnectionLimit("DEX");
+    if (limit <= 0) return;
+
+    const accessibleAddresses = new Set(wallets.slice(0, limit).map(w => w.address));
+    const validSelection = selectedWallets.filter(w => accessibleAddresses.has(w.address));
+
+    if (validSelection.length !== selectedWallets.length) {
+      dispatch(selectWallets(validSelection));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFreePlan, isSubscriptionLoading, wallets]);
 
   const onChartRefresh = () => {
     if (selectedWallets.length > 0) {

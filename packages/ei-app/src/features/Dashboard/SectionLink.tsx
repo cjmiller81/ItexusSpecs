@@ -1,19 +1,54 @@
 import React, { FC } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Link from "next/link";
 
 interface SectionLinkProps {
   href: string;
   text?: string;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-export const SectionLink: FC<SectionLinkProps> = ({ 
-  href, 
+export const SectionLink: FC<SectionLinkProps> = ({
+  href,
   text = "Go to full page",
-  onClick
+  onClick,
+  disabled,
 }) => {
+  if (disabled) {
+    return (
+      <Tooltip title="Not available on free plan" placement="top">
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.3,
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            padding: '2px 6px',
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: '4px',
+            cursor: 'not-allowed',
+            color: 'text.disabled',
+            userSelect: 'none',
+          }}
+        >
+          <LockOutlinedIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+          <Typography
+            variant="body2"
+            component="span"
+            sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}
+          >
+            {text}
+          </Typography>
+        </Box>
+      </Tooltip>
+    );
+  }
+
   const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
       e.preventDefault();
@@ -36,7 +71,7 @@ export const SectionLink: FC<SectionLinkProps> = ({
           fontSize: '0.75rem',
           fontWeight: 500,
           padding: '2px 6px',
-          border: '1px solid #219a83', 
+          border: '1px solid #219a83',
           borderRadius: '4px',
           transition: 'all 0.2s ease-in-out',
           cursor: 'pointer',
@@ -48,10 +83,10 @@ export const SectionLink: FC<SectionLinkProps> = ({
         }}
       >
         <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
-        <Typography 
-          variant="body2" 
-          component="span" 
-          sx={{ 
+        <Typography
+          variant="body2"
+          component="span"
+          sx={{
             fontSize: '0.75rem',
             lineHeight: 1.2,
           }}
