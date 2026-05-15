@@ -1,26 +1,26 @@
-import ArrowDropDown from "@mui/icons-material/ArrowDropDown"
-import ArrowDropUp from "@mui/icons-material/ArrowDropUp"
-import TrendingDown from "@mui/icons-material/TrendingDown"
-import TrendingUp from "@mui/icons-material/TrendingUp"
-import { Box, BoxProps, Typography } from "@mui/material"
-import { useTranslation } from "react-i18next"
-interface Props extends BoxProps {
-  totalWorth: number
-  growPercentage: number
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUp from "@mui/icons-material/ArrowDropUp";
+import TrendingDown from "@mui/icons-material/TrendingDown";
+import TrendingUp from "@mui/icons-material/TrendingUp";
+import { Box, BoxProps, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
+export interface TotalWalletsWorthCardProps extends BoxProps {
+  totalWorth: number;
+  growPercentage: number;
 }
 
-export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props }: Props) => {
-  const { t } = useTranslation("TotalWalletsWorthCard")
+export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props }: TotalWalletsWorthCardProps) => {
+  const { t } = useTranslation("TotalWalletsWorthCard");
 
-  const growMain = growPercentage >= 0 ? "success.main" : "error.main"
-  const growLight = growPercentage >= 0 ? "success.light" : "error.light"
+  const growMain = growPercentage >= 0 ? "success.main" : "error.main";
+  const growLight = growPercentage >= 0 ? "success.light" : "error.light";
   const totalWorthFormatted = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(totalWorth)
+  }).format(totalWorth);
   const growPercentageFormatted = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
-  }).format(growPercentage)
+  }).format(growPercentage);
 
   return (
     <Box
@@ -94,5 +94,5 @@ export const TotalWalletsWorthCard = ({ totalWorth, growPercentage, sx, ...props
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};

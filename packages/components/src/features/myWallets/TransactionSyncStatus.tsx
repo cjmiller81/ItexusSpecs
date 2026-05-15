@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { appAxios } from "../../lib/axios/customAxios";
 
-interface Props {
+export interface TransactionSyncStatusProps {
   walletAddress: string;
 }
 
-export const TransactionSyncStatus: React.FC<Props> = ({ walletAddress }) => {
+export const TransactionSyncStatus: React.FC<TransactionSyncStatusProps> = ({ walletAddress }) => {
   const [label, setLabel] = useState<string>("Loading…");
   const [anim, setAnim] = useState<boolean>(false);
 
@@ -54,7 +54,10 @@ export const TransactionSyncStatus: React.FC<Props> = ({ walletAddress }) => {
   }, [walletAddress]);
 
   return (
-    <div className={`sync-pill ${anim ? "sync-anim" : ""}`} role="status" aria-live="polite">
+    <div
+      className={`sync-pill ${anim ? "sync-anim" : ""}`}
+      role="status"
+      aria-live="polite">
       <div className="sync-icon">
         <span className="check">✓</span>
       </div>

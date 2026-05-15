@@ -2,17 +2,19 @@ import React from "react";
 import { EnrichedTokenPosition, LifiChain } from "../utils/enrichTokenPositions";
 import { useTheme } from "@mui/material/styles";
 
-interface ChainChipProps {
+export interface ChainChipProps {
   lifiChain: LifiChain | null;
   networkName: string;
 }
 
 export const ChainChip: React.FC<ChainChipProps> = ({ lifiChain, networkName }) => {
   const theme = useTheme();
-  const themeClass = theme.palette.mode === 'light' ? 'theme-light' : 'theme-dark';
+  const themeClass = theme.palette.mode === "light" ? "theme-light" : "theme-dark";
   if (lifiChain) {
     return (
-      <div className={`${themeClass} chain-chip`} style={{ border: `1px solid ${theme.palette.mode === 'light' ? "#e0e0e0" : "#4E4E57"}` }}>
+      <div
+        className={`${themeClass} chain-chip`}
+        style={{ border: `1px solid ${theme.palette.mode === "light" ? "#e0e0e0" : "#4E4E57"}` }}>
         {lifiChain.logoURI && (
           <img
             src={lifiChain.logoURI}
@@ -20,7 +22,7 @@ export const ChainChip: React.FC<ChainChipProps> = ({ lifiChain, networkName }) 
             width={16}
             height={16}
             onError={e => {
-              (e.currentTarget as HTMLImageElement).style.display = 'none';
+              (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
           />
         )}
@@ -35,4 +37,3 @@ export const ChainChip: React.FC<ChainChipProps> = ({ lifiChain, networkName }) 
     </div>
   );
 };
-

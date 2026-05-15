@@ -1,48 +1,47 @@
-import { Stack } from "@mui/material"
-import { LoginFlow, UpdateLoginFlowBody } from "@ory/client"
-import { AxiosError } from "axios"
-import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useRef, useState } from "react"
-import { Loader } from "../components/loader"
-import { HandleError } from "../utils/hooks"
-import { ory } from "../lib/sdk"
-import { StyledAuthContainer } from "./StyledAuthContainer"
-import ProtectedByOryLabel from "./protectedByOryLabel"
-import { CustomLoginForm } from "./CustomLoginForm"
-import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer"
-import { safeReturnTo } from "../utils/safeReturnTo"
-import { authLogger } from "../../../utils/authLogger"
+import { Stack } from "@mui/material";
+import { LoginFlow, UpdateLoginFlowBody } from "@ory/client";
+import { AxiosError } from "axios";
+import { useRouter } from "next/router";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { Loader } from "../components/loader";
+import { HandleError } from "../utils/hooks";
+import { ory } from "../lib/sdk";
+import { StyledAuthContainer } from "./StyledAuthContainer";
+import ProtectedByOryLabel from "./protectedByOryLabel";
+import { CustomLoginForm } from "./CustomLoginForm";
+import { useFlowIdExpirationTimer } from "../../../hooks/useFlowIdExpirationTimer";
+import { safeReturnTo } from "../utils/safeReturnTo";
+import { authLogger } from "../../../utils/authLogger";
 
-interface LoginProps {
-  env: { termsUrl: string; appTermsUrl: string }
+export interface LoginProps {
+  env: { termsUrl: string; appTermsUrl: string };
 }
 
 export const Login: FC<LoginProps> = ({ env }) => {
-  const [flow, setFlow] = useState<LoginFlow | null>(null)
-  const router = useRouter()
+  const [flow, setFlow] = useState<LoginFlow | null>(null);
+  const router = useRouter();
 
   // Harden `return_to` to protect against open-redirects via crafted query
   // strings (e.g. ?return_to=https://evil.com). `postLoginPath` is always a
   // same-origin relative path — safe to hand to Next's router.
-  const postLoginPath = safeReturnTo(router.query.return_to, "/")
-  const flowId = String(router.query.flow || "")
+  const postLoginPath = safeReturnTo(router.query.return_to, "/");
+  const flowId = String(router.query.flow || "");
 
   // Refresh means we want to refresh the session (used e.g. before password
   // change).
-  const refresh = Boolean(router.query.refresh)
+  const refresh = Boolean(router.query.refresh);
+  // AAL = Authorization Assurance Level. This implies that we want to upgrade the AAL, meaning that we want
+  // to perform two-factor authentication/verification.
+  const aal = String(router.query.aal || "");
+  const isAal2 = router.query.aal2 === "true"; // front-end trigger for MFA step-up
+  const aalParam = isAal2 ? "aal2" : aal; // if front-end asks for aal2, override the param
 
-  // AAL = Authorization Assurance Level. Implies we want to upgrade AAL,
-  // meaning two-factor authentication/verification.
-  const aal = String(router.query.aal || "")
-  const isAal2 = router.query.aal2 === "true"
-  const aalParam = isAal2 ? "aal2" : aal
-
-  const isRefreshFlowIdNeeded = useFlowIdExpirationTimer(flow)
+  const isRefreshFlowIdNeeded = useFlowIdExpirationTimer(flow);
 
   // Ref pattern breaks the handleError ↔ getFlow cycle that otherwise
   // produces stale closures: handleError needs the latest getFlow for the 410
   // refresh branch, but getFlow closes over handleError.
-  const getFlowRef = useRef<(id: string) => Promise<void | AxiosError>>()
+  const getFlowRef = useRef<(id: string) => Promise<void | AxiosError>>();
 
   const handleError = useCallback((error: AxiosError) => {
     const handle = HandleError(
@@ -50,9 +49,9 @@ export const Login: FC<LoginProps> = ({ env }) => {
       setFlow,
       "/ui/login",
       true,
-    )
-    return handle(error)
-  }, [])
+    );
+    return handle(error);
+  }, []);
 
   // Create a new login flow, preserving aal2 if requested.
   const createFlow = useCallback(async () => {
@@ -62,74 +61,74 @@ export const Login: FC<LoginProps> = ({ env }) => {
       // an absolute URL on the current origin is guaranteed to be safe
       // because we already validated `postLoginPath` via `safeReturnTo`.
       const oryReturnTo =
-        typeof window !== "undefined"
-          ? new URL(postLoginPath, window.location.origin).toString()
-          : undefined
+        typeof window !== "undefined" ? new URL(postLoginPath, window.location.origin).toString() : undefined;
 
       const { data } = await ory.createBrowserLoginFlow({
         refresh,
         // Passing `aal: ""` makes Kratos 400; only send it when truthy.
         ...(aalParam ? { aal: aalParam } : {}),
         ...(oryReturnTo ? { returnTo: oryReturnTo } : {}),
-      })
+      });
 
-      const qs = [`flow=${data.id}`]
-      if (isAal2) qs.push("aal2=true")
-      if (refresh) qs.push("refresh=true")
+      setFlow(data);
+
+      const qs = [`flow=${data.id}`];
+      if (isAal2) qs.push("aal2=true");
+      if (refresh) qs.push("refresh=true");
       if (postLoginPath && postLoginPath !== "/") {
-        qs.push(`return_to=${encodeURIComponent(postLoginPath)}`)
+        qs.push(`return_to=${encodeURIComponent(postLoginPath)}`);
       }
-      router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true })
+      router.replace(`/ui/login?${qs.join("&")}`, undefined, { shallow: true });
     } catch (err) {
-      authLogger.error("createBrowserLoginFlow failed", err)
-      handleError(err as AxiosError)
+      authLogger.error("createBrowserLoginFlow failed", err);
+      handleError(err as AxiosError);
     }
-  }, [refresh, aalParam, postLoginPath, isAal2, router, handleError])
+  }, [refresh, aalParam, postLoginPath, isAal2, router, handleError]);
 
   const getFlow = useCallback(
     (id: string) =>
       ory
         .getLoginFlow({ id })
         .then(({ data }) => {
-          setFlow(data)
+          setFlow(data);
         })
         .catch((error: AxiosError) => {
           if (error.response?.status === 410 || error.response?.status === 404) {
-            createFlow()
+            createFlow();
           } else {
-            handleError(error)
+            handleError(error);
           }
         }),
     [createFlow, handleError],
-  )
+  );
 
   // Keep the ref pointed at the latest getFlow so handleError can reach it
   // without creating a new handleError identity on every change.
   useEffect(() => {
-    getFlowRef.current = getFlow
-  }, [getFlow])
+    getFlowRef.current = getFlow;
+  }, [getFlow]);
 
   useEffect(() => {
-    if (!router.isReady) return
+    if (!router.isReady) return;
 
     ory.toSession().then(
       () => {
-        router.replace(postLoginPath)
+        router.replace(postLoginPath);
       },
       () => {
         if (flowId) {
-          getFlow(flowId).catch(() => createFlow())
+          getFlow(flowId).catch(() => createFlow());
         } else {
-          createFlow()
+          createFlow();
         }
       },
-    )
+    );
     // getFlow / createFlow are intentionally excluded — they depend on
     // postLoginPath which is already covered here. Including them would re-run
     // this effect on every render because new callback identities are
     // created whenever `router` changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady, flowId, postLoginPath])
+  }, [router.isReady, flowId, postLoginPath]);
 
   const submitFlow = (values: UpdateLoginFlowBody) => {
     return ory
@@ -139,32 +138,31 @@ export const Login: FC<LoginProps> = ({ env }) => {
       })
       .then(() => {
         // Check for postRecoveryRedirect cookie first.
-        const match = document.cookie
-          .split("; ")
-          .find(row => row.startsWith("postRecoveryRedirect="))
+        const match = document.cookie.split("; ").find(row => row.startsWith("postRecoveryRedirect="));
 
-        let redirect = match
-          ? safeReturnTo(decodeURIComponent(match.split("=")[1]), "/")
-          : "/"
+        let redirect = match ? safeReturnTo(decodeURIComponent(match.split("=")[1]), "/") : "/";
 
         // If there's no recovery redirect, use the validated return_to.
         if (!match && postLoginPath && postLoginPath !== "/") {
-          redirect = postLoginPath
+          redirect = postLoginPath;
         }
 
-        document.cookie = "postRecoveryRedirect=; path=/; max-age=0"
-        router.push(redirect)
+        document.cookie = "postRecoveryRedirect=; path=/; max-age=0";
+        router.push(redirect);
       })
       .catch(c => {
-        void handleError(c)
-      })
-  }
+        void handleError(c);
+      });
+  };
 
-  if (!flow) return <Loader />
+  if (!flow) return <Loader />;
 
   return (
     <StyledAuthContainer>
-      <Stack alignItems="center" gap={1} className="log">
+      <Stack
+        alignItems="center"
+        gap={1}
+        className="log">
         {flow && (
           <CustomLoginForm
             flow={flow}
@@ -176,7 +174,7 @@ export const Login: FC<LoginProps> = ({ env }) => {
         <ProtectedByOryLabel env={env} />
       </Stack>
     </StyledAuthContainer>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

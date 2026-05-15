@@ -3,7 +3,7 @@ import { Box, BoxProps, Button, Chip, Stack, Typography, darken, lighten, styled
 import Divider from "@mui/material/Divider";
 import { useTranslation } from "react-i18next";
 
-type PaymentCardProps = BoxProps & {
+export type PaymentCardTableRowProps = BoxProps & {
   number: string;
   isDefault: boolean;
   onSetDefault: () => void;
@@ -16,7 +16,7 @@ export const PaymentCardTableRow = ({
   onSetDefault,
   onDelete,
   ...props
-}: PaymentCardProps) => {
+}: PaymentCardTableRowProps) => {
   const { t } = useTranslation("BillingContainer");
   return (
     <Stack>

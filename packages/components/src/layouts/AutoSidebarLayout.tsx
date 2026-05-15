@@ -1,12 +1,12 @@
-import { toggleSideBar, UiState, useAppDispatch, useAppSelector } from "components";
+import { ReactNode, useEffect } from "react";
+import { toggleSideBar, useAppDispatch, useAppSelector } from "components";
 import { useTheme } from "@mui/material/styles";
-import { useEffect } from "react";
 
-interface Props {
-  children: any;
+export interface AutoSidebarLayoutProps {
+  children: ReactNode;
 }
 
-export function AutoSidebarLayout({ children }: Props) {
+export function AutoSidebarLayout({ children }: AutoSidebarLayoutProps) {
   const dispatch = useAppDispatch();
   const { sidebarOpened } = useAppSelector(state => state.ui);
   const theme = useTheme();

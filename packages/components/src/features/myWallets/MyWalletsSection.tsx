@@ -32,7 +32,7 @@ import { WalletLimitOverlay } from "./WalletLimitOverlay";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
-  exchanges: IExchange[]| null;
+  exchanges: IExchange[] | null;
   selectedWalletsIds: string[];
   loading?: boolean;
   onUpdateWallet: (wallet: Wallet) => void;
@@ -75,11 +75,16 @@ export const MyWalletsSection = ({
   const dispatch = useAppDispatch();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const router = useRouter();
-   
+
   const addWallet = async (walletAddressModel: AddressModel) => {
-    const resultAction = await dispatch(createWallet(walletAddressModel));
-    if (createWallet.rejected.match(resultAction)) {
-      setCreateErrorMessage((resultAction.payload as any)?.error)
+    const resultAction = (await dispatch(createWallet(walletAddressModel))) as {
+      meta?: { requestStatus?: string };
+      payload?: { error?: unknown };
+    };
+
+    if (resultAction.meta?.requestStatus === "rejected") {
+      const err = resultAction.payload?.error;
+      setCreateErrorMessage(err != null ? String(err) : null);
     } else {
       setCreateErrorMessage(null);
       setAddWalletModalOpen(false);
@@ -93,7 +98,7 @@ export const MyWalletsSection = ({
   const updateRowHeight = (rowId: string, height: string) => {
     setExpandedRowHeights(prev => ({
       ...prev,
-      [rowId]: height
+      [rowId]: height,
     }));
   };
   const formik = useFormik({
@@ -106,17 +111,17 @@ export const MyWalletsSection = ({
       apiKey: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
       apiSecret: activeConnection === "api" ? Yup.string().required(t("Required")) : Yup.string().optional(),
       chainName: Yup.string()
-      .required(t("ChainNameRequired"))
-      .test("unique-name", t("ExchangeNameExists"), (value) => {
-        if (!value) return true;
-        
-        return (
-          !isEditing ||
-          !exchange.some((ex) => String(ex?.name || "").toLowerCase() === String(value || "").toLowerCase())
-        );
-      }),
+        .required(t("ChainNameRequired"))
+        .test("unique-name", t("ExchangeNameExists"), value => {
+          if (!value) return true;
+
+          return (
+            !isEditing ||
+            !exchange.some(ex => String(ex?.name || "").toLowerCase() === String(value || "").toLowerCase())
+          );
+        }),
     }),
-    
+
     onSubmit: async (values, { resetForm }) => {
       try {
         const result = await krakenApi.connectToKraken({
@@ -126,7 +131,7 @@ export const MyWalletsSection = ({
           userId: null,
           accountName: values.chainName,
         });
-    
+
         if (result) {
           const newExchange = {
             exchange_id: selectedService,
@@ -134,29 +139,26 @@ export const MyWalletsSection = ({
             apiKey: values.apiKey,
             apiSecret: values.apiSecret,
           };
-    
+
           if (isEditing) {
-            setExchange((prevExchange) =>
-              prevExchange.map((ex) =>
-                ex.exchange_id === selectedService ? newExchange : ex
-              )
+            setExchange(prevExchange =>
+              prevExchange.map(ex => (ex.exchange_id === selectedService ? newExchange : ex)),
             );
           } else {
-            setExchange((prevExchange) => [...prevExchange, newExchange]);
+            setExchange(prevExchange => [...prevExchange, newExchange]);
           }
-        }        
+        }
       } catch (error) {
         console.error("Failed to connect to Kraken", error);
-        handleCancelExchange()
+        handleCancelExchange();
       } finally {
         resetForm();
         setIsEditing(false);
         setOpenKrakenDialog(false);
         setSelectedService("");
       }
-    }
-  });  
-  
+    },
+  });
 
   const handleCancelExchange = () => {
     setActiveConnection("");
@@ -171,7 +173,6 @@ export const MyWalletsSection = ({
     });
   };
 
-  //eslint-disable-next-line no-undef
   const onCellClick = async (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
     const stopPropagation = ["expand", "trash", "address", "name"];
     if (stopPropagation.includes(params.field)) {
@@ -179,18 +180,18 @@ export const MyWalletsSection = ({
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (selectedService === "Kraken") {
       setOpenKrakenDialog(true);
-    } 
-    setOpenExchangeDialog(false);
-  }, [selectedService]);  
-
-  useEffect(() =>{
-    if(exchanges !== null){
-      setExchange(exchanges)
     }
-  },[exchanges])
+    setOpenExchangeDialog(false);
+  }, [selectedService]);
+
+  useEffect(() => {
+    if (exchanges !== null) {
+      setExchange(exchanges);
+    }
+  }, [exchanges]);
 
   const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
@@ -217,7 +218,7 @@ export const MyWalletsSection = ({
     const expandedRowId = expandedRows[0];
     const expandedWallet = wallets.find(w => w.address === expandedRowId);
     if (!expandedWallet) return wallets;
-    
+
     const otherWallets = wallets.filter(w => w.address !== expandedRowId);
     return [...otherWallets, expandedWallet];
   }, [wallets, expandedRows]);
@@ -231,8 +232,8 @@ export const MyWalletsSection = ({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
-  };  
-  
+  };
+
   const handleDeleteClick = (id: GridRowId) => {
     onDeleteWallet(id as string);
   };
@@ -276,8 +277,7 @@ export const MyWalletsSection = ({
       <StyledAdaptivePageBox>
         <FeatureAccessGuard
           feature="walletConnectionDEX"
-          currentCount={wallets?.length || 0}
-        >
+          currentCount={wallets?.length || 0}>
           <StyledAddWalletButton
             variant="contained"
             onClick={() => setAddWalletModalOpen(true)}>
@@ -300,46 +300,48 @@ export const MyWalletsSection = ({
         </Box>
         <WalletLimitOverlay wallets={wallets}>
         <DexWalletsTable
-              loading={wallets === null && loading}
-              disableVirtualization
-              hideFooter
-              $hasExpandedRows={expandedRows.length > 0}
-              $minHeight={expandedRows.length > 0 ? (expandedRowHeights[expandedRows[0] as string] || "55vh") : undefined}
-              sx={{
-              ...tableScrollSx,
-              }}
-              scrollbarSize={7}
-              editMode="row"
-              rowModesModel={rowModesModel}
-              onRowModesModelChange={handleRowModesModelChange}
-              onRowEditStop={handleRowEditStop}
-              processRowUpdate={processRowUpdate}
-              slotProps={{
-              row: {
+          loading={wallets === null && loading}
+          disableVirtualization
+          hideFooter
+          $hasExpandedRows={expandedRows.length > 0}
+          $minHeight={expandedRows.length > 0 ? expandedRowHeights[expandedRows[0] as string] || "55vh" : undefined}
+          sx={{
+            ...tableScrollSx,
+          }}
+          scrollbarSize={7}
+          editMode="row"
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+          slotProps={{
+            row: {
               isExpanded: (id: GridRowId) => expandedRows.includes(id),
               onHeightUpdate: updateRowHeight,
-              },
-              }}
-              slots={{
-                row: ExpandableRowDex,
-              }}
-              onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
-              onSelectedChanged(
-              (orderedWallets || wallets || []).filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+            },
+          }}
+          slots={{
+            row: ExpandableRowDex,
+          }}
+          onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+            onSelectedChanged(
+              (orderedWallets || wallets || []).filter(wallet =>
+                rowSelectionModel.some(rowSelection => wallet.address === rowSelection),
+              ),
             );
           }}
           onCellClick={onCellClick}
           apiRef={apiRef}
           getRowId={x => x.address}
           columns={getDexWalletsColumns({
-          handleCancelClick: handleCancelClick,
-          handleSaveClick: handleSaveClick,
-          handleEditClick: handleEditClick,
-          handleDeleteClick: handleDeleteClick,
-          gridRowModesModel: rowModesModel,
-          expandedRows: expandedRows,
-          onExpandClick: handleExpandClick,
-          isXL: isXL
+            handleCancelClick: handleCancelClick,
+            handleSaveClick: handleSaveClick,
+            handleEditClick: handleEditClick,
+            handleDeleteClick: handleDeleteClick,
+            gridRowModesModel: rowModesModel,
+            expandedRows: expandedRows,
+            onExpandClick: handleExpandClick,
+            isXL: isXL,
           })}
           rows={orderedWallets || []}
           rowSelectionModel={selectedWalletsIds}

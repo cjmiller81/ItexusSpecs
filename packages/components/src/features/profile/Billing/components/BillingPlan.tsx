@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button as MuiButton } from "@mui/material";
 import { Grid, Card, Stack, Typography, Button, List, ListItem, ListItemText } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import CheckOutlined from "@ant-design/icons/CheckOutlined";
+import Check from "@mui/icons-material/Check";
 import { StyledSwitch } from "./StyledSwitch";
 import { PlanModel } from "../models/PlanModel";
 import { Product } from "../models/Product";
@@ -62,7 +62,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
     const firstWord = productName.split(" ")[0];
 
     const selectedPlan = plans.find(p => p.id === selectedPlanId);
-    
+
     const selectedPrice =
     pricingPeriod === "month"
       ? Math.floor(
@@ -75,7 +75,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
             p.product === selectedPlan?.product && p.recurring?.interval === "year"
           )?.unit_amount ?? selectedPlan?.unit_amount ?? 0
         ) / 100;
-          
+
     let buttonLabel = t("SelectThisPlan");
 
     if (selectedPlanId) {
@@ -94,10 +94,10 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
 
   return (
     <Grid item xs={12} sm={6} md={3}>
-      <Card sx={{ 
-        height: "100%", 
-        py: 3, 
-        px: 2, 
+      <Card sx={{
+        height: "100%",
+        py: 3,
+        px: 2,
         borderRadius: theme.shape.borderRadius,
         backgroundColor: theme.palette.mode === "light" ? "#f0ece5" : "transparent"
       }}>
@@ -126,7 +126,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
                   checked={pricingPeriod === "month"}
                   disabled={isToggleDisabled}
                 />
-                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}> 
+                <Typography sx={{ opacity: pricingPeriod === "month" ? 1 : 0.5 }}>
                   {t("BilledMonthly")}
                 </Typography>
               </Stack>
@@ -212,7 +212,7 @@ export const BillingPlan: FC<BillingPlanProps> = ({ plan, isSelected, onSelectPl
           <List sx={{ m: 0, p: 0, marginTop: "auto", "&> li": { px: 0, py: 0.625, "& svg": { fill: theme.palette.success.dark } } }} component="ul">
             {plansInfo.map((planItem, i) => (
               <ListItem key={i} sx={{ opacity: planItem.isEnabled ? 1 : 0.4 }} divider={i !== plans.length - 1}>
-                <CheckOutlined />
+                <Check />
                 <ListItemText sx={{ pl: 2 }} primary={ `${planItem.permissionValue}`}/>
               </ListItem>
             ))}

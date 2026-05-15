@@ -8,12 +8,17 @@ export interface OnFetchResponse {
   items: LookUpOption[];
 }
 
-interface Props extends Omit<SymbolsLookupProps, "options"> {
+export interface SymbolsLookupVirtualizedProps extends Omit<SymbolsLookupProps, "options"> {
   pageSize: number;
   onFetchPage: (pageNumber: number) => Promise<OnFetchResponse>;
 }
 
-export function SymbolsLookupVirtualized({ inputValue, pageSize, onFetchPage, ...props }: Props) {
+export function SymbolsLookupVirtualized({
+  inputValue,
+  pageSize,
+  onFetchPage,
+  ...props
+}: SymbolsLookupVirtualizedProps) {
   const [lookupRenderProps, setLookupRenderProps] = useState<ListOnItemsRenderedProps>({
     overscanStartIndex: 0,
     overscanStopIndex: 0,

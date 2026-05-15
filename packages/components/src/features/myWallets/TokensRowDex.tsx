@@ -7,14 +7,15 @@ import MovingIcon from "@mui/icons-material/Moving";
 import { Typography } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 import { useAppSelector } from "../../slices";
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { useMemo, useCallback, useState, useEffect } from "react";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { useMemo, useCallback, useEffect } from "react";
 import { filterDustTokens } from "../../helpers/filterDustTokens";
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import WalletDeFiOverview from "./DEX/WalletDeFiOverview";
 import WalletNftOverview from "./DEX/WalletNftOverview";
-import AppsIcon from '@mui/icons-material/Apps';
-import { WalletPortfolioResponse, NftHolding } from "../../models/wallet/walletPortfolio";
+import AppsIcon from "@mui/icons-material/Apps";
+import type { Wallet } from "../../models";
+import type { NftHolding, TokenHolding, WalletPortfolioResponse } from "../../models/wallet/walletPortfolio";
 import { formatCurrencyWithSymbol } from "../../utils/currencyUtils";
 import { useDustToggle } from "../../hooks/useDustToggle";
 import { WALLET_COLORS, getTokensColor } from "../../constants/colors";
@@ -23,10 +24,7 @@ const NFT_MIN_VALUE = 0.01;
 const INVALID_NFT_PATTERN = "INVALID AND WORTHLESS";
 
 interface ExpandableRowDexProps extends GridRowProps {
-  row: {
-    address: string;
-    [key: string]: any;
-  };
+  row: Wallet;
   isExpanded: (rowId: string | number) => boolean;
   rowId: string | number;
   onHeightUpdate?: (rowId: string, height: string) => void;
@@ -35,7 +33,7 @@ interface ExpandableRowDexProps extends GridRowProps {
 
 interface WalletData {
   wallet: WalletPortfolioResponse | undefined;
-  filteredTokens: any[];
+  filteredTokens: TokenHolding[];
   filteredTokensValue: number;
   totalDeFiValue: number;
   validNFTs: NftHolding[];
@@ -61,9 +59,7 @@ const useWalletData = (walletAddress: string, showDust: boolean): WalletData => 
       };
     }
 
-    const wallet = portfolioWalletData.find(
-      (w) => w.walletAddress === walletAddress
-    );
+    const wallet = portfolioWalletData.find(w => w.walletAddress === walletAddress);
 
     if (!wallet) {
       return {
@@ -78,23 +74,15 @@ const useWalletData = (walletAddress: string, showDust: boolean): WalletData => 
       };
     }
 
-    const filteredTokens = showDust 
-      ? wallet.tokenHoldings || []
-      : filterDustTokens(wallet.tokenHoldings || []);
+    const filteredTokens = showDust ? wallet.tokenHoldings || [] : filterDustTokens(wallet.tokenHoldings || []);
 
-    const filteredTokensValue = filteredTokens.reduce(
-      (sum, token) => sum + (token.balanceUSD || 0), 
-      0
-    );
+    const filteredTokensValue = filteredTokens.reduce((sum, token) => sum + (token.balanceUSD || 0), 0);
 
     const defiPositions = wallet.deFiPositions || [];
-    const totalDeFiValue = defiPositions.reduce(
-      (sum: number, pos) => sum + (pos.valueUSD || 0), 
-      0
-    );
+    const totalDeFiValue = defiPositions.reduce((sum: number, pos) => sum + (pos.valueUSD || 0), 0);
 
     const filterValidNFTs = (nfts: NftHolding[]): NftHolding[] =>
-      nfts?.filter((nft) => {
+      nfts?.filter(nft => {
         const isInvalid = nft.collectionName?.includes(INVALID_NFT_PATTERN);
         const hasMinimalValue = nft.estimatedValue > NFT_MIN_VALUE;
         return !isInvalid && hasMinimalValue;
@@ -139,20 +127,19 @@ const SectionHeader: React.FC<{
   valueWidth?: string;
   titleWidthLarge?: string;
   valueWidthLarge?: string;
-}> = ({ 
-  icon, 
-  title, 
-  value, 
-  color, 
-  onToggleDust, 
-  showDust, 
-  titleWidth = "85.9%", 
+}> = ({
+  icon,
+  title,
+  value,
+  color,
+  onToggleDust,
+  showDust,
+  titleWidth = "85.9%",
   valueWidth = "12.8%",
   titleWidthLarge,
-  valueWidthLarge
+  valueWidthLarge,
 }) => {
   const { t } = useTranslation("MyWalletsPage");
-  const theme = useTheme();
 
   return (
     <Box
@@ -160,67 +147,67 @@ const SectionHeader: React.FC<{
       alignItems="center"
       mb={1}
       mt={3}
-      sx={{ width: "100%" }}
-    >
-      <Box 
-        display="flex" 
-        alignItems="center" 
-        sx={{ 
+      sx={{ width: "100%" }}>
+      <Box
+        display="flex"
+        alignItems="center"
+        sx={{
           width: titleWidth,
           justifyContent: "flex-start",
           ...(titleWidthLarge && {
             "@media (min-width: 2000px)": {
-              width: titleWidthLarge
-            }
-          })
-        }}
-      >
-        {icon}
-        <Typography variant="h5" gutterBottom sx={{ 
-          fontWeight: 600, 
-          mb: 0, 
-          fontSize: "1.125rem",
-          color: color 
+              width: titleWidthLarge,
+            },
+          }),
         }}>
+        {icon}
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            fontWeight: 600,
+            mb: 0,
+            fontSize: "1.125rem",
+            color: color,
+          }}>
           {title}
         </Typography>
       </Box>
 
-      <Box 
-        display="flex" 
-        alignItems="center" 
-        sx={{ 
+      <Box
+        display="flex"
+        alignItems="center"
+        sx={{
           width: valueWidth,
           justifyContent: "flex-start",
           ...(valueWidthLarge && {
             "@media (min-width: 2000px)": {
-              width: valueWidthLarge
-            }
-          })
-        }}
-      >
+              width: valueWidthLarge,
+            },
+          }),
+        }}>
         {value && (
           <Typography
             variant="h6"
-            sx={{ color, fontWeight: 500 }}
-          >
+            sx={{ color, fontWeight: 500 }}>
             {value}
           </Typography>
         )}
 
         {onToggleDust && (
-          <Box 
-            display="flex" 
-            alignItems="center" 
+          <Box
+            display="flex"
+            alignItems="center"
             sx={{ cursor: "pointer", ml: 2 }}
-            onClick={onToggleDust}
-          >
+            onClick={onToggleDust}>
             {showDust ? (
               <VisibilityOffIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
             ) : (
               <RemoveRedEyeIcon sx={{ color: WALLET_COLORS.dustToggle, fontSize: 22, mr: 0.5 }} />
             )}
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              color="text.secondary">
               {showDust ? t("HideDust") : t("ShowDust")}
             </Typography>
           </Box>
@@ -230,89 +217,98 @@ const SectionHeader: React.FC<{
   );
 };
 
-export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
+export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = props => {
+  const { row, rowId, onHeightUpdate, isCollapsed, isExpanded: isRowExpanded } = props;
   const { t } = useTranslation("MyWalletsPage");
   const theme = useTheme();
   const { showDust, toggleDust } = useDustToggle();
 
-  const {
-    filteredTokens,
-    filteredTokensValue,
-    totalDeFiValue,
-    totalNftValue,
-    nftCount,
-    sectionsWithData,
-  } = useWalletData(props.row.address, showDust);
+  const { filteredTokens, filteredTokensValue, totalDeFiValue, totalNftValue, sectionsWithData } = useWalletData(
+    row.address,
+    showDust,
+  );
 
   const formattedTokensValue = useFormattedCurrency(filteredTokensValue);
   const formattedDeFiValue = useFormattedCurrency(totalDeFiValue);
   const formattedNftValue = useFormattedCurrency(totalNftValue);
 
-  const getMinHeight = () => {
-    const isProfilePage = window.location.pathname.includes('/profile');
-    const isCollapsed = props.isCollapsed ?? false;
-    
+  const getMinHeight = useCallback(() => {
+    const isProfilePage = window.location.pathname.includes("/profile");
+    const collapsed = isCollapsed ?? false;
+
     if (isProfilePage) {
       switch (sectionsWithData) {
-        case 0: return "35vh";
-        case 1: return "43vh";
-        case 2: return "70vh";
-        case 3: return "75vh";
-        default: return "65vh";
+        case 0:
+          return "35vh";
+        case 1:
+          return "43vh";
+        case 2:
+          return "70vh";
+        case 3:
+          return "75vh";
+        default:
+          return "65vh";
       }
     } else {
-      if (isCollapsed) {
+      if (collapsed) {
         switch (sectionsWithData) {
-          case 0: return "25vh";
-          case 1: return "71vh";
-          case 2: return "71vh";
-          case 3: return "71vh";
-          default: return "71vh";
+          case 0:
+            return "25vh";
+          case 1:
+            return "71vh";
+          case 2:
+            return "71vh";
+          case 3:
+            return "71vh";
+          default:
+            return "71vh";
         }
       } else {
         switch (sectionsWithData) {
-          case 0: return `25vh`;
-          case 1: return `50vh`;
-          case 2: return `90vh`;
-          case 3: return `90vh`;
-          default: return `90vh`;
+          case 0:
+            return `25vh`;
+          case 1:
+            return `50vh`;
+          case 2:
+            return `90vh`;
+          case 3:
+            return `90vh`;
+          default:
+            return `90vh`;
         }
       }
     }
-  };
+  }, [sectionsWithData, isCollapsed]);
 
+  const rowExpanded = isRowExpanded(rowId);
   useEffect(() => {
-    if (props.onHeightUpdate && props.isExpanded(props.rowId)) {
-      props.onHeightUpdate(props.row.address, getMinHeight());
+    if (onHeightUpdate && rowExpanded) {
+      onHeightUpdate(row.address, getMinHeight());
     }
-  }, [sectionsWithData, props.onHeightUpdate, props.isExpanded, props.rowId, props.row.address]);
+  }, [rowExpanded, rowId, row.address, onHeightUpdate, getMinHeight]);
 
   const tokensIcon = (
-    <MovingIcon 
-      sx={{ 
-        color: getTokensColor(theme.palette.mode === "dark"), 
-        mr: 1, 
-        fontSize: "40px" 
-      }} 
+    <MovingIcon
+      sx={{
+        color: getTokensColor(theme.palette.mode === "dark"),
+        mr: 1,
+        fontSize: "40px",
+      }}
     />
   );
 
-  const defiIcon = (
-    <LayersIcon sx={{ color: WALLET_COLORS.defi, mr: 1, fontSize: "40px" }} />
-  );
+  const defiIcon = <LayersIcon sx={{ color: WALLET_COLORS.defi, mr: 1, fontSize: "40px" }} />;
 
-  const nftIcon = (
-    <AppsIcon sx={{ color: WALLET_COLORS.nft, mr: 1, fontSize: "40px" }} />
-  );
+  const nftIcon = <AppsIcon sx={{ color: WALLET_COLORS.nft, mr: 1, fontSize: "40px" }} />;
 
-  const isExpanded = props.isExpanded(props.rowId);
+  const expanded = isRowExpanded(rowId);
 
   return (
     <Box sx={{ width: "100%" }}>
-      <GridRow 
-        {...props} 
+      <GridRow
+        {...props}
         sx={{
-          ...(isExpanded && {
+          ...(expanded && {
             position: "sticky",
             top: 52,
             zIndex: 9,
@@ -324,70 +320,76 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = (props) => {
           ...props.sx,
         }}
       />
-      {isExpanded && (
-                 <Box 
-                   px={3} 
-                   py={1} 
-                   sx={{ 
-                     width: "100%", 
-                     maxWidth: "100%", 
-                     maxHeight: getMinHeight(),
-                     overflowY: "auto",
-                     overflowX: "hidden",
-                     ...nativeBarSx,
-                   }}>
-           <Box display="flex" flexDirection="column" alignItems="flex-start" sx={{ width: "100%", maxWidth: "100%" }}>
-             <Box sx={{ width: "100%", maxWidth: "100%" }}>
-                              <SectionHeader
-                  icon={tokensIcon}
-                  title={t("WalletTokens")}
-                  value={formattedTokensValue}
-                  color={getTokensColor(theme.palette.mode === "dark")}
-                  onToggleDust={toggleDust}
-                  showDust={showDust}
-                  titleWidth="87.7%"
-                  valueWidth="11.3%"
-                  titleWidthLarge="87.4%"
-                  valueWidthLarge="11.6%"
-                />
+      {expanded && (
+        <Box
+          px={3}
+          py={1}
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            maxHeight: getMinHeight(),
+            overflowY: "auto",
+            overflowX: "hidden",
+            ...nativeBarSx,
+          }}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="flex-start"
+            sx={{ width: "100%", maxWidth: "100%" }}>
+            <Box sx={{ width: "100%", maxWidth: "100%" }}>
+              <SectionHeader
+                icon={tokensIcon}
+                title={t("WalletTokens")}
+                value={formattedTokensValue}
+                color={getTokensColor(theme.palette.mode === "dark")}
+                onToggleDust={toggleDust}
+                showDust={showDust}
+                titleWidth="87.7%"
+                valueWidth="11.3%"
+                titleWidthLarge="87.4%"
+                valueWidthLarge="11.6%"
+              />
 
-              <Box sx={{ width: "100%", maxWidth: "100%" }}> 
-                <WalletTokensOverview 
-                  walletAddress={props.row.address}
+              <Box sx={{ width: "100%", maxWidth: "100%" }}>
+                <WalletTokensOverview
+                  walletAddress={row.address}
                   tokens={filteredTokens}
                 />
               </Box>
             </Box>
           </Box>
-          
+
+          <SectionHeader
+            icon={defiIcon}
+            title={t("DeFiPositions")}
+            value={formattedDeFiValue}
+            color={WALLET_COLORS.defi}
+            titleWidth="87.8%"
+            valueWidth="11.2%"
+            titleWidthLarge="87.4%"
+            valueWidthLarge="11.6%"
+          />
+
+          <Box sx={{ width: "100%", maxWidth: "100%" }}>
+            <WalletDeFiOverview walletAddress={row.address} />
+          </Box>
+
+          <Box
+            mt={4}
+            sx={{ width: "100%", maxWidth: "100%" }}>
             <SectionHeader
-              icon={defiIcon}
-              title={t("DeFiPositions")}
-              value={formattedDeFiValue}
-              color={WALLET_COLORS.defi}
+              icon={nftIcon}
+              title={t("NFTHoldings")}
+              value={formattedNftValue}
+              color={WALLET_COLORS.nft}
               titleWidth="87.8%"
               valueWidth="11.2%"
               titleWidthLarge="87.4%"
               valueWidthLarge="11.6%"
             />
-
-          <Box sx={{ width: "100%", maxWidth: "100%" }}>
-            <WalletDeFiOverview walletAddress={props.row.address} />
-          </Box>
-
-          <Box mt={4} sx={{ width: "100%", maxWidth: "100%" }}>
-             <SectionHeader
-               icon={nftIcon}
-               title={t("NFTHoldings")}
-               value={formattedNftValue}
-               color={WALLET_COLORS.nft}
-               titleWidth="87.8%"
-               valueWidth="11.2%"
-               titleWidthLarge="87.4%"
-               valueWidthLarge="11.6%"
-             />
-            <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box"  }}>
-              <WalletNftOverview walletAddress={props.row.address} />
+            <Box sx={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
+              <WalletNftOverview walletAddress={row.address} />
             </Box>
           </Box>
         </Box>

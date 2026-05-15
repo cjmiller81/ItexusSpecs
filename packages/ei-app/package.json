@@ -18,17 +18,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@reactour/tour": "^3.7.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.2.4"
+    "@reactour/tour": "^3.7.0"
   },
   "msw": {
     "workerDirectory": [
       "public"
     ]
   },
-  "packageManager": "yarn@4.2.1",
-  "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.3"
-  }
+  "packageManager": "yarn@4.2.1"
 }

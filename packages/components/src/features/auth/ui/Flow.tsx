@@ -10,13 +10,13 @@ import {
   UpdateSettingsFlowBody,
   UpdateVerificationFlowBody,
   VerificationFlow,
-} from "@ory/client"
-import { getNodeId, isUiNodeInputAttributes } from "@ory/integrations/ui"
-import { Component, FormEvent, MouseEvent } from "react"
+} from "@ory/client";
+import { getNodeId, isUiNodeInputAttributes } from "@ory/integrations/ui";
+import { Component, FormEvent, MouseEvent } from "react";
 
-import { Messages } from "./Messages"
-import { Node } from "./Node"
-import { FormDispatcher } from "./helpers"
+import { Messages } from "./Messages";
+import { Node } from "./Node";
+import { FormDispatcher } from "./helpers";
 
 export type Values = Partial<
   | UpdateLoginFlowBody
@@ -24,53 +24,53 @@ export type Values = Partial<
   | UpdateRecoveryFlowBody
   | UpdateSettingsFlowBody
   | UpdateVerificationFlowBody
->
+>;
 
-export type Methods = "oidc" | "password" | "profile" | "totp" | "webauthn" | "passkey" | "link" | "lookup_secret"
+export type Methods = "oidc" | "password" | "profile" | "totp" | "webauthn" | "passkey" | "link" | "lookup_secret";
 
-export type Props<T> = {
+export type FlowProps<T> = {
   // The flow
-  flow?: LoginFlow | RegistrationFlow | SettingsFlow | VerificationFlow | RecoveryFlow
+  flow?: LoginFlow | RegistrationFlow | SettingsFlow | VerificationFlow | RecoveryFlow;
   // Only show certain nodes. We will always render the default nodes for CSRF tokens.
-  only?: Methods
+  only?: Methods;
   // Is triggered on submission
-  onSubmit: (values: T) => void
+  onSubmit: (values: T) => void;
   // Do not show the global messages. Useful when rendering them elsewhere.
-  hideGlobalMessages?: boolean
-}
+  hideGlobalMessages?: boolean;
+};
 
 function emptyState<T>() {
-  return {} as T
+  return {} as T;
 }
 
 type State<T> = {
-  values: T
-  isLoading: boolean
-}
+  values: T;
+  isLoading: boolean;
+};
 
-export class Flow<T extends Values> extends Component<Props<T>, State<T>> {
-  constructor(props: Props<T>) {
-    super(props)
+export class Flow<T extends Values> extends Component<FlowProps<T>, State<T>> {
+  constructor(props: FlowProps<T>) {
+    super(props);
     this.state = {
       values: emptyState(),
       isLoading: false,
-    }
+    };
   }
 
   componentDidMount() {
-    this.initializeValues(this.filterNodes())
+    this.initializeValues(this.filterNodes());
   }
 
-  componentDidUpdate(prevProps: Props<T>) {
+  componentDidUpdate(prevProps: FlowProps<T>) {
     if (prevProps.flow !== this.props.flow) {
       // Flow has changed, reload the values!
-      this.initializeValues(this.filterNodes())
+      this.initializeValues(this.filterNodes());
     }
   }
 
   initializeValues = (nodes: Array<UiNode> = []) => {
     // Compute the values
-    const values = emptyState<T>()
+    const values = emptyState<T>();
     nodes.forEach(node => {
       // This only makes sense for text nodes
       if (isUiNodeInputAttributes(node.attributes)) {
@@ -78,91 +78,96 @@ export class Flow<T extends Values> extends Component<Props<T>, State<T>> {
           // In order to mimic real HTML forms, we need to skip setting the value
           // for buttons as the button value will (in normal HTML forms) only trigger
           // if the user clicks it.
-          return
+          return;
         }
-        values[node.attributes.name as keyof Values] = node.attributes.value
+        values[node.attributes.name as keyof Values] = node.attributes.value;
       }
-    })
+    });
 
     // Set all the values!
-    this.setState(state => ({ ...state, values }))
-  }
+    this.setState(state => ({ ...state, values }));
+  };
 
   filterNodes = (): Array<UiNode> => {
-    const { flow, only } = this.props
+    const { flow, only } = this.props;
     if (!flow) {
-      return []
+      return [];
     }
     return flow.ui.nodes.filter(({ group }) => {
       if (!only) {
-        return true
+        return true;
       }
-      return group === "default" || group === only
-    })
-  }
+      return group === "default" || group === only;
+    });
+  };
 
   // Handles form submission
   handleSubmit = (event: FormEvent<HTMLFormElement> | MouseEvent<Element, globalThis.MouseEvent>) => {
     // Prevent all native handlers
-    event.stopPropagation()
-    event.preventDefault()
+    event.stopPropagation();
+    event.preventDefault();
 
     // Prevent double submission!
     if (this.state.isLoading) {
-      return Promise.resolve()
+      return Promise.resolve();
     }
 
-    const form = event.currentTarget
+    const form = event.currentTarget;
 
-    let body: T | undefined
+    let body: T | undefined;
 
     if (form && form instanceof HTMLFormElement) {
-      const formData = new FormData(form)
+      const formData = new FormData(form);
 
       // map the entire form data to JSON for the request body
-      body = Object.fromEntries(formData) as T
+      body = Object.fromEntries(formData) as T;
 
-      const hasSubmitter = (evt: any): evt is { submitter: HTMLInputElement } => "submitter" in evt
+      const isSubmitEventWithSubmitter = (
+        evt: unknown,
+      ): evt is SubmitEvent & { submitter: HTMLInputElement | HTMLButtonElement } =>
+        typeof SubmitEvent !== "undefined" &&
+        evt instanceof SubmitEvent &&
+        (evt.submitter instanceof HTMLInputElement || evt.submitter instanceof HTMLButtonElement);
 
       // We need the method specified from the name and value of the submit button.
       // when multiple submit buttons are present, the clicked one's value is used.
-      if (hasSubmitter(event.nativeEvent)) {
-        const method = event.nativeEvent.submitter
+      if (isSubmitEventWithSubmitter(event.nativeEvent)) {
+        const submitter = event.nativeEvent.submitter;
         body = {
           ...body,
-          ...{ [method.name]: method.value },
-        }
+          ...{ [submitter.name]: submitter.value },
+        };
       }
     }
 
     this.setState(state => ({
       ...state,
       isLoading: true,
-    }))
+    }));
 
-    const result = this.props.onSubmit({ ...body, ...this.state.values })
+    const result = this.props.onSubmit({ ...body, ...this.state.values });
 
     this.setState(state => ({
       ...state,
       isLoading: false,
-    }))
+    }));
 
     return result;
-  }
+  };
 
   render() {
-    const { hideGlobalMessages, flow } = this.props
-    const { values, isLoading } = this.state
+    const { hideGlobalMessages, flow } = this.props;
+    const { values, isLoading } = this.state;
 
     // Filter the nodes - only show the ones we want
-    const nodes = this.filterNodes()
+    const nodes = this.filterNodes();
 
     if (!flow) {
       // No flow was set yet? It's probably still loading...
       //
       // Nodes have only one element? It is probably just the CSRF Token
       // and the filter did not match any elements!
-      return null
+      return null;
     }
 
     return (
@@ -172,7 +177,7 @@ export class Flow<T extends Values> extends Component<Props<T>, State<T>> {
         onSubmit={this.handleSubmit}>
         {!hideGlobalMessages ? <Messages messages={flow.ui.messages} /> : null}
         {nodes.map((node, k) => {
-          const id = getNodeId(node) as keyof Values
+          const id = getNodeId(node) as keyof Values;
           return (
             <Node
               key={`${id}-${k}`}
@@ -191,13 +196,13 @@ export class Flow<T extends Values> extends Component<Props<T>, State<T>> {
                       },
                     }),
                     resolve,
-                  )
+                  );
                 })
               }
             />
-          )
+          );
         })}
       </form>
-    )
+    );
   }
 }

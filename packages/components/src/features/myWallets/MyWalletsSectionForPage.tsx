@@ -2,7 +2,7 @@ import { Box, BoxProps, Card, CircularProgress, SelectChangeEvent, Typography, B
 import { styled, useMediaQuery, useTheme } from "@mui/system";
 import { TabSelector } from "../../components/common/TabSelector";
 import { tabIcons } from "../../components/common/tabIcons";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import {
   GridCellParams,
   GridEventListener,
@@ -64,7 +64,7 @@ export const MyWalletsSectionForPage = ({
 }: Props) => {
   const { t } = useTranslation("MyWalletsSection");
   const apiRef = useGridApiRef();
-  
+
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [expandedRows, setExpandedRows] = useState<GridRowId[]>([]);
   const [expandedRowHeights, setExpandedRowHeights] = useState<Record<string, string>>({});
@@ -77,17 +77,22 @@ export const MyWalletsSectionForPage = ({
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
-  const { portfolioWalletData } = useAppSelector( state => state.wallets);
+  const { portfolioWalletData } = useAppSelector(state => state.wallets);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"positions" | "history">("positions");
 
   const addWallet = async (walletAddressModel: AddressModel) => {
-    const resultAction = await dispatch(createWallet(walletAddressModel));
-    if (createWallet.rejected.match(resultAction)) {
-      setCreateErrorMessage((resultAction.payload as any)?.error)
+    const resultAction = (await dispatch(createWallet(walletAddressModel))) as {
+      meta?: { requestStatus?: string };
+      payload?: { error?: unknown };
+    };
+
+    if (resultAction.meta?.requestStatus === "rejected") {
+      const err = resultAction.payload?.error;
+      setCreateErrorMessage(err != null ? String(err) : null);
     } else {
       setCreateErrorMessage(null);
-      setAddWalletModalOpen(false)
+      setAddWalletModalOpen(false);
     }
   };
 
@@ -98,7 +103,7 @@ export const MyWalletsSectionForPage = ({
   const updateRowHeight = (rowId: string, height: string) => {
     setExpandedRowHeights(prev => ({
       ...prev,
-      [rowId]: height
+      [rowId]: height,
     }));
   };
   const formik = useFormik({
@@ -125,19 +130,22 @@ export const MyWalletsSectionForPage = ({
       resetForm();
       setOpenKrakenDialog(false);
       setOpenCoinbaseDialog(false);
-      const newExchanges: IExchange = { exchange_id: selectedService, name: selectedService, apiKey:values.apiKey, apiSecret: values.apiSecret };
+      const newExchanges: IExchange = {
+        exchange_id: selectedService,
+        name: selectedService,
+        apiKey: values.apiKey,
+        apiSecret: values.apiSecret,
+      };
       setExchange([...exchange, newExchanges]);
     },
   });
 
-  //eslint-disable-next-line no-undef
   const onCellClick = async (params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
     const stopPropagation = ["expand", "trash", "address", "name"];
     if (stopPropagation.includes(params.field)) {
       event.stopPropagation();
     }
   };
-
 
   useEffect(() => {
     if (selectedService === "Kraken") {
@@ -173,7 +181,7 @@ export const MyWalletsSectionForPage = ({
     const expandedRowId = expandedRows[0];
     const expandedWallet = wallets.find(w => w.address === expandedRowId);
     if (!expandedWallet) return wallets;
-    
+
     const otherWallets = wallets.filter(w => w.address !== expandedRowId);
     return [...otherWallets, expandedWallet];
   }, [wallets, expandedRows]);
@@ -256,59 +264,64 @@ export const MyWalletsSectionForPage = ({
         }}>
         <TabSelector
           options={[
-            { label: t("Positions", { ns: "MyWalletsPage", defaultValue: "Positions" }), value: "positions", icon: tabIcons.positions },
-            { label: t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" }), value: "history", icon: tabIcons.history },
+            {
+              label: t("Positions", { ns: "MyWalletsPage", defaultValue: "Positions" }),
+              value: "positions",
+              icon: tabIcons.positions,
+            },
+            {
+              label: t("TransactionHistory", { ns: "MyWalletsPage", defaultValue: "Transaction History" }),
+              value: "history",
+              icon: tabIcons.history,
+            },
           ]}
           value={activeTab}
           onChange={setActiveTab as (v: string) => void}
         />
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 0.5 }}>
           {isExpandedView && (
             <Typography
               variant="caption"
               sx={{
-                fontSize: '0.7rem',
+                fontSize: "0.7rem",
                 color: theme.palette.text.secondary,
-                fontStyle: 'italic',
-              }}
-            >
-              Click or press "Esc" to Collapse View
+                fontStyle: "italic",
+              }}>
+              Click or press &quot;Esc&quot; to Collapse View
             </Typography>
           )}
           <Box
             component="button"
             onClick={() => setIsExpanded(!isExpanded)}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: 'rgba(25, 118, 210, 0.2)',
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "rgba(25, 118, 210, 0.2)",
               gap: 0.3,
-              textDecoration: 'none',
-              color: '#219a83',
-              fontSize: '0.75rem',
+              textDecoration: "none",
+              color: "#219a83",
+              fontSize: "0.75rem",
               fontWeight: 500,
-              padding: '2px 6px',
-              border: '1px solid #219a83',
-              borderRadius: '4px',
-              transition: 'all 0.2s ease-in-out',
-              cursor: 'pointer',
-              background: 'none',
-              fontFamily: 'inherit',
-              '&:hover': {
-                backgroundColor: '#219a83',
+              padding: "2px 6px",
+              border: "1px solid #219a83",
+              borderRadius: "4px",
+              transition: "all 0.2s ease-in-out",
+              cursor: "pointer",
+              background: "none",
+              fontFamily: "inherit",
+              "&:hover": {
+                backgroundColor: "#219a83",
                 color: "white",
               },
-            }}
-          >
-            <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+            }}>
+            <OpenInNewIcon sx={{ fontSize: "0.85rem", flexShrink: 0 }} />
             <Typography
               variant="body2"
               component="span"
               sx={{
-                fontSize: '0.75rem',
+                fontSize: "0.75rem",
                 lineHeight: 1.2,
-              }}
-            >
+              }}>
               {isExpanded
                 ? t("CollapseView", { ns: "MyWalletsPage", defaultValue: "Collapse View" })
                 : t("ExpandView", { ns: "MyWalletsPage", defaultValue: "Expand View" })}

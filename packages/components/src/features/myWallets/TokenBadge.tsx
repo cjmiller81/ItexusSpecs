@@ -1,45 +1,45 @@
-import { TokenTransfer } from '../../types/transactions';
-import { formatNumber, getTokenColor } from '../../utils/formatters';
+import { TokenTransfer } from "../../types/transactions";
+import { formatNumber, getTokenColor } from "../../utils/formatters";
 
-interface TokenBadgeProps {
+export interface TokenBadgeProps {
   transfer: TokenTransfer;
 }
 
 export function TokenBadge({ transfer }: TokenBadgeProps) {
-  const sign = transfer.direction === 'in' ? '+' : '-';
-  const colorClass = transfer.direction === 'in' ? 'in' : 'out';
+  const sign = transfer.direction === "in" ? "+" : "-";
+  const colorClass = transfer.direction === "in" ? "in" : "out";
 
   return (
     <div className={`token-badge ${colorClass}`}>
       {/* Icon with fallback */}
       {transfer.logoUrl ? (
-        <img 
-          src={transfer.logoUrl} 
+        <img
+          src={transfer.logoUrl}
           alt={transfer.symbol}
           className="token-icon"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-            (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style');
+          onError={e => {
+            (e.target as HTMLImageElement).style.display = "none";
+            (e.target as HTMLImageElement).nextElementSibling?.removeAttribute("style");
           }}
         />
       ) : null}
-      <span 
+      <span
         className="token-icon-fallback"
-        style={{ 
-          display: transfer.logoUrl ? 'none' : 'flex',
-          background: getTokenColor(transfer.symbol)
-        }}
-      >
+        style={{
+          display: transfer.logoUrl ? "none" : "flex",
+          background: getTokenColor(transfer.symbol),
+        }}>
         {transfer.symbol.slice(0, 2).toUpperCase()}
       </span>
 
       {/* Amount */}
-      <span>{sign}{formatNumber(transfer.amount)} {transfer.symbol}</span>
+      <span>
+        {sign}
+        {formatNumber(transfer.amount)} {transfer.symbol}
+      </span>
 
       {/* USD if available */}
-      {transfer.usdValue != null && (
-        <span className="token-usd">${formatNumber(transfer.usdValue)}</span>
-      )}
+      {transfer.usdValue != null && <span className="token-usd">${formatNumber(transfer.usdValue)}</span>}
     </div>
   );
 }
