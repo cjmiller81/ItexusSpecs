@@ -4,14 +4,11 @@ import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardTile, DashboardTileProps } from "./DashboardTile";
 import { useTheme, Box, CircularProgress } from "@mui/material";
-import { TabSelector } from '../../../../components/src/components/common/TabSelector';
+import { TabSelector } from "../../../../components/src/components/common/TabSelector";
 import { AppChartHome } from "@/components/Charts/AppChartHome";
 import { ApexOptions } from "apexcharts";
 
-type Props = Omit<
-  DashboardTileProps,
-  "children" | "title" | "rightHeaderContent"
-> & {
+type Props = Omit<DashboardTileProps, "children" | "title" | "rightHeaderContent"> & {
   chartDataGrowth: CompareToValues | null;
   chartDataValue: CompareToValues | null;
   chartLoading?: boolean;
@@ -22,23 +19,14 @@ enum ThemeMode {
   DARK = "dark",
 }
 
-export const WalletWorthTile: FC<Props> = ({
-  icon,
-  chartDataGrowth,
-  chartDataValue,
-  chartLoading,
-  ...props
-}) => {
+export const WalletWorthTile: FC<Props> = ({ icon, chartDataGrowth, chartDataValue, chartLoading, ...props }) => {
   const { t } = useTranslation("WalletWorthTile");
   const theme = useTheme();
-  const { isFreePlan } = useSubscription();
+  const { hasPageAccess } = useSubscription();
 
-  const backgroundColor =
-    theme.palette.mode === ThemeMode.DARK ? "transparent" : "#fff";
+  const backgroundColor = theme.palette.mode === ThemeMode.DARK ? "transparent" : "#fff";
 
-  const [selectedSection, setSelectedSection] = useState<"growth" | "value">(
-    "growth"
-  );
+  const [selectedSection, setSelectedSection] = useState<"growth" | "value">("growth");
 
   const series =
     selectedSection === "growth"
@@ -46,8 +34,8 @@ export const WalletWorthTile: FC<Props> = ({
         ? [...chartDataGrowth]
         : []
       : chartDataValue
-      ? [...chartDataValue]
-      : [];
+        ? [...chartDataValue]
+        : [];
 
   const chartOptions: ApexOptions = useMemo(() => {
     const growthFormatter = (value?: number) => {
@@ -66,8 +54,7 @@ export const WalletWorthTile: FC<Props> = ({
     return {
       yaxis: {
         labels: {
-          formatter:
-            selectedSection === "growth" ? growthFormatter : valueFormatter,
+          formatter: selectedSection === "growth" ? growthFormatter : valueFormatter,
         },
       },
       xaxis: {
@@ -81,8 +68,7 @@ export const WalletWorthTile: FC<Props> = ({
       },
       tooltip: {
         y: {
-          formatter:
-            selectedSection === "growth" ? growthFormatter : valueFormatter,
+          formatter: selectedSection === "growth" ? growthFormatter : valueFormatter,
         },
       },
     };
@@ -95,10 +81,13 @@ export const WalletWorthTile: FC<Props> = ({
       sectionLink={{
         href: "/myWallets/decentralized",
         text: t("GoToFullPage"),
-        disabled: isFreePlan,
+        disabled: !hasPageAccess("/myWallets/decentralized"),
       }}
       rightHeaderContent={
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box
+          display="flex"
+          alignItems="center"
+          gap={2}>
           <TabSelector
             options={[
               { label: t("Growth"), value: "growth" },
@@ -110,9 +99,8 @@ export const WalletWorthTile: FC<Props> = ({
           />
         </Box>
       }
-      {...props}
-    >
-      <Box sx={{ position: 'relative' }}>
+      {...props}>
+      <Box sx={{ position: "relative" }}>
         <AppChartHome
           sx={{ backgroundColor }}
           series={[
@@ -128,16 +116,18 @@ export const WalletWorthTile: FC<Props> = ({
         {chartLoading && (
           <Box
             sx={{
-              position: 'absolute',
+              position: "absolute",
               inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(0,0,0,0.15)',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "rgba(0,0,0,0.15)",
               borderRadius: 1,
-            }}
-          >
-            <CircularProgress sx={{ color: 'success.main' }} size={48} />
+            }}>
+            <CircularProgress
+              sx={{ color: "success.main" }}
+              size={48}
+            />
           </Box>
         )}
       </Box>
