@@ -5,7 +5,6 @@ import {
   UserSubscription,
   getPlanFromStripeSubscription,
   DEFAULT_FREE_PLAN,
-  getDevPlanOverride,
 } from '../types/subscription';
 import { RootState } from 'components';
 
@@ -26,28 +25,13 @@ export function useSubscription() {
     }
   }, [hasData, delayComplete]);
   
-  const devOverride = useMemo(() => {
-    if (process.env.NODE_ENV === 'production') return null;
-    return getDevPlanOverride();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const isLoading = useMemo(() => {
-    if (devOverride) return false;
     if (!hasData) return true;
     if (!delayComplete) return true;
     return false;
-  }, [devOverride, hasData, delayComplete]);
+  }, [hasData, delayComplete]);
 
   const subscription = useMemo((): UserSubscription => {
-    if (devOverride) {
-      return {
-        plan: devOverride.plan,
-        isActive: devOverride.isActive,
-        customerId: billing.billing?.id || undefined,
-      };
-    }
-
     // Get subscription data from billing state
     const stripeSubscription = billing.subscriptions?.[0]; // Get first subscription from array
 
@@ -62,7 +46,7 @@ export function useSubscription() {
       isActive,
       customerId: billing.billing?.id || undefined,
     };
-  }, [devOverride, billing.subscriptions, billing.billing?.id, billing.product]);
+  }, [billing.subscriptions, billing.billing?.id, billing.product]);
 
   // Helper functions for access control
   const hasPageAccess = useCallback(
