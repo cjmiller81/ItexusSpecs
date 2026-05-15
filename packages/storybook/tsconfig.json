@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "noEmit": true,
+    "emitDeclarationOnly": false,
+    "declaration": false,
+    "declarationDir": null,
+    "incremental": true
+  },
+  "include": [".storybook/**/*.ts", ".storybook/**/*.tsx", "vitest.config.ts"]
+}

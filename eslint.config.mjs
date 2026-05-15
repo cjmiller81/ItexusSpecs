@@ -57,7 +57,7 @@ export default tseslint.config({
     "no-undef": "off",
   },
 }, {
-  files: ["packages/components/**/*.{ts,tsx,js,jsx}"],
+  files: ["packages/components/**/*.{ts,tsx,js,jsx}", "packages/storybook/**/*.{ts,tsx,js,jsx}"],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
   },
