@@ -240,7 +240,7 @@ export const MyWalletsSectionForPage = ({
   const isXL = useMediaQuery("(min-width:2000px)");
 
   const renderCardContent = (isExpandedView: boolean = false) => (
-    <WalletPlanGate wallets={wallets}>
+    <WalletPlanGate>
     <Card
       elevation={0}
       sx={{

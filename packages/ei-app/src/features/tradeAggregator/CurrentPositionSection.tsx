@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRef, useMemo } from "react";
+import { useRouter } from "next/router";
 import { useLifiChainMap, LifiChain } from "@/common/lifiChainContext";
 import { lifiChainMapToArray } from "./lifiChains";
 import {
@@ -17,7 +18,7 @@ import { AddTemporaryPositionDialog } from "./AddTemporaryPositionDialog";
 import { keyframes } from "@mui/system";
 import { fetchWalletsPortfolio, PaginatedList } from "components";
 import { useTranslation } from "react-i18next";
-import { GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
+import { GridOverlay, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import { fetchWallets } from "components";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
 import { WalletBalance } from "@/models/Wallet/WalletBalance";
@@ -34,6 +35,7 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { useSubscription } from "components";
 
 const pulseGlow = keyframes`
@@ -116,6 +118,7 @@ export const CurrentPositionSection: React.FC<CurrentPositionSectionProps> = ({
     };
   }, [defaultHeight]);
   const theme = useTheme();
+  const router = useRouter();
   const { getWalletConnectionLimit, isFreePlan } = useSubscription();
   const walletLimit = isFreePlan ? 0 : getWalletConnectionLimit("DEX");
   const { t } = useTranslation(["IndexModelingSection", "Common"]);
@@ -215,42 +218,59 @@ export const CurrentPositionSection: React.FC<CurrentPositionSectionProps> = ({
     }
   }, [portfolioWalletData]);
 
-  const NoRowsOverlayComponent = () => {
-    // Show the "Select Wallet" overlay until a wallet is selected
-    if (wallets && wallets.length > 0 && !selectedWallet) {
+  const NoRowsOverlayComponent = useMemo(() => function NoRowsOverlay() {
+    if (walletLimit === 0) {
+      return (
+        <GridOverlay>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 30px", textAlign: "center" }}>
+            <LockOutlinedIcon sx={{ fontSize: 50, color: "#219a83", mb: 2 }} />
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, fontSize: "18px" }}>
+              {t("WalletAccessRequiresPaidPlan", { defaultValue: "Wallet access requires a paid plan" })}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 3, color: "gray", fontSize: "13px", maxWidth: "400px" }}>
+              {t("UpgradeToViewWalletPositions", { defaultValue: "Upgrade your plan to connect wallets and view your positions here." })}
+            </Typography>
+            <Button variant="contained" onClick={() => router.push("/profile/billing")} sx={{ backgroundColor: "#219a83", color: "white", fontSize: "11px" }}>
+              {t("UpgradePlan", { defaultValue: "Upgrade Plan" })}
+            </Button>
+          </Box>
+        </GridOverlay>
+      );
+    }
+    if (!wallets || wallets.length === 0) {
+      return <CustomNoWalletOverlay />;
+    }
+    if (!selectedWallet) {
       return <CustomSelectWalletOverlay />;
     }
-    // Only show spinner if a wallet is selected and loading
-    if (selectedWallet && isPortfolioLoading) {
+    if (isPortfolioLoading) {
       return (
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          height="100%"
-          minHeight={200}>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            <CircularProgress
-              size={32}
-              sx={{ color: "#219a83" }}
-            />
-          </Box>
-          <Typography
-            variant="body2"
-            color="text.secondary">
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" minHeight={200}>
+          <CircularProgress size={32} sx={{ color: "#219a83", mb: 1 }} />
+          <Typography variant="body2" color="text.secondary">
             Loading wallet positions...
           </Typography>
         </Box>
       );
     }
-    // If a wallet is selected but no positions exist, show CustomNoWalletOverlay
-    if (selectedWallet && filteredRows.length === 0) {
-      return <CustomNoWalletOverlay />;
+    if (filteredRows.length === 0) {
+      return (
+        <GridOverlay>
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 30px", textAlign: "center" }}>
+            <AccountBalanceWalletIcon sx={{ fontSize: 50, color: "text.disabled", mb: 2 }} />
+            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, fontSize: "18px" }}>
+              {t("NoTokenPositions", { defaultValue: "No token positions found" })}
+            </Typography>
+            <Typography variant="body2" sx={{ color: "gray", fontSize: "13px", maxWidth: "400px" }}>
+              {t("NoTokenPositionsDescription", { defaultValue: "This wallet has no token holdings to display." })}
+            </Typography>
+          </Box>
+        </GridOverlay>
+      );
     }
-    // Otherwise, default overlay
     return null;
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletLimit, wallets, selectedWallet, isPortfolioLoading, filteredRows]);
 
   useEffect(() => {
     if (wasManualSelection) return;
@@ -627,7 +647,7 @@ export const CurrentPositionSection: React.FC<CurrentPositionSectionProps> = ({
                     },
                   }}>
                   {wallets?.map((wallet, index) => {
-                    const isDisabled = walletLimit > 0 && index >= walletLimit;
+                    const isDisabled = index >= walletLimit;
                     return (
                       <MenuItem
                         key={wallet.walletId}
@@ -658,7 +678,7 @@ export const CurrentPositionSection: React.FC<CurrentPositionSectionProps> = ({
                     "& .MuiSelect-icon": { color: "white" },
                   }}>
                   {wallets?.map((wallet, index) => {
-                    const isDisabled = walletLimit > 0 && index >= walletLimit;
+                    const isDisabled = index >= walletLimit;
                     return (
                       <MenuItem
                         key={wallet.walletId}

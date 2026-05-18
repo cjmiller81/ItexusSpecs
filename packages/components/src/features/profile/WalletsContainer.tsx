@@ -71,7 +71,7 @@ export const WalletsContainer = ({ lifiChainMap, ...props }: WalletsContainerPro
 
   return (
     <Box {...props}>
-      <WalletPlanGate wallets={wallets}>
+      <WalletPlanGate>
       <MyWalletsSection
         onUpdateWallet={wallet => dispatch(updateWallet(wallet))}
         selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
