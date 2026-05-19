@@ -47,16 +47,12 @@ export default function ProfilePage() {
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
   const router = useRouter()
 
-  const [value, setValue] = useState<string>('details')
-
-  // Keep `value` synced with both catch-all `router.query.tab` and query param `?tab=`
-  useEffect(() => {
-    const rawTab = router.query.tab
-    let tab = 'details'
-    if (Array.isArray(rawTab) && rawTab.length) tab = rawTab[0]
-    else if (typeof rawTab === 'string' && rawTab.length) tab = rawTab
-    setValue(tab)
-  }, [router.query.tab])
+  const rawTab = router.query.tab
+  const value = Array.isArray(rawTab) && rawTab.length
+    ? rawTab[0]
+    : typeof rawTab === 'string' && rawTab.length
+      ? rawTab
+      : 'details'
   const { t } = useTranslation("ProfilePage")
 
   const steps: StepType[] = [
@@ -102,15 +98,8 @@ export default function ProfilePage() {
     }
   ];
 
-  useEffect(() => {
-    // Navigate to the canonical profile path for the selected tab.
-    // Use a full navigation so tab children mount reliably.
-    router.push(`/profile/${value}`, undefined, { shallow: false })
-  }, [value])
-
   const handleChange = (newValue: string) => {
-    //eslint-disable-next-line no-unused-vars
-    setValue(newValue)
+    router.push(`/profile/${newValue}`, undefined, { shallow: false })
   }
 
   const onAvatarChanged = async (file: File) => {

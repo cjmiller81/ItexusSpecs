@@ -30,6 +30,7 @@ import { ChartSeries } from "@/libs/redux/Slices/ChartSlicesCommon";
 import { WalletsOverviewPanel } from "@/features/MyWallets/WalletsOverviewPanel";
 import { FeatureAccessGuard } from "components";
 import { useSubscription } from "components";
+import { PageAccessGuard } from "@/components/PageAccessGuard";
 
 const TOUR_ID = "decentralized_v1";
 const TOUR_NAME = "decentralized";
@@ -382,6 +383,7 @@ export default function MyWalletsPage() {
   ];
 
   return (
+    <PageAccessGuard requiredPage="/myWallets/decentralized">
     <Require2FA>
       <TourProvider
         steps={steps}
@@ -596,5 +598,6 @@ export default function MyWalletsPage() {
         </>
       </TourProvider>
     </Require2FA>
+    </PageAccessGuard>
   );
 }
