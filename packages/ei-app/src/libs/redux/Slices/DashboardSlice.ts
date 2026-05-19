@@ -25,21 +25,25 @@ export const dashboardSlice = createAppSlice({
   reducers: create => ({
     fetchHistoricalWalletData: create.asyncThunk<
       { growth: CompareToValues; value: CompareToValues },
-      void
+      { addresses?: string[] } | undefined
     >(
-      async (_, thunkApi) => {
+      async (arg, thunkApi) => {
         const state = thunkApi.getState() as RootState;
 
+        const portfolioData = arg?.addresses
+          ? state.wallets.portfolioWalletData.filter(p => arg.addresses!.includes(p.walletAddress))
+          : state.wallets.portfolioWalletData;
+
         const response = await walletsApi.getHistoricalWalletData(
-          toTotalTokensBalancesFromPortfolio(state.wallets.portfolioWalletData),
+          toTotalTokensBalancesFromPortfolio(portfolioData),
           moment().utc().add(-1, "M").toDate(),
           moment().utc().toDate(),
           null,
         );
 
-        const selectedWalletAddresses = state.wallets.wallets?.map(wallet => wallet.address) || []
+        const selectedWalletAddresses = arg?.addresses ?? state.wallets.wallets?.map(wallet => wallet.address) ?? []
         const currentTokensValue = getCurrentTokensValueFromZapper ? getCurrentTokensValueFromZapper(
-          state.wallets.portfolioWalletData,
+          portfolioData,
           selectedWalletAddresses
         ) : 0
         

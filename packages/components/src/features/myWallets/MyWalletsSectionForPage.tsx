@@ -23,6 +23,7 @@ import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { PageTitle } from "../../components/TextDisplay/PageTitle";
 import { IExchange, Wallet } from "../../models";
 import { createWallet, TotalWalletWorthData, useAppDispatch, useAppSelector } from "../../slices";
+import { useSubscription } from "../../hooks/useSubscription";
 
 import { AddressModel, WalletInputModal } from "./WalletInputModal";
 import { WalletPlanGate } from "./WalletPlanGate";
@@ -80,6 +81,14 @@ export const MyWalletsSectionForPage = ({
   const { portfolioWalletData } = useAppSelector(state => state.wallets);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"positions" | "history">("positions");
+
+  const { isFreePlan, getWalletConnectionLimit } = useSubscription();
+  const walletLimit = isFreePlan ? 0 : getWalletConnectionLimit("DEX");
+  const accessibleAddresses = React.useMemo(() => {
+    if (!wallets) return new Set<string>();
+    const accessible = walletLimit > 0 ? wallets.slice(0, walletLimit) : [];
+    return new Set(accessible.map(w => w.address));
+  }, [wallets, walletLimit]);
 
   const addWallet = async (walletAddressModel: AddressModel) => {
     const resultAction = (await dispatch(createWallet(walletAddressModel))) as {
@@ -370,8 +379,9 @@ export const MyWalletsSectionForPage = ({
                   row: ExpandableRowDex,
                 }}
                 onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+                  const allowed = rowSelectionModel.filter(id => accessibleAddresses.has(id as string));
                   onSelectedChanged(
-                    (orderedWallets || wallets || []).filter(wallet => rowSelectionModel.some(rowSelection => wallet.address === rowSelection)),
+                    (orderedWallets || wallets || []).filter(wallet => allowed.some(id => wallet.address === id)),
                   );
                 }}
                 onCellClick={onCellClick}

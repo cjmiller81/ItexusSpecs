@@ -27,7 +27,8 @@ import {
   PasswordResetModal,
   updateTourStatusAsync,
   fetchReactourSettingsAsync,
-  Require2FA
+  Require2FA,
+  useSubscription,
 } from "components";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
@@ -77,7 +78,10 @@ export default function HomePage() {
   const traits = session?.identity?.traits
   const firstName = traits?.name?.first ?? "" ;
   const { t } = useTranslation("HomePage");
-  const wallets = useAppSelector(state => state.wallets.wallets);
+  const { isFreePlan, getWalletConnectionLimit } = useSubscription();
+  const walletLimit = isFreePlan ? 0 : getWalletConnectionLimit("DEX");
+  const allWallets = useAppSelector(state => state.wallets.wallets);
+  const wallets = allWallets ? (walletLimit > 0 ? allWallets.slice(0, walletLimit) : []) : null;
   const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusFetchingPortfolio = useAppSelector(state => state.wallets.statusFetchingPortfolio);
@@ -124,8 +128,8 @@ export default function HomePage() {
   }, [router.query.requireChangePassword]);
 
   useEffect(() => {
-    if (wallets === null) dispatch(fetchWallets(null));
-  }, [wallets,dispatch]);
+    if (allWallets === null) dispatch(fetchWallets(null));
+  }, [allWallets, dispatch]);
 
   const { lifiChainMap } = useLifiChainMap();
 
@@ -144,7 +148,7 @@ export default function HomePage() {
     if (!wallets || wallets.length === 0) return;
     if (!portfolioWalletData || portfolioWalletData.length === 0) return;
 
-    dispatch(fetchHistoricalWalletData());
+    dispatch(fetchHistoricalWalletData({ addresses: wallets.map(w => w.address) }));
   }, [wallets, portfolioWalletData, dispatch]);
 
 const retryRef = useRef<ReturnType<typeof setInterval> | null>(null);
