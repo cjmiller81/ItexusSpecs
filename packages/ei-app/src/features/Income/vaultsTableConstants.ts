@@ -14,6 +14,7 @@ export enum DefiField {
   TradingApr = "tradingApr",
   StrategyTypeId = "strategyTypeId",
   EarnedToken = "earnedToken",
+  Oracle = "oracle",
 }
 
 export enum DefiLabel {
@@ -30,6 +31,7 @@ export enum DefiLabel {
   TradingApr = "Trading APR",
   StrategyTypeId = "Strategy Type ID",
   EarnedToken = "Earned Token",
+  Oracle = "Oracle",
 }
 
 export const vaultsFilterBuilderFields: FilterBuilderItems[] = [
@@ -102,5 +104,11 @@ export const vaultsFilterBuilderFields: FilterBuilderItems[] = [
     dataField: DefiField.EarnedToken,
     dataType: "string",
     filterOperations: ["contains", "notcontains", "startswith", "endswith", "=", "<>"]
+  },
+  {
+    caption: DefiLabel.Oracle,
+    dataField: DefiField.Oracle,
+    dataType: "string",
+    filterOperations: ["=", "<>", "contains", "notcontains"]
   },
 ];

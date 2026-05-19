@@ -143,6 +143,31 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
   const filterRef = useRef<CustomFilterBuilderRef>(null);
+  const prevExternalFilterRef = useRef<object[] | null | undefined>(undefined);
+
+  const hasCategoryFilter = useCallback((filter: any): boolean => {
+    if (!filter || !Array.isArray(filter)) return false;
+    const BEEFY_CATEGORY_FIELDS = ["strategyTypeId", "platformId", "oracle"];
+    if (filter.length === 3 && BEEFY_CATEGORY_FIELDS.includes(filter[0] as string)) return true;
+    return filter.some((item: any) => Array.isArray(item) && hasCategoryFilter(item));
+  }, []);
+
+  useEffect(() => {
+    if (externalFilter === prevExternalFilterRef.current) return;
+    prevExternalFilterRef.current = externalFilter;
+
+    if (externalFilter && Array.isArray(externalFilter) && externalFilter.length > 0) {
+      currentFilterRef.current = externalFilter as object[];
+      filterRef.current?.onUpdateFilter(externalFilter);
+      setCurrentFilter(externalFilter as object[]);
+    } else if (!externalFilter) {
+      if (currentFilterRef.current && hasCategoryFilter(currentFilterRef.current)) {
+        currentFilterRef.current = null;
+        filterRef.current?.onUpdateFilter(null);
+        setCurrentFilter(null);
+      }
+    }
+  }, [externalFilter, hasCategoryFilter]);
   const [isColumnChooserOpen, setIsColumnChooserOpen] = useState(false);
 
   const filterPanelText = useRef<Element | null>(null);
@@ -628,6 +653,16 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
           visible={false}
           headerFilter={{ visible: true }}
           calculateFilterExpression={calculateFilterExpression}
+        />
+        <Column
+          dataField="oracle"
+          caption="Oracle"
+          alignment="left"
+          dataType="string"
+          allowHiding={false}
+          visible={false}
+          showInColumnChooser={false}
+          allowHeaderFiltering={false}
         />
         <Column
           dataField="assets"

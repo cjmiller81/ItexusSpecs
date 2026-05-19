@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,6 +18,7 @@ import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "comp
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
+import { BeefyVaultCategoryFiltersSection, BeefyVaultCategoryFiltersSectionRef } from "./BeefyVaultCategoryFiltersSection";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 import appAxios from "@/libs/axios/axios";
 import { VaultsData } from "./Models/VaultsData";
@@ -38,6 +39,12 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
   const theme = useTheme();
   const dataGridRef = useRef<any>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [externalFilter, setExternalFilter] = useState<object[] | null | undefined>();
+  const categoryFilterRef = useRef<BeefyVaultCategoryFiltersSectionRef>(null);
+
+  const handleCategoryFilterChange = useCallback((filter: any[] | null) => {
+    setExternalFilter(filter ?? null);
+  }, []);
 
   const processedVaults = (data: VaultsData[]) => {
     return data.map(pool => {
@@ -63,6 +70,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
           anyPool.trading_apr ?? anyPool.breakdowns?.tradingApr ?? null,
         strategyTypeId: anyPool.strategy_type_id ?? null,
         earnedToken: anyPool.earned_token ?? null,
+        oracle: anyPool.oracle ?? null,
       };
     });
   };
@@ -274,6 +282,12 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
         </Typography>
         {startTourButton}
       </Box>
+      <Box sx={{ mb: 2 }}>
+        <BeefyVaultCategoryFiltersSection
+          ref={categoryFilterRef}
+          onFilterChange={handleCategoryFilterChange}
+        />
+      </Box>
       <StatePersistedAccordion
               className="index-modeling-section-container"
               persistKey={persisKey}
@@ -359,6 +373,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
             onUpdate={() => {}}
             dataSource={filteredTokensSource}
             dataGridRef={dataGridRef}
+            externalFilter={externalFilter}
           />
         </AccordionDetails>
       </StatePersistedAccordion>
@@ -367,5 +382,5 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
 }
 
 const MemoizedDefiPoolsTable = React.memo(VaultsPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource;
+  return prevProps.dataSource === nextProps.dataSource && prevProps.externalFilter === nextProps.externalFilter;
 });

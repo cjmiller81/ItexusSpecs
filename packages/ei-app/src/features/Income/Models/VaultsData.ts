@@ -32,4 +32,5 @@ export type VaultsData = {
   strategyTypeId?: string;
   earnedToken?: string;
   add_liquidity_url?: string;
+  oracle?: string | null;
 };
