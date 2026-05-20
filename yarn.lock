@@ -8771,6 +8771,7 @@ __metadata:
     "@ory/elements-react": "npm:^1.1.0"
     "@ory/integrations": "npm:^1.1.5"
     "@reduxjs/toolkit": "npm:^2.2.0"
+    "@storybook/nextjs-vite": "npm:^10.4.0"
     "@stripe/react-stripe-js": "npm:^3.1.1"
     "@stripe/stripe-js": "npm:^5.6.0"
     "@svgr/webpack": "npm:^8.1.0"

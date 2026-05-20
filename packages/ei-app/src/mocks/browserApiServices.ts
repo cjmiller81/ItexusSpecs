@@ -1,15 +1,11 @@
-'use client'
+"use client";
 
-import { setupWorker } from 'msw/browser'
-import { RequestHandler } from 'msw'
-import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
+import { setupWorker } from "msw/browser";
+import type { RequestHandler } from "msw";
 
-import { backendApiServiceHandlers } from './backendApiServiceHandlers'
-//import { someOtherServiceHandlers } from './someOtherServiceHandlers'
+import { backendApiServiceHandlers } from "./backendApiServiceHandlers";
+import { yieldsHandlers } from "./yieldsHandlers";
 
-let handlers: RequestHandler<RequestHandlerDefaultInfo, any, any, RequestHandlerOptions>[] = []
+const handlers: RequestHandler[] = [...backendApiServiceHandlers, ...yieldsHandlers];
 
-handlers = handlers.concat(backendApiServiceHandlers);
-//handlers = handlers.concat(someOtherServiceHandlers);
-
-export const worker = setupWorker(...handlers)
+export const worker = setupWorker(...handlers);

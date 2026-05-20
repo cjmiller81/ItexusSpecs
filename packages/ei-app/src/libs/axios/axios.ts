@@ -1,35 +1,40 @@
-import { configureAxiosMockHandlers } from "@/mocks/configureAxiosMockHandlers"
-import { AxiosError } from "axios"
-import { addError, appAxios } from "components"
-import i18n from "i18next"
-import { appStore } from "../redux/Store"
+import { AxiosError } from "axios";
+import { addError, appAxios } from "components";
+import i18n from "i18next";
+import { appStore } from "../redux/Store";
 
 appAxios.interceptors.response.use(
   async response => {
-    return response
+    return response;
   },
   async (_error: AxiosError) => {
-    const originalRequest = _error.config
+    const originalRequest = _error.config;
 
     if (originalRequest) {
       if (_error.status === 500) {
-        appStore.dispatch(addError({ message: i18n.t("somethingWentWrong", { ns: "ErrorMessages" }) }))
+        appStore.dispatch(addError({ message: i18n.t("somethingWentWrong", { ns: "ErrorMessages" }) }));
       }
 
-      return Promise.reject(_error)
+      return Promise.reject(_error);
     }
 
-    return Promise.reject()
+    return Promise.reject();
   },
-)
+);
 
-const EXCLUDED_URLS = [
-  "https://api.coingecko.com",
-];
+const EXCLUDED_URLS = ["https://api.coingecko.com"];
+
+type AxiosBaseQueryArgs = {
+  url: string;
+  method?: string;
+  data?: unknown;
+  params?: Record<string, unknown>;
+  headers?: Record<string, string>;
+};
 
 export const axiosBaseQuery =
   () =>
-  async ({ url, method, data, params, headers }: any) => {
+  async ({ url, method, data, params, headers }: AxiosBaseQueryArgs) => {
     const isExcluded = EXCLUDED_URLS.some(excluded => url.startsWith(excluded));
 
     const result = await appAxios({
@@ -45,7 +50,4 @@ export const axiosBaseQuery =
     return { data: result.data };
   };
 
-if (process.env.NEXT_PUBLIC_MOCK_BACKEND_API === "true") {
-  configureAxiosMockHandlers(appAxios)
-}
-export default appAxios
+export default appAxios;

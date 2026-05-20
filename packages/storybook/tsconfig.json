@@ -6,7 +6,17 @@
     "emitDeclarationOnly": false,
     "declaration": false,
     "declarationDir": null,
-    "incremental": true
+    "incremental": true,
+    "baseUrl": "..",
+    // Mirror the `@/*` alias that ei-app, echo-app, and dpd-app each declare
+    // in their own tsconfig.json. The runtime equivalent is the
+    // `customResolver` in `.storybook/main.ts`, which resolves `@/...`
+    // against the importing file's workspace. tsc only needs a single
+    // mapping for the preview's typecheck — ei-app is the primary app
+    // whose files the preview transitively imports.
+    "paths": {
+      "@/*": ["ei-app/src/*"]
+    }
   },
   "include": [".storybook/**/*.ts", ".storybook/**/*.tsx", "vitest.config.ts"]
 }

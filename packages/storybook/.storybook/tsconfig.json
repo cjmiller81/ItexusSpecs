@@ -11,9 +11,13 @@
   "include": [
     "./**/*.ts",
     "./**/*.tsx",
-    "../../components/src/**/*.stories.@(ts|tsx)",
-    "../../ei-app/src/**/*.stories.@(ts|tsx)",
-    "../../echo-app/src/**/*.stories.@(ts|tsx)",
-    "../../dpd-app/src/**/*.stories.@(ts|tsx)"
+    "../../components/src/**/*.ts",
+    "../../components/src/**/*.tsx",
+    "../../ei-app/src/**/*.ts",
+    "../../ei-app/src/**/*.tsx",
+    "../../echo-app/src/**/*.ts",
+    "../../echo-app/src/**/*.tsx",
+    "../../dpd-app/src/**/*.ts",
+    "../../dpd-app/src/**/*.tsx"
   ]
 }
