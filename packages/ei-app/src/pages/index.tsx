@@ -33,7 +33,7 @@ import {
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
 import moment from "moment";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
 
@@ -81,7 +81,10 @@ export default function HomePage() {
   const { isFreePlan, getWalletConnectionLimit } = useSubscription();
   const walletLimit = isFreePlan ? 0 : getWalletConnectionLimit("DEX");
   const allWallets = useAppSelector(state => state.wallets.wallets);
-  const wallets = allWallets ? (walletLimit > 0 ? allWallets.slice(0, walletLimit) : []) : null;
+  const wallets = useMemo(
+    () => allWallets ? (walletLimit > 0 ? allWallets.slice(0, walletLimit) : []) : null,
+    [allWallets, walletLimit],
+  );
   const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
   const statusFetchingWallets = useAppSelector(state => state.wallets.statusFetchingWallets);
   const statusFetchingPortfolio = useAppSelector(state => state.wallets.statusFetchingPortfolio);
