@@ -181,13 +181,16 @@ export const tablesHandlers: RequestHandler[] = [
   http.get(`${process.env.BACKEND_API_URL}/api/beefy/vaults/assets-unique`, () =>
     HttpResponse.json(uniqueAssetsFixture),
   ),
-  http.get(`${process.env.BACKEND_API_URL}/api/lifi/chains`, () => HttpResponse.json(lifiChainsFixture)),
-  http.get(`${process.env.BACKEND_API_URL}/api/lifi/tokens`, ({ request }) => {
+  // `LifiChainProvider` / `lifiApi` use `appAxios` with a relative path. In
+  // Storybook that resolves to the preview origin (e.g. localhost:6006), not
+  // `BACKEND_API_URL`, so host-agnostic patterns are required.
+  http.get(/.*\/api\/lifi\/chains(?:\?.*)?$/, () => HttpResponse.json(lifiChainsFixture)),
+  http.get(/.*\/api\/lifi\/tokens(?:\?.*)?$/, ({ request }) => {
     const url = new URL(request.url);
     const chainId = Number(url.searchParams.get("chainId") ?? 1);
     return HttpResponse.json(lifiTokensFixture(chainId));
   }),
-  http.post(`${process.env.BACKEND_API_URL}/api/lifi/routes`, () => HttpResponse.json(lifiRoutesFixture)),
+  http.post(/.*\/api\/lifi\/routes(?:\?.*)?$/, () => HttpResponse.json(lifiRoutesFixture)),
   // Trade aggregator (CEX) endpoints used by TradeTable / ArbitrageMatrix.
   http.get(`${process.env.BACKEND_API_URL}/api/countries`, () =>
     HttpResponse.json(["United States", "United Kingdom", "Germany", "Japan"]),

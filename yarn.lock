@@ -4677,7 +4677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/pluginutils@npm:^5.0.2":
+"@rollup/pluginutils@npm:^5.0.2, @rollup/pluginutils@npm:^5.3.0":
   version: 5.3.0
   resolution: "@rollup/pluginutils@npm:5.3.0"
   dependencies:
@@ -5332,7 +5332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/core@npm:8.1.0":
+"@svgr/core@npm:8.1.0, @svgr/core@npm:^8.1.0":
   version: 8.1.0
   resolution: "@svgr/core@npm:8.1.0"
   dependencies:
@@ -5355,7 +5355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/plugin-jsx@npm:8.1.0":
+"@svgr/plugin-jsx@npm:8.1.0, @svgr/plugin-jsx@npm:^8.1.0":
   version: 8.1.0
   resolution: "@svgr/plugin-jsx@npm:8.1.0"
   dependencies:
@@ -16856,6 +16856,7 @@ __metadata:
     react-dom: "npm:^18.2.0"
     storybook: "npm:^10.4.0"
     vite: "npm:^6.0.0"
+    vite-plugin-svgr: "npm:^5.2.0"
   languageName: unknown
   linkType: soft
 
@@ -18224,6 +18225,19 @@ __metadata:
     storybook: ^0.0.0-0 || ^9.0.0 || ^10.0.0 || ^10.0.0-0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0
     vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: 10c0/8680c328cedeb3abee17888885d83978abd82e4d1505e2ce6833bc6ebc85e964731ef3b7b4ea0f25b693b3c594ff2965e3a18072f76e80baf1faa4ffc9860ac4
+  languageName: node
+  linkType: hard
+
+"vite-plugin-svgr@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "vite-plugin-svgr@npm:5.2.0"
+  dependencies:
+    "@rollup/pluginutils": "npm:^5.3.0"
+    "@svgr/core": "npm:^8.1.0"
+    "@svgr/plugin-jsx": "npm:^8.1.0"
+  peerDependencies:
+    vite: ">=3.0.0"
+  checksum: 10c0/818ddea9a25839f9a5e3903f55e738b3de2f76c374148a637e61e31e6a3ada815a061d3e8010306a9f2701827d2f34d8fbc5db47bf1e74059050ad7a57c0f601
   languageName: node
   linkType: hard
 

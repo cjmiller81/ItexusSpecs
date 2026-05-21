@@ -1,36 +1,42 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 
 import CustomSelectWalletOverlay from "./CustomSelectWalletOverlay";
 
 // `CustomSelectWalletOverlay` is the DataGrid `noRowsOverlay` companion to
-// `CustomNoWalletOverlay` — used when the user has saved wallets but has not
-// yet chosen one for the current table view. The story wraps the overlay in
-// an empty DataGrid so the `GridOverlay` positioning context is satisfied.
+// `CustomNoWalletOverlay`. See that story file for a deep comment on why
+// the wrapper has to be a fixed-pixel `div` + a non-flex DataGrid column
+// (avoids the `useResizeContainer` warning and runaway column flex loop).
 
 const meta = {
   title: "EI App/Components/CustomSelectWalletOverlay",
   component: CustomSelectWalletOverlay,
   parameters: {
-    layout: "centered",
+    layout: "padded",
     docs: {
       description: {
         component:
           "Empty-state overlay shown when the user has saved wallets but the active table requires picking one. Pairs with `CustomNoWalletOverlay` for the zero-wallets branch.",
       },
+      story: { inline: false, iframeHeight: 380 },
     },
   },
   tags: ["autodocs"],
   decorators: [
     Story => (
-      <Box sx={{ width: 520, height: 320 }}>
+      <div style={{ width: 520 }}>
         <DataGrid
+          autoHeight
           rows={[]}
-          columns={[{ field: "asset", headerName: "Asset", flex: 1 }]}
+          columns={[{ field: "asset", headerName: "Asset", width: 520 }]}
+          disableVirtualization
+          disableColumnMenu
+          disableColumnSelector
+          hideFooter
           slots={{ noRowsOverlay: () => <Story /> }}
+          sx={{ "--DataGrid-overlayHeight": "320px" }}
         />
-      </Box>
+      </div>
     ),
   ],
 } satisfies Meta<typeof CustomSelectWalletOverlay>;

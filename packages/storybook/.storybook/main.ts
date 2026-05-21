@@ -2,6 +2,7 @@ import type { StorybookConfig } from "@storybook/nextjs-vite";
 import { existsSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import svgr from "vite-plugin-svgr";
 
 // Keep this module ESM-only — Storybook 10.4 auto-loads `.storybook/main.ts`
 // via the ESM loader, so the CommonJS `__dirname` global is not available.
@@ -38,7 +39,28 @@ const config: StorybookConfig = {
   ],
   framework: {
     name: getAbsolutePath("@storybook/nextjs-vite"),
-    options: {},
+    // Exclude `.svg` from the framework's bundled next-image plugin so it
+    // doesn't intercept SVG imports and rewrite them to Next.js image
+    // metadata objects (`{ src, width, height, blurDataURL }`). Without this,
+    // every plain `import Icon from "./foo.svg"` resolves to that metadata
+    // object instead of a React component, and `<Icon />` throws
+    // "React.jsx: type is invalid … but got: object" — see the EI App
+    // sidebar's social icons (`packages/ei-app/src/constants/sidebar.tsx`).
+    //
+    // With `.svg` excluded here, the next-image plugin returns `null` from
+    // its `resolveId` for SVG paths, and the import flows through to
+    // `vite-plugin-svgr` (configured in `viteFinal` below), which mirrors
+    // the production Next.js `@svgr/webpack` rule and turns the SVG into a
+    // React component.
+    //
+    // (The plugin itself logs `warnOnce("Detected vite-plugin-svgr but you
+    // are not passing image include or exclude patterns to the nextjs-vite
+    // plugin…")` when this option is missing.)
+    options: {
+      image: {
+        excludeFiles: ["**/*.svg"],
+      },
+    },
   },
   // The MSW worker and shared static assets live in `packages/components/public`.
   staticDirs: ["../../components/public", "../../ei-app/public"],
@@ -162,6 +184,34 @@ const config: StorybookConfig = {
       ...(config.server.fs ?? {}),
       allow: [...(config.server.fs?.allow ?? []), repoRoot],
     };
+
+    // Mirror the Next.js workspaces' `@svgr/webpack` rule (see
+    // `packages/ei-app/next.config.js`) so every plain `.svg` ES import in
+    // sibling sources resolves to a React component instead of a URL/object.
+    // `sidebar.tsx` (and similar files) does:
+    //
+    //   import TelegramIcon from "../../public/telegram.svg";
+    //   <TelegramIcon width={18} … />
+    //
+    // Without this plugin, `TelegramIcon` is not a component and
+    // `<TelegramIcon />` throws "React.jsx: type is invalid … but got:
+    // object", which surfaces in any story that mounts `Layout` (e.g. the
+    // EI App/Layouts/* stories). This pairs with the framework's
+    // `image.excludeFiles: ["**/*.svg"]` option above, which stops the
+    // bundled next-image plugin from intercepting SVG imports first.
+    //
+    // The include filter is a regex (not the `**/*.svg?react` default glob)
+    // because Vite's pipeline can append a postfix to the `id` passed to
+    // `load()` (e.g. `?import`, `?used`). A `\.svg` regex matches both bare
+    // paths and paths with any query string, so every variant is transformed.
+    config.plugins = [
+      ...(config.plugins ?? []),
+      svgr({
+        include: /\.svg(?:\?.*)?$/,
+        svgrOptions: { exportType: "default" },
+      }),
+    ];
+
     return config;
   },
 };

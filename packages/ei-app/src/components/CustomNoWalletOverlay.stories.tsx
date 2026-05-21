@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 
 import CustomNoWalletOverlay from "./CustomNoWalletOverlay";
@@ -7,31 +6,49 @@ import CustomNoWalletOverlay from "./CustomNoWalletOverlay";
 // `CustomNoWalletOverlay` is a DataGrid `noRowsOverlay` slot used on the
 // wallet-bound tables (positions, portfolio, etc.) when the user has not
 // saved a wallet address yet. It includes a pulsing CTA that routes to
-// `/profile/wallets`. The story wraps the overlay in an empty DataGrid so
-// the `GridOverlay` positioning context is satisfied.
+// `/profile/wallets`.
+//
+// `GridOverlay` reads from `GridRootPropsContext` (via `useGridRootProps`),
+// so the story must mount a real DataGrid. The grid is configured with:
+//   - `autoHeight` so it sizes itself instead of running `useResizeContainer`
+//     against the parent (which would otherwise log
+//     "useResizeContainer - parent ... has an empty height" on first paint),
+//   - `--DataGrid-overlayHeight` to control how tall the no-rows area is,
+//   - fixed pixel column width (no `flex` metric, which earlier caused a
+//     ResizeObserver feedback loop that grew the grid horizontally),
+//   - virtualization + column menus disabled to remove other measurement
+//     work that can re-emit size updates,
+//   - autodocs rendered in an iframe to avoid inline-render side effects.
 
 const meta = {
   title: "EI App/Components/CustomNoWalletOverlay",
   component: CustomNoWalletOverlay,
   parameters: {
-    layout: "centered",
+    layout: "padded",
     docs: {
       description: {
         component:
           "Empty-state overlay for the DataGrid-backed wallet tables. Rendered when the user has not yet saved a wallet; clicking the CTA navigates to the wallets profile tab.",
       },
+      story: { inline: false, iframeHeight: 420 },
     },
   },
   tags: ["autodocs"],
   decorators: [
     Story => (
-      <Box sx={{ width: 520, height: 360 }}>
+      <div style={{ width: 520 }}>
         <DataGrid
+          autoHeight
           rows={[]}
-          columns={[{ field: "asset", headerName: "Asset", flex: 1 }]}
+          columns={[{ field: "asset", headerName: "Asset", width: 520 }]}
+          disableVirtualization
+          disableColumnMenu
+          disableColumnSelector
+          hideFooter
           slots={{ noRowsOverlay: () => <Story /> }}
+          sx={{ "--DataGrid-overlayHeight": "360px" }}
         />
-      </Box>
+      </div>
     ),
   ],
 } satisfies Meta<typeof CustomNoWalletOverlay>;

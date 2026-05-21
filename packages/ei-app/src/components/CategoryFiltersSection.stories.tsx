@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -49,14 +49,17 @@ export const WithEmittedFilter: Story = {
     function CategoryFiltersWithReadout() {
       const [filter, setFilter] = useState<unknown[] | null>(null);
       const [context, setContext] = useState<CategoryFilterType | null>(null);
+      // Stable reference — CategoryFiltersSection's mount effect lists
+      // `onFilterChange` as a dependency; an inline handler retriggers it forever.
+      const handleFilterChange = useCallback((nextFilter: unknown[] | null, nextContext: CategoryFilterType) => {
+        setFilter(nextFilter);
+        setContext(nextContext);
+      }, []);
       return (
         <Stack spacing={2}>
           <CategoryFiltersSection
             {...args}
-            onFilterChange={(nextFilter, nextContext) => {
-              setFilter(nextFilter);
-              setContext(nextContext);
-            }}
+            onFilterChange={handleFilterChange}
           />
           <Box
             sx={{
