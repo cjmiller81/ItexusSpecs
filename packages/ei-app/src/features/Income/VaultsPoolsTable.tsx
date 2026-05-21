@@ -52,6 +52,7 @@ import { createFilter, deleteFilter, fetchFilters, updateFilter } from "@/libs/r
 import { descOrderingAfterClick, reconfigureFilterPanelStyles } from "@/common/devextreme-filter";
 import { StyledDataGridDef } from "@/features/Income/StyledDataGridDef";
 import CustomFilterBuilder, { CustomFilterBuilderRef } from "../Common/DevExpressTable/CustomFilterBuilder";
+import { FilterType } from "components/src/models/token/IPrefilterTokensFilterValues";
 
 export interface IPrefilterTokensTable {
   loading: boolean;
@@ -59,6 +60,9 @@ export interface IPrefilterTokensTable {
   onUpdate: (filteredTokenData: ICoin[]) => void;
   dataGridRef?: MutableRefObject<DataGridDef<VaultsData, string> | null>;
   externalFilter?: object[] | null | undefined;
+  filterKey?: string | null;
+  onClearCategoryFilter?: () => void;
+  onTreeViewFilterChange?: (filter: any, filterContext: { tab?: string; category?: string }) => void;
 }
 
 const COLUMN_CHOOSER_BUTTON_ID = "vaults-column-chooser-btn";
@@ -79,13 +83,37 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
-  loading,
-  onUpdate,
-  dataSource,
-  dataGridRef,
-  externalFilter,
-}) => {
+export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef, externalFilter, filterKey, onClearCategoryFilter, onTreeViewFilterChange }) => {
+    const transformFilterFromAnyof = (filter: any): any => {
+      if (!filter || !Array.isArray(filter)) {
+        return filter;
+      }
+      if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+        const [field, , values] = filter;
+        if (values.length === 0) return [];
+        if (values.length === 1) {
+          return [field, 'contains', values[0]];
+        }
+        const conditions = values.map((value: any) => [field, 'contains', value]);
+        const result: any[] = [];
+        conditions.forEach((condition, index) => {
+          if (index > 0) {
+            result.push('or');
+          }
+          result.push(condition);
+        });
+        return result;
+      }
+      if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
+        return filter.map((item: any) => {
+          if (Array.isArray(item)) {
+            return transformFilterFromAnyof(item);
+          }
+          return item;
+        });
+      }
+      return filter;
+    };
   const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
   const datagrid = (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -94,7 +122,19 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
     state => state.allTokensTable,
   );
   const dispatch = useAppDispatch();
-  const liquidityPoolFilters = useMemo(() => filters.filter(f => f.filterType === "vaults"), [filters]);
+  const liquidityPoolFilters = useMemo(
+    () => filters.filter(f => typeof f?.filterType === "string" && f.filterType.startsWith("vaults")),
+    [filters]
+  );
+
+  const handleTreeViewSelection = useCallback(
+    (filter: any, filterContext: { tab?: string; category?: string }) => {
+      if (onTreeViewFilterChange) {
+        onTreeViewFilterChange(filter, filterContext);
+      }
+    },
+    [onTreeViewFilterChange]
+  );
 
   const [uniqueAssets, setUniqueAssets] = useState<{ id: string; value: string; text: string }[]>([]);
   useEffect(() => {
@@ -385,7 +425,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
             <SimpleBar style={{ maxHeight: "600px", width: "700px", overflow: "hidden" }}>
               <CustomFilterBuilder
                 ref={filterRef}
-                filterType="vaults"
+                filterType={(filterKey || "vaults") as FilterType}
                 filterBuilderFields={vaultsFilterBuilderFields}
                 filterLoading={updatingFilterStatus === "loading" || creatingFilterStatus === "loading"}
                 filterDeletingLoading={deletingFilterStatus === "loading"}
@@ -394,12 +434,14 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
                 onUpdateFilter={filter => dispatch(updateFilter(filter))}
                 onDisableFilter={() => {
                   onApplyFilter(null);
+                  onClearCategoryFilter?.();
                 }}
                 onApply={filter => {
                   onApplyFilter(filter);
                 }}
                 filterToApply={currentFilterRef.current}
                 onDeleteFilter={filterId => dispatch(deleteFilter({ id: filterId }))}
+                onTreeViewFilterChange={handleTreeViewSelection}
               />
             </SimpleBar>
           </Item>

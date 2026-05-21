@@ -18,6 +18,7 @@ export type BeefyMajorTab = (typeof PRIMARY_TABS)[number];
 export interface BeefyVaultCategoryFiltersSectionRef {
   clearFilter: () => void;
   clearTooltips: () => void;
+  setFilter: (filter: any, tab: BeefyMajorTab, category?: string) => void;
 }
 
 interface BeefyVaultCategoryFiltersSectionProps {
@@ -60,6 +61,16 @@ export const BeefyVaultCategoryFiltersSection = forwardRef<
       onFilterChange?.(null, { tab: undefined, category: undefined });
     },
     clearTooltips: () => {},
+    setFilter: (filter, tab, category) => {
+      if (PRIMARY_TABS.includes(tab)) {
+        setCurrentTab(tab);
+        setSelectedSub(category && category !== `All ${tab}` ? category : "");
+        onFilterChange?.(filter, {
+          tab: tab === ALL_VAULTS ? undefined : tab,
+          category: category || undefined,
+        });
+      }
+    },
   }), [onFilterChange]);
 
   const isInitialMount = useRef(true);

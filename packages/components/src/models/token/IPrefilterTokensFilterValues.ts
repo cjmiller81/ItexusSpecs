@@ -1,4 +1,4 @@
-export type FilterType = null | "market-cap" | "market-cap-equal" | "liquidity-pool" | "vaults";
+export type FilterType = string | null;
 
 export interface IPrefilterTokensFilterValues {
   id: string;

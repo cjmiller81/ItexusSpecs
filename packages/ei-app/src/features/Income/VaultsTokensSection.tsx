@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useAppSelector } from "@/libs/redux/Store";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,7 +18,8 @@ import { PageTitle, StatePersistedAccordion, StyledAccordionSummary } from "comp
 import DataSource from "devextreme/data/data_source";
 import DownloadIcon from "@mui/icons-material/Download";
 import { VaultsPoolsTable } from "./VaultsPoolsTable";
-import { BeefyVaultCategoryFiltersSection, BeefyVaultCategoryFiltersSectionRef } from "./BeefyVaultCategoryFiltersSection";
+import { BeefyVaultCategoryFiltersSection, BeefyVaultCategoryFiltersSectionRef, BeefyMajorTab } from "./BeefyVaultCategoryFiltersSection";
+import { VAULTS, BEEFY_VAULT_TAB_KEYS, BEEFY_VAULT_SUBCATEGORY_KEYS } from "@/constants/prefilterKeys";
 import { useGetAllDataQuery } from "@/features/Income/VaultsApi";
 import appAxios from "@/libs/axios/axios";
 import { VaultsData } from "./Models/VaultsData";
@@ -40,11 +41,51 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
   const dataGridRef = useRef<any>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [externalFilter, setExternalFilter] = useState<object[] | null | undefined>();
+  const [categoryFilter, setCategoryFilter] = useState<{ tab: string | undefined; category: string | undefined }>({
+    tab: undefined,
+    category: undefined,
+  });
   const categoryFilterRef = useRef<BeefyVaultCategoryFiltersSectionRef>(null);
 
-  const handleCategoryFilterChange = useCallback((filter: any[] | null) => {
-    setExternalFilter(filter ?? null);
+  const handleCategoryFilterChange = useCallback(
+    (filter: any[] | null, filterContext: { tab: string | undefined; category: string | undefined }) => {
+      setExternalFilter(filter ?? null);
+      setCategoryFilter(filterContext);
+    },
+    []
+  );
+
+  const handleClearCategoryFilter = useCallback(() => {
+    categoryFilterRef.current?.clearFilter();
+    setExternalFilter(null);
   }, []);
+
+  const handleTreeViewFilterChange = useCallback(
+    (filter: any, filterContext: { tab?: string; category?: string }) => {
+      if (filterContext.tab) {
+        (categoryFilterRef.current as any)?.setFilter(
+          filter,
+          filterContext.tab as BeefyMajorTab,
+          filterContext.category,
+        );
+      }
+    },
+    []
+  );
+
+  const filterKey = useMemo(() => {
+    if (!categoryFilter.tab) return VAULTS;
+    const tabSlug = BEEFY_VAULT_TAB_KEYS[categoryFilter.tab];
+    if (!tabSlug) return VAULTS;
+
+    const category = categoryFilter.category;
+    if (!category || category.startsWith('All ')) {
+      return `${VAULTS}-${tabSlug}`;
+    }
+
+    const subSlug = BEEFY_VAULT_SUBCATEGORY_KEYS[category];
+    return subSlug ? `${VAULTS}-${tabSlug}-${subSlug}` : `${VAULTS}-${tabSlug}`;
+  }, [categoryFilter.tab, categoryFilter.category]);
 
   const processedVaults = (data: VaultsData[]) => {
     return data.map(pool => {
@@ -282,12 +323,6 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
         </Typography>
         {startTourButton}
       </Box>
-      <Box sx={{ mb: 2 }}>
-        <BeefyVaultCategoryFiltersSection
-          ref={categoryFilterRef}
-          onFilterChange={handleCategoryFilterChange}
-        />
-      </Box>
       <StatePersistedAccordion
               className="index-modeling-section-container"
               persistKey={persisKey}
@@ -368,12 +403,21 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
             transition: "width 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
             pointerEvents: "auto",
           }}>
+          <Box sx={{ mb: 3 }}>
+            <BeefyVaultCategoryFiltersSection
+              ref={categoryFilterRef}
+              onFilterChange={handleCategoryFilterChange}
+            />
+          </Box>
           <MemoizedDefiPoolsTable
             loading={isVaultsLoading}
             onUpdate={() => {}}
             dataSource={filteredTokensSource}
             dataGridRef={dataGridRef}
             externalFilter={externalFilter}
+            filterKey={filterKey}
+            onClearCategoryFilter={handleClearCategoryFilter}
+            onTreeViewFilterChange={handleTreeViewFilterChange}
           />
         </AccordionDetails>
       </StatePersistedAccordion>
@@ -382,5 +426,11 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
 }
 
 const MemoizedDefiPoolsTable = React.memo(VaultsPoolsTable, (prevProps, nextProps) => {
-  return prevProps.dataSource === nextProps.dataSource && prevProps.externalFilter === nextProps.externalFilter;
+  return (
+    prevProps.dataSource === nextProps.dataSource &&
+    prevProps.externalFilter === nextProps.externalFilter &&
+    prevProps.filterKey === nextProps.filterKey &&
+    prevProps.onClearCategoryFilter === nextProps.onClearCategoryFilter &&
+    prevProps.onTreeViewFilterChange === nextProps.onTreeViewFilterChange
+  );
 });

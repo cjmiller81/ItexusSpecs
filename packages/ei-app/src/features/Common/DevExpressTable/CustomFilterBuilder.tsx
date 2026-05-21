@@ -46,12 +46,7 @@ import { useGetExchangesQuery } from "@/features/Investing/exchangesApi";
 import { iconsAbortableApi } from "@/services/iconsService";
 import appAxios from "@/libs/axios/axios";
 import { filtersApi } from "../../../../../components/src/services/filterService";
-import {
-  LIQUIDITY_POOL,
-  PREFILTER_TAB_KEYS,
-  PREFILTER_ALL_CATEGORIES_MAP,
-  PREFILTER_CATEGORIES_MAP,
-} from "@/constants/prefilterKeys";
+import { LIQUIDITY_POOL, PREFILTER_TAB_KEYS, PREFILTER_ALL_CATEGORIES_MAP, PREFILTER_CATEGORIES_MAP, VAULTS, BEEFY_VAULT_TAB_KEY_TO_LABEL, BEEFY_VAULT_SUBCATEGORY_KEY_TO_LABEL } from "@/constants/prefilterKeys";
 import { generateFilterKey } from "@/helpers/LiquidPoolsFilterFormatter";
 import { PrefilterTabs, PrefilterCategories } from "@/types/filter";
 import { TreeView, TreeItem } from "@mui/x-tree-view";
@@ -509,38 +504,38 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         });
       }, [predefinedFilters]);
 
-      const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
-      const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
-      const [filterName, setFilterName] = useState<string | undefined>("");
-      const [filterValue, setFilterValue] = useState<object[] | string[] | undefined | null>();
-      const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>();
-      const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
-      const { t } = useTranslation("CustomFilterBuilder");
-      const theme = useTheme();
-      const [openIntroduction, setOpenIntroduction] = useState(true);
-      const [openLogicGate, setOpenLogicGate] = useState(true);
-      const [openBuildFilter, setOpenBuildFilter] = useState(true);
-      const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
-      const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
-      const isLiquidityPoolFilter = filterType === LIQUIDITY_POOL;
-      const isVaultsFilter = filterType === "vaults";
-      const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
-      const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery(undefined, {
-        skip: isLiquidityPoolFilter,
-      });
-      const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery(undefined, {
-        skip: isLiquidityPoolFilter,
-      });
-      const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
-      const [allPoolSymbolOptions, setAllPoolSymbolOptions] = useState<string[]>([]);
-      const [allPoolProjectOptions, setAllPoolProjectOptions] = useState<string[]>([]);
-      const [allVaultNameOptions, setAllVaultNameOptions] = useState<string[]>([]);
-      const [allVaultPlatformOptions, setAllVaultPlatformOptions] = useState<string[]>([]);
-      const [customChains, setCustomChains] = useState<string[]>([]);
-      const [customCategories, setCustomCategories] = useState<string[]>([]);
-      const [customExchanges, setCustomExchanges] = useState<string[]>([]);
-      const [poolCategories, setPoolCategories] = useState<string[]>([]);
-      const [customFilterType, setCustomFilterType] = useState<string | undefined>(undefined);
+  const [filterBuilderOpen, setFilterBuilderOpen] = useState(false);
+  const [selectedSavedFilter, setSelectedSavedFilter] = useState<IPrefilterTokensFilterValues | null>(null);
+  const [filterName, setFilterName] = useState<string | undefined>("");
+  const [filterValue, setFilterValue] = useState<object[] | string[] | undefined | null>();
+  const [filterToDelete, setFilterToDelete] = useState<IPrefilterTokensFilterValues | undefined>();
+  const [isDeleteFilterModalOpened, setIsDeleteFilterModalOpened] = useState<boolean>(false);
+  const { t } = useTranslation("CustomFilterBuilder");
+  const theme = useTheme();
+  const [openIntroduction, setOpenIntroduction] = useState(true);
+  const [openLogicGate, setOpenLogicGate] = useState(true);
+  const [openBuildFilter, setOpenBuildFilter] = useState(true);
+  const [currentVideo, setCurrentVideo] = useState(videoLinks.introduction);
+  const [showGuidanceBanner, setShowGuidanceBanner] = useState(true);
+  const isLiquidityPoolFilter = filterType === LIQUIDITY_POOL;
+  const isVaultsFilter = typeof filterType === "string" && filterType.startsWith(VAULTS);
+  const { data: chains, isLoading: chainsLoading } = useGetChainsQuery();
+  const { data: categories, isLoading: categoriesLoading } = useGetCategoriesQuery(undefined, { 
+    skip: isLiquidityPoolFilter 
+  });
+  const { data: exchanges, isLoading: exchangesLoading } = useGetExchangesQuery(undefined, { 
+    skip: isLiquidityPoolFilter 
+  });
+  const [allSymbolOptions, setAllSymbolOptions] = useState<string[]>([]);
+  const [allPoolSymbolOptions, setAllPoolSymbolOptions] = useState<string[]>([]);
+  const [allPoolProjectOptions, setAllPoolProjectOptions] = useState<string[]>([]);
+  const [allVaultNameOptions, setAllVaultNameOptions] = useState<string[]>([]);
+  const [allVaultPlatformOptions, setAllVaultPlatformOptions] = useState<string[]>([]);
+  const [customChains, setCustomChains] = useState<string[]>([]);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [customExchanges, setCustomExchanges] = useState<string[]>([]);
+  const [poolCategories, setPoolCategories] = useState<string[]>([]);
+  const [customFilterType, setCustomFilterType] = useState<string | undefined>(undefined); 
 
       // State for filter tree popover
       const [filterTreeAnchorEl, setFilterTreeAnchorEl] = useState<null | HTMLElement>(null);
@@ -1755,74 +1750,124 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
                         tree[tabNodeId].children.push(categoryNode);
                       }
 
-                      categoryNode.children.push({
-                        id: filter.id,
-                        name: filter.name,
-                        filterValue: filter.filter,
-                        isPublic: filter.isPublic,
-                        filterObject: filter,
-                        nodeId: filter.id,
-                        categoryName: categoryName,
-                        tabName: tabName,
-                        hasChildren: false,
-                      });
-                    }
-                  } else {
-                    tree[tabNodeId].children.push({
-                      id: filter.id,
-                      name: filter.name,
-                      filterValue: filter.filter,
-                      isPublic: filter.isPublic,
-                      filterObject: filter,
-                      nodeId: filter.id,
-                      tabName: tabName,
-                      hasChildren: false,
-                    });
-                  }
-                } else {
-                  tree[tabNodeId].children.push({
+                  categoryNode.children.push({
                     id: filter.id,
                     name: filter.name,
                     filterValue: filter.filter,
                     isPublic: filter.isPublic,
                     filterObject: filter,
                     nodeId: filter.id,
+                    categoryName: categoryName,
                     tabName: tabName,
-                    hasChildren: false,
+                    hasChildren: false
                   });
                 }
+              } else {
+                tree[tabNodeId].children.push({
+                  id: filter.id,
+                  name: filter.name,
+                  filterValue: filter.filter,
+                  isPublic: filter.isPublic,
+                  filterObject: filter,
+                  nodeId: filter.id,
+                  tabName: tabName,
+                  hasChildren: false
+                });
               }
+            } else {
+              tree[tabNodeId].children.push({
+                id: filter.id,
+                name: filter.name,
+                filterValue: filter.filter,
+                isPublic: filter.isPublic,
+                filterObject: filter,
+                nodeId: filter.id,
+                tabName: tabName,
+                hasChildren: false
+              });
             }
-          } else {
-            if (!tree[topLevelKey]) {
-              tree[topLevelKey] = {
-                name: topLevelKeys[topLevelKey],
+          }
+        } else if (topLevelKey === VAULTS) {
+          const dashIdx = childFilterType.indexOf('-');
+          const tabSlug = dashIdx === -1 ? childFilterType : childFilterType.slice(0, dashIdx);
+          const subSlug = dashIdx === -1 ? null : childFilterType.slice(dashIdx + 1);
+
+          const tabLabel = BEEFY_VAULT_TAB_KEY_TO_LABEL[tabSlug] ?? tabSlug;
+          const tabNodeId = `${topLevelKey}-${tabSlug}`;
+
+          if (!tree[tabNodeId]) {
+            tree[tabNodeId] = {
+              name: tabLabel,
+              children: [],
+              nodeId: tabNodeId,
+              isTab: true,
+            };
+          }
+
+          if (subSlug) {
+            const subLabel = BEEFY_VAULT_SUBCATEGORY_KEY_TO_LABEL[subSlug] ?? subSlug;
+            const subNodeId = `${tabNodeId}-${subSlug}`;
+            let subNode = tree[tabNodeId].children.find((c: any) => c.nodeId === subNodeId);
+            if (!subNode) {
+              subNode = {
+                name: subLabel,
+                categoryName: subLabel,
+                tabName: tabLabel,
                 children: [],
-                nodeId: topLevelKey,
+                nodeId: subNodeId,
               };
-
-              if (topLevelKey === LIQUIDITY_POOL) {
-                const samplesHeader = {
-                  name: "Samples",
-                  children: [],
-                  nodeId: `${topLevelKey}-samples`,
-                };
-
-                const customHeader = {
-                  name: "Custom",
-                  children: [],
-                  nodeId: `${topLevelKey}-custom`,
-                };
-
-                tree[topLevelKey].children.push(samplesHeader, customHeader);
-              }
+              tree[tabNodeId].children.push(subNode);
             }
-
-            const targetHeaderName = filter.isPublic ? "Samples" : "Custom";
-            const targetHeader =
-              topLevelKey === LIQUIDITY_POOL
-                ? tree[topLevelKey].children.find((child: any) => child.name === targetHeaderName)
-                : tree[topLevelKey];
+            subNode.children.push({
+              id: filter.id,
+              name: filter.name,
+              filterValue: filter.filter,
+              isPublic: filter.isPublic,
+              filterObject: filter,
+              nodeId: filter.id,
+              hasChildren: false,
+            });
+          } else {
+            tree[tabNodeId].children.push({
+              id: filter.id,
+              name: filter.name,
+              filterValue: filter.filter,
+              isPublic: filter.isPublic,
+              filterObject: filter,
+              nodeId: filter.id,
+              hasChildren: false,
+            });
+          }
+        }
+      } else {
+        if (!tree[topLevelKey]) {
+          tree[topLevelKey] = { 
+            name: topLevelKeys[topLevelKey], 
+            children: [],
+            nodeId: topLevelKey
+          };
+          
+          if (topLevelKey === LIQUIDITY_POOL) {
+            const samplesHeader = {
+              name: "Samples",
+              children: [],
+              nodeId: `${topLevelKey}-samples`
+            };
+            
+            const customHeader = {
+              name: "Custom", 
+              children: [],
+              nodeId: `${topLevelKey}-custom`
+            };
+            
+            tree[topLevelKey].children.push(samplesHeader, customHeader);
+          }
+        }
+        
+        const targetHeaderName = filter.isPublic ? "Samples" : "Custom";
+        const targetHeader = topLevelKey === LIQUIDITY_POOL ? tree[topLevelKey].children.find(
+            (child: any) => child.name === targetHeaderName
+          ) : tree[topLevelKey];
 
             if (targetHeader) {
               targetHeader.children.push({
@@ -1969,20 +2014,37 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         }
       };
 
-      const determineFilterContext = (filterType?: string | null): { tab?: MainTab; category?: string } => {
-        if (!filterType) {
-          return {};
+  const determineFilterContext = (filterType?: string | null): { tab?: MainTab; category?: string } => {
+    if (!filterType) {
+      return {};
+    }
+    if (filterType.startsWith(VAULTS + "-")) {
+      const subKey = filterType.slice((VAULTS + "-").length);
+
+      const tab = BEEFY_VAULT_TAB_KEY_TO_LABEL[subKey];
+      if (tab) return { tab: tab as any };
+
+      const dashIdx = subKey.indexOf('-');
+      if (dashIdx !== -1) {
+        const tabSlug = subKey.slice(0, dashIdx);
+        const subCatSlug = subKey.slice(dashIdx + 1);
+        const tabLabel = BEEFY_VAULT_TAB_KEY_TO_LABEL[tabSlug];
+        const subCatLabel = BEEFY_VAULT_SUBCATEGORY_KEY_TO_LABEL[subCatSlug];
+        if (tabLabel) {
+          return { tab: tabLabel as any, category: subCatLabel || subCatSlug };
         }
-        const parts = filterType.split("-");
-        if (parts.length === 1 && MAIN_TABS.includes(parts[0] as MainTab)) {
-          return { tab: parts[0] as MainTab };
-        } else if (parts.length === 2 && MAIN_TABS.includes(parts[0] as MainTab)) {
-          return { tab: parts[0] as MainTab, category: `All ${parts[1]}` };
-        } else if (parts.length === 3 && MAIN_TABS.includes(parts[0] as MainTab)) {
-          return { tab: parts[0] as MainTab, category: parts[2] };
-        }
-        return {};
-      };
+      }
+    }
+    const parts = filterType.split("-");
+    if (parts.length === 1 && MAIN_TABS.includes(parts[0] as MainTab)) {
+      return { tab: parts[0] as MainTab };
+    } else if (parts.length === 2 && MAIN_TABS.includes(parts[0] as MainTab)) {
+      return { tab: parts[0] as MainTab, category: `All ${parts[1]}` };
+    } else if (parts.length === 3 && MAIN_TABS.includes(parts[0] as MainTab)) {
+      return { tab: parts[0] as MainTab, category: parts[2] };
+    }
+    return {};
+  };
 
       const rootNodes = useMemo(() => {
         return Object.values(filterTree).sort((a: any, b: any) => (a?.name ?? "").localeCompare(b?.name ?? ""));

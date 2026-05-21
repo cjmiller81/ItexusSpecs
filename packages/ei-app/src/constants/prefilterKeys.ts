@@ -68,6 +68,37 @@ export const PREFILTER_CATEGORIES_MAP: { [key in Exclude<PrefilterTabs, Prefilte
   },
 };
 
+export const VAULTS = 'vaults';
+
+export const BEEFY_VAULT_TAB_KEYS: Record<string, string> = {
+  "Concentrated Liquidity": "clm",
+  "Liquidity Pools": "lp",
+  "Lending Vaults": "lending",
+  "Single-Asset Staking": "staking",
+};
+
+export const BEEFY_VAULT_TAB_KEY_TO_LABEL: Record<string, string> = Object.fromEntries(
+  Object.entries(BEEFY_VAULT_TAB_KEYS).map(([label, key]) => [key, label])
+);
+
+export const BEEFY_VAULT_SUBCATEGORY_KEYS: Record<string, string> = {
+  "CLM Pools": "clm-pools",
+  "Managed Range": "managed-range",
+  "LP": "lp",
+  "Multi-LP": "multi-lp",
+  "Compounding LP": "compounding-lp",
+  "Curated Lending": "curated-lending",
+  "Money Market": "money-market",
+  "Leveraged Lending": "leveraged-lending",
+  "Stable Savings": "stable-savings",
+  "Native Staking": "native-staking",
+  "Maxi": "maxi",
+};
+
+export const BEEFY_VAULT_SUBCATEGORY_KEY_TO_LABEL: Record<string, string> = Object.fromEntries(
+  Object.entries(BEEFY_VAULT_SUBCATEGORY_KEYS).map(([label, key]) => [key, label])
+);
+
 export const CATEGORY_NAME_MAPPING: Record<string, string> = {
   "Options Vaults": "Options Vault",
   "Onchain Capital Allocation": "Onchain Capital Allocator",
