@@ -93,7 +93,15 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
           }
           return null;
         }
-        // Recursively process subfilters
+        // Any other leaf comparison filter — return as-is to preserve value array structure
+        if (
+          filter.length === 3 &&
+          typeof filter[1] === 'string' &&
+          (typeof filter[0] === 'string' || (filter[0] && typeof filter[0] === 'object' && filter[0].dataField))
+        ) {
+          return filter;
+        }
+        // Recursively process composite filters
         let processed = filter
           .map(sub => removeAssetsFiltersAndCollectValues(sub, assetsParam))
           .filter(x => x !== null && x !== undefined);
@@ -119,6 +127,9 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
     // Transform anyof filters (from DevExtreme HeaderFilter) to contains/or format for the backend
     function transformAnyof(filter: any): any {
       if (!filter || !Array.isArray(filter)) return filter;
+      if (filter.length === 3 && filter[1] === 'anyof' && typeof filter[2] === 'string') {
+        return [filter[0], 'contains', filter[2]];
+      }
       if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
         const [field, , values] = filter;
         if (values.length === 0) return null;
