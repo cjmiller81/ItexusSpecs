@@ -8,8 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
-import React, { useMemo, useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
-import { BEEFY_VAULT_TAB_KEYS, BEEFY_VAULT_SUBCATEGORY_KEYS } from "@/constants/prefilterKeys";
+import React, { useMemo, useState, useImperativeHandle, forwardRef } from "react";
 
 export const ALL_VAULTS = "All Vaults" as const;
 export const PRIMARY_TABS = [
@@ -28,19 +27,6 @@ const SUBCATEGORIES: Record<Exclude<BeefyMajorTab, typeof ALL_VAULTS>, string[]>
   "Single-Asset Staking": ["All Single-Asset Staking", "Native Staking", "Maxi"],
 };
 
-const buildFilterFromSelection = (tab: BeefyMajorTab, subCategory: string): any[] | null => {
-  if (tab === ALL_VAULTS) return null;
-
-  const tabSlug = BEEFY_VAULT_TAB_KEYS[tab];
-  if (!tabSlug) return null;
-
-  if (!subCategory || subCategory.startsWith("All ")) {
-    return ["strategyTypeId", "contains", tabSlug];
-  }
-
-  const subSlug = BEEFY_VAULT_SUBCATEGORY_KEYS[subCategory];
-  return subSlug ? ["strategyTypeId", "=", subSlug] : ["strategyTypeId", "contains", tabSlug];
-};
 
 interface BeefyVaultCategoryFiltersSectionProps {
   onFilterChange?: (filter: any[] | null, filterContext: { tab: string | undefined; category: string | undefined }) => void;
@@ -91,14 +77,6 @@ export const BeefyVaultCategoryFiltersSection = forwardRef<BeefyVaultCategoryFil
       },
     }), [onFilterChange]);
 
-    const isInitialMount = useRef(true);
-    useEffect(() => {
-      if (isInitialMount.current) {
-        isInitialMount.current = false;
-        return;
-      }
-    }, []);
-
     const handleTabClick = (tab: BeefyMajorTab) => {
       setCurrentTab(tab);
       setSelectedSub("");
@@ -107,8 +85,7 @@ export const BeefyVaultCategoryFiltersSection = forwardRef<BeefyVaultCategoryFil
           onFilterChange(null, { tab: undefined, category: undefined });
         } else {
           const defaultSub = SUBCATEGORIES[tab as Exclude<BeefyMajorTab, typeof ALL_VAULTS>]?.[0] ?? "";
-          const filter = buildFilterFromSelection(tab, defaultSub);
-          onFilterChange(filter, { tab, category: defaultSub || undefined });
+          onFilterChange(null, { tab, category: defaultSub || undefined });
         }
       }
     };
@@ -116,8 +93,7 @@ export const BeefyVaultCategoryFiltersSection = forwardRef<BeefyVaultCategoryFil
     const handleSubClick = (sub: string) => {
       setSelectedSub(sub);
       if (onFilterChange && currentTab !== ALL_VAULTS) {
-        const filter = buildFilterFromSelection(currentTab, sub);
-        onFilterChange(filter, { tab: currentTab, category: sub || undefined });
+        onFilterChange(null, { tab: currentTab, category: sub || undefined });
       }
     };
 
