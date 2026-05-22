@@ -80,36 +80,6 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
 }));
 
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef, externalFilter }) => {
-    const transformFilterFromAnyof = (filter: any): any => {
-      if (!filter || !Array.isArray(filter)) {
-        return filter;
-      }
-      if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
-        const [field, , values] = filter;
-        if (values.length === 0) return [];
-        if (values.length === 1) {
-          return [field, 'contains', values[0]];
-        }
-        const conditions = values.map((value: any) => [field, 'contains', value]);
-        const result: any[] = [];
-        conditions.forEach((condition, index) => {
-          if (index > 0) {
-            result.push('or');
-          }
-          result.push(condition);
-        });
-        return result;
-      }
-      if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
-        return filter.map((item: any) => {
-          if (Array.isArray(item)) {
-            return transformFilterFromAnyof(item);
-          }
-          return item;
-        });
-      }
-      return filter;
-    };
   const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
   const datagrid =
     (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
@@ -149,18 +119,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
   }, [dispatch]);
 
   const onApplyFilter = (filter: string | any[] | (() => any) | null) => {
-    let transformedFilter = filter;
-    if (filter && Array.isArray(filter)) {
-      transformedFilter = transformFilterFromAnyof(filter);
-    }
-    if (transformedFilter && Array.isArray(transformedFilter) && (transformedFilter.includes('and') || transformedFilter.includes('or'))) {
-      transformedFilter = transformFilterFromAnyof(transformedFilter);
-    }
-    currentFilterRef.current = transformedFilter as object[];
-
-    filterRef.current?.onUpdateFilter(transformedFilter || []);
-
-    setCurrentFilter(transformedFilter as object[] | null | undefined);
+    currentFilterRef.current = filter as object[];
+    filterRef.current?.onUpdateFilter(filter || []);
+    setCurrentFilter(filter as object[] | null | undefined);
   };
 
   const onContentReady = () => {
@@ -252,7 +213,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           }}
         />
         <HeaderFilter
-          height={650}
+          height={350}
           visible={true}>
           <Search enabled={true} />
         </HeaderFilter>
@@ -525,7 +486,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         >
           <HeaderFilter
             visible={true}
-            height={650}
+            height={350}
             dataSource={{
               store: {
                 type: "array",

@@ -116,6 +116,23 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
       return filter;
     }
 
+    // Transform anyof filters (from DevExtreme HeaderFilter) to contains/or format for the backend
+    function transformAnyof(filter: any): any {
+      if (!filter || !Array.isArray(filter)) return filter;
+      if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
+        const [field, , values] = filter;
+        if (values.length === 0) return null;
+        if (values.length === 1) return [field, 'contains', values[0]];
+        const result: any[] = [];
+        values.forEach((v: any, i: number) => {
+          if (i > 0) result.push('or');
+          result.push([field, 'contains', v]);
+        });
+        return result;
+      }
+      return filter.map((item: any) => Array.isArray(item) ? transformAnyof(item) : item);
+    }
+
     // Helper: filter is meaningful if it contains anything except only logical operators
     function isMeaningfulFilter(f: any): boolean {
       if (!f) return false;
@@ -149,6 +166,7 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
               // Deep clone filter to avoid mutating DevExtreme state
               let filterCopy = Array.isArray(filter) ? JSON.parse(JSON.stringify(filter)) : filter;
               let filterWithoutAssets = removeAssetsFiltersAndCollectValues(filterCopy, assetsParam);
+              filterWithoutAssets = transformAnyof(filterWithoutAssets);
               if (isMeaningfulFilter(filterWithoutAssets)) {
                 params.filter = JSON.stringify(filterWithoutAssets);
               }
