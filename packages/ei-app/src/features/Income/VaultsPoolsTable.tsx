@@ -107,6 +107,28 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     return () => { cancelled = true; };
   }, []);
 
+  const [uniqueChains, setUniqueChains] = useState<{ id: string; value: string; text: string }[]>([]);
+  const [uniquePlatforms, setUniquePlatforms] = useState<{ id: string; value: string; text: string }[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const axios = await import("@/libs/axios/axios").then(m => m.default);
+        const response = await axios.get("/api/beefy/vaults", { params: { take: 9999 } });
+        if (!cancelled && response.data?.data) {
+          const data = response.data.data as any[];
+          const chains = ([...new Set(data.map(v => v.chain).filter(Boolean))] as string[]).sort();
+          setUniqueChains(chains.map(c => ({ id: c, value: c, text: c })));
+          const platforms = ([...new Set(data.map(v => v.platform_id || v.platformId).filter(Boolean))] as string[]).sort();
+          setUniquePlatforms(platforms.map(p => ({ id: p, value: p, text: p })));
+        }
+      } catch (e) {
+        // silently fail — HeaderFilter falls back to current-page values
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const currentFilterRef = useRef<object[] | null | undefined>(null);
   const [currentFilter, setCurrentFilter] = useState<object[] | null | undefined>(); // we use it only for re-render component
   const filterRef = useRef<CustomFilterBuilderRef>(null);
@@ -340,8 +362,19 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="string"
           allowHiding={false}
-          headerFilter={{ visible: true }}
-        />
+        >
+          <HeaderFilter
+            visible={true}
+            height={350}
+            dataSource={{
+              store: { type: "array", data: uniqueChains },
+              map: (item: any) => ({ text: item.text, value: item.value }),
+            }}
+            search={{ enabled: true, mode: "contains", searchExpr: ["text"] }}
+          >
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField="boost"
           caption="Boosts"
@@ -358,7 +391,19 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="string"
           allowHiding={false}
-        />
+        >
+          <HeaderFilter
+            visible={true}
+            height={350}
+            dataSource={{
+              store: { type: "array", data: uniquePlatforms },
+              map: (item: any) => ({ text: item.text, value: item.value }),
+            }}
+            search={{ enabled: true, mode: "contains", searchExpr: ["text"] }}
+          >
+            <Search enabled={true} />
+          </HeaderFilter>
+        </Column>
         <Column
           dataField="tvl"
           caption="TVL"
