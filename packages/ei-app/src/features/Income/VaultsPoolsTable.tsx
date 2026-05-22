@@ -117,9 +117,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         const response = await axios.get("/api/beefy/vaults", { params: { take: 9999 } });
         if (!cancelled && response.data?.data) {
           const data = response.data.data as any[];
-          const chains = ([...new Set(data.map(v => v.chain).filter(Boolean))] as string[]).sort();
+          const chains = (Array.from(new Set(data.map((v: any) => v.chain).filter(Boolean))) as string[]).sort();
           setUniqueChains(chains.map(c => ({ id: c, value: c, text: c })));
-          const platforms = ([...new Set(data.map(v => v.platform_id || v.platformId).filter(Boolean))] as string[]).sort();
+          const platforms = (Array.from(new Set(data.map((v: any) => v.platform_id || v.platformId).filter(Boolean))) as string[]).sort();
           setUniquePlatforms(platforms.map(p => ({ id: p, value: p, text: p })));
         }
       } catch (e) {
