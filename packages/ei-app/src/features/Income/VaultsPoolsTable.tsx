@@ -84,36 +84,6 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
 }));
 
 export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef, externalFilter, filterKey, onClearCategoryFilter, onTreeViewFilterChange }) => {
-    const transformFilterFromAnyof = (filter: any): any => {
-      if (!filter || !Array.isArray(filter)) {
-        return filter;
-      }
-      if (filter.length === 3 && filter[1] === 'anyof' && Array.isArray(filter[2])) {
-        const [field, , values] = filter;
-        if (values.length === 0) return [];
-        if (values.length === 1) {
-          return [field, 'contains', values[0]];
-        }
-        const conditions = values.map((value: any) => [field, 'contains', value]);
-        const result: any[] = [];
-        conditions.forEach((condition, index) => {
-          if (index > 0) {
-            result.push('or');
-          }
-          result.push(condition);
-        });
-        return result;
-      }
-      if (filter.length > 1 && (filter.includes('and') || filter.includes('or'))) {
-        return filter.map((item: any) => {
-          if (Array.isArray(item)) {
-            return transformFilterFromAnyof(item);
-          }
-          return item;
-        });
-      }
-      return filter;
-    };
   const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
   const datagrid = (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);

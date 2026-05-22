@@ -48,26 +48,26 @@ export const BeefyVaultCategoryFiltersSection = forwardRef<
   const borderColor = isDark ? alpha("#ffffff", 0.12) : alpha("#0f172a", 0.24);
   const chipBorderColor = isDark ? alpha("#ffffff", 0.08) : alpha("#0f172a", 0.3);
 
-  const [currentTab, setCurrentTab] = useState<BeefyMajorTab>(ALL_VAULTS);
-  const [selectedSub, setSelectedSub] = useState<string>("");
+  type TabState = { tab: BeefyMajorTab; sub: string; filterOverride?: any };
+  const [tabState, setTabState] = useState<TabState>({ tab: ALL_VAULTS, sub: "" });
+  const currentTab = tabState.tab;
+  const selectedSub = tabState.sub;
 
   const major = BEEFY_MAJOR_CATEGORIES.find(c => c.label === currentTab);
   const allSubLabel = major ? `All ${major.label}` : "";
 
   useImperativeHandle(ref, () => ({
     clearFilter: () => {
-      setCurrentTab(ALL_VAULTS);
-      setSelectedSub("");
+      setTabState({ tab: ALL_VAULTS, sub: "" });
       onFilterChange?.(null, { tab: undefined, category: undefined });
     },
     clearTooltips: () => {},
     setFilter: (filter, tab, category) => {
       if (PRIMARY_TABS.includes(tab)) {
-        setCurrentTab(tab);
-        setSelectedSub(category && category !== `All ${tab}` ? category : "");
-        onFilterChange?.(filter, {
-          tab: tab === ALL_VAULTS ? undefined : tab,
-          category: category || undefined,
+        setTabState({
+          tab,
+          sub: category && category !== `All ${tab}` ? category : "",
+          filterOverride: filter,
         });
       }
     },
@@ -81,17 +81,23 @@ export const BeefyVaultCategoryFiltersSection = forwardRef<
       onFilterChange?.(null, { tab: undefined, category: undefined });
       return;
     }
+    if (tabState.filterOverride !== undefined) {
+      onFilterChange?.(tabState.filterOverride, {
+        tab: tabState.tab === ALL_VAULTS ? undefined : tabState.tab,
+        category: tabState.sub || undefined,
+      });
+      return;
+    }
     const filter = buildBeefyFilter(currentTab, selectedSub || allSubLabel);
     onFilterChange?.(filter, { tab: currentTab === ALL_VAULTS ? undefined : currentTab, category: selectedSub || allSubLabel || undefined });
-  }, [currentTab, selectedSub, onFilterChange]);
+  }, [tabState, onFilterChange]);
 
   const handleMajorClick = (tab: BeefyMajorTab) => {
-    setCurrentTab(tab);
-    setSelectedSub("");
+    setTabState({ tab, sub: "" });
   };
 
   const handleSubClick = (subLabel: string) => {
-    setSelectedSub(subLabel);
+    setTabState(prev => ({ ...prev, sub: subLabel, filterOverride: undefined }));
   };
 
   return (
