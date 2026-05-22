@@ -27,7 +27,7 @@ import {
   PasswordResetModal,
   updateTourStatusAsync,
   fetchReactourSettingsAsync,
-  Require2FA
+  Require2FA,
 } from "components";
 import { useLifiChainMap } from "@/common/lifiChainContext";
 import { AnimatedStartTourButton } from "../components/AnimatedStartTourButton";
@@ -59,14 +59,13 @@ const SurveyButton = () => {
         backgroundColor: "#219a83",
         color: "white",
         "&:hover": {
-          backgroundColor: "#219a83"
-        }
+          backgroundColor: "#219a83",
+        },
       }}
       onClick={() => {
         // Open survey link in new tab: https://forms.gle/NhcLMGVZZyphnsK8A
         window.open("https://forms.gle/NhcLMGVZZyphnsK8A", "_blank");
-      }}
-    >
+      }}>
       Survey Link
     </Button>
   );
@@ -74,8 +73,8 @@ const SurveyButton = () => {
 
 export default function HomePage() {
   const { session } = useOry();
-  const traits = session?.identity?.traits
-  const firstName = traits?.name?.first ?? "" ;
+  const traits = session?.identity?.traits;
+  const firstName = traits?.name?.first ?? "";
   const { t } = useTranslation("HomePage");
   const wallets = useAppSelector(state => state.wallets.wallets);
   const portfolioWalletData = useAppSelector(state => state.wallets.portfolioWalletData);
@@ -83,7 +82,7 @@ export default function HomePage() {
   const statusFetchingPortfolio = useAppSelector(state => state.wallets.statusFetchingPortfolio);
   const statusTotalWalletWorthChartData = useAppSelector(state => state.dashboard.statusTotalWalletWorthChartData);
   const totalWalletWorthChartData = useAppSelector(state => state.dashboard.totalWalletWorthChartData);
-  const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData)
+  const totalWalletWorthValueChartData = useAppSelector(state => state.dashboard.totalWalletWorthValueChartData);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<[Date, Date]>([
@@ -107,14 +106,12 @@ export default function HomePage() {
     max: 150,
     fromDate: moment(selectedDate[0]).utc().toDate(),
     toDate: moment(selectedDate[1]).utc().toDate(),
-  })
+  });
 
   useEffect(() => {
-    const recoveryCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('postRecoveryRedirect='));
+    const recoveryCookie = document.cookie.split("; ").find(row => row.startsWith("postRecoveryRedirect="));
 
-    const requiresPasswordChange = router.query.requireChangePassword === 'true';
+    const requiresPasswordChange = router.query.requireChangePassword === "true";
 
     if (recoveryCookie || requiresPasswordChange) {
       setShowPasswordResetModal(true);
@@ -125,12 +122,12 @@ export default function HomePage() {
 
   useEffect(() => {
     if (wallets === null) dispatch(fetchWallets(null));
-  }, [wallets,dispatch]);
+  }, [wallets, dispatch]);
 
   const { lifiChainMap } = useLifiChainMap();
 
   useEffect(() => {
-    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== 'loading') {
+    if (wallets && wallets.length > 0 && lifiChainMap && statusFetchingPortfolio !== "loading") {
       const addresses = wallets.map(w => w.address);
       const currentAddresses = portfolioWalletData.map(w => w.walletAddress);
       const addressesChanged = addresses.some(addr => !currentAddresses.includes(addr));
@@ -147,248 +144,322 @@ export default function HomePage() {
     dispatch(fetchHistoricalWalletData());
   }, [wallets, portfolioWalletData, dispatch]);
 
-const retryRef = useRef<ReturnType<typeof setInterval> | null>(null);
-const topTokensRef = useRef<TopTokenData[] | null>(null);
+  const retryRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const topTokensRef = useRef<TopTokenData[] | null>(null);
 
-useEffect(() => {
-  const fetchTopTokens = () => {
-    setIsFetchingTopTokens(true);
-    filteredTokensApi
-      .getTopTokens(10)
-      .then(response => {
-        const calculatedData = response.data.map<TopTokenData>(data => ({
-          tokenId: data.id,
-          iconUrl: data.lURI,
-          id: data.id,
-          marketCap: data.mCap,
-          symbol: data.sym,
-          price: data.price,
-          fulDilVal: data.fulDilVal,
-        }));
-        setTopTokens(calculatedData);
-        topTokensRef.current = calculatedData;
-      })
-      .catch(console.error)
-      .finally(() => setIsFetchingTopTokens(false));
-  };
+  useEffect(() => {
+    const fetchTopTokens = () => {
+      setIsFetchingTopTokens(true);
+      filteredTokensApi
+        .getTopTokens(10)
+        .then(response => {
+          const calculatedData = response.data.map<TopTokenData>(data => ({
+            tokenId: data.id,
+            iconUrl: data.lURI,
+            id: data.id,
+            marketCap: data.mCap,
+            symbol: data.sym,
+            price: data.price,
+            fulDilVal: data.fulDilVal,
+          }));
+          setTopTokens(calculatedData);
+          topTokensRef.current = calculatedData;
+        })
+        .catch(console.error)
+        .finally(() => setIsFetchingTopTokens(false));
+    };
 
-  fetchTopTokens();
+    fetchTopTokens();
 
-  retryRef.current = setInterval(() => {
-    const tokens = topTokensRef.current;
-    if (!tokens || tokens.length === 0) {
-      fetchTopTokens();
-    }
-  }, 3000);
+    retryRef.current = setInterval(() => {
+      const tokens = topTokensRef.current;
+      if (!tokens || tokens.length === 0) {
+        fetchTopTokens();
+      }
+    }, 3000);
 
-  return () => {
-    if (retryRef.current) clearInterval(retryRef.current);
-  };
-}, []);
+    return () => {
+      if (retryRef.current) clearInterval(retryRef.current);
+    };
+  }, []);
 
   const steps: StepType[] = [
     {
       selector: "#ei-logo",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("WelcomeToElanInsights")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("CryptoDataMiningAnalyticsDecisionModeling")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("WelcomeToElanInsights")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem" }}>
+            {t("CryptoDataMiningAnalyticsDecisionModeling")}
+          </Typography>
         </Box>
       ),
-      position: "bottom"
+      position: "bottom",
     },
     {
       selector: "#ei-profile-button",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("ProfileSettings")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("ClickHereToAccessYourProfile")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("ProfileSettings")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem" }}>
+            {t("ClickHereToAccessYourProfile")}
+          </Typography>
         </Box>
       ),
-      position: "bottom"
+      position: "bottom",
     },
     {
       selector: "#ei-crypto-news",
       content: () => (
-         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("CryptoNews")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterNewsEvents")}</Typography>
+        <Box>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("CryptoNews")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem", whiteSpace: "pre-line" }}>
+            {t("FilterNewsEvents")}
+          </Typography>
         </Box>
       ),
-      position: "right"
+      position: "right",
     },
     {
       selector: "#ei-crypto-calendar",
       content: () => (
-         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("CryptoCalendar")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("FilterCalendarEvents")}</Typography>
+        <Box>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("CryptoCalendar")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem", whiteSpace: "pre-line" }}>
+            {t("FilterCalendarEvents")}
+          </Typography>
         </Box>
       ),
-      position: "right"
+      position: "right",
     },
     {
       selector: "#ei-platform-menu",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("PlatformStrategies")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("PlatformsContainStrategies")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("PlatformStrategies")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem" }}>
+            {t("PlatformsContainStrategies")}
+          </Typography>
         </Box>
       ),
-      position: "right"
+      position: "right",
     },
     {
       selector: "#ei-tools-section",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("AdvancedTools")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("ToolsEnableCustomizedAnalysis")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("AdvancedTools")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem" }}>
+            {t("ToolsEnableCustomizedAnalysis")}
+          </Typography>
         </Box>
       ),
-      position: "left"
+      position: "left",
     },
     {
       selector: "#ei-investing-card",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("InvestingStrategies")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheInvestingStrategy")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("InvestingStrategies")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem" }}>
+            {t("SnapshotOfTheInvestingStrategy")}
+          </Typography>
         </Box>
       ),
-      position: "top"
+      position: "top",
     },
     {
       selector: "#ei-income-card",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("IncomeStrategies")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem' }}>{t("SnapshotOfTheIncomeStrategy")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("IncomeStrategies")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem" }}>
+            {t("SnapshotOfTheIncomeStrategy")}
+          </Typography>
         </Box>
       ),
-      position: "top"
+      position: "top",
     },
     {
       selector: "#ei-theme-toggle",
       content: () => (
         <Box>
-          <Typography fontWeight={700} fontSize={18} sx={{ mb: 1, color: '#1a1a1a' }}>{t("LightDarkMode")}</Typography>
-          <Typography sx={{ color: '#6b7280', lineHeight: 1.8, fontSize: '0.95rem', whiteSpace: 'pre-line' }}>{t("ChangeBetweenLightAndDarkModes")}</Typography>
+          <Typography
+            fontWeight={700}
+            fontSize={18}
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("LightDarkMode")}
+          </Typography>
+          <Typography sx={{ color: "#6b7280", lineHeight: 1.8, fontSize: "0.95rem", whiteSpace: "pre-line" }}>
+            {t("ChangeBetweenLightAndDarkModes")}
+          </Typography>
         </Box>
       ),
-      position: "left"
-    }
+      position: "left",
+    },
   ];
 
   return (
     <TourProvider
       steps={steps}
-        styles={{
-          popover: (base) => ({
-            ...base,
-            borderRadius: 12,
-            padding: 16,
-            background: "#f7f5f2",
-            color: "#6b7280",
-            fontSize: "0.95rem",
-            lineHeight: 1.8
-          }),
-          maskArea: (base) => ({ ...base, rx: 10 }),
-          close: (base) => ({
-            ...base,
-            width: 14,
-            height: 14,
-            padding: '10px',
-            boxSizing: 'content-box',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            top: 10,
-            right: 8,
-            cursor: 'pointer',
-          }),
-        }}
-        showBadge={false}
-        components={{
-          Content: (props: any) => {
-            const step = steps[props.currentStep];
-            // @ts-ignore - content() signature varies
-            const content = typeof step?.content === 'function' ? step.content() : step?.content;
+      styles={{
+        popover: base => ({
+          ...base,
+          borderRadius: 12,
+          padding: 16,
+          background: "#f7f5f2",
+          color: "#6b7280",
+          fontSize: "0.95rem",
+          lineHeight: 1.8,
+        }),
+        maskArea: base => ({ ...base, rx: 10 }),
+        close: base => ({
+          ...base,
+          width: 14,
+          height: 14,
+          padding: "10px",
+          boxSizing: "content-box",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          top: 10,
+          right: 8,
+          cursor: "pointer",
+        }),
+      }}
+      showBadge={false}
+      components={{
+        Content: (props: { currentStep: number }) => {
+          const step = steps[props.currentStep];
+          // @ts-expect-error - content() signature varies
+          const content = typeof step?.content === "function" ? step.content() : step?.content;
 
-            return (
-              <Box>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
-                  <Box sx={{
+          return (
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1.5 }}>
+                <Box
+                  sx={{
                     width: 30,
                     height: 30,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(45deg,#3b82f6,#06b6d4)',
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    borderRadius: "50%",
+                    background: "linear-gradient(45deg,#3b82f6,#06b6d4)",
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     fontWeight: 700,
                     fontSize: 14,
                     flexShrink: 0,
-                    marginTop: "-2px"
+                    marginTop: "-2px",
                   }}>
-                    {(props.currentStep ?? 0) + 1}
-                  </Box>
-                  <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
-                    {content || null}
-                  </Box>
+                  {(props.currentStep ?? 0) + 1}
                 </Box>
-              </Box>
-            );
-          },
-          Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-              <Box sx={{ display: 'flex', gap: '6px' }}>
-                {Array.from({ length: steps?.length || 0 }).map((_, i) => (
-                  <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
-                ))}
-              </Box>
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                {currentStep > 0 && (
-                  <Button
-                    variant="contained"
-                    onClick={() => setCurrentStep(currentStep - 1)}
-                    sx={{
-                      background: '#f7f5f2',
-                      color: '#4a5568',
-                      border: '1px solid #e2e8f0',
-                      boxShadow: 'none',
-                      textTransform: 'none',
-                      '&:hover': { background: '#f0ece5', boxShadow: 'none' }
-                    }}
-                  >
-                    Prior
-                  </Button>
-                )}
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    if (currentStep === (steps?.length || 0) - 1) {
-                      setIsOpen(false);
-                    } else {
-                      setCurrentStep(currentStep + 1);
-                    }
-                  }}
-                  sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
-                >
-                  {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
-                </Button>
+                <Box sx={{ flex: 1, color: "#6b7280", fontSize: "0.95rem", lineHeight: 1.8 }}>{content || null}</Box>
               </Box>
             </Box>
-          )
-        }}
-    >
+          );
+        },
+        Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+            <Box sx={{ display: "flex", gap: "6px" }}>
+              {Array.from({ length: steps?.length || 0 }).map((_, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: i <= currentStep ? "#3b82f6" : "#e2e8f0",
+                  }}
+                />
+              ))}
+            </Box>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              {currentStep > 0 && (
+                <Button
+                  variant="contained"
+                  onClick={() => setCurrentStep(currentStep - 1)}
+                  sx={{
+                    background: "#f7f5f2",
+                    color: "#4a5568",
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "none",
+                    textTransform: "none",
+                    "&:hover": { background: "#f0ece5", boxShadow: "none" },
+                  }}>
+                  Prior
+                </Button>
+              )}
+              <Button
+                variant="contained"
+                onClick={() => {
+                  if (currentStep === (steps?.length || 0) - 1) {
+                    setIsOpen(false);
+                  } else {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+                sx={{
+                  background: "linear-gradient(45deg,#3b82f6,#06b6d4)",
+                  color: "#fff",
+                  boxShadow: "none",
+                  textTransform: "none",
+                }}>
+                {currentStep === (steps?.length || 0) - 1 ? "Finish" : "Next"}
+              </Button>
+            </Box>
+          </Box>
+        ),
+      }}>
       <Box id="homepage">
         <TourStateSync
           totalSteps={steps.length}
           showPasswordResetModal={showPasswordResetModal}
           showWelcomeModal={showWelcomeModal}
         />
-        <Box display="flex" alignItems="center">
+        <Box
+          display="flex"
+          alignItems="center">
           <Typography
             variant="h5"
             sx={{ fontWeight: "bold" }}>
@@ -398,87 +469,42 @@ useEffect(() => {
           <SurveyButton />
         </Box>
 
-      <Grid
-        mt={2}
-        spacing={2}
-        container
-        alignItems="stretch"
-        sx={{ marginTop: 0 }}>
         <Grid
-          item
-          xs={12}
-          md={6}
-          lg={5}
-          sx={{ display: 'flex' }}>
-        <Require2FA>
-          <WalletWorthTile
-            loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
-            chartLoading={statusFetchingPortfolio === "loading"}
-            icon={<AccountBalanceWalletIcon />}
-            chartDataGrowth={totalWalletWorthChartData}
-            chartDataValue={totalWalletWorthValueChartData}
-            sx={{ width: '100%' }}
-          />
-          </Require2FA>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          lg={5}
-          id="ei-investing-card"
-          sx={{ display: 'flex' }}>
-          <TopTokensTile
-            loading={isFetchingTopTokens}
-            title={t("TopTokensTile")}
-            icon={<AutoGraphIcon />}
-            tableAssets={topTokens}
-            sx={{ width: '100%' }}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={12}
-          lg={2}
-          id="ei-crypto-news"
-          sx={{ display: 'flex' }}>
-          <CryptoNewsTile
-            title={t("CryptoNewsTile")}
-            icon={<NewspaperIcon />}
-            sx={{ width: '100%' }}
-          />
-        </Grid>
-
-        <Grid
-          item
-          xs={12}
-          container
+          mt={2}
           spacing={2}
-          justifyContent="space-between"
-          id="ei-platforms-section">
+          container
+          alignItems="stretch"
+          sx={{ marginTop: 0 }}>
           <Grid
             item
             xs={12}
             md={6}
             lg={5}
-            id="ei-income-card">
-            <IncomeTile
-              loading={isPoolsLoading}
-              data={poolsData}
-              icon={<CurrencyExchangeIcon />}
-              title={t("IncomeTile")}
-            />
+            sx={{ display: "flex" }}>
+            <Require2FA>
+              <WalletWorthTile
+                loading={statusFetchingWallets === "loading" || statusTotalWalletWorthChartData === "loading"}
+                chartLoading={statusFetchingPortfolio === "loading"}
+                icon={<AccountBalanceWalletIcon />}
+                chartDataGrowth={totalWalletWorthChartData}
+                chartDataValue={totalWalletWorthValueChartData}
+                sx={{ width: "100%" }}
+              />
+            </Require2FA>
           </Grid>
           <Grid
             item
             xs={12}
             md={6}
             lg={5}
-            id="ei-tools-section">
-            <TradingViewTile
-              icon={<SyncAltIcon />}
-              title={t("TradingTile")}
+            id="ei-investing-card"
+            sx={{ display: "flex" }}>
+            <TopTokensTile
+              loading={isFetchingTopTokens}
+              title={t("TopTokensTile")}
+              icon={<AutoGraphIcon />}
+              tableAssets={topTokens}
+              sx={{ width: "100%" }}
             />
           </Grid>
           <Grid
@@ -486,31 +512,76 @@ useEffect(() => {
             xs={12}
             md={12}
             lg={2}
-            id="ei-crypto-calendar">
-            <CryptoCalendar
-              loading={isCalendarLoading}
-              title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
-              icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
-              calendarData={calendarEvents?.body || []}
-              setSelectedDate={setSelectedDate}
-              selectedDate={selectedDate}
-              onFetchPage={fetchLookupPage}
+            id="ei-crypto-news"
+            sx={{ display: "flex" }}>
+            <CryptoNewsTile
+              title={t("CryptoNewsTile")}
+              icon={<NewspaperIcon />}
+              sx={{ width: "100%" }}
             />
           </Grid>
+
+          <Grid
+            item
+            xs={12}
+            container
+            spacing={2}
+            justifyContent="space-between"
+            id="ei-platforms-section">
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={5}
+              id="ei-income-card">
+              <IncomeTile
+                loading={isPoolsLoading}
+                data={poolsData}
+                icon={<CurrencyExchangeIcon />}
+                title={t("IncomeTile")}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={5}
+              id="ei-tools-section">
+              <TradingViewTile
+                icon={<SyncAltIcon />}
+                title={t("TradingTile")}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={12}
+              lg={2}
+              id="ei-crypto-calendar">
+              <CryptoCalendar
+                loading={isCalendarLoading}
+                title={t("CryptoCalendarTitle", { ns: "CryptoCalendar" })}
+                icon={<CalendarMonthOutlinedIcon sx={{ color: "primary.main" }} />}
+                calendarData={calendarEvents?.body || []}
+                setSelectedDate={setSelectedDate}
+                selectedDate={selectedDate}
+                onFetchPage={fetchLookupPage}
+              />
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
       </Box>
       <PasswordResetModal
         open={showPasswordResetModal}
         onClose={() => setShowPasswordResetModal(false)}
         onSuccess={() => {
           setShowPasswordResetModal(false);
-          document.cookie = 'postRecoveryRedirect=; path=/; max-age=0';
+          document.cookie = "postRecoveryRedirect=; path=/; max-age=0";
           if (router.query.requireChangePassword) {
-            router.replace('/', undefined, { shallow: true });
+            router.replace("/", undefined, { shallow: true });
           }
         }}
-        onWelcomeModalOpen={(isOpen) => setShowWelcomeModal(isOpen)}
+        onWelcomeModalOpen={isOpen => setShowWelcomeModal(isOpen)}
       />
     </TourProvider>
   );
@@ -519,7 +590,7 @@ useEffect(() => {
 const TourStateSync = ({
   totalSteps,
   showPasswordResetModal,
-  showWelcomeModal
+  showWelcomeModal,
 }: {
   totalSteps: number;
   showPasswordResetModal: boolean;
@@ -528,14 +599,14 @@ const TourStateSync = ({
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
   const [tourWasOpened, setTourWasOpened] = useState(false);
-  const reactourSettings = useAppSelector((state) => state.reactour.settings);
+  const reactourSettings = useAppSelector(state => state.reactour.settings);
 
   useEffect(() => {
     const loadTourData = async () => {
       try {
         await dispatch(fetchReactourSettingsAsync()).unwrap();
       } catch (error) {
-        console.error('Failed to fetch tour settings:', error);
+        console.error("Failed to fetch tour settings:", error);
       }
     };
     loadTourData();
@@ -557,21 +628,25 @@ const TourStateSync = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    dispatch(updateTourStatusAsync({
-      tourName: TOUR_NAME,
-      update: {
-        step: currentStep,
-        viewed: currentStep >= totalSteps - 1 ? true : undefined
-      }
-    }));
+    dispatch(
+      updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: {
+          step: currentStep,
+          viewed: currentStep >= totalSteps - 1 ? true : undefined,
+        },
+      }),
+    );
   }, [currentStep, totalSteps, isOpen, dispatch]);
 
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
-      dispatch(updateTourStatusAsync({
-        tourName: TOUR_NAME,
-        update: { viewed: true }
-      }));
+      dispatch(
+        updateTourStatusAsync({
+          tourName: TOUR_NAME,
+          update: { viewed: true },
+        }),
+      );
     } else if (isOpen) {
       setTourWasOpened(true);
     }

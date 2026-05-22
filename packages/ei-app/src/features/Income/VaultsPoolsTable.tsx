@@ -19,7 +19,7 @@ import DataGridDef, {
   Toolbar,
 } from "devextreme-react/data-grid";
 import DataSource from "devextreme/data/data_source";
-import React, { FC, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button, styled } from "@mui/material";
 const AddLiquidityButton = styled(Button)(({ theme }) => ({
   textTransform: "none",
@@ -36,9 +36,9 @@ const AddLiquidityButton = styled(Button)(({ theme }) => ({
   alignItems: "center",
   fontSize: 14,
   boxShadow: "none",
-  '&:hover': {
-    backgroundColor: '#1c8d74',
-    boxShadow: 'none',
+  "&:hover": {
+    backgroundColor: "#1c8d74",
+    boxShadow: "none",
   },
 }));
 import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
@@ -79,10 +79,15 @@ const ColumnChooserActionButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate, dataSource, dataGridRef, externalFilter }) => {
+export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({
+  loading,
+  onUpdate,
+  dataSource,
+  dataGridRef,
+  externalFilter,
+}) => {
   const internalDataGridRef = useRef<DataGridDef<VaultsData, string> | null>(null);
-  const datagrid =
-    (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
+  const datagrid = (dataGridRef as MutableRefObject<DataGridDef<VaultsData, string> | null>) ?? internalDataGridRef;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const allowedPageSizes = useMemo(() => [5, 10, 20, 50], []);
   const { filters, deletingFilterStatus, creatingFilterStatus, updatingFilterStatus } = useAppSelector(
@@ -104,7 +109,9 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         setUniqueAssets([]);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const [uniqueChains, setUniqueChains] = useState<{ id: string; value: string; text: string }[]>([]);
@@ -119,14 +126,18 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           const data = response.data.data as any[];
           const chains = (Array.from(new Set(data.map((v: any) => v.chain).filter(Boolean))) as string[]).sort();
           setUniqueChains(chains.map(c => ({ id: c, value: c, text: c })));
-          const platforms = (Array.from(new Set(data.map((v: any) => v.platform_id || v.platformId).filter(Boolean))) as string[]).sort();
+          const platforms = (
+            Array.from(new Set(data.map((v: any) => v.platform_id || v.platformId).filter(Boolean))) as string[]
+          ).sort();
           setUniquePlatforms(platforms.map(p => ({ id: p, value: p, text: p })));
         }
       } catch (e) {
         // silently fail — HeaderFilter falls back to current-page values
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const currentFilterRef = useRef<object[] | null | undefined>(null);
@@ -140,11 +151,100 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     dispatch(fetchFilters({}));
   }, [dispatch]);
 
+  const transformFilterFromAnyof = useCallback((filter: any): any => {
+    if (!filter || !Array.isArray(filter)) {
+      return filter;
+    }
+
+    if (filter.length === 3 && filter[1] === "anyof" && Array.isArray(filter[2])) {
+      const [field, , values] = filter;
+      if (values.length === 0) return [];
+      if (values.length === 1) {
+        return [field, "contains", values[0]];
+      }
+      const conditions = values.map((value: any) => [field, "contains", value]);
+      const result: any[] = [];
+      conditions.forEach((condition, index) => {
+        if (index > 0) {
+          result.push("or");
+        }
+        result.push(condition);
+      });
+      return result;
+    }
+
+    if (filter.length > 1 && (filter.includes("and") || filter.includes("or"))) {
+      return filter.map((item: any) => {
+        if (Array.isArray(item)) {
+          return transformFilterFromAnyof(item);
+        }
+        return item;
+      });
+    }
+
+    return filter;
+  }, []);
+
   const onApplyFilter = (filter: string | any[] | (() => any) | null) => {
-    currentFilterRef.current = filter as object[];
-    filterRef.current?.onUpdateFilter(filter || []);
-    setCurrentFilter(filter as object[] | null | undefined);
+    let newFilter = filter as object[] | string[] | null;
+
+    if (newFilter && Array.isArray(newFilter)) {
+      newFilter = transformFilterFromAnyof(newFilter);
+    }
+
+    currentFilterRef.current = newFilter as object[];
+    filterRef.current?.onUpdateFilter(newFilter || []);
+    setCurrentFilter(newFilter as object[] | null | undefined);
   };
+
+  const calculateFilterExpression = useCallback(function (
+    this: any,
+    filterValues: any,
+    selectedFilterOperation: string | null,
+    _target: string,
+    ...rest: any[]
+  ): any {
+    try {
+      if (filterValues) {
+        const selectedValue = filterValues;
+
+        if (selectedValue && selectedFilterOperation === "=") {
+          return [this.dataField, "contains", selectedValue];
+        }
+
+        if (selectedFilterOperation === "contains") {
+          return [this.dataField, "contains", selectedValue];
+        }
+
+        if (Array.isArray(selectedValue) && selectedValue.length > 0) {
+          if (selectedValue.length === 1) {
+            return [this.dataField, "contains", selectedValue[0]];
+          }
+          const conditions = selectedValue.map((value: string) => [this.dataField, "contains", value]);
+          const result: any[] = [];
+          conditions.forEach((condition, index) => {
+            if (index > 0) {
+              result.push("or");
+            }
+            result.push(condition);
+          });
+          return result;
+        }
+
+        return this.defaultCalculateFilterExpression.call(
+          this,
+          filterValues,
+          selectedFilterOperation,
+          _target,
+          ...rest,
+        );
+      }
+      return this.defaultCalculateFilterExpression.call(this, filterValues, selectedFilterOperation, _target, ...rest);
+    } catch (err) {
+      console.error("Error on calculateFilterExpression:", err);
+      return null;
+    }
+  }, []);
 
   const onContentReady = () => {
     const filterPanelTextDiv = containerRef.current?.querySelector(".dx-datagrid-filter-panel-text");
@@ -171,24 +271,24 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
     return Math.max(score, 0);
   };
 
-  const formatTimestamp = (unixSeconds: number, fallbackText = 'N/A') => {
+  const formatTimestamp = (unixSeconds: number, fallbackText = "N/A") => {
     if (!unixSeconds || unixSeconds === 0) return fallbackText;
 
     const date = new Date(unixSeconds * 1000);
 
-    const hours   = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    const month   = String(date.getMonth() + 1).padStart(2, '0');
-    const day     = String(date.getDate()).padStart(2, '0');
-    const year    = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
 
     return `${hours}:${minutes}:${seconds} ${month}/${day}/${year}`;
   };
 
   return (
     <div ref={containerRef}>
-      {/*@ts-ignore*/}
+      {/*@ts-expect-error - generic StyledDataGridDef component*/}
       <StyledDataGridDef<VaultsData>
         style={{ pointerEvents: "auto" }}
         id="income_table"
@@ -211,14 +311,17 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
         filterValue={
           currentFilter && Array.isArray(currentFilter) && currentFilter.length > 0
             ? currentFilter
-            : (externalFilter !== undefined && externalFilter !== null && Array.isArray(externalFilter) && externalFilter.length > 0
+            : externalFilter !== undefined &&
+                externalFilter !== null &&
+                Array.isArray(externalFilter) &&
+                externalFilter.length > 0
               ? externalFilter
-              : [])
+              : []
         }
         onContentReady={onContentReady}
         filterSyncEnabled={true}
         onFilterValueChange={onApplyFilter}
-        onOptionChanged={(e) => {
+        onOptionChanged={e => {
           // Track ColumnChooser open/close state
           if (e.fullName === "columnChooser.visible" || e.fullName?.includes("columnChooser")) {
             setIsColumnChooserOpen(e.value === true);
@@ -289,9 +392,15 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
               }}>
               <span>COLUMN CHOOSER</span>
               {isColumnChooserOpen ? (
-                <KeyboardArrowUpRoundedIcon fontSize="small" className="column-chooser-arrow" />
+                <KeyboardArrowUpRoundedIcon
+                  fontSize="small"
+                  className="column-chooser-arrow"
+                />
               ) : (
-                <KeyboardArrowDownRoundedIcon fontSize="small" className="column-chooser-arrow" />
+                <KeyboardArrowDownRoundedIcon
+                  fontSize="small"
+                  className="column-chooser-arrow"
+                />
               )}
             </ColumnChooserActionButton>
           </Item>
@@ -333,15 +442,14 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    color: 'inherit',
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                  }}
-                >
+                    color: "inherit",
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    height: "100%",
+                  }}>
                   Add Liquidity&nbsp;&rarr;
                 </a>
               </AddLiquidityButton>
@@ -355,6 +463,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataType="string"
           allowHiding={false}
           headerFilter={{ visible: true }}
+          calculateFilterExpression={calculateFilterExpression}
         />
         <Column
           dataField="chain"
@@ -362,7 +471,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="string"
           allowHiding={false}
-        >
+          calculateFilterExpression={calculateFilterExpression}>
           <HeaderFilter
             visible={true}
             height={350}
@@ -370,8 +479,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
               store: { type: "array", data: uniqueChains },
               map: (item: any) => ({ text: item.text, value: item.value }),
             }}
-            search={{ enabled: true, mode: "contains", searchExpr: ["text"] }}
-          >
+            search={{ enabled: true, mode: "contains", searchExpr: ["text"] }}>
             <Search enabled={true} />
           </HeaderFilter>
         </Column>
@@ -391,7 +499,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           alignment="left"
           dataType="string"
           allowHiding={false}
-        >
+          calculateFilterExpression={calculateFilterExpression}>
           <HeaderFilter
             visible={true}
             height={350}
@@ -399,8 +507,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
               store: { type: "array", data: uniquePlatforms },
               map: (item: any) => ({ text: item.text, value: item.value }),
             }}
-            search={{ enabled: true, mode: "contains", searchExpr: ["text"] }}
-          >
+            search={{ enabled: true, mode: "contains", searchExpr: ["text"] }}>
             <Search enabled={true} />
           </HeaderFilter>
         </Column>
@@ -510,6 +617,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={true}
           visible={false}
           headerFilter={{ visible: true }}
+          calculateFilterExpression={calculateFilterExpression}
         />
         <Column
           dataField="earnedToken"
@@ -519,6 +627,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           allowHiding={true}
           visible={false}
           headerFilter={{ visible: true }}
+          calculateFilterExpression={calculateFilterExpression}
         />
         <Column
           dataField="assets"
@@ -527,8 +636,8 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataType="string"
           allowHiding={true}
           visible={false}
-          cellRender={({ data }) => Array.isArray(data.assets) ? data.assets.join(', ') : data.assets}
-        >
+          cellRender={({ data }) => (Array.isArray(data.assets) ? data.assets.join(", ") : data.assets)}
+          calculateFilterExpression={calculateFilterExpression}>
           <HeaderFilter
             visible={true}
             height={350}
@@ -543,8 +652,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
               enabled: true,
               mode: "contains",
               searchExpr: ["text"],
-            }}
-          >
+            }}>
             <Search enabled={true} />
           </HeaderFilter>
         </Column>
@@ -564,7 +672,7 @@ export const VaultsPoolsTable: FC<IPrefilterTokensTable> = ({ loading, onUpdate,
           dataType="string"
           allowHiding={true}
           visible={false}
-          calculateCellValue={data => formatTimestamp(data.last_harvest, 'Never')}
+          calculateCellValue={data => formatTimestamp(data.last_harvest, "Never")}
         />
         <Export
           enabled={true}
