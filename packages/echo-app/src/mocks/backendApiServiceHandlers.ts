@@ -1,40 +1,51 @@
-import { http, HttpResponse } from 'msw'
-import { RequestHandler } from 'msw'
-import { RequestHandlerDefaultInfo, RequestHandlerOptions } from 'msw/lib/core/handlers/RequestHandler'
+import { http, HttpResponse, type RequestHandler } from "msw";
 
 // Mock data:
-import allCategories from './data/categories/all.json';
+import allCategories from "./data/categories/all.json";
 
-import allChains from './data/chains/all.json';
+import allChains from "./data/chains/all.json";
 
-import marketCapWeightedIndexJanMarBtc8 from './data/marketCapWeightedIndex/janMarBtc8.json';
+import marketCapWeightedIndexJanMarBtc8 from "./data/marketCapWeightedIndex/janMarBtc8.json";
 
-import allTokens from './data/tokens/all.json';
-import btcTokens from './data/tokens-search/btc.json';
-import ethTokens from './data/tokens-search/eth.json';
-import { ICategory } from 'components/src/models/token/ICatigory';
-import { IPlatform } from 'components/src/models/token/IPlatform';
-import { ICoin } from 'components/src/models/token/ICoin';
-import { IMarketCapWeightedIndex } from 'components';
+import allTokens from "./data/tokens/all.json";
+import btcTokens from "./data/tokens-search/btc.json";
+import ethTokens from "./data/tokens-search/eth.json";
+import { ICategory } from "components/src/models/token/ICatigory";
+import { IPlatform } from "components/src/models/token/IPlatform";
+import { ICoin } from "components/src/models/token/ICoin";
+import { IMarketCapWeightedIndex } from "components";
 
 //const mockState = {}
 
 // Mock the `services/backend-api.service.ts` API requests.
-export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo, any, any, RequestHandlerOptions>[] = [
-
-  http.get(`${process.env.API_BASE_URL}/categories`, () => {
-    const categories = allCategories as ICategory[]
-    return HttpResponse.json(categories)
+//
+// Every handler below uses a host-agnostic regex instead of
+// `` `${process.env.API_BASE_URL}/path` ``. The interpolated form looks
+// correct but expands to the literal `"undefined/path"` in any Storybook
+// bundle: `@storybook/nextjs-vite`'s Next-env Vite plugin only forwards
+// `NEXT_PUBLIC_*` variables into client code (see
+// `vite-plugin-storybook-nextjs/dist/index.js` → `publicNextEnvMap`), and
+// `API_BASE_URL` isn't prefixed with `NEXT_PUBLIC_`. MSW would then resolve
+// `"undefined/path"` as `http://localhost:6006/undefined/path` and never
+// match the real `/path` request the app fires.
+//
+// Top-level paths get the stricter `^https?://<host>/...$` anchor so the
+// handlers won't accidentally shadow a nested `/api/.../categories` etc.
+// path a future handler could add.
+export const backendApiServiceHandlers: RequestHandler[] = [
+  http.get(/^https?:\/\/[^/]+\/categories(?:\?.*)?$/, () => {
+    const categories = allCategories as ICategory[];
+    return HttpResponse.json(categories);
   }),
 
-  http.get(`${process.env.API_BASE_URL}/chains`, () => {
-    const chains = allChains as IPlatform[]
-    return HttpResponse.json(chains)
+  http.get(/^https?:\/\/[^/]+\/chains(?:\?.*)?$/, () => {
+    const chains = allChains as IPlatform[];
+    return HttpResponse.json(chains);
   }),
 
-  http.post(`${process.env.API_BASE_URL}/model/run/marketCapWeightedIndex`, () => {
+  http.post(/^https?:\/\/[^/]+\/model\/run\/marketCapWeightedIndex(?:\?.*)?$/, () => {
     /*
-    var url = new URL(request.url)
+    const url = new URL(request.url)
     let tokenCount = 8
     let startDate = new Date('2024-01-01')
     let endDate = new Date()
@@ -58,33 +69,33 @@ export const backendApiServiceHandlers: RequestHandler<RequestHandlerDefaultInfo
     })
     */
 
-    const marketCapWeightedIndex = marketCapWeightedIndexJanMarBtc8 as unknown as IMarketCapWeightedIndex[]
-    return HttpResponse.json(marketCapWeightedIndex)
+    const marketCapWeightedIndex = marketCapWeightedIndexJanMarBtc8 as unknown as IMarketCapWeightedIndex[];
+    return HttpResponse.json(marketCapWeightedIndex);
   }),
 
-  http.get(`${process.env.API_BASE_URL}/tokens`, () => {
-    const coins = allTokens as ICoin[]
-    return HttpResponse.json(coins)
+  http.get(/^https?:\/\/[^/]+\/tokens(?:\?.*)?$/, () => {
+    const coins = allTokens as ICoin[];
+    return HttpResponse.json(coins);
   }),
 
-  http.get(`${process.env.API_BASE_URL}/tokens-search`, ({ request }) => {
-    var url = new URL(request.url)
-    if (url.searchParams.has('query')) {
-      const symbolQuery = url.searchParams.get('query') ?? ''
-      if (symbolQuery?.indexOf('btc') > -1) {
-        const coins = btcTokens as ICoin[]
-        return HttpResponse.json(coins)
-      } else if (symbolQuery?.indexOf('eth') > -1) {
-        const coins = ethTokens as ICoin[]
-        return HttpResponse.json(coins)
+  http.get(/^https?:\/\/[^/]+\/tokens-search(?:\?.*)?$/, ({ request }) => {
+    const url = new URL(request.url);
+    if (url.searchParams.has("query")) {
+      const symbolQuery = url.searchParams.get("query") ?? "";
+      if (symbolQuery?.indexOf("btc") > -1) {
+        const coins = btcTokens as ICoin[];
+        return HttpResponse.json(coins);
+      } else if (symbolQuery?.indexOf("eth") > -1) {
+        const coins = ethTokens as ICoin[];
+        return HttpResponse.json(coins);
       } else {
-        const coins = allTokens as ICoin[]
-        return HttpResponse.json(coins)
+        const coins = allTokens as ICoin[];
+        return HttpResponse.json(coins);
       }
     }
 
     return new HttpResponse(null, {
-      status: 200
-    })
+      status: 200,
+    });
   }),
-]
+];

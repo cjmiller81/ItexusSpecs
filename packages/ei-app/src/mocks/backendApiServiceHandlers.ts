@@ -23,18 +23,34 @@ import type { IMarketCapWeightedIndex } from "components/src/models/token/IMarke
 //const mockState = {}
 
 // Mock the `services/backend-api.service.ts` API requests.
+//
+// The `/chains` and `/categories` URLs need host-agnostic patterns because
+// `process.env.BACKEND_API_URL` is not defined in the Storybook bundle:
+// `@storybook/nextjs-vite`'s Next-env Vite plugin only forwards
+// `NEXT_PUBLIC_*` variables into client code (see
+// `vite-plugin-storybook-nextjs/dist/index.js` → `publicNextEnvMap`), so the
+// production Next.js whitelist for `BACKEND_API_URL` in `next.config.js`
+// never reaches the iframe. A literal `` `${process.env.BACKEND_API_URL}/chains` ``
+// would expand to the string `"undefined/chains"`, and MSW would resolve
+// that as `http://localhost:6006/undefined/chains`, never matching the real
+// request to `http://localhost:6006/chains` (RTK Query's `chainsApi` /
+// `categoriesApi` send the path unchanged when no base URL is set).
+//
+// The regex anchors at `https?://<host>` so the handlers also won't
+// shadow the nested `/api/defi/pools/chains` / `/api/defi/pools/categories`
+// endpoints handled in `tablesHandlers`.
 export const backendApiServiceHandlers: RequestHandler[] = [
-  http.get(`${process.env.BACKEND_API_URL}/categories`, () => {
+  http.get(/^https?:\/\/[^/]+\/categories(?:\?.*)?$/, () => {
     const categories = allCategories as ICategory[];
     return HttpResponse.json(categories);
   }),
 
-  http.get(`${process.env.BACKEND_API_URL}/chains`, () => {
+  http.get(/^https?:\/\/[^/]+\/chains(?:\?.*)?$/, () => {
     const chains = allChains as IPlatform[];
     return HttpResponse.json(chains);
   }),
 
-  http.post(`${process.env.BACKEND_API_URL}/model/run/marketCapWeightedIndex`, () => {
+  http.post(/^https?:\/\/[^/]+\/model\/run\/marketCapWeightedIndex(?:\?.*)?$/, () => {
     /*
     const url = new URL(request.url)
     let tokenCount = 8
@@ -64,14 +80,14 @@ export const backendApiServiceHandlers: RequestHandler[] = [
     return HttpResponse.json(marketCapWeightedIndex);
   }),
 
-  http.get(`${process.env.BACKEND_API_URL}/tokens`, () => {
+  http.get(/^https?:\/\/[^/]+\/tokens(?:\?.*)?$/, () => {
     const coins = allTokens as ICoin[];
     return HttpResponse.json(coins);
   }),
 
-  http.get(`${process.env.BACKEND_API_URL}/tokens-filters`, () => HttpResponse.json([])),
+  http.get(/^https?:\/\/[^/]+\/tokens-filters(?:\?.*)?$/, () => HttpResponse.json([])),
 
-  http.get(`${process.env.BACKEND_API_URL}/tokens-search`, ({ request }) => {
+  http.get(/^https?:\/\/[^/]+\/tokens-search(?:\?.*)?$/, ({ request }) => {
     const url = new URL(request.url);
     if (url.searchParams.has("query")) {
       const symbolQuery = url.searchParams.get("query") ?? "";

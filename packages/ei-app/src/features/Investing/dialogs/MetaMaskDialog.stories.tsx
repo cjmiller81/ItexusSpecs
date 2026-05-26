@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useFormik } from "formik";
 
+import { dialogContainerDecorator } from "components/src/storybookMocks/dialogDocsDecorator";
+
 import { MetaMaskDialog } from "./MetaMaskDialog";
 
 type MetaMaskFormValues = {
@@ -25,6 +27,10 @@ const meta = {
   title: "EI App/Investing/Dialogs/MetaMaskDialog",
   component: FormikHost,
   parameters: { layout: "centered" },
+  // See `tradeAggregator/NoRouteDialog.stories.tsx` /
+  // `dialogDocsDecorator.tsx`. Bound the modal to a sized card on the Docs
+  // page only.
+  decorators: [dialogContainerDecorator(560)],
   tags: ["autodocs"],
   args: {
     open: true,

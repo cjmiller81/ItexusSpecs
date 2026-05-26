@@ -2,13 +2,17 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
 import { useState } from "react";
 import { Box, Button, Stack, Typography } from "@mui/material";
+import { dialogContainerDecorator } from "../../../../storybookMocks/dialogDocsDecorator";
 import { PaymentMethodModal } from "./PaymentMethodModal";
 
 // PaymentMethodModal is a thin wrapper around `AppModal` with the wider
 // 700×400 body sizing the Billing tab uses for its "Add a payment method"
-// flow. Because it's a portal-rendered Modal, the autodocs preview can't
-// inline-render it without overlapping siblings — `docs.story.inline =
-// false` opens each variant in its own iframe canvas.
+// flow. Because it's a portal-rendered Modal, the Docs page would otherwise
+// see it overlay the rest of the page — `dialogContainerDecorator` contains
+// it inside a bounded card in Docs view (the Story view still renders the
+// modal full viewport). See `dialogDocsDecorator.tsx` for why this is
+// preferred over `docs.story.inline = false` (per-story iframes are huge
+// in Vite dev).
 const ToggleRender = ({ initialOpen, onClose }: { initialOpen: boolean; onClose?: () => void }) => {
   const [open, setOpen] = useState(initialOpen);
   const close = () => {
@@ -54,10 +58,10 @@ const meta = {
         component:
           "Wider variant of `AppModal` (700×400 min size, responsive down to 90% width below `md`) used for the Billing tab's payment-method dialogs. Stories render their own children — the modal itself is structural.",
       },
-      story: { inline: false, iframeHeight: 520 },
     },
   },
   tags: ["autodocs"],
+  decorators: [dialogContainerDecorator(520, 760)],
   args: {
     open: false,
     onClose: fn(),

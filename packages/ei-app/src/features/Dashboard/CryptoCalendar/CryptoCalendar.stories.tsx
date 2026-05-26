@@ -79,6 +79,17 @@ const meta: Meta<typeof CryptoCalendar> = {
   parameters: {
     layout: "fullscreen",
   },
+  argTypes: {
+    // `selectedDate` is a `[Date, Date]` tuple (start/end of the visible
+    // range) but its name ends in "Date", so the preview-level matcher
+    // ``date: /Date$/i`` in `.storybook/preview.tsx` infers a date control.
+    // That control assumes a single Date/timestamp and ends up feeding the
+    // tuple through `new Date(value).getTime()` → `NaN`, which the formatter
+    // stringifies as `"0NaN-aN-aN"` / `"aN:aN"` and the browser then rejects
+    // ("does not conform to the required format, 'yyyy-MM-dd'"). Opt the
+    // prop out of controls so the matcher never runs against it.
+    selectedDate: { control: false },
+  },
   decorators: [
     Story => (
       <Box sx={{ width: "100%", maxWidth: 540, mx: "auto", p: 2, height: 760 }}>

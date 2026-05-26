@@ -17,8 +17,7 @@ import CustomNoWalletOverlay from "./CustomNoWalletOverlay";
 //   - fixed pixel column width (no `flex` metric, which earlier caused a
 //     ResizeObserver feedback loop that grew the grid horizontally),
 //   - virtualization + column menus disabled to remove other measurement
-//     work that can re-emit size updates,
-//   - autodocs rendered in an iframe to avoid inline-render side effects.
+//     work that can re-emit size updates.
 
 const meta = {
   title: "EI App/Components/CustomNoWalletOverlay",
@@ -30,7 +29,6 @@ const meta = {
         component:
           "Empty-state overlay for the DataGrid-backed wallet tables. Rendered when the user has not yet saved a wallet; clicking the CTA navigates to the wallets profile tab.",
       },
-      story: { inline: false, iframeHeight: 420 },
     },
   },
   tags: ["autodocs"],

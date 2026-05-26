@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useState } from "react";
 import { fn } from "storybook/test";
 import Button from "@mui/material/Button";
+import { dialogContainerDecorator } from "../../storybookMocks/dialogDocsDecorator";
 import { WelcomeModal } from "./WelcomeModal";
 
 // WelcomeModal is shown once after a successful password change. It calls
@@ -9,9 +10,12 @@ import { WelcomeModal } from "./WelcomeModal";
 // preview.tsx initializes a "WelcomeModal" namespace with stand-in English
 // strings so the modal can render without the real i18n bundles loaded.
 //
-// Modals render into a portal. With `docs.story.inline = false` the Docs
-// page renders each story inside its own iframe so the open modals do not
-// stack on top of each other.
+// The modal renders into a portal. On the Docs page that would overlay
+// the rest of the page; `dialogContainerDecorator` contains the modal in
+// a bounded card in Docs view (the Story view still renders it full
+// viewport). See `dialogDocsDecorator.tsx` for why this is preferred over
+// `docs.story.inline = false` (per-story iframes blow up Vite dev request
+// counts and page weight).
 
 const meta = {
   title: "modals/WelcomeModal",
@@ -19,7 +23,6 @@ const meta = {
   parameters: {
     layout: "fullscreen",
     docs: {
-      story: { inline: false, iframeHeight: 720 },
       description: {
         component:
           "Beta-test welcome dialog. The component reads its copy from the `WelcomeModal` i18n namespace — the Storybook preview seeds that namespace with placeholder English strings.",
@@ -27,6 +30,7 @@ const meta = {
     },
   },
   tags: ["autodocs"],
+  decorators: [dialogContainerDecorator(720)],
   args: {
     open: true,
     onClose: fn(),

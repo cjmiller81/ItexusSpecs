@@ -1,18 +1,10 @@
-import {
-  Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Card,
-  Box,
-  useTheme,
-} from "@mui/material";
+import { Typography, Accordion, AccordionSummary, AccordionDetails, Card, Box, useTheme } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function PrivacyNoticeSection() {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  
+
   const notices = [
     {
       title: "1. Data We Collect",
@@ -53,57 +45,58 @@ export default function PrivacyNoticeSection() {
   ];
 
   const renderContent = (text: string) => {
-  const lines = text.split("\n");
+    const lines = text.split("\n");
 
-  return lines.map((line, idx) => {
-    const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
-    const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+    return lines.map((line, idx) => {
+      const emailMatch = line.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
 
-    return (
-      <Typography key={idx} sx={{ color: isDark ? "lightgray" : "#4a4a4a", }}>
-        {emailMatch ? (
-          <>
-            {line.split(emailMatch[0])[0]}
-            <a
-              href={`mailto:${emailMatch[0]}`}
-              style={{ color: "#70b3ff", textDecoration: "none" }}
-            >
-              {emailMatch[0]}
-            </a>
-            {line.split(emailMatch[0])[1]}
-          </>
-        ) : urlMatch ? (
-          <>
-            {line.split(urlMatch[0])[0]}
-            <a
-              href={urlMatch[0]}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#70b3ff", textDecoration: "none" }}
-            >
-              {urlMatch[0]}
-            </a>
-            {line.split(urlMatch[0])[1]}
-          </>
-        ) : (
-          line
-        )}
-      </Typography>
-    );
-  });
-};
-
+      return (
+        <Typography
+          key={idx}
+          sx={{ color: isDark ? "lightgray" : "#4a4a4a" }}>
+          {emailMatch ? (
+            <>
+              {line.split(emailMatch[0])[0]}
+              <a
+                href={`mailto:${emailMatch[0]}`}
+                style={{ color: "#70b3ff", textDecoration: "none" }}>
+                {emailMatch[0]}
+              </a>
+              {line.split(emailMatch[0])[1]}
+            </>
+          ) : urlMatch ? (
+            <>
+              {line.split(urlMatch[0])[0]}
+              <a
+                href={urlMatch[0]}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#70b3ff", textDecoration: "none" }}>
+                {urlMatch[0]}
+              </a>
+              {line.split(urlMatch[0])[1]}
+            </>
+          ) : (
+            line
+          )}
+        </Typography>
+      );
+    });
+  };
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+      <Typography
+        variant="h5"
+        sx={{ fontWeight: "bold", mb: 1 }}>
         Privacy Notice
       </Typography>
-      <Typography sx={{ color: "gray", mb: 2 }}>
-        Updated June 2, 2025
-      </Typography>
+      <Typography sx={{ color: "gray", mb: 2 }}>Updated June 2, 2025</Typography>
       <Typography paragraph>
-        Elan Insights is committed to protecting your privacy. This Privacy Notice explains how data is collected, used, secured, shared, and what rights you have under applicable privacy laws. Elan Insights is a non-custodial SaaS platform for cryptocurrency analytics, and its data practices follow a minimal collection approach.
+        Elan Insights is committed to protecting your privacy. This Privacy Notice explains how data is collected, used,
+        secured, shared, and what rights you have under applicable privacy laws. Elan Insights is a non-custodial SaaS
+        platform for cryptocurrency analytics, and its data practices follow a minimal collection approach.
       </Typography>
 
       {notices.map((notice, idx) => (
@@ -113,8 +106,7 @@ export default function PrivacyNoticeSection() {
           disableGutters
           elevation={0}
           square
-          sx={{ mb: "15px", border: "1px solid gray", borderRadius: "8px", overflow: "hidden" }}
-        >
+          sx={{ mb: "15px", border: "1px solid gray", borderRadius: "8px", overflow: "hidden" }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography fontWeight="bold">{notice.title}</Typography>
           </AccordionSummary>

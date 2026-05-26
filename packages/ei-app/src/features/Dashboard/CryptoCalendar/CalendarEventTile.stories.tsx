@@ -22,6 +22,18 @@ const meta: Meta<typeof CalendarEventTile> = {
   component: CalendarEventTile,
   parameters: {
     layout: "centered",
+    // `CalendarEventTile`'s props extend MUI's `StackProps`, which exposes
+    // `color`, `bgcolor`, `borderColor`, etc. typed as the polymorphic
+    // `ResponsiveStyleValue<…>` — react-docgen-typescript flags those as the
+    // catch-all `"other"` kind. Combined with the preview-level matcher
+    // ``color: /(background|color)$/i`` in `.storybook/preview.tsx`, autodocs
+    // tries to render them with a color picker and logs:
+    //   "Addon controls: Control of type color only supports string,
+    //    received 'other' instead"
+    // None of these inherited Stack props are meaningful for this story —
+    // every variation just swaps `event`. Restrict the controls panel
+    // accordingly so the matcher never has a chance to fire.
+    controls: { include: ["event"] },
   },
   decorators: [
     Story => (

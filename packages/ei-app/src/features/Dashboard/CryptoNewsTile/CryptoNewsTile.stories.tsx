@@ -13,6 +13,19 @@ const meta: Meta<typeof CryptoNewsTile> = {
   component: CryptoNewsTile,
   parameters: {
     layout: "centered",
+    // `CryptoNewsTile`'s props extend `DashboardTileProps`, which is
+    // `Omit<StackProps, 'title'> & {...}` — so it inherits MUI Stack's
+    // `color`, `bgcolor`, `borderColor`, etc., typed as the polymorphic
+    // `ResponsiveStyleValue<…>` (react-docgen-typescript flags those as the
+    // catch-all `"other"` kind). The preview-level matcher
+    // ``color: /(background|color)$/i`` in `.storybook/preview.tsx` then
+    // tries to render them with a color picker and logs:
+    //   "Addon controls: Control of type color only supports string,
+    //    received 'other' instead"
+    // None of those Stack styling props are exercised by this story —
+    // only `title` and `icon` are varied. Restrict the controls panel
+    // accordingly so the matcher never has a chance to fire.
+    controls: { include: ["title", "icon"] },
   },
   decorators: [
     Story => (

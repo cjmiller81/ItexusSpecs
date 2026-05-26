@@ -18,7 +18,6 @@ const meta = {
         component:
           "Empty-state overlay shown when the user has saved wallets but the active table requires picking one. Pairs with `CustomNoWalletOverlay` for the zero-wallets branch.",
       },
-      story: { inline: false, iframeHeight: 380 },
     },
   },
   tags: ["autodocs"],

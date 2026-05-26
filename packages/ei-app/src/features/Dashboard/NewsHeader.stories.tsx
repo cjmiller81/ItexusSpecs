@@ -10,6 +10,16 @@ const meta: Meta<typeof NewsHeader> = {
   component: NewsHeader,
   parameters: {
     layout: "centered",
+    // `NewsHeaderProps` is `StackProps & {...}`, so it inherits MUI Stack's
+    // `color` / `bgcolor` / `borderColor`, typed as `ResponsiveStyleValue<…>`
+    // (react-docgen "other"). Combined with the preview-level matcher
+    // ``color: /(background|color)$/i`` (see `.storybook/preview.tsx`),
+    // autodocs would log
+    //   "Addon controls: Control of type color only supports string,
+    //    received 'other' instead".
+    // Restrict the controls panel to the props this story actually varies.
+    // (Same root cause and fix as `CryptoNewsTile.stories.tsx`.)
+    controls: { include: ["ago", "source", "tokensIconsUrls"] },
   },
   decorators: [
     Story => (

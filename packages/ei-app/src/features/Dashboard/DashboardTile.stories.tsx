@@ -17,6 +17,28 @@ const meta: Meta<typeof DashboardTile> = {
   component: DashboardTile,
   parameters: {
     layout: "centered",
+    // `DashboardTileProps` is `Omit<StackProps, 'title'> & {...}`, so it
+    // inherits MUI Stack's `color` / `bgcolor` / `borderColor`, typed as
+    // `ResponsiveStyleValue<…>` (react-docgen "other"). Combined with the
+    // preview-level matcher ``color: /(background|color)$/i``
+    // (see `.storybook/preview.tsx`), autodocs would log
+    //   "Addon controls: Control of type color only supports string,
+    //    received 'other' instead".
+    // Restrict the controls panel to the explicit `DashboardTileProps`
+    // members (no inherited Stack styling props).
+    // (Same root cause and fix as `CryptoNewsTile.stories.tsx`.)
+    controls: {
+      include: [
+        "title",
+        "icon",
+        "loading",
+        "datePicker",
+        "afterTitleComponent",
+        "rightHeaderContent",
+        "sectionLink",
+        "children",
+      ],
+    },
   },
   decorators: [
     Story => (

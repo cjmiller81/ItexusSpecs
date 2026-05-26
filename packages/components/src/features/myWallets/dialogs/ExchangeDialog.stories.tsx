@@ -4,6 +4,9 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { fn } from "storybook/test";
+
+import { dialogContainerDecorator } from "../../../storybookMocks/dialogDocsDecorator";
+
 import { ExchangeDialog } from "./ExchangeDialog";
 
 const SERVICE_OPTIONS = ["Kraken", "Coinbase"];
@@ -51,6 +54,10 @@ const meta: Meta<typeof ExchangeDialog> = {
       },
     },
   },
+  // Bound the modal to a sized card on the Docs page only. The standalone
+  // Story page still gets the dialog at full viewport. See
+  // `storybookMocks/dialogDocsDecorator.tsx`.
+  decorators: [dialogContainerDecorator(560)],
   tags: ["autodocs"],
 };
 

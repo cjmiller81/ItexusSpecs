@@ -33,6 +33,10 @@ const dataSource = new DataSource({
   pageSize: 10,
 });
 
+// `dataSource` is deliberately *not* in `args` — see the comment in
+// `DefiPoolsTable.stories.tsx`. The DevExtreme `DataSource` instance has
+// internal circular references that break `JSON.stringify(args)` on the
+// Docs page. Inject it via `render` instead.
 const meta = {
   title: "EI App/Investing/PrefilterTokensTable",
   component: PrefilterTokensTable,
@@ -48,12 +52,21 @@ const meta = {
   args: {
     onCurrentFilterChange: () => {},
     onSorterChanged: () => {},
-    dataSource: dataSource as never,
     chains: chainsFixture,
     categories: categoriesFixture,
     exchanges: exchangesFixture,
     filterType: "market-cap",
+    // `null` placeholder so `Story = {}` satisfies TS; the real instance
+    // is injected by `render` below. See the matching note in
+    // `PrefilterTokensSection.stories.tsx`.
+    dataSource: null as unknown as DataSource,
   },
+  render: args => (
+    <PrefilterTokensTable
+      {...args}
+      dataSource={dataSource}
+    />
+  ),
 } satisfies Meta<typeof PrefilterTokensTable>;
 
 export default meta;

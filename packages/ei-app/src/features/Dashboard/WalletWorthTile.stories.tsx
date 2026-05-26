@@ -25,6 +25,16 @@ const meta: Meta<typeof WalletWorthTile> = {
   component: WalletWorthTile,
   parameters: {
     layout: "centered",
+    // `WalletWorthTile`'s props extend `DashboardTileProps`, which inherits
+    // from MUI `StackProps` — bringing in `color` / `bgcolor` / `borderColor`
+    // typed as `ResponsiveStyleValue<…>` (react-docgen "other"). Combined
+    // with the preview-level matcher ``color: /(background|color)$/i``
+    // (see `.storybook/preview.tsx`), autodocs would log
+    //   "Addon controls: Control of type color only supports string,
+    //    received 'other' instead".
+    // Restrict the controls panel to the props this story actually varies.
+    // (Same root cause and fix as `CryptoNewsTile.stories.tsx`.)
+    controls: { include: ["icon", "chartDataGrowth", "chartDataValue", "chartLoading"] },
   },
   decorators: [
     Story => (

@@ -73,11 +73,14 @@ const buildResponse = (): NewsResponse => ({
   total_items: newsFixture.length,
 });
 
+// Host-agnostic regexes — `process.env.BACKEND_API_URL` is undefined in the
+// Storybook bundle, so a literal `` `${process.env.BACKEND_API_URL}/api/cryptonews/...` ``
+// would register as `"undefined/api/cryptonews/..."` and never match.
 export const cryptoNewsHandlers: RequestHandler[] = [
-  http.get(`${process.env.BACKEND_API_URL}/api/cryptonews/category`, () => HttpResponse.json(buildResponse())),
-  http.get(`${process.env.BACKEND_API_URL}/api/cryptonews/ticker`, () => HttpResponse.json(buildResponse())),
-  http.get(`${process.env.BACKEND_API_URL}/api/cryptonews/ticker-advanced`, () => HttpResponse.json(buildResponse())),
-  http.get(`${process.env.BACKEND_API_URL}/api/cryptonews/tickers`, () =>
+  http.get(/.*\/api\/cryptonews\/category(?:\?.*)?$/, () => HttpResponse.json(buildResponse())),
+  http.get(/.*\/api\/cryptonews\/ticker(?:\?.*)?$/, () => HttpResponse.json(buildResponse())),
+  http.get(/.*\/api\/cryptonews\/ticker-advanced(?:\?.*)?$/, () => HttpResponse.json(buildResponse())),
+  http.get(/.*\/api\/cryptonews\/tickers(?:\?.*)?$/, () =>
     HttpResponse.json(["BTC", "ETH", "SOL", "USDC", "USDT", "ARB"]),
   ),
 ];

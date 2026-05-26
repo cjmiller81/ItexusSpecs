@@ -18,6 +18,10 @@ const dataSource = new DataSource({
   pageSize: 10,
 });
 
+// `dataSource` is deliberately *not* in `args` — see the comment in
+// `DefiPoolsTable.stories.tsx`. The DevExtreme `DataSource` instance has
+// internal circular references that break `JSON.stringify(args)` on the
+// Docs page. Inject it via `render` instead.
 const meta = {
   title: "EI App/Investing/PrefilterTokensSection",
   component: PrefilterTokensSection,
@@ -32,12 +36,23 @@ const meta = {
   ],
   args: {
     persisKey: "prefilter-tokens-storybook",
-    dataSource: dataSource as never,
     onFilterChanged: () => {},
     onSorterChanged: () => {},
     filterType: "market-cap",
     exportFileName: "market-cap-tokens",
+    // `null` placeholder so individual stories can stay as `Story = {}`
+    // without TS complaining that required `dataSource` is missing.
+    // The real instance is injected by `render` below, so the value here
+    // is never actually rendered — it only exists to satisfy the type and
+    // serialize cleanly to JSON for the Docs page.
+    dataSource: null as unknown as DataSource,
   },
+  render: args => (
+    <PrefilterTokensSection
+      {...args}
+      dataSource={dataSource}
+    />
+  ),
 } satisfies Meta<typeof PrefilterTokensSection>;
 
 export default meta;

@@ -1,11 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
+import { dialogContainerDecorator } from "components/src/storybookMocks/dialogDocsDecorator";
+
 import { ConfirmTransactionDialog } from "./ConfirmTransactionDialog";
 
 const meta = {
   title: "EI App/TradeAggregator/Dialogs/ConfirmTransactionDialog",
   component: ConfirmTransactionDialog,
   parameters: { layout: "centered" },
+  // See `NoRouteDialog.stories.tsx` / `dialogDocsDecorator.tsx`. Bound the
+  // modal to a sized card on the Docs page only.
+  decorators: [dialogContainerDecorator(460)],
   tags: ["autodocs"],
   args: {
     open: true,

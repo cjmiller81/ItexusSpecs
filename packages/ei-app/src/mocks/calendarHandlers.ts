@@ -5,6 +5,7 @@ import type {
   CalendarEvent,
   Category,
 } from "../features/Dashboard/CryptoCalendar/eventsResponseModel";
+import { transparentPngResponse } from "./transparentPng";
 
 // Static fixture days are computed relative to "now" so the synthetic calendar
 // always lands in the visible window across stories (Today / This week).
@@ -89,7 +90,30 @@ const buildCategoriesResponse = (): CategoriesResponse => ({
   body: fixtureCategories,
 });
 
+// Host-agnostic regexes — `process.env.BACKEND_API_URL` is undefined in the
+// Storybook bundle (the framework's Next-env plugin only forwards
+// `NEXT_PUBLIC_*` vars), so a literal `` `${process.env.BACKEND_API_URL}/api/cal/...` ``
+// would register as `"undefined/api/cal/..."` and never match the real
+// `http://localhost:6006/api/cal/...` request made via `appAxios`.
+
+// `*_normal.png` is the per-coin icon URL `CalendarEventTile` and
+// `NewCryptoCalendar` build as
+//   `${process.env.COIN_MARKET_CALENDAR_IMAGE_URL}${coin.id}_normal.png`.
+//
+// Two reasons we mock these in Storybook (see `./transparentPng.ts` for the
+// general rationale):
+//   1. `COIN_MARKET_CALENDAR_IMAGE_URL` is not `NEXT_PUBLIC_*`, so the
+//      template expands to `…/undefined<coin>_normal.png` and 404s.
+//   2. Even if we did inject the env, the production URL points at
+//      CoinMarketCal's CDN — stories shouldn't depend on third-party
+//      services being reachable.
+//
+// Regex matches the icon path regardless of host or query string so it
+// covers both the broken `localhost:6006/undefined<coin>_normal.png` shape
+// AND the real `https://d235dzzkn2ryki.cloudfront.net/<coin>_normal.png`
+// shape (in case the env var is ever defined in a Storybook build).
 export const calendarHandlers: RequestHandler[] = [
-  http.get(`${process.env.BACKEND_API_URL}/api/cal/events`, () => HttpResponse.json(buildEventsResponse())),
-  http.get(`${process.env.BACKEND_API_URL}/api/cal/categories`, () => HttpResponse.json(buildCategoriesResponse())),
+  http.get(/.*\/api\/cal\/events(?:\?.*)?$/, () => HttpResponse.json(buildEventsResponse())),
+  http.get(/.*\/api\/cal\/categories(?:\?.*)?$/, () => HttpResponse.json(buildCategoriesResponse())),
+  http.get(/[^/]+_normal\.png(?:\?.*)?$/, () => transparentPngResponse()),
 ];

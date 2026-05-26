@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { dialogContainerDecorator } from "../../storybookMocks/dialogDocsDecorator";
 import { AppModal } from "./AppModal";
 
 const modalContent = (
@@ -39,19 +40,19 @@ const modalContent = (
   </Box>
 );
 
+// AppModal is a portal-rendered MUI Modal. On the Docs page the portal would
+// otherwise overlay the rest of the page; `dialogContainerDecorator` contains
+// it inside a bounded card (Docs view only — Story view renders the modal
+// at its normal full-viewport sizing). See `dialogDocsDecorator.tsx` for why
+// this is preferred over `docs.story.inline = false`.
 const meta = {
   title: "Modals/AppModal",
   component: AppModal,
   parameters: {
     layout: "fullscreen",
-    docs: {
-      story: {
-        inline: false,
-        iframeHeight: 480,
-      },
-    },
   },
   tags: ["autodocs"],
+  decorators: [dialogContainerDecorator(480)],
   args: {
     open: false,
     onClose: fn(),
