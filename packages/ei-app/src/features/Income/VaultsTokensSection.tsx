@@ -114,7 +114,15 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
           }
           return null;
         }
-        // Recursively process subfilters
+        // Any other leaf comparison filter — return as-is to preserve value array structure
+        if (
+          filter.length === 3 &&
+          typeof filter[1] === "string" &&
+          (typeof filter[0] === "string" || (filter[0] && typeof filter[0] === "object" && filter[0].dataField))
+        ) {
+          return filter;
+        }
+        // Recursively process composite filters
         let processed = filter
           .map(sub => removeAssetsFiltersAndCollectValues(sub, assetsParam))
           .filter(x => x !== null && x !== undefined);
@@ -135,6 +143,26 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
         return processed;
       }
       return filter;
+    }
+
+    // Transform anyof filters (from DevExtreme HeaderFilter) to contains/or format for the backend
+    function transformAnyof(filter: unknown): unknown {
+      if (!filter || !Array.isArray(filter)) return filter;
+      if (filter.length === 3 && filter[1] === "anyof" && typeof filter[2] === "string") {
+        return [filter[0], "contains", filter[2]];
+      }
+      if (filter.length === 3 && filter[1] === "anyof" && Array.isArray(filter[2])) {
+        const [field, , values] = filter as [unknown, unknown, unknown[]];
+        if (values.length === 0) return null;
+        if (values.length === 1) return [field, "contains", values[0]];
+        const result: unknown[] = [];
+        values.forEach((v: unknown, i: number) => {
+          if (i > 0) result.push("or");
+          result.push([field, "contains", v]);
+        });
+        return result;
+      }
+      return filter.map((item: unknown) => (Array.isArray(item) ? transformAnyof(item) : item));
     }
 
     // Helper: filter is meaningful if it contains anything except only logical operators
@@ -175,7 +203,8 @@ export default function VaultsTokensSection({ persisKey, startTourButton, export
             if (filter) {
               // Deep clone filter to avoid mutating DevExtreme state
               const filterCopy = Array.isArray(filter) ? JSON.parse(JSON.stringify(filter)) : filter;
-              const filterWithoutAssets = removeAssetsFiltersAndCollectValues(filterCopy, assetsParam);
+              let filterWithoutAssets = removeAssetsFiltersAndCollectValues(filterCopy, assetsParam);
+              filterWithoutAssets = transformAnyof(filterWithoutAssets);
               if (isMeaningfulFilter(filterWithoutAssets)) {
                 params.filter = JSON.stringify(filterWithoutAssets);
               }

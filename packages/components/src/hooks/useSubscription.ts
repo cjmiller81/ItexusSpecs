@@ -22,14 +22,8 @@ export function useSubscription() {
   }, [hasData, delayComplete]);
 
   const isLoading = useMemo(() => {
-    if (!hasData) {
-      return true;
-    }
-
-    if (!delayComplete) {
-      return true;
-    }
-
+    if (!hasData) return true;
+    if (!delayComplete) return true;
     return false;
   }, [hasData, delayComplete]);
 
@@ -43,13 +37,11 @@ export function useSubscription() {
     // Determine plan from Stripe subscription data
     const plan = getPlanFromStripeSubscription(stripeSubscription, billing.product);
 
-    const result = {
+    return {
       plan,
       isActive,
       customerId: billing.billing?.id || undefined,
     };
-
-    return result;
   }, [billing.subscriptions, billing.billing?.id, billing.product]);
 
   // Helper functions for access control

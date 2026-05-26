@@ -57,6 +57,19 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   const [selectedWalletId, setSelectedWalletId] = useState<string>("");
   const [hasUserSelectedWallet, setHasUserSelectedWallet] = useState<boolean>(false);
 
+  useEffect(() => {
+    if (!selectedWalletId) return;
+    if (!wallets || wallets.length === 0) {
+      setSelectedWalletId("");
+      setHasUserSelectedWallet(false);
+      return;
+    }
+    if (!wallets.some(w => w.walletId === selectedWalletId)) {
+      setSelectedWalletId("");
+      setHasUserSelectedWallet(false);
+    }
+  }, [wallets, selectedWalletId]);
+
   // Determine if we're in "selection mode" (wallets provided but no explicit walletAddress)
   const isSelectionMode = !walletAddress && wallets && wallets.length > 0;
 
@@ -233,6 +246,20 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
         <AlertTitle sx={{ mt: 2, mb: 1, fontSize: "1.125rem" }}>Something went wrong</AlertTitle>
         <Box sx={{ maxWidth: 360, mx: "auto" }}>{error.message}</Box>
       </Alert>
+    );
+  }
+
+  if (!wallets || wallets.length === 0) {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 8 }}>
+        <Typography
+          variant="body2"
+          color="text.secondary">
+          {t("NoWalletsForHistory", {
+            defaultValue: "No wallets connected — add a wallet to view transaction history",
+          })}
+        </Typography>
+      </Box>
     );
   }
 

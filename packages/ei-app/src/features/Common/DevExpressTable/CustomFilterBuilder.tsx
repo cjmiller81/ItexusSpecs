@@ -824,7 +824,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
 
         let processedFilter = filterToApply;
 
-        if (isLiquidityPoolFilter && processedFilter && Array.isArray(processedFilter)) {
+        if ((isLiquidityPoolFilter || isVaultsFilter) && processedFilter && Array.isArray(processedFilter)) {
           processedFilter = transformFilterFromAnyof(processedFilter);
         }
 
@@ -846,7 +846,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             setFilterName("");
           }
         }
-      }, [filterToApply, sortedPredefinedFilters, isLiquidityPoolFilter, transformFilterFromAnyof]);
+      }, [filterToApply, sortedPredefinedFilters, isLiquidityPoolFilter, isVaultsFilter, transformFilterFromAnyof]);
 
       useEffect(() => {
         if (filterBuilderOpen) {

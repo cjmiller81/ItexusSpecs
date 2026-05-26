@@ -28,6 +28,7 @@ import { krakenApi } from "../../services/krakenService";
 import { getDexWalletsColumns } from "./DexWalletsTableColumnsDefs";
 import { ExpandableRowDex } from "./TokensRowDex";
 import { DexWalletsTable } from "./DexWalletTable";
+import { WalletLimitOverlay } from "./WalletLimitOverlay";
 
 interface Props extends BoxProps {
   wallets: Wallet[] | null;
@@ -297,54 +298,56 @@ export const MyWalletsSection = ({
             />
           )}
         </Box>
-        <DexWalletsTable
-          loading={wallets === null && loading}
-          disableVirtualization
-          hideFooter
-          $hasExpandedRows={expandedRows.length > 0}
-          $minHeight={expandedRows.length > 0 ? expandedRowHeights[expandedRows[0] as string] || "55vh" : undefined}
-          sx={{
-            ...tableScrollSx,
-          }}
-          scrollbarSize={7}
-          editMode="row"
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          slotProps={{
-            row: {
-              isExpanded: (id: GridRowId) => expandedRows.includes(id),
-              onHeightUpdate: updateRowHeight,
-            },
-          }}
-          slots={{
-            row: ExpandableRowDex,
-          }}
-          onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
-            onSelectedChanged(
-              (orderedWallets || wallets || []).filter(wallet =>
-                rowSelectionModel.some(rowSelection => wallet.address === rowSelection),
-              ),
-            );
-          }}
-          onCellClick={onCellClick}
-          apiRef={apiRef}
-          getRowId={x => x.address}
-          columns={getDexWalletsColumns({
-            handleCancelClick: handleCancelClick,
-            handleSaveClick: handleSaveClick,
-            handleEditClick: handleEditClick,
-            handleDeleteClick: handleDeleteClick,
-            gridRowModesModel: rowModesModel,
-            expandedRows: expandedRows,
-            onExpandClick: handleExpandClick,
-            isXL: isXL,
-          })}
-          rows={orderedWallets || []}
-          rowSelectionModel={selectedWalletsIds}
-          checkboxSelection={true}
-        />
+        <WalletLimitOverlay wallets={wallets}>
+          <DexWalletsTable
+            loading={wallets === null && loading}
+            disableVirtualization
+            hideFooter
+            $hasExpandedRows={expandedRows.length > 0}
+            $minHeight={expandedRows.length > 0 ? expandedRowHeights[expandedRows[0] as string] || "55vh" : undefined}
+            sx={{
+              ...tableScrollSx,
+            }}
+            scrollbarSize={7}
+            editMode="row"
+            rowModesModel={rowModesModel}
+            onRowModesModelChange={handleRowModesModelChange}
+            onRowEditStop={handleRowEditStop}
+            processRowUpdate={processRowUpdate}
+            slotProps={{
+              row: {
+                isExpanded: (id: GridRowId) => expandedRows.includes(id),
+                onHeightUpdate: updateRowHeight,
+              },
+            }}
+            slots={{
+              row: ExpandableRowDex,
+            }}
+            onRowSelectionModelChange={(rowSelectionModel: GridRowSelectionModel) => {
+              onSelectedChanged(
+                (orderedWallets || wallets || []).filter(wallet =>
+                  rowSelectionModel.some(rowSelection => wallet.address === rowSelection),
+                ),
+              );
+            }}
+            onCellClick={onCellClick}
+            apiRef={apiRef}
+            getRowId={x => x.address}
+            columns={getDexWalletsColumns({
+              handleCancelClick: handleCancelClick,
+              handleSaveClick: handleSaveClick,
+              handleEditClick: handleEditClick,
+              handleDeleteClick: handleDeleteClick,
+              gridRowModesModel: rowModesModel,
+              expandedRows: expandedRows,
+              onExpandClick: handleExpandClick,
+              isXL: isXL,
+            })}
+            rows={orderedWallets || []}
+            rowSelectionModel={selectedWalletsIds}
+            checkboxSelection={true}
+          />
+        </WalletLimitOverlay>
       </Box>
     </Box>
   );
