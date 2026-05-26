@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import DerivativesPage from "./index";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "../storybook/pageStoryDecorators";
+import DerivativesPage from "@/pages/derivatives/index";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
 
 const meta = {
   title: "EI App/Pages/Derivatives",

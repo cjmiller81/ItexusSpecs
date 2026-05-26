@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { oryHandlers } from "components/src/storybookMocks/oryHandlers";
 
-import ProfilePage from "./[[...tab]]";
+import ProfilePage from "@/pages/profile/[[...tab]]";
 import { pageStoryHandlers } from "@/mocks/pageStoryHandlers";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "../storybook/pageStoryDecorators";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
 
 const profilePathname = "/profile/[[...tab]]";
 

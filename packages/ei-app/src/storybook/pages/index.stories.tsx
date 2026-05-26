@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { oryHandlers } from "components/src/storybookMocks/oryHandlers";
 
-import HomePage from "./index";
+import HomePage from "@/pages/index";
 import { pageStoryHandlers } from "@/mocks/pageStoryHandlers";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "./storybook/pageStoryDecorators";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
 
 const meta = {
   title: "EI App/Pages/Home",

@@ -1,19 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import VaultsPage from "./index";
+import LiquidityPoolsPage from "@/pages/liquidity_pools/index";
 import { pageStoryHandlers } from "@/mocks/pageStoryHandlers";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "../storybook/pageStoryDecorators";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
+
 const meta = {
-  title: "EI App/Pages/Vaults",
-  component: VaultsPage,
+  title: "EI App/Pages/LiquidityPools",
+  component: LiquidityPoolsPage,
   parameters: {
     ...defaultPageParameters,
-    ...pageRouterParams({ asPath: "/vaults" }),
+    ...pageRouterParams({ asPath: "/liquidity_pools" }),
     msw: { handlers: pageStoryHandlers() },
   },
   tags: ["autodocs"],
   decorators: [withAppPageShell],
-} satisfies Meta<typeof VaultsPage>;
+} satisfies Meta<typeof LiquidityPoolsPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

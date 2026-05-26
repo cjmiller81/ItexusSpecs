@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import DexAggregatorPage from "./index";
+import VaultsPage from "@/pages/vaults/index";
 import { pageStoryHandlers } from "@/mocks/pageStoryHandlers";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "../../storybook/pageStoryDecorators";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
 
 const meta = {
-  title: "EI App/Pages/TradeAggregatorDex",
-  component: DexAggregatorPage,
+  title: "EI App/Pages/Vaults",
+  component: VaultsPage,
   parameters: {
     ...defaultPageParameters,
-    ...pageRouterParams({ asPath: "/tradeAggregator/dex" }),
+    ...pageRouterParams({ asPath: "/vaults" }),
     msw: { handlers: pageStoryHandlers() },
   },
   tags: ["autodocs"],
   decorators: [withAppPageShell],
-} satisfies Meta<typeof DexAggregatorPage>;
+} satisfies Meta<typeof VaultsPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

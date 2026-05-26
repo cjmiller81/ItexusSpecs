@@ -1,20 +1,20 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import MyWalletsPage from "./index";
+import CexPage from "@/pages/tradeAggregator/cex/index";
 import { pageStoryHandlers } from "@/mocks/pageStoryHandlers";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "../storybook/pageStoryDecorators";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
 
 const meta = {
-  title: "EI App/Pages/MyWallets",
-  component: MyWalletsPage,
+  title: "EI App/Pages/TradeAggregatorCex",
+  component: CexPage,
   parameters: {
     ...defaultPageParameters,
-    ...pageRouterParams({ asPath: "/myWallets" }),
+    ...pageRouterParams({ asPath: "/tradeAggregator/cex" }),
     msw: { handlers: pageStoryHandlers() },
   },
   tags: ["autodocs"],
   decorators: [withAppPageShell],
-} satisfies Meta<typeof MyWalletsPage>;
+} satisfies Meta<typeof CexPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

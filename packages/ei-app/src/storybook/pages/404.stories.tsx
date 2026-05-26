@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import NotFoundPage from "./404";
-import { defaultPageParameters, pageRouterParams, withAppPageShell } from "./storybook/pageStoryDecorators";
+import NotFoundPage from "@/pages/404";
+import { defaultPageParameters, pageRouterParams, withAppPageShell } from "@/storybook/pageStoryDecorators";
 
 const meta = {
   title: "EI App/Pages/404",
