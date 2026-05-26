@@ -218,7 +218,8 @@ const SectionHeader: React.FC<{
 };
 
 export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = props => {
-  const { row, rowId, onHeightUpdate, isCollapsed, isExpanded: isRowExpanded } = props;
+  const { onHeightUpdate, isCollapsed, isExpanded: isRowExpanded, ...gridRowProps } = props;
+  const { row, rowId } = gridRowProps;
   const { t } = useTranslation("MyWalletsPage");
   const theme = useTheme();
   const { showDust, toggleDust } = useDustToggle();
@@ -306,7 +307,7 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = props => {
   return (
     <Box sx={{ width: "100%" }}>
       <GridRow
-        {...props}
+        {...gridRowProps}
         sx={{
           ...(expanded && {
             position: "sticky",
@@ -317,7 +318,7 @@ export const ExpandableRowDex: React.FC<ExpandableRowDexProps> = props => {
               backgroundColor: theme.palette.mode === "dark" ? "#1f2937" : "#f7f5f2",
             },
           }),
-          ...props.sx,
+          ...gridRowProps.sx,
         }}
       />
       {expanded && (

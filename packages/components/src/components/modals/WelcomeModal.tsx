@@ -83,6 +83,8 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
               <CheckCircleOutlineIcon color="primary" />
             </ListItemIcon>
             <ListItemText
+              primaryTypographyProps={{ component: "div" }}
+              secondaryTypographyProps={{ component: "div" }}
               primary={
                 <Typography
                   variant="body1"
@@ -121,6 +123,8 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
               <CheckCircleOutlineIcon color="primary" />
             </ListItemIcon>
             <ListItemText
+              primaryTypographyProps={{ component: "div" }}
+              secondaryTypographyProps={{ component: "div" }}
               primary={
                 <Typography
                   variant="body1"
@@ -150,6 +154,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
               <CheckCircleOutlineIcon color="primary" />
             </ListItemIcon>
             <ListItemText
+              primaryTypographyProps={{ component: "div" }}
               primary={
                 <Typography
                   variant="body1"
@@ -165,6 +170,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
               <CheckCircleOutlineIcon color="primary" />
             </ListItemIcon>
             <ListItemText
+              primaryTypographyProps={{ component: "div" }}
               primary={
                 <Typography
                   variant="body1"
@@ -180,6 +186,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({ open, onClose }) => 
               <CheckCircleOutlineIcon color="primary" />
             </ListItemIcon>
             <ListItemText
+              primaryTypographyProps={{ component: "div" }}
               primary={
                 <Typography
                   variant="body1"

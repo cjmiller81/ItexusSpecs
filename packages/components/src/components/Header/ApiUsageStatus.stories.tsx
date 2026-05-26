@@ -38,6 +38,7 @@ export const Loading: Story = {
 };
 
 export const Error: Story = {
+  tags: ["!autodocs"],
   parameters: {
     msw: {
       handlers: [http.get(ENDPOINT, () => HttpResponse.json({ message: "Internal server error" }, { status: 500 }))],

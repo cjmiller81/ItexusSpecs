@@ -107,4 +107,32 @@ export const backendApiServiceHandlers: RequestHandler[] = [
       status: 200,
     });
   }),
+
+  // `/tokens-searchV2` — paginated successor to `/tokens-search`, called by
+  // `iconsService.ts` (both GET for query-based search and POST for
+  // address-list lookups). Returns an empty `PaginatedList<TokenSearchItem>`
+  // shape: enough to satisfy the consumer (RTK Query / Axios), which would
+  // otherwise see 404s and retry-loop on the home page — that loop is also
+  // what triggers MSW's `MaxListenersExceededWarning` (11+ in-flight
+  // `response:mocked` listeners on the addon's internal emitter).
+  http.get(/^https?:\/\/[^/]+\/tokens-searchV2(?:\?.*)?$/, () =>
+    HttpResponse.json({
+      items: [],
+      pageNumber: 0,
+      totalPages: 0,
+      totalCount: 0,
+      hasPreviousPage: false,
+      hansNextPage: false,
+    }),
+  ),
+  http.post(/^https?:\/\/[^/]+\/tokens-searchV2(?:\?.*)?$/, () =>
+    HttpResponse.json({
+      items: [],
+      pageNumber: 0,
+      totalPages: 0,
+      totalCount: 0,
+      hasPreviousPage: false,
+      hansNextPage: false,
+    }),
+  ),
 ];

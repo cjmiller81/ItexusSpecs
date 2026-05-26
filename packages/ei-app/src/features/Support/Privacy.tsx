@@ -111,7 +111,7 @@ export default function PrivacyNoticeSection() {
             <Typography fontWeight="bold">{notice.title}</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography sx={{ whiteSpace: "pre-line", color: "lightgray" }}>{renderContent(notice.content)}</Typography>
+            <Box sx={{ whiteSpace: "pre-line", color: "lightgray" }}>{renderContent(notice.content)}</Box>
           </AccordionDetails>
         </Accordion>
       ))}

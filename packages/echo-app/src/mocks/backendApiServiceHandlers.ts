@@ -98,4 +98,30 @@ export const backendApiServiceHandlers: RequestHandler[] = [
       status: 200,
     });
   }),
+
+  // `/tokens-searchV2` — paginated successor to `/tokens-search`, called by
+  // `iconsService.ts` (both GET for query-based search and POST for
+  // address-list lookups). Returns an empty `PaginatedList<TokenSearchItem>`
+  // shape so the consumer (RTK Query / Axios) doesn't see 404s and
+  // retry-loop on the home page.
+  http.get(/^https?:\/\/[^/]+\/tokens-searchV2(?:\?.*)?$/, () =>
+    HttpResponse.json({
+      items: [],
+      pageNumber: 0,
+      totalPages: 0,
+      totalCount: 0,
+      hasPreviousPage: false,
+      hansNextPage: false,
+    }),
+  ),
+  http.post(/^https?:\/\/[^/]+\/tokens-searchV2(?:\?.*)?$/, () =>
+    HttpResponse.json({
+      items: [],
+      pageNumber: 0,
+      totalPages: 0,
+      totalCount: 0,
+      hasPreviousPage: false,
+      hansNextPage: false,
+    }),
+  ),
 ];

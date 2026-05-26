@@ -1,45 +1,45 @@
-import { SettingsFlow, UpdateSettingsFlowBody } from "@ory/client"
-import { AxiosError } from "axios"
-import type { NextPage } from "next"
-import Link from "next/link"
-import { useRouter } from "next/router"
-import { ReactNode, useEffect, useState } from "react"
-import { ory } from "../lib/sdk"
-import { ActionCard, CenterLink } from "../styled/index"
-import { Flow, Methods } from "./Flow"
-import { Messages } from "./Messages"
-import { authLogger } from "../../../utils/authLogger"
+import { SettingsFlow, UpdateSettingsFlowBody } from "@ory/client";
+import { AxiosError } from "axios";
+import type { NextPage } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { ReactNode, useEffect, useState } from "react";
+import { ory } from "../lib/sdk";
+import { ActionCard, CenterLink } from "../styled/index";
+import { Flow, Methods } from "./Flow";
+import { Messages } from "./Messages";
+import { authLogger } from "../../../utils/authLogger";
 
 interface Props {
-  flow?: SettingsFlow
-  only?: Methods
+  flow?: SettingsFlow;
+  only?: Methods;
 }
 
 function SettingsCard({ flow, only, children }: Props & { children: ReactNode }) {
   if (!flow) {
-    return null
+    return null;
   }
 
-  const nodes = only ? flow.ui.nodes.filter(({ group }) => group === only) : flow.ui.nodes
+  const nodes = only ? flow.ui.nodes.filter(({ group }) => group === only) : flow.ui.nodes;
 
   if (nodes.length === 0) {
-    return null
+    return null;
   }
 
-  return <ActionCard>{children}</ActionCard>
+  return <ActionCard>{children}</ActionCard>;
 }
 
 const Settings: NextPage = () => {
-  const [flow, setFlow] = useState<SettingsFlow>()
+  const [flow, setFlow] = useState<SettingsFlow>();
 
   // Get ?flow=... from the URL
-  const router = useRouter()
-  const { flow: flowId, return_to: returnTo } = router.query
+  const router = useRouter();
+  const { flow: flowId, return_to: returnTo } = router.query;
 
   useEffect(() => {
     // If the router is not ready yet, or we already have a flow, do nothing.
     if (!router.isReady || flow) {
-      return
+      return;
     }
 
     // If ?flow=.. was in the URL, we fetch it.
@@ -48,9 +48,9 @@ const Settings: NextPage = () => {
         .getSettingsFlow({ id: String(flowId) })
         .then(({ data }) => setFlow(data))
         .catch((err: AxiosError) => {
-          authLogger.error("getSettingsFlow failed", err)
-        })
-      return
+          authLogger.error("getSettingsFlow failed", err);
+        });
+      return;
     }
 
     // Otherwise we initialize a new flow.
@@ -60,9 +60,9 @@ const Settings: NextPage = () => {
       })
       .then(({ data }) => setFlow(data))
       .catch((err: AxiosError) => {
-        authLogger.error("createBrowserSettingsFlow failed", err)
-      })
-  }, [flowId, router, router.isReady, returnTo, flow])
+        authLogger.error("createBrowserSettingsFlow failed", err);
+      });
+  }, [flowId, router, router.isReady, returnTo, flow]);
 
   const onSubmit = async (values: UpdateSettingsFlowBody) => {
     try {
@@ -70,43 +70,43 @@ const Settings: NextPage = () => {
       // prevents the user losing data if they reload the page.
       await router.push(`/ui/settings?flow=${flow?.id}`, undefined, {
         shallow: true,
-      })
+      });
 
       const { data } = await ory.updateSettingsFlow({
         flow: String(flow?.id),
         updateSettingsFlowBody: values,
-      })
+      });
 
       // The settings have been saved and the flow was updated. Let's show it
       // to the user.
-      setFlow(data)
+      setFlow(data);
 
       // `continue_with` is a list of actions the user might need to take
       // before the settings update is complete (e.g. email verification).
       if (data.continue_with) {
         for (const item of data.continue_with) {
           if (item.action === "show_verification_ui") {
-            router.push(`/ui/verification?flow=${item.flow.id}`)
-            return
+            router.push(`/ui/verification?flow=${item.flow.id}`);
+            return;
           }
         }
       }
 
       if (data.return_to) {
-        window.location.href = data.return_to
-        return
+        window.location.href = data.return_to;
+        return;
       }
     } catch (err) {
-      const axiosErr = err as AxiosError<SettingsFlow>
+      const axiosErr = err as AxiosError<SettingsFlow>;
       // 400 usually means form validation error — Ory returns the updated
       // flow in the body so we just re-render it.
       if (axiosErr.response?.status === 400 && axiosErr.response.data) {
-        setFlow(axiosErr.response.data)
-        return
+        setFlow(axiosErr.response.data);
+        return;
       }
-      authLogger.error("updateSettingsFlow failed", err)
+      authLogger.error("updateSettingsFlow failed", err);
     }
-  }
+  };
 
   return (
     <>
@@ -226,12 +226,13 @@ const Settings: NextPage = () => {
       <ActionCard>
         <Link
           href="/"
-          passHref>
+          passHref
+          legacyBehavior>
           <CenterLink>Go back</CenterLink>
         </Link>
       </ActionCard>
     </>
-  )
-}
+  );
+};
 
-export default Settings
+export default Settings;

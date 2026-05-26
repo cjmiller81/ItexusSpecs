@@ -109,7 +109,13 @@ export const KrakenDialog: React.FC<KrakenDialogProps> = ({
           sx={{ marginBottom: "12px" }}
           error={Boolean(exchangeNameError)}
           helperText={
-            exchangeNameError && <Typography sx={{ color: "red", fontWeight: "bold" }}>{exchangeNameError}</Typography>
+            exchangeNameError && (
+              <Typography
+                component="span"
+                sx={{ color: "red", fontWeight: "bold" }}>
+                {exchangeNameError}
+              </Typography>
+            )
           }
         />
 
