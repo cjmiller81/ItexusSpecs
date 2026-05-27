@@ -15,6 +15,7 @@ A monorepo containing three Next.js trading-platform applications (`ei`, `echo`,
 
 - **Node.js** = 24.x
 - **Corepack** enabled — ships with Node 16.10+. This auto-provisions the correct Yarn version from `"packageManager"` in `package.json` (Yarn 4.2.1). Enable it once per Node install:
+
   ```shell
   corepack enable
   ```
