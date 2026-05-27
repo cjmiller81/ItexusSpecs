@@ -23,7 +23,7 @@ const makePool = (overrides: Partial<PoolData>): PoolData => ({
   stablecoin: true,
   ilRisk: "no",
   exposure: "single",
-  predictions: { predictionValue: 4.0, predictionDate: "2026-06-01" },
+  predictions: { predictedClass: "A", predictedProbability: 4.0, binnedConfidence: 1 },
   poolMeta: null,
   mu: 4.0,
   sigma: 0.2,
