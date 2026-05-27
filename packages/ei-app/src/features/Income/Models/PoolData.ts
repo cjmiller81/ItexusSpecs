@@ -1,6 +1,7 @@
 type Predictions = {
-  predictionValue: number;
-  predictionDate: string;
+  predictedClass: string | null;
+  predictedProbability: number | null;
+  binnedConfidence: number | null;
 };
 
 export type PoolData = {

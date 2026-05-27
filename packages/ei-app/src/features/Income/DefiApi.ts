@@ -1,6 +1,8 @@
 import { axiosBaseQuery } from "@/libs/axios/axios";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { PoolApiResponse } from "./Models/PoolApiResponse";
+import { ProtocolMeta } from "./Models/ProtocolMeta";
+import { PoolChartPoint } from "./Models/PoolChartPoint";
 
 type PoolsQueryArgs = {
   sorter?: string;
@@ -80,8 +82,39 @@ export const defisApi = createApi({
           return { data: result.data as string[] };
         },
       }),
+      getProtocolMeta: build.query<ProtocolMeta | null, string>({
+        async queryFn(slug, _api, _extra, baseQuery) {
+          const result = await baseQuery({
+            url: `/api/defi/protocol-meta`,
+            method: "get",
+            params: { slug },
+          });
+
+          if ("error" in result && result.error) {
+            const status = (result.error as any)?.status;
+            if (status === 404) return { data: null };
+            return { error: result.error } as any;
+          }
+
+          return { data: result.data as ProtocolMeta };
+        },
+      }),
+      getChartData: build.query<{ status: string; data: PoolChartPoint[] }, string>({
+        query: (poolId) => ({
+          url: `/api/defi/chart/${encodeURIComponent(poolId)}`,
+          method: "get",
+        }),
+      }),
     };
   },
 });
 
-export const { useGetPoolsQuery, useGetPoolSymbolsQuery, useLazyGetPoolSymbolsQuery, useGetPoolProjectsQuery, useLazyGetPoolProjectsQuery } = defisApi;
+export const {
+  useGetPoolsQuery,
+  useGetPoolSymbolsQuery,
+  useLazyGetPoolSymbolsQuery,
+  useGetPoolProjectsQuery,
+  useLazyGetPoolProjectsQuery,
+  useGetProtocolMetaQuery,
+  useGetChartDataQuery,
+} = defisApi;

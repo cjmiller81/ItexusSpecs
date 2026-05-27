@@ -1,12 +1,14 @@
-import DefiTokensSection from "@/features/Income/DefiTokensSection";
+import DefiTokensSection, { StyledAccordionSummary } from "@/features/Income/DefiTokensSection";
 import { TourProvider, useTour, StepType } from "@reactour/tour";
 import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButton";
 import { CategoryFiltersSection } from "../../components/CategoryFiltersSection";
-import { Box, Typography, Button } from "@mui/material";
+import { AccordionDetails, Box, IconButton, Typography, Button, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/libs/redux/Store";
-import { setAccordionState, updateTourStatusAsync, fetchReactourSettingsAsync } from "components";
+import { setAccordionState, updateTourStatusAsync, fetchReactourSettingsAsync, StatePersistedAccordion } from "components";
+import { RiskAnalysisPanel } from "@/features/Income/RiskAnalysis";
+import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 
 const TOUR_ID = "liquidity_pools_v1";
 const TOUR_NAME = "liquidity_pools";
@@ -110,7 +112,27 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
 };
 
 export default function LiquidityPoolsPage() {
-  const { t } = useTranslation(["LiquidityPoolsPage", "Common"]); 
+  const { t } = useTranslation(["LiquidityPoolsPage", "Common"]);
+  const theme = useTheme();
+
+  const darkThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none" as const,
+    position: "inherit" as const,
+    borderRadius: "10px",
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+    backgroundColor: "#363640",
+    border: "1px solid #25252AFF",
+  };
+
+  const lightThemeStyles = {
+    cursor: "default !important",
+    pointerEvents: "none" as const,
+    position: "inherit" as const,
+    boxShadow: "0px 0px 12px rgba(0, 0, 0, 0.2)",
+    borderRadius: "10px",
+    backgroundColor: "#f7f5f2 !important",
+  };
 
   const steps: StepType[] = [
     {
@@ -284,6 +306,35 @@ export default function LiquidityPoolsPage() {
           exportFileName={t("LiquidityPools", { ns: "IncomeSection" })}
           prefilterControls={<CategoryFiltersSection />}
         />
+        <Box sx={{ mt: 2 }}>
+          <StatePersistedAccordion
+            persistKey="RiskAnalysisSection"
+            defaultExpanded
+            sx={{
+              ...(theme.palette.mode === "dark" ? darkThemeStyles : lightThemeStyles),
+              borderRadius: "10px",
+              overflow: "hidden",
+              "&.Mui-expanded": { borderBottomLeftRadius: 10, borderBottomRightRadius: 10 },
+              "&:not(.Mui-expanded)": { borderBottomLeftRadius: 10, borderBottomRightRadius: 10 },
+            }}
+          >
+            <StyledAccordionSummary
+              expandIcon={
+                <IconButton sx={{ cursor: "pointer", pointerEvents: "auto", transform: "rotate(-90deg)" }}>
+                  <ArrowBackIosNewOutlinedIcon sx={{ "& path": { stroke: "currentColor", strokeWidth: 2, fill: "currentColor" } }} />
+                </IconButton>
+              }
+              sx={{ pointerEvents: "auto !important", cursor: "pointer !important" }}
+            >
+              <Typography variant="h6" fontWeight={600} sx={{ fontSize: "1rem" }}>
+                Risk Factor Analysis
+              </Typography>
+            </StyledAccordionSummary>
+            <AccordionDetails sx={{ p: 0, pointerEvents: "auto" }}>
+              <RiskAnalysisPanel />
+            </AccordionDetails>
+          </StatePersistedAccordion>
+        </Box>
       </>
     </TourProvider>
   );
