@@ -19,7 +19,9 @@ import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
-import { TourProvider, useTour, StepType } from "@reactour/tour";
+import { TourProvider, useTour, StepType, components as reactourComponents } from "@reactour/tour";
+
+type TourContentProps = React.ComponentProps<typeof reactourComponents.Content>;
 import {
   fetchWallets,
   fetchWalletsPortfolio,
@@ -369,7 +371,7 @@ export default function HomePage() {
       }}
       showBadge={false}
       components={{
-        Content: (props: { currentStep: number }) => {
+        Content: (props: TourContentProps) => {
           const step = steps[props.currentStep];
           // @ts-expect-error - content() signature varies
           const content = typeof step?.content === "function" ? step.content() : step?.content;

@@ -3,6 +3,9 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { fn } from "storybook/test";
+
+import { dialogContainerDecorator } from "../../storybookMocks/dialogDocsDecorator";
+
 import { CentralizedWalletModal } from "./CentralizedExchangeDialog";
 
 function CentralizedWalletModalWrapper(props: { defaultOpen?: boolean }) {
@@ -43,6 +46,10 @@ const meta = {
       },
     },
   },
+  // Bound the modal to a sized card on the Docs page only. The standalone
+  // Story page still gets the dialog at full viewport. See
+  // `storybookMocks/dialogDocsDecorator.tsx`.
+  decorators: [dialogContainerDecorator(520)],
   tags: ["autodocs"],
 } satisfies Meta<typeof CentralizedWalletModal>;
 

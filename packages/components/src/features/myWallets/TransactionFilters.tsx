@@ -66,7 +66,7 @@ export function TransactionFilters(props: TransactionFiltersProps) {
               tooltip={t("Required", { ns: "Tooltips" })}
               required
               disableFuture
-              value={props.fromDate}
+              value={props.fromDate ?? null}
               onChange={date => {
                 props.setPreset("custom");
                 props.setFromDate(date ?? undefined);
@@ -80,7 +80,7 @@ export function TransactionFilters(props: TransactionFiltersProps) {
               tooltip={t("Required", { ns: "Tooltips" })}
               required
               disableFuture
-              value={props.toDate}
+              value={props.toDate ?? null}
               onChange={date => {
                 props.setPreset("custom");
                 props.setToDate(date ?? undefined);

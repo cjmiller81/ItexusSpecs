@@ -1,6 +1,6 @@
-import { TabContext, TabPanel } from "@mui/lab"
-import TabList from "@mui/lab/TabList"
-import { Box, Tab, styled, Button, Typography } from "@mui/material"
+import { TabContext, TabPanel } from "@mui/lab";
+import TabList from "@mui/lab/TabList";
+import { Box, Tab, styled, Button, Typography } from "@mui/material";
 import {
   BillingContainer,
   ProfileContainer,
@@ -16,15 +16,18 @@ import {
   fetchReactourSettingsAsync,
   useAppSelector,
   Require2FA,
-} from "components"
-import { useLifiChainMap } from "@/common/lifiChainContext"
-import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
+} from "components";
+import { useLifiChainMap } from "@/common/lifiChainContext";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js"
-import { TourProvider, useTour, StepType } from "@reactour/tour"
-import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButton"
+import { Elements } from "@stripe/react-stripe-js";
+import { TourProvider, useTour, StepType, components as reactourComponents } from "@reactour/tour";
+import React from "react";
+import { AnimatedStartTourButton } from "../../components/AnimatedStartTourButton";
+
+type TourContentProps = React.ComponentProps<typeof reactourComponents.Content>;
 
 const TOUR_ID = "profile_v1";
 const TOUR_NAME = "profile";
@@ -40,175 +43,200 @@ const StartTourButton = () => {
 
 export default function ProfilePage() {
   const { lifiChainMap } = useLifiChainMap();
-  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false)
-  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false)
-  const { onUpdateAvatar, session, onUpdateProfile } = useOry()
-  const dispatch = useAppDispatch()
+  const [isAvatarUploading, setIsAvatarUploading] = useState<boolean>(false);
+  const [isProfileDetailsUpdating, setIsProfileDetailsUpdating] = useState<boolean>(false);
+  const { onUpdateAvatar, session, onUpdateProfile } = useOry();
+  const dispatch = useAppDispatch();
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY as string);
-  const router = useRouter()
+  const router = useRouter();
 
-  const rawTab = router.query.tab
-  const value = Array.isArray(rawTab) && rawTab.length
-    ? rawTab[0]
-    : typeof rawTab === 'string' && rawTab.length
-      ? rawTab
-      : 'details'
-  const { t } = useTranslation("ProfilePage")
+  const rawTab = router.query.tab;
+  const value =
+    Array.isArray(rawTab) && rawTab.length
+      ? rawTab[0]
+      : typeof rawTab === "string" && rawTab.length
+        ? rawTab
+        : "details";
+  const { t } = useTranslation("ProfilePage");
 
   const steps: StepType[] = [
     {
       selector: "#profile-header-tabs",
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("YourProfileSection")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("YourProfileSection")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("ManageYourAccountSettings")}</Typography>
         </Box>
       ),
-      position: "bottom"
+      position: "bottom",
     },
     {
       selector: '[data-tour="profile-tab-details"]',
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("CustomizeYourExperience")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("CustomizeYourExperience")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("PersonalizeYourDashboardSubscribeForFullToolsAccess")}</Typography>
         </Box>
       ),
-      position: "right"
+      position: "right",
     },
     {
       selector: '[data-tour="profile-tab-wallets"]',
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("ConnectedWallets")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("ConnectedWallets")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("ViewManageYourConnectedCryptoWallets")}</Typography>
         </Box>
       ),
-      position: "bottom"
+      position: "bottom",
     },
     {
       selector: '[data-tour="profile-tab-billing"]',
       content: () => (
         <Box sx={{ color: "#1a1a1a" }}>
-          <Typography variant="h6" sx={{ mb: 1, color: "#1a1a1a" }}>{t("SubscriptionStatus")}</Typography>
+          <Typography
+            variant="h6"
+            sx={{ mb: 1, color: "#1a1a1a" }}>
+            {t("SubscriptionStatus")}
+          </Typography>
           <Typography sx={{ color: "#4a5568" }}>{t("ViewYourCurrentSubscriptionTierAvailableFeatures")}</Typography>
         </Box>
       ),
-      position: "bottom"
-    }
+      position: "bottom",
+    },
   ];
 
   const handleChange = (newValue: string) => {
-    router.push(`/profile/${newValue}`, undefined, { shallow: false })
-  }
+    router.push(`/profile/${newValue}`, undefined, { shallow: false });
+  };
 
   const onAvatarChanged = async (file: File) => {
-    setIsAvatarUploading(true)
+    setIsAvatarUploading(true);
     profileService
       .uploadAvatart(file)
       .then(url => onUpdateAvatar(url))
-      .catch((error: any) => {
-        const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError({ message: reason }))
-        else dispatch(addError({ message: t("AvatarUploadingError") }))
+      .catch((error: unknown) => {
+        const reason = (error as { response?: { data?: { error?: { reason?: string } } } })?.response?.data?.error
+          ?.reason;
+        if (reason) dispatch(addError({ message: reason }));
+        else dispatch(addError({ message: t("AvatarUploadingError") }));
       })
-      .finally(() => setIsAvatarUploading(false))
-  }
+      .finally(() => setIsAvatarUploading(false));
+  };
 
   const onChangeDetails = (firstName: string, lastName: string) => {
-    setIsProfileDetailsUpdating(true)
+    setIsProfileDetailsUpdating(true);
     onUpdateProfile(firstName, lastName)
       .then()
-      .catch((error: any) => {
-        const reason = error?.response?.data?.error?.reason
-        if (reason) dispatch(addError({ message: reason }))
-        else dispatch(addError({ message: t("ProfileUpdatingError") }))
+      .catch((error: unknown) => {
+        const reason = (error as { response?: { data?: { error?: { reason?: string } } } })?.response?.data?.error
+          ?.reason;
+        if (reason) dispatch(addError({ message: reason }));
+        else dispatch(addError({ message: t("ProfileUpdatingError") }));
       })
-      .finally(() => setIsProfileDetailsUpdating(false))
-  }
+      .finally(() => setIsProfileDetailsUpdating(false));
+  };
 
   return (
     <TourProvider
       steps={steps}
       styles={{
-        popover: (base) => ({
+        popover: base => ({
           ...base,
           borderRadius: 12,
           padding: 16,
           background: "#f7f5f2",
           color: "#6b7280",
           fontSize: "0.95rem",
-          lineHeight: 1.8
+          lineHeight: 1.8,
         }),
-        maskArea: (base) => ({ ...base, rx: 10 }),
-        close: (base) => ({
+        maskArea: base => ({ ...base, rx: 10 }),
+        close: base => ({
           ...base,
           width: 14,
           height: 14,
-          padding: '10px',
-          boxSizing: 'content-box',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          padding: "10px",
+          boxSizing: "content-box",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           top: 10,
           right: 8,
-          cursor: 'pointer',
+          cursor: "pointer",
         }),
       }}
       showBadge={false}
       components={{
-        Content: (props: any) => {
+        Content: (props: TourContentProps) => {
           const step = steps[props.currentStep];
-          // @ts-ignore - content() signature varies
-          const content = typeof step?.content === 'function' ? step.content() : step?.content;
+          // @ts-expect-error - content() signature varies
+          const content = typeof step?.content === "function" ? step.content() : step?.content;
 
           return (
             <Box>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 1.5 }}>
-                <Box sx={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(45deg,#3b82f6,#06b6d4)',
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: 14,
-                  flexShrink: 0,
-                  marginTop: "-2px"
-                }}>
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1.5 }}>
+                <Box
+                  sx={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    background: "linear-gradient(45deg,#3b82f6,#06b6d4)",
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    flexShrink: 0,
+                    marginTop: "-2px",
+                  }}>
                   {(props.currentStep ?? 0) + 1}
                 </Box>
-                <Box sx={{ flex: 1, color: '#6b7280', fontSize: '0.95rem', lineHeight: 1.8 }}>
-                  {content || null}
-                </Box>
+                <Box sx={{ flex: 1, color: "#6b7280", fontSize: "0.95rem", lineHeight: 1.8 }}>{content || null}</Box>
               </Box>
             </Box>
           );
         },
         Navigation: ({ setCurrentStep, currentStep, steps, setIsOpen }) => (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-            <Box sx={{ display: 'flex', gap: '6px' }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+            <Box sx={{ display: "flex", gap: "6px" }}>
               {Array.from({ length: steps?.length || 0 }).map((_, i) => (
-                <Box key={i} sx={{ width: 8, height: 8, borderRadius: '50%', background: i <= currentStep ? '#3b82f6' : '#e2e8f0' }} />
+                <Box
+                  key={i}
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: i <= currentStep ? "#3b82f6" : "#e2e8f0",
+                  }}
+                />
               ))}
             </Box>
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
               {currentStep > 0 && (
                 <Button
                   variant="contained"
                   onClick={() => setCurrentStep(currentStep - 1)}
                   sx={{
-                    background: '#f7f5f2',
-                    color: '#4a5568',
-                    border: '1px solid #e2e8f0',
-                    boxShadow: 'none',
-                    textTransform: 'none',
-                    '&:hover': { background: '#f0ece5', boxShadow: 'none' }
-                  }}
-                >
+                    background: "#f7f5f2",
+                    color: "#4a5568",
+                    border: "1px solid #e2e8f0",
+                    boxShadow: "none",
+                    textTransform: "none",
+                    "&:hover": { background: "#f0ece5", boxShadow: "none" },
+                  }}>
                   Prior
                 </Button>
               )}
@@ -221,20 +249,28 @@ export default function ProfilePage() {
                     setCurrentStep(currentStep + 1);
                   }
                 }}
-                sx={{ background: 'linear-gradient(45deg,#3b82f6,#06b6d4)', color: '#fff', boxShadow: 'none', textTransform: 'none' }}
-              >
-                {currentStep === (steps?.length || 0) - 1 ? 'Finish' : 'Next'}
+                sx={{
+                  background: "linear-gradient(45deg,#3b82f6,#06b6d4)",
+                  color: "#fff",
+                  boxShadow: "none",
+                  textTransform: "none",
+                }}>
+                {currentStep === (steps?.length || 0) - 1 ? "Finish" : "Next"}
               </Button>
             </Box>
           </Box>
-        )
-      }}
-    >
+        ),
+      }}>
       <>
         <TourStateSync totalSteps={steps.length} />
         <ProfileContainer>
-          <Box display="flex" alignItems="center" sx={{ mb: 2 }}>
-            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            sx={{ mb: 2 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold" }}>
               {t("UserProfile")}
             </Typography>
             <StartTourButton />
@@ -242,8 +278,7 @@ export default function ProfilePage() {
           <TabContext value={value}>
             <StyledTabList
               onChange={(_event, newValue) => handleChange(newValue)}
-              id="profile-header-tabs"
-            >
+              id="profile-header-tabs">
               <Tab
                 label={t("PROFILE")}
                 value="details"
@@ -253,11 +288,11 @@ export default function ProfilePage() {
                 label={t("SECURITY")}
                 value="security"
               />
-                <Tab
-                  label={t("WALLETS")}
-                  value="wallets"
-                  data-tour="profile-tab-wallets"
-                />
+              <Tab
+                label={t("WALLETS")}
+                value="wallets"
+                data-tour="profile-tab-wallets"
+              />
               <Tab
                 label={t("BILLING")}
                 value="billing"
@@ -285,7 +320,7 @@ export default function ProfilePage() {
             </TabPanel>
             <TabPanel value="wallets">
               <Require2FA>
-              <WalletsContainer lifiChainMap={lifiChainMap} />
+                <WalletsContainer lifiChainMap={lifiChainMap} />
               </Require2FA>
             </TabPanel>
             <TabPanel value="billing">
@@ -297,7 +332,7 @@ export default function ProfilePage() {
         </ProfileContainer>
       </>
     </TourProvider>
-  )
+  );
 }
 
 const StyledProfileBox = styled(Box)(({ theme }) => ({
@@ -308,7 +343,7 @@ const StyledProfileBox = styled(Box)(({ theme }) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-}))
+}));
 
 const StyledTabList = styled(TabList)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
@@ -317,20 +352,20 @@ const StyledTabList = styled(TabList)(({ theme }) => ({
       padding: "8px 12px",
     },
   },
-}))
+}));
 
 const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   const { setIsOpen, isOpen, currentStep, setCurrentStep } = useTour();
   const dispatch = useAppDispatch();
   const [tourWasOpened, setTourWasOpened] = useState(false);
-  const reactourSettings = useAppSelector((state) => state.reactour.settings);
+  const reactourSettings = useAppSelector(state => state.reactour.settings);
 
   useEffect(() => {
     const loadTourData = async () => {
       try {
         await dispatch(fetchReactourSettingsAsync()).unwrap();
       } catch (error) {
-        console.error('Failed to fetch tour settings:', error);
+        console.error("Failed to fetch tour settings:", error);
       }
     };
     loadTourData();
@@ -351,21 +386,25 @@ const TourStateSync = ({ totalSteps }: { totalSteps: number }) => {
   useEffect(() => {
     if (!isOpen) return;
 
-    dispatch(updateTourStatusAsync({
-      tourName: TOUR_NAME,
-      update: {
-        step: currentStep,
-        viewed: currentStep >= totalSteps - 1 ? true : undefined
-      }
-    }));
+    dispatch(
+      updateTourStatusAsync({
+        tourName: TOUR_NAME,
+        update: {
+          step: currentStep,
+          viewed: currentStep >= totalSteps - 1 ? true : undefined,
+        },
+      }),
+    );
   }, [currentStep, totalSteps, isOpen, dispatch]);
 
   useEffect(() => {
     if (!isOpen && tourWasOpened) {
-      dispatch(updateTourStatusAsync({
-        tourName: TOUR_NAME,
-        update: { viewed: true }
-      }));
+      dispatch(
+        updateTourStatusAsync({
+          tourName: TOUR_NAME,
+          update: { viewed: true },
+        }),
+      );
     } else if (isOpen) {
       setTourWasOpened(true);
     }

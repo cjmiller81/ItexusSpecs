@@ -64,7 +64,9 @@ export const ConnectionCard = () => {
     setOpenExchangeDialog(false);
   }, [selectedService]);
 
-  const handleActiveConnectionChange = (event: any) => {
+  const handleActiveConnectionChange = (
+    event: SelectChangeEvent<string> | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const value = event.target.value;
     setActiveConnection(value);
   };
@@ -186,39 +188,44 @@ export const ConnectionCard = () => {
             borderColor: "transparent !important",
           },
         }}
-        inputComponent={({ inputRef, ...props }) => (
-          <Select
-            {...(props as any)}
-            inputRef={inputRef}
-            displayEmpty
-            value={activeConnection}
-            color="primary"
-            onChange={handleActiveConnectionChange}
-            sx={{
-              width: "100%",
-              display: "flex !important",
-              paddingLeft: "0 !important",
-              padding: 0,
-              "& .MuiSelect-icon": { color: theme.palette.grey[500] },
-            }}
-            renderValue={selected => {
-              const value = selected as string;
-              if (!value) {
-                return <TruncatedText>{t("SelectConnection")}</TruncatedText>;
-              }
-              return <TruncatedText>{value}</TruncatedText>;
-            }}>
-            <MenuItem value="Kraken">
-              <TruncatedText>Exchange: Kraken</TruncatedText>
-            </MenuItem>
-            <MenuItem value="MetaMask">
-              <TruncatedText>Wallet: MetaMask</TruncatedText>
-            </MenuItem>
-            <MenuItem value="Coinbase">
-              <TruncatedText>Exchange: Coinbase</TruncatedText>
-            </MenuItem>
-          </Select>
-        )}
+        inputComponent={React.forwardRef<HTMLInputElement, Record<string, unknown>>(function ActiveConnectionSelect(
+          { inputRef: _inputRef, ...props },
+          ref,
+        ) {
+          return (
+            <Select
+              {...(props as Record<string, unknown>)}
+              inputRef={ref}
+              displayEmpty
+              value={activeConnection}
+              color="primary"
+              onChange={handleActiveConnectionChange}
+              sx={{
+                width: "100%",
+                display: "flex !important",
+                paddingLeft: "0 !important",
+                padding: 0,
+                "& .MuiSelect-icon": { color: theme.palette.grey[500] },
+              }}
+              renderValue={selected => {
+                const value = selected as string;
+                if (!value) {
+                  return <TruncatedText>{t("SelectConnection")}</TruncatedText>;
+                }
+                return <TruncatedText>{value}</TruncatedText>;
+              }}>
+              <MenuItem value="Kraken">
+                <TruncatedText>Exchange: Kraken</TruncatedText>
+              </MenuItem>
+              <MenuItem value="MetaMask">
+                <TruncatedText>Wallet: MetaMask</TruncatedText>
+              </MenuItem>
+              <MenuItem value="Coinbase">
+                <TruncatedText>Exchange: Coinbase</TruncatedText>
+              </MenuItem>
+            </Select>
+          );
+        })}
       />
 
       <Typography

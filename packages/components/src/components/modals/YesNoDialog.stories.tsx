@@ -1,19 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
+
+import { dialogContainerDecorator } from "../../storybookMocks/dialogDocsDecorator";
+
 import { YesNoDialog } from "./YesNoDialog";
 
 const meta = {
   title: "Modals/YesNoDialog",
   component: YesNoDialog,
   parameters: {
-    layout: "fullscreen",
-    docs: {
-      story: {
-        inline: false,
-        iframeHeight: 360,
-      },
-    },
+    layout: "centered",
   },
+  // Bound the modal to a sized card on the Docs page only. See
+  // `storybookMocks/dialogDocsDecorator.tsx`.
+  decorators: [dialogContainerDecorator(360)],
   tags: ["autodocs"],
   args: {
     onAgree: fn(),

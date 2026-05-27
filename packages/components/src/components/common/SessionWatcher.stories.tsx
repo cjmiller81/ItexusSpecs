@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { fn } from "storybook/test";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { dialogContainerDecorator } from "../../storybookMocks/dialogDocsDecorator";
 import { SessionWatcher } from "./SessionWatcher";
 
 // SessionWatcher is invisible until the current Ory session is within 3
@@ -9,9 +10,11 @@ import { SessionWatcher } from "./SessionWatcher";
 // a 1s countdown. It reads `session.expires_at` from the Ory context, so
 // stories override `parameters.oryContext` to bring the dialog on screen.
 //
-// Stories that should render the dialog use `docs.story.inline = false`
-// because the Dialog renders into a portal and would otherwise stack on
-// top of the autodocs page.
+// Stories that open the warning Dialog apply `dialogContainerDecorator`
+// per-story so the portal-rendered Dialog stays inside a bounded card on
+// the Docs page. The `Idle` story doesn't open the Dialog, so it renders
+// inline without the decorator. See `dialogDocsDecorator.tsx` for why this
+// is preferred over `docs.story.inline = false`.
 const meta = {
   title: "Common/SessionWatcher",
   component: SessionWatcher,
@@ -49,11 +52,12 @@ export const Idle: Story = {
 };
 
 // Force the warning open by setting expires_at to 2 minutes from now.
-// The story renders in its own iframe so the Dialog portal doesn't stack
-// on top of unrelated docs blocks.
+// The Dialog portal is contained inside a bounded card on the Docs page
+// by `dialogContainerDecorator` so it doesn't stack on top of the rest
+// of the autodocs blocks.
 export const WarningVisible: Story = {
+  decorators: [dialogContainerDecorator(360)],
   parameters: {
-    docs: { story: { inline: false, iframeHeight: 360 } },
     oryContext: {
       session: {
         id: "storybook-session",
@@ -75,8 +79,8 @@ export const WarningVisible: Story = {
 
 // One minute left exercises the "1 minute" (singular) copy branch.
 export const OneMinuteLeft: Story = {
+  decorators: [dialogContainerDecorator(360)],
   parameters: {
-    docs: { story: { inline: false, iframeHeight: 360 } },
     oryContext: {
       session: {
         id: "storybook-session",

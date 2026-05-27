@@ -1,0 +1,13 @@
+<!--
+  Register the DevExtreme theme metadata so `themes.current(...)` works in
+  stories that render the production layout stack (e.g. RootLayout, which
+  mounts DevextremeThemeProvider).
+
+  The two CSS bundles ship from `packages/ei-app/public` and are served at
+  the root by Storybook's `staticDirs` config in `.storybook/main.ts`.
+  Without these `<link rel="dx-theme">` tags, DevExtreme has no registered
+  themes to switch between and throws E0021 ("Unknown theme is set: null").
+  Production wires these up in `packages/ei-app/src/pages/_document.tsx`.
+-->
+<link rel="dx-theme" data-theme="material.blue.light" href="/dx.material.blue.light.css" data-active="true" />
+<link rel="dx-theme" data-theme="material.blue.dark" href="/dx.material.blue.dark.css" data-active="false" />

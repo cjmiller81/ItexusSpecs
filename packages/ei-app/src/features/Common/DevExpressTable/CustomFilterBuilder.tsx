@@ -922,17 +922,13 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
             const categoryValue = categoryConditions[0][2];
             const categoryTab = defineCategorySingleTab(categoryValue);
             const newFilterType = generateFilterKey(filterType, categoryTab, categoryValue);
-            if (newFilterType) {
-              setCustomFilterType(newFilterType);
-            }
+            if (newFilterType) setCustomFilterType(newFilterType);
             return;
           }
 
           const { categoryTab, categoryValue } = defineCategoryAllTab(categoryConditions);
-          const newFilterType2 = generateFilterKey(filterType, categoryTab as `${PrefilterTabs}`, categoryValue);
-          if (newFilterType2) {
-            setCustomFilterType(newFilterType2);
-          }
+          const newFilterType = generateFilterKey(filterType, categoryTab as `${PrefilterTabs}`, categoryValue);
+          if (newFilterType) setCustomFilterType(newFilterType);
           return;
         }
 
@@ -943,9 +939,7 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         if (!categoryTab) return;
 
         const newFilterType = generateFilterKey(filterType, categoryTab, categoryValue);
-        if (newFilterType) {
-          setCustomFilterType(newFilterType);
-        }
+        if (newFilterType) setCustomFilterType(newFilterType);
       }, [filterValue, filterType]);
 
       const handleFilterValueChanged = (event: ValueChangedEvent) => {
@@ -1851,9 +1845,18 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
         if (!nodes || !Array.isArray(nodes)) return null;
 
         return nodes.map(node => {
-          const hasChildren = node.children && node.children.length > 0;
+          // Distinguish "header" nodes (from `buildFilterTree` — always carry a
+          // `children` array, even when empty) from leaf filter nodes (no
+          // `children` property, `hasChildren: false`). Using `children.length > 0`
+          // here used to misclassify empty headers like the auto-injected
+          // "Custom" bucket under Liquidity Pools as leaves, which (a) hit the
+          // leaf branch with `key={node.id}`/`nodeId={node.id}` where neither
+          // exists, producing a React "unique key" warning and an unkeyed
+          // TreeItem, and (b) rendered a stray delete button wired to
+          // `node.filterObject` (undefined) because `!node.isPublic` was true.
+          const isParent = Array.isArray(node.children);
 
-          if (hasChildren) {
+          if (isParent) {
             return (
               <TreeItem
                 key={node.nodeId}
@@ -1885,10 +1888,15 @@ const CustomFilterBuilder: React.FC<ICustomFilterBuilderProps & React.RefAttribu
               </TreeItem>
             );
           } else {
+            // Leaf filter nodes always carry both `id` and `nodeId` (both set to
+            // `filter.id` by `buildFilterTree`). Fall back to `nodeId` just in
+            // case a future tree shape forgets one of them — we still want a
+            // stable React key here either way.
+            const leafKey = node.id ?? node.nodeId;
             return (
               <TreeItem
-                key={node.id}
-                nodeId={node.id}
+                key={leafKey}
+                nodeId={leafKey}
                 label={
                   <Box
                     sx={{

@@ -1,21 +1,27 @@
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Box, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX, onConfirmTransaction }) {
   const { t } = useTranslation(["TradeTable"]);
   const theme = useTheme();
-  const [basePair, quotePair] = tradeData.mkt ? tradeData.mkt.split('/') : ['', ''];
-  const isBuy = tradeData.action === 'buy';
+  const [basePair, quotePair] = tradeData.mkt ? tradeData.mkt.split("/") : ["", ""];
+  const isBuy = tradeData.action === "buy";
   const textColor = theme.palette.mode === "dark" ? "#fff" : "#000";
-  
+
   if (!tradeData) return null;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" >
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm">
       <DialogTitle>{t("ConfirmTransaction")}</DialogTitle>
       <DialogContent>
-        <Box display="flex" flexDirection="column" gap={1}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap={1}>
           {[
             { label: t("MKT"), value: tradeData.mkt },
             { label: t("Buy"), value: isBuy ? basePair : quotePair },
@@ -24,16 +30,33 @@ export function ConfirmTransactionDialog({ open, onClose, tradeData, selectedCEX
             { label: t("EstTotal"), value: tradeData.value },
             { label: t("Exchange"), value: selectedCEX },
           ].map(({ label, value }) => (
-            <Box key={label} display="flex" justifyContent="space-between">
-              <Typography variant="body1"><strong>{label}:</strong></Typography>
-              <Typography variant="body1" sx={{ textAlign: 'right' }}>{value}</Typography>
+            <Box
+              key={label}
+              display="flex"
+              justifyContent="space-between">
+              <Typography variant="body1">
+                <strong>{label}:</strong>
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{ textAlign: "right" }}>
+                {value}
+              </Typography>
             </Box>
           ))}
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary" sx={{color:textColor}}>{t("Cancel")}</Button>
-        <Button onClick={onConfirmTransaction} color="primary" variant="contained">
+        <Button
+          onClick={onClose}
+          color="secondary"
+          sx={{ color: textColor }}>
+          {t("Cancel")}
+        </Button>
+        <Button
+          onClick={onConfirmTransaction}
+          color="primary"
+          variant="contained">
           {t("Confirm")}
         </Button>
       </DialogActions>

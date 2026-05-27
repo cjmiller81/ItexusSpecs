@@ -21,10 +21,6 @@
     "type": "git",
     "url": "git@info-emergentcybernetics.github.com:EmergentCybernetics/ItexusSpecs.git"
   },
-  "scripts": {
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
-  },
   "packageManager": "yarn@4.2.1",
   "dependencies": {
     "@ory/client": "^1.9.0",
@@ -36,13 +32,6 @@
     "use-file-picker": "^2.1.2"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.4.0",
-    "@storybook/addon-docs": "^10.4.0",
-    "@storybook/nextjs-vite": "^10.4.0",
-    "eslint-plugin-storybook": "10.4.0",
-    "msw": "^2.2.2",
-    "msw-storybook-addon": "^2.0.7",
-    "storybook": "^10.4.0",
-    "vite": "^6.0.0"
+    "msw": "^2.2.2"
   }
 }

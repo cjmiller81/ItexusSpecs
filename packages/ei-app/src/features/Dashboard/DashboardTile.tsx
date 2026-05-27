@@ -3,7 +3,7 @@ import { Box, Stack, StackProps, useTheme } from "@mui/system";
 import { FC, ReactNode, useState } from "react";
 import { SectionLink } from "./SectionLink";
 
-export type DashboardTileProps = Omit<StackProps, 'title'> & {
+export type DashboardTileProps = Omit<StackProps, "title"> & {
   title: string;
   icon: ReactNode;
   loading?: boolean;
@@ -34,34 +34,30 @@ export const DashboardTile: FC<DashboardTileProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Stack 
+    <Stack
       {...props}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      sx={{ position: 'relative', height: '100%', ...props.sx }}
-    >
-      <Stack 
-        direction="row" 
-        alignItems="center" 
-        justifyContent="space-between" 
+      sx={{ position: "relative", height: "100%", ...props.sx }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
         gap={0.5}
-        sx={{ minHeight: '48px' }}
-      >
-        <Stack 
-          direction="row" 
-          alignItems="center" 
-          gap={0.5} 
-          flex="1 1 auto" 
-          minWidth={0}
-        >
-          <Box 
+        sx={{ minHeight: "48px" }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={0.5}
+          flex="1 1 auto"
+          minWidth={0}>
+          <Box
             sx={{
-              color: sectionLink && isHovered ? '#219a83' : 'inherit',
-              transition: 'color 0.2s ease-in-out',
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
+              color: sectionLink && isHovered ? "#219a83" : "inherit",
+              transition: "color 0.2s ease-in-out",
+              display: "flex",
+              alignItems: "center",
+            }}>
             {icon}
           </Box>
           <Typography
@@ -72,8 +68,8 @@ export const DashboardTile: FC<DashboardTileProps> = ({
               textOverflow: "ellipsis",
               fontSize: "0.9rem",
               letterSpacing: "0.02em",
-              color: sectionLink && isHovered ? '#219a83' : 'inherit',
-              transition: 'color 0.2s ease-in-out',
+              color: sectionLink && isHovered ? "#219a83" : "inherit",
+              transition: "color 0.2s ease-in-out",
             }}
             variant="h6">
             {title}
@@ -87,7 +83,10 @@ export const DashboardTile: FC<DashboardTileProps> = ({
           )}
         </Stack>
 
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1}>
           {sectionLink && (isHovered || sectionLink.alwaysVisible || sectionLink.disabled) && (
             <SectionLink
               href={sectionLink.href}
@@ -100,16 +99,15 @@ export const DashboardTile: FC<DashboardTileProps> = ({
           {datePicker && <Box>{datePicker}</Box>}
         </Stack>
       </Stack>
-      <Paper 
-        sx={{ 
+      <Paper
+        sx={{
           boxShadow: theme.shadows?.[8],
-          border: sectionLink && isHovered ? '2px solid #219a83' : '2px solid transparent',
-          transition: 'border-color 0.2s ease-in-out',
+          border: sectionLink && isHovered ? "2px solid #219a83" : "2px solid transparent",
+          transition: "border-color 0.2s ease-in-out",
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+          display: "flex",
+          flexDirection: "column",
+        }}>
         {children}
       </Paper>
     </Stack>

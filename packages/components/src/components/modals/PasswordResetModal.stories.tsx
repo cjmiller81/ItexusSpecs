@@ -4,6 +4,7 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { dialogContainerDecorator } from "../../storybookMocks/dialogDocsDecorator";
 import { PasswordResetModal, type PasswordResetModalProps } from "./PasswordResetModal";
 
 // PasswordResetModal is a Formik-validated dialog that calls Ory's
@@ -12,8 +13,13 @@ import { PasswordResetModal, type PasswordResetModalProps } from "./PasswordRese
 // is enabled immediately in stories — to exercise the "Initializing..." state,
 // override createSettingsFlow with a delayed resolution under parameters.oryContext).
 //
-// The dialog itself is a portal, so stories that render it open use
-// docs.story.inline = false to keep the autodocs page readable.
+// The dialog itself is a portal. On the Docs page it would otherwise
+// overlay the rest of the page; `dialogContainerDecorator` contains it
+// inside a bounded card by disabling the portal + swapping the modal/
+// backdrop from `position: fixed` to `position: absolute`. See
+// `dialogDocsDecorator.tsx` for why this is preferred over the obvious
+// `docs.story.inline = false` (per-story iframes blow up Vite dev request
+// counts and page weight).
 const meta = {
   title: "Modals/PasswordResetModal",
   component: PasswordResetModal,
@@ -27,6 +33,7 @@ const meta = {
     },
   },
   tags: ["autodocs"],
+  decorators: [dialogContainerDecorator(480)],
   args: {
     open: true,
     onClose: fn(),
@@ -38,11 +45,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Open: Story = {
-  parameters: {
-    docs: { story: { inline: false, iframeHeight: 480 } },
-  },
-};
+export const Open: Story = {};
 
 // Submitting raises a per-story onChangePassword that throws — the
 // dispatched error message renders via the global Snackbar host, but the
@@ -50,7 +53,6 @@ export const Open: Story = {
 // branch. Type a >=8 character password and click Change password.
 export const SubmitFails: Story = {
   parameters: {
-    docs: { story: { inline: false, iframeHeight: 480 } },
     oryContext: {
       onChangePassword: async () => {
         throw new Error("password is too weak");

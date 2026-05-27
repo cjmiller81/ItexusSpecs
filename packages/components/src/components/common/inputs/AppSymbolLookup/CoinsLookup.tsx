@@ -9,8 +9,7 @@ import { AppInputProps } from "../AppInputProps";
 import { ListOnItemsRenderedProps } from "react-window";
 import { IconButton, TextField } from "@mui/material";
 import Search from "@mui/icons-material/Search";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { ListboxComponent } from "./ListBoxComponent";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -25,10 +24,10 @@ export interface CoinsLookUpOption {
 
 export interface CoinsLookupProps
   extends AppInputProps,
-    Omit<AutocompleteProps<CoinsLookUpOption, true, false, false, any>, "renderInput"> {
+    Omit<AutocompleteProps<CoinsLookUpOption, true, false, false, React.ElementType>, "renderInput"> {
   options: CoinsLookUpOption[];
   value?: CoinsLookUpOption[];
-  onItemsRendered?: (props: ListOnItemsRenderedProps) => any;
+  onItemsRendered?: (props: ListOnItemsRenderedProps) => void;
 }
 
 const StyledPopper = styled(Popper)(({ theme }) => ({
@@ -60,7 +59,7 @@ const Button = styled(ButtonBase)(({ theme }) => ({
   justifyContent: "space-between",
   position: "relative",
   width: "100%",
-  backgroundColor: theme.palette.mode === 'light' ? "#fff" : theme.palette.grey[800],
+  backgroundColor: theme.palette.mode === "light" ? "#fff" : theme.palette.grey[800],
   "&:hover": {
     border: "1px solid rgba(255, 255, 255, 0.87)",
   },
@@ -131,7 +130,7 @@ export function CoinsLookup({
     if (!props.onChange) {
       return;
     }
-    var result = newValue;
+    let result = newValue;
     const hasTop100 = result.some(option => option.id === "100");
     const hasTop300 = result.some(option => option.id === "300");
     const hasTop500 = result.some(option => option.id === "500");
@@ -181,13 +180,25 @@ export function CoinsLookup({
       <Button
         disableRipple
         onClick={handleClick}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 0, flex: 1 }}>
-              <MonetizationOnIcon sx={{ fontSize: 14, color: "text.secondary", flexShrink: 0 }} />
-              <label style={{ marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{nameOfButton}</label>
-            </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, minWidth: 0, flex: 1 }}>
+          <MonetizationOnIcon sx={{ fontSize: 14, color: "text.secondary", flexShrink: 0 }} />
+          <label
+            style={{
+              marginTop: "2px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              minWidth: 0,
+            }}>
+            {nameOfButton}
+          </label>
+        </Box>
         <IconContainer sx={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
           {hasSelectedItems ? (
             <IconButton
+              component="span"
+              role="button"
+              aria-label={t("ClearSelection", { ns: "Common", defaultValue: "Clear selection" })}
               onClick={handleClearSelection}
               size="small"
               sx={{ ml: 0.5, maxWidth: "13px", maxHeight: "15px" }}>
@@ -244,12 +255,14 @@ export function CoinsLookup({
               open={true}
               disableCloseOnSelect
               disableListWrap
-              PopperComponent={StyledPopper as any}
+              PopperComponent={StyledPopper}
               ListboxComponent={ListboxComponent}
               ListboxProps={
                 {
                   onItemsRendered: onItemsRenderedLocal,
-                } as any
+                } as React.HTMLAttributes<HTMLUListElement> & {
+                  onItemsRendered: (props: ListOnItemsRenderedProps) => void;
+                }
               }
               options={enhancedOptions}
               {...props}
@@ -289,8 +302,7 @@ export function CoinsLookup({
                           alignItems: "center",
                           justifyContent: "center",
                           pr: 1,
-                        }}
-                      >
+                        }}>
                         <Search sx={{ fontSize: 18, color: "text.secondary" }} />
                       </Box>
                     ),
@@ -298,7 +310,7 @@ export function CoinsLookup({
                 />
               )}
               renderOption={(props, option, state) => [props, option, state.index] as React.ReactNode}
-              renderGroup={params => params as any}
+              renderGroup={params => params as unknown as React.ReactNode}
             />
           </div>
         </ClickAwayListener>

@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import { GridRow } from "@mui/x-data-grid";
+import { GridRow, GridRowProps } from "@mui/x-data-grid";
 import { nativeBarSx } from "../../components/common/SimpleBarStyled";
 import { BasicTable } from "../../components/DataDisplay";
 import { useAppSelector } from "../../slices";
@@ -7,20 +7,30 @@ import { useMemo } from "react";
 import { getTokenNamesColumns } from "./TokensTableColumnsDefs";
 import { toTableTokensModelFromWallet } from "../../utils/tokensTableHelpers";
 
-export const ExpandableRow = (props: any) => {
+interface ExpandableRowProps extends GridRowProps {
+  row: { address: string };
+  isExpanded: (rowId: string | number) => boolean;
+  rowId: string | number;
+}
+
+export const ExpandableRow = (props: ExpandableRowProps) => {
+  const { isExpanded, rowId, row, ...gridRowProps } = props;
   const { portfolioWalletData } = useAppSelector(state => state.wallets);
-  
+
   const rows = useMemo(() => {
-    const wallet = portfolioWalletData.find(w => w.walletAddress === props.row.address);
+    const wallet = portfolioWalletData.find(w => w.walletAddress === row.address);
     if (!wallet) return [];
-    
+
     return toTableTokensModelFromWallet(wallet);
-  }, [portfolioWalletData, props.row.address]);
+  }, [portfolioWalletData, row.address]);
 
   return (
     <Box sx={{ overflowX: "auto" }}>
-      <GridRow {...props} />
-      {props.isExpanded(props.rowId) && (
+      <GridRow
+        {...gridRowProps}
+        row={row}
+      />
+      {isExpanded(rowId) && (
         <Box
           px={3}
           py={1}>
@@ -32,7 +42,7 @@ export const ExpandableRow = (props: any) => {
                 height: "auto",
                 maxHeight: "10000px",
               },
-              ...tableScrollSx
+              ...tableScrollSx,
             }}
             slots={{
               pagination: () => {
@@ -65,4 +75,4 @@ const tableScrollSx = {
   "& .MuiDataGrid-virtualScroller": {
     ...nativeBarSx,
   },
-}
+};

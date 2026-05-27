@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Box, Tooltip, Typography } from "@mui/material";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
 
 interface SectionLinkProps {
@@ -11,37 +11,32 @@ interface SectionLinkProps {
   disabled?: boolean;
 }
 
-export const SectionLink: FC<SectionLinkProps> = ({
-  href,
-  text = "Go to full page",
-  onClick,
-  disabled,
-}) => {
+export const SectionLink: FC<SectionLinkProps> = ({ href, text = "Go to full page", onClick, disabled }) => {
   if (disabled) {
     return (
-      <Tooltip title="Not available on free plan" placement="top">
+      <Tooltip
+        title="Not available on free plan"
+        placement="top">
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 0.3,
-            fontSize: '0.75rem',
+            fontSize: "0.75rem",
             fontWeight: 500,
-            padding: '2px 6px',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: '4px',
-            cursor: 'not-allowed',
-            color: 'text.disabled',
-            userSelect: 'none',
-          }}
-        >
-          <LockOutlinedIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+            padding: "2px 6px",
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: "4px",
+            cursor: "not-allowed",
+            color: "text.disabled",
+            userSelect: "none",
+          }}>
+          <LockOutlinedIcon sx={{ fontSize: "0.85rem", flexShrink: 0 }} />
           <Typography
             variant="body2"
             component="span"
-            sx={{ fontSize: '0.75rem', lineHeight: 1.2 }}
-          >
+            sx={{ fontSize: "0.75rem", lineHeight: 1.2 }}>
             {text}
           </Typography>
         </Box>
@@ -57,41 +52,42 @@ export const SectionLink: FC<SectionLinkProps> = ({
   };
 
   return (
-    <Link href={href} passHref legacyBehavior>
+    <Link
+      href={href}
+      passHref
+      legacyBehavior>
       <Box
         component="a"
         onClick={handleClick}
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: 'rgba(25, 118, 210, 0.2)',
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "rgba(25, 118, 210, 0.2)",
           gap: 0.3,
-          textDecoration: 'none',
-          color: '#219a83',
-          fontSize: '0.75rem',
+          textDecoration: "none",
+          color: "#219a83",
+          fontSize: "0.75rem",
           fontWeight: 500,
-          padding: '2px 6px',
-          border: '1px solid #219a83',
-          borderRadius: '4px',
-          transition: 'all 0.2s ease-in-out',
-          cursor: 'pointer',
-          '&:hover': {
-            backgroundColor: '#219a83',
+          padding: "2px 6px",
+          border: "1px solid #219a83",
+          borderRadius: "4px",
+          transition: "all 0.2s ease-in-out",
+          cursor: "pointer",
+          "&:hover": {
+            backgroundColor: "#219a83",
             color: "white",
-            textDecoration: 'underline',
+            textDecoration: "underline",
           },
-        }}
-      >
-        <OpenInNewIcon sx={{ fontSize: '0.85rem', flexShrink: 0 }} />
+        }}>
+        <OpenInNewIcon sx={{ fontSize: "0.85rem", flexShrink: 0 }} />
         <Typography
           variant="body2"
           component="span"
           sx={{
-            fontSize: '0.75rem',
+            fontSize: "0.75rem",
             lineHeight: 1.2,
-          }}
-        >
-          {text.includes('View Full') ? (
+          }}>
+          {text.includes("View Full") ? (
             <>
               View Full
               <br />

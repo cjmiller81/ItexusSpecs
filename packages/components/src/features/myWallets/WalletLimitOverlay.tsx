@@ -51,8 +51,7 @@ export const WalletLimitOverlay = ({ wallets, children, sx }: WalletLimitOverlay
           justifyContent: "center",
           backdropFilter: "blur(4px)",
           backgroundColor: isDark ? "rgba(31, 41, 55, 0.88)" : "rgba(247, 245, 242, 0.88)",
-        }}
-      >
+        }}>
         {/* Constrained content row so button never drifts to the table edge */}
         <Box
           sx={{
@@ -64,8 +63,7 @@ export const WalletLimitOverlay = ({ wallets, children, sx }: WalletLimitOverlay
             width: "100%",
             maxWidth: 680,
             px: 3,
-          }}
-        >
+          }}>
           {/* Lock icon + text */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Box
@@ -78,19 +76,19 @@ export const WalletLimitOverlay = ({ wallets, children, sx }: WalletLimitOverlay
                 borderRadius: 2,
                 backgroundColor: "rgba(33, 154, 131, 0.15)",
                 flexShrink: 0,
-              }}
-            >
+              }}>
               <LockOutlinedIcon sx={{ fontSize: "1.5rem", color: "#219a83" }} />
             </Box>
 
             <Box>
               <Typography
                 variant="body1"
-                sx={{ fontWeight: 700, color: isDark ? "#fff" : "#1a1a1a", lineHeight: 1.3 }}
-              >
+                sx={{ fontWeight: 700, color: isDark ? "#fff" : "#1a1a1a", lineHeight: 1.3 }}>
                 {excessCount} wallet{excessCount > 1 ? "s" : ""} exceed your plan limit
               </Typography>
-              <Typography variant="body2" sx={{ color: isDark ? "#9ca3af" : "#6b7280", mt: 0.25 }}>
+              <Typography
+                variant="body2"
+                sx={{ color: isDark ? "#9ca3af" : "#6b7280", mt: 0.25 }}>
                 Your current plan allows {limit} saved wallet connection{limit !== 1 ? "s" : ""}.
               </Typography>
             </Box>
@@ -107,8 +105,7 @@ export const WalletLimitOverlay = ({ wallets, children, sx }: WalletLimitOverlay
               whiteSpace: "nowrap",
               flexShrink: 0,
               "&:hover": { backgroundColor: "#1a7d6a" },
-            }}
-          >
+            }}>
             Upgrade plan →
           </Button>
         </Box>

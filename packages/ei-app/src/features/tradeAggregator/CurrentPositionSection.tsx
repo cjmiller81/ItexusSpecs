@@ -218,59 +218,105 @@ export const CurrentPositionSection: React.FC<CurrentPositionSectionProps> = ({
     }
   }, [portfolioWalletData]);
 
-  const NoRowsOverlayComponent = useMemo(() => function NoRowsOverlay() {
-    if (walletLimit === 0) {
-      return (
-        <GridOverlay>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 30px", textAlign: "center" }}>
-            <LockOutlinedIcon sx={{ fontSize: 50, color: "#219a83", mb: 2 }} />
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, fontSize: "18px" }}>
-              {t("WalletAccessRequiresPaidPlan", { defaultValue: "Wallet access requires a paid plan" })}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 3, color: "gray", fontSize: "13px", maxWidth: "400px" }}>
-              {t("UpgradeToViewWalletPositions", { defaultValue: "Upgrade your plan to connect wallets and view your positions here." })}
-            </Typography>
-            <Button variant="contained" onClick={() => router.push("/profile/billing")} sx={{ backgroundColor: "#219a83", color: "white", fontSize: "11px" }}>
-              {t("UpgradePlan", { defaultValue: "Upgrade Plan" })}
-            </Button>
-          </Box>
-        </GridOverlay>
-      );
-    }
-    if (!wallets || wallets.length === 0) {
-      return <CustomNoWalletOverlay />;
-    }
-    if (!selectedWallet) {
-      return <CustomSelectWalletOverlay />;
-    }
-    if (isPortfolioLoading) {
-      return (
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%" minHeight={200}>
-          <CircularProgress size={32} sx={{ color: "#219a83", mb: 1 }} />
-          <Typography variant="body2" color="text.secondary">
-            Loading wallet positions...
-          </Typography>
-        </Box>
-      );
-    }
-    if (filteredRows.length === 0) {
-      return (
-        <GridOverlay>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 30px", textAlign: "center" }}>
-            <AccountBalanceWalletIcon sx={{ fontSize: 50, color: "text.disabled", mb: 2 }} />
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1, fontSize: "18px" }}>
-              {t("NoTokenPositions", { defaultValue: "No token positions found" })}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "gray", fontSize: "13px", maxWidth: "400px" }}>
-              {t("NoTokenPositionsDescription", { defaultValue: "This wallet has no token holdings to display." })}
-            </Typography>
-          </Box>
-        </GridOverlay>
-      );
-    }
-    return null;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletLimit, wallets, selectedWallet, isPortfolioLoading, filteredRows]);
+  const NoRowsOverlayComponent = useMemo(
+    () =>
+      function NoRowsOverlay() {
+        if (walletLimit === 0) {
+          return (
+            <GridOverlay>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "40px 30px",
+                  textAlign: "center",
+                }}>
+                <LockOutlinedIcon sx={{ fontSize: 50, color: "#219a83", mb: 2 }} />
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{ mb: 1, fontSize: "18px" }}>
+                  {t("WalletAccessRequiresPaidPlan", { defaultValue: "Wallet access requires a paid plan" })}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ mb: 3, color: "gray", fontSize: "13px", maxWidth: "400px" }}>
+                  {t("UpgradeToViewWalletPositions", {
+                    defaultValue: "Upgrade your plan to connect wallets and view your positions here.",
+                  })}
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={() => router.push("/profile/billing")}
+                  sx={{ backgroundColor: "#219a83", color: "white", fontSize: "11px" }}>
+                  {t("UpgradePlan", { defaultValue: "Upgrade Plan" })}
+                </Button>
+              </Box>
+            </GridOverlay>
+          );
+        }
+        if (!wallets || wallets.length === 0) {
+          return <CustomNoWalletOverlay />;
+        }
+        if (!selectedWallet) {
+          return <CustomSelectWalletOverlay />;
+        }
+        if (isPortfolioLoading) {
+          return (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              height="100%"
+              minHeight={200}>
+              <CircularProgress
+                size={32}
+                sx={{ color: "#219a83", mb: 1 }}
+              />
+              <Typography
+                variant="body2"
+                color="text.secondary">
+                Loading wallet positions...
+              </Typography>
+            </Box>
+          );
+        }
+        if (filteredRows.length === 0) {
+          return (
+            <GridOverlay>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "40px 30px",
+                  textAlign: "center",
+                }}>
+                <AccountBalanceWalletIcon sx={{ fontSize: 50, color: "text.disabled", mb: 2 }} />
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{ mb: 1, fontSize: "18px" }}>
+                  {t("NoTokenPositions", { defaultValue: "No token positions found" })}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "gray", fontSize: "13px", maxWidth: "400px" }}>
+                  {t("NoTokenPositionsDescription", { defaultValue: "This wallet has no token holdings to display." })}
+                </Typography>
+              </Box>
+            </GridOverlay>
+          );
+        }
+        return null;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      },
+    [walletLimit, wallets, selectedWallet, isPortfolioLoading, filteredRows],
+  );
 
   useEffect(() => {
     if (wasManualSelection) return;

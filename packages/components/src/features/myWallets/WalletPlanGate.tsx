@@ -29,20 +29,19 @@ export const WalletPlanGate = ({ children }: WalletPlanGateProps) => {
           gap: 2,
           backdropFilter: "blur(4px)",
           backgroundColor: theme =>
-            theme.palette.mode === "dark"
-              ? "rgba(0, 0, 0, 0.55)"
-              : "rgba(247, 245, 242, 0.82)",
+            theme.palette.mode === "dark" ? "rgba(0, 0, 0, 0.55)" : "rgba(247, 245, 242, 0.82)",
           borderRadius: 3,
-        }}
-      >
+        }}>
         <LockOutlinedIcon sx={{ fontSize: "2.5rem", color: "text.secondary" }} />
-        <Typography variant="h6" align="center" sx={{ fontWeight: 600 }}>
-          Wallets aren't accessible on the free plan
+        <Typography
+          variant="h6"
+          align="center"
+          sx={{ fontWeight: 600 }}>
+          Wallets aren&apos;t accessible on the free plan
         </Typography>
         <Button
           variant="contained"
-          onClick={() => router.push("/profile/billing")}
-        >
+          onClick={() => router.push("/profile/billing")}>
           Upgrade Plan
         </Button>
       </Box>

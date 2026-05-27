@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "rootDir": "../../..",
+    "noEmit": true,
+    "emitDeclarationOnly": false,
+    "declaration": false,
+    "declarationDir": null
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "../../components/src/**/*.ts",
+    "../../components/src/**/*.tsx",
+    "../../ei-app/src/**/*.ts",
+    "../../ei-app/src/**/*.tsx",
+    "../../echo-app/src/**/*.ts",
+    "../../echo-app/src/**/*.tsx",
+    "../../dpd-app/src/**/*.ts",
+    "../../dpd-app/src/**/*.tsx"
+  ]
+}

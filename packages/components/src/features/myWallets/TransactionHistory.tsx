@@ -23,8 +23,6 @@ import { TransactionFilters } from "./TransactionFilters";
 import { TransactionRow } from "./TransactionRow";
 import "./TransactionHistory.css";
 import { useTheme } from "@mui/system";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { useSubscription } from "../../hooks/useSubscription";
 import { TransactionSyncStatus } from "./TransactionSyncStatus";
 import { TransactionSyncButton } from "./TransactionSyncButton";
 
@@ -36,11 +34,11 @@ interface TransactionHistoryProps {
 type DateRange = { from: Date; to: Date }; // ISO yyyy-mm-dd
 
 const PRESETS: Record<string, number | null> = {
-  'all': null,
-  'last_7': 7,
-  'last_30': 30,
-  'last_90': 90,
-  'custom': null,
+  all: null,
+  last_7: 7,
+  last_30: 30,
+  last_90: 90,
+  custom: null,
 };
 
 function formatISO(date: Date) {
@@ -55,8 +53,6 @@ function computeRange(days: number | null): DateRange {
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAddress, wallets }) => {
   const { t } = useTranslation("MyWalletsPage");
-  const { getWalletConnectionLimit, isFreePlan } = useSubscription();
-  const walletLimit = isFreePlan ? 0 : getWalletConnectionLimit("DEX");
   // local selection when wallets list is provided
   const [selectedWalletId, setSelectedWalletId] = useState<string>("");
   const [hasUserSelectedWallet, setHasUserSelectedWallet] = useState<boolean>(false);
@@ -105,12 +101,17 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
     error,
     data,
     paginatedTransactions,
-    dateFilter, setDateFilter,
-    typeFilter, setTypeFilter,
-    tokenFilter, setTokenFilter,
-    hideSpam, setHideSpam,
+    dateFilter,
+    setDateFilter,
+    typeFilter,
+    setTypeFilter,
+    tokenFilter,
+    setTokenFilter,
+    hideSpam,
+    setHideSpam,
     uniqueTokens,
-    page, setPage,
+    page,
+    setPage,
     pageSize,
     setPageSize,
     totalPages,
@@ -147,7 +148,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   };
 
   // Date range state
-  const [preset, setPreset] = useState<string>('all');
+  const [preset, setPreset] = useState<string>("all");
   const [fromDate, setFromDate] = useState<Date | undefined>(allDateFilterRange.from);
   const [toDate, setToDate] = useState<Date | undefined>(allDateFilterRange.to);
 
@@ -156,11 +157,11 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
 
   useEffect(() => {
     // notify parent / trigger API whenever preset changes to non-custom
-    if (preset !== 'custom') {
-      if (preset === 'all') {
+    if (preset !== "custom") {
+      if (preset === "all") {
         // "All Time" — clear date filter so API can request all records
-        console.log('[DatePreset] preset=all -> clearing dateFilter');
-        setDateFilter('all');
+        console.log("[DatePreset] preset=all -> clearing dateFilter");
+        setDateFilter("all");
         setPage(0);
         setFromDate(allDateFilterRange.from);
         setToDate(allDateFilterRange.to);
@@ -171,7 +172,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
       const r = computeRange(days);
       setFromDate(r.from);
       setToDate(r.to);
-      console.log('[DatePreset] setting dateFilter', r);
+      console.log("[DatePreset] setting dateFilter", r);
       setDateFilter({ from: formatISO(r.from), to: formatISO(r.to) });
       setPage(0); // reset to first page (server 0-based) to trigger refetch / UI update
     }
@@ -179,54 +180,53 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   }, [preset]);
 
   useEffect(() => {
-    if (preset !== 'all') return;
+    if (preset !== "all") return;
 
     if (fromDate !== allDateFilterRange.from || toDate !== allDateFilterRange.to) {
       setFromDate(allDateFilterRange.from);
       setToDate(allDateFilterRange.to);
-    }
-
-    return () => {
-      setFromDate(undefined);
-      setToDate(undefined);
     }
   }, [allDateFilterRange]);
 
   function handleApplyCustom() {
     // validate
     if (!fromDate || !toDate) {
-      console.warn('[DateRange] Apply aborted - missing from/to', { fromDate, toDate });
+      console.warn("[DateRange] Apply aborted - missing from/to", { fromDate, toDate });
       return;
     }
     if (fromDate > toDate) {
-      console.warn('fromDate must be <= toDate');
+      console.warn("fromDate must be <= toDate");
       return;
     }
-    console.log('[DateRange] Apply clicked -> setting dateFilter', { from: fromDate, to: toDate });
+    console.log("[DateRange] Apply clicked -> setting dateFilter", { from: fromDate, to: toDate });
     setDateFilter({ from: formatISO(fromDate), to: formatISO(toDate) });
     setPage(0); // ensure API is called for server page 0 with new date filter
   }
 
   const refreshTransactions = () => {
-    console.log('[Refresh] Refreshing transactions with current filters...');
+    console.log("[Refresh] Refreshing transactions with current filters...");
     // ensure we pass strings (ISO dates) to the API, or 'all' if no explicit range
     if (fromDate && toDate) {
       setDateFilter({ from: formatISO(fromDate), to: formatISO(toDate) });
     } else {
-      setDateFilter('all');
+      setDateFilter("all");
     }
     setPage(0);
   };
 
   const handleSyncComplete = () => {
-    console.log('[Sync] Sync completed, refreshing transactions...');
+    console.log("[Sync] Sync completed, refreshing transactions...");
     refreshTransactions();
   };
 
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 10 }}>
-        <CircularProgress size={48} thickness={4} sx={{ color: "#9F7AEA" }} />
+        <CircularProgress
+          size={48}
+          thickness={4}
+          sx={{ color: "#9F7AEA" }}
+        />
       </Box>
     );
   }
@@ -242,14 +242,9 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
           py: 6,
           "& .MuiAlert-icon": { fontSize: 40, mr: 0, mb: 1, padding: 0 },
           "& .MuiAlert-message": { width: "100%" },
-        }}
-      >
-        <AlertTitle sx={{ mt: 2, mb: 1, fontSize: "1.125rem" }}>
-          Something went wrong
-        </AlertTitle>
-        <Box sx={{ maxWidth: 360, mx: "auto" }}>
-          {error.message}
-        </Box>
+        }}>
+        <AlertTitle sx={{ mt: 2, mb: 1, fontSize: "1.125rem" }}>Something went wrong</AlertTitle>
+        <Box sx={{ maxWidth: 360, mx: "auto" }}>{error.message}</Box>
       </Alert>
     );
   }
@@ -257,8 +252,12 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
   if (!wallets || wallets.length === 0) {
     return (
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 8 }}>
-        <Typography variant="body2" color="text.secondary">
-          {t("NoWalletsForHistory", { defaultValue: "No wallets connected — add a wallet to view transaction history" })}
+        <Typography
+          variant="body2"
+          color="text.secondary">
+          {t("NoWalletsForHistory", {
+            defaultValue: "No wallets connected — add a wallet to view transaction history",
+          })}
         </Typography>
       </Box>
     );
@@ -266,72 +265,90 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
 
   return (
     <div className="transaction-history">
-      <div className="header" style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-
-      {/* Wallet selection with address underneath, sync controls directly to the right of dropdown */}
-      <Box sx={{ mb: 3, display: "flex", alignItems: "flex-start", gap: 2, flexWrap: "wrap", justifyContent: "space-between", width: "100%" }}>
-        {/* Left column: dropdown + address */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <Select
-            displayEmpty
-            value={selectedWalletId}
-            onChange={handleWalletSelect}
-            renderValue={() => selectedWalletId ? wallets?.find(w => w.walletId === selectedWalletId)?.walletName || "" : "SELECT SAVED WALLET" }
-            sx={{
-              backgroundColor: "#219a83",
-              fontSize: "12px",
-              fontWeight: 500,
-              color: "white",
-              width: "100%",
-              maxWidth: "400px",
-              maxHeight: "40px",
-              marginBottom: selectedWalletId ? "12px" : 0,
-              "& .MuiSelect-icon": { color: "white" },
-            }}
-          >
-            {wallets?.map((wallet, index) => {
-              const isDisabled = walletLimit > 0 && index >= walletLimit;
-              return (
+      <div
+        className="header"
+        style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+        {/* Wallet selection with address underneath, sync controls directly to the right of dropdown */}
+        <Box
+          sx={{
+            mb: 3,
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 2,
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            width: "100%",
+          }}>
+          {/* Left column: dropdown + address */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <Select
+              displayEmpty
+              value={selectedWalletId}
+              onChange={handleWalletSelect}
+              renderValue={() =>
+                selectedWalletId
+                  ? wallets?.find(w => w.walletId === selectedWalletId)?.walletName || ""
+                  : "SELECT SAVED WALLET"
+              }
+              sx={{
+                backgroundColor: "#219a83",
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "white",
+                width: "100%",
+                maxWidth: "400px",
+                maxHeight: "40px",
+                marginBottom: selectedWalletId ? "12px" : 0,
+                "& .MuiSelect-icon": { color: "white" },
+              }}>
+              {wallets?.map(wallet => (
                 <MenuItem
                   key={wallet.walletId}
-                  value={wallet.walletId}
-                  disabled={isDisabled}
-                  sx={isDisabled ? { opacity: 0.5, gap: 1 } : {}}
-                >
+                  value={wallet.walletId}>
                   {wallet.walletName || wallet.address}
-                  {isDisabled && <LockOutlinedIcon sx={{ fontSize: "0.85rem", ml: "auto" }} />}
                 </MenuItem>
-              );
-            })}
-          </Select>
+              ))}
+            </Select>
 
-          {resolvedAddress && (
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: "0.875rem",
-                color: "#94a3b8",
-                mt: 0.5,
-              }}
-            >
-              {resolvedAddress}
-            </Typography>
-          )}
-        </div>
-
-        {/* Sync controls placed immediately to the right of the dropdown */}
-        {resolvedAddress && (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: isSelectionMode ? 18 : 0, justifyContent: "flex-end", flexGrow: 1 }}>
-            <TransactionSyncButton walletAddress={resolvedAddress} onSyncComplete={handleSyncComplete} />
-            <TransactionSyncStatus walletAddress={resolvedAddress} />
+            {resolvedAddress && (
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: "0.875rem",
+                  color: "#94a3b8",
+                  mt: 0.5,
+                }}>
+                {resolvedAddress}
+              </Typography>
+            )}
           </div>
-        )}
-      </Box>
+
+          {/* Sync controls placed immediately to the right of the dropdown */}
+          {resolvedAddress && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                marginTop: isSelectionMode ? 18 : 0,
+                justifyContent: "flex-end",
+                flexGrow: 1,
+              }}>
+              <TransactionSyncButton
+                walletAddress={resolvedAddress}
+                onSyncComplete={handleSyncComplete}
+              />
+              <TransactionSyncStatus walletAddress={resolvedAddress} />
+            </div>
+          )}
+        </Box>
       </div>
 
       {/* Main Section - Only show when we have a resolved address */}
       {resolvedAddress && (
-        <div className="transaction-section" style={{ marginTop: 12, ...borderColors }}>
+        <div
+          className="transaction-section"
+          style={{ marginTop: 12, ...borderColors }}>
           <div
             className="section-header"
             style={{
@@ -339,55 +356,61 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
               justifyContent: "space-between",
               padding: "1rem 1.25rem",
               borderBottom: "1px solid #4E4E57",
-              ...borderColors
-            }}
-          >
-            <span className="section-title" style={{ fontWeight: 600 }}>Transactions</span>
+              ...borderColors,
+            }}>
+            <span
+              className="section-title"
+              style={{ fontWeight: 600 }}>
+              Transactions
+            </span>
             <div>
-              <span className="section-count" style={{ color: "#64748b" }}>{sectionCountText}</span>
+              <span
+                className="section-count"
+                style={{ color: "#64748b" }}>
+                {sectionCountText}
+              </span>
               <Button
                 onClick={async () => {
                   try {
                     const allTransactions = await fetchAllTransactionsForExport();
 
                     if (allTransactions.length === 0) {
-                      console.warn('No transactions to export');
+                      console.warn("No transactions to export");
                       return;
                     }
 
-                    let exportDateRange: 'all' | 'last_7' | 'last_30' | 'custom' = 'all';
+                    let exportDateRange: "all" | "last_7" | "last_30" | "custom" = "all";
                     let startDate: Date | undefined;
                     let endDate: Date | undefined;
 
-                    if (dateFilter !== 'all' && typeof dateFilter !== 'string') {
+                    if (dateFilter !== "all" && typeof dateFilter !== "string") {
                       // Custom date range
-                      exportDateRange = 'custom';
+                      exportDateRange = "custom";
                       startDate = new Date(dateFilter.from);
                       endDate = new Date(dateFilter.to);
-                    } else if (dateFilter === 'all') {
-                      exportDateRange = 'all';
-                    } else if (dateFilter === 'last_7') {
-                      exportDateRange = 'last_7';
-                    } else if (dateFilter === 'last_30') {
-                      exportDateRange = 'last_30';
+                    } else if (dateFilter === "all") {
+                      exportDateRange = "all";
+                    } else if (dateFilter === "last_7") {
+                      exportDateRange = "last_7";
+                    } else if (dateFilter === "last_30") {
+                      exportDateRange = "last_30";
                     }
 
                     const opts: ExportOptions = {
                       dateRange: exportDateRange,
                       startDate,
                       endDate,
-                      selectedTypes: typeFilter === 'all' ? ['all'] : [typeFilter.toLowerCase()],
-                      hideSpam: hideSpam
+                      selectedTypes: typeFilter === "all" ? ["all"] : [typeFilter.toLowerCase()],
+                      hideSpam: hideSpam,
                     };
 
                     exportTransactionsXlsx(allTransactions, opts);
                   } catch (err) {
-                    console.error('Export failed:', err);
+                    console.error("Export failed:", err);
                   }
                 }}
                 variant="outlined"
-                sx={{ ml: 4, marginRight: "17px" }}
-              >
+                sx={{ ml: 4, marginRight: "17px" }}>
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                   <DownloadIcon />
                   {t("Export")}
@@ -417,14 +440,20 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
           </div>
 
           {/* Transaction List */}
-          <div className="transaction-list" style={{ padding: "0.75rem 1rem", maxHeight: "60vh", overflowY: "auto" }}>
+          <div
+            className="transaction-list"
+            style={{ padding: "0.75rem 1rem", maxHeight: "60vh", overflowY: "auto" }}>
             {paginatedTransactions.length === 0 ? (
               <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
                 📭 No transactions found matching filters
               </div>
             ) : (
               paginatedTransactions.map(tx => (
-                <TransactionRow key={tx.hash} transaction={tx} borderColors={borderColors} />
+                <TransactionRow
+                  key={tx.hash}
+                  transaction={tx}
+                  borderColors={borderColors}
+                />
               ))
             )}
           </div>
@@ -437,7 +466,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
             page={page}
             rowsPerPage={pageSize}
             onPageChange={(_event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
+            onRowsPerPageChange={event => {
               setPageSize(parseInt(event.target.value, 10));
               setPage(0);
             }}
@@ -445,6 +474,6 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ walletAd
           />
         </div>
       )}
-     </div>
-   );
- };
+    </div>
+  );
+};

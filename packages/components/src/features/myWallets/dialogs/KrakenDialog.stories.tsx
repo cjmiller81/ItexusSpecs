@@ -5,6 +5,9 @@ import Stack from "@mui/material/Stack";
 import { useFormik, type FormikConfig } from "formik";
 import * as Yup from "yup";
 import { fn } from "storybook/test";
+
+import { dialogContainerDecorator } from "../../../storybookMocks/dialogDocsDecorator";
+
 import type { IExchange } from "../../../models";
 import { KrakenDialog } from "./KrakenDialog";
 
@@ -106,6 +109,10 @@ const meta: Meta<typeof KrakenDialog> = {
       },
     },
   },
+  // Bound the modal to a sized card on the Docs page only. Height accounts
+  // for the API-help illustration block which can push the Paper tall. See
+  // `storybookMocks/dialogDocsDecorator.tsx`.
+  decorators: [dialogContainerDecorator(800)],
   tags: ["autodocs"],
 };
 

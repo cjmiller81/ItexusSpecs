@@ -5,6 +5,9 @@ import Stack from "@mui/material/Stack";
 import { useFormik, type FormikConfig } from "formik";
 import * as Yup from "yup";
 import { fn } from "storybook/test";
+
+import { dialogContainerDecorator } from "../../../storybookMocks/dialogDocsDecorator";
+
 import { CoinbaseDialog } from "./CoinbaseDialog";
 
 type CoinbaseFormValues = {
@@ -79,6 +82,10 @@ const meta: Meta<typeof CoinbaseDialog> = {
       },
     },
   },
+  // Bound the modal to a sized card on the Docs page only. The standalone
+  // Story page still gets the dialog at full viewport. See
+  // `storybookMocks/dialogDocsDecorator.tsx`.
+  decorators: [dialogContainerDecorator(720)],
   tags: ["autodocs"],
 };
 

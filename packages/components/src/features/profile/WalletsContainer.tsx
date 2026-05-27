@@ -13,7 +13,7 @@ import {
   updateWallet,
 } from "../../slices/walletsSlice";
 import { MyWalletsSection } from "../myWallets/MyWalletsSection";
-import { WalletPlanGate } from "../myWallets/WalletPlanGate"
+import { WalletPlanGate } from "../myWallets/WalletPlanGate";
 import { Wallet } from "../../models";
 import type { WalletPortfolioResponse } from "../../models/wallet/walletPortfolio";
 import type { LifiChain } from "../../utils/enrichTokenPositions";
@@ -72,19 +72,19 @@ export const WalletsContainer = ({ lifiChainMap, ...props }: WalletsContainerPro
   return (
     <Box {...props}>
       <WalletPlanGate>
-      <MyWalletsSection
-        onUpdateWallet={wallet => dispatch(updateWallet(wallet))}
-        selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
-        totalWalletsWorthData={totalWalletsWorthData}
-        loading={statusFetchingWallets === "loading"}
-        wallets={wallets}
-        exchanges={exchanges}
-        onSelectedRowsChanged={rows => dispatch(selectWallets(rows))}
-        onAddWallet={wallet => dispatch(createWallet(wallet))}
-        onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
-        onDeleteExchange={exchange => dispatch(deleteExchange(exchange))}
-        totalAmount={totalAmount}
-      />
+        <MyWalletsSection
+          onUpdateWallet={wallet => dispatch(updateWallet(wallet))}
+          selectedWalletsIds={selectedWallets.map(wallet => wallet.address)}
+          totalWalletsWorthData={totalWalletsWorthData}
+          loading={statusFetchingWallets === "loading"}
+          wallets={wallets}
+          exchanges={exchanges}
+          onSelectedRowsChanged={rows => dispatch(selectWallets(rows))}
+          onAddWallet={wallet => dispatch(createWallet(wallet))}
+          onDeleteWallet={wallet => dispatch(deleteWallet(wallet))}
+          onDeleteExchange={exchange => dispatch(deleteExchange(exchange))}
+          totalAmount={totalAmount}
+        />
       </WalletPlanGate>
     </Box>
   );
