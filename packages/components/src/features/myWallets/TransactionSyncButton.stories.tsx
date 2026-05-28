@@ -118,7 +118,10 @@ export const CompletesAfterPoll: Story = {
     const canvas = within(canvasElement);
     const body = within(canvasElement.ownerDocument.body);
     await userEvent.click(canvas.getByRole("button", { name: /sync new transactions/i }));
-    await waitFor(() => expect(canvas.getByRole("button", { name: /sync new transactions/i })).toBeDisabled(), {
+    // The button's accessible name flips to "Syncing..." once `syncing` is
+    // set, so wait for that label (rather than the resting "Sync New
+    // Transactions" one) to confirm the sync actually started.
+    await waitFor(() => expect(canvas.getByRole("button", { name: /syncing/i })).toBeDisabled(), {
       timeout: 2000,
     });
     await waitFor(() => body.getByText("Sync completed!"), { timeout: 18_000 });

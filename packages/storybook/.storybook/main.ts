@@ -36,6 +36,7 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-docs"),
     getAbsolutePath("@storybook/addon-a11y"),
     getAbsolutePath("@storybook/addon-vitest"),
+    getAbsolutePath("storybook-addon-test-codegen")
   ],
   framework: {
     name: getAbsolutePath("@storybook/nextjs-vite"),
@@ -185,6 +186,33 @@ const config: StorybookConfig = {
       allow: [...(config.server.fs?.allow ?? []), repoRoot],
     };
 
+    // Force the pre-Vite-6 CJS interop on the import-analysis side so default
+    // imports of CJS deps always unwrap `module.exports.default`. Needed
+    // because:
+    //
+    // 1. `packages/components/package.json` has `"type": "module"`, which
+    //    makes Vite's import-analysis treat every component file as
+    //    `isNodeMode === true` and emit `const X = cjsModule` instead of
+    //    `const X = !cjsModule.__esModule ? cjsModule : cjsModule.default`.
+    //    That mirrors Node's automatic CJS→ESM default-export unwrap.
+    // 2. Vite 8's optimizer (rolldown 1.0.1) does NOT unwrap on the bundled
+    //    side either: an icon like `@mui/icons-material/Menu` ends up as
+    //    `export default require_Menu()`, where `require_Menu()` returns the
+    //    raw `{ __esModule: true, default: <Icon> }` exports object.
+    //
+    // Combined, `import Menu from "@mui/icons-material/Menu"` resolves to
+    // that exports object — not the component — and every `<Menu />` throws
+    // "Element type is invalid … but got: object" in the browser. Setting
+    // `legacy.inconsistentCjsInterop: true` flips `isNodeMode` to `false`
+    // unconditionally (see Vite's `interopNamedImports` in
+    // `node_modules/vite/dist/node/chunks/node.js`), restoring the unwrap on
+    // the consumer side. This is Vite-only; production Next.js builds use
+    // webpack/SWC and are unaffected.
+    config.legacy = {
+      ...(config.legacy ?? {}),
+      inconsistentCjsInterop: true,
+    };
+
     // Mirror the Next.js workspaces' `@svgr/webpack` rule (see
     // `packages/ei-app/next.config.js`) so every plain `.svg` ES import in
     // sibling sources resolves to a React component instead of a URL/object.
@@ -209,6 +237,15 @@ const config: StorybookConfig = {
       svgr({
         include: /\.svg(?:\?.*)?$/,
         svgrOptions: { exportType: "default" },
+        // `vite-plugin-svgr` v5.2.0 forwards `lang: "jsx"` to `transformWithOxc`
+        // but doesn't supply any JSX runtime options. Oxc then derives them
+        // from the importer's tsconfig, which here resolves to React app
+        // configs with `"jsx": "preserve"` — so JSX tags are left intact and
+        // Vite's import-analysis chokes on them ("Failed to parse source for
+        // import analysis … <svg …/>"). Force the automatic runtime to
+        // actually compile the JSX. Tracked upstream at
+        // https://github.com/pd4d10/vite-plugin-svgr/issues/141.
+        oxcOptions: { jsx: { runtime: "automatic" } },
       }),
     ];
 
