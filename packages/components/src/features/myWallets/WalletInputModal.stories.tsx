@@ -3,7 +3,7 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { fn } from "storybook/test";
+import { fn, userEvent, within, waitFor, expect } from "storybook/test";
 import { WalletInputModal, type WalletInputProps } from "./WalletInputModal";
 
 const noopHandlers: Pick<WalletInputProps, "onClose" | "onEnter" | "onCleanupError"> = {
@@ -90,4 +90,20 @@ export const WithDuplicateError: Story = {
       error="Wallet address already exists"
     />
   ),
+};
+
+export const AddWalletOpensModalCancelButtonClosesModal: Story = {
+  render: () => <WalletInputModalShell />,
+
+  play: async ({ canvasElement }) => {
+    const body = canvasElement.ownerDocument.body;
+    const canvas = within(body);
+    await userEvent.click(await canvas.findByRole("button", { name: "Add wallet" }));
+    await waitFor(() => expect(body.querySelector('[role="presentation"] > div:nth-of-type(3)')).toBeVisible());
+    await waitFor(() =>
+      expect(canvas.queryByText("Add new wallet", { exact: true })).toHaveTextContent("Add new wallet"),
+    );
+    await userEvent.click(await canvas.findByText("Cancel", { exact: true }));
+    await waitFor(() => expect(body.querySelector('[role="presentation"] > div:nth-of-type(3)')).toBeNull());
+  },
 };
