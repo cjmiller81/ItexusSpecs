@@ -84,6 +84,16 @@ export default defineConfig({
         },
         test: {
           name: "storybook",
+          // Vitest's browser mode defaults `testTimeout` to 15000ms. A handful
+          // of stories drive components that intentionally wait on real
+          // timers (e.g. `TransactionSyncButton` polls every 15s before it
+          // toasts "Sync completed!"), so their play functions need a
+          // ceiling slightly above the longest in-play `waitFor`. The addon
+          // generates `test(name, testStory(...))` without forwarding any
+          // per-story timeout, so we have to set this at the project level.
+          // Fast tests are unaffected — Vitest only enforces this if the
+          // test actually runs that long.
+          testTimeout: 30_000,
           browser: {
             enabled: true,
             headless: true,
