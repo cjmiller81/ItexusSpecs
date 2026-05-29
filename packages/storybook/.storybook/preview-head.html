@@ -11,3 +11,38 @@
 -->
 <link rel="dx-theme" data-theme="material.blue.light" href="/dx.material.blue.light.css" data-active="true" />
 <link rel="dx-theme" data-theme="material.blue.dark" href="/dx.material.blue.dark.css" data-active="false" />
+
+<!--
+  Force-readable text colors for the `storybook-addon-test-codegen` recorder
+  overlay.
+
+  The addon appends two kinds of elements directly to <body> using only
+  inline styles (no class/id), so they pick up the surrounding theme:
+
+    1. The element outline tooltip — the "expect(findByText('...'))" label
+       shown while hovering elements in assertion-recording mode. The addon
+       tags it with `data-no-query="true"` (see
+       `node_modules/storybook-addon-test-codegen/dist/preview.js`, where it
+       calls `tooltip.setAttribute("data-no-query", "true")`).
+
+    2. The "Add Assertion" dropdown menu listing the available matchers
+       ("to be visible", "to be in the document", "to have text content
+       '…'"). It's appended via `document.body.appendChild(menuElement)`
+       and styled inline with `z-index: 2147483647; background-color:
+       white;` — there is no class or id to hook onto, so we target the
+       inline-style signature.
+
+  Both elements set their own white background inline but do NOT set a
+  text color, so they inherit `color: #fff` from MUI's `CssBaseline` body
+  rule (which is white because `preview.tsx`'s `storybookTheme` is dark).
+  That makes the recorder's text invisible against its own white panel.
+
+  Pin the recorder UI to a dark, theme-independent text color so the
+  options can actually be read while picking an assertion.
+-->
+<style>
+  [data-no-query="true"],
+  body > div[style*="z-index: 2147483647"][style*="background-color: white"] {
+    color: #2e3438 !important;
+  }
+</style>
